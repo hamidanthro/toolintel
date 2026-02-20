@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Your Tool — Tool Intel</title>
+    <meta name="description" content="Submit your AI tool for independent review consideration. Free submission, no influence on scores.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --navy: #0f2744;
+            --navy-light: #1e3a5f;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --green: #10b981;
+            --red: #ef4444;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--gray-800);
+            line-height: 1.6;
+            background: var(--gray-50);
+        }
+        
+        h1, h2, h3 { font-family: 'Merriweather', Georgia, serif; font-weight: 700; line-height: 1.3; }
+        
+        /* Header */
+        header {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--gray-200);
+            background: var(--white);
+        }
+        
+        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+        
+        .logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.25rem; color: var(--navy); text-decoration: none; }
+        .logo span { color: var(--blue-accent); }
+        
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+        .nav-links a:hover { color: var(--navy); }
+        
+        /* Main */
+        main { padding: 60px 24px; max-width: 700px; margin: 0 auto; }
+        
+        h1 { font-size: 2rem; color: var(--navy); margin-bottom: 16px; text-align: center; }
+        .subtitle { text-align: center; color: var(--gray-600); margin-bottom: 40px; }
+        
+        /* Rules */
+        .rules {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .rules h3 { font-size: 1rem; color: var(--navy); margin-bottom: 12px; }
+        .rules ul { padding-left: 20px; color: var(--gray-600); font-size: 0.95rem; }
+        .rules li { margin-bottom: 8px; }
+        
+        /* Form */
+        .form-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 32px;
+        }
+        
+        .form-group { margin-bottom: 24px; }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        
+        label .required { color: var(--red); }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 14px;
+            font-size: 1rem;
+            border: 1px solid var(--gray-200);
+            border-radius: 6px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--blue-accent);
+        }
+        
+        textarea { resize: vertical; min-height: 120px; }
+        
+        .help-text { font-size: 0.85rem; color: var(--gray-400); margin-top: 6px; }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .checkbox-group input { width: auto; margin-top: 3px; }
+        .checkbox-group label { margin-bottom: 0; font-weight: 400; color: var(--gray-600); }
+        
+        button[type="submit"] {
+            width: 100%;
+            padding: 14px;
+            font-size: 1rem;
+            font-weight: 600;
+            background: var(--navy);
+            color: var(--white);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        button[type="submit"]:hover { background: var(--navy-light); }
+        button[type="submit"]:disabled { background: var(--gray-400); cursor: not-allowed; }
+        
+        #form-message {
+            text-align: center;
+            margin-top: 16px;
+            font-weight: 500;
+        }
+        
+        /* Footer */
+        footer {
+            padding: 40px 24px;
+            text-align: center;
+            border-top: 1px solid var(--gray-200);
+            background: var(--white);
+            margin-top: 60px;
+        }
+        
+        footer p { color: var(--gray-400); font-size: 0.9rem; }
+        footer a { color: var(--gray-600); }
+        
+        @media (max-width: 640px) {
+            main { padding: 40px 16px; }
+            h1 { font-size: 1.5rem; }
+            .form-card { padding: 24px 16px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo">Tool<span>Intel</span></a>
+            <div class="nav-links">
+                <a href="/methodology">Methodology</a>
+                <a href="/reviews">Reviews</a>
+                <a href="/submit">Submit Tool</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Submit Your AI Tool for Review</h1>
+        <p class="subtitle">Free submission. No influence on scores. Enter our review queue.</p>
+        
+        <div class="rules">
+            <h3>Before You Submit</h3>
+            <ul>
+                <li>Submission is <strong>free</strong> — there is no fee to be considered</li>
+                <li>Submission does not guarantee a review or influence scores</li>
+                <li>Products may not resubmit if rejected for 90 days</li>
+                <li>False information results in permanent disqualification</li>
+                <li>Reviewed tools remain on the platform permanently</li>
+            </ul>
+        </div>
+        
+        <div class="form-card">
+            <form id="submit-form">
+                <div class="form-group">
+                    <label>Product Name <span class="required">*</span></label>
+                    <input type="text" name="productName" required placeholder="e.g., Claude, ChatGPT, Jasper">
+                </div>
+                
+                <div class="form-group">
+                    <label>Product URL <span class="required">*</span></label>
+                    <input type="url" name="productUrl" required placeholder="https://yourproduct.com">
+                </div>
+                
+                <div class="form-group">
+                    <label>Primary AI Category <span class="required">*</span></label>
+                    <select name="category" required>
+                        <option value="">Select a category...</option>
+                        <option value="chatbot">AI Customer Support & Chatbots</option>
+                        <option value="writing">AI Writing & Content Generation</option>
+                        <option value="coding">AI Coding Assistants</option>
+                        <option value="image">AI Image & Video Generation</option>
+                        <option value="data">AI Data Analysis & BI</option>
+                        <option value="automation">AI Automation & Workflow</option>
+                        <option value="voice">AI Voice & Transcription</option>
+                        <option value="vertical">Vertical AI (Healthcare, Legal, etc.)</option>
+                        <option value="crm">AI CRM & Sales Intelligence</option>
+                        <option value="platform">Foundation Models & AI APIs</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Pricing Model <span class="required">*</span></label>
+                    <input type="text" name="pricing" required placeholder="e.g., Free tier + $20/mo Pro, Enterprise custom">
+                </div>
+                
+                <div class="form-group">
+                    <label>Privacy Policy URL <span class="required">*</span></label>
+                    <input type="url" name="privacyUrl" required placeholder="https://yourproduct.com/privacy">
+                    <p class="help-text">Must be a live URL, not a PDF</p>
+                </div>
+                
+                <div class="form-group">
+                    <label>Terms of Service URL <span class="required">*</span></label>
+                    <input type="url" name="tosUrl" required placeholder="https://yourproduct.com/terms">
+                </div>
+                
+                <div class="form-group">
+                    <label>Security Certifications</label>
+                    <input type="text" name="certifications" placeholder="e.g., SOC2 (2025), ISO 27001, HIPAA">
+                    <p class="help-text">Include audit dates if available</p>
+                </div>
+                
+                <div class="form-group">
+                    <label>Contact Email <span class="required">*</span></label>
+                    <input type="email" name="contactEmail" required placeholder="you@company.com">
+                </div>
+                
+                <div class="form-group">
+                    <label>Product Description <span class="required">*</span></label>
+                    <textarea name="description" required placeholder="Brief description of what your tool does and who it's for (500 words max)"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="interview" name="interview" value="yes">
+                        <label for="interview">We are willing to participate in a developer interview</label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="confirm" name="confirm" required>
+                        <label for="confirm">I confirm all information is accurate and understand false submissions result in disqualification <span class="required">*</span></label>
+                    </div>
+                </div>
+                
+                <button type="submit" id="submit-btn">Submit for Review Consideration</button>
+                <p id="form-message"></p>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2026 Tool Intel. <a href="/methodology">Methodology</a> is always public.</p>
+    </footer>
+
+    <script>
+        document.getElementById('submit-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            const msg = document.getElementById('form-message');
+            
+            btn.disabled = true;
+            btn.textContent = 'Submitting...';
+            
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            
+            try {
+                const res = await fetch('https://v7086lxsji.execute-api.us-east-1.amazonaws.com/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await res.json();
+                
+                if (result.success) {
+                    msg.textContent = '✓ Submission received! We\'ll review and respond within 30 days.';
+                    msg.style.color = '#10b981';
+                    e.target.reset();
+                    btn.textContent = 'Submitted!';
+                } else {
+                    throw new Error(result.error || 'Submission failed');
+                }
+            } catch (err) {
+                msg.textContent = err.message || 'Error submitting. Please try again.';
+                msg.style.color = '#ef4444';
+                btn.disabled = false;
+                btn.textContent = 'Try Again';
+            }
+        });
+    </script>
+</body>
+</html>
