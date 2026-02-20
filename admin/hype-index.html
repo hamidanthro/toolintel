@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hype Index Management — ToolIntel Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0f2744;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --green: #10b981;
+            --yellow: #f59e0b;
+            --red: #ef4444;
+            --blue: #3b82f6;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--gray-50); color: var(--gray-800); }
+        
+        header { background: var(--navy); color: white; padding: 20px 24px; }
+        header h1 { font-size: 1.5rem; font-weight: 600; }
+        header .subtitle { color: var(--gray-400); font-size: 0.9rem; margin-top: 4px; }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+        
+        .tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+        .tab { padding: 10px 20px; border: none; background: var(--white); border-radius: 6px; cursor: pointer; font-size: 0.95rem; font-weight: 500; color: var(--gray-600); border: 1px solid var(--gray-200); }
+        .tab.active { background: var(--navy); color: white; border-color: var(--navy); }
+        .tab .badge { background: var(--yellow); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; margin-left: 8px; }
+        
+        .panel { display: none; }
+        .panel.active { display: block; }
+        
+        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: var(--white); border: 1px solid var(--gray-200); border-radius: 8px; padding: 16px; text-align: center; }
+        .stat-card .number { font-size: 2rem; font-weight: 700; color: var(--navy); }
+        .stat-card .label { font-size: 0.85rem; color: var(--gray-600); }
+        .stat-card.alert .number { color: var(--yellow); }
+        
+        .card { background: var(--white); border: 1px solid var(--gray-200); border-radius: 8px; padding: 20px; margin-bottom: 16px; }
+        .card.flagged { border-left: 4px solid var(--yellow); background: #fffbeb; }
+        
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .card-title { font-weight: 600; color: var(--navy); }
+        
+        .status-badge { padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 500; }
+        .status-badge.overrated { background: #fee2e2; color: #991b1b; }
+        .status-badge.underrated { background: #dbeafe; color: #1e40af; }
+        .status-badge.fairly-rated { background: #d1fae5; color: #065f46; }
+        .status-badge.emerging { background: var(--gray-100); color: var(--gray-600); }
+        
+        .hype-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.9rem; }
+        .hype-table th, .hype-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--gray-200); }
+        .hype-table th { background: var(--gray-50); font-weight: 600; color: var(--navy); }
+        .hype-table tr:hover { background: var(--gray-50); }
+        .hype-table .gap { font-weight: 600; }
+        .hype-table .gap.positive { color: var(--red); }
+        .hype-table .gap.negative { color: var(--blue); }
+        
+        .btn { padding: 8px 16px; border-radius: 6px; font-size: 0.9rem; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; }
+        .btn-primary { background: var(--navy); color: white; }
+        .btn-success { background: var(--green); color: white; }
+        .btn-secondary { background: var(--gray-100); color: var(--gray-600); border: 1px solid var(--gray-200); }
+        .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+        .btn-group { display: flex; gap: 8px; }
+        
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 0.9rem; font-weight: 500; color: var(--gray-600); margin-bottom: 6px; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: 6px; font-size: 0.95rem; }
+        .form-group textarea { min-height: 100px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+        
+        .empty-state { text-align: center; padding: 60px 24px; color: var(--gray-400); }
+        
+        .source-list { margin-top: 12px; }
+        .source-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: var(--gray-50); border-radius: 4px; margin-bottom: 8px; }
+        
+        @media (max-width: 768px) {
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .form-row, .form-row-3 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>📊 Hype Index Management</h1>
+        <div class="subtitle">Media Sentiment vs Independent Score Analysis</div>
+    </header>
+    
+    <div class="container">
+        <div class="stats-row">
+            <div class="stat-card"><div class="number" id="statTotal">-</div><div class="label">Tools Analyzed</div></div>
+            <div class="stat-card"><div class="number" id="statOverrated">-</div><div class="label">Overrated</div></div>
+            <div class="stat-card"><div class="number" id="statUnderrated">-</div><div class="label">Underrated</div></div>
+            <div class="stat-card alert"><div class="number" id="statFlagged">-</div><div class="label">Flagged for Review</div></div>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" data-panel="tools">📋 All Tools</button>
+            <button class="tab" data-panel="flagged">⚠️ Flagged <span class="badge" id="flaggedBadge" style="display:none;">0</span></button>
+            <button class="tab" data-panel="update">✏️ Update Tool</button>
+            <button class="tab" data-panel="sources">📰 Add Source</button>
+            <button class="tab" data-panel="report">📝 Quarterly Report</button>
+        </div>
+        
+        <!-- All Tools Panel -->
+        <div class="panel active" id="panel-tools">
+            <div id="toolsList">
+                <div class="empty-state">Loading...</div>
+            </div>
+        </div>
+        
+        <!-- Flagged Panel -->
+        <div class="panel" id="panel-flagged">
+            <p style="color: var(--gray-600); margin-bottom: 16px;">Tools with significant gap changes since last quarter requiring review.</p>
+            <div id="flaggedList">
+                <div class="empty-state">Loading...</div>
+            </div>
+        </div>
+        
+        <!-- Update Tool Panel -->
+        <div class="panel" id="panel-update">
+            <div class="card">
+                <h3 style="margin-bottom: 16px;">Update Hype Index Data</h3>
+                <form id="updateForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Tool Slug *</label>
+                            <input type="text" name="toolSlug" required placeholder="chatgpt">
+                        </div>
+                        <div class="form-group">
+                            <label>Tool Name</label>
+                            <input type="text" name="toolName" placeholder="ChatGPT">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Category</label>
+                            <input type="text" name="category" placeholder="Foundation Models & AI APIs">
+                        </div>
+                        <div class="form-group">
+                            <label>Independent Score *</label>
+                            <input type="number" name="independentScore" min="0" max="100" required placeholder="87">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Media Sentiment Score (leave empty for Emerging)</label>
+                        <input type="number" name="mediaSentiment" min="0" max="100" placeholder="95">
+                    </div>
+                    <div class="form-group">
+                        <label><input type="checkbox" name="flagged"> Flag for priority review</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Hype Data</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Add Source Panel -->
+        <div class="panel" id="panel-sources">
+            <div class="card">
+                <h3 style="margin-bottom: 16px;">Add Media Coverage Source</h3>
+                <form id="sourceForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Tool Slug *</label>
+                            <input type="text" name="toolSlug" required placeholder="chatgpt">
+                        </div>
+                        <div class="form-group">
+                            <label>Publication Name *</label>
+                            <input type="text" name="publication" required placeholder="TechCrunch">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Sentiment *</label>
+                            <select name="sentiment" required>
+                                <option value="">Select...</option>
+                                <option value="Positive">Positive</option>
+                                <option value="Neutral">Neutral</option>
+                                <option value="Negative">Negative</option>
+                                <option value="Mixed">Mixed</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Most Recent Coverage Date</label>
+                            <input type="date" name="lastCoverageDate">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Article URL (optional)</label>
+                        <input type="url" name="articleUrl" placeholder="https://techcrunch.com/...">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Source</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Quarterly Report Panel -->
+        <div class="panel" id="panel-report">
+            <div class="card">
+                <h3 style="margin-bottom: 16px;">Publish Quarterly Hype Report</h3>
+                <form id="reportForm">
+                    <div class="form-group">
+                        <label>Quarter *</label>
+                        <input type="text" name="quarter" required placeholder="Q1-2026">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Most Overrated Tool *</label>
+                            <input type="text" name="overratedTool" required placeholder="ChatGPT">
+                        </div>
+                        <div class="form-group">
+                            <label>Overrated Gap</label>
+                            <input type="number" name="overratedGap" placeholder="+12">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Overrated Analysis (200 words)</label>
+                        <textarea name="overratedAnalysis" placeholder="Why this tool is overrated..."></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Most Underrated Tool *</label>
+                            <input type="text" name="underratedTool" required placeholder="Cursor">
+                        </div>
+                        <div class="form-group">
+                            <label>Underrated Gap</label>
+                            <input type="number" name="underratedGap" placeholder="-15">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Underrated Analysis (200 words)</label>
+                        <textarea name="underratedAnalysis" placeholder="Why this tool is underrated..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success">Publish Quarterly Report</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const API = 'https://v7086lxsji.execute-api.us-east-1.amazonaws.com';
+    const KEY = new URLSearchParams(window.location.search).get('key') || '';
+    
+    if (!KEY) {
+        document.body.innerHTML = '<div style="padding:60px;text-align:center;color:#991b1b;">Admin key required. Add ?key=YOUR_KEY to URL.</div>';
+    }
+    
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById(`panel-${tab.dataset.panel}`).classList.add('active');
+        });
+    });
+    
+    function esc(t) { const d = document.createElement('div'); d.textContent = t || ''; return d.innerHTML; }
+    
+    async function loadTools() {
+        try {
+            const r = await fetch(`${API}/hype-index/admin/all?key=${KEY}`);
+            const tools = await r.json();
+            const container = document.getElementById('toolsList');
+            
+            const overrated = tools.filter(t => t.hypeStatus?.status === 'Overrated').length;
+            const underrated = tools.filter(t => t.hypeStatus?.status === 'Underrated').length;
+            
+            document.getElementById('statTotal').textContent = tools.length;
+            document.getElementById('statOverrated').textContent = overrated;
+            document.getElementById('statUnderrated').textContent = underrated;
+            
+            if (!tools.length) {
+                container.innerHTML = '<div class="empty-state">No tools have hype data yet.</div>';
+                return;
+            }
+            
+            container.innerHTML = `
+                <table class="hype-table">
+                    <thead>
+                        <tr>
+                            <th>Tool</th>
+                            <th>Media</th>
+                            <th>Independent</th>
+                            <th>Gap</th>
+                            <th>Status</th>
+                            <th>Updated</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tools.map(t => {
+                            const gap = t.gap || 0;
+                            const gapClass = gap > 0 ? 'positive' : gap < 0 ? 'negative' : '';
+                            const gapSign = gap > 0 ? '+' : '';
+                            const statusClass = (t.hypeStatus?.status || 'emerging').toLowerCase().replace(' ', '-');
+                            return `
+                                <tr>
+                                    <td><strong>${esc(t.toolName || t.toolSlug)}</strong><br><span style="font-size:0.8rem;color:#9ca3af;">${esc(t.category || '')}</span></td>
+                                    <td>${t.mediaSentiment ?? '-'}</td>
+                                    <td>${t.independentScore ?? '-'}</td>
+                                    <td class="gap ${gapClass}">${gap !== null ? `${gapSign}${gap}` : '-'}</td>
+                                    <td><span class="status-badge ${statusClass}">${esc(t.hypeStatus?.status || 'Emerging')}</span></td>
+                                    <td style="font-size:0.8rem;color:#9ca3af;">${t.updatedAt ? new Date(t.updatedAt).toLocaleDateString() : '-'}</td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            `;
+        } catch (e) {
+            console.error(e);
+        }
+    }
+    
+    async function loadFlagged() {
+        try {
+            const r = await fetch(`${API}/hype-index/admin/flagged?key=${KEY}`);
+            const items = await r.json();
+            const container = document.getElementById('flaggedList');
+            
+            document.getElementById('statFlagged').textContent = items.length;
+            const badge = document.getElementById('flaggedBadge');
+            if (items.length > 0) {
+                badge.textContent = items.length;
+                badge.style.display = 'inline';
+            } else {
+                badge.style.display = 'none';
+            }
+            
+            if (!items.length) {
+                container.innerHTML = '<div class="empty-state">✅ No tools flagged for review.</div>';
+                return;
+            }
+            
+            container.innerHTML = items.map(t => `
+                <div class="card flagged">
+                    <div class="card-header">
+                        <span class="card-title">${esc(t.toolName || t.toolSlug)}</span>
+                        <div class="btn-group">
+                            <button class="btn btn-secondary btn-sm" onclick="clearFlag('${esc(t.toolSlug)}')">Clear Flag</button>
+                        </div>
+                    </div>
+                    <p style="color: var(--gray-600);">Gap changed significantly. Media: ${t.mediaSentiment ?? '-'} | Independent: ${t.independentScore ?? '-'}</p>
+                </div>
+            `).join('');
+        } catch (e) {
+            console.error(e);
+        }
+    }
+    
+    async function clearFlag(toolSlug) {
+        try {
+            await fetch(`${API}/hype-index/admin/clear-flag`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ key: KEY, toolSlug })
+            });
+            loadFlagged();
+        } catch (e) {
+            alert('Error: ' + e.message);
+        }
+    }
+    
+    document.getElementById('updateForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const form = new FormData(this);
+        
+        try {
+            const r = await fetch(`${API}/hype-index/admin/update`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    key: KEY,
+                    toolSlug: form.get('toolSlug'),
+                    toolName: form.get('toolName'),
+                    category: form.get('category'),
+                    independentScore: parseInt(form.get('independentScore')),
+                    mediaSentiment: form.get('mediaSentiment') ? parseInt(form.get('mediaSentiment')) : null,
+                    flagged: form.get('flagged') === 'on'
+                })
+            });
+            
+            if (r.ok) {
+                alert('Hype data updated');
+                this.reset();
+                loadTools();
+            } else {
+                const err = await r.json();
+                alert('Error: ' + (err.error || 'Unknown'));
+            }
+        } catch (e) {
+            alert('Error: ' + e.message);
+        }
+    });
+    
+    document.getElementById('sourceForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const form = new FormData(this);
+        
+        try {
+            const r = await fetch(`${API}/hype-index/admin/add-source`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    key: KEY,
+                    toolSlug: form.get('toolSlug'),
+                    publication: form.get('publication'),
+                    sentiment: form.get('sentiment'),
+                    lastCoverageDate: form.get('lastCoverageDate'),
+                    articleUrl: form.get('articleUrl')
+                })
+            });
+            
+            if (r.ok) {
+                alert('Source added');
+                this.reset();
+            } else {
+                const err = await r.json();
+                alert('Error: ' + (err.error || 'Unknown'));
+            }
+        } catch (e) {
+            alert('Error: ' + e.message);
+        }
+    });
+    
+    document.getElementById('reportForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const form = new FormData(this);
+        
+        try {
+            const r = await fetch(`${API}/hype-index/admin/publish-quarterly-report`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    key: KEY,
+                    quarter: form.get('quarter'),
+                    mostOverrated: {
+                        toolName: form.get('overratedTool'),
+                        gap: parseInt(form.get('overratedGap')) || null
+                    },
+                    mostUnderrated: {
+                        toolName: form.get('underratedTool'),
+                        gap: parseInt(form.get('underratedGap')) || null
+                    },
+                    overratedAnalysis: form.get('overratedAnalysis'),
+                    underratedAnalysis: form.get('underratedAnalysis')
+                })
+            });
+            
+            if (r.ok) {
+                alert('Quarterly report published');
+                this.reset();
+            } else {
+                const err = await r.json();
+                alert('Error: ' + (err.error || 'Unknown'));
+            }
+        } catch (e) {
+            alert('Error: ' + e.message);
+        }
+    });
+    
+    loadTools();
+    loadFlagged();
+    </script>
+</body>
+</html>
