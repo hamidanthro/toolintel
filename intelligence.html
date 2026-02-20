@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category Trend Reports — ToolIntel</title>
+    <meta name="description" content="Independent quarterly intelligence on the AI tools market. Score trends, pricing movements, and compliance shifts across every category we monitor.">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root { --navy: #0f2744; --blue-accent: #3b82f6; --gray-50: #f9fafb; --gray-100: #f3f4f6; --gray-200: #e5e7eb; --gray-400: #9ca3af; --gray-600: #4b5563; --gray-800: #1f2937; --white: #ffffff; --green: #10b981; --yellow: #f59e0b; --red: #ef4444; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; color: var(--gray-800); line-height: 1.7; background: var(--gray-50); }
+        h1, h2, h3, h4 { font-family: 'Merriweather', serif; font-weight: 700; line-height: 1.3; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+        
+        header { padding: 16px 0; border-bottom: 1px solid var(--gray-200); background: var(--white); position: sticky; top: 0; z-index: 100; }
+        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+        .logo { font-weight: 700; font-size: 1.25rem; color: var(--navy); text-decoration: none; }
+        .logo span { color: var(--blue-accent); }
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+        
+        .hero { background: var(--navy); color: var(--white); padding: 60px 0; text-align: center; }
+        .hero h1 { font-size: 2.25rem; margin-bottom: 12px; }
+        .hero .subtitle { color: var(--gray-400); font-size: 1.1rem; max-width: 700px; margin: 0 auto; line-height: 1.6; }
+        .hero .quarter-badge { display: inline-block; background: var(--blue-accent); padding: 6px 16px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; margin-top: 20px; }
+        
+        .section { padding: 48px 0; }
+        .section-header { margin-bottom: 32px; }
+        .section-header h2 { font-size: 1.5rem; color: var(--navy); margin-bottom: 8px; }
+        .section-header p { color: var(--gray-600); }
+        
+        /* Category Grid */
+        .category-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .category-card { background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; padding: 24px; }
+        .category-card h3 { font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 600; color: var(--navy); margin-bottom: 16px; }
+        .category-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .metric { text-align: center; }
+        .metric .value { font-size: 1.5rem; font-weight: 700; color: var(--navy); }
+        .metric .value.up { color: var(--green); }
+        .metric .value.down { color: var(--red); }
+        .metric .label { font-size: 0.75rem; color: var(--gray-400); margin-top: 4px; }
+        .category-highlight { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--gray-100); font-size: 0.85rem; }
+        .category-highlight .up { color: var(--green); }
+        .category-highlight .down { color: var(--red); }
+        
+        /* Quarterly Report */
+        .report-section { background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; padding: 32px; margin-bottom: 32px; }
+        .report-dateline { color: var(--gray-400); font-size: 0.9rem; margin-bottom: 16px; }
+        .report-summary { font-size: 1.1rem; color: var(--gray-800); margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--gray-200); line-height: 1.8; }
+        .report-highlights { list-style: none; }
+        .report-highlights li { padding: 12px 0; border-bottom: 1px solid var(--gray-100); display: flex; align-items: start; gap: 12px; }
+        .report-highlights li:last-child { border-bottom: none; }
+        .highlight-category { font-weight: 600; color: var(--navy); min-width: 200px; }
+        .highlight-text { color: var(--gray-600); }
+        .highlight-change { font-weight: 600; min-width: 60px; }
+        .highlight-change.up { color: var(--green); }
+        .highlight-change.down { color: var(--red); }
+        
+        /* Compliance Chart */
+        .chart-container { background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; padding: 24px; margin-bottom: 32px; }
+        .chart-container h3 { font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 600; color: var(--navy); margin-bottom: 20px; }
+        .chart-wrapper { height: 300px; }
+        
+        /* Leaderboards */
+        .leaderboards { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; }
+        .leaderboard { background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; overflow: hidden; }
+        .leaderboard-header { background: var(--navy); color: var(--white); padding: 16px 20px; font-weight: 600; }
+        .leaderboard-header.improved { background: #065f46; }
+        .leaderboard-header.declined { background: #991b1b; }
+        .leaderboard-list { padding: 0; }
+        .leaderboard-item { display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--gray-100); gap: 16px; }
+        .leaderboard-item:last-child { border-bottom: none; }
+        .leaderboard-rank { font-size: 1.25rem; font-weight: 700; color: var(--gray-400); width: 30px; }
+        .leaderboard-info { flex: 1; }
+        .leaderboard-tool { font-weight: 600; color: var(--navy); }
+        .leaderboard-category { font-size: 0.8rem; color: var(--gray-400); }
+        .leaderboard-reason { font-size: 0.85rem; color: var(--gray-600); margin-top: 4px; }
+        .leaderboard-change { font-size: 1.25rem; font-weight: 700; }
+        .leaderboard-change.up { color: var(--green); }
+        .leaderboard-change.down { color: var(--red); }
+        
+        /* Download & Subscribe */
+        .actions-bar { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin: 32px 0; }
+        .btn { padding: 14px 28px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; border: none; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-primary { background: var(--navy); color: var(--white); }
+        .btn-secondary { background: var(--white); color: var(--navy); border: 2px solid var(--navy); }
+        
+        /* Subscribe Section */
+        .subscribe-section { background: var(--gray-100); border-radius: 12px; padding: 32px; text-align: center; margin: 32px 0; }
+        .subscribe-section p { color: var(--gray-600); margin-bottom: 16px; }
+        .subscribe-form { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .subscribe-form input { padding: 12px 16px; border: 1px solid var(--gray-200); border-radius: 6px; font-size: 1rem; width: 280px; }
+        .subscribe-form button { padding: 12px 24px; background: var(--navy); color: var(--white); border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        .subscribe-note { font-size: 0.85rem; color: var(--gray-400); margin-top: 12px; }
+        .subscribe-success { color: var(--green); font-weight: 500; display: none; }
+        
+        footer { padding: 40px 0; border-top: 1px solid var(--gray-200); text-align: center; background: var(--white); }
+        footer p { color: var(--gray-400); font-size: 0.9rem; }
+        footer a { color: var(--gray-600); }
+        
+        .empty-state { text-align: center; padding: 60px 24px; color: var(--gray-400); }
+        
+        @media (max-width: 768px) {
+            .leaderboards { grid-template-columns: 1fr; }
+            .category-metrics { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 1.75rem; }
+        }
+    </style>
+</head>
+<body>
+    <header><nav><a href="/" class="logo">Tool<span>Intel</span></a><div class="nav-links"><a href="/methodology.html">Methodology</a><a href="/reviews.html">Reviews</a><a href="/intelligence.html">Intelligence</a></div></nav></header>
+    
+    <div class="hero">
+        <div class="container">
+            <h1>Independent Quarterly Intelligence on the AI Tools Market</h1>
+            <p class="subtitle">Score trends, pricing movements, and compliance shifts across every category we monitor — sourced exclusively from our independent review database.</p>
+            <span class="quarter-badge" id="quarterBadge">Q1 2026</span>
+        </div>
+    </div>
+    
+    <main>
+        <div class="container">
+            <!-- Category Grid -->
+            <section class="section">
+                <div class="section-header">
+                    <h2>Category Performance</h2>
+                    <p>Average scores and notable movements by category</p>
+                </div>
+                <div class="category-grid" id="categoryGrid">
+                    <div class="empty-state">Loading category data...</div>
+                </div>
+            </section>
+            
+            <!-- Quarterly Report -->
+            <section class="section">
+                <div class="section-header">
+                    <h2>Quarterly Trend Report</h2>
+                    <p>Data-driven analysis of significant movements across all categories</p>
+                </div>
+                <div class="report-section" id="quarterlyReport">
+                    <div class="empty-state">Loading quarterly report...</div>
+                </div>
+            </section>
+            
+            <!-- Compliance Trend Chart -->
+            <section class="section">
+                <div class="section-header">
+                    <h2>Compliance Trend</h2>
+                    <p>Platform-wide averages for Data Privacy, Compliance, and Transparency over the last four quarters</p>
+                </div>
+                <div class="chart-container">
+                    <h3>Compliance Category Averages (4 Quarters)</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="complianceChart"></canvas>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Leaderboards -->
+            <section class="section">
+                <div class="section-header">
+                    <h2>Quarterly Leaderboards</h2>
+                    <p>Tools with the biggest score movements this quarter</p>
+                </div>
+                <div class="leaderboards" id="leaderboards">
+                    <div class="empty-state">Loading leaderboards...</div>
+                </div>
+            </section>
+            
+            <!-- Actions -->
+            <div class="actions-bar">
+                <a href="#" class="btn btn-primary" id="downloadPdf" onclick="downloadPdf(); return false;">
+                    📄 Download Quarterly Report (PDF)
+                </a>
+            </div>
+            
+            <!-- Subscribe -->
+            <div class="subscribe-section">
+                <p><strong>Receive the quarterly trend report by email — no other communications.</strong></p>
+                <form class="subscribe-form" id="subscribeForm" onsubmit="subscribe(event)">
+                    <input type="email" name="email" placeholder="you@company.com" required>
+                    <button type="submit">Subscribe</button>
+                </form>
+                <p class="subscribe-note">One email per quarter. PDF attached. Three-sentence summary. Nothing else.</p>
+                <p class="subscribe-success" id="subscribeSuccess">✓ Subscribed! You'll receive the next quarterly report.</p>
+            </div>
+        </div>
+    </main>
+    
+    <footer><div class="container"><p>© 2026 ToolIntel. <a href="/methodology.html">Methodology</a> · <a href="/transparency.html">Transparency</a></p></div></footer>
+    
+    <script>
+    const API = 'https://v7086lxsji.execute-api.us-east-1.amazonaws.com';
+    let currentData = null;
+    
+    function esc(t) { const d = document.createElement('div'); d.textContent = t || ''; return d.innerHTML; }
+    
+    async function loadIntelligence() {
+        try {
+            const [mainRes, catRes] = await Promise.all([
+                fetch(`${API}/intelligence`),
+                fetch(`${API}/intelligence/categories`)
+            ]);
+            
+            const mainData = await mainRes.json();
+            const categories = await catRes.json();
+            currentData = { ...mainData, categories };
+            
+            document.getElementById('quarterBadge').textContent = mainData.quarter;
+            
+            renderCategories(categories);
+            renderReport(mainData.report);
+            renderComplianceChart(mainData.complianceTrend);
+            renderLeaderboards(mainData.leaderboards);
+        } catch (e) {
+            console.error('Failed to load intelligence data:', e);
+        }
+    }
+    
+    function renderCategories(categories) {
+        const container = document.getElementById('categoryGrid');
+        
+        if (!categories || categories.length === 0) {
+            container.innerHTML = '<div class="empty-state">Category data will be available after the first quarterly calculation.</div>';
+            return;
+        }
+        
+        container.innerHTML = categories.map(cat => {
+            const diff = cat.scoreDiff || 0;
+            const diffClass = diff > 0 ? 'up' : diff < 0 ? 'down' : '';
+            const arrow = diff > 0 ? '↑' : diff < 0 ? '↓' : '';
+            const diffText = diff !== 0 ? `${arrow} ${Math.abs(diff).toFixed(1)}` : '—';
+            
+            return `
+                <div class="category-card">
+                    <h3>${esc(cat.category)}</h3>
+                    <div class="category-metrics">
+                        <div class="metric">
+                            <div class="value ${diffClass}">${cat.avgScore?.toFixed(1) || '-'}</div>
+                            <div class="label">Avg Score</div>
+                        </div>
+                        <div class="metric">
+                            <div class="value ${diffClass}">${diffText}</div>
+                            <div class="label">vs Last Quarter</div>
+                        </div>
+                        <div class="metric">
+                            <div class="value">${cat.toolCount || 0}</div>
+                            <div class="label">Tools Reviewed</div>
+                        </div>
+                        <div class="metric">
+                            <div class="value">${cat.prevAvgScore?.toFixed(1) || '-'}</div>
+                            <div class="label">Previous Avg</div>
+                        </div>
+                    </div>
+                    ${cat.biggestImprovement || cat.biggestDecline ? `
+                        <div class="category-highlight">
+                            ${cat.biggestImprovement ? `<div class="up">↑ ${esc(cat.biggestImprovement.tool)}: +${cat.biggestImprovement.change}</div>` : ''}
+                            ${cat.biggestDecline ? `<div class="down">↓ ${esc(cat.biggestDecline.tool)}: ${cat.biggestDecline.change}</div>` : ''}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }).join('');
+    }
+    
+    function renderReport(report) {
+        const container = document.getElementById('quarterlyReport');
+        
+        if (!report) {
+            container.innerHTML = '<div class="empty-state">The quarterly trend report will be published at the end of the quarter.</div>';
+            return;
+        }
+        
+        const highlights = report.categoryHighlights || [];
+        
+        container.innerHTML = `
+            <div class="report-dateline">${esc(report.title)} · Published ${new Date(report.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+            <div class="report-summary">${esc(report.summary)}</div>
+            ${report.content ? `<div style="color: var(--gray-600); margin-bottom: 24px; white-space: pre-line;">${esc(report.content)}</div>` : ''}
+            ${highlights.length > 0 ? `
+                <h4 style="color: var(--navy); margin-bottom: 16px;">Category Highlights (>2pt movement)</h4>
+                <ul class="report-highlights">
+                    ${highlights.map(h => `
+                        <li>
+                            <span class="highlight-category">${esc(h.category)}</span>
+                            <span class="highlight-change ${h.change > 0 ? 'up' : 'down'}">${h.change > 0 ? '+' : ''}${h.change}</span>
+                            <span class="highlight-text">${esc(h.explanation)}</span>
+                        </li>
+                    `).join('')}
+                </ul>
+            ` : ''}
+        `;
+    }
+    
+    function renderComplianceChart(trend) {
+        const ctx = document.getElementById('complianceChart').getContext('2d');
+        
+        if (!trend || trend.length === 0) {
+            // Show placeholder
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Q2 2025', 'Q3 2025', 'Q4 2025', 'Q1 2026'],
+                    datasets: [
+                        { label: 'Data Privacy', data: [null, null, null, null], borderColor: '#3b82f6', tension: 0.3 },
+                        { label: 'Compliance', data: [null, null, null, null], borderColor: '#10b981', tension: 0.3 },
+                        { label: 'Transparency', data: [null, null, null, null], borderColor: '#f59e0b', tension: 0.3 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { min: 60, max: 100 } }
+                }
+            });
+            return;
+        }
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: trend.map(t => t.quarter),
+                datasets: [
+                    {
+                        label: 'Data Privacy & Security',
+                        data: trend.map(t => t.dataPrivacy),
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Compliance',
+                        data: trend.map(t => t.compliance),
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Transparency',
+                        data: trend.map(t => t.transparency),
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                },
+                scales: {
+                    y: {
+                        min: 60,
+                        max: 100,
+                        title: { display: true, text: 'Average Score' }
+                    }
+                }
+            }
+        });
+    }
+    
+    function renderLeaderboards(leaderboards) {
+        const container = document.getElementById('leaderboards');
+        
+        if (!leaderboards) {
+            container.innerHTML = `
+                <div class="leaderboard">
+                    <div class="leaderboard-header improved">📈 Most Improved</div>
+                    <div class="leaderboard-list"><div class="empty-state" style="padding: 32px;">Data available after quarterly calculation</div></div>
+                </div>
+                <div class="leaderboard">
+                    <div class="leaderboard-header declined">📉 Most Declined</div>
+                    <div class="leaderboard-list"><div class="empty-state" style="padding: 32px;">Data available after quarterly calculation</div></div>
+                </div>
+            `;
+            return;
+        }
+        
+        const improved = leaderboards.mostImproved || [];
+        const declined = leaderboards.mostDeclined || [];
+        
+        container.innerHTML = `
+            <div class="leaderboard">
+                <div class="leaderboard-header improved">📈 Most Improved</div>
+                <div class="leaderboard-list">
+                    ${improved.length ? improved.map((t, i) => `
+                        <div class="leaderboard-item">
+                            <span class="leaderboard-rank">${i + 1}</span>
+                            <div class="leaderboard-info">
+                                <div class="leaderboard-tool">${esc(t.toolName || t.toolSlug)}</div>
+                                <div class="leaderboard-category">${esc(t.category)}</div>
+                                <div class="leaderboard-reason">${esc(t.reason)}</div>
+                            </div>
+                            <span class="leaderboard-change up">+${t.scoreDiff}</span>
+                        </div>
+                    `).join('') : '<div class="empty-state" style="padding: 32px;">No improvements recorded</div>'}
+                </div>
+            </div>
+            <div class="leaderboard">
+                <div class="leaderboard-header declined">📉 Most Declined</div>
+                <div class="leaderboard-list">
+                    ${declined.length ? declined.map((t, i) => `
+                        <div class="leaderboard-item">
+                            <span class="leaderboard-rank">${i + 1}</span>
+                            <div class="leaderboard-info">
+                                <div class="leaderboard-tool">${esc(t.toolName || t.toolSlug)}</div>
+                                <div class="leaderboard-category">${esc(t.category)}</div>
+                                <div class="leaderboard-reason">${esc(t.reason)}</div>
+                            </div>
+                            <span class="leaderboard-change down">${t.scoreDiff}</span>
+                        </div>
+                    `).join('') : '<div class="empty-state" style="padding: 32px;">No declines recorded</div>'}
+                </div>
+            </div>
+        `;
+    }
+    
+    async function subscribe(e) {
+        e.preventDefault();
+        const email = e.target.email.value;
+        
+        try {
+            const res = await fetch(`${API}/intelligence/subscribe`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+            
+            if (res.ok) {
+                document.getElementById('subscribeForm').style.display = 'none';
+                document.getElementById('subscribeSuccess').style.display = 'block';
+            } else {
+                alert('Subscription failed. Please try again.');
+            }
+        } catch (e) {
+            alert('Error: ' + e.message);
+        }
+    }
+    
+    function downloadPdf() {
+        // In production, this would generate/download the PDF
+        alert('PDF generation requires server-side implementation. The quarterly report will be available for download when published.');
+    }
+    
+    loadIntelligence();
+    </script>
+</body>
+</html>

@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trend Intelligence — ToolIntel Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0f2744;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --green: #10b981;
+            --yellow: #f59e0b;
+            --red: #ef4444;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--gray-50); color: var(--gray-800); }
+        
+        header { background: var(--navy); color: white; padding: 20px 24px; }
+        header h1 { font-size: 1.5rem; font-weight: 600; }
+        header .subtitle { color: var(--gray-400); font-size: 0.9rem; margin-top: 4px; }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+        
+        .tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+        .tab { padding: 10px 20px; border: none; background: var(--white); border-radius: 6px; cursor: pointer; font-size: 0.95rem; font-weight: 500; color: var(--gray-600); border: 1px solid var(--gray-200); }
+        .tab.active { background: var(--navy); color: white; border-color: var(--navy); }
+        .tab .badge { background: var(--yellow); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; margin-left: 8px; }
+        
+        .panel { display: none; }
+        .panel.active { display: block; }
+        
+        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: var(--white); border: 1px solid var(--gray-200); border-radius: 8px; padding: 16px; text-align: center; }
+        .stat-card .number { font-size: 2rem; font-weight: 700; color: var(--navy); }
+        .stat-card .label { font-size: 0.85rem; color: var(--gray-600); }
+        
+        .card { background: var(--white); border: 1px solid var(--gray-200); border-radius: 8px; padding: 20px; margin-bottom: 16px; }
+        .card.flagged { border-left: 4px solid var(--yellow); background: #fffbeb; }
+        
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .card-title { font-weight: 600; color: var(--navy); }
+        
+        .flag-badge { padding: 3px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; background: var(--yellow); color: #92400e; }
+        
+        .category-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.9rem; }
+        .category-table th, .category-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--gray-200); }
+        .category-table th { background: var(--gray-50); font-weight: 600; color: var(--navy); }
+        .category-table tr:hover { background: var(--gray-50); }
+        .category-table .change { font-weight: 600; }
+        .category-table .change.up { color: var(--green); }
+        .category-table .change.down { color: var(--red); }
+        
+        .btn { padding: 8px 16px; border-radius: 6px; font-size: 0.9rem; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; }
+        .btn-primary { background: var(--navy); color: white; }
+        .btn-success { background: var(--green); color: white; }
+        .btn-secondary { background: var(--gray-100); color: var(--gray-600); border: 1px solid var(--gray-200); }
+        .btn-group { display: flex; gap: 8px; margin-top: 12px; }
+        
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 0.9rem; font-weight: 500; color: var(--gray-600); margin-bottom: 6px; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: 6px; font-size: 0.95rem; }
+        .form-group textarea { min-height: 120px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+        
+        .empty-state { text-align: center; padding: 60px 24px; color: var(--gray-400); }
+        
+        .highlight-form { background: var(--gray-50); padding: 16px; border-radius: 8px; margin-top: 16px; }
+        .highlight-item { display: grid; grid-template-columns: 200px 60px 1fr auto; gap: 12px; align-items: center; margin-bottom: 12px; }
+        .highlight-item input { padding: 8px; border: 1px solid var(--gray-200); border-radius: 4px; }
+        
+        @media (max-width: 768px) {
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .form-row, .form-row-3 { grid-template-columns: 1fr; }
+            .highlight-item { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>📊 Trend Intelligence Dashboard</h1>
+        <div class="subtitle">Quarterly Report Management & Category Analytics</div>
+    </header>
+    
+    <div class="container">
+        <div class="stats-row">
+            <div class="stat-card"><div class="number" id="statQuarter">-</div><div class="label">Current Quarter</div></div>
+            <div class="stat-card"><div class="number" id="statCategories">-</div><div class="label">Categories Tracked</div></div>
+            <div class="stat-card"><div class="number" id="statFlagged">-</div><div class="label">Flagged (>3pt)</div></div>
+            <div class="stat-card"><div class="number" id="statSubscribers">-</div><div class="label">Subscribers</div></div>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" data-panel="calculate">🧮 Calculate Quarterly</button>
+            <button class="tab" data-panel="report">📝 Publish Report</button>
+            <button class="tab" data-panel="email">📧 Send Emails</button>
+            <button class="tab" data-panel="subscribers">👥 Subscribers</button>
+        </div>
+        
+        <!-- Calculate Panel -->
+        <div class="panel active" id="panel-calculate">
+            <div class="card">
+                <h3 style="margin-bottom: 16px;">Calculate Quarterly Category Data</h3>
+                <p style="color: var(--gray-600); margin-bottom: 20px;">
+                    Enter category averages and tool scores to generate the quarterly intelligence report.
+                </p>
+                <form id="calculateForm">
+                    <div class="form-group">
+                        <label>Quarter</label>
+                        <input type="text" name="quarter" id="quarterInput" placeholder="Q1-2026" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Category Data (JSON array)</label>
+                        <textarea name="categoryData" placeholder='[{"category": "Foundation Models", "avgScore": 85.2, "prevAvgScore": 83.5, "toolCount": 8, "biggestImprovement": {"tool": "Claude", "change": 3}, "biggestDecline": {"tool": "Gemini", "change": -2}}]' rows="8"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Tool Scores with Changes (JSON array, for leaderboards)</label>
+                        <textarea name="toolScores" placeholder='[{"toolSlug": "claude", "toolName": "Claude", "category": "Foundation Models", "scoreDiff": 3, "reason": "Improved reasoning capabilities with Sonnet 4.5"}]' rows="6"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Calculate & Save Quarterly Data</button>
+                </form>
+            </div>
+            
+            <div class="card" id="draftPreview" style="display: none;">
+                <div class="card-header">
+                    <span class="card-title">Quarterly Draft Preview</span>
+                </div>
+                <div id="draftContent"></div>
+            </div>
+        </div>
+        
+        <!-- Publish Report Panel -->
+        <div class="panel" id="panel-report">
+            <div class="card">
+                <h3 style="margin-bottom: 16px;">Publish Quarterly Trend Report</h3>
+                <form id="reportForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Quarter</label>
+                            <input type="text" name="quarter" placeholder="Q1-2026" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Report Title</label>
+                            <input type="text" name="title" placeholder="Q1 2026 Trend Report">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Summary Paragraph (most notable finding)</label>
+                        <textarea name="summary" placeholder="One paragraph summarizing the quarter's most significant movement..." rows="4" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Full Report Content (300-500 words)</label>
+                        <textarea name="content" placeholder="Data-driven analysis of movements across all categories..." rows="10" required></textarea>
+                    </div>
+                    
+                    <div class="highlight-form">
+                        <label style="margin-bottom: 12px; display: block; font-weight: 600;">Category Highlights (>2pt movement)</label>
+                        <div id="highlightsList"></div>
+                        <button type="button" class="btn btn-secondary" onclick="addHighlight()">+ Add Highlight</button>
+                    </div>
+                    
+                    <h4 style="margin: 24px 0 16px;">Compliance Trend Data</h4>
+                    <div class="form-row-3">
+                        <div class="form-group">
+                            <label>Data Privacy Avg</label>
+                            <input type="number" name="dataPrivacy" step="0.1" min="0" max="100" placeholder="78.5">
+                        </div>
+                        <div class="form-group">
+                            <label>Compliance Avg</label>
+                            <input type="number" name="compliance" step="0.1" min="0" max="100" placeholder="82.3">
+                        </div>
+                        <div class="form-group">
+                            <label>Transparency Avg</label>
+                            <input type="number" name="transparency" step="0.1" min="0" max="100" placeholder="75.8">
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-success" style="margin-top: 20px;">Publish Report</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Email Panel -->
+        <div class="panel" id="panel-email">
+            <div class="card">
+                <h3 style="margin-bottom: 16px;">Send Quarterly Email to Subscribers</h3>
+                <form id="emailForm">
+                    <div class="form-group">
+                        <label>Quarter</label>
+                        <input type="text" name="quarter" placeholder="Q1-2026" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Three-Sentence Summary</label>
+                        <textarea name="summaryText" placeholder="Brief summary for email (3 sentences max)..." rows="4" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>PDF Download URL (optional)</label>
+                        <input type="url" name="pdfUrl" placeholder="https://toolintel.ai/reports/Q1-2026.pdf">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Send to All Subscribers</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Subscribers Panel -->
+        <div class="panel" id="panel-subscribers">
+            <div id="subscribersList">
+                <div class="empty-state">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const API = 'https://v7086lxsji.execute-api.us-east-1.amazonaws.com';
+    const KEY = new URLSearchParams(window.location.search).get('key') || '';
+    
+    if (!KEY) {
+        document.body.innerHTML = '<div style="padding:60px;text-align:center;color:#991b1b;">Admin key required. Add ?key=YOUR_KEY to URL.</div>';
+    }
+    
+    // Set current quarter
+    const now = new Date();
+    const q = Math.ceil((now.getMonth() + 1) / 3);
+    const currentQuarter = `Q${q}-${now.getFullYear()}`;
+    document.getElementById('quarterInput').value = currentQuarter;
+    document.getElementById('statQuarter').textContent = currentQuarter;
+    
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById(`panel-${tab.dataset.panel}`).classList.add('active');
+        });
+    });
+    
+    function esc(t) { const d = document.createElement('div'); d.textContent = t || ''; return d.innerHTML; }
+    
+    let highlightCount = 0;
+    function addHighlight() {
+        const container = document.getElementById('highlightsList');
+        const id = highlightCount++;
+        const div = document.createElement('div');
+        div.className = 'highlight-item';
+        div.innerHTML = `
+            <input type="text" name="highlight_category_${id}" placeholder="Category">
+            <input type="number" name="highlight_change_${id}" placeholder="+/-">
+            <input type="text" name="highlight_explanation_${id}" placeholder="Explanation">
+            <button type="button" class="btn btn-secondary" onclick="this.parentElement.remove()">×</button>
+        `;
+        container.appendChild(div);
+    }
+    
+    async function loadDraft() {
+        try {
+            const r = await fetch(`${API}/intelligence/admin/draft?key=${KEY}`);
+            const data = await r.json();
+            
+            document.getElementById('statCategories').textContent = data.categories?.length || 0;
+            document.getElementById('statFlagged').textContent = data.flaggedCategories?.length || 0;
+            
+            if (data.categories?.length > 0) {
+                document.getElementById('draftPreview').style.display = 'block';
+                document.getElementById('draftContent').innerHTML = `
+                    <table class="category-table">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Avg Score</th>
+                                <th>Prev Score</th>
+                                <th>Change</th>
+                                <th>Tools</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.categories.map(c => {
+                                const diff = c.scoreDiff || 0;
+                                const isFlagged = Math.abs(diff) >= 3;
+                                return `
+                                    <tr class="${isFlagged ? 'flagged' : ''}">
+                                        <td>${esc(c.category)}</td>
+                                        <td>${c.avgScore?.toFixed(1) || '-'}</td>
+                                        <td>${c.prevAvgScore?.toFixed(1) || '-'}</td>
+                                        <td class="change ${diff > 0 ? 'up' : diff < 0 ? 'down' : ''}">${diff > 0 ? '+' : ''}${diff.toFixed(1)}</td>
+                                        <td>${c.toolCount || 0}</td>
+                                        <td>${isFlagged ? '<span class="flag-badge">⚠️ >3pt</span>' : '✓'}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                `;
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+    
+    async function loadSubscribers() {
+        try {
+            const r = await fetch(`${API}/intelligence/admin/subscribers?key=${KEY}`);
+            const items = await r.json();
+            const container = document.getElementById('subscribersList');
+            
+            document.getElementById('statSubscribers').textContent = items.filter(i => i.active !== false).length;
+            
+            if (!items.length) {
+                container.innerHTML = '<div class="empty-state">No subscribers yet.</div>';
+                return;
+            }
+            
+            container.innerHTML = `
+                <div class="card">
+                    <h3 style="margin-bottom: 16px;">Quarterly Report Subscribers (${items.length})</h3>
+                    <table class="category-table">
+                        <thead><tr><th>Email</th><th>Subscribed</th></tr></thead>
+                        <tbody>
+                            ${items.map(s => `
+                                <tr>
+                                    <td>${esc(s.email)}</td>
+                                    <td>${new Date(s.createdAt).toLocaleDateString()}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        } catch (e) {
+            console.error(e);
+        }
+    }
+    
+    document.getElementById('calculateForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const form = new FormData(this);
+        
+        let categoryData, toolScores;
+        try {
+            categoryData = JSON.parse(form.get('categoryData'));
+            toolScores = form.get('toolScores') ? JSON.parse(form.get('toolScores')) : null;
+        } catch (err) {
+            alert('Invalid JSON format');
+            return;
+        }
+        
+        try {
+            const r = await fetch(`${API}/intelligence/admin/calculate`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    key: KEY,
+                    quarter: form.get('quarter'),
+                    categoryData,
+                    toolScores
+                })
+            });
+            
+            if (r.ok) {
+                alert('Quarterly data calculated and saved');
+                loadDraft();
+            } else {
+                const err = await r.json();
+                alert('Error: ' + (err.error || 'Unknown'));
+            }
+        } catch (e) {
+            alert('Error: ' + e.message);
+        }
+    });
+    
+    document.getElementById('reportForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const form = new FormData(this);
+        
+        // Collect highlights
+        const highlights = [];
+        document.querySelectorAll('.highlight-item').forEach(item => {
+            const inputs = item.querySelectorAll('input');
+            if (inputs[0].value && inputs[1].value) {
+                highlights.push({
+                    category: inputs[0].value,
+                    change: parseFloat(inputs[1].value),
+                    explanation: inputs[2].value
+                });
+            }
+        });
+        
+        const complianceData = {
+            dataPrivacy: parseFloat(form.get('dataPrivacy')) || null,
+            compliance: parseFloat(form.get('compliance')) || null,
+            transparency: parseFloat(form.get('transparency')) || null
+        };
+        
+        try {
+            const r = await fetch(`${API}/intelligence/admin/publish-report`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    key: KEY,
+                    quarter: form.get('quarter'),
+                    title: form.get('title'),
+                    summary: form.get('summary'),
+                    content: form.get('content'),
+                    categoryHighlights: highlights,
+                    complianceData: (complianceData.dataPrivacy || complianceData.compliance || complianceData.transparency) ? complianceData : null
+                })
+            });
+            
+            if (r.ok) {
+                alert('Report published successfully');
+            } else {
+                const err = await r.json();
+                alert('Error: ' + (err.error || 'Unknown'));
+            }
+        } catch (e) {
+            alert('Error: ' + e.message);
+        }
+    });
+    
+    document.getElementById('emailForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        if (!confirm('Send quarterly report email to all subscribers?')) return;
+        
+        const form = new FormData(this);
+        
+        try {
+            const r = await fetch(`${API}/intelligence/admin/send-quarterly-email`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    key: KEY,
+                    quarter: form.get('quarter'),
+                    summaryText: form.get('summaryText'),
+                    pdfUrl: form.get('pdfUrl')
+                })
+            });
+            
+            const result = await r.json();
+            if (r.ok) {
+                alert(`Emails sent: ${result.sent} of ${result.total} subscribers`);
+            } else {
+                alert('Error: ' + (result.error || 'Unknown'));
+            }
+        } catch (e) {
+            alert('Error: ' + e.message);
+        }
+    });
+    
+    loadDraft();
+    loadSubscribers();
+    </script>
+</body>
+</html>
