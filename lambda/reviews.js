@@ -200,18 +200,18 @@ exports.handler = async (event) => {
                 return { statusCode: 400, headers, body: JSON.stringify({ error: `Hidden insight must be at most 50 words (currently ${insightWords})` }) };
             }
             
-            // Validate overall score (1-5, integers only)
-            const score = parseInt(overallScore);
-            if (isNaN(score) || score < 1 || score > 5) {
-                return { statusCode: 400, headers, body: JSON.stringify({ error: 'Overall score must be 1-5' }) };
+            // Validate overall score (1-5, 0.5 increments)
+            const score = parseFloat(overallScore);
+            if (isNaN(score) || score < 1 || score > 5 || (score * 2) % 1 !== 0) {
+                return { statusCode: 400, headers, body: JSON.stringify({ error: 'Overall score must be 1-5 in 0.5 increments' }) };
             }
             
-            // Validate dimension scores (1-5, integers only)
+            // Validate dimension scores (1-5, 0.5 increments)
             const dims = { dimAccuracy, dimPrivacy, dimValue, dimEase, dimSupport };
             for (const [name, val] of Object.entries(dims)) {
-                const d = parseInt(val);
-                if (isNaN(d) || d < 1 || d > 5) {
-                    return { statusCode: 400, headers, body: JSON.stringify({ error: `${name} must be 1-5` }) };
+                const d = parseFloat(val);
+                if (isNaN(d) || d < 1 || d > 5 || (d * 2) % 1 !== 0) {
+                    return { statusCode: 400, headers, body: JSON.stringify({ error: `${name} must be 1-5 in 0.5 increments` }) };
                 }
             }
             
@@ -263,12 +263,12 @@ exports.handler = async (event) => {
                 ratingClaims,
                 ratingPricing,
                 ratingRecommend,
-                overallScore: parseInt(overallScore),
-                dimAccuracy: parseInt(dimAccuracy),
-                dimPrivacy: parseInt(dimPrivacy),
-                dimValue: parseInt(dimValue),
-                dimEase: parseInt(dimEase),
-                dimSupport: parseInt(dimSupport),
+                overallScore: parseFloat(overallScore),
+                dimAccuracy: parseFloat(dimAccuracy),
+                dimPrivacy: parseFloat(dimPrivacy),
+                dimValue: parseFloat(dimValue),
+                dimEase: parseFloat(dimEase),
+                dimSupport: parseFloat(dimSupport),
                 reviewText: reviewText.substring(0, 5000),
                 hiddenInsight: hiddenInsight.substring(0, 500),
                 disclosure1: true,

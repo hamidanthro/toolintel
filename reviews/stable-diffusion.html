@@ -338,7 +338,7 @@
                                 <div class="star-rating-container">
                                     <div class="star-display" id="starDisplay">★★★<span class="empty">☆☆</span></div>
                                     <div class="score-slider">
-                                        <input type="range" name="overallScore" id="scoreSlider" min="1" max="5" step="1" value="3" required>
+                                        <input type="range" name="overallScore" id="scoreSlider" min="1" max="5" step="0.5" value="3" required>
                                     </div>
                                     <div class="score-value" id="scoreValue">3</div>
                                 </div>
@@ -348,27 +348,27 @@
                             <div class="dimension-scores">
                                 <div class="dimension-row">
                                     <span class="dim-label">Accuracy of AI outputs</span>
-                                    <input type="range" name="dimAccuracy" min="1" max="5" step="1" value="3" required>
+                                    <input type="range" name="dimAccuracy" min="1" max="5" step="0.5" value="3" required>
                                     <span class="dim-value" data-for="dimAccuracy">3</span>
                                 </div>
                                 <div class="dimension-row">
                                     <span class="dim-label">Data privacy confidence</span>
-                                    <input type="range" name="dimPrivacy" min="1" max="5" step="1" value="3" required>
+                                    <input type="range" name="dimPrivacy" min="1" max="5" step="0.5" value="3" required>
                                     <span class="dim-value" data-for="dimPrivacy">3</span>
                                 </div>
                                 <div class="dimension-row">
                                     <span class="dim-label">Value for money</span>
-                                    <input type="range" name="dimValue" min="1" max="5" step="1" value="3" required>
+                                    <input type="range" name="dimValue" min="1" max="5" step="0.5" value="3" required>
                                     <span class="dim-value" data-for="dimValue">3</span>
                                 </div>
                                 <div class="dimension-row">
                                     <span class="dim-label">Ease of use</span>
-                                    <input type="range" name="dimEase" min="1" max="5" step="1" value="3" required>
+                                    <input type="range" name="dimEase" min="1" max="5" step="0.5" value="3" required>
                                     <span class="dim-value" data-for="dimEase">3</span>
                                 </div>
                                 <div class="dimension-row">
                                     <span class="dim-label">Support & documentation</span>
-                                    <input type="range" name="dimSupport" min="1" max="5" step="1" value="3" required>
+                                    <input type="range" name="dimSupport" min="1" max="5" step="0.5" value="3" required>
                                     <span class="dim-value" data-for="dimSupport">3</span>
                                 </div>
                             </div>
@@ -432,8 +432,10 @@
         }
         
         function renderStars(score) {
-            const s = Math.round(score);
-            return '★'.repeat(s) + '<span class="empty">' + '☆'.repeat(5 - s) + '</span>';
+            const full = Math.floor(score);
+            const half = score % 1 >= 0.5 ? 1 : 0;
+            const empty = 5 - full - half;
+            return '★'.repeat(full) + (half ? '⯪' : '') + '<span class="empty">' + '☆'.repeat(empty) + '</span>';
         }
         
         // Overall score slider
@@ -442,8 +444,8 @@
         const scoreValue = document.getElementById('scoreValue');
         
         function updateStarDisplay() {
-            const val = parseInt(scoreSlider.value);
-            scoreValue.textContent = val;
+            const val = parseFloat(scoreSlider.value);
+            scoreValue.textContent = val % 1 === 0 ? val : val.toFixed(1);
             starDisplay.innerHTML = renderStars(val);
         }
         scoreSlider.addEventListener('input', updateStarDisplay);
@@ -453,7 +455,8 @@
         document.querySelectorAll('.dimension-row input[type="range"]').forEach(slider => {
             const valueDisplay = slider.nextElementSibling;
             slider.addEventListener('input', () => {
-                valueDisplay.textContent = slider.value;
+                const v = parseFloat(slider.value);
+                valueDisplay.textContent = v % 1 === 0 ? v : v.toFixed(1);
             });
         });
         
