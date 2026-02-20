@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing Verification Dashboard — ToolIntel Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0f2744;
+            --navy-light: #1e3a5f;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --green: #10b981;
+            --yellow: #f59e0b;
+            --red: #ef4444;
+            --orange: #f97316;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--gray-50); color: var(--gray-800); }
+        
+        header { background: var(--navy); color: white; padding: 20px 24px; }
+        header h1 { font-size: 1.5rem; font-weight: 600; }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+        
+        .tabs { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid var(--gray-200); padding-bottom: 16px; }
+        .tab { padding: 10px 20px; border: none; background: var(--white); border-radius: 6px 6px 0 0; cursor: pointer; font-size: 0.95rem; font-weight: 500; color: var(--gray-600); border: 1px solid var(--gray-200); border-bottom: none; }
+        .tab.active { background: var(--navy); color: white; border-color: var(--navy); }
+        .tab .badge { background: var(--red); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; margin-left: 8px; }
+        
+        .panel { display: none; }
+        .panel.active { display: block; }
+        
+        .card { background: var(--white); border: 1px solid var(--gray-200); border-radius: 8px; padding: 20px; margin-bottom: 16px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .card-title { font-weight: 600; color: var(--navy); }
+        .card-meta { font-size: 0.85rem; color: var(--gray-600); }
+        
+        .warning-badge { display: inline-block; padding: 4px 10px; background: #fef3c7; color: #92400e; border-radius: 4px; font-size: 0.8rem; font-weight: 500; }
+        .danger-badge { display: inline-block; padding: 4px 10px; background: #fee2e2; color: #991b1b; border-radius: 4px; font-size: 0.8rem; font-weight: 500; }
+        .success-badge { display: inline-block; padding: 4px 10px; background: #d1fae5; color: #065f46; border-radius: 4px; font-size: 0.8rem; font-weight: 500; }
+        
+        .btn { padding: 8px 16px; border-radius: 6px; font-size: 0.9rem; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; }
+        .btn-primary { background: var(--navy); color: white; }
+        .btn-primary:hover { background: var(--navy-light); }
+        .btn-success { background: var(--green); color: white; }
+        .btn-danger { background: var(--red); color: white; }
+        .btn-secondary { background: var(--gray-100); color: var(--gray-600); border: 1px solid var(--gray-200); }
+        
+        .detail-row { display: flex; gap: 24px; margin-bottom: 8px; font-size: 0.9rem; }
+        .detail-label { color: var(--gray-400); min-width: 100px; }
+        .detail-value { color: var(--gray-800); }
+        
+        .empty-state { text-align: center; padding: 60px 24px; color: var(--gray-400); }
+        
+        table { width: 100%; border-collapse: collapse; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid var(--gray-200); }
+        th { background: var(--gray-50); font-weight: 500; color: var(--gray-600); font-size: 0.85rem; }
+        
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 0.9rem; font-weight: 500; color: var(--gray-600); margin-bottom: 6px; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: 6px; font-size: 0.95rem; }
+        .form-group textarea { min-height: 80px; }
+        
+        .tier-editor { background: var(--gray-50); padding: 16px; border-radius: 8px; margin-bottom: 12px; }
+        .tier-row { display: grid; grid-template-columns: 1fr 1fr 2fr 2fr; gap: 12px; margin-bottom: 8px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>💰 Pricing Verification Dashboard</h1>
+    </header>
+    
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" data-panel="stale">⚠️ Needs Verification <span class="badge" id="staleBadge">0</span></button>
+            <button class="tab" data-panel="reports">📝 Change Reports <span class="badge" id="reportsBadge">0</span></button>
+            <button class="tab" data-panel="init">➕ Initialize Pricing</button>
+        </div>
+        
+        <!-- Stale Pricing Panel -->
+        <div class="panel active" id="panel-stale">
+            <div id="staleList">
+                <div class="empty-state">Loading...</div>
+            </div>
+        </div>
+        
+        <!-- Reports Panel -->
+        <div class="panel" id="panel-reports">
+            <div id="reportsList">
+                <div class="empty-state">Loading...</div>
+            </div>
+        </div>
+        
+        <!-- Initialize Panel -->
+        <div class="panel" id="panel-init">
+            <div class="card">
+                <h3 style="margin-bottom: 16px;">Initialize Pricing for New Tool</h3>
+                <form id="initForm">
+                    <div class="form-group">
+                        <label>Tool Slug (e.g., perplexity)</label>
+                        <input type="text" name="toolSlug" required placeholder="tool-slug">
+                    </div>
+                    <div class="form-group">
+                        <label>Tool Name</label>
+                        <input type="text" name="toolName" required placeholder="Perplexity">
+                    </div>
+                    <div class="form-group">
+                        <label>Vendor URL</label>
+                        <input type="url" name="vendorUrl" placeholder="https://perplexity.ai/pricing">
+                    </div>
+                    <div class="form-group">
+                        <label>Pricing Tiers (JSON)</label>
+                        <textarea name="tiers" placeholder='[{"name":"Free","price":"$0","features":"Basic features","hiddenCosts":"None"},{"name":"Pro","price":"$20/mo","features":"Full features","hiddenCosts":"Annual only"}]'></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Initialize Pricing</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = 'https://v7086lxsji.execute-api.us-east-1.amazonaws.com';
+        const urlParams = new URLSearchParams(window.location.search);
+        const ADMIN_KEY = urlParams.get('key');
+        
+        if (!ADMIN_KEY) {
+            document.body.innerHTML = '<div style="padding:60px;text-align:center;color:#999;">Access denied. Admin key required.</div>';
+        }
+        
+        // Tabs
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+            });
+        });
+        
+        // Load stale pricing
+        async function loadStale() {
+            try {
+                const res = await fetch(`${API_BASE}/pricing/admin/stale?key=${ADMIN_KEY}`);
+                const items = await res.json();
+                document.getElementById('staleBadge').textContent = items.length;
+                
+                if (items.length === 0) {
+                    document.getElementById('staleList').innerHTML = '<div class="empty-state">✓ All pricing is up to date!</div>';
+                    return;
+                }
+                
+                document.getElementById('staleList').innerHTML = items.map(item => `
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <span class="card-title">${escapeHtml(item.toolName || item.toolSlug)}</span>
+                                <span class="${item.daysSinceVerification > 180 ? 'danger-badge' : 'warning-badge'}" style="margin-left:12px;">
+                                    ${item.daysSinceVerification} days since verification
+                                </span>
+                            </div>
+                            <div>
+                                <button class="btn btn-success" onclick="markVerified('${item.toolSlug}')">✓ Mark Verified</button>
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Last Verified:</span>
+                            <span class="detail-value">${item.verifiedAt ? new Date(item.verifiedAt).toLocaleDateString() : 'Never'}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Vendor URL:</span>
+                            <span class="detail-value"><a href="${item.vendorUrl}" target="_blank">${item.vendorUrl || 'Not set'}</a></span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                document.getElementById('staleList').innerHTML = `<div class="empty-state">Error: ${e.message}</div>`;
+            }
+        }
+        
+        // Load reports
+        async function loadReports() {
+            try {
+                const res = await fetch(`${API_BASE}/pricing/reports/admin?key=${ADMIN_KEY}`);
+                const items = await res.json();
+                const pending = items.filter(i => i.status === 'pending');
+                document.getElementById('reportsBadge').textContent = pending.length;
+                
+                if (items.length === 0) {
+                    document.getElementById('reportsList').innerHTML = '<div class="empty-state">No pricing change reports.</div>';
+                    return;
+                }
+                
+                document.getElementById('reportsList').innerHTML = items.map(item => `
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <span class="card-title">${escapeHtml(item.toolName)}</span>
+                                <span class="${item.status === 'pending' ? 'warning-badge' : item.status === 'approved' ? 'success-badge' : 'danger-badge'}" style="margin-left:12px;">
+                                    ${item.status}
+                                </span>
+                            </div>
+                            <span style="color:var(--gray-400);font-size:0.85rem;">${new Date(item.submittedAt).toLocaleDateString()}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Tier:</span>
+                            <span class="detail-value">${escapeHtml(item.tierAffected)}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Price Change:</span>
+                            <span class="detail-value">${escapeHtml(item.oldPrice)} → ${escapeHtml(item.newPrice)}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Source:</span>
+                            <span class="detail-value"><a href="${item.sourceUrl}" target="_blank">${escapeHtml(item.sourceUrl)}</a></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Reported by:</span>
+                            <span class="detail-value">${escapeHtml(item.submitterName)} (${item.submitterEmail})</span>
+                        </div>
+                        ${item.status === 'pending' ? `
+                            <div style="margin-top:16px;display:flex;gap:12px;">
+                                <button class="btn btn-success" onclick="updateReport('${item.id}', 'approved')">✓ Approve</button>
+                                <button class="btn btn-danger" onclick="updateReport('${item.id}', 'rejected')">✗ Reject</button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('');
+            } catch (e) {
+                document.getElementById('reportsList').innerHTML = `<div class="empty-state">Error: ${e.message}</div>`;
+            }
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text || '';
+            return div.innerHTML;
+        }
+        
+        async function markVerified(toolSlug) {
+            try {
+                await fetch(`${API_BASE}/pricing/admin/verify`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ key: ADMIN_KEY, toolSlug })
+                });
+                loadStale();
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        }
+        
+        async function updateReport(id, status) {
+            try {
+                await fetch(`${API_BASE}/pricing/report/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ key: ADMIN_KEY, status })
+                });
+                loadReports();
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        }
+        
+        // Init form
+        document.getElementById('initForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const data = {
+                key: ADMIN_KEY,
+                toolSlug: form.toolSlug.value,
+                toolName: form.toolName.value,
+                vendorUrl: form.vendorUrl.value,
+                tiers: JSON.parse(form.tiers.value || '[]')
+            };
+            
+            try {
+                const res = await fetch(`${API_BASE}/pricing/admin/init`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (res.ok) {
+                    alert('Pricing initialized!');
+                    form.reset();
+                    loadStale();
+                } else {
+                    const err = await res.json();
+                    alert('Error: ' + err.error);
+                }
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        };
+        
+        if (ADMIN_KEY) {
+            loadStale();
+            loadReports();
+        }
+    </script>
+</body>
+</html>
