@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conflict of Interest Policy — ToolIntel</title>
+    <meta name="description" content="ToolIntel's conflict of interest policy. How we maintain independence and what we will never accept.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --navy: #0f2744;
+            --navy-light: #1e3a5f;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --red: #ef4444;
+            --red-light: #fef2f2;
+            --green: #10b981;
+            --green-light: #ecfdf5;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--gray-800);
+            line-height: 1.7;
+            background: var(--white);
+        }
+        
+        h1, h2, h3 { font-family: 'Merriweather', Georgia, serif; font-weight: 700; line-height: 1.3; }
+        
+        .container { max-width: 800px; margin: 0 auto; padding: 0 24px; }
+        
+        header {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--gray-200);
+            position: sticky;
+            top: 0;
+            background: var(--white);
+            z-index: 100;
+        }
+        
+        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+        
+        .logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.25rem; color: var(--navy); text-decoration: none; }
+        .logo span { color: var(--blue-accent); }
+        
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+        .nav-links a:hover { color: var(--navy); }
+        .nav-links a.primary { background: var(--navy); color: white; padding: 8px 16px; border-radius: 6px; }
+        .nav-links a.primary:hover { background: var(--navy-light); }
+        
+        .hero {
+            padding: 80px 0 60px;
+            text-align: center;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .hero h1 { font-size: 2.5rem; color: var(--navy); margin-bottom: 16px; }
+        .hero p { font-size: 1.1rem; color: var(--gray-600); max-width: 600px; margin: 0 auto; }
+        
+        .content { padding: 60px 0; }
+        
+        .section { margin-bottom: 48px; }
+        .section h2 { font-size: 1.5rem; color: var(--navy); margin-bottom: 20px; }
+        .section p { margin-bottom: 16px; color: var(--gray-600); }
+        
+        .policy-box {
+            padding: 24px;
+            border-radius: 8px;
+            margin: 24px 0;
+        }
+        
+        .policy-box.red {
+            background: var(--red-light);
+            border: 1px solid var(--red);
+        }
+        
+        .policy-box.green {
+            background: var(--green-light);
+            border: 1px solid var(--green);
+        }
+        
+        .policy-box h3 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .policy-box.red h3 { color: var(--red); }
+        .policy-box.green h3 { color: var(--green); }
+        
+        .policy-box ul {
+            margin: 0;
+            padding-left: 24px;
+            color: var(--gray-600);
+        }
+        
+        .policy-box li { margin-bottom: 8px; }
+        
+        .disclosure-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+        }
+        
+        .disclosure-table th, .disclosure-table td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .disclosure-table th {
+            background: var(--gray-50);
+            font-weight: 600;
+            color: var(--navy);
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .status.none {
+            background: var(--green-light);
+            color: var(--green);
+        }
+        
+        .callout {
+            background: var(--gray-50);
+            border-left: 4px solid var(--navy);
+            padding: 20px 24px;
+            margin: 24px 0;
+        }
+        
+        .callout p { margin: 0; color: var(--gray-600); }
+        .callout strong { color: var(--navy); }
+        
+        .last-updated {
+            display: inline-block;
+            background: var(--gray-100);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            margin-top: 24px;
+        }
+        
+        footer {
+            padding: 40px 0;
+            border-top: 1px solid var(--gray-200);
+            text-align: center;
+        }
+        
+        footer p { color: var(--gray-400); font-size: 0.9rem; }
+        footer a { color: var(--gray-600); }
+        
+        @media (max-width: 640px) {
+            .hero h1 { font-size: 1.75rem; }
+            .nav-links { gap: 16px; }
+            .nav-links a { font-size: 0.85rem; }
+            .disclosure-table { font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo">Tool<span>Intel</span></a>
+            <div class="nav-links">
+                <a href="/methodology.html">Methodology</a>
+                <a href="/transparency.html">Transparency</a>
+                <a href="/reviews.html">Reviews</a>
+                <a href="/submit.html" class="primary">Submit Tool</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Conflict of Interest Policy</h1>
+                <p>How we maintain independence. What we will never accept. What happens if circumstances change.</p>
+                <span class="last-updated">Last updated: February 2026</span>
+            </div>
+        </section>
+
+        <div class="content">
+            <div class="container">
+                
+                <section class="section">
+                    <h2>The Core Principle</h2>
+                    <p>ToolIntel exists to serve buyers, not vendors. The moment we accept money from a company we review, our judgment is compromised—even if we believe it isn't. This policy exists to eliminate that possibility entirely.</p>
+                </section>
+
+                <div class="policy-box red">
+                    <h3>🚫 What We Will Never Accept</h3>
+                    <ul>
+                        <li><strong>Payment for reviews</strong> — No sponsored reviews, paid placements, or "premium listings"</li>
+                        <li><strong>Affiliate commissions</strong> — No referral fees, affiliate links, or revenue sharing</li>
+                        <li><strong>Free products for review</strong> — We pay for every tool at the tier being reviewed</li>
+                        <li><strong>Advertising from reviewed companies</strong> — No display ads, sponsored content, or native advertising</li>
+                        <li><strong>Advisory or consulting fees</strong> — No paid advisory relationships with AI vendors</li>
+                        <li><strong>Equity or options</strong> — No ownership stakes in companies we might review</li>
+                        <li><strong>Conference speaking fees</strong> — Not from vendors; only from neutral parties</li>
+                        <li><strong>Gifts exceeding $50</strong> — Swag is fine; anything more is declined</li>
+                    </ul>
+                </div>
+
+                <div class="policy-box green">
+                    <h3>✓ What We Do Accept</h3>
+                    <ul>
+                        <li><strong>Reader subscriptions</strong> — Direct support from the audience we serve</li>
+                        <li><strong>Advertising from non-reviewed entities</strong> — Companies we don't and won't review</li>
+                        <li><strong>Speaking fees from neutral parties</strong> — Universities, non-profits, conferences without vendor sponsors</li>
+                        <li><strong>Tool submission fees</strong> — A flat fee to enter the review queue (does not affect scores)</li>
+                    </ul>
+                </div>
+
+                <section class="section">
+                    <h2>Current Disclosure Statement</h2>
+                    <table class="disclosure-table">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Ownership in AI companies</td>
+                                <td><span class="status none">None</span></td>
+                            </tr>
+                            <tr>
+                                <td>Advisory relationships</td>
+                                <td><span class="status none">None</span></td>
+                            </tr>
+                            <tr>
+                                <td>Affiliate relationships</td>
+                                <td><span class="status none">None</span></td>
+                            </tr>
+                            <tr>
+                                <td>Vendor sponsorships</td>
+                                <td><span class="status none">None</span></td>
+                            </tr>
+                            <tr>
+                                <td>Paid vendor relationships</td>
+                                <td><span class="status none">None</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p style="font-size: 0.9rem; color: var(--gray-400);">This table is updated whenever circumstances change. Historical versions are archived.</p>
+                </section>
+
+                <section class="section">
+                    <h2>What Happens If Circumstances Change</h2>
+                    <p>If I ever acquire a financial interest in a company that could be reviewed:</p>
+                    <ol style="margin: 16px 0; padding-left: 24px; color: var(--gray-600);">
+                        <li>That company will be immediately excluded from review eligibility</li>
+                        <li>Any existing review will be flagged with a conflict notice</li>
+                        <li>The disclosure table above will be updated within 24 hours</li>
+                        <li>An explanation will be published on the Transparency page</li>
+                    </ol>
+                </section>
+
+                <section class="section">
+                    <h2>Recusal Policy</h2>
+                    <p>I will not review any tool where:</p>
+                    <ul style="margin: 16px 0; padding-left: 24px; color: var(--gray-600);">
+                        <li>I have a personal relationship with founders or executives</li>
+                        <li>I have previously worked for or consulted with the company</li>
+                        <li>I have any financial interest, however small</li>
+                        <li>A family member has a material relationship with the company</li>
+                    </ul>
+                    <p>In these cases, the tool will not be reviewed. No exceptions.</p>
+                </section>
+
+                <div class="callout">
+                    <p><strong>Challenge me on this.</strong> If you believe I have an undisclosed conflict of interest, email me at <a href="mailto:conflict@toolintel.ai">conflict@toolintel.ai</a>. I will investigate and respond publicly within 7 days.</p>
+                </div>
+
+                <section class="section">
+                    <h2>Why This Matters</h2>
+                    <p>The AI tool review space is broken because most reviewers have financial relationships with the tools they cover. Affiliate links, sponsored content, and advertising revenue create invisible biases that are almost impossible to overcome—even with good intentions.</p>
+                    <p>This policy is my commitment to doing it differently. It may limit how fast ToolIntel can grow. That's a tradeoff I'm willing to make.</p>
+                </section>
+
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>© 2026 ToolIntel. Independent AI tool intelligence. No sponsored content. No pay-to-play.</p>
+        </div>
+    </footer>
+</body>
+</html>

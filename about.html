@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About the Reviewer — ToolIntel</title>
+    <meta name="description" content="Meet the independent reviewer behind ToolIntel. Background, qualifications, and why this project exists.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --navy: #0f2744;
+            --navy-light: #1e3a5f;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--gray-800);
+            line-height: 1.7;
+            background: var(--white);
+        }
+        
+        h1, h2, h3 { font-family: 'Merriweather', Georgia, serif; font-weight: 700; line-height: 1.3; }
+        
+        .container { max-width: 800px; margin: 0 auto; padding: 0 24px; }
+        
+        header {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--gray-200);
+            position: sticky;
+            top: 0;
+            background: var(--white);
+            z-index: 100;
+        }
+        
+        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+        
+        .logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.25rem; color: var(--navy); text-decoration: none; }
+        .logo span { color: var(--blue-accent); }
+        
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+        .nav-links a:hover { color: var(--navy); }
+        .nav-links a.primary { background: var(--navy); color: white; padding: 8px 16px; border-radius: 6px; }
+        .nav-links a.primary:hover { background: var(--navy-light); }
+        
+        .hero {
+            padding: 80px 0 60px;
+            text-align: center;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .hero h1 { font-size: 2.5rem; color: var(--navy); margin-bottom: 16px; }
+        .hero p { font-size: 1.1rem; color: var(--gray-600); max-width: 600px; margin: 0 auto; }
+        
+        .content { padding: 60px 0; }
+        
+        .section { margin-bottom: 48px; }
+        .section h2 { font-size: 1.5rem; color: var(--navy); margin-bottom: 20px; }
+        .section p { margin-bottom: 16px; color: var(--gray-600); }
+        
+        .profile-card {
+            display: flex;
+            gap: 32px;
+            align-items: flex-start;
+            background: var(--gray-50);
+            padding: 32px;
+            border-radius: 12px;
+            margin-bottom: 48px;
+        }
+        
+        .profile-photo {
+            width: 120px;
+            height: 120px;
+            background: var(--navy);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        
+        .profile-info h3 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.5rem;
+            color: var(--navy);
+            margin-bottom: 8px;
+        }
+        
+        .profile-info .title {
+            color: var(--blue-accent);
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+        
+        .profile-info p { color: var(--gray-600); margin: 0; }
+        
+        .credentials {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin: 32px 0;
+        }
+        
+        .credential {
+            background: var(--gray-50);
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .credential h4 {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            color: var(--gray-400);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        
+        .credential p {
+            color: var(--navy);
+            font-weight: 500;
+            margin: 0;
+        }
+        
+        .callout {
+            background: var(--gray-50);
+            border-left: 4px solid var(--navy);
+            padding: 20px 24px;
+            margin: 24px 0;
+        }
+        
+        .callout p { margin: 0; color: var(--gray-600); }
+        .callout strong { color: var(--navy); }
+        
+        .social-links {
+            display: flex;
+            gap: 16px;
+            margin-top: 24px;
+        }
+        
+        .social-links a {
+            color: var(--gray-600);
+            text-decoration: none;
+            padding: 8px 16px;
+            border: 1px solid var(--gray-200);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+        
+        .social-links a:hover {
+            border-color: var(--navy);
+            color: var(--navy);
+        }
+        
+        footer {
+            padding: 40px 0;
+            border-top: 1px solid var(--gray-200);
+            text-align: center;
+        }
+        
+        footer p { color: var(--gray-400); font-size: 0.9rem; }
+        footer a { color: var(--gray-600); }
+        
+        @media (max-width: 640px) {
+            .hero h1 { font-size: 1.75rem; }
+            .nav-links { gap: 16px; }
+            .nav-links a { font-size: 0.85rem; }
+            .profile-card { flex-direction: column; text-align: center; }
+            .credentials { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo">Tool<span>Intel</span></a>
+            <div class="nav-links">
+                <a href="/methodology.html">Methodology</a>
+                <a href="/transparency.html">Transparency</a>
+                <a href="/reviews.html">Reviews</a>
+                <a href="/submit.html" class="primary">Submit Tool</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>About the Reviewer</h1>
+                <p>One person. No investors. No editorial board. Full accountability.</p>
+            </div>
+        </section>
+
+        <div class="content">
+            <div class="container">
+                
+                <div class="profile-card">
+                    <div class="profile-photo">HA</div>
+                    <div class="profile-info">
+                        <h3>Hamid Ali</h3>
+                        <p class="title">Independent AI Analyst & Software Engineer</p>
+                        <p>I've spent 10+ years building software products and the last 3 years deep in AI tooling—building with it, evaluating it, and watching vendors promise things their products can't deliver. ToolIntel exists because I got tired of seeing buyers make $50K decisions based on marketing pages.</p>
+                    </div>
+                </div>
+
+                <section class="section">
+                    <h2>Why I Started This</h2>
+                    <p>In 2024, I watched three companies in my network buy AI tools based on flashy demos and regret it within months. One spent $120K on an "enterprise AI assistant" that couldn't reliably handle basic tasks. Another signed a 2-year contract for a tool that had undisclosed data retention practices.</p>
+                    <p>The problem wasn't that these tools were bad. The problem was that no one was doing the due diligence these buyers needed—not the analysts (who get paid by vendors), not the tech blogs (who get paid by ads), and definitely not the vendors themselves.</p>
+                    <p>I started ToolIntel to be the reviewer I wished existed: independent, methodical, and completely unaffiliated with the companies I evaluate.</p>
+                </section>
+
+                <section class="section">
+                    <h2>Qualifications</h2>
+                    <div class="credentials">
+                        <div class="credential">
+                            <h4>Technical Background</h4>
+                            <p>10+ years software engineering, 3+ years AI/ML implementation</p>
+                        </div>
+                        <div class="credential">
+                            <h4>Enterprise Experience</h4>
+                            <p>Led AI tool evaluation for multiple organizations</p>
+                        </div>
+                        <div class="credential">
+                            <h4>Analysis Work</h4>
+                            <p>Financial Data Analyst for SPEDG (since 2012)</p>
+                        </div>
+                        <div class="credential">
+                            <h4>Location</h4>
+                            <p>San Antonio, Texas</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2>My Commitment</h2>
+                    <p>Every review on this site is written by me. Not a team. Not freelancers. Me. This means:</p>
+                    <ul style="margin: 16px 0; padding-left: 24px; color: var(--gray-600);">
+                        <li>Slower publication schedule (quality over quantity)</li>
+                        <li>Complete accountability—if a review is wrong, it's my fault</li>
+                        <li>No hidden editorial influence or investor pressure</li>
+                        <li>Direct contact: you can reach me, not a support team</li>
+                    </ul>
+                </section>
+
+                <div class="callout">
+                    <p><strong>Full disclosure:</strong> I pay for every tool I review at the tier being evaluated. I have no financial relationships with any AI vendor. I do not accept sponsored content, affiliate payments, or "partnership" offers. See the <a href="/conflict-of-interest.html">Conflict of Interest Policy</a> for details.</p>
+                </div>
+
+                <section class="section">
+                    <h2>Contact</h2>
+                    <p>For corrections, disputes, or questions about methodology:</p>
+                    <div class="social-links">
+                        <a href="https://linkedin.com/in/hamid-ali-31645852" target="_blank">LinkedIn</a>
+                        <a href="mailto:contact@toolintel.ai">Email</a>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>© 2026 ToolIntel. Independent AI tool intelligence.</p>
+        </div>
+    </footer>
+</body>
+</html>
