@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perplexity Review — ToolIntel</title>
-    <meta name="description" content="Community reviews for Perplexity. Editorial review coming soon. Share your experience with this AI tool.">
+    <title>{{NAME}} Review — ToolIntel</title>
+    <meta name="description" content="Community reviews for {{NAME}}. Editorial review coming soon. Share your experience with this AI tool.">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -152,7 +152,7 @@
 
     <div class="breadcrumb">
         <div class="breadcrumb-content">
-            <a href="/">Home</a> → <a href="/reviews.html">Reviews</a> → Perplexity
+            <a href="/">Home</a> → <a href="/reviews.html">Reviews</a> → {{NAME}}
         </div>
     </div>
 
@@ -161,15 +161,15 @@
             <div class="container">
                 <div class="hero-content">
                     <div class="tool-info">
-                        <span class="tool-badge">AI Search</span>
+                        <span class="tool-badge">{{CATEGORY}}</span>
                         <span class="coming-soon-badge">Editorial Review Coming Soon</span>
-                        <h1>Perplexity</h1>
+                        <h1>{{NAME}}</h1>
                         <div class="tool-meta">
-                            <span>by Perplexity AI</span>
+                            <span>by {{COMPANY}}</span>
                             <span>•</span>
-                            <a href="https://perplexity.ai" target="_blank" rel="nofollow noopener">perplexity.ai ↗</a>
+                            <a href="https://{{URL}}" target="_blank" rel="nofollow noopener">{{URL}} ↗</a>
                         </div>
-                        <p style="color: var(--gray-600); max-width: 600px;">AI-powered answer engine combining search and language models. Our editorial team is currently evaluating this tool using our rigorous methodology.</p>
+                        <p style="color: var(--gray-600); max-width: 600px;">{{DESC}} Our editorial team is currently evaluating this tool using our rigorous methodology.</p>
                     </div>
                     <div class="score-section">
                         <div class="score-pending">
@@ -184,7 +184,7 @@
             <div class="container">
                 <div class="coming-soon-box">
                     <h2>📝 Editorial Review In Progress</h2>
-                    <p>Our team is currently conducting an in-depth evaluation of Perplexity. The full review will be published soon with detailed scoring across all criteria.</p>
+                    <p>Our team is currently conducting an in-depth evaluation of {{NAME}}. The full review will be published soon with detailed scoring across all criteria.</p>
                 </div>
 
                 <div class="section community-section" id="community">
@@ -203,7 +203,7 @@
                         <div class="form-error" id="formError">Please check all required fields and try again.</div>
                         
                         <form id="reviewForm">
-                            <input type="hidden" name="tool" value="perplexity">
+                            <input type="hidden" name="tool" value="{{SLUG}}">
                             
                             <div class="form-row">
                                 <div class="form-group">
@@ -315,7 +315,7 @@
 
     <script>
         const API_BASE = 'https://v7086lxsji.execute-api.us-east-1.amazonaws.com';
-        const TOOL_SLUG = 'perplexity';
+        const TOOL_SLUG = '{{SLUG}}';
         
         function escapeHtml(text) {
             const div = document.createElement('div');

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notion AI Review — ToolIntel</title>
-    <meta name="description" content="Community reviews for Notion AI by Notion. Editorial review coming soon. Share your experience with this AI tool.">
+    <meta name="description" content="Community reviews for Notion AI. Editorial review coming soon. Share your experience with this AI tool.">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,6 +24,7 @@
             --white: #ffffff;
             --green: #10b981;
             --yellow: #f59e0b;
+            --red: #ef4444;
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -89,33 +90,34 @@
         .review-form { margin-top: 32px; padding: 24px; background: var(--white); border: 1px solid var(--gray-200); border-radius: 8px; }
         .review-form h4 { font-family: 'Inter', sans-serif; font-size: 1.1rem; font-weight: 600; color: var(--navy); margin-bottom: 8px; }
         .review-form .form-intro { font-size: 0.9rem; color: var(--gray-600); margin-bottom: 24px; line-height: 1.6; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; font-size: 0.9rem; font-weight: 500; color: var(--gray-800); margin-bottom: 6px; }
-        .label-hint { font-weight: 400; color: var(--gray-400); }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: 6px; font-size: 0.95rem; font-family: inherit; }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--blue-accent); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
-        .form-group textarea { min-height: 120px; resize: vertical; }
-        .char-count { font-size: 0.8rem; color: var(--gray-400); margin-top: 4px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group > label { display: block; font-size: 0.9rem; font-weight: 500; color: var(--gray-600); margin-bottom: 6px; }
+        .form-group .label-hint { font-weight: 400; color: var(--gray-400); font-size: 0.8rem; }
+        .form-group input[type="text"], .form-group input[type="email"], .form-group textarea, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: 6px; font-size: 0.95rem; font-family: inherit; background: var(--white); }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: var(--blue-accent); }
+        .form-group textarea { min-height: 150px; resize: vertical; }
+        .char-count { font-size: 0.8rem; color: var(--gray-400); text-align: right; margin-top: 4px; }
+        .char-count.error { color: var(--red); }
         
-        .structured-ratings { background: var(--gray-50); border-radius: 8px; padding: 16px; }
-        .rating-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--gray-200); gap: 16px; }
-        .rating-row:last-child { border-bottom: none; }
-        .rating-label { font-size: 0.9rem; color: var(--gray-600); flex: 1; }
-        .rating-options { display: flex; gap: 16px; flex-shrink: 0; }
-        .rating-options label { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.9rem; white-space: nowrap; }
-        .rating-options input { margin: 0; flex-shrink: 0; }
+        .structured-ratings { display: grid; gap: 12px; }
+        .rating-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--gray-50); border-radius: 6px; }
+        .rating-row .rating-label { font-size: 0.9rem; color: var(--gray-600); flex: 1; }
+        .rating-row .rating-options { display: flex; gap: 8px; }
+        .rating-row .rating-options label { display: flex; align-items: center; cursor: pointer; padding: 6px 12px; border-radius: 4px; font-size: 0.85rem; border: 1px solid var(--gray-200); background: var(--white); transition: all 0.15s; }
+        .rating-row .rating-options input { display: none; }
+        .rating-row .rating-options label:has(input:checked) { border-color: var(--navy); background: var(--navy); color: var(--white); }
         
-        .star-rating { display: flex; flex-direction: row-reverse; justify-content: flex-end; gap: 4px; }
+        .star-rating { display: flex; gap: 4px; flex-direction: row-reverse; justify-content: flex-end; }
         .star-rating input { display: none; }
-        .star-rating label { font-size: 1.5rem; color: var(--gray-200); cursor: pointer; transition: color 0.2s; }
-        .star-rating input:checked ~ label, .star-rating label:hover, .star-rating label:hover ~ label { color: #f59e0b; }
+        .star-rating label { cursor: pointer; font-size: 1.8rem; color: var(--gray-200); transition: color 0.15s; }
+        .star-rating label:hover, .star-rating label:hover ~ label, .star-rating input:checked ~ label { color: #fbbf24; }
         
-        .disclosure-box { background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 6px; padding: 12px; margin: 20px 0; }
-        .disclosure-box label { display: flex; gap: 10px; align-items: flex-start; font-size: 0.85rem; color: var(--gray-600); cursor: pointer; }
-        .disclosure-box input { margin-top: 3px; }
+        .disclosure-box { padding: 16px; background: #fef3c7; border: 1px solid #fcd34d; border-radius: 6px; margin-bottom: 20px; }
+        .disclosure-box label { display: flex; align-items: start; gap: 12px; cursor: pointer; font-size: 0.9rem; color: var(--gray-800); line-height: 1.5; }
+        .disclosure-box input[type="checkbox"] { margin-top: 3px; width: 18px; height: 18px; flex-shrink: 0; }
         
-        .submit-btn { width: 100%; padding: 14px; background: var(--navy); color: white; border: none; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+        .submit-btn { background: var(--navy); color: var(--white); border: none; padding: 14px 32px; font-size: 1rem; font-weight: 500; border-radius: 6px; cursor: pointer; transition: all 0.2s; width: 100%; }
         .submit-btn:hover { background: var(--navy-light); }
         .submit-btn:disabled { background: var(--gray-400); cursor: not-allowed; }
         .form-note { font-size: 0.8rem; color: var(--gray-400); text-align: center; margin-top: 12px; }
@@ -131,7 +133,8 @@
             .hero-content { grid-template-columns: 1fr; }
             .score-section { margin-top: 24px; }
             .form-row { grid-template-columns: 1fr; }
-            .rating-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+            .rating-row { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .rating-row .rating-options { width: 100%; justify-content: flex-start; }
         }
     </style>
 </head>
@@ -164,9 +167,9 @@
                         <div class="tool-meta">
                             <span>by Notion</span>
                             <span>•</span>
-                            <a href="https://notion-ai.google.com" target="_blank" rel="nofollow noopener">notion-ai.google.com ↗</a>
+                            <a href="https://notion.so" target="_blank" rel="nofollow noopener">notion.so ↗</a>
                         </div>
-                        <p style="color: var(--gray-600); max-width: 600px;">Notion's multimodal AI assistant. Our editorial team is currently evaluating this tool using our rigorous methodology.</p>
+                        <p style="color: var(--gray-600); max-width: 600px;">AI writing and productivity features built into Notion. Our editorial team is currently evaluating this tool using our rigorous methodology.</p>
                     </div>
                     <div class="score-section">
                         <div class="score-pending">
@@ -234,8 +237,8 @@
                                 <select name="pricingTier" required>
                                     <option value="">Select...</option>
                                     <option value="free">Free</option>
-                                    <option value="pro">Advanced/Ultra</option>
-                                    <option value="team">Notion One AI Premium</option>
+                                    <option value="pro">Pro/Paid</option>
+                                    <option value="team">Team</option>
                                     <option value="enterprise">Enterprise</option>
                                     <option value="api">API</option>
                                 </select>
