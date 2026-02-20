@@ -3,18 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>[TOOL NAME] Review — ToolIntel</title>
-    <meta name="description" content="Independent review of [TOOL NAME]. Scored across 10 categories using our public methodology.">
+    <!-- 
+    ==========================================
+    TOOLINTEL UNIFIED REVIEW TEMPLATE v2.0
+    ==========================================
+    
+    TO CREATE A NEW REVIEW:
+    1. Copy this file and rename to [tool-slug].html
+    2. Search and replace the following placeholders:
+       - {{TOOL_NAME}} → Tool display name (e.g., "Claude")
+       - {{TOOL_SLUG}} → URL-safe slug (e.g., "claude")
+       - {{VENDOR_NAME}} → Company name (e.g., "Anthropic")
+       - {{CATEGORY}} → Tool category (e.g., "Foundation Models & AI APIs")
+       - {{WEBSITE_URL}} → Official website
+       - {{PRICING_URL}} → Pricing page URL
+       - {{TOTAL_SCORE}} → Overall score (0-100)
+       - {{SCORE_CLASS}} → "green" (80+), "yellow" (60-79), "red" (<60)
+       - {{VERDICT_LINE}} → One-line summary
+       - {{REVIEW_DATE}} → Review date (e.g., "Feb 20, 2026")
+    3. Fill in score breakdown values
+    4. Write the verdict and analysis sections
+    5. All dynamic components (pricing, claims, experts) load automatically!
+    
+    COMPONENTS INCLUDED:
+    - Dynamic Pricing Table (with history, alerts, hidden costs)
+    - Marketing Claim Verification
+    - Procurement Pack Download
+    - Expert Contributions
+    - Hype Index Integration
+    ==========================================
+    -->
+    <title>{{TOOL_NAME}} Review — ToolIntel</title>
+    <meta name="description" content="Independent review of {{TOOL_NAME}} by {{VENDOR_NAME}}. Scored across 10 categories using our public methodology.">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Component Scripts -->
+    <script src="/js/pricing-table.js" defer></script>
+    <script src="/js/claim-verification.js" defer></script>
+    <script src="/js/procurement-pack.js" defer></script>
+    <script src="/js/expert-contribution.js" defer></script>
     
     <style>
         :root {
             --navy: #0f2744;
             --navy-light: #1e3a5f;
             --blue-accent: #3b82f6;
+            --teal: #0d9488;
             --gray-50: #f9fafb;
             --gray-100: #f3f4f6;
             --gray-200: #e5e7eb;
@@ -132,6 +169,7 @@
             display: flex;
             gap: 8px;
             justify-content: center;
+            flex-wrap: wrap;
         }
         
         .action-btn {
@@ -146,6 +184,13 @@
         }
         
         .action-btn:hover { border-color: var(--navy); color: var(--navy); }
+        
+        .action-btn.primary {
+            background: var(--teal);
+            color: white;
+            border-color: var(--teal);
+        }
+        .action-btn.primary:hover { background: #0f766e; }
         
         /* Score Bars */
         .score-breakdown {
@@ -309,6 +354,11 @@
         
         .accordion-item.open .accordion-content { display: block; }
         
+        /* Component Containers */
+        .component-section {
+            margin: 30px 0;
+        }
+        
         /* Researcher Section */
         .researcher-section {
             background: #f0f9ff;
@@ -353,25 +403,6 @@
             font-size: 0.85rem;
             color: #9333ea;
             margin-bottom: 16px;
-        }
-        
-        /* Pricing Table */
-        .pricing-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 16px 0;
-        }
-        
-        .pricing-table th, .pricing-table td {
-            padding: 12px 16px;
-            text-align: left;
-            border-bottom: 1px solid var(--gray-200);
-        }
-        
-        .pricing-table th {
-            background: var(--gray-50);
-            font-weight: 600;
-            color: var(--navy);
         }
         
         /* Alternatives */
@@ -454,9 +485,10 @@
         <nav>
             <a href="/" class="logo">Tool<span>Intel</span></a>
             <div class="nav-links">
-                <a href="/methodology">Methodology</a>
-                <a href="/reviews">Reviews</a>
-                <a href="/submit">Submit Tool</a>
+                <a href="/methodology.html">Methodology</a>
+                <a href="/reviews.html">Reviews</a>
+                <a href="/compare.html">Compare</a>
+                <a href="/expert-network.html">Experts</a>
             </div>
         </nav>
     </header>
@@ -467,26 +499,28 @@
             <div class="container">
                 <div class="hero-content">
                     <div class="tool-info">
-                        <h1>Claude (Anthropic)</h1>
+                        <h1>{{TOOL_NAME}} ({{VENDOR_NAME}})</h1>
                         <div class="tool-meta">
-                            <span>Foundation Models & AI APIs</span>
+                            <span>{{CATEGORY}}</span>
                             <span>•</span>
-                            <a href="https://claude.ai" target="_blank">claude.ai ↗</a>
+                            <a href="{{WEBSITE_URL}}" target="_blank">{{WEBSITE_URL}} ↗</a>
                         </div>
-                        <p class="verdict-line">Exceptional safety focus, enterprise-ready</p>
+                        <p class="verdict-line">{{VERDICT_LINE}}</p>
                         <p class="review-meta">
-                            Reviewed by <strong>ToolIntel</strong> · Feb 20, 2026 · Methodology v1.0
+                            Reviewed by <strong>ToolIntel</strong> · {{REVIEW_DATE}} · Methodology v1.0
                         </p>
                     </div>
                     <div class="score-section">
-                        <div class="score-ring green">
-                            <span class="score-number">87</span>
+                        <div class="score-ring {{SCORE_CLASS}}">
+                            <span class="score-number">{{TOTAL_SCORE}}</span>
                             <span class="score-label">out of 100</span>
                         </div>
                         <div class="action-buttons">
                             <button class="action-btn">☆ Save</button>
-                            <button class="action-btn">⇄ Compare</button>
+                            <button class="action-btn" onclick="window.location.href='/compare.html?tools={{TOOL_SLUG}}'">⇄ Compare</button>
                             <button class="action-btn">↗ Share</button>
+                            <!-- Procurement Pack Button - Injected by JS -->
+                            <div id="procurementBtn"></div>
                         </div>
                     </div>
                 </div>
@@ -498,6 +532,7 @@
             <div class="score-breakdown">
                 <h3>Score Breakdown</h3>
                 
+                <!-- UPDATE THESE VALUES FOR EACH TOOL -->
                 <div class="score-bar-item">
                     <span class="score-bar-label">Core AI Performance (25%)</span>
                     <div class="score-bar-track">
@@ -592,19 +627,17 @@
                         <div class="verdict-card ideal">
                             <h4>✓ Ideal For</h4>
                             <ul>
-                                <li>Enterprises prioritizing AI safety</li>
-                                <li>Regulated industries (healthcare, legal, finance)</li>
-                                <li>Teams needing long-context analysis</li>
-                                <li>Developers building production applications</li>
+                                <li><!-- FILL IN --></li>
+                                <li><!-- FILL IN --></li>
+                                <li><!-- FILL IN --></li>
                             </ul>
                         </div>
                         <div class="verdict-card not-ideal">
                             <h4>✗ Not Ideal For</h4>
                             <ul>
-                                <li>Budget-constrained solo users</li>
-                                <li>Real-time applications requiring sub-100ms latency</li>
-                                <li>Teams needing image generation</li>
-                                <li>Users who want minimal content filtering</li>
+                                <li><!-- FILL IN --></li>
+                                <li><!-- FILL IN --></li>
+                                <li><!-- FILL IN --></li>
                             </ul>
                         </div>
                     </div>
@@ -613,26 +646,38 @@
                         <div class="sw-card">
                             <h4>💪 Top Strengths</h4>
                             <ul>
-                                <li><strong>Industry-leading safety:</strong> Constitutional AI approach produces notably fewer harmful outputs</li>
-                                <li><strong>200K context window:</strong> Handles entire codebases and long documents</li>
-                                <li><strong>Transparent practices:</strong> Published model cards, clear data handling</li>
+                                <li><!-- FILL IN --></li>
+                                <li><!-- FILL IN --></li>
+                                <li><!-- FILL IN --></li>
                             </ul>
                         </div>
                         <div class="sw-card">
                             <h4>⚠️ Top Weaknesses</h4>
                             <ul>
-                                <li><strong>Premium pricing:</strong> API costs significantly higher than competitors</li>
-                                <li><strong>No image capabilities:</strong> Text-only limits multimodal use cases</li>
-                                <li><strong>Occasional over-refusals:</strong> Safety measures sometimes block legitimate requests</li>
+                                <li><!-- FILL IN --></li>
+                                <li><!-- FILL IN --></li>
+                                <li><!-- FILL IN --></li>
                             </ul>
                         </div>
                     </div>
                     
                     <div class="callout">
                         <div class="callout-title">💡 What the marketing page doesn't tell you</div>
-                        <p>Claude's "helpful, harmless, honest" training makes it notably more willing to say "I don't know" than competitors — which can frustrate users expecting confident answers, but produces more reliable outputs for critical business decisions.</p>
+                        <p><!-- FILL IN: Insider insight --></p>
                     </div>
                 </div>
+
+                <!-- ==========================================
+                     DYNAMIC PRICING TABLE
+                     Loads automatically via API
+                     ========================================== -->
+                <div class="component-section" id="pricingSection"></div>
+
+                <!-- ==========================================
+                     MARKETING CLAIM VERIFICATION
+                     Loads automatically via API
+                     ========================================== -->
+                <div class="component-section" id="claimSection"></div>
 
                 <!-- DEEP DIVE SECTIONS (Accordions) -->
                 <div class="section">
@@ -641,22 +686,20 @@
                     <div class="accordion-item">
                         <div class="accordion-header" onclick="this.parentElement.classList.toggle('open')">
                             <span>Core AI Performance</span>
-                            <span>88/100 →</span>
+                            <span>→</span>
                         </div>
                         <div class="accordion-content">
-                            <p>Claude demonstrates exceptional performance on reasoning tasks, particularly in code generation, analysis, and long-form writing. In our testing across 50 standardized prompts...</p>
-                            <p>[Detailed analysis continues...]</p>
+                            <p><!-- FILL IN: Detailed analysis --></p>
                         </div>
                     </div>
                     
                     <div class="accordion-item">
                         <div class="accordion-header" onclick="this.parentElement.classList.toggle('open')">
                             <span>Data Privacy & Security</span>
-                            <span>92/100 →</span>
+                            <span>→</span>
                         </div>
                         <div class="accordion-content">
-                            <p>Anthropic's privacy practices are among the strongest in the industry. Customer data submitted via the API is not used for model training by default. SOC2 Type II certified...</p>
-                            <p>[Detailed analysis continues...]</p>
+                            <p><!-- FILL IN: Detailed analysis --></p>
                         </div>
                     </div>
                     
@@ -668,93 +711,37 @@
                         <div class="accordion-content">
                             <h4>Plain-English Summary</h4>
                             <ul>
-                                <li>✓ API data not used for training by default</li>
-                                <li>✓ 30-day data retention, then deletion</li>
-                                <li>✓ No third-party data sharing for advertising</li>
-                                <li>⚠ Consumer product (claude.ai) has different terms</li>
+                                <li><!-- FILL IN --></li>
                             </ul>
-                            <p><a href="https://anthropic.com/privacy" target="_blank">Read full privacy policy →</a></p>
+                            <p><a href="#" target="_blank">Read full privacy policy →</a></p>
                         </div>
                     </div>
                 </div>
 
-                <!-- PRICING ANALYSIS -->
-                <div class="section">
-                    <h2>Pricing Analysis</h2>
-                    <p>What you actually pay at each tier vs. what you get.</p>
-                    
-                    <table class="pricing-table">
-                        <thead>
-                            <tr>
-                                <th>Tier</th>
-                                <th>Price</th>
-                                <th>What You Get</th>
-                                <th>Hidden Costs?</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Free (claude.ai)</td>
-                                <td>$0/mo</td>
-                                <td>Limited messages, Claude 3 Sonnet</td>
-                                <td>Data may be used for training</td>
-                            </tr>
-                            <tr>
-                                <td>Pro</td>
-                                <td>$20/mo</td>
-                                <td>5x more usage, Claude 3 Opus access</td>
-                                <td>None identified</td>
-                            </tr>
-                            <tr>
-                                <td>API</td>
-                                <td>Pay-per-token</td>
-                                <td>Full API access, no training on data</td>
-                                <td>Costs scale with usage</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <!-- ==========================================
+                     EXPERT CONTRIBUTIONS
+                     Shows domain expert analysis if available
+                     ========================================== -->
+                <div class="component-section" id="expertSection"></div>
 
                 <!-- DEVELOPER INTERVIEW -->
                 <div class="section">
                     <h2>Developer Interview Summary</h2>
-                    <p class="review-meta">Interview conducted February 15, 2026</p>
+                    <p class="review-meta">Interview conducted <!-- DATE --></p>
                     
                     <h3>On model architecture:</h3>
-                    <p>"We use a proprietary transformer architecture with Constitutional AI training. We don't disclose parameter counts, but our models are trained on a diverse corpus with significant investment in RLHF."</p>
+                    <p>"<!-- QUOTE -->"</p>
                     
-                    <h3>On data handling in a breach:</h3>
-                    <p>"We have incident response procedures that include customer notification within 72 hours, forensic analysis, and credit monitoring offers where appropriate."</p>
-                    
-                    <h3>On EU AI Act readiness:</h3>
-                    <p>"We're actively working on compliance. We expect to be fully compliant before the relevant provisions take effect."</p>
-                </div>
-
-                <!-- RESEARCHER PERSPECTIVE -->
-                <div class="section researcher-section">
-                    <h2>Independent Researcher Perspective</h2>
-                    
-                    <div class="researcher-info">
-                        <div class="researcher-avatar">JD</div>
-                        <div>
-                            <div class="researcher-name">Dr. Jane Doe</div>
-                            <div class="researcher-affiliation">AI Safety Researcher, Stanford HAI</div>
-                        </div>
-                    </div>
-                    
-                    <p>"The ToolIntel assessment aligns with my research findings. Claude's Constitutional AI approach does produce measurably fewer harmful outputs in adversarial testing. However, the 'over-refusal' issue noted in the review is worth emphasizing — in my testing, Claude refused 23% of benign security research queries that GPT-4 handled without issue."</p>
-                    
-                    <p><strong>Verdict:</strong> Agree with score. Would emphasize the refusal rate caveat for security researchers.</p>
+                    <h3>On data handling:</h3>
+                    <p>"<!-- QUOTE -->"</p>
                 </div>
 
                 <!-- VENDOR RESPONSE -->
                 <div class="section vendor-section">
                     <h2>Vendor Response</h2>
-                    <p class="response-date">Submitted March 1, 2026 (within 30-day response window)</p>
+                    <p class="response-date"><!-- Submitted DATE or "Pending vendor response" --></p>
                     
-                    <p>"We appreciate ToolIntel's thorough review. We'd like to clarify that our pricing reflects significant investment in safety research that benefits the entire AI ecosystem. Regarding the 'over-refusal' issue, we're actively working on reducing false positives while maintaining our safety standards. We've already shipped improvements in Claude 3.1 that address many of these cases."</p>
-                    
-                    <p><em>— Anthropic Communications Team</em></p>
+                    <p><!-- VENDOR RESPONSE TEXT or "We have invited {{VENDOR_NAME}} to respond to this review. This section will be updated if they choose to participate." --></p>
                 </div>
 
                 <!-- COMMUNITY SIGNAL -->
@@ -763,7 +750,7 @@
                     
                     <p>User ratings from verified purchasers. This section is distinct from our editorial review.</p>
                     
-                    <p><em>Community ratings will be displayed here once verification system is live.</em></p>
+                    <p><em>Community ratings coming soon.</em></p>
                 </div>
 
                 <!-- ALTERNATIVES -->
@@ -772,19 +759,19 @@
                     
                     <div class="alternatives-grid">
                         <div class="alt-card">
-                            <div class="name">GPT-4 (OpenAI)</div>
-                            <div class="score">84</div>
-                            <div class="category">If you need multimodal</div>
+                            <div class="name"><!-- ALT 1 NAME --></div>
+                            <div class="score"><!-- SCORE --></div>
+                            <div class="category"><!-- Why consider --></div>
                         </div>
                         <div class="alt-card">
-                            <div class="name">Gemini (Google)</div>
-                            <div class="score">81</div>
-                            <div class="category">If you need Google integration</div>
+                            <div class="name"><!-- ALT 2 NAME --></div>
+                            <div class="score"><!-- SCORE --></div>
+                            <div class="category"><!-- Why consider --></div>
                         </div>
                         <div class="alt-card">
-                            <div class="name">Llama 3 (Meta)</div>
-                            <div class="score">78</div>
-                            <div class="category">If you need self-hosting</div>
+                            <div class="name"><!-- ALT 3 NAME --></div>
+                            <div class="score"><!-- SCORE --></div>
+                            <div class="category"><!-- Why consider --></div>
                         </div>
                     </div>
                 </div>
@@ -794,8 +781,8 @@
                     <h2>Review Change Log</h2>
                     
                     <div class="changelog-item">
-                        <span class="changelog-date">Feb 20, 2026</span>
-                        <span class="changelog-text">Initial review published. Score: 87/100</span>
+                        <span class="changelog-date">{{REVIEW_DATE}}</span>
+                        <span class="changelog-text">Initial review published. Score: {{TOTAL_SCORE}}/100</span>
                     </div>
                 </div>
 
@@ -805,8 +792,70 @@
 
     <footer>
         <div class="container">
-            <p>© 2026 ToolIntel. <a href="/methodology">Methodology</a> is always public.</p>
+            <p>© 2026 ToolIntel. <a href="/methodology.html">Methodology</a> is always public. No affiliate links.</p>
         </div>
     </footer>
+
+    <!-- ==========================================
+         COMPONENT INITIALIZATION
+         All dynamic features load here
+         ========================================== -->
+    <script>
+        // Tool configuration - UPDATE THESE FOR EACH REVIEW
+        const TOOL_CONFIG = {
+            slug: '{{TOOL_SLUG}}',
+            name: '{{TOOL_NAME}}',
+            pricingUrl: '{{PRICING_URL}}',
+            score: {{TOTAL_SCORE}},
+            verdict: '{{VERDICT_LINE}}',
+            // Add more data as needed for procurement pack
+            reviewData: {
+                category: '{{CATEGORY}}',
+                vendor: '{{VENDOR_NAME}}',
+                reviewDate: '{{REVIEW_DATE}}'
+            }
+        };
+        
+        // Initialize all components when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. Pricing Table
+            if (typeof initPricingTable === 'function') {
+                initPricingTable(
+                    TOOL_CONFIG.slug,
+                    TOOL_CONFIG.name,
+                    TOOL_CONFIG.pricingUrl,
+                    'pricingSection'
+                );
+            }
+            
+            // 2. Claim Verification
+            if (typeof initClaimVerification === 'function') {
+                initClaimVerification(
+                    TOOL_CONFIG.slug,
+                    TOOL_CONFIG.name,
+                    'claimSection'
+                );
+            }
+            
+            // 3. Procurement Pack Button
+            if (typeof initProcurementPack === 'function') {
+                initProcurementPack(
+                    TOOL_CONFIG.slug,
+                    TOOL_CONFIG.name,
+                    TOOL_CONFIG.reviewData,
+                    'procurementBtn'
+                );
+            }
+            
+            // 4. Expert Contributions
+            if (typeof initExpertContributions === 'function') {
+                initExpertContributions(
+                    TOOL_CONFIG.slug,
+                    TOOL_CONFIG.name,
+                    'expertSection'
+                );
+            }
+        });
+    </script>
 </body>
 </html>
