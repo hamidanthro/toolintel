@@ -247,6 +247,9 @@
         }
         footer p { color: var(--gray-400); font-size: 0.9rem; }
         footer a { color: var(--gray-600); margin: 0 12px; }
+        footer .footer-secondary { margin-top: 12px; font-size: 0.8rem; }
+        footer .footer-secondary a { color: var(--gray-400); margin: 0 8px; }
+        footer .disclosure { margin-top: 12px; font-size: 0.75rem; color: var(--gray-400); max-width: 600px; margin-left: auto; margin-right: auto; }
         
         @media (max-width: 768px) {
             .hero h1 { font-size: 2rem; }
@@ -464,14 +467,20 @@
 
     <footer>
         <p>
-            
             <a href="/methodology.html">Methodology</a>
-                <a href="/transparency.html">Transparency</a>
-                <a href="/reviews.html">Reviews</a>
+            <a href="/reviews.html">Reviews</a>
             <a href="/transparency.html">Transparency</a>
             <a href="/submit.html">Submit Tool</a>
         </p>
-        <p style="margin-top: 16px;">© 2026 Tool Intel. Independent AI tool reviews.</p>
+        <p class="footer-secondary">
+            <a href="/about.html">About the Reviewer</a>
+            <a href="/methodology.html#criteria">Review Criteria</a>
+            <a href="/conflict-of-interest.html">Conflict of Interest Policy</a>
+            <a href="/corrections.html">Correction Policy</a>
+            <a href="/submit.html">Submit a Tool</a>
+        </p>
+        <p style="margin-top: 16px;">© 2026 ToolIntel. Independent AI tool intelligence. No sponsored content. No pay-to-play.</p>
+        <p class="disclosure">The reviewer has no financial relationship with any tool listed on this site. All tools are independently selected and evaluated.</p>
     </footer>
 
     <script>
