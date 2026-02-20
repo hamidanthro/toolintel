@@ -150,6 +150,12 @@
             border: 1px solid var(--gray-200);
             border-radius: 8px;
             padding: 12px 16px;
+            text-decoration: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        a.queue-item:hover {
+            border-color: var(--blue-accent);
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
         }
         .queue-item .tool-name { font-weight: 500; color: var(--navy); font-size: 0.95rem; }
         .queue-item .category { font-size: 0.8rem; color: var(--gray-400); }
@@ -295,13 +301,13 @@
             <p class="queue-subtitle">Tools we've identified for upcoming review. Updated daily.</p>
             
             <div class="queue-grid" id="queueGrid">
-                <div class="queue-item"><div><div class="tool-name">Gemini</div><div class="category">Foundation Models</div></div><span class="status scheduled">Up Next</span></div>
-                <div class="queue-item"><div><div class="tool-name">GitHub Copilot</div><div class="category">AI Coding</div></div><span class="status scheduled">Up Next</span></div>
-                <div class="queue-item"><div><div class="tool-name">Perplexity</div><div class="category">AI Search</div></div><span class="status scheduled">Up Next</span></div>
-                <div class="queue-item"><div><div class="tool-name">DALL-E 3</div><div class="category">Image Gen</div></div><span class="status scheduled">Up Next</span></div>
-                <div class="queue-item"><div><div class="tool-name">Stable Diffusion</div><div class="category">Image Gen</div></div><span class="status scheduled">Up Next</span></div>
-                <div class="queue-item"><div><div class="tool-name">ElevenLabs</div><div class="category">Voice AI</div></div><span class="status in-queue">In Queue</span></div>
-                <div class="queue-item"><div><div class="tool-name">Runway</div><div class="category">Video Gen</div></div><span class="status in-queue">In Queue</span></div>
+                <a href="/reviews/gemini.html" class="queue-item"><div><div class="tool-name">Gemini</div><div class="category">Foundation Models</div></div><span class="status scheduled">Up Next</span></a>
+                <a href="/reviews/github-copilot.html" class="queue-item"><div><div class="tool-name">GitHub Copilot</div><div class="category">AI Coding</div></div><span class="status scheduled">Up Next</span></a>
+                <a href="/reviews/perplexity.html" class="queue-item"><div><div class="tool-name">Perplexity</div><div class="category">AI Search</div></div><span class="status scheduled">Up Next</span></a>
+                <a href="/reviews/dall-e-3.html" class="queue-item"><div><div class="tool-name">DALL-E 3</div><div class="category">Image Gen</div></div><span class="status scheduled">Up Next</span></a>
+                <a href="/reviews/stable-diffusion.html" class="queue-item"><div><div class="tool-name">Stable Diffusion</div><div class="category">Image Gen</div></div><span class="status scheduled">Up Next</span></a>
+                <a href="/reviews/elevenlabs.html" class="queue-item"><div><div class="tool-name">ElevenLabs</div><div class="category">Voice AI</div></div><span class="status in-queue">In Queue</span></a>
+                <a href="/reviews/runway.html" class="queue-item"><div><div class="tool-name">Runway</div><div class="category">Video Gen</div></div><span class="status in-queue">In Queue</span></a>
                 <div class="queue-item"><div><div class="tool-name">Suno</div><div class="category">Music AI</div></div><span class="status in-queue">In Queue</span></div>
                 <div class="queue-item"><div><div class="tool-name">Copy.ai</div><div class="category">AI Writing</div></div><span class="status in-queue">In Queue</span></div>
                 <div class="queue-item"><div><div class="tool-name">Intercom Fin</div><div class="category">AI Chatbots</div></div><span class="status in-queue">In Queue</span></div>
