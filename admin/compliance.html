@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compliance Verification Queue — ToolIntel Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0f2744;
+            --navy-light: #1e3a5f;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --green: #10b981;
+            --yellow: #f59e0b;
+            --red: #ef4444;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--gray-50); color: var(--gray-800); }
+        
+        header { background: var(--navy); color: white; padding: 20px 24px; }
+        header h1 { font-size: 1.5rem; font-weight: 600; }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+        
+        .tabs { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid var(--gray-200); padding-bottom: 16px; }
+        .tab { padding: 10px 20px; border: none; background: var(--white); border-radius: 6px 6px 0 0; cursor: pointer; font-size: 0.95rem; font-weight: 500; color: var(--gray-600); border: 1px solid var(--gray-200); border-bottom: none; }
+        .tab.active { background: var(--navy); color: white; border-color: var(--navy); }
+        .tab .badge { background: var(--red); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; margin-left: 8px; }
+        
+        .panel { display: none; }
+        .panel.active { display: block; }
+        
+        .info-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+        .info-box h3 {
+            color: #1e40af;
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+        .info-box p {
+            color: #3b82f6;
+            font-size: 0.9rem;
+        }
+        
+        .card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        .card-title {
+            font-weight: 600;
+            color: var(--navy);
+            font-size: 1.1rem;
+        }
+        .search-hits {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            background: #fef3c7;
+            color: #92400e;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .unverified-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .unverified-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--gray-100);
+            border: 1px solid var(--gray-200);
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+        .unverified-item .status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--yellow);
+        }
+        
+        .action-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-primary { background: var(--navy); color: white; }
+        .btn-success { background: var(--green); color: white; }
+        .btn-secondary { background: var(--gray-100); color: var(--gray-600); border: 1px solid var(--gray-200); }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: var(--gray-400);
+        }
+        
+        /* Bulk Editor */
+        .bulk-editor {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 24px;
+        }
+        .bulk-editor h3 {
+            font-size: 1rem;
+            color: var(--navy);
+            margin-bottom: 16px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--gray-600);
+            margin-bottom: 6px;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--gray-200);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-family: inherit;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .compliance-checklist {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 8px;
+            margin: 16px 0;
+            padding: 16px;
+            background: var(--gray-50);
+            border-radius: 8px;
+        }
+        .compliance-check-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .compliance-check-item select {
+            padding: 6px 10px;
+            border: 1px solid var(--gray-200);
+            border-radius: 4px;
+            font-size: 0.8rem;
+            min-width: 120px;
+        }
+        .compliance-check-item label {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--green);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: none;
+            z-index: 1000;
+        }
+        .toast.active { display: block; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🔒 Compliance Verification Queue</h1>
+    </header>
+    
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" data-panel="queue">📋 Verification Queue <span class="badge" id="queueBadge">0</span></button>
+            <button class="tab" data-panel="editor">➕ Bulk Editor</button>
+        </div>
+        
+        <!-- Queue Panel -->
+        <div class="panel active" id="panel-queue">
+            <div class="info-box">
+                <h3>📊 Prioritization Logic</h3>
+                <p>Tools are sorted by the number of times they've appeared in filtered search results. Verifying the most-searched tools first maximizes impact for buyers actively evaluating vendors.</p>
+            </div>
+            
+            <div id="queueList">
+                <div class="empty-state">Loading...</div>
+            </div>
+        </div>
+        
+        <!-- Bulk Editor Panel -->
+        <div class="panel" id="panel-editor">
+            <div class="bulk-editor">
+                <h3>Set Compliance Status for a Tool</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tool Slug *</label>
+                        <input type="text" id="editorToolSlug" placeholder="e.g., claude">
+                    </div>
+                    <div class="form-group">
+                        <label>Tool Name</label>
+                        <input type="text" id="editorToolName" placeholder="e.g., Claude">
+                    </div>
+                </div>
+                
+                <h4 style="margin: 20px 0 12px; font-size: 0.95rem; color: #0f2744;">Compliance Status</h4>
+                <p style="font-size: 0.85rem; color: #6b7280; margin-bottom: 12px;">Set status for each compliance item (leave as "Not Set" to skip)</p>
+                
+                <div class="compliance-checklist" id="complianceChecklist"></div>
+                
+                <button class="btn btn-primary" onclick="saveBulkCompliance()">Save All Compliance Data</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="toast" id="toast">✓ Action completed</div>
+    
+    <script>
+        const API_BASE = 'https://v7086lxsji.execute-api.us-east-1.amazonaws.com';
+        const urlParams = new URLSearchParams(window.location.search);
+        const ADMIN_KEY = urlParams.get('key');
+        
+        if (!ADMIN_KEY) {
+            document.body.innerHTML = '<div style="padding:60px;text-align:center;color:#999;">Access denied. Admin key required.</div>';
+        }
+        
+        const COMPLIANCE_ITEMS = {
+            gdpr: 'GDPR Compliant',
+            ccpa: 'CCPA Compliant',
+            pipeda: 'PIPEDA Compliant',
+            pdpa: 'PDPA Compliant',
+            lgpd: 'LGPD Compliant',
+            hipaa: 'HIPAA BAA Available',
+            hitrust: 'HITRUST Certified',
+            fda21: 'FDA 21 CFR Part 11',
+            ferpa: 'FERPA Compliant',
+            coppa: 'COPPA Compliant',
+            soc2: 'SOC 2 Type II',
+            iso27001: 'ISO 27001',
+            fedramp: 'FedRAMP Authorized',
+            stateramp: 'StateRAMP Authorized',
+            pcidss: 'PCI DSS Compliant',
+            euaiact: 'EU AI Act Conformity',
+            nistai: 'NIST AI RMF Aligned',
+            ieeeai: 'IEEE AI Ethics'
+        };
+        
+        function showToast(msg = '✓ Action completed') {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('active');
+            setTimeout(() => toast.classList.remove('active'), 3000);
+        }
+        
+        // Tabs
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+            });
+        });
+        
+        // Initialize compliance checklist in editor
+        function initEditor() {
+            const checklist = document.getElementById('complianceChecklist');
+            checklist.innerHTML = Object.entries(COMPLIANCE_ITEMS).map(([id, name]) => `
+                <div class="compliance-check-item">
+                    <select id="status_${id}">
+                        <option value="">Not Set</option>
+                        <option value="verified">✓ Verified</option>
+                        <option value="vendor_reported">⚠ Vendor Reported</option>
+                        <option value="expired">✗ Expired</option>
+                        <option value="none">— None</option>
+                    </select>
+                    <label>${name}</label>
+                </div>
+            `).join('');
+        }
+        
+        async function loadQueue() {
+            try {
+                const res = await fetch(`${API_BASE}/compliance/admin/queue?key=${ADMIN_KEY}`);
+                const data = await res.json();
+                
+                const queue = data.queue || [];
+                document.getElementById('queueBadge').textContent = queue.length;
+                
+                if (queue.length === 0) {
+                    document.getElementById('queueList').innerHTML = '<div class="empty-state">✓ All vendor-reported compliance items have been verified!</div>';
+                    return;
+                }
+                
+                document.getElementById('queueList').innerHTML = queue.map(tool => `
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">${tool.toolName}</span>
+                            <span class="search-hits">🔍 ${tool.searchHits} search hits</span>
+                        </div>
+                        <div class="unverified-items">
+                            ${tool.unverifiedItems.map(item => `
+                                <div class="unverified-item">
+                                    <span class="status"></span>
+                                    ${item.name}
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="action-row">
+                            <button class="btn btn-primary" onclick="loadToolForEdit('${tool.toolSlug}', '${tool.toolName}')">Edit Compliance</button>
+                            <a href="/reviews/${tool.toolSlug}.html" target="_blank" class="btn btn-secondary">View Review</a>
+                        </div>
+                    </div>
+                `).join('');
+                
+            } catch (e) {
+                console.error(e);
+                document.getElementById('queueList').innerHTML = `<div class="empty-state">Error: ${e.message}</div>`;
+            }
+        }
+        
+        async function loadToolForEdit(toolSlug, toolName) {
+            // Switch to editor tab
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.querySelector('[data-panel="editor"]').classList.add('active');
+            document.getElementById('panel-editor').classList.add('active');
+            
+            // Set tool info
+            document.getElementById('editorToolSlug').value = toolSlug;
+            document.getElementById('editorToolName').value = toolName;
+            
+            // Load existing compliance data
+            try {
+                const res = await fetch(`${API_BASE}/compliance/tool?toolSlug=${toolSlug}`);
+                const data = await res.json();
+                
+                // Reset all selects
+                Object.keys(COMPLIANCE_ITEMS).forEach(id => {
+                    document.getElementById(`status_${id}`).value = '';
+                });
+                
+                // Set existing values
+                for (const [compId, comp] of Object.entries(data.compliance || {})) {
+                    const select = document.getElementById(`status_${compId}`);
+                    if (select && comp.status) {
+                        select.value = comp.status;
+                    }
+                }
+                
+            } catch (e) {
+                console.error('Failed to load tool compliance:', e);
+            }
+        }
+        
+        async function saveBulkCompliance() {
+            const toolSlug = document.getElementById('editorToolSlug').value.trim();
+            const toolName = document.getElementById('editorToolName').value.trim();
+            
+            if (!toolSlug) {
+                alert('Tool slug is required');
+                return;
+            }
+            
+            const items = [];
+            Object.keys(COMPLIANCE_ITEMS).forEach(id => {
+                const status = document.getElementById(`status_${id}`).value;
+                if (status) {
+                    items.push({ complianceId: id, status });
+                }
+            });
+            
+            if (items.length === 0) {
+                alert('Please set at least one compliance status');
+                return;
+            }
+            
+            try {
+                const res = await fetch(`${API_BASE}/compliance/admin/bulk`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        key: ADMIN_KEY,
+                        toolSlug,
+                        toolName: toolName || toolSlug,
+                        items
+                    })
+                });
+                
+                if (!res.ok) throw new Error('Failed to save');
+                
+                showToast(`✓ Saved ${items.length} compliance items`);
+                loadQueue();
+                
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        }
+        
+        if (ADMIN_KEY) {
+            initEditor();
+            loadQueue();
+        }
+    </script>
+</body>
+</html>
