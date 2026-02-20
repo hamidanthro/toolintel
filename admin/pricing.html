@@ -29,35 +29,43 @@
         header { background: var(--navy); color: white; padding: 20px 24px; }
         header h1 { font-size: 1.5rem; font-weight: 600; }
         
-        .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
         
-        .tabs { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid var(--gray-200); padding-bottom: 16px; }
+        .tabs { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid var(--gray-200); padding-bottom: 16px; flex-wrap: wrap; }
         .tab { padding: 10px 20px; border: none; background: var(--white); border-radius: 6px 6px 0 0; cursor: pointer; font-size: 0.95rem; font-weight: 500; color: var(--gray-600); border: 1px solid var(--gray-200); border-bottom: none; }
         .tab.active { background: var(--navy); color: white; border-color: var(--navy); }
         .tab .badge { background: var(--red); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; margin-left: 8px; }
+        .tab .badge.warning { background: var(--yellow); }
         
         .panel { display: none; }
         .panel.active { display: block; }
         
         .card { background: var(--white); border: 1px solid var(--gray-200); border-radius: 8px; padding: 20px; margin-bottom: 16px; }
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .card-title { font-weight: 600; color: var(--navy); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 12px; }
+        .card-title { font-weight: 600; color: var(--navy); font-size: 1.1rem; }
         .card-meta { font-size: 0.85rem; color: var(--gray-600); }
         
         .warning-badge { display: inline-block; padding: 4px 10px; background: #fef3c7; color: #92400e; border-radius: 4px; font-size: 0.8rem; font-weight: 500; }
         .danger-badge { display: inline-block; padding: 4px 10px; background: #fee2e2; color: #991b1b; border-radius: 4px; font-size: 0.8rem; font-weight: 500; }
         .success-badge { display: inline-block; padding: 4px 10px; background: #d1fae5; color: #065f46; border-radius: 4px; font-size: 0.8rem; font-weight: 500; }
+        .info-badge { display: inline-block; padding: 4px 10px; background: #dbeafe; color: #1e40af; border-radius: 4px; font-size: 0.8rem; font-weight: 500; }
         
-        .btn { padding: 8px 16px; border-radius: 6px; font-size: 0.9rem; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; }
+        .btn { padding: 8px 16px; border-radius: 6px; font-size: 0.9rem; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
         .btn-primary { background: var(--navy); color: white; }
         .btn-primary:hover { background: var(--navy-light); }
         .btn-success { background: var(--green); color: white; }
+        .btn-success:hover { background: #059669; }
         .btn-danger { background: var(--red); color: white; }
         .btn-secondary { background: var(--gray-100); color: var(--gray-600); border: 1px solid var(--gray-200); }
+        .btn-secondary:hover { background: var(--gray-200); }
+        .btn-outline { background: transparent; border: 1px solid var(--gray-300); color: var(--gray-600); }
+        .btn-outline:hover { border-color: var(--navy); color: var(--navy); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         
         .detail-row { display: flex; gap: 24px; margin-bottom: 8px; font-size: 0.9rem; }
-        .detail-label { color: var(--gray-400); min-width: 100px; }
+        .detail-label { color: var(--gray-400); min-width: 120px; }
         .detail-value { color: var(--gray-800); }
+        .detail-value a { color: var(--blue-accent); }
         
         .empty-state { text-align: center; padding: 60px 24px; color: var(--gray-400); }
         
@@ -67,11 +75,44 @@
         
         .form-group { margin-bottom: 16px; }
         .form-group label { display: block; font-size: 0.9rem; font-weight: 500; color: var(--gray-600); margin-bottom: 6px; }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: 6px; font-size: 0.95rem; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: 6px; font-size: 0.95rem; font-family: inherit; }
         .form-group textarea { min-height: 80px; }
+        .form-inline { display: flex; gap: 12px; align-items: flex-end; }
+        .form-inline .form-group { flex: 1; margin-bottom: 0; }
         
-        .tier-editor { background: var(--gray-50); padding: 16px; border-radius: 8px; margin-bottom: 12px; }
-        .tier-row { display: grid; grid-template-columns: 1fr 1fr 2fr 2fr; gap: 12px; margin-bottom: 8px; }
+        .queue-card { display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: start; }
+        .queue-info { flex: 1; }
+        .queue-actions { display: flex; flex-direction: column; gap: 8px; min-width: 200px; }
+        
+        .report-count { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: #fee2e2; color: #991b1b; border-radius: 4px; font-size: 0.8rem; font-weight: 500; }
+        .report-count.zero { background: var(--gray-100); color: var(--gray-600); }
+        
+        .tier-list { background: var(--gray-50); border-radius: 8px; padding: 12px; margin-top: 12px; }
+        .tier-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--gray-200); }
+        .tier-item:last-child { border-bottom: none; }
+        .tier-name { font-weight: 500; color: var(--navy); }
+        .tier-price { color: var(--gray-600); }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: flex-start; padding: 40px 20px; overflow-y: auto; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; border-radius: 12px; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; }
+        .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: white; z-index: 10; }
+        .modal-header h3 { font-size: 1.1rem; font-weight: 600; color: var(--navy); }
+        .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray-400); }
+        .modal-body { padding: 24px; }
+        .modal-footer { padding: 16px 24px; border-top: 1px solid var(--gray-200); display: flex; justify-content: flex-end; gap: 12px; position: sticky; bottom: 0; background: white; }
+        
+        .success-toast { position: fixed; bottom: 24px; right: 24px; background: var(--green); color: white; padding: 12px 20px; border-radius: 8px; display: none; z-index: 2000; }
+        .success-toast.active { display: block; }
+        
+        .section-title { font-size: 1rem; font-weight: 600; color: var(--navy); margin: 24px 0 12px; padding-top: 16px; border-top: 1px solid var(--gray-200); }
+        .section-title:first-child { border-top: none; margin-top: 0; padding-top: 0; }
+        
+        @media (max-width: 768px) {
+            .queue-card { grid-template-columns: 1fr; }
+            .queue-actions { flex-direction: row; flex-wrap: wrap; }
+            .form-inline { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
@@ -81,14 +122,17 @@
     
     <div class="container">
         <div class="tabs">
-            <button class="tab active" data-panel="stale">⚠️ Needs Verification <span class="badge" id="staleBadge">0</span></button>
+            <button class="tab active" data-panel="queue">📋 Verification Queue <span class="badge" id="queueBadge">0</span></button>
             <button class="tab" data-panel="reports">📝 Change Reports <span class="badge" id="reportsBadge">0</span></button>
+            <button class="tab" data-panel="hidden">💰 Hidden Costs</button>
+            <button class="tab" data-panel="freetier">🆓 Free Tier Tracking</button>
             <button class="tab" data-panel="init">➕ Initialize Pricing</button>
         </div>
         
-        <!-- Stale Pricing Panel -->
-        <div class="panel active" id="panel-stale">
-            <div id="staleList">
+        <!-- Verification Queue Panel -->
+        <div class="panel active" id="panel-queue">
+            <p style="color:var(--gray-600);margin-bottom:20px;">Tools sorted by community reports first, then days since verification. One-click verify after checking vendor pricing page.</p>
+            <div id="queueList">
                 <div class="empty-state">Loading...</div>
             </div>
         </div>
@@ -100,32 +144,158 @@
             </div>
         </div>
         
+        <!-- Hidden Costs Panel -->
+        <div class="panel" id="panel-hidden">
+            <div class="card">
+                <h3 style="margin-bottom: 16px;">Add Hidden Cost Entry</h3>
+                <form id="hiddenCostForm">
+                    <div class="form-group">
+                        <label>Tool Slug</label>
+                        <input type="text" name="toolSlug" required placeholder="e.g., claude">
+                    </div>
+                    <div class="form-group">
+                        <label>Hidden Cost Description</label>
+                        <textarea name="description" required placeholder="e.g., Minimum 5 seats required for Team plan, even for small teams"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>How Discovered</label>
+                        <input type="text" name="howDiscovered" placeholder="e.g., Editor testing, Community report, Fine print review">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Hidden Cost</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Free Tier Panel -->
+        <div class="panel" id="panel-freetier">
+            <div class="card">
+                <h3 style="margin-bottom: 16px;">Update Free Tier Status</h3>
+                <form id="freeTierForm">
+                    <div class="form-inline" style="margin-bottom:16px;">
+                        <div class="form-group">
+                            <label>Tool Slug</label>
+                            <input type="text" name="toolSlug" required placeholder="e.g., claude">
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select name="status" required>
+                                <option value="full">Full Free Tier</option>
+                                <option value="limited">Limited Free Tier</option>
+                                <option value="trial">Trial Only</option>
+                                <option value="none">No Free Tier</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Notes (optional)</label>
+                        <input type="text" name="notes" placeholder="e.g., Reduced daily limits from 50 to 25 messages">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Free Tier Status</button>
+                </form>
+            </div>
+        </div>
+        
         <!-- Initialize Panel -->
         <div class="panel" id="panel-init">
             <div class="card">
                 <h3 style="margin-bottom: 16px;">Initialize Pricing for New Tool</h3>
                 <form id="initForm">
-                    <div class="form-group">
-                        <label>Tool Slug (e.g., perplexity)</label>
-                        <input type="text" name="toolSlug" required placeholder="tool-slug">
+                    <div class="form-inline" style="margin-bottom:16px;">
+                        <div class="form-group">
+                            <label>Tool Slug (e.g., perplexity)</label>
+                            <input type="text" name="toolSlug" required placeholder="tool-slug">
+                        </div>
+                        <div class="form-group">
+                            <label>Tool Name</label>
+                            <input type="text" name="toolName" required placeholder="Perplexity">
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label>Tool Name</label>
-                        <input type="text" name="toolName" required placeholder="Perplexity">
-                    </div>
-                    <div class="form-group">
-                        <label>Vendor URL</label>
+                        <label>Vendor Pricing URL</label>
                         <input type="url" name="vendorUrl" placeholder="https://perplexity.ai/pricing">
                     </div>
                     <div class="form-group">
+                        <label>Initial Free Tier Status</label>
+                        <select name="freeTierStatus">
+                            <option value="">-- Select --</option>
+                            <option value="full">Full Free Tier</option>
+                            <option value="limited">Limited Free Tier</option>
+                            <option value="trial">Trial Only</option>
+                            <option value="none">No Free Tier</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label>Pricing Tiers (JSON)</label>
-                        <textarea name="tiers" placeholder='[{"name":"Free","price":"$0","features":"Basic features","hiddenCosts":"None"},{"name":"Pro","price":"$20/mo","features":"Full features","hiddenCosts":"Annual only"}]'></textarea>
+                        <textarea name="tiers" rows="6" placeholder='[
+  {"name":"Free","price":"$0","features":"Basic features","hiddenCosts":"None"},
+  {"name":"Pro","price":"$20/mo","features":"Full features","hiddenCosts":"Annual billing only"}
+]'></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary">Initialize Pricing</button>
                 </form>
             </div>
         </div>
     </div>
+    
+    <!-- Update Pricing Modal -->
+    <div class="modal" id="updateModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📝 Update Pricing</h3>
+                <button class="modal-close" onclick="closeUpdateModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="updateForm">
+                    <input type="hidden" name="toolSlug" id="updateToolSlug">
+                    
+                    <div class="section-title">Change Details</div>
+                    <div class="form-inline" style="margin-bottom:16px;">
+                        <div class="form-group">
+                            <label>Tier Affected</label>
+                            <input type="text" name="tierAffected" placeholder="e.g., Pro">
+                        </div>
+                        <div class="form-group">
+                            <label>Old Price</label>
+                            <input type="text" name="oldPrice" placeholder="e.g., $20/mo">
+                        </div>
+                        <div class="form-group">
+                            <label>New Price</label>
+                            <input type="text" name="newPrice" placeholder="e.g., $25/mo">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Change Description</label>
+                        <input type="text" name="changeDescription" required placeholder="e.g., Pro tier increased from $20 to $25/month">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Percentage Change (positive = increase)</label>
+                        <input type="number" name="percentageChange" step="0.1" placeholder="e.g., 25">
+                    </div>
+                    
+                    <div class="section-title">Updated Pricing Tiers</div>
+                    <div class="form-group">
+                        <label>Full Tiers JSON (copy from Initialize form)</label>
+                        <textarea name="tiers" rows="8" id="updateTiers"></textarea>
+                    </div>
+                    
+                    <div class="section-title">Pricing Fairness Score (Optional)</div>
+                    <div class="form-group">
+                        <label>Updated Fairness Score (0-100)</label>
+                        <input type="number" name="fairnessScore" min="0" max="100" placeholder="e.g., 75">
+                        <p style="font-size:0.8rem;color:var(--gray-400);margin-top:4px;">Only fill if this price change affects the methodology score.</p>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeUpdateModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="submitUpdate()">Save Changes & Send Alerts</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="success-toast" id="successToast">✓ Action completed successfully</div>
     
     <script>
         const API_BASE = 'https://v7086lxsji.execute-api.us-east-1.amazonaws.com';
@@ -134,6 +304,19 @@
         
         if (!ADMIN_KEY) {
             document.body.innerHTML = '<div style="padding:60px;text-align:center;color:#999;">Access denied. Admin key required.</div>';
+        }
+        
+        function showToast(message = '✓ Action completed successfully') {
+            const toast = document.getElementById('successToast');
+            toast.textContent = message;
+            toast.classList.add('active');
+            setTimeout(() => toast.classList.remove('active'), 3000);
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text || '';
+            return div.innerHTML;
         }
         
         // Tabs
@@ -146,43 +329,138 @@
             });
         });
         
-        // Load stale pricing
-        async function loadStale() {
+        // Load verification queue
+        async function loadQueue() {
             try {
-                const res = await fetch(`${API_BASE}/pricing/admin/stale?key=${ADMIN_KEY}`);
+                const res = await fetch(`${API_BASE}/pricing/admin/queue?key=${ADMIN_KEY}`);
                 const items = await res.json();
-                document.getElementById('staleBadge').textContent = items.length;
+                document.getElementById('queueBadge').textContent = items.length;
                 
                 if (items.length === 0) {
-                    document.getElementById('staleList').innerHTML = '<div class="empty-state">✓ All pricing is up to date!</div>';
+                    document.getElementById('queueList').innerHTML = '<div class="empty-state">✓ All pricing is up to date!</div>';
                     return;
                 }
                 
-                document.getElementById('staleList').innerHTML = items.map(item => `
+                document.getElementById('queueList').innerHTML = items.map(item => `
                     <div class="card">
-                        <div class="card-header">
-                            <div>
-                                <span class="card-title">${escapeHtml(item.toolName || item.toolSlug)}</span>
-                                <span class="${item.daysSinceVerification > 180 ? 'danger-badge' : 'warning-badge'}" style="margin-left:12px;">
-                                    ${item.daysSinceVerification} days since verification
-                                </span>
+                        <div class="queue-card">
+                            <div class="queue-info">
+                                <div class="card-header">
+                                    <div>
+                                        <span class="card-title">${escapeHtml(item.toolName || item.toolSlug)}</span>
+                                        ${item.pendingReports > 0 ? `<span class="report-count" style="margin-left:12px;">📝 ${item.pendingReports} pending report${item.pendingReports > 1 ? 's' : ''}</span>` : ''}
+                                        <span class="${item.daysSinceVerification > 180 ? 'danger-badge' : item.daysSinceVerification > 90 ? 'warning-badge' : 'info-badge'}" style="margin-left:12px;">
+                                            ${item.daysSinceVerification} days old
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Last Verified:</span>
+                                    <span class="detail-value">${item.verifiedAt ? new Date(item.verifiedAt).toLocaleDateString() : 'Never'}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Vendor URL:</span>
+                                    <span class="detail-value">${item.vendorUrl ? `<a href="${item.vendorUrl}" target="_blank" rel="noopener">${escapeHtml(item.vendorUrl)}</a>` : 'Not set'}</span>
+                                </div>
+                                ${item.tiers && item.tiers.length > 0 ? `
+                                    <div class="tier-list">
+                                        ${item.tiers.map(t => `
+                                            <div class="tier-item">
+                                                <span class="tier-name">${escapeHtml(t.name)}</span>
+                                                <span class="tier-price">${escapeHtml(t.price)}</span>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                ` : ''}
                             </div>
-                            <div>
-                                <button class="btn btn-success" onclick="markVerified('${item.toolSlug}')">✓ Mark Verified</button>
+                            <div class="queue-actions">
+                                ${item.vendorUrl ? `<a href="${item.vendorUrl}" target="_blank" rel="noopener" class="btn btn-outline">🔗 Check Vendor Page</a>` : ''}
+                                <button class="btn btn-success" onclick="quickVerify('${item.toolSlug}', this)">✓ Verify (No Changes)</button>
+                                <button class="btn btn-primary" onclick="openUpdateModal('${item.toolSlug}', '${escapeHtml(item.toolName || item.toolSlug)}', ${JSON.stringify(JSON.stringify(item.tiers || []))})">📝 Update Pricing</button>
                             </div>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Last Verified:</span>
-                            <span class="detail-value">${item.verifiedAt ? new Date(item.verifiedAt).toLocaleDateString() : 'Never'}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Vendor URL:</span>
-                            <span class="detail-value"><a href="${item.vendorUrl}" target="_blank">${item.vendorUrl || 'Not set'}</a></span>
                         </div>
                     </div>
                 `).join('');
             } catch (e) {
-                document.getElementById('staleList').innerHTML = `<div class="empty-state">Error: ${e.message}</div>`;
+                document.getElementById('queueList').innerHTML = `<div class="empty-state">Error: ${e.message}</div>`;
+            }
+        }
+        
+        // Quick verify (one-click)
+        async function quickVerify(toolSlug, btn) {
+            btn.disabled = true;
+            btn.textContent = 'Verifying...';
+            
+            try {
+                const res = await fetch(`${API_BASE}/pricing/admin/verify`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ key: ADMIN_KEY, toolSlug })
+                });
+                
+                if (!res.ok) throw new Error('Verification failed');
+                
+                showToast(`✓ ${toolSlug} pricing verified`);
+                loadQueue();
+            } catch (e) {
+                alert('Error: ' + e.message);
+                btn.disabled = false;
+                btn.textContent = '✓ Verify (No Changes)';
+            }
+        }
+        
+        // Update pricing modal
+        function openUpdateModal(toolSlug, toolName, tiersJson) {
+            document.getElementById('updateToolSlug').value = toolSlug;
+            document.getElementById('updateTiers').value = JSON.stringify(JSON.parse(tiersJson), null, 2);
+            document.getElementById('updateModal').classList.add('active');
+        }
+        
+        function closeUpdateModal() {
+            document.getElementById('updateModal').classList.remove('active');
+            document.getElementById('updateForm').reset();
+        }
+        
+        async function submitUpdate() {
+            const form = document.getElementById('updateForm');
+            
+            let tiers;
+            try {
+                tiers = JSON.parse(form.tiers.value || '[]');
+            } catch (e) {
+                alert('Invalid JSON in tiers field');
+                return;
+            }
+            
+            const data = {
+                key: ADMIN_KEY,
+                toolSlug: form.toolSlug.value,
+                changeDescription: form.changeDescription.value,
+                tierAffected: form.tierAffected.value || null,
+                oldPrice: form.oldPrice.value || null,
+                newPrice: form.newPrice.value || null,
+                percentageChange: form.percentageChange.value ? parseFloat(form.percentageChange.value) : null,
+                fairnessScore: form.fairnessScore.value ? parseInt(form.fairnessScore.value) : undefined,
+                tiers
+            };
+            
+            try {
+                const res = await fetch(`${API_BASE}/pricing/admin/update`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.error || 'Update failed');
+                }
+                
+                closeUpdateModal();
+                showToast('✓ Pricing updated & alerts sent');
+                loadQueue();
+            } catch (e) {
+                alert('Error: ' + e.message);
             }
         }
         
@@ -239,25 +517,6 @@
             }
         }
         
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text || '';
-            return div.innerHTML;
-        }
-        
-        async function markVerified(toolSlug) {
-            try {
-                await fetch(`${API_BASE}/pricing/admin/verify`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ key: ADMIN_KEY, toolSlug })
-                });
-                loadStale();
-            } catch (e) {
-                alert('Error: ' + e.message);
-            }
-        }
-        
         async function updateReport(id, status) {
             try {
                 await fetch(`${API_BASE}/pricing/report/${id}`, {
@@ -265,22 +524,92 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ key: ADMIN_KEY, status })
                 });
+                showToast(`Report ${status}`);
                 loadReports();
+                loadQueue();
             } catch (e) {
                 alert('Error: ' + e.message);
             }
         }
         
+        // Hidden Cost form
+        document.getElementById('hiddenCostForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            
+            try {
+                const res = await fetch(`${API_BASE}/pricing/admin/hidden-cost`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        key: ADMIN_KEY,
+                        toolSlug: form.toolSlug.value,
+                        description: form.description.value,
+                        howDiscovered: form.howDiscovered.value || 'Editor review'
+                    })
+                });
+                
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.error || 'Failed');
+                }
+                
+                showToast('✓ Hidden cost added');
+                form.reset();
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        };
+        
+        // Free Tier form
+        document.getElementById('freeTierForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            
+            try {
+                const res = await fetch(`${API_BASE}/pricing/admin/free-tier`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        key: ADMIN_KEY,
+                        toolSlug: form.toolSlug.value,
+                        status: form.status.value,
+                        notes: form.notes.value || null
+                    })
+                });
+                
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.error || 'Failed');
+                }
+                
+                showToast('✓ Free tier status updated');
+                form.reset();
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        };
+        
         // Init form
         document.getElementById('initForm').onsubmit = async (e) => {
             e.preventDefault();
             const form = e.target;
+            
+            let tiers;
+            try {
+                tiers = JSON.parse(form.tiers.value || '[]');
+            } catch (e) {
+                alert('Invalid JSON in tiers field');
+                return;
+            }
+            
             const data = {
                 key: ADMIN_KEY,
                 toolSlug: form.toolSlug.value,
                 toolName: form.toolName.value,
                 vendorUrl: form.vendorUrl.value,
-                tiers: JSON.parse(form.tiers.value || '[]')
+                tiers,
+                freeTierStatus: form.freeTierStatus.value || null
             };
             
             try {
@@ -289,21 +618,33 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
-                if (res.ok) {
-                    alert('Pricing initialized!');
-                    form.reset();
-                    loadStale();
-                } else {
+                
+                if (!res.ok) {
                     const err = await res.json();
-                    alert('Error: ' + err.error);
+                    throw new Error(err.error || 'Initialization failed');
                 }
+                
+                showToast('✓ Pricing initialized');
+                form.reset();
+                loadQueue();
             } catch (e) {
                 alert('Error: ' + e.message);
             }
         };
         
+        // Close modal on escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeUpdateModal();
+        });
+        
+        // Close modal on overlay click
+        document.getElementById('updateModal').addEventListener('click', (e) => {
+            if (e.target.id === 'updateModal') closeUpdateModal();
+        });
+        
+        // Initial load
         if (ADMIN_KEY) {
-            loadStale();
+            loadQueue();
             loadReports();
         }
     </script>

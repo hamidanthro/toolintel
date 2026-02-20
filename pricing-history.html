@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing History — ToolIntel</title>
+    <meta name="description" content="Complete pricing history and change tracking for AI tools.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --navy: #0f2744;
+            --navy-light: #1e3a5f;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --green: #10b981;
+            --yellow: #f59e0b;
+            --red: #ef4444;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: var(--gray-800); line-height: 1.7; background: var(--gray-50); }
+        h1, h2, h3, h4 { font-family: 'Merriweather', Georgia, serif; font-weight: 700; line-height: 1.3; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+        
+        header { padding: 16px 0; border-bottom: 1px solid var(--gray-200); background: var(--white); position: sticky; top: 0; z-index: 100; }
+        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+        .logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.25rem; color: var(--navy); text-decoration: none; }
+        .logo span { color: var(--blue-accent); }
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+        .nav-links a:hover { color: var(--navy); }
+        
+        .breadcrumb { background: var(--white); border-bottom: 1px solid var(--gray-200); padding: 12px 0; }
+        .breadcrumb-content { max-width: 1000px; margin: 0 auto; padding: 0 24px; font-size: 0.9rem; color: var(--gray-400); }
+        .breadcrumb-content a { color: var(--gray-600); text-decoration: none; }
+        .breadcrumb-content a:hover { color: var(--navy); }
+        
+        .page-header { padding: 40px 0; background: var(--white); border-bottom: 1px solid var(--gray-200); }
+        .page-header h1 { font-size: 1.75rem; color: var(--navy); margin-bottom: 8px; }
+        .page-header .subtitle { color: var(--gray-600); font-size: 1rem; }
+        
+        .content { padding: 40px 0; }
+        
+        /* Summary Stats */
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+        .stat-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--navy);
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+        .stat-value.increase { color: var(--red); }
+        .stat-value.decrease { color: var(--green); }
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+        }
+        
+        /* Volatility Badge */
+        .volatility-section {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .volatility-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border-radius: 24px;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        .volatility-badge.stable { background: #d1fae5; color: #065f46; }
+        .volatility-badge.moderate { background: #dbeafe; color: #1e40af; }
+        .volatility-badge.volatile { background: #fef3c7; color: #92400e; }
+        .volatility-badge.unpredictable { background: #fee2e2; color: #991b1b; }
+        .volatility-explanation {
+            flex: 1;
+            color: var(--gray-600);
+            font-size: 0.95rem;
+        }
+        
+        /* History Table */
+        .history-section {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 32px;
+        }
+        .history-section h2 {
+            font-size: 1.1rem;
+            color: var(--navy);
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--gray-200);
+            background: var(--gray-50);
+        }
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .history-table th,
+        .history-table td {
+            text-align: left;
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--gray-100);
+        }
+        .history-table th {
+            background: var(--gray-50);
+            font-weight: 600;
+            color: var(--gray-600);
+            font-size: 0.85rem;
+        }
+        .history-table td {
+            font-size: 0.95rem;
+        }
+        .history-table .date { color: var(--gray-600); white-space: nowrap; }
+        .history-table .tier { font-weight: 500; color: var(--navy); }
+        .history-table .price { font-family: 'Inter', sans-serif; }
+        .history-table .change-up { color: var(--red); font-weight: 600; }
+        .history-table .change-down { color: var(--green); font-weight: 600; }
+        .history-table .change-none { color: var(--gray-400); }
+        .history-table tr:last-child td { border-bottom: none; }
+        
+        /* Free Tier Section */
+        .free-tier-section {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+        .free-tier-section h2 {
+            font-size: 1.1rem;
+            color: #166534;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .free-tier-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .ft-entry {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 8px;
+        }
+        .ft-date {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            min-width: 120px;
+        }
+        .ft-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .ft-status.full { background: #d1fae5; color: #065f46; }
+        .ft-status.limited { background: #fef3c7; color: #92400e; }
+        .ft-status.trial { background: #dbeafe; color: #1e40af; }
+        .ft-status.none { background: #fee2e2; color: #991b1b; }
+        .ft-notes {
+            flex: 1;
+            color: var(--gray-600);
+            font-size: 0.9rem;
+        }
+        
+        /* Alert Section */
+        .alert-section {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+        .alert-section h2 {
+            font-size: 1.1rem;
+            color: #1e40af;
+            margin-bottom: 8px;
+        }
+        .alert-section p {
+            color: #3b82f6;
+            margin-bottom: 16px;
+        }
+        .alert-form {
+            display: flex;
+            gap: 12px;
+            max-width: 400px;
+        }
+        .alert-form input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        .alert-form button {
+            padding: 12px 20px;
+            background: #1e40af;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .alert-form button:hover { background: #1e3a8a; }
+        .alert-success {
+            color: #065f46;
+            background: #d1fae5;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 12px;
+            display: none;
+        }
+        .alert-error {
+            color: #991b1b;
+            background: #fee2e2;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 12px;
+            display: none;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--blue-accent);
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 24px;
+        }
+        .back-link:hover { text-decoration: underline; }
+        
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: var(--gray-400);
+        }
+        
+        footer { padding: 40px 0; border-top: 1px solid var(--gray-200); text-align: center; background: var(--white); }
+        footer p { color: var(--gray-400); font-size: 0.9rem; }
+        footer a { color: var(--gray-600); }
+        
+        @media (max-width: 768px) {
+            .summary-stats { grid-template-columns: 1fr; }
+            .volatility-section { flex-direction: column; align-items: flex-start; }
+            .alert-form { flex-direction: column; }
+            .history-table th, .history-table td { padding: 10px 12px; font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo">Tool<span>Intel</span></a>
+            <div class="nav-links">
+                <a href="/reviews.html">Reviews</a>
+                <a href="/methodology.html">Methodology</a>
+                <a href="/about.html">About</a>
+            </div>
+        </nav>
+    </header>
+    
+    <div class="breadcrumb">
+        <div class="breadcrumb-content">
+            <a href="/">Home</a> / 
+            <a href="/reviews.html">Reviews</a> / 
+            <span id="breadcrumbTool">Loading...</span> / 
+            Pricing History
+        </div>
+    </div>
+    
+    <div class="page-header">
+        <div class="container">
+            <h1 id="pageTitle">Pricing History</h1>
+            <p class="subtitle" id="pageSubtitle">Complete pricing change record since tracking began</p>
+        </div>
+    </div>
+    
+    <main class="content">
+        <div class="container" id="mainContent">
+            <div class="loading">Loading pricing history...</div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>© 2026 ToolIntel. Independent. Transparent. No affiliate links.</p>
+    </footer>
+    
+    <script>
+        const PRICING_API = 'https://v7086lxsji.execute-api.us-east-1.amazonaws.com';
+        
+        const FREE_TIER_LABELS = {
+            full: { label: 'Full Free Tier', icon: '✓' },
+            limited: { label: 'Limited Free Tier', icon: '◐' },
+            trial: { label: 'Trial Only', icon: '⏱' },
+            none: { label: 'No Free Tier', icon: '✗' }
+        };
+        
+        function getToolSlug() {
+            // Try URL path first: /tools/[slug]/pricing-history
+            const pathMatch = window.location.pathname.match(/\/tools\/([^/]+)\/pricing-history/);
+            if (pathMatch) return pathMatch[1];
+            
+            // Fall back to query param
+            const params = new URLSearchParams(window.location.search);
+            return params.get('tool');
+        }
+        
+        function formatDate(dateStr) {
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text || '';
+            return div.innerHTML;
+        }
+        
+        async function loadPricingHistory() {
+            const toolSlug = getToolSlug();
+            
+            if (!toolSlug) {
+                document.getElementById('mainContent').innerHTML = `
+                    <div class="loading">
+                        <p>No tool specified.</p>
+                        <a href="/reviews.html" class="back-link">← Browse all tools</a>
+                    </div>
+                `;
+                return;
+            }
+            
+            try {
+                const res = await fetch(`${PRICING_API}/pricing?toolSlug=${toolSlug}`);
+                const data = await res.json();
+                
+                if (!data.current) {
+                    document.getElementById('mainContent').innerHTML = `
+                        <div class="loading">
+                            <p>No pricing data found for this tool.</p>
+                            <a href="/reviews.html" class="back-link">← Browse all tools</a>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const toolName = data.current.toolName || toolSlug;
+                
+                // Update page titles
+                document.title = `${toolName} Pricing History — ToolIntel`;
+                document.getElementById('pageTitle').textContent = `${toolName} Pricing History`;
+                document.getElementById('pageSubtitle').textContent = `Complete pricing change record since ${data.history.length > 0 ? formatDate(data.history[data.history.length - 1].date) : 'tracking began'}`;
+                document.getElementById('breadcrumbTool').innerHTML = `<a href="/reviews/${toolSlug}.html">${escapeHtml(toolName)}</a>`;
+                
+                let html = `<a href="/reviews/${toolSlug}.html" class="back-link">← Back to ${escapeHtml(toolName)} Review</a>`;
+                
+                // Summary Stats
+                html += `
+                    <div class="summary-stats">
+                        <div class="stat-card">
+                            <div class="stat-value">${data.summary.totalChanges}</div>
+                            <div class="stat-label">Price changes since tracking began</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value ${data.summary.avgAnnualIncrease > 0 ? 'increase' : ''}">${data.summary.avgAnnualIncrease > 0 ? '+' : ''}${data.summary.avgAnnualIncrease}%</div>
+                            <div class="stat-label">Average price increase</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value increase">${data.summary.highestIncrease > 0 ? '+' : ''}${data.summary.highestIncrease}%</div>
+                            <div class="stat-label">Highest single increase</div>
+                        </div>
+                    </div>
+                `;
+                
+                // Volatility Badge
+                if (data.volatility) {
+                    html += `
+                        <div class="volatility-section">
+                            <span class="volatility-badge ${data.volatility.rating}">
+                                📊 ${data.volatility.label}
+                            </span>
+                            <span class="volatility-explanation">${escapeHtml(data.volatilityExplanation)}</span>
+                        </div>
+                    `;
+                }
+                
+                // Full History Table
+                html += `
+                    <div class="history-section">
+                        <h2>📜 Complete Pricing History</h2>
+                        <table class="history-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Tier Affected</th>
+                                    <th>Old Price</th>
+                                    <th>New Price</th>
+                                    <th>Change</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                
+                if (data.history && data.history.length > 0) {
+                    for (const h of data.history) {
+                        const changeClass = h.percentageChange > 0 ? 'change-up' : h.percentageChange < 0 ? 'change-down' : 'change-none';
+                        const changeText = h.percentageChange !== null 
+                            ? (h.percentageChange > 0 ? `+${h.percentageChange}%` : `${h.percentageChange}%`)
+                            : '—';
+                        
+                        html += `
+                            <tr>
+                                <td class="date">${formatDate(h.date)}</td>
+                                <td class="tier">${escapeHtml(h.tierAffected || 'All tiers')}</td>
+                                <td class="price">${escapeHtml(h.oldPrice || '—')}</td>
+                                <td class="price">${escapeHtml(h.newPrice || '—')}</td>
+                                <td class="${changeClass}">${changeText}</td>
+                            </tr>
+                        `;
+                    }
+                } else {
+                    html += `<tr><td colspan="5" style="text-align:center;color:#9ca3af;">No pricing changes recorded yet.</td></tr>`;
+                }
+                
+                html += `</tbody></table></div>`;
+                
+                // Free Tier History
+                if (data.freeTierHistory && data.freeTierHistory.length > 0) {
+                    html += `
+                        <div class="free-tier-section">
+                            <h2>🆓 Free Tier History</h2>
+                            <p style="color:#4b5563;margin-bottom:16px;font-size:0.9rem;">Tracking whether ${escapeHtml(toolName)} has degraded, restricted, or eliminated their free tier over time.</p>
+                            <div class="free-tier-timeline">
+                    `;
+                    
+                    for (const entry of data.freeTierHistory) {
+                        const statusInfo = FREE_TIER_LABELS[entry.status] || { label: entry.status, icon: '?' };
+                        html += `
+                            <div class="ft-entry">
+                                <span class="ft-date">${formatDate(entry.date)}</span>
+                                <span class="ft-status ${entry.status}">${statusInfo.icon} ${statusInfo.label}</span>
+                                <span class="ft-notes">${entry.notes ? escapeHtml(entry.notes) : ''}</span>
+                            </div>
+                        `;
+                    }
+                    
+                    html += `</div></div>`;
+                }
+                
+                // Price Alert Subscription
+                html += `
+                    <div class="alert-section">
+                        <h2>🔔 Get Price Change Alerts</h2>
+                        <p>Receive a single email notification whenever ${escapeHtml(toolName)} changes their pricing. No marketing, just the facts.</p>
+                        <div class="alert-form">
+                            <input type="email" id="alertEmail" placeholder="your@email.com">
+                            <button onclick="subscribeAlert('${toolSlug}')">Subscribe</button>
+                        </div>
+                        <div class="alert-success" id="alertSuccess">✓ Check your email to confirm subscription</div>
+                        <div class="alert-error" id="alertError"></div>
+                    </div>
+                `;
+                
+                document.getElementById('mainContent').innerHTML = html;
+                
+            } catch (err) {
+                console.error('Failed to load pricing history:', err);
+                document.getElementById('mainContent').innerHTML = `
+                    <div class="loading">
+                        <p>Unable to load pricing history.</p>
+                        <a href="/reviews.html" class="back-link">← Browse all tools</a>
+                    </div>
+                `;
+            }
+        }
+        
+        async function subscribeAlert(toolSlug) {
+            const emailInput = document.getElementById('alertEmail');
+            const successDiv = document.getElementById('alertSuccess');
+            const errorDiv = document.getElementById('alertError');
+            const btn = emailInput.parentElement.querySelector('button');
+            
+            const email = emailInput.value.trim();
+            if (!email) {
+                errorDiv.textContent = 'Please enter your email';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.textContent = 'Subscribing...';
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+            
+            try {
+                const res = await fetch(`${PRICING_API}/pricing/alerts/subscribe`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ toolSlug, email })
+                });
+                
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.error || 'Subscription failed');
+                }
+                
+                successDiv.style.display = 'block';
+                emailInput.value = '';
+                
+            } catch (err) {
+                errorDiv.textContent = err.message;
+                errorDiv.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Subscribe';
+            }
+        }
+        
+        // Load on page ready
+        document.addEventListener('DOMContentLoaded', loadPricingHistory);
+    </script>
+</body>
+</html>
