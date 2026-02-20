@@ -90,13 +90,13 @@ function isValidEmail(email) {
 }
 
 exports.handler = async (event) => {
-    // Handle CORS preflight
-    if (event.httpMethod === 'OPTIONS') {
-        return { statusCode: 200, headers, body: '' };
-    }
-
     const path = event.path || event.rawPath || '';
     const method = event.httpMethod || event.requestContext?.http?.method;
+    
+    // Handle CORS preflight
+    if (method === 'OPTIONS') {
+        return { statusCode: 200, headers, body: '' };
+    }
     const query = event.queryStringParameters || {};
     
     try {
