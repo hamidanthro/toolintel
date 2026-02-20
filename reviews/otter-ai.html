@@ -211,6 +211,22 @@
                     <p>Our team is currently conducting an in-depth evaluation of Otter.ai. The full review will be published soon with detailed scoring across all criteria.</p>
                 </div>
 
+                <!-- Verified Certifications Section -->
+                <div class="section" id="certificationsSection" style="display: none;">
+                    <h2>🔐 Verified Certifications</h2>
+                    <div id="certificationsList"></div>
+                    <p class="cert-disclaimer" style="font-size: 0.8rem; color: var(--gray-400); font-style: italic; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--gray-200);">
+                        ToolIntel verifies that these certifications were issued by the named body and were valid at the time of verification. We do not perform ongoing compliance audits and cannot confirm that current operations meet certification standards.
+                    </p>
+                </div>
+
+                <!-- Certification Submission CTA -->
+                <div class="section" style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-color: #0ea5e9;">
+                    <h2 style="color: #0c4a6e;">🏢 Are you Otter.ai?</h2>
+                    <p style="color: #0369a1;">Submit your security certifications (SOC 2, ISO 27001, HIPAA, etc.) for independent verification and display them on this profile.</p>
+                    <button onclick="openCertModal()" style="background: var(--navy); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 0.95rem; font-weight: 500; cursor: pointer; margin-top: 12px;">Submit Certification</button>
+                </div>
+
                 <div class="section community-section" id="community">
                     <h2>Community Reviews <span class="community-badge">VERIFIED USERS</span></h2>
                     <p>Reviews from verified users. These are separate from our editorial review and are manually approved to ensure authenticity.</p>
@@ -592,6 +608,50 @@
                 btn.textContent = 'Submit for Editorial Review';
             }
         });
+        
+        // Load and display verified certifications
+        async function loadCertifications() {
+            try {
+                const res = await fetch(`${API_BASE}/certifications?toolSlug=${TOOL_SLUG}&status=verified`);
+                const certs = await res.json();
+                
+                if (certs.length === 0) return;
+                
+                document.getElementById('certificationsSection').style.display = 'block';
+                const now = new Date();
+                
+                document.getElementById('certificationsList').innerHTML = certs.map(c => {
+                    const isExpired = new Date(c.expirationDate) < now;
+                    return `
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: ${isExpired ? 'var(--gray-50)' : '#d1fae5'}; border-radius: 8px; margin-bottom: 12px;">
+                            <div>
+                                <div style="font-weight: 600; color: ${isExpired ? 'var(--gray-600)' : '#065f46'};">${escapeHtml(c.certType)}</div>
+                                <div style="font-size: 0.85rem; color: ${isExpired ? 'var(--gray-400)' : '#047857'};">
+                                    Issued by ${escapeHtml(c.issuingBody)} • Audit: ${c.auditDate} • Expires: ${c.expirationDate}
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 0.75rem; font-weight: 500; padding: 4px 10px; border-radius: 4px; background: ${isExpired ? 'var(--gray-200)' : '#a7f3d0'}; color: ${isExpired ? 'var(--gray-600)' : '#065f46'};">
+                                    ${isExpired ? '⏱️ Expired' : '✓ Verified by ToolIntel'}
+                                </div>
+                                <div style="font-size: 0.75rem; color: var(--gray-400); margin-top: 4px;">
+                                    ${isExpired ? '' : 'Verified ' + new Date(c.verifiedAt).toLocaleDateString()}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (e) {
+                console.error('Failed to load certifications:', e);
+            }
+        }
+        
+        loadCertifications();
+    </script>
+    <script src="/js/certification-form.js"></script>
+    <script>
+        // Initialize certification form
+        initCertificationForm('otter-ai', 'Otter.ai');
     </script>
 </body>
 </html>

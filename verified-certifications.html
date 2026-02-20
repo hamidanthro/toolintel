@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verified Certifications Registry — ToolIntel</title>
+    <meta name="description" content="Public registry of AI tools with verified security and compliance certifications. SOC 2, ISO 27001, HIPAA, and more.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --navy: #0f2744;
+            --navy-light: #1e3a5f;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --green: #10b981;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; color: var(--gray-800); line-height: 1.6; background: var(--gray-50); }
+        h1, h2, h3 { font-family: 'Merriweather', Georgia, serif; font-weight: 700; }
+        
+        header { padding: 16px 0; border-bottom: 1px solid var(--gray-200); background: var(--white); }
+        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        .logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.5rem; color: var(--navy); text-decoration: none; }
+        .logo span { color: var(--blue-accent); }
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+        .nav-links a:hover { color: var(--navy); }
+        
+        .hero { background: var(--navy); color: white; padding: 60px 24px; text-align: center; }
+        .hero h1 { font-size: 2.25rem; margin-bottom: 12px; }
+        .hero p { color: var(--gray-400); max-width: 700px; margin: 0 auto; }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+        
+        .filters { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 32px; }
+        .filter-btn { padding: 8px 16px; border: 1px solid var(--gray-200); background: var(--white); border-radius: 20px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; }
+        .filter-btn:hover { border-color: var(--navy); }
+        .filter-btn.active { background: var(--navy); color: white; border-color: var(--navy); }
+        
+        .stats-bar { display: flex; gap: 32px; justify-content: center; margin-bottom: 32px; padding: 16px; background: var(--white); border-radius: 8px; border: 1px solid var(--gray-200); }
+        .stats-bar .stat { text-align: center; }
+        .stats-bar .stat-number { font-size: 1.5rem; font-weight: 700; color: var(--navy); }
+        .stats-bar .stat-label { font-size: 0.85rem; color: var(--gray-600); }
+        
+        .registry-grid { display: grid; gap: 16px; }
+        
+        .tool-card { background: var(--white); border: 1px solid var(--gray-200); border-radius: 8px; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .tool-info h3 { font-size: 1.1rem; color: var(--navy); margin-bottom: 4px; font-family: 'Inter', sans-serif; }
+        .tool-info .company { font-size: 0.9rem; color: var(--gray-600); }
+        
+        .cert-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+        .cert-badge { display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: #d1fae5; border-radius: 6px; font-size: 0.8rem; color: #065f46; }
+        .cert-badge .icon { font-size: 1rem; }
+        .cert-badge.expired { background: var(--gray-100); color: var(--gray-600); }
+        
+        .view-link { color: var(--blue-accent); text-decoration: none; font-size: 0.9rem; font-weight: 500; white-space: nowrap; margin-left: 16px; }
+        .view-link:hover { text-decoration: underline; }
+        
+        .empty-state { text-align: center; padding: 60px 24px; color: var(--gray-400); }
+        
+        .disclaimer { margin-top: 48px; padding: 20px; background: var(--gray-100); border-radius: 8px; font-size: 0.85rem; color: var(--gray-600); font-style: italic; text-align: center; }
+        
+        footer { border-top: 1px solid var(--gray-200); padding: 24px; text-align: center; font-size: 0.9rem; color: var(--gray-600); background: var(--white); margin-top: 60px; }
+        footer a { color: var(--gray-600); text-decoration: none; margin: 0 12px; }
+        footer a:hover { color: var(--navy); }
+        
+        @media (max-width: 768px) {
+            .tool-card { flex-direction: column; align-items: flex-start; gap: 16px; }
+            .stats-bar { flex-direction: column; gap: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo">Tool<span>Intel</span></a>
+            <div class="nav-links">
+                <a href="/reviews.html">Reviews</a>
+                <a href="/methodology.html">Methodology</a>
+                <a href="/about.html">About</a>
+            </div>
+        </nav>
+    </header>
+    
+    <section class="hero">
+        <h1>🔐 Verified Certifications Registry</h1>
+        <p>AI tools with independently verified security and compliance certifications. Each certification has been validated by ToolIntel's editorial team.</p>
+    </section>
+    
+    <div class="container">
+        <div class="stats-bar">
+            <div class="stat">
+                <div class="stat-number" id="toolCount">-</div>
+                <div class="stat-label">Tools Verified</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="certCount">-</div>
+                <div class="stat-label">Certifications</div>
+            </div>
+        </div>
+        
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="SOC 2 Type II">SOC 2 Type II</button>
+            <button class="filter-btn" data-filter="SOC 2 Type I">SOC 2 Type I</button>
+            <button class="filter-btn" data-filter="ISO 27001">ISO 27001</button>
+            <button class="filter-btn" data-filter="HIPAA BAA">HIPAA BAA</button>
+            <button class="filter-btn" data-filter="GDPR">GDPR</button>
+            <button class="filter-btn" data-filter="FedRAMP">FedRAMP</button>
+        </div>
+        
+        <div class="registry-grid" id="registryGrid">
+            <div class="empty-state">Loading verified certifications...</div>
+        </div>
+        
+        <div class="disclaimer">
+            ToolIntel verifies that these certifications were issued by the named body and were valid at the time of verification. We do not perform ongoing compliance audits and cannot confirm that current operations meet certification standards.
+        </div>
+    </div>
+    
+    <footer>
+        <a href="/methodology.html">Methodology</a>
+        <a href="/transparency.html">Transparency</a>
+        <a href="/reviews.html">Reviews</a>
+        <a href="/verified-certifications.html">Verified Certifications</a>
+        <p style="margin-top: 16px;">© 2026 ToolIntel. Independent AI tool intelligence.</p>
+    </footer>
+    
+    <script>
+        const API_BASE = 'https://v7086lxsji.execute-api.us-east-1.amazonaws.com';
+        let allCerts = [];
+        let currentFilter = 'all';
+        
+        async function loadCertifications() {
+            try {
+                const res = await fetch(`${API_BASE}/certifications/public`);
+                allCerts = await res.json();
+                updateStats();
+                renderRegistry();
+            } catch (e) {
+                document.getElementById('registryGrid').innerHTML = '<div class="empty-state">Error loading certifications.</div>';
+            }
+        }
+        
+        function updateStats() {
+            const toolSlugs = new Set(allCerts.map(c => c.toolSlug));
+            document.getElementById('toolCount').textContent = toolSlugs.size;
+            document.getElementById('certCount').textContent = allCerts.length;
+        }
+        
+        function renderRegistry() {
+            let filtered = allCerts;
+            if (currentFilter !== 'all') {
+                filtered = allCerts.filter(c => c.certType.includes(currentFilter));
+            }
+            
+            // Group by tool
+            const byTool = {};
+            filtered.forEach(cert => {
+                if (!byTool[cert.toolSlug]) {
+                    byTool[cert.toolSlug] = { toolName: cert.toolName, companyName: cert.companyName, toolSlug: cert.toolSlug, certs: [] };
+                }
+                byTool[cert.toolSlug].certs.push(cert);
+            });
+            
+            const tools = Object.values(byTool).sort((a, b) => a.toolName.localeCompare(b.toolName));
+            
+            if (tools.length === 0) {
+                document.getElementById('registryGrid').innerHTML = '<div class="empty-state">No verified certifications found.</div>';
+                return;
+            }
+            
+            const now = new Date();
+            document.getElementById('registryGrid').innerHTML = tools.map(tool => `
+                <div class="tool-card">
+                    <div class="tool-info">
+                        <h3>${escapeHtml(tool.toolName)}</h3>
+                        <div class="company">${escapeHtml(tool.companyName)}</div>
+                    </div>
+                    <div style="display: flex; align-items: center;">
+                        <div class="cert-badges">
+                            ${tool.certs.map(c => {
+                                const isExpired = new Date(c.expirationDate) < now;
+                                return `<div class="cert-badge ${isExpired ? 'expired' : ''}" title="Verified ${new Date(c.verifiedAt).toLocaleDateString()}">
+                                    <span class="icon">${isExpired ? '⏱️' : '✓'}</span>
+                                    ${escapeHtml(c.certType)}${isExpired ? ' (Expired)' : ''}
+                                </div>`;
+                            }).join('')}
+                        </div>
+                        <a href="/reviews/${tool.toolSlug}.html" class="view-link">View Tool →</a>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text || '';
+            return div.innerHTML;
+        }
+        
+        // Filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                renderRegistry();
+            });
+        });
+        
+        loadCertifications();
+    </script>
+</body>
+</html>
