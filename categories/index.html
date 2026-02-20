@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tool Categories — Tool Intel</title>
+    <meta name="description" content="Browse AI tools by category. Chatbots, coding assistants, writing tools, image generation, and more.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --navy: #0f2744; --blue-accent: #3b82f6; --gray-50: #f9fafb; --gray-200: #e5e7eb; --gray-400: #9ca3af; --gray-600: #4b5563; --gray-800: #1f2937; --white: #ffffff; --green: #10b981; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; color: var(--gray-800); line-height: 1.6; background: var(--gray-50); }
+        h1, h2 { font-family: 'Merriweather', serif; font-weight: 700; }
+        header { padding: 16px 0; border-bottom: 1px solid var(--gray-200); background: var(--white); }
+        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+        .logo { font-weight: 700; font-size: 1.25rem; color: var(--navy); text-decoration: none; }
+        .logo span { color: var(--blue-accent); }
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { color: var(--gray-600); text-decoration: none; font-weight: 500; }
+        main { max-width: 1000px; margin: 0 auto; padding: 60px 24px; }
+        h1 { font-size: 2rem; color: var(--navy); text-align: center; margin-bottom: 12px; }
+        .subtitle { text-align: center; color: var(--gray-600); margin-bottom: 48px; }
+        .categories-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .category-card { background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; padding: 24px; text-decoration: none; transition: all 0.2s; }
+        .category-card:hover { border-color: var(--blue-accent); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .category-icon { font-size: 2rem; margin-bottom: 12px; }
+        .category-name { font-weight: 600; color: var(--navy); font-size: 1.1rem; margin-bottom: 8px; }
+        .category-desc { font-size: 0.9rem; color: var(--gray-600); margin-bottom: 12px; }
+        .category-stats { display: flex; gap: 16px; font-size: 0.85rem; color: var(--gray-400); }
+        .category-stats .reviewed { color: var(--green); font-weight: 500; }
+        footer { padding: 40px 24px; text-align: center; border-top: 1px solid var(--gray-200); background: var(--white); margin-top: 60px; }
+        footer p { color: var(--gray-400); font-size: 0.9rem; }
+        footer a { color: var(--gray-600); }
+    </style>
+</head>
+<body>
+    <header><nav><a href="/" class="logo">Tool<span>Intel</span></a><div class="nav-links"><a href="/methodology.html">Methodology</a><a href="/reviews.html">Reviews</a><a href="/transparency.html">Transparency</a></div></nav></header>
+    <main>
+        <h1>AI Tool Categories</h1>
+        <p class="subtitle">Browse reviews by category. Each category includes a buying guide and red flags to watch for.</p>
+        
+        <div class="categories-grid">
+            <a href="/categories/chatbots.html" class="category-card">
+                <div class="category-icon">💬</div>
+                <div class="category-name">AI Chatbots & Support</div>
+                <div class="category-desc">Customer support automation, website chatbots, conversational AI</div>
+                <div class="category-stats"><span class="reviewed">1 reviewed</span><span>2 in queue</span></div>
+            </a>
+            
+            <a href="/categories/coding.html" class="category-card">
+                <div class="category-icon">💻</div>
+                <div class="category-name">AI Coding Assistants</div>
+                <div class="category-desc">Code completion, pair programming, developer productivity</div>
+                <div class="category-stats"><span>0 reviewed</span><span>3 in queue</span></div>
+            </a>
+            
+            <a href="/categories/writing.html" class="category-card">
+                <div class="category-icon">✍️</div>
+                <div class="category-name">AI Writing & Content</div>
+                <div class="category-desc">Content generation, copywriting, blog posts, marketing copy</div>
+                <div class="category-stats"><span>0 reviewed</span><span>2 in queue</span></div>
+            </a>
+            
+            <a href="#" class="category-card" style="opacity: 0.6;">
+                <div class="category-icon">🎨</div>
+                <div class="category-name">AI Image Generation</div>
+                <div class="category-desc">Image creation, art generation, visual content</div>
+                <div class="category-stats"><span>Coming soon</span></div>
+            </a>
+            
+            <a href="#" class="category-card" style="opacity: 0.6;">
+                <div class="category-icon">📊</div>
+                <div class="category-name">AI Data & Analytics</div>
+                <div class="category-desc">Business intelligence, data analysis, reporting</div>
+                <div class="category-stats"><span>Coming soon</span></div>
+            </a>
+            
+            <a href="#" class="category-card" style="opacity: 0.6;">
+                <div class="category-icon">🔄</div>
+                <div class="category-name">AI Automation</div>
+                <div class="category-desc">Workflow automation, task orchestration, RPA</div>
+                <div class="category-stats"><span>Coming soon</span></div>
+            </a>
+            
+            <a href="#" class="category-card" style="opacity: 0.6;">
+                <div class="category-icon">🎙️</div>
+                <div class="category-name">AI Voice & Transcription</div>
+                <div class="category-desc">Speech-to-text, voice synthesis, transcription</div>
+                <div class="category-stats"><span>Coming soon</span></div>
+            </a>
+            
+            <a href="#" class="category-card" style="opacity: 0.6;">
+                <div class="category-icon">🧠</div>
+                <div class="category-name">Foundation Models & APIs</div>
+                <div class="category-desc">LLM APIs, model providers, AI platforms</div>
+                <div class="category-stats"><span>2 in queue</span></div>
+            </a>
+        </div>
+    </main>
+    <footer><p>© 2026 Tool Intel. <a href="/methodology.html">Methodology</a> · <a href="/transparency.html">Transparency</a></p></footer>
+</body>
+</html>
