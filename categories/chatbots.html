@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Customer Support & Chatbot Tools — Tool Intel</title>
+    <meta name="description" content="Independent reviews of AI chatbot and customer support tools. Compare scores, features, and pricing.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --navy: #0f2744;
+            --navy-light: #1e3a5f;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --green: #10b981;
+            --yellow: #f59e0b;
+            --red: #ef4444;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--gray-800);
+            line-height: 1.6;
+            background: var(--gray-50);
+        }
+        
+        h1, h2, h3 { font-family: 'Merriweather', Georgia, serif; font-weight: 700; line-height: 1.3; }
+        
+        /* Header */
+        header {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--gray-200);
+            background: var(--white);
+        }
+        
+        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+        
+        .logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.25rem; color: var(--navy); text-decoration: none; }
+        .logo span { color: var(--blue-accent); }
+        
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+        .nav-links a:hover { color: var(--navy); }
+        
+        /* Hero */
+        .category-hero {
+            background: var(--navy);
+            color: var(--white);
+            padding: 60px 24px;
+        }
+        
+        .hero-content { max-width: 900px; margin: 0 auto; }
+        
+        .breadcrumb {
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+            opacity: 0.8;
+        }
+        
+        .breadcrumb a { color: var(--white); text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        
+        .category-hero h1 { font-size: 2rem; margin-bottom: 12px; }
+        .category-hero p { font-size: 1.1rem; opacity: 0.9; max-width: 600px; }
+        
+        .category-stats {
+            display: flex;
+            gap: 32px;
+            margin-top: 24px;
+        }
+        
+        .stat { text-align: center; }
+        .stat-value { font-size: 1.5rem; font-weight: 700; }
+        .stat-label { font-size: 0.85rem; opacity: 0.7; }
+        
+        /* Main Content */
+        main { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
+        
+        /* Buying Guide */
+        .buying-guide {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 32px;
+        }
+        
+        .buying-guide h2 { font-size: 1.25rem; color: var(--navy); margin-bottom: 20px; }
+        
+        .guide-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        
+        .guide-section h3 {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 12px;
+        }
+        
+        .guide-section ul { padding-left: 18px; color: var(--gray-600); font-size: 0.95rem; }
+        .guide-section li { margin-bottom: 8px; }
+        
+        .red-flags {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 24px;
+        }
+        
+        .red-flags h3 {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #991b1b;
+            margin-bottom: 12px;
+        }
+        
+        .red-flags ul { padding-left: 18px; color: #b91c1c; font-size: 0.95rem; }
+        
+        /* Tools List */
+        .tools-section {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 32px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .section-header h2 { font-size: 1.25rem; color: var(--navy); margin: 0; }
+        
+        .sort-dropdown {
+            padding: 8px 12px;
+            border: 1px solid var(--gray-200);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+        
+        /* Tool Card */
+        .tool-card {
+            display: flex;
+            gap: 20px;
+            padding: 24px 0;
+            border-bottom: 1px solid var(--gray-100);
+        }
+        
+        .tool-card:last-child { border-bottom: none; }
+        
+        .tool-rank {
+            width: 32px;
+            height: 32px;
+            background: var(--gray-100);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--navy);
+            flex-shrink: 0;
+        }
+        
+        .tool-rank.gold { background: #fef3c7; color: #92400e; }
+        .tool-rank.silver { background: #e5e7eb; color: #4b5563; }
+        .tool-rank.bronze { background: #fed7aa; color: #9a3412; }
+        
+        .tool-info { flex: 1; }
+        
+        .tool-name {
+            font-weight: 600;
+            color: var(--navy);
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+        
+        .tool-name a { color: inherit; text-decoration: none; }
+        .tool-name a:hover { color: var(--blue-accent); }
+        
+        .tool-tagline { color: var(--gray-600); font-size: 0.95rem; margin-bottom: 8px; }
+        
+        .tool-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 0.85rem;
+            color: var(--gray-400);
+        }
+        
+        .tool-score {
+            text-align: center;
+            flex-shrink: 0;
+        }
+        
+        .score-badge {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+        
+        .score-badge.high { background: #d1fae5; color: #065f46; }
+        .score-badge.mid { background: #fef3c7; color: #92400e; }
+        .score-badge.low { background: #fee2e2; color: #991b1b; }
+        
+        .score-label { font-size: 0.75rem; color: var(--gray-400); margin-top: 4px; }
+        
+        /* No Tools */
+        .no-tools {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray-400);
+        }
+        
+        .no-tools p { margin-bottom: 16px; }
+        
+        .no-tools a {
+            color: var(--blue-accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        /* Footer */
+        footer {
+            padding: 40px 24px;
+            text-align: center;
+            border-top: 1px solid var(--gray-200);
+            background: var(--white);
+            margin-top: 40px;
+        }
+        
+        footer p { color: var(--gray-400); font-size: 0.9rem; }
+        footer a { color: var(--gray-600); }
+        
+        @media (max-width: 640px) {
+            .guide-grid { grid-template-columns: 1fr; }
+            .category-stats { flex-direction: column; gap: 16px; }
+            .tool-card { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo">Tool<span>Intel</span></a>
+            <div class="nav-links">
+                <a href="/methodology.html">Methodology</a>
+                <a href="/reviews.html">Reviews</a>
+                <a href="/transparency.html">Transparency</a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="category-hero">
+        <div class="hero-content">
+            <div class="breadcrumb">
+                <a href="/reviews.html">Reviews</a> → AI Customer Support & Chatbots
+            </div>
+            <h1>AI Customer Support & Chatbot Tools</h1>
+            <p>Independent reviews of AI-powered customer support, chatbots, and conversational AI platforms.</p>
+            
+            <div class="category-stats">
+                <div class="stat">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">Tools Reviewed</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">—</div>
+                    <div class="stat-label">Category Avg</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">In Queue</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main>
+        <!-- Buying Guide -->
+        <div class="buying-guide">
+            <h2>📖 Buying Guide: AI Chatbots</h2>
+            
+            <div class="guide-grid">
+                <div class="guide-section">
+                    <h3>What to Prioritize</h3>
+                    <ul>
+                        <li><strong>Integration capabilities</strong> — How easily does it connect to your existing helpdesk, CRM, and knowledge base?</li>
+                        <li><strong>Escalation paths</strong> — Can customers easily reach a human when needed?</li>
+                        <li><strong>Training data security</strong> — Where is your customer conversation data stored and who can access it?</li>
+                        <li><strong>Multilingual support</strong> — Does it handle your customer base's languages natively?</li>
+                    </ul>
+                </div>
+                <div class="guide-section">
+                    <h3>Questions to Ask Vendors</h3>
+                    <ul>
+                        <li>How do you handle customer data if I cancel service?</li>
+                        <li>What's your average resolution rate without human escalation?</li>
+                        <li>Can I audit what the AI said to my customers?</li>
+                        <li>How do you prevent hallucinated responses about my products?</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="red-flags">
+                <h3>🚩 Red Flags for This Category</h3>
+                <ul>
+                    <li>No ability to review/audit AI conversations</li>
+                    <li>Unclear data retention policies for customer conversations</li>
+                    <li>No human escalation option or hidden escalation paths</li>
+                    <li>Claims of "100% resolution rate" — always unrealistic</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Tools List -->
+        <div class="tools-section">
+            <div class="section-header">
+                <h2>Reviewed Tools</h2>
+                <select class="sort-dropdown" disabled>
+                    <option>Sort by Score (High to Low)</option>
+                </select>
+            </div>
+            
+            <div class="no-tools">
+                <p>No tools reviewed in this category yet.</p>
+                <p>Tools in queue: <strong>Intercom AI, Zendesk AI</strong></p>
+                <a href="/#waitlist">Get notified when reviews publish →</a>
+            </div>
+            
+            <!-- Example of what a tool card will look like:
+            <div class="tool-card">
+                <div class="tool-rank gold">1</div>
+                <div class="tool-info">
+                    <div class="tool-name"><a href="/reviews/intercom-ai.html">Intercom AI</a></div>
+                    <div class="tool-tagline">Best for: Mid-size SaaS companies with existing Intercom setup</div>
+                    <div class="tool-meta">
+                        <span>Reviewed Feb 2026</span>
+                        <span>•</span>
+                        <span>From $74/mo</span>
+                    </div>
+                </div>
+                <div class="tool-score">
+                    <div class="score-badge high">85</div>
+                    <div class="score-label">Score</div>
+                </div>
+            </div>
+            -->
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2026 Tool Intel. <a href="/methodology.html">Methodology</a> · <a href="/transparency.html">Transparency</a></p>
+    </footer>
+</body>
+</html>
