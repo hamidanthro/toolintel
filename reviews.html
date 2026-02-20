@@ -329,16 +329,43 @@
         // Search functionality
         const searchInput = document.getElementById('searchInput');
         const reviewCards = document.querySelectorAll('.review-card');
+        const queueItems = document.querySelectorAll('.queue-item');
         
-        searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase();
+        function performSearch(query) {
+            query = query.toLowerCase().trim();
+            let foundCount = 0;
+            
+            // Search reviews
             reviewCards.forEach(card => {
                 const name = card.dataset.name || '';
                 const category = card.dataset.category || '';
-                const visible = name.includes(query) || category.includes(query);
+                const visible = !query || name.includes(query) || category.includes(query);
                 card.style.display = visible ? 'flex' : 'none';
+                if (visible) foundCount++;
             });
+            
+            // Also search queue items
+            queueItems.forEach(item => {
+                const name = item.querySelector('.tool-name')?.textContent.toLowerCase() || '';
+                const cat = item.querySelector('.category')?.textContent.toLowerCase() || '';
+                const visible = !query || name.includes(query) || cat.includes(query);
+                item.style.display = visible ? 'flex' : 'none';
+            });
+            
+            return foundCount;
+        }
+        
+        searchInput.addEventListener('input', (e) => {
+            performSearch(e.target.value);
         });
+        
+        // Handle URL query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const queryParam = urlParams.get('q');
+        if (queryParam) {
+            searchInput.value = queryParam;
+            performSearch(queryParam);
+        }
         
         // Category filter
         const categoryBtns = document.querySelectorAll('.category-btn[data-category]');
