@@ -141,6 +141,9 @@
         }
         .score-circle.green { background: #d1fae5; border: 3px solid #10b981; color: #065f46; }
         .score-circle.yellow { background: #fef3c7; border: 3px solid #f59e0b; color: #92400e; }
+        .score-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .version { font-size: 0.65rem; color: var(--gray-400); }
+        .reviewed { font-size: 0.75rem; color: var(--gray-400); margin-top: 4px; }
         
         .review-card .info { flex: 1; }
         .review-card .name { font-weight: 600; color: var(--navy); font-size: 1.1rem; margin-bottom: 4px; }
@@ -260,6 +263,7 @@
             <a href="/" class="logo">Tool<span>Intel</span></a>
             <div class="nav-links">
                 <a href="/methodology.html">Methodology</a>
+                <a href="/transparency.html">Transparency</a>
                 <a href="/reviews.html">Reviews</a>
                 <a href="/submit.html" class="primary">Submit Tool</a>
             </div>        </nav>
@@ -305,56 +309,52 @@
             
             <div class="reviews-grid">
                 <a href="/reviews/claude.html" class="review-card">
-                    <div class="score-circle green">89</div>
+                    <div class="score-wrap"><div class="score-circle green">89</div><span class="version">v1.0</span></div>
                     <div class="info">
                         <div class="name">Claude</div>
-                        <div class="tagline">Best-in-class reasoning, industry-leading safety</div>
-                        <div class="meta">Foundation Models • From $20/mo</div>
+                        <div class="tagline">Strong reasoning, transparent safety documentation</div>
+                        <div class="meta">Foundation Models • Free tier available · Pro from $20/mo</div>
+                        <div class="reviewed">Reviewed: Feb 2026</div>
                     </div>
                 </a>
                 
                 <a href="/reviews/chatgpt.html" class="review-card">
-                    <div class="score-circle green">87</div>
+                    <div class="score-wrap"><div class="score-circle green">87</div><span class="version">v1.0</span></div>
                     <div class="info">
                         <div class="name">ChatGPT</div>
-                        <div class="tagline">Most complete multimodal AI ecosystem</div>
-                        <div class="meta">Foundation Models • From $20/mo</div>
+                        <div class="tagline">Broad capability set, largest third-party integrations</div>
+                        <div class="meta">Foundation Models • Free tier available · Plus from $20/mo</div>
+                        <div class="reviewed">Reviewed: Feb 2026</div>
                     </div>
                 </a>
                 
                 <a href="/reviews/cursor.html" class="review-card">
-                    <div class="score-circle green">85</div>
+                    <div class="score-wrap"><div class="score-circle green">85</div><span class="version">v1.0</span></div>
                     <div class="info">
                         <div class="name">Cursor</div>
-                        <div class="tagline">The AI-native IDE developers actually want</div>
+                        <div class="tagline">Significant productivity gains for daily coding workflows</div>
                         <div class="meta">AI Coding • From $20/mo</div>
+                        <div class="reviewed">Reviewed: Feb 2026</div>
                     </div>
                 </a>
                 
                 <a href="/reviews/midjourney.html" class="review-card">
-                    <div class="score-circle green">81</div>
+                    <div class="score-wrap"><div class="score-circle green">81</div><span class="version">v1.0</span></div>
                     <div class="info">
                         <div class="name">Midjourney</div>
-                        <div class="tagline">Unmatched aesthetic quality, unique artistic style</div>
-                        <div class="meta">Image Generation • From $10/mo</div>
-                    </div>
-                </a>
-                
-                <a href="/reviews/replyquik.html" class="review-card">
-                    <div class="score-circle yellow">76</div>
-                    <div class="info">
-                        <div class="name">ReplyQuik</div>
-                        <div class="tagline">Affordable SMB chatbot, solid basics</div>
-                        <div class="meta">AI Chatbots • From $19.99/mo</div>
+                        <div class="tagline">Consistently high visual quality, limited API access</div>
+                        <div class="meta">Image Generation • From $10/mo · No free tier</div>
+                        <div class="reviewed">Reviewed: Feb 2026</div>
                     </div>
                 </a>
                 
                 <a href="/reviews/jasper.html" class="review-card">
-                    <div class="score-circle yellow">74</div>
+                    <div class="score-wrap"><div class="score-circle yellow">74</div><span class="version">v1.0</span></div>
                     <div class="info">
                         <div class="name">Jasper</div>
-                        <div class="tagline">Enterprise marketing AI with a steep price tag</div>
+                        <div class="tagline">Wide content template library, pricing requires evaluation at scale</div>
                         <div class="meta">AI Writing • From $69/mo</div>
+                        <div class="reviewed">Reviewed: Feb 2026</div>
                     </div>
                 </a>
             </div>
@@ -465,6 +465,7 @@
         <p>
             
             <a href="/methodology.html">Methodology</a>
+                <a href="/transparency.html">Transparency</a>
                 <a href="/reviews.html">Reviews</a>
             <a href="/transparency.html">Transparency</a>
             <a href="/submit.html">Submit Tool</a>
