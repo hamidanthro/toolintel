@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reliability Monitoring Dashboard — ToolIntel Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0f2744;
+            --navy-light: #1e3a5f;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --green: #10b981;
+            --yellow: #f59e0b;
+            --red: #ef4444;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--gray-50); color: var(--gray-800); }
+        
+        header { background: var(--navy); color: white; padding: 20px 24px; }
+        header h1 { font-size: 1.5rem; font-weight: 600; }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+        
+        .tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+        .tab { padding: 10px 20px; border: none; background: var(--white); border-radius: 6px; cursor: pointer; font-size: 0.95rem; font-weight: 500; color: var(--gray-600); border: 1px solid var(--gray-200); }
+        .tab.active { background: var(--navy); color: white; border-color: var(--navy); }
+        .tab .badge { background: var(--red); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; margin-left: 8px; }
+        .tab .badge.warning { background: var(--yellow); }
+        
+        .panel { display: none; }
+        .panel.active { display: block; }
+        
+        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: var(--white); border: 1px solid var(--gray-200); border-radius: 8px; padding: 16px; text-align: center; }
+        .stat-card .number { font-size: 2rem; font-weight: 700; color: var(--navy); }
+        .stat-card .label { font-size: 0.85rem; color: var(--gray-600); }
+        .stat-card.alert .number { color: var(--red); }
+        
+        .card { background: var(--white); border: 1px solid var(--gray-200); border-radius: 8px; padding: 20px; margin-bottom: 16px; }
+        .card.alerting { border-left: 4px solid var(--red); }
+        
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .card-title { font-weight: 600; color: var(--navy); }
+        
+        .status-badge { padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 500; }
+        .status-badge.operational { background: #d1fae5; color: #065f46; }
+        .status-badge.degraded { background: #fef3c7; color: #92400e; }
+        .status-badge.outage { background: #fee2e2; color: #991b1b; }
+        .status-badge.pending { background: #fef3c7; color: #92400e; }
+        .status-badge.confirmed { background: #d1fae5; color: #065f46; }
+        .status-badge.rejected { background: var(--gray-100); color: var(--gray-600); }
+        
+        .metrics-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 12px 0; }
+        .metric { text-align: center; padding: 12px; background: var(--gray-50); border-radius: 6px; }
+        .metric .value { font-size: 1.25rem; font-weight: 700; }
+        .metric .value.green { color: var(--green); }
+        .metric .value.yellow { color: var(--yellow); }
+        .metric .value.red { color: var(--red); }
+        .metric .label { font-size: 0.75rem; color: var(--gray-400); }
+        
+        .btn { padding: 8px 16px; border-radius: 6px; font-size: 0.9rem; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; }
+        .btn-primary { background: var(--navy); color: white; }
+        .btn-success { background: var(--green); color: white; }
+        .btn-danger { background: var(--red); color: white; }
+        .btn-secondary { background: var(--gray-100); color: var(--gray-600); border: 1px solid var(--gray-200); }
+        
+        .detail-row { display: flex; gap: 24px; margin-bottom: 8px; font-size: 0.9rem; }
+        .detail-label { color: var(--gray-400); min-width: 120px; }
+        
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 0.9rem; font-weight: 500; color: var(--gray-600); margin-bottom: 6px; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: 6px; font-size: 0.95rem; }
+        
+        .empty-state { text-align: center; padding: 60px 24px; color: var(--gray-400); }
+        
+        .alert-banner { background: #fee2e2; border: 1px solid #fecaca; color: #991b1b; padding: 12px 16px; border-radius: 8px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
+        .alert-banner .icon { font-size: 1.25rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>📊 Reliability Monitoring Dashboard</h1>
+    </header>
+    
+    <div class="container">
+        <div id="alertBanner" class="alert-banner" style="display:none;">
+            <span class="icon">🚨</span>
+            <span id="alertText">Tools below 95% uptime detected</span>
+        </div>
+        
+        <div class="stats-row">
+            <div class="stat-card"><div class="number" id="statTotal">-</div><div class="label">Tools Monitored</div></div>
+            <div class="stat-card"><div class="number" id="statOperational">-</div><div class="label">Operational</div></div>
+            <div class="stat-card alert"><div class="number" id="statAlerting">-</div><div class="label">Alerting (<95%)</div></div>
+            <div class="stat-card"><div class="number" id="statReports">-</div><div class="label">Pending Reports</div></div>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" data-panel="monitoring">🖥️ Monitoring</button>
+            <button class="tab" data-panel="reports">📝 Outage Reports <span class="badge" id="reportsBadge">0</span></button>
+            <button class="tab" data-panel="add">➕ Add Tool / Incident</button>
+        </div>
+        
+        <!-- Monitoring Panel -->
+        <div class="panel active" id="panel-monitoring">
+            <div id="toolsList">
+                <div class="empty-state">Loading...</div>
+            </div>
+        </div>
+        
+        <!-- Reports Panel -->
+        <div class="panel" id="panel-reports">
+            <div id="reportsList">
+                <div class="empty-state">Loading...</div>
+            </div>
+        </div>
+        
+        <!-- Add Panel -->
+        <div class="panel" id="panel-add">
+            <div class="card">
+                <h3 style="margin-bottom: 16px;">Initialize Monitoring for New Tool</h3>
+                <form id="initForm">
+                    <div class="form-group">
+                        <label>Tool Slug</label>
+                        <input type="text" name="toolSlug" required placeholder="perplexity">
+                    </div>
+                    <div class="form-group">
+                        <label>Tool Name</label>
+                        <input type="text" name="toolName" required placeholder="Perplexity">
+                    </div>
+                    <div class="form-group">
+                        <label>Monitor URL (API endpoint)</label>
+                        <input type="url" name="monitorUrl" placeholder="https://api.perplexity.ai/health">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Start Monitoring</button>
+                </form>
+            </div>
+            
+            <div class="card" style="margin-top: 24px;">
+                <h3 style="margin-bottom: 16px;">Add Incident Manually</h3>
+                <form id="incidentForm">
+                    <div class="form-group">
+                        <label>Tool Slug</label>
+                        <input type="text" name="toolSlug" required placeholder="perplexity">
+                    </div>
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" name="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Incident Type</label>
+                        <select name="incidentType" required>
+                            <option value="">Select...</option>
+                            <option value="Outage">Outage</option>
+                            <option value="Degraded Performance">Degraded Performance</option>
+                            <option value="Slow Response">Slow Response</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Duration</label>
+                        <input type="text" name="duration" placeholder="e.g., 45 minutes">
+                    </div>
+                    <div class="form-group">
+                        <label>Vendor Response Time</label>
+                        <input type="text" name="vendorResponseTime" placeholder="e.g., 15 minutes">
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea name="description" placeholder="What happened?"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Incident</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = 'https://v7086lxsji.execute-api.us-east-1.amazonaws.com';
+        const urlParams = new URLSearchParams(window.location.search);
+        const ADMIN_KEY = urlParams.get('key');
+        
+        if (!ADMIN_KEY) {
+            document.body.innerHTML = '<div style="padding:60px;text-align:center;color:#999;">Access denied. Admin key required.</div>';
+        }
+        
+        // Tabs
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+            });
+        });
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text || '';
+            return div.innerHTML;
+        }
+        
+        function getUptimeColor(uptime) {
+            if (uptime >= 99) return 'green';
+            if (uptime >= 95) return 'yellow';
+            return 'red';
+        }
+        
+        async function loadTools() {
+            try {
+                const res = await fetch(`${API_BASE}/reliability/admin/all?key=${ADMIN_KEY}`);
+                const tools = await res.json();
+                
+                document.getElementById('statTotal').textContent = tools.length;
+                document.getElementById('statOperational').textContent = tools.filter(t => t.currentStatus === 'operational').length;
+                const alerting = tools.filter(t => t.isAlerting);
+                document.getElementById('statAlerting').textContent = alerting.length;
+                
+                if (alerting.length > 0) {
+                    document.getElementById('alertBanner').style.display = 'flex';
+                    document.getElementById('alertText').textContent = `${alerting.length} tool(s) below 95% uptime in last 7 days: ${alerting.map(t => t.toolName).join(', ')}`;
+                }
+                
+                if (tools.length === 0) {
+                    document.getElementById('toolsList').innerHTML = '<div class="empty-state">No tools being monitored yet.</div>';
+                    return;
+                }
+                
+                document.getElementById('toolsList').innerHTML = tools.map(tool => `
+                    <div class="card ${tool.isAlerting ? 'alerting' : ''}">
+                        <div class="card-header">
+                            <span class="card-title">${escapeHtml(tool.toolName)}</span>
+                            <span class="status-badge ${tool.currentStatus}">${tool.currentStatus}</span>
+                        </div>
+                        <div class="metrics-row">
+                            <div class="metric">
+                                <div class="value ${getUptimeColor(tool.uptime90d)}">${tool.uptime90d?.toFixed(2) || 0}%</div>
+                                <div class="label">90-Day Uptime</div>
+                            </div>
+                            <div class="metric">
+                                <div class="value ${getUptimeColor(tool.uptime7d)}">${tool.uptime7d?.toFixed(2) || 0}%</div>
+                                <div class="label">7-Day Uptime</div>
+                            </div>
+                            <div class="metric">
+                                <div class="value">${tool.avgResponseMs || 0}ms</div>
+                                <div class="label">Avg Response</div>
+                            </div>
+                            <div class="metric">
+                                <div class="value">${tool.outageCount90d || 0}</div>
+                                <div class="label">Outages (90d)</div>
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Last Check:</span>
+                            <span>${tool.lastCheckAge !== null ? tool.lastCheckAge + ' minutes ago' : 'Never'}</span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                document.getElementById('toolsList').innerHTML = `<div class="empty-state">Error: ${e.message}</div>`;
+            }
+        }
+        
+        async function loadReports() {
+            try {
+                const res = await fetch(`${API_BASE}/reliability/reports/admin?key=${ADMIN_KEY}`);
+                const reports = await res.json();
+                
+                const pending = reports.filter(r => r.status === 'pending');
+                document.getElementById('reportsBadge').textContent = pending.length;
+                document.getElementById('statReports').textContent = pending.length;
+                
+                if (reports.length === 0) {
+                    document.getElementById('reportsList').innerHTML = '<div class="empty-state">No outage reports.</div>';
+                    return;
+                }
+                
+                document.getElementById('reportsList').innerHTML = reports.map(r => `
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">${escapeHtml(r.toolName)}</span>
+                            <span class="status-badge ${r.status}">${r.status}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Incident Time:</span>
+                            <span>${r.incidentDateTime}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Description:</span>
+                            <span>${escapeHtml(r.description)}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Reported By:</span>
+                            <span>${escapeHtml(r.reporterName)} (${r.reporterEmail})</span>
+                        </div>
+                        ${r.status === 'pending' ? `
+                            <div style="margin-top:16px;display:flex;gap:12px;">
+                                <button class="btn btn-success" onclick="updateReport('${r.id}', 'confirmed')">✓ Confirm</button>
+                                <button class="btn btn-danger" onclick="updateReport('${r.id}', 'rejected')">✗ Reject</button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('');
+            } catch (e) {
+                document.getElementById('reportsList').innerHTML = `<div class="empty-state">Error: ${e.message}</div>`;
+            }
+        }
+        
+        async function updateReport(id, status) {
+            try {
+                await fetch(`${API_BASE}/reliability/report/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ key: ADMIN_KEY, status })
+                });
+                loadReports();
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        }
+        
+        document.getElementById('initForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            try {
+                const res = await fetch(`${API_BASE}/reliability/admin/init`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        key: ADMIN_KEY,
+                        toolSlug: form.toolSlug.value,
+                        toolName: form.toolName.value,
+                        monitorUrl: form.monitorUrl.value
+                    })
+                });
+                if (res.ok) {
+                    alert('Monitoring initialized!');
+                    form.reset();
+                    loadTools();
+                }
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        };
+        
+        document.getElementById('incidentForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            try {
+                const res = await fetch(`${API_BASE}/reliability/admin/add-incident`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        key: ADMIN_KEY,
+                        toolSlug: form.toolSlug.value,
+                        date: form.date.value,
+                        incidentType: form.incidentType.value,
+                        duration: form.duration.value,
+                        vendorResponseTime: form.vendorResponseTime.value,
+                        description: form.description.value
+                    })
+                });
+                if (res.ok) {
+                    alert('Incident added!');
+                    form.reset();
+                }
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        };
+        
+        if (ADMIN_KEY) {
+            loadTools();
+            loadReports();
+        }
+    </script>
+</body>
+</html>
