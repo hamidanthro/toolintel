@@ -4,12 +4,60 @@
 
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { DynamoDBDocumentClient, PutCommand, QueryCommand, ScanCommand, UpdateCommand, DeleteCommand } = require('@aws-sdk/lib-dynamodb');
+const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses');
 const crypto = require('crypto');
+
+const ses = new SESClient({ region: 'us-east-1' });
 
 const client = new DynamoDBClient({ region: 'us-east-1' });
 const ddb = DynamoDBDocumentClient.from(client);
 const TABLE = 'toolintel-reviews';
 const ADMIN_KEY = process.env.ADMIN_KEY || 'toolintel-admin-2026';
+const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || 'hamid.ali87@gmail.com';
+const FROM_EMAIL = process.env.FROM_EMAIL || 'wealthdeskpro@gmail.com';
+
+// Send email notification for new review
+async function sendReviewNotification(review) {
+    const adminUrl = `https://toolintel.ai/admin/?key=${ADMIN_KEY}`;
+    
+    const subject = `[ToolIntel] New Review: ${review.tool} by ${review.fullName}`;
+    const body = `New community review submitted for moderation.
+
+Tool: ${review.tool}
+Reviewer: ${review.fullName}
+Email: ${review.email}
+Job: ${review.jobTitle}
+Usage: ${review.usageDuration}
+Tier: ${review.pricingTier}
+Score: ${'★'.repeat(review.overallScore)}${'☆'.repeat(5-review.overallScore)} (${review.overallScore}/5)
+
+Ratings:
+- Does what it claims: ${review.ratingClaims}
+- Transparent pricing: ${review.ratingPricing}
+- Would recommend: ${review.ratingRecommend}
+
+Review:
+${review.reviewText}
+
+---
+Approve/Reject: ${adminUrl}
+`;
+
+    try {
+        await ses.send(new SendEmailCommand({
+            Source: FROM_EMAIL,
+            Destination: { ToAddresses: [NOTIFY_EMAIL] },
+            Message: {
+                Subject: { Data: subject },
+                Body: { Text: { Data: body } }
+            }
+        }));
+        console.log('Notification email sent');
+    } catch (err) {
+        console.error('Failed to send notification email:', err);
+        // Don't fail the request if email fails
+    }
+}
 
 const headers = {
     'Content-Type': 'application/json',
@@ -166,6 +214,9 @@ exports.handler = async (event) => {
             };
             
             await ddb.send(new PutCommand({ TableName: TABLE, Item: item }));
+            
+            // Send email notification (async, don't block response)
+            await sendReviewNotification(item);
             
             return { statusCode: 201, headers, body: JSON.stringify({ success: true, id: item.id }) };
         }
