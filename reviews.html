@@ -27,46 +27,52 @@
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            color: var(--gray-800);
-            line-height: 1.6;
-            background: var(--gray-50);
-        }
-        
+        body { font-family: 'Inter', -apple-system, sans-serif; color: var(--gray-800); line-height: 1.6; background: var(--gray-50); }
         h1, h2, h3 { font-family: 'Merriweather', Georgia, serif; font-weight: 700; line-height: 1.3; }
         
-        /* Header */
-        header {
-            padding: 16px 0;
-            border-bottom: 1px solid var(--gray-200);
-            background: var(--white);
-        }
-        
+        header { padding: 16px 0; border-bottom: 1px solid var(--gray-200); background: var(--white); }
         nav { display: flex; justify-content: space-between; align-items: center; max-width: 1120px; margin: 0 auto; padding: 0 24px; }
-        
         .logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.25rem; color: var(--navy); text-decoration: none; }
         .logo span { color: var(--blue-accent); }
-        
         .nav-links { display: flex; gap: 32px; }
         .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
         .nav-links a:hover { color: var(--navy); }
         
-        /* Main */
         main { max-width: 1120px; margin: 0 auto; padding: 60px 24px; }
         
-        h1 { font-size: 2rem; color: var(--navy); margin-bottom: 8px; }
-        .subtitle { color: var(--gray-600); margin-bottom: 40px; }
+        .page-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; margin-bottom: 32px; flex-wrap: wrap; }
+        .page-header h1 { font-size: 2rem; color: var(--navy); margin-bottom: 8px; }
+        .subtitle { color: var(--gray-600); }
+        
+        /* Search Box */
+        .search-container { width: 100%; max-width: 400px; }
+        .search-box {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'/%3E%3C/svg%3E") 12px center no-repeat;
+            background-size: 20px;
+        }
+        .search-box:focus { outline: none; border-color: var(--blue-accent); }
+        
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            gap: 32px;
+            padding: 16px 24px;
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            margin-bottom: 32px;
+        }
+        .stat { text-align: center; }
+        .stat-number { font-size: 1.5rem; font-weight: 700; color: var(--navy); }
+        .stat-label { font-size: 0.8rem; color: var(--gray-400); }
         
         /* Categories */
-        .categories {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 40px;
-        }
-        
+        .categories { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 32px; }
         .category-btn {
             padding: 8px 16px;
             background: var(--white);
@@ -76,51 +82,64 @@
             color: var(--gray-600);
             cursor: pointer;
             transition: all 0.2s;
+            text-decoration: none;
         }
+        .category-btn:hover, .category-btn.active { background: var(--navy); color: var(--white); border-color: var(--navy); }
         
-        .category-btn:hover, .category-btn.active {
-            background: var(--navy);
-            color: var(--white);
-            border-color: var(--navy);
+        /* Editorial Note */
+        .editorial-note {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 32px;
+            font-size: 0.9rem;
+            color: #1e40af;
         }
+        .editorial-note strong { color: #1e3a8a; }
         
-        /* Coming Soon */
-        .coming-soon {
+        /* Reviews List */
+        .reviews-list { display: grid; gap: 16px; margin-bottom: 48px; }
+        .review-card {
+            display: flex;
+            gap: 20px;
             background: var(--white);
             border: 1px solid var(--gray-200);
             border-radius: 12px;
-            padding: 60px 40px;
-            text-align: center;
-        }
-        
-        .coming-soon h2 { font-size: 1.5rem; color: var(--navy); margin-bottom: 16px; }
-        .coming-soon p { color: var(--gray-600); max-width: 500px; margin: 0 auto 24px; }
-        
-        .coming-soon .cta {
-            display: inline-block;
-            padding: 12px 24px;
-            background: var(--navy);
-            color: var(--white);
+            padding: 24px;
             text-decoration: none;
-            border-radius: 6px;
-            font-weight: 600;
-            transition: background 0.2s;
+            transition: border-color 0.2s, transform 0.2s;
         }
+        .review-card:hover { border-color: var(--blue-accent); transform: translateY(-2px); }
         
-        .coming-soon .cta:hover { background: var(--navy-light); }
-        
-        /* Review Queue */
-        .queue {
-            margin-top: 60px;
+        .score-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
         }
+        .score-circle.green { background: linear-gradient(135deg, #d1fae5, #a7f3d0); border: 3px solid #10b981; }
+        .score-circle.yellow { background: linear-gradient(135deg, #fef3c7, #fde68a); border: 3px solid #f59e0b; }
+        .score-circle span { font-size: 1.5rem; font-weight: 700; }
+        .score-circle.green span { color: #065f46; }
+        .score-circle.yellow span { color: #92400e; }
         
-        .queue h3 { font-size: 1.25rem; color: var(--navy); margin-bottom: 20px; }
+        .review-info { flex: 1; }
+        .review-info .name { font-weight: 600; font-size: 1.1rem; color: var(--navy); margin-bottom: 4px; }
+        .review-info .tagline { color: var(--gray-600); font-size: 0.95rem; margin-bottom: 8px; }
+        .review-info .meta { display: flex; gap: 12px; font-size: 0.85rem; color: var(--gray-400); flex-wrap: wrap; }
         
-        .queue-list {
-            display: grid;
-            gap: 16px;
-        }
+        .review-cta { color: var(--blue-accent); font-weight: 500; align-self: center; white-space: nowrap; }
         
+        /* Queue Section */
+        .queue { margin-top: 48px; }
+        .queue h3 { font-size: 1.25rem; color: var(--navy); margin-bottom: 8px; }
+        .queue-subtitle { color: var(--gray-400); font-size: 0.9rem; margin-bottom: 20px; }
+        
+        .queue-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
         .queue-item {
             display: flex;
             justify-content: space-between;
@@ -128,38 +147,40 @@
             background: var(--white);
             border: 1px solid var(--gray-200);
             border-radius: 8px;
-            padding: 16px 20px;
+            padding: 12px 16px;
         }
+        .queue-item .tool-name { font-weight: 500; color: var(--navy); font-size: 0.95rem; }
+        .queue-item .category { font-size: 0.8rem; color: var(--gray-400); }
         
-        .queue-item .tool-name { font-weight: 600; color: var(--navy); }
-        .queue-item .category { font-size: 0.85rem; color: var(--gray-400); }
-        
-        .status {
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-        
-        .status.testing { background: #dbeafe; color: #1d4ed8; }
-        .status.writing { background: #fef3c7; color: #b45309; }
+        .status { padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 500; }
         .status.scheduled { background: #d1fae5; color: #065f46; }
+        .status.in-queue { background: var(--gray-100); color: var(--gray-600); }
         
-        /* Footer */
-        footer {
-            padding: 40px 24px;
-            text-align: center;
-            border-top: 1px solid var(--gray-200);
+        .show-more {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-top: 16px;
             background: var(--white);
-            margin-top: 60px;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            color: var(--gray-600);
+            font-weight: 500;
+            cursor: pointer;
+            text-align: center;
         }
+        .show-more:hover { border-color: var(--navy); color: var(--navy); }
         
+        footer { padding: 40px 24px; text-align: center; border-top: 1px solid var(--gray-200); background: var(--white); margin-top: 60px; }
         footer p { color: var(--gray-400); font-size: 0.9rem; }
         footer a { color: var(--gray-600); }
         
-        @media (max-width: 640px) {
-            h1 { font-size: 1.5rem; }
-            .queue-item { flex-direction: column; align-items: flex-start; gap: 12px; }
+        @media (max-width: 768px) {
+            .page-header { flex-direction: column; }
+            .search-container { max-width: 100%; }
+            .stats-bar { flex-wrap: wrap; gap: 16px; }
+            .review-card { flex-direction: column; }
+            .review-cta { align-self: flex-start; }
         }
     </style>
 </head>
@@ -168,171 +189,236 @@
         <nav>
             <a href="/" class="logo">Tool<span>Intel</span></a>
             <div class="nav-links">
-                <a href="/methodology">Methodology</a>
-                <a href="/reviews">Reviews</a>
-                <a href="/submit">Submit Tool</a>
+                <a href="/methodology.html">Methodology</a>
+                <a href="/reviews.html">Reviews</a>
+                <a href="/submit.html">Submit Tool</a>
             </div>
         </nav>
     </header>
 
     <main>
-        <h1>AI Tool Reviews</h1>
-        <p class="subtitle">Independent evaluations using our <a href="/methodology">public methodology</a>.</p>
+        <div class="page-header">
+            <div>
+                <h1>AI Tool Reviews</h1>
+                <p class="subtitle">Independent evaluations using our <a href="/methodology.html">public methodology</a>.</p>
+            </div>
+            <div class="search-container">
+                <input type="text" class="search-box" placeholder="Search tools..." id="searchInput">
+            </div>
+        </div>
+        
+        <div class="stats-bar">
+            <div class="stat">
+                <div class="stat-number" id="reviewedCount">6</div>
+                <div class="stat-label">Reviews Published</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="queueCount">120+</div>
+                <div class="stat-label">In Review Queue</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">5/day</div>
+                <div class="stat-label">New Reviews Target</div>
+            </div>
+        </div>
+        
+        <div class="editorial-note">
+            <strong>📋 How we select tools:</strong> Tool Intel independently identifies and adds AI tools to our review queue. We do not accept payment for reviews or prioritization. Vendors may <a href="/submit.html">submit tools for consideration</a>, but submission does not guarantee review or influence scoring.
+        </div>
         
         <div class="categories">
-            <a href="/reviews.html" class="category-btn active">All Reviews</a>
-            <a href="/categories/chatbots.html" class="category-btn">Chatbots</a>
-            <a href="/categories/writing.html" class="category-btn">Writing</a>
-            <a href="/categories/coding.html" class="category-btn">Coding</a>
+            <button class="category-btn active" data-category="all">All Reviews</button>
+            <button class="category-btn" data-category="foundation-models">Foundation Models</button>
+            <button class="category-btn" data-category="coding">Coding</button>
+            <button class="category-btn" data-category="writing">Writing</button>
+            <button class="category-btn" data-category="image-gen">Image Gen</button>
+            <button class="category-btn" data-category="chatbots">Chatbots</button>
             <a href="/categories/index.html" class="category-btn">All Categories →</a>
         </div>
         
-        <div class="reviews-list" style="display: grid; gap: 16px;">
-            <!-- Claude -->
-            <a href="/reviews/claude.html" style="display: flex; gap: 20px; background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; padding: 24px; text-decoration: none; transition: border-color 0.2s;">
-                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #d1fae5, #a7f3d0); border: 3px solid #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                    <span style="font-size: 1.5rem; font-weight: 700; color: #065f46;">89</span>
+        <div class="reviews-list" id="reviewsList">
+            <a href="/reviews/claude.html" class="review-card" data-category="foundation-models" data-name="claude anthropic">
+                <div class="score-circle green"><span>89</span></div>
+                <div class="review-info">
+                    <div class="name">Claude</div>
+                    <div class="tagline">Best-in-class reasoning, industry-leading safety</div>
+                    <div class="meta"><span>Foundation Models</span><span>•</span><span>Feb 20, 2026</span><span>•</span><span>From $20/mo</span></div>
                 </div>
-                <div style="flex: 1;">
-                    <div style="font-weight: 600; font-size: 1.1rem; color: var(--navy); margin-bottom: 4px;">Claude</div>
-                    <div style="color: var(--gray-600); font-size: 0.95rem; margin-bottom: 8px;">Best-in-class reasoning, industry-leading safety</div>
-                    <div style="display: flex; gap: 12px; font-size: 0.85rem; color: var(--gray-400);">
-                        <span>Foundation Models</span>
-                        <span>•</span>
-                        <span>Feb 20, 2026</span>
-                        <span>•</span>
-                        <span>From $20/mo</span>
-                    </div>
-                </div>
-                <div style="color: var(--blue-accent); font-weight: 500; align-self: center;">Read Review →</div>
+                <div class="review-cta">Read Review →</div>
             </a>
             
-            <!-- ChatGPT -->
-            <a href="/reviews/chatgpt.html" style="display: flex; gap: 20px; background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; padding: 24px; text-decoration: none; transition: border-color 0.2s;">
-                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #d1fae5, #a7f3d0); border: 3px solid #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                    <span style="font-size: 1.5rem; font-weight: 700; color: #065f46;">87</span>
+            <a href="/reviews/chatgpt.html" class="review-card" data-category="foundation-models" data-name="chatgpt openai gpt">
+                <div class="score-circle green"><span>87</span></div>
+                <div class="review-info">
+                    <div class="name">ChatGPT</div>
+                    <div class="tagline">Most complete multimodal AI ecosystem</div>
+                    <div class="meta"><span>Foundation Models</span><span>•</span><span>Feb 20, 2026</span><span>•</span><span>From $20/mo</span></div>
                 </div>
-                <div style="flex: 1;">
-                    <div style="font-weight: 600; font-size: 1.1rem; color: var(--navy); margin-bottom: 4px;">ChatGPT</div>
-                    <div style="color: var(--gray-600); font-size: 0.95rem; margin-bottom: 8px;">Most complete multimodal AI ecosystem</div>
-                    <div style="display: flex; gap: 12px; font-size: 0.85rem; color: var(--gray-400);">
-                        <span>Foundation Models</span>
-                        <span>•</span>
-                        <span>Feb 20, 2026</span>
-                        <span>•</span>
-                        <span>From $20/mo</span>
-                    </div>
-                </div>
-                <div style="color: var(--blue-accent); font-weight: 500; align-self: center;">Read Review →</div>
+                <div class="review-cta">Read Review →</div>
             </a>
             
-            <!-- Cursor -->
-            <a href="/reviews/cursor.html" style="display: flex; gap: 20px; background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; padding: 24px; text-decoration: none; transition: border-color 0.2s;">
-                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #d1fae5, #a7f3d0); border: 3px solid #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                    <span style="font-size: 1.5rem; font-weight: 700; color: #065f46;">85</span>
+            <a href="/reviews/cursor.html" class="review-card" data-category="coding" data-name="cursor anysphere code editor ide">
+                <div class="score-circle green"><span>85</span></div>
+                <div class="review-info">
+                    <div class="name">Cursor</div>
+                    <div class="tagline">The AI-native IDE developers actually want</div>
+                    <div class="meta"><span>AI Coding</span><span>•</span><span>Feb 20, 2026</span><span>•</span><span>From $20/mo</span></div>
                 </div>
-                <div style="flex: 1;">
-                    <div style="font-weight: 600; font-size: 1.1rem; color: var(--navy); margin-bottom: 4px;">Cursor</div>
-                    <div style="color: var(--gray-600); font-size: 0.95rem; margin-bottom: 8px;">The AI-native IDE developers actually want</div>
-                    <div style="display: flex; gap: 12px; font-size: 0.85rem; color: var(--gray-400);">
-                        <span>AI Coding</span>
-                        <span>•</span>
-                        <span>Feb 20, 2026</span>
-                        <span>•</span>
-                        <span>From $20/mo</span>
-                    </div>
-                </div>
-                <div style="color: var(--blue-accent); font-weight: 500; align-self: center;">Read Review →</div>
+                <div class="review-cta">Read Review →</div>
             </a>
             
-            <!-- Midjourney -->
-            <a href="/reviews/midjourney.html" style="display: flex; gap: 20px; background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; padding: 24px; text-decoration: none; transition: border-color 0.2s;">
-                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #d1fae5, #a7f3d0); border: 3px solid #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                    <span style="font-size: 1.5rem; font-weight: 700; color: #065f46;">81</span>
+            <a href="/reviews/midjourney.html" class="review-card" data-category="image-gen" data-name="midjourney image art">
+                <div class="score-circle green"><span>81</span></div>
+                <div class="review-info">
+                    <div class="name">Midjourney</div>
+                    <div class="tagline">Unmatched aesthetic quality, unique artistic style</div>
+                    <div class="meta"><span>AI Image Gen</span><span>•</span><span>Feb 20, 2026</span><span>•</span><span>From $10/mo</span></div>
                 </div>
-                <div style="flex: 1;">
-                    <div style="font-weight: 600; font-size: 1.1rem; color: var(--navy); margin-bottom: 4px;">Midjourney</div>
-                    <div style="color: var(--gray-600); font-size: 0.95rem; margin-bottom: 8px;">Unmatched aesthetic quality, unique artistic style</div>
-                    <div style="display: flex; gap: 12px; font-size: 0.85rem; color: var(--gray-400);">
-                        <span>AI Image Gen</span>
-                        <span>•</span>
-                        <span>Feb 20, 2026</span>
-                        <span>•</span>
-                        <span>From $10/mo</span>
-                    </div>
-                </div>
-                <div style="color: var(--blue-accent); font-weight: 500; align-self: center;">Read Review →</div>
+                <div class="review-cta">Read Review →</div>
             </a>
             
-            <!-- ReplyQuik -->
-            <a href="/reviews/replyquik.html" style="display: flex; gap: 20px; background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; padding: 24px; text-decoration: none; transition: border-color 0.2s;">
-                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #fef3c7, #fde68a); border: 3px solid #f59e0b; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                    <span style="font-size: 1.5rem; font-weight: 700; color: #92400e;">76</span>
+            <a href="/reviews/replyquik.html" class="review-card" data-category="chatbots" data-name="replyquik chatbot support">
+                <div class="score-circle yellow"><span>76</span></div>
+                <div class="review-info">
+                    <div class="name">ReplyQuik</div>
+                    <div class="tagline">Affordable SMB chatbot, solid basics</div>
+                    <div class="meta"><span>AI Chatbots</span><span>•</span><span>Feb 20, 2026</span><span>•</span><span>From $19.99/mo</span></div>
                 </div>
-                <div style="flex: 1;">
-                    <div style="font-weight: 600; font-size: 1.1rem; color: var(--navy); margin-bottom: 4px;">ReplyQuik</div>
-                    <div style="color: var(--gray-600); font-size: 0.95rem; margin-bottom: 8px;">Affordable SMB chatbot, solid basics</div>
-                    <div style="display: flex; gap: 12px; font-size: 0.85rem; color: var(--gray-400);">
-                        <span>AI Chatbots</span>
-                        <span>•</span>
-                        <span>Feb 20, 2026</span>
-                        <span>•</span>
-                        <span>From $19.99/mo</span>
-                    </div>
-                </div>
-                <div style="color: var(--blue-accent); font-weight: 500; align-self: center;">Read Review →</div>
+                <div class="review-cta">Read Review →</div>
             </a>
             
-            <!-- Jasper -->
-            <a href="/reviews/jasper.html" style="display: flex; gap: 20px; background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; padding: 24px; text-decoration: none; transition: border-color 0.2s;">
-                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #fef3c7, #fde68a); border: 3px solid #f59e0b; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                    <span style="font-size: 1.5rem; font-weight: 700; color: #92400e;">74</span>
+            <a href="/reviews/jasper.html" class="review-card" data-category="writing" data-name="jasper writing content marketing">
+                <div class="score-circle yellow"><span>74</span></div>
+                <div class="review-info">
+                    <div class="name">Jasper</div>
+                    <div class="tagline">Enterprise marketing AI with a steep price tag</div>
+                    <div class="meta"><span>AI Writing</span><span>•</span><span>Feb 20, 2026</span><span>•</span><span>From $69/mo</span></div>
                 </div>
-                <div style="flex: 1;">
-                    <div style="font-weight: 600; font-size: 1.1rem; color: var(--navy); margin-bottom: 4px;">Jasper</div>
-                    <div style="color: var(--gray-600); font-size: 0.95rem; margin-bottom: 8px;">Enterprise marketing AI with a steep price tag</div>
-                    <div style="display: flex; gap: 12px; font-size: 0.85rem; color: var(--gray-400);">
-                        <span>AI Writing</span>
-                        <span>•</span>
-                        <span>Feb 20, 2026</span>
-                        <span>•</span>
-                        <span>From $69/mo</span>
-                    </div>
-                </div>
-                <div style="color: var(--blue-accent); font-weight: 500; align-self: center;">Read Review →</div>
+                <div class="review-cta">Read Review →</div>
             </a>
         </div>
         
         <div class="queue">
-            <h3>📋 Review Queue (Public)</h3>
-            <div class="queue-list">
-                <div class="queue-item">
-                    <div>
-                        <div class="tool-name">Gemini (Google)</div>
-                        <div class="category">Foundation Models & AI APIs</div>
-                    </div>
-                    <span class="status scheduled">Scheduled</span>
-                </div>
-                <div class="queue-item">
-                    <div>
-                        <div class="tool-name">GitHub Copilot</div>
-                        <div class="category">AI Coding Assistants</div>
-                    </div>
-                    <span class="status scheduled">Scheduled</span>
-                </div>
-                <div class="queue-item">
-                    <div>
-                        <div class="tool-name">Perplexity</div>
-                        <div class="category">AI Search & Research</div>
-                    </div>
-                    <span class="status scheduled">Scheduled</span>
-                </div>
+            <h3>📋 Review Queue</h3>
+            <p class="queue-subtitle">Tools we've identified for upcoming review. Updated daily.</p>
+            
+            <div class="queue-grid" id="queueGrid">
+                <div class="queue-item"><div><div class="tool-name">Gemini</div><div class="category">Foundation Models</div></div><span class="status scheduled">Up Next</span></div>
+                <div class="queue-item"><div><div class="tool-name">GitHub Copilot</div><div class="category">AI Coding</div></div><span class="status scheduled">Up Next</span></div>
+                <div class="queue-item"><div><div class="tool-name">Perplexity</div><div class="category">AI Search</div></div><span class="status scheduled">Up Next</span></div>
+                <div class="queue-item"><div><div class="tool-name">DALL-E 3</div><div class="category">Image Gen</div></div><span class="status scheduled">Up Next</span></div>
+                <div class="queue-item"><div><div class="tool-name">Stable Diffusion</div><div class="category">Image Gen</div></div><span class="status scheduled">Up Next</span></div>
+                <div class="queue-item"><div><div class="tool-name">ElevenLabs</div><div class="category">Voice AI</div></div><span class="status in-queue">In Queue</span></div>
+                <div class="queue-item"><div><div class="tool-name">Runway</div><div class="category">Video Gen</div></div><span class="status in-queue">In Queue</span></div>
+                <div class="queue-item"><div><div class="tool-name">Suno</div><div class="category">Music AI</div></div><span class="status in-queue">In Queue</span></div>
+                <div class="queue-item"><div><div class="tool-name">Copy.ai</div><div class="category">AI Writing</div></div><span class="status in-queue">In Queue</span></div>
+                <div class="queue-item"><div><div class="tool-name">Intercom Fin</div><div class="category">AI Chatbots</div></div><span class="status in-queue">In Queue</span></div>
+                <div class="queue-item"><div><div class="tool-name">Notion AI</div><div class="category">Productivity</div></div><span class="status in-queue">In Queue</span></div>
+                <div class="queue-item"><div><div class="tool-name">Otter.ai</div><div class="category">Transcription</div></div><span class="status in-queue">In Queue</span></div>
             </div>
+            
+            <button class="show-more" id="showMoreBtn">Show All 120+ Tools in Queue ↓</button>
         </div>
     </main>
 
     <footer>
-        <p>© 2026 Tool Intel. <a href="/methodology">Methodology</a> is always public.</p>
+        <p>© 2026 Tool Intel. <a href="/methodology.html">Methodology</a> is always public.</p>
     </footer>
+    
+    <script>
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const reviewCards = document.querySelectorAll('.review-card');
+        
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            reviewCards.forEach(card => {
+                const name = card.dataset.name || '';
+                const category = card.dataset.category || '';
+                const visible = name.includes(query) || category.includes(query);
+                card.style.display = visible ? 'flex' : 'none';
+            });
+        });
+        
+        // Category filter
+        const categoryBtns = document.querySelectorAll('.category-btn[data-category]');
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                categoryBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const category = btn.dataset.category;
+                reviewCards.forEach(card => {
+                    if (category === 'all' || card.dataset.category === category) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+        
+        // Show more queue items
+        const queueData = [
+            {name: "Codeium", cat: "AI Coding"},
+            {name: "Adobe Firefly", cat: "Image Gen"},
+            {name: "Pika", cat: "Video Gen"},
+            {name: "HeyGen", cat: "Video Gen"},
+            {name: "Synthesia", cat: "Video Gen"},
+            {name: "Murf AI", cat: "Voice AI"},
+            {name: "Descript", cat: "Audio"},
+            {name: "Writer", cat: "AI Writing"},
+            {name: "Writesonic", cat: "AI Writing"},
+            {name: "Grammarly", cat: "AI Writing"},
+            {name: "Tidio", cat: "Chatbots"},
+            {name: "Zendesk AI", cat: "Chatbots"},
+            {name: "Tabnine", cat: "AI Coding"},
+            {name: "Windsurf", cat: "AI Coding"},
+            {name: "Leonardo.ai", cat: "Image Gen"},
+            {name: "Ideogram", cat: "Image Gen"},
+            {name: "Zapier AI", cat: "Automation"},
+            {name: "Make AI", cat: "Automation"},
+            {name: "Mem", cat: "Productivity"},
+            {name: "Motion", cat: "Productivity"},
+            {name: "Superhuman AI", cat: "Email"},
+            {name: "Phind", cat: "AI Search"},
+            {name: "Gamma", cat: "Presentations"},
+            {name: "Beautiful.ai", cat: "Presentations"},
+            {name: "Loom AI", cat: "Video"},
+            {name: "Fathom", cat: "Meetings"},
+            {name: "tl;dv", cat: "Meetings"},
+            {name: "Apollo AI", cat: "Sales"},
+            {name: "Clay", cat: "Sales"},
+            {name: "Opus Clip", cat: "Video Editing"},
+            {name: "Remove.bg", cat: "Image Editing"},
+            {name: "Groq", cat: "API"},
+            {name: "Together AI", cat: "API"},
+            {name: "Replicate", cat: "API"},
+            {name: "Ollama", cat: "Open Source"},
+            {name: "LM Studio", cat: "Open Source"},
+            {name: "DeepSeek", cat: "Open Source"},
+        ];
+        
+        let expanded = false;
+        document.getElementById('showMoreBtn').addEventListener('click', function() {
+            const grid = document.getElementById('queueGrid');
+            if (!expanded) {
+                queueData.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'queue-item';
+                    div.innerHTML = `<div><div class="tool-name">${item.name}</div><div class="category">${item.cat}</div></div><span class="status in-queue">In Queue</span>`;
+                    grid.appendChild(div);
+                });
+                this.textContent = 'Show Less ↑';
+                expanded = true;
+            } else {
+                const items = grid.querySelectorAll('.queue-item');
+                for (let i = items.length - 1; i >= 12; i--) {
+                    items[i].remove();
+                }
+                this.textContent = 'Show All 120+ Tools in Queue ↓';
+                expanded = false;
+            }
+        });
+    </script>
 </body>
 </html>
