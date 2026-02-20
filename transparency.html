@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transparency Dashboard — Tool Intel</title>
+    <meta name="description" content="Our operating data, disclosed publicly. Total reviews, queue status, conflicts of interest, and more.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --navy: #0f2744;
+            --navy-light: #1e3a5f;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --green: #10b981;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--gray-800);
+            line-height: 1.6;
+            background: var(--gray-50);
+        }
+        
+        h1, h2, h3 { font-family: 'Merriweather', Georgia, serif; font-weight: 700; line-height: 1.3; }
+        
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+        
+        /* Header */
+        header {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--gray-200);
+            background: var(--white);
+        }
+        
+        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+        
+        .logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.25rem; color: var(--navy); text-decoration: none; }
+        .logo span { color: var(--blue-accent); }
+        
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+        .nav-links a:hover { color: var(--navy); }
+        
+        /* Hero */
+        .hero {
+            background: var(--white);
+            padding: 60px 0;
+            border-bottom: 1px solid var(--gray-200);
+            text-align: center;
+        }
+        
+        .hero h1 { font-size: 2rem; color: var(--navy); margin-bottom: 12px; }
+        .hero p { color: var(--gray-600); max-width: 600px; margin: 0 auto; }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin: -40px auto 40px;
+            max-width: 900px;
+            padding: 0 24px;
+        }
+        
+        .stat-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--navy);
+            line-height: 1;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--gray-400);
+            margin-top: 8px;
+        }
+        
+        /* Content */
+        .content { padding: 40px 0; }
+        
+        .section {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+        
+        .section h2 { font-size: 1.25rem; color: var(--navy); margin-bottom: 20px; }
+        .section p { color: var(--gray-600); margin-bottom: 16px; }
+        
+        /* Queue Table */
+        .queue-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .queue-table th, .queue-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-100);
+        }
+        
+        .queue-table th {
+            font-weight: 600;
+            color: var(--navy);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-badge.testing { background: #dbeafe; color: #1d4ed8; }
+        .status-badge.scheduled { background: #d1fae5; color: #065f46; }
+        .status-badge.writing { background: #fef3c7; color: #b45309; }
+        
+        /* Disclosure List */
+        .disclosure-list {
+            list-style: none;
+        }
+        
+        .disclosure-item {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--gray-100);
+        }
+        
+        .disclosure-item:last-child { border-bottom: none; }
+        
+        .disclosure-item strong { color: var(--navy); }
+        
+        .check { color: var(--green); margin-right: 8px; }
+        
+        /* Changelog */
+        .changelog-item {
+            display: flex;
+            gap: 20px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--gray-100);
+        }
+        
+        .changelog-date {
+            min-width: 120px;
+            font-size: 0.9rem;
+            color: var(--gray-400);
+        }
+        
+        .changelog-content {
+            flex: 1;
+        }
+        
+        .changelog-content strong { color: var(--navy); }
+        
+        /* Researcher Grid */
+        .researcher-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        
+        .researcher-card {
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 16px;
+        }
+        
+        .researcher-card .name { font-weight: 600; color: var(--navy); }
+        .researcher-card .affiliation { font-size: 0.9rem; color: var(--gray-600); }
+        .researcher-card .expertise { font-size: 0.85rem; color: var(--gray-400); margin-top: 8px; }
+        
+        /* Footer */
+        footer {
+            padding: 40px 24px;
+            text-align: center;
+            border-top: 1px solid var(--gray-200);
+            background: var(--white);
+        }
+        
+        footer p { color: var(--gray-400); font-size: 0.9rem; }
+        footer a { color: var(--gray-600); }
+        
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .researcher-grid { grid-template-columns: 1fr; }
+        }
+        
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo">Tool<span>Intel</span></a>
+            <div class="nav-links">
+                <a href="/methodology">Methodology</a>
+                <a href="/reviews">Reviews</a>
+                <a href="/submit">Submit Tool</a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Transparency Dashboard</h1>
+            <p>Our operating data, disclosed publicly. This is how we hold ourselves accountable.</p>
+        </div>
+    </section>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">0</div>
+            <div class="stat-label">Tools Reviewed</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">5</div>
+            <div class="stat-label">In Review Queue</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">0</div>
+            <div class="stat-label">Vendor Responses</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">0</div>
+            <div class="stat-label">Score Changes</div>
+        </div>
+    </div>
+
+    <main class="content">
+        <div class="container">
+            
+            <!-- Review Queue -->
+            <div class="section">
+                <h2>📋 Public Review Queue</h2>
+                <p>Tools currently being evaluated. Estimated completion dates may shift based on vendor interview availability.</p>
+                
+                <table class="queue-table">
+                    <thead>
+                        <tr>
+                            <th>Tool</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Est. Publish</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Claude (Anthropic)</td>
+                            <td>Foundation Models</td>
+                            <td><span class="status-badge testing">Testing</span></td>
+                            <td>March 2026</td>
+                        </tr>
+                        <tr>
+                            <td>ChatGPT (OpenAI)</td>
+                            <td>Foundation Models</td>
+                            <td><span class="status-badge testing">Testing</span></td>
+                            <td>March 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Cursor</td>
+                            <td>Coding Assistants</td>
+                            <td><span class="status-badge scheduled">Scheduled</span></td>
+                            <td>April 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Jasper</td>
+                            <td>Writing & Content</td>
+                            <td><span class="status-badge scheduled">Scheduled</span></td>
+                            <td>April 2026</td>
+                        </tr>
+                        <tr>
+                            <td>Midjourney</td>
+                            <td>Image Generation</td>
+                            <td><span class="status-badge scheduled">Scheduled</span></td>
+                            <td>May 2026</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Conflict of Interest -->
+            <div class="section">
+                <h2>⚖️ Conflict of Interest Disclosures</h2>
+                <p>Updated whenever any relationship with an AI company changes.</p>
+                
+                <ul class="disclosure-list">
+                    <li class="disclosure-item">
+                        <span class="check">✓</span>
+                        <strong>Editor/Founder:</strong> No financial interest in any AI tool company. No investments in AI startups. No advisory roles.
+                    </li>
+                    <li class="disclosure-item">
+                        <span class="check">✓</span>
+                        <strong>Tool Usage:</strong> This platform uses Claude (Anthropic) for drafting assistance. All AI-assisted content is human-reviewed and edited.
+                    </li>
+                    <li class="disclosure-item">
+                        <span class="check">✓</span>
+                        <strong>Paid Relationships:</strong> None. No consulting agreements with reviewed companies.
+                    </li>
+                    <li class="disclosure-item">
+                        <span class="check">✓</span>
+                        <strong>Free Products:</strong> We pay for all tools at the tier being reviewed. No extended free trials accepted.
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Researcher Network -->
+            <div class="section">
+                <h2>🔬 Active Researcher Network</h2>
+                <p>Independent researchers who cross-check our reviews. Minimum 5 required before launch.</p>
+                
+                <div class="researcher-grid">
+                    <div class="researcher-card">
+                        <div class="name">Recruiting</div>
+                        <div class="affiliation">Applications open</div>
+                        <div class="expertise">AI Safety, Security, Privacy</div>
+                    </div>
+                    <div class="researcher-card">
+                        <div class="name">Recruiting</div>
+                        <div class="affiliation">Applications open</div>
+                        <div class="expertise">ML Engineering, Performance</div>
+                    </div>
+                </div>
+                
+                <p style="margin-top: 20px; font-size: 0.9rem;">
+                    <a href="mailto:researchers@toolintel.ai">Apply to join our researcher network →</a>
+                </p>
+            </div>
+
+            <!-- Score Change Log -->
+            <div class="section">
+                <h2>📊 Score Change Log</h2>
+                <p>Every time any score changes, with the reason why.</p>
+                
+                <div class="changelog-item">
+                    <div class="changelog-date">—</div>
+                    <div class="changelog-content">
+                        <p style="color: var(--gray-400); font-style: italic;">No score changes yet. Reviews are being conducted.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Methodology Updates -->
+            <div class="section">
+                <h2>📝 Methodology Version History</h2>
+                
+                <div class="changelog-item">
+                    <div class="changelog-date">Feb 20, 2026</div>
+                    <div class="changelog-content">
+                        <strong>v1.0 — Initial Release</strong>
+                        <p>10-category scoring framework established. 5-step review process defined. Weights assigned based on buyer research.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Ratings -->
+            <div class="section">
+                <h2>👥 Community Ratings Status</h2>
+                
+                <p><strong>Status:</strong> Not yet accepting community ratings.</p>
+                <p>Per our operating guidelines, we will introduce user ratings only after establishing a verification system robust enough to prevent fake submissions. Estimated: 12-18 months post-launch.</p>
+                
+                <p style="margin-top: 16px;">
+                    <strong>Verified Ratings Collected:</strong> 0<br>
+                    <strong>Verification System:</strong> In development
+                </p>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2026 Tool Intel. <a href="/methodology">Methodology</a> is always public.</p>
+    </footer>
+</body>
+</html>

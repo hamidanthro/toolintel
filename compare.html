@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compare AI Tools — Tool Intel</title>
+    <meta name="description" content="Side-by-side comparison of AI tools across all 10 scoring categories.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --navy: #0f2744;
+            --navy-light: #1e3a5f;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --green: #10b981;
+            --yellow: #f59e0b;
+            --red: #ef4444;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--gray-800);
+            line-height: 1.6;
+            background: var(--gray-50);
+        }
+        
+        h1, h2, h3 { font-family: 'Merriweather', Georgia, serif; font-weight: 700; line-height: 1.3; }
+        
+        /* Header */
+        header {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--gray-200);
+            background: var(--white);
+        }
+        
+        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+        
+        .logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.25rem; color: var(--navy); text-decoration: none; }
+        .logo span { color: var(--blue-accent); }
+        
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+        .nav-links a:hover { color: var(--navy); }
+        
+        /* Main */
+        main { max-width: 1000px; margin: 0 auto; padding: 60px 24px; }
+        
+        h1 { font-size: 2rem; color: var(--navy); margin-bottom: 8px; text-align: center; }
+        .subtitle { text-align: center; color: var(--gray-600); margin-bottom: 40px; }
+        
+        /* Tool Selector */
+        .selector-section {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 32px;
+        }
+        
+        .selector-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .selector-card {
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .selector-card:hover { border-color: var(--blue-accent); }
+        .selector-card.selected { border-color: var(--navy); background: var(--gray-50); }
+        
+        .selector-card select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--gray-200);
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        
+        .selector-card label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--gray-400);
+            margin-bottom: 8px;
+        }
+        
+        /* Coming Soon */
+        .coming-soon {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 60px 40px;
+            text-align: center;
+        }
+        
+        .coming-soon h2 { font-size: 1.5rem; color: var(--navy); margin-bottom: 16px; }
+        .coming-soon p { color: var(--gray-600); max-width: 500px; margin: 0 auto 24px; }
+        
+        /* Comparison Table Preview */
+        .comparison-preview {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 32px;
+        }
+        
+        .preview-header {
+            background: var(--navy);
+            color: var(--white);
+            padding: 16px 24px;
+            font-weight: 600;
+        }
+        
+        .preview-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .preview-table th, .preview-table td {
+            padding: 16px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--gray-100);
+        }
+        
+        .preview-table th {
+            background: var(--gray-50);
+            font-weight: 600;
+            color: var(--navy);
+        }
+        
+        .preview-table th:first-child, .preview-table td:first-child {
+            text-align: left;
+            font-weight: 500;
+            color: var(--gray-600);
+        }
+        
+        .score-cell {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        
+        .score-cell.high { color: var(--green); }
+        .score-cell.mid { color: var(--yellow); }
+        .score-cell.low { color: var(--red); }
+        
+        .winner-badge {
+            background: var(--green);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 4px;
+        }
+        
+        .preview-footer {
+            padding: 20px 24px;
+            background: var(--gray-50);
+            border-top: 1px solid var(--gray-200);
+        }
+        
+        .recommendation {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .rec-card {
+            flex: 1;
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 16px;
+        }
+        
+        .rec-card h4 {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            color: var(--gray-400);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .rec-card .tool { font-weight: 600; color: var(--navy); }
+        .rec-card .reason { font-size: 0.9rem; color: var(--gray-600); margin-top: 4px; }
+        
+        /* Footer */
+        footer {
+            padding: 40px 24px;
+            text-align: center;
+            border-top: 1px solid var(--gray-200);
+            background: var(--white);
+            margin-top: 60px;
+        }
+        
+        footer p { color: var(--gray-400); font-size: 0.9rem; }
+        footer a { color: var(--gray-600); }
+        
+        @media (max-width: 768px) {
+            .selector-grid { grid-template-columns: 1fr; }
+            .recommendation { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo">Tool<span>Intel</span></a>
+            <div class="nav-links">
+                <a href="/methodology">Methodology</a>
+                <a href="/reviews">Reviews</a>
+                <a href="/submit">Submit Tool</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Compare AI Tools</h1>
+        <p class="subtitle">Side-by-side comparison across all 10 scoring categories</p>
+        
+        <div class="selector-section">
+            <div class="selector-grid">
+                <div class="selector-card">
+                    <label>Tool 1</label>
+                    <select disabled>
+                        <option>Select a reviewed tool...</option>
+                    </select>
+                </div>
+                <div class="selector-card">
+                    <label>Tool 2</label>
+                    <select disabled>
+                        <option>Select a reviewed tool...</option>
+                    </select>
+                </div>
+                <div class="selector-card">
+                    <label>Tool 3 (Optional)</label>
+                    <select disabled>
+                        <option>Select a reviewed tool...</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="coming-soon">
+            <h2>Comparison Tool Coming Soon</h2>
+            <p>Once we publish our first reviews, you'll be able to compare any reviewed tools side-by-side across all 10 scoring categories.</p>
+        </div>
+        
+        <!-- Preview of what it will look like -->
+        <div class="comparison-preview">
+            <div class="preview-header">Preview: What comparisons will look like</div>
+            <table class="preview-table">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Claude</th>
+                        <th>ChatGPT</th>
+                        <th>Gemini</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Overall Score</td>
+                        <td class="score-cell high">87 <span class="winner-badge">Best</span></td>
+                        <td class="score-cell high">84</td>
+                        <td class="score-cell high">81</td>
+                    </tr>
+                    <tr>
+                        <td>Core AI Performance (25%)</td>
+                        <td class="score-cell high">88</td>
+                        <td class="score-cell high">90 <span class="winner-badge">Best</span></td>
+                        <td class="score-cell high">85</td>
+                    </tr>
+                    <tr>
+                        <td>Data Privacy (20%)</td>
+                        <td class="score-cell high">92 <span class="winner-badge">Best</span></td>
+                        <td class="score-cell high">82</td>
+                        <td class="score-cell mid">78</td>
+                    </tr>
+                    <tr>
+                        <td>Transparency (15%)</td>
+                        <td class="score-cell high">90 <span class="winner-badge">Best</span></td>
+                        <td class="score-cell mid">75</td>
+                        <td class="score-cell mid">72</td>
+                    </tr>
+                    <tr>
+                        <td>Pricing Fairness (8%)</td>
+                        <td class="score-cell mid">75</td>
+                        <td class="score-cell high">85 <span class="winner-badge">Best</span></td>
+                        <td class="score-cell high">88</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="preview-footer">
+                <h3 style="font-size: 1rem; color: var(--navy); margin-bottom: 16px;">Recommendation by Use Case</h3>
+                <div class="recommendation">
+                    <div class="rec-card">
+                        <h4>Best for Enterprise</h4>
+                        <div class="tool">Claude</div>
+                        <div class="reason">Highest privacy & compliance scores</div>
+                    </div>
+                    <div class="rec-card">
+                        <h4>Best for Performance</h4>
+                        <div class="tool">ChatGPT</div>
+                        <div class="reason">Top score in core AI capabilities</div>
+                    </div>
+                    <div class="rec-card">
+                        <h4>Best for Budget</h4>
+                        <div class="tool">Gemini</div>
+                        <div class="reason">Best pricing fairness score</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <p style="text-align: center; color: var(--gray-400); margin-top: 24px; font-size: 0.9rem;">
+            <em>Above is a preview with sample data. Real comparisons will be available once reviews are published.</em>
+        </p>
+    </main>
+
+    <footer>
+        <p>© 2026 Tool Intel. <a href="/methodology">Methodology</a> is always public.</p>
+    </footer>
+</body>
+</html>
