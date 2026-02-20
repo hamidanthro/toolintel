@@ -80,7 +80,9 @@
             gap: 48px;
             margin-top: 32px;
         }
-        .hero-stat { text-align: center; }
+        .hero-stat { text-align: center; text-decoration: none; color: inherit; transition: transform 0.2s; }
+        .hero-stat:hover { transform: translateY(-2px); }
+        a.hero-stat { color: var(--white); }
         .hero-stat .number { font-size: 2rem; font-weight: 700; }
         .hero-stat .label { font-size: 0.9rem; opacity: 0.8; }
         
@@ -273,18 +275,18 @@
         </div>
         
         <div class="hero-stats">
-            <div class="hero-stat">
+            <a href="/reviews.html" class="hero-stat">
                 <div class="number" id="toolCount">—</div>
                 <div class="label">Tools in Database</div>
-            </div>
-            <div class="hero-stat">
+            </a>
+            <a href="/reviews.html" class="hero-stat">
                 <div class="number" id="reviewCount">—</div>
                 <div class="label">Reviews Published</div>
-            </div>
-            <div class="hero-stat">
+            </a>
+            <a href="/reviews.html" class="hero-stat">
                 <div class="number" id="categoryCount">—</div>
                 <div class="label">Categories</div>
-            </div>
+            </a>
         </div>
         
         <div class="trust-badges">
