@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Management — ToolIntel Admin</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+    
+    .header { background: #1e293b; padding: 20px 30px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+    .header h1 { font-size: 1.5rem; }
+    .header a { color: #60a5fa; text-decoration: none; }
+    
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; padding: 24px 30px; }
+    .stat-card { background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 16px; text-align: center; }
+    .stat-value { font-size: 2rem; font-weight: 700; color: #14b8a6; }
+    .stat-label { color: #94a3b8; font-size: 0.8rem; margin-top: 4px; }
+    
+    .tabs { display: flex; gap: 0; padding: 0 30px; border-bottom: 1px solid #334155; }
+    .tab { padding: 14px 22px; cursor: pointer; color: #94a3b8; border-bottom: 2px solid transparent; transition: all 0.2s; font-size: 0.9rem; }
+    .tab:hover { color: #e2e8f0; }
+    .tab.active { color: #14b8a6; border-bottom-color: #14b8a6; }
+    
+    .panel { display: none; padding: 24px 30px; }
+    .panel.active { display: block; }
+    
+    .table-container { background: #1e293b; border: 1px solid #334155; border-radius: 10px; overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th { background: #334155; padding: 12px 16px; text-align: left; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; color: #94a3b8; }
+    td { padding: 14px 16px; border-bottom: 1px solid #334155; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover { background: rgba(255,255,255,0.02); }
+    
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 0.7rem; font-weight: 600; }
+    .badge-free { background: #374151; color: #9ca3af; }
+    .badge-pro { background: #dbeafe; color: #1e40af; }
+    .badge-enterprise { background: #ede9fe; color: #5b21b6; }
+    .badge-active { background: #d1fae5; color: #065f46; }
+    .badge-flagged { background: #fee2e2; color: #991b1b; }
+    
+    .btn { padding: 6px 14px; border: none; border-radius: 5px; cursor: pointer; font-size: 0.8rem; font-weight: 500; transition: all 0.2s; }
+    .btn-revoke { background: #ef4444; color: white; }
+    .btn-revoke:hover { background: #dc2626; }
+    .btn-create { background: #10b981; color: white; }
+    .btn-create:hover { background: #059669; }
+    .btn-view { background: #3b82f6; color: white; }
+    .btn-view:hover { background: #2563eb; }
+    
+    .key-display {
+      font-family: monospace;
+      background: #0f172a;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+    
+    .chart-container {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .chart-container h3 { margin-bottom: 20px; font-size: 1.1rem; }
+    
+    .bar-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      height: 150px;
+      padding-top: 20px;
+    }
+    .bar-day {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .bar {
+      width: 100%;
+      background: #14b8a6;
+      border-radius: 4px 4px 0 0;
+      min-height: 4px;
+    }
+    .bar-label {
+      font-size: 0.7rem;
+      color: #64748b;
+    }
+    
+    .endpoint-breakdown {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .endpoint-stat {
+      background: #0f172a;
+      padding: 16px;
+      border-radius: 8px;
+    }
+    .endpoint-stat .name { color: #94a3b8; font-size: 0.85rem; font-family: monospace; }
+    .endpoint-stat .count { font-size: 1.5rem; font-weight: 700; color: #14b8a6; }
+    
+    .abuse-card {
+      background: #1e293b;
+      border: 1px solid #ef4444;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .abuse-card h4 { color: #fca5a5; margin-bottom: 8px; }
+    .abuse-card p { color: #94a3b8; font-size: 0.9rem; margin-bottom: 12px; }
+    .abuse-meta { display: flex; gap: 20px; font-size: 0.85rem; color: #64748b; }
+    
+    .webhook-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .webhook-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .webhook-url { font-family: monospace; color: #60a5fa; font-size: 0.9rem; }
+    .webhook-events { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .webhook-event { background: #374151; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; color: #9ca3af; }
+    .webhook-meta { display: flex; gap: 24px; font-size: 0.85rem; color: #64748b; }
+    .webhook-success { color: #10b981; font-weight: 600; }
+    
+    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
+    .modal.active { display: flex; }
+    .modal-content { background: #1e293b; border-radius: 12px; padding: 30px; max-width: 500px; width: 90%; }
+    .modal-content h3 { margin-bottom: 20px; }
+    .modal-close { position: absolute; top: 15px; right: 20px; background: none; border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer; }
+    
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; margin-bottom: 6px; color: #94a3b8; font-size: 0.9rem; }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 10px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      color: white;
+      font-size: 0.95rem;
+    }
+    
+    .new-key-display {
+      background: #0f172a;
+      border: 2px solid #14b8a6;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      margin-top: 20px;
+    }
+    .new-key-display p { color: #94a3b8; font-size: 0.85rem; margin-bottom: 10px; }
+    .new-key-display code {
+      display: block;
+      background: #334155;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 1rem;
+      color: #5eead4;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🔑 API Management</h1>
+    <a href="/admin/">← Back to Admin</a>
+  </div>
+  
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-value" id="totalKeys">234</div>
+      <div class="stat-label">Total API Keys</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="activeKeys">156</div>
+      <div class="stat-label">Active (30 days)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="totalRequests">234K</div>
+      <div class="stat-label">Requests (30 days)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="webhooks">47</div>
+      <div class="stat-label">Webhooks</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="deliveryRate">97.8%</div>
+      <div class="stat-label">Webhook Delivery</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="flagged">1</div>
+      <div class="stat-label">Flagged for Abuse</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="mrr">$2.8K</div>
+      <div class="stat-label">API MRR</div>
+    </div>
+  </div>
+  
+  <div class="tabs">
+    <div class="tab active" data-panel="keys">API Keys</div>
+    <div class="tab" data-panel="webhooks">Webhook Monitor</div>
+    <div class="tab" data-panel="usage">Usage Analytics</div>
+    <div class="tab" data-panel="abuse">Abuse Detection</div>
+  </div>
+  
+  <!-- API Keys Panel -->
+  <div class="panel active" id="keys">
+    <div style="margin-bottom: 20px;">
+      <button class="btn btn-create" onclick="showCreateModal()">+ Create API Key</button>
+    </div>
+    
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>API Key</th>
+            <th>Tier</th>
+            <th>Owner</th>
+            <th>Requests (30d)</th>
+            <th>Last Used</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="keysTable">
+          <tr>
+            <td><span class="key-display">ti_ent_def456...</span></td>
+            <td><span class="badge badge-enterprise">Enterprise</span></td>
+            <td>procurement@bigcorp.com</td>
+            <td>45,230</td>
+            <td>2 min ago</td>
+            <td><span class="badge badge-active">Active</span></td>
+            <td><button class="btn btn-revoke" onclick="revokeKey('ti_ent_def456')">Revoke</button></td>
+          </tr>
+          <tr>
+            <td><span class="key-display">ti_pro_abc123...</span></td>
+            <td><span class="badge badge-pro">Professional</span></td>
+            <td>acme@company.com</td>
+            <td>4,521</td>
+            <td>1 hour ago</td>
+            <td><span class="badge badge-active">Active</span></td>
+            <td><button class="btn btn-revoke" onclick="revokeKey('ti_pro_abc123')">Revoke</button></td>
+          </tr>
+          <tr>
+            <td><span class="key-display">ti_free_xyz789...</span></td>
+            <td><span class="badge badge-free">Free</span></td>
+            <td>dev@startup.io</td>
+            <td>87</td>
+            <td>Yesterday</td>
+            <td><span class="badge badge-active">Active</span></td>
+            <td><button class="btn btn-revoke" onclick="revokeKey('ti_free_xyz789')">Revoke</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  <!-- Webhook Monitor Panel -->
+  <div class="panel" id="webhooks">
+    <div id="webhookList">
+      <div class="webhook-card">
+        <div class="webhook-header">
+          <span class="webhook-url">https://api.bigcorp.com/toolintel</span>
+          <span class="badge badge-enterprise">Enterprise</span>
+        </div>
+        <div class="webhook-events">
+          <span class="webhook-event">score_change</span>
+          <span class="webhook-event">pricing_change</span>
+          <span class="webhook-event">security_incident</span>
+        </div>
+        <div class="webhook-meta">
+          <span>Owner: bigcorp@enterprise.com</span>
+          <span class="webhook-success">98.5% delivery</span>
+          <span>Last triggered: 3 hours ago</span>
+        </div>
+      </div>
+      
+      <div class="webhook-card">
+        <div class="webhook-header">
+          <span class="webhook-url">https://acme.com/webhook</span>
+          <span class="badge badge-pro">Professional</span>
+        </div>
+        <div class="webhook-events">
+          <span class="webhook-event">score_change</span>
+        </div>
+        <div class="webhook-meta">
+          <span>Owner: acme@company.com</span>
+          <span class="webhook-success">100% delivery</span>
+          <span>Last triggered: 1 day ago</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Usage Analytics Panel -->
+  <div class="panel" id="usage">
+    <div class="chart-container">
+      <h3>Requests per Day (Last 30 Days)</h3>
+      <div class="bar-chart" id="requestsChart"></div>
+    </div>
+    
+    <div class="chart-container">
+      <h3>Requests by Endpoint</h3>
+      <div class="endpoint-breakdown">
+        <div class="endpoint-stat">
+          <div class="name">GET /tools/:toolname</div>
+          <div class="count">112,340</div>
+        </div>
+        <div class="endpoint-stat">
+          <div class="name">GET /tools</div>
+          <div class="count">89,234</div>
+        </div>
+        <div class="endpoint-stat">
+          <div class="name">GET /categories/compare</div>
+          <div class="count">20,537</div>
+        </div>
+        <div class="endpoint-stat">
+          <div class="name">GET /tools/:toolname/changelog</div>
+          <div class="count">12,456</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="chart-container">
+      <h3>Most Queried Tools</h3>
+      <div class="endpoint-breakdown">
+        <div class="endpoint-stat">
+          <div class="name">claude</div>
+          <div class="count">34,521</div>
+        </div>
+        <div class="endpoint-stat">
+          <div class="name">gpt-4</div>
+          <div class="count">31,245</div>
+        </div>
+        <div class="endpoint-stat">
+          <div class="name">gemini</div>
+          <div class="count">18,934</div>
+        </div>
+        <div class="endpoint-stat">
+          <div class="name">copilot</div>
+          <div class="count">15,678</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Abuse Detection Panel -->
+  <div class="panel" id="abuse">
+    <div class="abuse-card">
+      <h4>⚠️ Rate Limit Exceeded</h4>
+      <p><span class="key-display">ti_free_suspicious...</span> exceeded rate limit 5x in 24 hours</p>
+      <div class="abuse-meta">
+        <span>Request count: 523 (limit: 100)</span>
+        <span>Flagged: 5 hours ago</span>
+        <span>Status: Pending Review</span>
+      </div>
+      <div style="margin-top: 16px;">
+        <button class="btn btn-view">Review</button>
+        <button class="btn btn-revoke" style="margin-left: 8px;">Revoke Key</button>
+      </div>
+    </div>
+    
+    <div class="chart-container" style="border-color: #374151;">
+      <h3>Unusual Patterns (Reviewed)</h3>
+      <div style="padding: 20px; color: #64748b;">
+        <p><span class="key-display">ti_pro_unusual...</span> — Scraping all tools sequentially</p>
+        <p style="font-size: 0.85rem; margin-top: 8px;">Detected: Feb 19 • Status: <span style="color: #10b981;">Reviewed OK</span> — Legitimate procurement audit</p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Create Key Modal -->
+  <div class="modal" id="createModal">
+    <div class="modal-content" style="position: relative;">
+      <button class="modal-close" onclick="closeModal()">×</button>
+      <h3>Create API Key</h3>
+      
+      <form id="createKeyForm" onsubmit="createKey(event)">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="keyEmail" required placeholder="user@company.com">
+        </div>
+        <div class="form-group">
+          <label>Company</label>
+          <input type="text" id="keyCompany" placeholder="Company name">
+        </div>
+        <div class="form-group">
+          <label>Tier</label>
+          <select id="keyTier" required>
+            <option value="free">Free</option>
+            <option value="professional">Professional</option>
+            <option value="enterprise">Enterprise</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-create" style="width: 100%; padding: 12px;">Create Key</button>
+      </form>
+      
+      <div class="new-key-display" id="newKeyDisplay" style="display: none;">
+        <p>⚠️ Copy this key now — it cannot be retrieved later!</p>
+        <code id="newKeyValue"></code>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Tab switching
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.panel).classList.add('active');
+      });
+    });
+    
+    // Generate chart
+    const chart = document.getElementById('requestsChart');
+    const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    for (let i = 0; i < 30; i++) {
+      const height = 3000 + Math.random() * 5000;
+      const day = document.createElement('div');
+      day.className = 'bar-day';
+      day.innerHTML = `
+        <div class="bar" style="height: ${height / 100}px"></div>
+        <span class="bar-label">${days[i % 7]}</span>
+      `;
+      chart.appendChild(day);
+    }
+    
+    function showCreateModal() {
+      document.getElementById('createModal').classList.add('active');
+      document.getElementById('createKeyForm').style.display = 'block';
+      document.getElementById('newKeyDisplay').style.display = 'none';
+    }
+    
+    function closeModal() {
+      document.getElementById('createModal').classList.remove('active');
+    }
+    
+    function createKey(event) {
+      event.preventDefault();
+      const email = document.getElementById('keyEmail').value;
+      const tier = document.getElementById('keyTier').value;
+      
+      // Generate fake key
+      const key = `ti_${tier.substring(0, 3)}_${Math.random().toString(36).substring(2, 15)}`;
+      
+      document.getElementById('createKeyForm').style.display = 'none';
+      document.getElementById('newKeyDisplay').style.display = 'block';
+      document.getElementById('newKeyValue').textContent = key;
+    }
+    
+    function revokeKey(key) {
+      if (confirm(`Revoke API key ${key}? This cannot be undone.`)) {
+        alert('Key revoked');
+      }
+    }
+  </script>
+</body>
+</html>

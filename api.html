@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ToolIntel Developer API</title>
+  <meta name="description" content="Programmatic access to independent AI tool intelligence. Integrate verified AI tool scores, compliance data, and pricing intelligence directly into your applications.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0f172a;
+      --navy-light: #1e293b;
+      --teal: #0d9488;
+      --teal-light: #14b8a6;
+      --gray-50: #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-400: #94a3b8;
+      --gray-600: #475569;
+      --gray-800: #1e293b;
+      --white: #ffffff;
+      --blue: #3b82f6;
+      --green: #10b981;
+      --yellow: #f59e0b;
+      --purple: #8b5cf6;
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', -apple-system, sans-serif; color: var(--gray-800); line-height: 1.7; background: var(--gray-50); }
+    code, pre { font-family: 'Fira Code', monospace; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    
+    header { background: var(--navy); color: white; padding: 16px 0; }
+    nav { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .logo { font-weight: 700; font-size: 1.25rem; color: white; text-decoration: none; }
+    .logo span { color: var(--teal-light); }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a { color: var(--gray-400); font-size: 0.9rem; }
+    .nav-links a:hover { color: white; text-decoration: none; }
+    
+    .hero {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+      color: white;
+      padding: 80px 24px;
+      text-align: center;
+    }
+    .hero h1 { font-size: 2.5rem; margin-bottom: 16px; }
+    .hero p { max-width: 800px; margin: 0 auto; color: rgba(255,255,255,0.8); font-size: 1.15rem; line-height: 1.8; }
+    
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    
+    .main-content {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 40px;
+      padding: 40px 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      height: fit-content;
+    }
+    .sidebar h4 {
+      color: var(--gray-400);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+      margin-top: 24px;
+    }
+    .sidebar h4:first-child { margin-top: 0; }
+    .sidebar a {
+      display: block;
+      color: var(--gray-600);
+      padding: 6px 0;
+      font-size: 0.9rem;
+    }
+    .sidebar a:hover { color: var(--teal); text-decoration: none; }
+    .sidebar a.active { color: var(--teal); font-weight: 600; }
+    
+    /* Content */
+    .content section {
+      margin-bottom: 60px;
+    }
+    .content h2 {
+      font-size: 1.75rem;
+      color: var(--navy);
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--gray-200);
+    }
+    .content h3 {
+      font-size: 1.25rem;
+      color: var(--navy);
+      margin: 32px 0 16px;
+    }
+    .content p {
+      color: var(--gray-600);
+      margin-bottom: 16px;
+    }
+    
+    /* Endpoint Cards */
+    .endpoint {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .endpoint-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      background: var(--gray-50);
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .method {
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      font-family: 'Fira Code', monospace;
+    }
+    .method.get { background: #dbeafe; color: #1e40af; }
+    .method.post { background: #d1fae5; color: #065f46; }
+    .method.delete { background: #fee2e2; color: #991b1b; }
+    .endpoint-path {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.95rem;
+      color: var(--navy);
+    }
+    .endpoint-body { padding: 20px; }
+    .endpoint-desc { color: var(--gray-600); margin-bottom: 16px; }
+    
+    /* Code blocks */
+    .code-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--gray-200);
+      margin-bottom: 0;
+    }
+    .code-tab {
+      padding: 8px 16px;
+      background: var(--gray-100);
+      border: none;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: var(--gray-600);
+    }
+    .code-tab.active {
+      background: var(--navy);
+      color: white;
+    }
+    .code-block {
+      background: var(--navy);
+      color: #e2e8f0;
+      padding: 20px;
+      border-radius: 0 0 8px 8px;
+      overflow-x: auto;
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+    .code-block .comment { color: #64748b; }
+    .code-block .string { color: #86efac; }
+    .code-block .keyword { color: #c4b5fd; }
+    .code-block .number { color: #fcd34d; }
+    
+    /* Response example */
+    .response-example {
+      background: #1e293b;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 16px;
+      overflow-x: auto;
+    }
+    .response-example pre {
+      color: #e2e8f0;
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+    
+    /* Parameters table */
+    .params-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+    }
+    .params-table th {
+      text-align: left;
+      padding: 10px 12px;
+      background: var(--gray-100);
+      font-size: 0.8rem;
+      color: var(--gray-600);
+      text-transform: uppercase;
+    }
+    .params-table td {
+      padding: 12px;
+      border-bottom: 1px solid var(--gray-200);
+      font-size: 0.9rem;
+    }
+    .params-table code {
+      background: var(--gray-100);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+    .required { color: #ef4444; font-size: 0.75rem; }
+    
+    /* Pricing tiers */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin: 32px 0;
+    }
+    .pricing-card {
+      background: white;
+      border: 2px solid var(--gray-200);
+      border-radius: 16px;
+      padding: 30px;
+      text-align: center;
+    }
+    .pricing-card.featured {
+      border-color: var(--teal);
+      position: relative;
+    }
+    .pricing-card.featured::before {
+      content: 'POPULAR';
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--teal);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+    .pricing-card h3 {
+      color: var(--navy);
+      margin: 0 0 8px;
+    }
+    .pricing-price {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--teal);
+      margin-bottom: 4px;
+    }
+    .pricing-price span {
+      font-size: 1rem;
+      color: var(--gray-400);
+      font-weight: 400;
+    }
+    .pricing-limit {
+      color: var(--gray-600);
+      font-size: 0.9rem;
+      margin-bottom: 24px;
+    }
+    .pricing-features {
+      text-align: left;
+      list-style: none;
+      margin-bottom: 24px;
+    }
+    .pricing-features li {
+      padding: 8px 0;
+      color: var(--gray-600);
+      font-size: 0.9rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .pricing-features li::before {
+      content: '✓';
+      color: var(--green);
+      font-weight: 700;
+    }
+    .pricing-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background: var(--navy);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+    }
+    .pricing-btn:hover { background: #334155; text-decoration: none; }
+    .pricing-card.featured .pricing-btn {
+      background: var(--teal);
+    }
+    .pricing-card.featured .pricing-btn:hover {
+      background: #0f766e;
+    }
+    
+    /* Webhook events */
+    .webhook-events {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin: 24px 0;
+    }
+    .webhook-event {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .webhook-event h4 {
+      color: var(--navy);
+      font-size: 0.95rem;
+      margin-bottom: 6px;
+    }
+    .webhook-event p {
+      color: var(--gray-600);
+      font-size: 0.85rem;
+      margin: 0;
+    }
+    
+    /* Integration guides */
+    .integration-card {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .integration-card h4 {
+      color: var(--navy);
+      margin-bottom: 12px;
+    }
+    .integration-card ol {
+      color: var(--gray-600);
+      padding-left: 20px;
+    }
+    .integration-card li {
+      margin-bottom: 8px;
+    }
+    
+    /* Links section */
+    .quick-links {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin: 32px 0;
+    }
+    .quick-link {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .quick-link:hover {
+      border-color: var(--teal);
+      transform: translateY(-2px);
+      text-decoration: none;
+    }
+    .quick-link .icon { font-size: 2rem; margin-bottom: 10px; }
+    .quick-link h4 { color: var(--navy); font-size: 0.95rem; margin-bottom: 4px; }
+    .quick-link p { color: var(--gray-600); font-size: 0.8rem; margin: 0; }
+    
+    footer {
+      background: var(--navy);
+      color: var(--gray-400);
+      padding: 40px 24px;
+      text-align: center;
+    }
+    
+    @media (max-width: 900px) {
+      .main-content { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .pricing-grid { grid-template-columns: 1fr; }
+      .quick-links { grid-template-columns: repeat(2, 1fr); }
+      .webhook-events { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="/" class="logo">Tool<span>Intel</span> API</a>
+      <div class="nav-links">
+        <a href="#endpoints">Endpoints</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#webhooks">Webhooks</a>
+        <a href="/api/sandbox">Sandbox</a>
+        <a href="/api/status">Status</a>
+      </div>
+    </nav>
+  </header>
+  
+  <section class="hero">
+    <h1>Programmatic Access to Independent AI Tool Intelligence</h1>
+    <p>Integrate verified AI tool scores, compliance data, and pricing intelligence directly into your procurement systems, internal tools, and applications. All data is sourced from our independent review database — never self-reported by vendors.</p>
+  </section>
+  
+  <div class="container">
+    <div class="quick-links">
+      <a href="/api/sandbox" class="quick-link">
+        <div class="icon">🧪</div>
+        <h4>API Sandbox</h4>
+        <p>Try live requests</p>
+      </a>
+      <a href="/api/status" class="quick-link">
+        <div class="icon">📊</div>
+        <h4>API Status</h4>
+        <p>99.97% uptime</p>
+      </a>
+      <a href="/api/attribution" class="quick-link">
+        <div class="icon">📋</div>
+        <h4>Attribution Policy</h4>
+        <p>Usage requirements</p>
+      </a>
+      <a href="https://github.com/toolintel/browser-extension" class="quick-link">
+        <div class="icon">🧩</div>
+        <h4>Browser Extension</h4>
+        <p>Open source spec</p>
+      </a>
+    </div>
+  </div>
+  
+  <div class="main-content">
+    <aside class="sidebar">
+      <h4>Getting Started</h4>
+      <a href="#authentication">Authentication</a>
+      <a href="#rate-limits">Rate Limits</a>
+      <a href="#errors">Error Codes</a>
+      
+      <h4>Endpoints</h4>
+      <a href="#get-tools">GET /tools</a>
+      <a href="#get-tool">GET /tools/:toolname</a>
+      <a href="#get-changelog">GET /tools/:toolname/changelog</a>
+      <a href="#compare">GET /categories/compare</a>
+      
+      <h4>Features</h4>
+      <a href="#webhooks">Webhooks</a>
+      <a href="#integrations">Integrations</a>
+      <a href="#extension">Browser Extension</a>
+      
+      <h4>Reference</h4>
+      <a href="#pricing">Pricing</a>
+      <a href="#attribution">Attribution</a>
+    </aside>
+    
+    <div class="content">
+      <!-- Authentication -->
+      <section id="authentication">
+        <h2>Authentication</h2>
+        <p>All API requests require an API key passed in the <code>X-API-Key</code> header. Get your API key from the <a href="#pricing">pricing section</a> below.</p>
+        
+        <div class="code-block">
+<span class="comment"># Include your API key in every request</span>
+curl -H <span class="string">"X-API-Key: ti_pro_your_key_here"</span> \
+  https://api.toolintel.ai/tools</div>
+      </section>
+      
+      <!-- Endpoints -->
+      <section id="endpoints">
+        <h2>Core Endpoints</h2>
+        
+        <!-- GET /tools -->
+        <div class="endpoint" id="get-tools">
+          <div class="endpoint-header">
+            <span class="method get">GET</span>
+            <span class="endpoint-path">/tools</span>
+          </div>
+          <div class="endpoint-body">
+            <p class="endpoint-desc">Returns a paginated list of all reviewed tools with their overall score, category, subcategory, review date, and methodology version.</p>
+            
+            <h4>Query Parameters</h4>
+            <table class="params-table">
+              <thead>
+                <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><code>category</code></td><td>string</td><td>Filter by category (e.g., "Foundation Models")</td></tr>
+                <tr><td><code>minScore</code></td><td>integer</td><td>Minimum overall score (0-100)</td></tr>
+                <tr><td><code>compliance</code></td><td>string</td><td>Required compliance (e.g., "hipaa,soc2")</td></tr>
+                <tr><td><code>region</code></td><td>string</td><td>Data residency region</td></tr>
+                <tr><td><code>pricingTier</code></td><td>string</td><td>Filter by pricing tier</td></tr>
+                <tr><td><code>page</code></td><td>integer</td><td>Page number (default: 1)</td></tr>
+                <tr><td><code>perPage</code></td><td>integer</td><td>Results per page (max: 50)</td></tr>
+              </tbody>
+            </table>
+            
+            <h4>Example Request</h4>
+            <div class="code-tabs">
+              <button class="code-tab active">cURL</button>
+              <button class="code-tab">Python</button>
+              <button class="code-tab">JavaScript</button>
+            </div>
+            <div class="code-block">
+curl -H <span class="string">"X-API-Key: YOUR_API_KEY"</span> \
+  <span class="string">"https://api.toolintel.ai/tools?category=Foundation%20Models&minScore=80"</span></div>
+            
+            <h4>Response</h4>
+            <div class="response-example">
+<pre>{
+  "tools": [
+    {
+      "slug": "claude",
+      "name": "Claude",
+      "vendor": "Anthropic",
+      "category": "Foundation Models",
+      "subcategory": "LLM",
+      "overallScore": 89,
+      "reviewDate": "2026-02-20",
+      "methodologyVersion": "1.0"
+    }
+  ],
+  "total": 45,
+  "page": 1,
+  "perPage": 50
+}</pre>
+            </div>
+          </div>
+        </div>
+        
+        <!-- GET /tools/:toolname -->
+        <div class="endpoint" id="get-tool">
+          <div class="endpoint-header">
+            <span class="method get">GET</span>
+            <span class="endpoint-path">/tools/:toolname</span>
+          </div>
+          <div class="endpoint-body">
+            <p class="endpoint-desc">Returns the complete review data for a specific tool including all 10 category scores, pricing data with verification timestamp, certification status, incident history, policy change log, hype index rating, and claim verification results.</p>
+            
+            <p><strong>Note:</strong> Free tier returns limited data. Upgrade to Professional for full access.</p>
+            
+            <h4>Example Request</h4>
+            <div class="code-block">
+curl -H <span class="string">"X-API-Key: YOUR_API_KEY"</span> \
+  https://api.toolintel.ai/tools/claude</div>
+            
+            <h4>Response (Professional/Enterprise)</h4>
+            <div class="response-example">
+<pre>{
+  "slug": "claude",
+  "name": "Claude",
+  "vendor": "Anthropic",
+  "overallScore": 89,
+  "verdict": "Best for complex reasoning and teams prioritizing safety.",
+  "categoryScores": {
+    "coreAiPerformance": { "score": 92, "weight": 25 },
+    "dataPrivacySecurity": { "score": 95, "weight": 20 },
+    "transparency": { "score": 90, "weight": 15 },
+    "reliabilityUptime": { "score": 88, "weight": 10 },
+    "compliance": { "score": 91, "weight": 10 },
+    "pricingFairness": { "score": 75, "weight": 8 },
+    "integrationUsability": { "score": 82, "weight": 5 },
+    "humanOverride": { "score": 90, "weight": 4 },
+    "vendorAccountability": { "score": 85, "weight": 2 },
+    "biasFairness": { "score": 88, "weight": 1 }
+  },
+  "pricing": {
+    "verifiedAt": "2026-02-18T10:30:00Z",
+    "tiers": [...],
+    "volatilityRating": "Stable"
+  },
+  "compliance": {
+    "soc2": { "status": "Verified", "verifiedAt": "2026-01-15" },
+    "hipaa": { "status": "BAA Available" },
+    ...
+  },
+  "incidentHistory": [...],
+  "policyChangeLog": [...],
+  "hypeIndex": { "marketingScore": 72, "realityGap": 8 },
+  "claimVerification": { "summary": "Mostly Verified", "verified": 8, "false": 0 }
+}</pre>
+            </div>
+          </div>
+        </div>
+        
+        <!-- GET /tools/:toolname/changelog -->
+        <div class="endpoint" id="get-changelog">
+          <div class="endpoint-header">
+            <span class="method get">GET</span>
+            <span class="endpoint-path">/tools/:toolname/changelog</span>
+          </div>
+          <div class="endpoint-body">
+            <p class="endpoint-desc">Returns the complete product change history for a specific tool including score impact ratings and dates. <span class="required">Professional/Enterprise only</span></p>
+            
+            <h4>Response</h4>
+            <div class="response-example">
+<pre>{
+  "toolSlug": "claude",
+  "changelog": [
+    {
+      "date": "2026-02-20",
+      "change": "Initial review published",
+      "scoreImpact": null,
+      "newScore": 89
+    },
+    {
+      "date": "2026-02-10",
+      "change": "SOC 2 compliance verified",
+      "scoreImpact": "+2",
+      "oldScore": 87,
+      "newScore": 89
+    }
+  ]
+}</pre>
+            </div>
+          </div>
+        </div>
+        
+        <!-- GET /categories/compare -->
+        <div class="endpoint" id="compare">
+          <div class="endpoint-header">
+            <span class="method get">GET</span>
+            <span class="endpoint-path">/categories/compare</span>
+          </div>
+          <div class="endpoint-body">
+            <p class="endpoint-desc">Accepts an array of tool names and an optional custom weighting object and returns a weighted comparison result identical to the platform's comparison engine output. <span class="required">Professional/Enterprise only</span></p>
+            
+            <h4>Query Parameters</h4>
+            <table class="params-table">
+              <thead>
+                <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><code>tools</code> <span class="required">*</span></td><td>string</td><td>Comma-separated tool slugs (2-4 tools)</td></tr>
+                <tr><td><code>weights</code></td><td>JSON</td><td>Custom category weights object</td></tr>
+              </tbody>
+            </table>
+            
+            <h4>Example Request</h4>
+            <div class="code-block">
+curl -H <span class="string">"X-API-Key: YOUR_API_KEY"</span> \
+  <span class="string">"https://api.toolintel.ai/categories/compare?tools=claude,gpt-4,gemini"</span></div>
+            
+            <h4>Response</h4>
+            <div class="response-example">
+<pre>{
+  "comparison": [
+    { "slug": "claude", "name": "Claude", "overallScore": 89, "weightedScore": 89 },
+    { "slug": "gpt-4", "name": "GPT-4", "overallScore": 87, "weightedScore": 86 },
+    { "slug": "gemini", "name": "Gemini", "overallScore": 84, "weightedScore": 83 }
+  ],
+  "winner": { "slug": "claude", "name": "Claude", "weightedScore": 89 },
+  "weightsUsed": { "coreAiPerformance": 25, "dataPrivacySecurity": 20, ... },
+  "generatedAt": "2026-02-20T17:45:00Z"
+}</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Rate Limits -->
+      <section id="rate-limits">
+        <h2>Rate Limits</h2>
+        <table class="params-table">
+          <thead>
+            <tr><th>Tier</th><th>Monthly Limit</th><th>Rate</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Free</td><td>100 requests</td><td>10 requests/minute</td></tr>
+            <tr><td>Professional</td><td>10,000 requests</td><td>100 requests/minute</td></tr>
+            <tr><td>Enterprise</td><td>Unlimited</td><td>Custom (dedicated)</td></tr>
+          </tbody>
+        </table>
+        <p>Rate limit headers are included in every response: <code>X-RateLimit-Limit</code>, <code>X-RateLimit-Remaining</code>, <code>X-RateLimit-Reset</code>.</p>
+      </section>
+      
+      <!-- Error Codes -->
+      <section id="errors">
+        <h2>Error Codes</h2>
+        <table class="params-table">
+          <thead>
+            <tr><th>Code</th><th>Meaning</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>400</code></td><td>Bad Request — Invalid parameters</td></tr>
+            <tr><td><code>401</code></td><td>Unauthorized — Invalid or missing API key</td></tr>
+            <tr><td><code>403</code></td><td>Forbidden — Endpoint requires higher tier</td></tr>
+            <tr><td><code>404</code></td><td>Not Found — Tool or endpoint doesn't exist</td></tr>
+            <tr><td><code>429</code></td><td>Too Many Requests — Rate limit exceeded</td></tr>
+            <tr><td><code>500</code></td><td>Internal Server Error</td></tr>
+          </tbody>
+        </table>
+      </section>
+      
+      <!-- Pricing -->
+      <section id="pricing">
+        <h2>API Pricing</h2>
+        
+        <div class="pricing-grid">
+          <div class="pricing-card">
+            <h3>Free</h3>
+            <div class="pricing-price">$0<span>/month</span></div>
+            <div class="pricing-limit">100 requests/month</div>
+            <ul class="pricing-features">
+              <li>Overall scores and basic metadata</li>
+              <li>No authentication beyond API key</li>
+              <li>Attribution required</li>
+              <li>Personal projects and evaluation</li>
+            </ul>
+            <a href="#" class="pricing-btn">Get Free Key</a>
+          </div>
+          
+          <div class="pricing-card featured">
+            <h3>Professional</h3>
+            <div class="pricing-price">$49<span>/month</span></div>
+            <div class="pricing-limit">10,000 requests/month</div>
+            <ul class="pricing-features">
+              <li>Full access to all endpoints</li>
+              <li>Detailed scores, pricing, compliance</li>
+              <li>Changelog access</li>
+              <li>Webhook support</li>
+              <li>Priority support</li>
+            </ul>
+            <a href="#" class="pricing-btn">Start Professional</a>
+          </div>
+          
+          <div class="pricing-card">
+            <h3>Enterprise</h3>
+            <div class="pricing-price">Custom</div>
+            <div class="pricing-limit">Unlimited requests</div>
+            <ul class="pricing-features">
+              <li>Everything in Professional</li>
+              <li>Dedicated rate limits</li>
+              <li>SLA guarantee</li>
+              <li>Custom data fields</li>
+              <li>Signed attribution agreement</li>
+            </ul>
+            <a href="mailto:enterprise@toolintel.ai" class="pricing-btn">Contact Sales</a>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Webhooks -->
+      <section id="webhooks">
+        <h2>Webhooks</h2>
+        <p>Receive real-time POST notifications when events occur for tools you're monitoring. Available on Professional and Enterprise tiers.</p>
+        
+        <h3>Supported Events</h3>
+        <div class="webhook-events">
+          <div class="webhook-event">
+            <h4>score_change</h4>
+            <p>Tool score has been updated with old and new values</p>
+          </div>
+          <div class="webhook-event">
+            <h4>security_incident</h4>
+            <p>New security incident recorded for a tool</p>
+          </div>
+          <div class="webhook-event">
+            <h4>pricing_change</h4>
+            <p>Pricing change detected for a tool</p>
+          </div>
+          <div class="webhook-event">
+            <h4>certification_change</h4>
+            <p>Certification expired or renewed</p>
+          </div>
+          <div class="webhook-event">
+            <h4>tos_change</h4>
+            <p>Terms of service change logged</p>
+          </div>
+          <div class="webhook-event">
+            <h4>expert_analysis</h4>
+            <p>New expert contributor analysis published</p>
+          </div>
+          <div class="webhook-event">
+            <h4>claim_verdict</h4>
+            <p>New marketing claim verdict published</p>
+          </div>
+        </div>
+        
+        <h3>Webhook Payload</h3>
+        <div class="response-example">
+<pre>{
+  "event": "score_change",
+  "toolSlug": "claude",
+  "toolName": "Claude",
+  "timestamp": "2026-02-20T14:30:00Z",
+  "data": {
+    "oldScore": 87,
+    "newScore": 89,
+    "reason": "SOC 2 compliance verified"
+  },
+  "reviewUrl": "https://toolintel.ai/reviews/claude"
+}</pre>
+        </div>
+      </section>
+      
+      <!-- Integrations -->
+      <section id="integrations">
+        <h2>Procurement System Integration</h2>
+        
+        <div class="integration-card">
+          <h4>📊 Salesforce: Auto-populate Vendor Records</h4>
+          <ol>
+            <li>Create a custom field "ToolIntel Score" on the Vendor object</li>
+            <li>Set up a Flow that triggers on Vendor creation</li>
+            <li>Use HTTP Callout to call <code>GET /tools/:toolname</code></li>
+            <li>Map <code>overallScore</code> and <code>compliance</code> to custom fields</li>
+            <li>Add ToolIntel attribution link to vendor record</li>
+          </ol>
+        </div>
+        
+        <div class="integration-card">
+          <h4>🛒 Coupa/Ariba: Compliance-Based Shortlisting</h4>
+          <ol>
+            <li>Export your AI tool vendor list as CSV</li>
+            <li>Use <code>GET /tools?compliance=hipaa,soc2</code> to filter by requirements</li>
+            <li>Cross-reference with your vendor list</li>
+            <li>Flag non-compliant vendors for review</li>
+            <li>Import compliance status back into procurement system</li>
+          </ol>
+        </div>
+        
+        <div class="integration-card">
+          <h4>⚙️ Internal Approval Workflow: Score Threshold Check</h4>
+          <ol>
+            <li>When a new AI tool is submitted for procurement approval</li>
+            <li>Call <code>GET /tools/:toolname</code> to retrieve scores</li>
+            <li>Check if <code>dataPrivacySecurity.score &lt; 80</code> or <code>compliance.score &lt; 75</code></li>
+            <li>If threshold not met, auto-flag for security review</li>
+            <li>Include ToolIntel report link in approval ticket</li>
+          </ol>
+        </div>
+      </section>
+      
+      <!-- Browser Extension -->
+      <section id="extension">
+        <h2>Browser Extension Specification</h2>
+        <p>Build a browser extension that displays ToolIntel scores on AI tool websites. This specification is open source and available on GitHub.</p>
+        
+        <h3>Sample Chrome Extension Code</h3>
+        <div class="code-block">
+<span class="comment">// content.js - Detect domain and show score overlay</span>
+<span class="keyword">const</span> domain = window.location.hostname.replace(<span class="string">'www.'</span>, <span class="string">''</span>);
+
+<span class="comment">// Map domains to tool slugs</span>
+<span class="keyword">const</span> domainMap = {
+  <span class="string">'claude.ai'</span>: <span class="string">'claude'</span>,
+  <span class="string">'chat.openai.com'</span>: <span class="string">'gpt-4'</span>,
+  <span class="string">'gemini.google.com'</span>: <span class="string">'gemini'</span>
+};
+
+<span class="keyword">const</span> toolSlug = domainMap[domain];
+<span class="keyword">if</span> (toolSlug) {
+  fetch(<span class="string">`https://api.toolintel.ai/tools/${toolSlug}`</span>, {
+    headers: { <span class="string">'X-API-Key'</span>: API_KEY }
+  })
+  .then(r => r.json())
+  .then(data => showScoreOverlay(data));
+}
+
+<span class="keyword">function</span> showScoreOverlay(tool) {
+  <span class="keyword">const</span> overlay = document.createElement(<span class="string">'div'</span>);
+  overlay.innerHTML = <span class="string">`
+    &lt;div class="toolintel-badge"&gt;
+      &lt;strong&gt;ToolIntel: ${tool.overallScore}/100&lt;/strong&gt;
+      &lt;small&gt;Privacy: ${tool.categoryScores.dataPrivacySecurity.score}&lt;/small&gt;
+      &lt;small&gt;Compliance: ${tool.categoryScores.compliance.score}&lt;/small&gt;
+      &lt;a href="https://toolintel.ai/reviews/${tool.slug}"&gt;Full Review →&lt;/a&gt;
+    &lt;/div&gt;
+  `</span>;
+  document.body.appendChild(overlay);
+}</div>
+        
+        <p style="margin-top: 16px;"><a href="https://github.com/toolintel/browser-extension">View full specification on GitHub →</a></p>
+      </section>
+      
+      <!-- Attribution -->
+      <section id="attribution">
+        <h2>Data Attribution Policy</h2>
+        
+        <div style="background: #fef3c7; border: 1px solid #fcd34d; border-radius: 12px; padding: 24px; margin: 24px 0;">
+          <p style="color: #92400e; font-weight: 600; margin-bottom: 12px; font-size: 1.1rem;">Our data is independent because we pay to maintain it independently.</p>
+          <p style="color: #78350f; margin: 0;">Attribution ensures buyers know where the intelligence comes from and can verify it at the source.</p>
+        </div>
+        
+        <h3>Requirements</h3>
+        <ul style="color: var(--gray-600); padding-left: 20px;">
+          <li>All public-facing uses must display the ToolIntel name and link to the source review</li>
+          <li>Data may not be resold as a standalone product without an Enterprise license</li>
+          <li>Scores may not be modified or combined with other scores without clear disclosure</li>
+          <li>Historical data snapshots may not be published without a timestamp and methodology version tag</li>
+        </ul>
+        
+        <p style="margin-top: 20px;"><a href="/api/attribution">Read full attribution policy →</a></p>
+      </section>
+    </div>
+  </div>
+  
+  <footer>
+    <p>© 2026 ToolIntel. <a href="/" style="color: var(--gray-400);">Home</a> · <a href="/api/status" style="color: var(--gray-400);">API Status</a> · <a href="mailto:api@toolintel.ai" style="color: var(--gray-400);">api@toolintel.ai</a></p>
+  </footer>
+</body>
+</html>

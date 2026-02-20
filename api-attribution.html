@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Attribution Policy — ToolIntel API</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0f172a;
+      --teal: #0d9488;
+      --gray-50: #f8fafc;
+      --gray-200: #e2e8f0;
+      --gray-400: #94a3b8;
+      --gray-600: #475569;
+      --gray-800: #1e293b;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: var(--gray-50); color: var(--gray-800); line-height: 1.8; }
+    h1, h2 { font-family: 'Merriweather', Georgia, serif; }
+    
+    header { background: var(--navy); color: white; padding: 60px 24px; text-align: center; }
+    header h1 { font-size: 2rem; margin-bottom: 12px; }
+    header p { color: var(--gray-400); font-size: 1.05rem; max-width: 600px; margin: 0 auto; }
+    
+    .container { max-width: 800px; margin: 0 auto; padding: 50px 24px; }
+    
+    .highlight-box {
+      background: linear-gradient(135deg, var(--navy) 0%, #1e3a5f 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 12px;
+      margin-bottom: 40px;
+    }
+    .highlight-box h2 {
+      font-size: 1.3rem;
+      margin-bottom: 12px;
+      color: #5eead4;
+    }
+    .highlight-box p {
+      color: rgba(255,255,255,0.9);
+      font-size: 1.05rem;
+    }
+    
+    .section {
+      margin-bottom: 40px;
+    }
+    .section h2 {
+      font-size: 1.4rem;
+      color: var(--navy);
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--gray-200);
+    }
+    .section p {
+      color: var(--gray-600);
+      margin-bottom: 16px;
+    }
+    
+    .requirement-list {
+      list-style: none;
+      margin: 20px 0;
+    }
+    .requirement-list li {
+      display: flex;
+      gap: 16px;
+      padding: 20px;
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 10px;
+      margin-bottom: 12px;
+    }
+    .requirement-number {
+      width: 36px;
+      height: 36px;
+      background: var(--teal);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .requirement-content h4 {
+      color: var(--navy);
+      margin-bottom: 6px;
+    }
+    .requirement-content p {
+      color: var(--gray-600);
+      font-size: 0.95rem;
+      margin: 0;
+    }
+    
+    .example-box {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 10px;
+      padding: 24px;
+      margin: 20px 0;
+    }
+    .example-box h4 {
+      color: var(--navy);
+      margin-bottom: 12px;
+    }
+    .example-good, .example-bad {
+      padding: 12px 16px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+    .example-good {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    .example-bad {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .example-good::before { content: '✓ '; font-weight: 700; }
+    .example-bad::before { content: '✗ '; font-weight: 700; }
+    
+    .cta-section {
+      background: var(--gray-50);
+      border: 2px solid var(--teal);
+      border-radius: 12px;
+      padding: 30px;
+      text-align: center;
+      margin-top: 40px;
+    }
+    .cta-section h3 {
+      color: var(--navy);
+      margin-bottom: 12px;
+    }
+    .cta-section p {
+      color: var(--gray-600);
+      margin-bottom: 20px;
+    }
+    .cta-btn {
+      display: inline-block;
+      background: var(--teal);
+      color: white;
+      padding: 12px 28px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .cta-btn:hover { background: #0f766e; }
+    
+    footer { text-align: center; padding: 40px; color: var(--gray-400); font-size: 0.85rem; }
+    footer a { color: var(--gray-400); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Data Attribution Policy</h1>
+    <p>Requirements for using ToolIntel data in third-party applications</p>
+  </header>
+  
+  <div class="container">
+    <div class="highlight-box">
+      <h2>Why Attribution Matters</h2>
+      <p>Our data is independent because we pay to maintain it independently. Attribution ensures buyers know where the intelligence comes from and can verify it at the source.</p>
+    </div>
+    
+    <div class="section">
+      <h2>Core Requirements</h2>
+      
+      <ul class="requirement-list">
+        <li>
+          <span class="requirement-number">1</span>
+          <div class="requirement-content">
+            <h4>Display ToolIntel Name and Link</h4>
+            <p>All public-facing uses must display the ToolIntel name and link to the source review. This applies to websites, apps, reports, dashboards, and any other medium where ToolIntel data is visible to end users.</p>
+          </div>
+        </li>
+        
+        <li>
+          <span class="requirement-number">2</span>
+          <div class="requirement-content">
+            <h4>No Standalone Resale</h4>
+            <p>Data may not be resold as a standalone product without an Enterprise license. Building a product that adds value on top of our data is allowed; selling raw exports of our data is not.</p>
+          </div>
+        </li>
+        
+        <li>
+          <span class="requirement-number">3</span>
+          <div class="requirement-content">
+            <h4>No Undisclosed Modifications</h4>
+            <p>Scores may not be modified or combined with other scores without clear disclosure. If you apply your own weighting or combine ToolIntel scores with other data sources, this must be clearly stated.</p>
+          </div>
+        </li>
+        
+        <li>
+          <span class="requirement-number">4</span>
+          <div class="requirement-content">
+            <h4>Timestamp Historical Data</h4>
+            <p>Historical data snapshots may not be published without a timestamp and methodology version tag. Scores change over time; users must know when the data was captured and under which methodology.</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+    
+    <div class="section">
+      <h2>Attribution Examples</h2>
+      
+      <div class="example-box">
+        <h4>Displaying a Score</h4>
+        <div class="example-good">"Claude scores 89/100 on ToolIntel (toolintel.ai/reviews/claude)"</div>
+        <div class="example-bad">"Claude scores 89/100" (no attribution)</div>
+      </div>
+      
+      <div class="example-box">
+        <h4>Building a Dashboard</h4>
+        <div class="example-good">Dashboard footer: "AI tool scores provided by ToolIntel. Click any score to view the full review."</div>
+        <div class="example-bad">Displaying scores with no indication of source</div>
+      </div>
+      
+      <div class="example-box">
+        <h4>Publishing Historical Data</h4>
+        <div class="example-good">"As of February 20, 2026 (ToolIntel Methodology v1.0), Claude scored 89/100"</div>
+        <div class="example-bad">"Claude scores 89/100" (publishing old data without timestamp)</div>
+      </div>
+      
+      <div class="example-box">
+        <h4>Creating Composite Scores</h4>
+        <div class="example-good">"Our VendorRisk score combines ToolIntel's compliance data with our internal risk assessment. ToolIntel compliance score: 91."</div>
+        <div class="example-bad">Creating a "security score" that blends ToolIntel data with other sources without disclosure</div>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h2>Tier-Specific Requirements</h2>
+      
+      <p><strong>Free Tier:</strong> Attribution required. "Powered by ToolIntel" must be visible wherever scores are displayed.</p>
+      
+      <p><strong>Professional Tier:</strong> Attribution required. More flexibility in placement, but source must be clear and linkable.</p>
+      
+      <p><strong>Enterprise Tier:</strong> Custom attribution agreement. May include white-label options with appropriate contractual terms.</p>
+    </div>
+    
+    <div class="section">
+      <h2>Enforcement</h2>
+      
+      <p>We monitor public uses of our API and data. Violations are handled as follows:</p>
+      
+      <p><strong>First violation:</strong> Email notification with 7 days to add attribution.</p>
+      
+      <p><strong>Second violation:</strong> API key suspended pending compliance.</p>
+      
+      <p><strong>Severe violations:</strong> Permanent revocation and potential legal action for commercial misuse.</p>
+      
+      <p>If you're unsure whether your use case complies, email <a href="mailto:api@toolintel.ai">api@toolintel.ai</a> before launching.</p>
+    </div>
+    
+    <div class="cta-section">
+      <h3>Questions About Attribution?</h3>
+      <p>We want to help you use our data correctly. Reach out if you need guidance on your specific use case.</p>
+      <a href="mailto:api@toolintel.ai" class="cta-btn">Contact API Support</a>
+    </div>
+  </div>
+  
+  <footer>
+    <p><a href="/api.html">API Documentation</a> · <a href="/api/status">API Status</a> · Last updated: February 20, 2026</p>
+  </footer>
+</body>
+</html>

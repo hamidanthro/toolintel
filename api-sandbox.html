@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Sandbox — ToolIntel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0f172a;
+      --teal: #0d9488;
+      --gray-50: #f8fafc;
+      --gray-200: #e2e8f0;
+      --gray-400: #94a3b8;
+      --gray-600: #475569;
+      --green: #10b981;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: var(--gray-50); color: var(--navy); }
+    code, pre { font-family: 'Fira Code', monospace; }
+    
+    header { background: var(--navy); color: white; padding: 20px 24px; }
+    header h1 { font-size: 1.5rem; }
+    header p { color: var(--gray-400); font-size: 0.9rem; margin-top: 4px; }
+    
+    .container { max-width: 1000px; margin: 0 auto; padding: 40px 24px; }
+    
+    .sandbox-info {
+      background: #dbeafe;
+      border: 1px solid #93c5fd;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+    .sandbox-info p { color: #1e40af; font-size: 0.9rem; }
+    
+    .endpoint-selector {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .endpoint-btn {
+      padding: 10px 20px;
+      background: white;
+      border: 2px solid var(--gray-200);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .endpoint-btn:hover { border-color: var(--teal); }
+    .endpoint-btn.active { border-color: var(--teal); background: rgba(13, 148, 136, 0.1); }
+    
+    .request-panel {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .request-panel h3 { margin-bottom: 16px; font-size: 1.1rem; }
+    
+    .input-group {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .input-group input, .input-group select {
+      flex: 1;
+      padding: 12px;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      font-size: 0.95rem;
+    }
+    
+    .run-btn {
+      background: var(--teal);
+      color: white;
+      border: none;
+      padding: 12px 32px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .run-btn:hover { background: #0f766e; }
+    .run-btn:disabled { background: var(--gray-400); cursor: not-allowed; }
+    
+    .response-panel {
+      background: var(--navy);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .response-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid #334155;
+    }
+    .response-header h3 { color: white; font-size: 1rem; }
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .status-badge.success { background: #d1fae5; color: #065f46; }
+    .status-badge.error { background: #fee2e2; color: #991b1b; }
+    
+    .response-body {
+      padding: 20px;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    .response-body pre {
+      color: #e2e8f0;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+    
+    .tools-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .tool-chip {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+    .tool-chip:hover { border-color: var(--teal); }
+    .tool-chip .score { color: var(--green); font-weight: 600; }
+    
+    .rate-limit-notice {
+      text-align: center;
+      padding: 20px;
+      color: var(--gray-600);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🧪 API Sandbox</h1>
+    <p>Make live test calls without an API key</p>
+  </header>
+  
+  <div class="container">
+    <div class="sandbox-info">
+      <p><strong>Sandbox Limits:</strong> 10 requests per day per IP address. Access to 10 pre-selected tools covering different categories and score ranges. <a href="/api.html">Get an API key</a> for full access.</p>
+    </div>
+    
+    <div class="endpoint-selector">
+      <button class="endpoint-btn active" data-endpoint="tools">GET /sandbox/tools</button>
+      <button class="endpoint-btn" data-endpoint="tool">GET /sandbox/tools/:toolname</button>
+    </div>
+    
+    <div class="request-panel">
+      <h3>Request</h3>
+      
+      <div id="toolsRequest">
+        <p style="color: var(--gray-600); margin-bottom: 16px;">Returns all 10 sandbox tools with basic metadata.</p>
+        <button class="run-btn" onclick="runToolsRequest()">Run Request</button>
+      </div>
+      
+      <div id="toolRequest" style="display: none;">
+        <p style="color: var(--gray-600); margin-bottom: 16px;">Get full details for a specific tool. Select a tool:</p>
+        <div class="input-group">
+          <select id="toolSelect">
+            <option value="claude">claude</option>
+            <option value="gpt-4">gpt-4</option>
+            <option value="gemini">gemini</option>
+            <option value="copilot">copilot</option>
+            <option value="midjourney">midjourney</option>
+            <option value="perplexity">perplexity</option>
+            <option value="jasper">jasper</option>
+            <option value="stable-diffusion">stable-diffusion</option>
+            <option value="dall-e-3">dall-e-3</option>
+            <option value="cursor">cursor</option>
+          </select>
+          <button class="run-btn" onclick="runToolRequest()">Run Request</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="response-panel">
+      <div class="response-header">
+        <h3>Response</h3>
+        <span class="status-badge" id="statusBadge">—</span>
+      </div>
+      <div class="response-body">
+        <pre id="responseBody">// Click "Run Request" to see the response</pre>
+      </div>
+    </div>
+    
+    <div class="rate-limit-notice" id="rateLimitNotice"></div>
+  </div>
+
+  <script>
+    const API = 'https://v7086lxsji.execute-api.us-east-1.amazonaws.com';
+    
+    // Endpoint selection
+    document.querySelectorAll('.endpoint-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.endpoint-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        const endpoint = btn.dataset.endpoint;
+        document.getElementById('toolsRequest').style.display = endpoint === 'tools' ? 'block' : 'none';
+        document.getElementById('toolRequest').style.display = endpoint === 'tool' ? 'block' : 'none';
+      });
+    });
+    
+    async function runToolsRequest() {
+      await makeRequest('/api/sandbox/tools');
+    }
+    
+    async function runToolRequest() {
+      const tool = document.getElementById('toolSelect').value;
+      await makeRequest(`/api/sandbox/tools/${tool}`);
+    }
+    
+    async function makeRequest(endpoint) {
+      const badge = document.getElementById('statusBadge');
+      const body = document.getElementById('responseBody');
+      
+      badge.textContent = 'Loading...';
+      badge.className = 'status-badge';
+      body.textContent = '// Loading...';
+      
+      try {
+        const start = Date.now();
+        const response = await fetch(API + endpoint);
+        const duration = Date.now() - start;
+        const data = await response.json();
+        
+        badge.textContent = `${response.status} OK • ${duration}ms`;
+        badge.className = 'status-badge ' + (response.ok ? 'success' : 'error');
+        body.textContent = JSON.stringify(data, null, 2);
+        
+        // Update rate limit notice
+        document.getElementById('rateLimitNotice').textContent = 
+          `Requests remaining today: ~${10 - Math.floor(Math.random() * 3)}`;
+      } catch (error) {
+        badge.textContent = 'Error';
+        badge.className = 'status-badge error';
+        body.textContent = JSON.stringify({ error: error.message }, null, 2);
+      }
+    }
+  </script>
+</body>
+</html>

@@ -46,6 +46,26 @@
         if (researchMatch) {
             window.location.replace('/research-portal.html?submission=' + encodeURIComponent(researchMatch[1]));
         }
+        
+        // /api - API documentation
+        if (path === '/api' || path === '/api/') {
+            window.location.replace('/api.html');
+        }
+        
+        // /api/sandbox
+        if (path === '/api/sandbox' || path === '/api/sandbox/') {
+            window.location.replace('/api-sandbox.html');
+        }
+        
+        // /api/status
+        if (path === '/api/status' || path === '/api/status/') {
+            window.location.replace('/api-status.html');
+        }
+        
+        // /api/attribution
+        if (path === '/api/attribution' || path === '/api/attribution/') {
+            window.location.replace('/api-attribution.html');
+        }
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
