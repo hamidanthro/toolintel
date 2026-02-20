@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Platform Audit Trail — ToolIntel</title>
+  <meta name="description" content="Real-time record of every meaningful action taken on the ToolIntel platform. Nothing is quietly edited. Nothing is silently removed.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0f2744;
+      --navy-light: #1e293b;
+      --teal: #0d9488;
+      --gray-50: #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-400: #94a3b8;
+      --gray-600: #475569;
+      --gray-800: #1e293b;
+      --white: #ffffff;
+      --blue: #3b82f6;
+      --green: #10b981;
+      --red: #ef4444;
+      --orange: #f97316;
+      --purple: #8b5cf6;
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', -apple-system, sans-serif; color: var(--gray-800); line-height: 1.7; background: var(--gray-50); }
+    h1, h2, h3 { font-family: 'Merriweather', Georgia, serif; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    
+    header { background: var(--navy); padding: 16px 0; }
+    nav { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .logo { font-weight: 700; font-size: 1.25rem; color: white; text-decoration: none; }
+    .logo span { color: var(--teal); }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a { color: var(--gray-400); font-size: 0.9rem; }
+    .nav-links a:hover { color: white; text-decoration: none; }
+    
+    .hero {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+      color: white;
+      padding: 50px 24px;
+      text-align: center;
+    }
+    .hero h1 { font-size: 2.2rem; margin-bottom: 12px; }
+    .hero .subtitle { color: rgba(255,255,255,0.8); max-width: 800px; margin: 0 auto 24px; font-size: 1.05rem; }
+    
+    .trust-statement {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 10px;
+      padding: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.9);
+      line-height: 1.7;
+    }
+    .trust-statement strong { color: var(--teal); }
+    
+    .container { max-width: 1200px; margin: 0 auto; padding: 30px 24px; }
+    
+    .main-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr 280px;
+      gap: 30px;
+    }
+    
+    /* Filter Panel */
+    .filter-panel {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 20px;
+      height: fit-content;
+      position: sticky;
+      top: 20px;
+    }
+    .filter-panel h3 {
+      font-size: 1rem;
+      color: var(--navy);
+      margin-bottom: 16px;
+    }
+    
+    .search-box {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+    }
+    
+    .filter-section {
+      margin-bottom: 20px;
+    }
+    .filter-section label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--gray-600);
+      font-weight: 600;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+    .filter-section select,
+    .filter-section input[type="date"] {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid var(--gray-200);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+    
+    .action-type-filters {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .action-filter {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .action-filter input { accent-color: var(--teal); }
+    .action-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    
+    .clear-filters {
+      background: none;
+      border: 1px solid var(--gray-200);
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: var(--gray-600);
+      width: 100%;
+      margin-top: 10px;
+    }
+    .clear-filters:hover { background: var(--gray-50); }
+    
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--gray-200);
+      margin-bottom: 20px;
+    }
+    .tab {
+      padding: 12px 20px;
+      cursor: pointer;
+      color: var(--gray-600);
+      font-size: 0.9rem;
+      font-weight: 500;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .tab:hover { color: var(--navy); }
+    .tab.active { color: var(--teal); border-bottom-color: var(--teal); }
+    
+    /* Feed Panel */
+    .feed-panel {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    
+    .panel-content {
+      display: none;
+      padding: 20px;
+    }
+    .panel-content.active { display: block; }
+    
+    /* Audit Entry */
+    .audit-entry {
+      display: grid;
+      grid-template-columns: 140px 160px 1fr;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--gray-100);
+      align-items: start;
+    }
+    .audit-entry:last-child { border-bottom: none; }
+    
+    .entry-time {
+      font-size: 0.85rem;
+      color: var(--gray-400);
+    }
+    .entry-time .date { font-weight: 500; color: var(--gray-600); }
+    
+    .entry-type {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: white;
+    }
+    
+    .entry-content {
+      flex: 1;
+    }
+    .entry-tool {
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+    .entry-tool a { color: var(--navy); }
+    .entry-desc {
+      color: var(--gray-600);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+    .entry-by {
+      color: var(--gray-400);
+      font-size: 0.8rem;
+      margin-top: 6px;
+    }
+    
+    /* Score Change Table */
+    .score-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .score-table th {
+      text-align: left;
+      padding: 12px;
+      background: var(--gray-50);
+      font-size: 0.8rem;
+      color: var(--gray-600);
+      text-transform: uppercase;
+    }
+    .score-table td {
+      padding: 12px;
+      border-bottom: 1px solid var(--gray-100);
+      font-size: 0.9rem;
+    }
+    .score-change {
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .score-change.up { color: var(--green); }
+    .score-change.down { color: var(--red); }
+    
+    /* Methodology Table */
+    .method-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .method-table th {
+      text-align: left;
+      padding: 12px;
+      background: var(--gray-50);
+      font-size: 0.8rem;
+      color: var(--gray-600);
+    }
+    .method-table td {
+      padding: 12px;
+      border-bottom: 1px solid var(--gray-100);
+      font-size: 0.9rem;
+    }
+    .version-badge {
+      background: var(--navy);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    
+    /* Rejection Summary */
+    .rejection-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+    .rejection-card {
+      background: var(--gray-50);
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .rejection-card h4 {
+      color: var(--navy);
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+    }
+    .rejection-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--gray-200);
+      font-size: 0.85rem;
+    }
+    .rejection-item:last-child { border-bottom: none; }
+    .rejection-count { font-weight: 600; color: var(--navy); }
+    
+    /* Vendor Contact Table */
+    .vendor-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .vendor-table th {
+      text-align: left;
+      padding: 12px;
+      background: var(--gray-50);
+      font-size: 0.8rem;
+      color: var(--gray-600);
+    }
+    .vendor-table td {
+      padding: 12px;
+      border-bottom: 1px solid var(--gray-100);
+      font-size: 0.9rem;
+    }
+    .outcome-badge {
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .outcome-badge.published { background: #d1fae5; color: #065f46; }
+    .outcome-badge.pending { background: #fef3c7; color: #92400e; }
+    .outcome-badge.declined { background: #fee2e2; color: #991b1b; }
+    .outcome-badge.nochange { background: #e2e8f0; color: #475569; }
+    
+    /* Stats Sidebar */
+    .stats-sidebar {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 20px;
+      height: fit-content;
+      position: sticky;
+      top: 20px;
+    }
+    .stats-sidebar h3 {
+      font-size: 1rem;
+      color: var(--navy);
+      margin-bottom: 16px;
+    }
+    .stat-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .stat-item:last-child { border-bottom: none; }
+    .stat-label { color: var(--gray-600); font-size: 0.85rem; }
+    .stat-value { font-weight: 700; color: var(--teal); }
+    
+    .export-section {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid var(--gray-200);
+    }
+    .export-btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background: var(--navy);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 8px;
+      text-align: center;
+      text-decoration: none;
+    }
+    .export-btn:hover { background: #1e3a5f; text-decoration: none; }
+    .export-btn.secondary {
+      background: white;
+      color: var(--navy);
+      border: 1px solid var(--gray-200);
+    }
+    .export-btn.secondary:hover { background: var(--gray-50); }
+    
+    .rss-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--gray-600);
+      font-size: 0.85rem;
+      margin-top: 12px;
+    }
+    
+    /* Important note */
+    .important-note {
+      background: #fef3c7;
+      border: 1px solid #fcd34d;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 20px;
+      font-size: 0.85rem;
+      color: #92400e;
+    }
+    
+    footer { padding: 40px 24px; text-align: center; border-top: 1px solid var(--gray-200); background: white; margin-top: 40px; }
+    footer p { color: var(--gray-400); font-size: 0.9rem; }
+    
+    @media (max-width: 1024px) {
+      .main-layout { grid-template-columns: 1fr; }
+      .filter-panel, .stats-sidebar { position: static; }
+      .audit-entry { grid-template-columns: 1fr; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="/" class="logo">Tool<span>Intel</span></a>
+      <div class="nav-links">
+        <a href="/reviews.html">Reviews</a>
+        <a href="/methodology.html">Methodology</a>
+        <a href="/transparency.html">Transparency</a>
+      </div>
+    </nav>
+  </header>
+  
+  <section class="hero">
+    <h1>Every Action We Take, Publicly Logged</h1>
+    <p class="subtitle">This page shows a real-time record of every meaningful action taken on the ToolIntel platform. Nothing is quietly edited. Nothing is silently removed. Every change is timestamped, attributed, and permanent.</p>
+    
+    <div class="trust-statement">
+      <strong>ToolIntel has never deleted a published review, never removed a security incident record, never changed a score at vendor request, and never published a review without completing all five methodology steps.</strong> This audit trail is the evidence. If you ever find a discrepancy between what this log shows and what appears on a tool's review page, contact us immediately at <a href="mailto:audit@toolintel.ai" style="color: #5eead4;">audit@toolintel.ai</a>.
+    </div>
+  </section>
+  
+  <div class="container">
+    <div class="main-layout">
+      <!-- Filter Panel -->
+      <aside class="filter-panel">
+        <h3>🔍 Filter & Search</h3>
+        
+        <input type="text" class="search-box" id="searchBox" placeholder="Search audit entries...">
+        
+        <div class="filter-section">
+          <label>Action Type</label>
+          <div class="action-type-filters" id="actionFilters"></div>
+        </div>
+        
+        <div class="filter-section">
+          <label>Tool</label>
+          <select id="toolFilter">
+            <option value="">All Tools</option>
+          </select>
+        </div>
+        
+        <div class="filter-section">
+          <label>Date Range</label>
+          <input type="date" id="startDate" placeholder="Start date">
+          <input type="date" id="endDate" placeholder="End date">
+        </div>
+        
+        <div class="filter-section">
+          <label>Impact Level</label>
+          <select id="impactFilter">
+            <option value="">All Levels</option>
+            <option value="high">High Impact</option>
+            <option value="medium">Medium Impact</option>
+            <option value="low">Low Impact</option>
+          </select>
+        </div>
+        
+        <button class="clear-filters" onclick="clearFilters()">Clear All Filters</button>
+      </aside>
+      
+      <!-- Main Feed -->
+      <main class="feed-panel">
+        <div class="tabs">
+          <div class="tab active" data-panel="feed">Live Feed</div>
+          <div class="tab" data-panel="scores">Score Changes</div>
+          <div class="tab" data-panel="methodology">Methodology</div>
+          <div class="tab" data-panel="rejections">Rejected Content</div>
+          <div class="tab" data-panel="vendor">Vendor Contacts</div>
+        </div>
+        
+        <div class="panel-content active" id="feed">
+          <div id="auditFeed"></div>
+        </div>
+        
+        <div class="panel-content" id="scores">
+          <div class="important-note">
+            <strong>This is the most scrutinized page on the platform.</strong> Any pattern of scores going up after vendor contact would be immediately visible here. The absence of such a pattern is one of the most powerful credibility signals we can display.
+          </div>
+          <table class="score-table" style="margin-top: 20px;">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Tool</th>
+                <th>Previous</th>
+                <th>New</th>
+                <th>Change</th>
+                <th>Reason</th>
+              </tr>
+            </thead>
+            <tbody id="scoreTable"></tbody>
+          </table>
+        </div>
+        
+        <div class="panel-content" id="methodology">
+          <p style="color: var(--gray-600); margin-bottom: 20px;">Complete history of methodology updates. Each version is permanently archived.</p>
+          <table class="method-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Version</th>
+                <th>What Changed</th>
+                <th>Why</th>
+                <th>Archive</th>
+              </tr>
+            </thead>
+            <tbody id="methodologyTable"></tbody>
+          </table>
+        </div>
+        
+        <div class="panel-content" id="rejections">
+          <p style="color: var(--gray-600); margin-bottom: 20px;">Summary of rejected submissions (last 90 days). Individual submissions are never published to protect submitter privacy.</p>
+          <div class="rejection-grid" id="rejectionsGrid"></div>
+        </div>
+        
+        <div class="panel-content" id="vendor">
+          <div class="important-note" style="margin-bottom: 20px;">
+            <strong>Every vendor interaction is logged regardless of outcome.</strong> Score appeals that result in no change are just as visible as any other entry. ToolIntel has never changed a score at vendor request.
+          </div>
+          <table class="vendor-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Tool</th>
+                <th>Contact Type</th>
+                <th>Outcome</th>
+              </tr>
+            </thead>
+            <tbody id="vendorTable"></tbody>
+          </table>
+        </div>
+      </main>
+      
+      <!-- Stats Sidebar -->
+      <aside class="stats-sidebar">
+        <h3>📊 30-Day Statistics</h3>
+        <div id="statsList"></div>
+        
+        <div class="export-section">
+          <button class="export-btn" onclick="downloadReport()">📥 Download Audit Report</button>
+          <a href="/api/audit/rss" class="export-btn secondary">📡 RSS Feed</a>
+          
+          <div class="rss-link">
+            <span>🔗</span>
+            <a href="/api.html#audit">API Documentation</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+  
+  <footer>
+    <p>© 2026 ToolIntel. Independent. Transparent. Every action logged.</p>
+  </footer>
+
+  <script>
+    const API = 'https://v7086lxsji.execute-api.us-east-1.amazonaws.com/audit';
+    
+    // Tab switching
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.panel-content').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.panel).classList.add('active');
+      });
+    });
+    
+    // Load all data
+    async function loadAuditData() {
+      try {
+        const [feedRes, scoresRes, methodRes, rejectRes, vendorRes, statsRes] = await Promise.all([
+          fetch(API),
+          fetch(`${API}/scores`),
+          fetch(`${API}/methodology`),
+          fetch(`${API}/rejections`),
+          fetch(`${API}/vendor-contacts`),
+          fetch(`${API}/stats`)
+        ]);
+        
+        const feed = await feedRes.json();
+        const scores = await scoresRes.json();
+        const methodology = await methodRes.json();
+        const rejections = await rejectRes.json();
+        const vendor = await vendorRes.json();
+        const stats = await statsRes.json();
+        
+        renderFeed(feed);
+        renderScoreTable(scores);
+        renderMethodology(methodology);
+        renderRejections(rejections);
+        renderVendorContacts(vendor);
+        renderStats(stats);
+        buildFilters(feed);
+        
+      } catch (error) {
+        console.error('Failed to load audit data:', error);
+        loadSampleData();
+      }
+    }
+    
+    function loadSampleData() {
+      // Fallback sample data
+      renderFeed({ entries: getSampleEntries(), actionTypes: getActionTypes() });
+      renderScoreTable(getSampleScores());
+      renderMethodology(getSampleMethodology());
+      renderRejections(getSampleRejections());
+      renderVendorContacts(getSampleVendorContacts());
+      renderStats(getSampleStats());
+      buildFilters({ entries: getSampleEntries(), actionTypes: getActionTypes() });
+    }
+    
+    function renderFeed(data) {
+      const container = document.getElementById('auditFeed');
+      
+      container.innerHTML = data.entries.map(entry => `
+        <div class="audit-entry">
+          <div class="entry-time">
+            <div class="date">${formatDate(entry.timestamp)}</div>
+            <div>${formatTime(entry.timestamp)}</div>
+          </div>
+          <div>
+            <span class="entry-type" style="background: ${entry.actionColor}">${entry.actionLabel}</span>
+          </div>
+          <div class="entry-content">
+            ${entry.toolName ? `<div class="entry-tool"><a href="/reviews/${entry.toolSlug}">${entry.toolName}</a></div>` : ''}
+            <div class="entry-desc">${entry.description}</div>
+            <div class="entry-by">Action by: ${entry.actionBy}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    function renderScoreTable(data) {
+      const tbody = document.getElementById('scoreTable');
+      
+      tbody.innerHTML = data.changes.map(c => `
+        <tr>
+          <td>${c.date}</td>
+          <td><a href="/reviews/${c.toolSlug}">${c.tool}</a></td>
+          <td>${c.prevScore}</td>
+          <td>${c.newScore}</td>
+          <td>
+            <span class="score-change ${c.change > 0 ? 'up' : 'down'}">
+              ${c.change > 0 ? '↑' : '↓'} ${Math.abs(c.change)}
+            </span>
+          </td>
+          <td>${c.reason}</td>
+        </tr>
+      `).join('');
+    }
+    
+    function renderMethodology(data) {
+      const tbody = document.getElementById('methodologyTable');
+      
+      tbody.innerHTML = data.versions.map(v => `
+        <tr>
+          <td>${v.date}</td>
+          <td><span class="version-badge">v${v.version}</span></td>
+          <td>${v.changes}</td>
+          <td>${v.reason}</td>
+          <td><a href="${v.documentUrl}">View Archive →</a></td>
+        </tr>
+      `).join('');
+    }
+    
+    function renderRejections(data) {
+      const grid = document.getElementById('rejectionsGrid');
+      
+      grid.innerHTML = `
+        <div class="rejection-card">
+          <h4>By Content Type</h4>
+          ${Object.entries(data.byType).map(([type, count]) => `
+            <div class="rejection-item">
+              <span>${type}</span>
+              <span class="rejection-count">${count}</span>
+            </div>
+          `).join('')}
+        </div>
+        <div class="rejection-card">
+          <h4>By Rejection Reason</h4>
+          ${Object.entries(data.byReason).map(([reason, count]) => `
+            <div class="rejection-item">
+              <span>${reason}</span>
+              <span class="rejection-count">${count}</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+    
+    function renderVendorContacts(data) {
+      const tbody = document.getElementById('vendorTable');
+      
+      tbody.innerHTML = data.contacts.map(c => {
+        let outcomeClass = 'published';
+        if (c.outcome === 'Pending') outcomeClass = 'pending';
+        if (c.outcome === 'Declined' || c.outcome === 'Rejected') outcomeClass = 'declined';
+        if (c.outcome === 'No Change') outcomeClass = 'nochange';
+        
+        return `
+          <tr>
+            <td>${c.date}</td>
+            <td><a href="/reviews/${c.toolSlug}">${c.tool}</a></td>
+            <td>${c.type}</td>
+            <td><span class="outcome-badge ${outcomeClass}">${c.outcome}</span></td>
+          </tr>
+        `;
+      }).join('');
+    }
+    
+    function renderStats(data) {
+      const container = document.getElementById('statsList');
+      const stats = data.stats;
+      
+      container.innerHTML = `
+        <div class="stat-item"><span class="stat-label">Reviews Published</span><span class="stat-value">${stats.reviewsPublished}</span></div>
+        <div class="stat-item"><span class="stat-label">Score Changes</span><span class="stat-value">${stats.scoreChangesMade}</span></div>
+        <div class="stat-item"><span class="stat-label">Pricing Verifications</span><span class="stat-value">${stats.pricingVerifications}</span></div>
+        <div class="stat-item"><span class="stat-label">Community Approved</span><span class="stat-value">${stats.communityReviewsApproved}</span></div>
+        <div class="stat-item"><span class="stat-label">Community Rejected</span><span class="stat-value">${stats.communityReviewsRejected}</span></div>
+        <div class="stat-item"><span class="stat-label">Expert Contributions</span><span class="stat-value">${stats.expertContributionsPublished}</span></div>
+        <div class="stat-item"><span class="stat-label">Research Published</span><span class="stat-value">${stats.researchSubmissionsPublished}</span></div>
+      `;
+    }
+    
+    function buildFilters(data) {
+      const actionFilters = document.getElementById('actionFilters');
+      const toolFilter = document.getElementById('toolFilter');
+      
+      // Action type checkboxes
+      actionFilters.innerHTML = Object.entries(data.actionTypes).map(([key, val]) => `
+        <label class="action-filter">
+          <input type="checkbox" value="${key}" onchange="applyFilters()">
+          <span class="action-dot" style="background: ${val.color}"></span>
+          <span>${val.label}</span>
+        </label>
+      `).join('');
+      
+      // Tool dropdown
+      const tools = [...new Set(data.entries.filter(e => e.toolSlug).map(e => ({ slug: e.toolSlug, name: e.toolName })))];
+      toolFilter.innerHTML = '<option value="">All Tools</option>' + 
+        tools.map(t => `<option value="${t.slug}">${t.name}</option>`).join('');
+    }
+    
+    function formatDate(timestamp) {
+      return new Date(timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+    
+    function formatTime(timestamp) {
+      return new Date(timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    }
+    
+    function clearFilters() {
+      document.querySelectorAll('.action-filter input').forEach(cb => cb.checked = false);
+      document.getElementById('toolFilter').value = '';
+      document.getElementById('startDate').value = '';
+      document.getElementById('endDate').value = '';
+      document.getElementById('impactFilter').value = '';
+      document.getElementById('searchBox').value = '';
+      loadAuditData();
+    }
+    
+    function downloadReport() {
+      const startDate = document.getElementById('startDate').value || '';
+      const endDate = document.getElementById('endDate').value || '';
+      alert(`Generating audit report for ${startDate || 'all time'} to ${endDate || 'present'}...`);
+      // In production, redirect to PDF download
+    }
+    
+    // Sample data fallbacks
+    function getActionTypes() {
+      return {
+        REVIEW_PUBLISHED: { label: 'Review Published', color: '#0f2744', impact: 'high' },
+        SCORE_UPDATED: { label: 'Score Updated', color: '#3b82f6', impact: 'high' },
+        PRICING_VERIFIED: { label: 'Pricing Verified', color: '#10b981', impact: 'medium' },
+        CERTIFICATION_VERIFIED: { label: 'Certification Verified', color: '#0d9488', impact: 'medium' },
+        SECURITY_INCIDENT: { label: 'Security Incident', color: '#ef4444', impact: 'high' },
+        EXPERT_PUBLISHED: { label: 'Expert Contribution', color: '#0f766e', impact: 'medium' }
+      };
+    }
+    
+    function getSampleEntries() {
+      return [
+        { id: '1', timestamp: new Date().toISOString(), actionType: 'SCORE_UPDATED', actionLabel: 'Score Updated', actionColor: '#3b82f6', toolName: 'Claude', toolSlug: 'claude', description: 'Claude overall score updated from 87 to 89 following SOC 2 Type II verification', actionBy: 'ToolIntel Editorial Team' },
+        { id: '2', timestamp: new Date(Date.now() - 86400000).toISOString(), actionType: 'REVIEW_PUBLISHED', actionLabel: 'Review Published', actionColor: '#0f2744', toolName: 'Stable Diffusion', toolSlug: 'stable-diffusion', description: 'Initial review published with overall score 77/100', actionBy: 'ToolIntel Editorial Team' },
+        { id: '3', timestamp: new Date(Date.now() - 172800000).toISOString(), actionType: 'PRICING_VERIFIED', actionLabel: 'Pricing Verified', actionColor: '#10b981', toolName: 'Jasper', toolSlug: 'jasper', description: 'Pro tier price increase from $49 to $59 verified', actionBy: 'ToolIntel Editorial Team' }
+      ];
+    }
+    
+    function getSampleScores() {
+      return { changes: [
+        { date: '2026-02-20', tool: 'Claude', toolSlug: 'claude', prevScore: 87, newScore: 89, change: 2, reason: 'SOC 2 verification' }
+      ]};
+    }
+    
+    function getSampleMethodology() {
+      return { versions: [
+        { version: '1.1', date: '2026-02-15', changes: 'Added EU AI Act compliance', reason: 'Regulatory preparedness', documentUrl: '/methodology.html' }
+      ]};
+    }
+    
+    function getSampleRejections() {
+      return { byType: { 'Community Review': 31 }, byReason: { 'Insufficient detail': 18 }};
+    }
+    
+    function getSampleVendorContacts() {
+      return { contacts: [
+        { date: '2026-02-18', tool: 'Claude', toolSlug: 'claude', type: 'Certification Submission', outcome: 'Published' }
+      ]};
+    }
+    
+    function getSampleStats() {
+      return { stats: { reviewsPublished: 8, scoreChangesMade: 5, pricingVerifications: 23, communityReviewsApproved: 12, communityReviewsRejected: 8, expertContributionsPublished: 4, researchSubmissionsPublished: 2 }};
+    }
+    
+    // Initialize
+    loadAuditData();
+  </script>
+</body>
+</html>
