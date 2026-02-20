@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procurement Pack — ToolIntel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: #f9fafb; }
+        
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            color: #6b7280;
+        }
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #e5e7eb;
+            border-top-color: #0f2744;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 16px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .error {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 24px;
+            text-align: center;
+        }
+        .error h1 {
+            font-size: 4rem;
+            color: #e5e7eb;
+            margin-bottom: 16px;
+        }
+        .error p {
+            color: #6b7280;
+            margin-bottom: 24px;
+        }
+        .error a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+        .error a:hover { text-decoration: underline; }
+        
+        .pack-container {
+            background: white;
+            min-height: 100vh;
+        }
+        
+        .pack-header {
+            background: #0f2744;
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .pack-header .logo {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        .pack-header .logo span { color: #3b82f6; }
+        .pack-header .actions {
+            display: flex;
+            gap: 12px;
+        }
+        .pack-header .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            background: white;
+            color: #0f2744;
+        }
+        .pack-header .btn:hover { background: #f3f4f6; }
+        
+        .pack-content {
+            max-width: 8.5in;
+            margin: 0 auto;
+        }
+        
+        @media print {
+            .pack-header { display: none; }
+            .pack-container { background: white; }
+        }
+    </style>
+</head>
+<body>
+    <div id="content">
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Loading Procurement Pack...</p>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = 'https://v7086lxsji.execute-api.us-east-1.amazonaws.com';
+        
+        function getShareId() {
+            // Try path: /pack/[id]
+            const pathMatch = window.location.pathname.match(/\/pack\/([^/]+)/);
+            if (pathMatch) return pathMatch[1];
+            
+            // Try query param
+            const params = new URLSearchParams(window.location.search);
+            return params.get('id');
+        }
+        
+        async function loadPack() {
+            const shareId = getShareId();
+            
+            if (!shareId) {
+                showError('No pack ID specified', 'The link you followed appears to be incomplete.');
+                return;
+            }
+            
+            try {
+                const res = await fetch(`${API_BASE}/procurement/shared/${shareId}`);
+                
+                if (res.status === 404) {
+                    showError('Pack Not Found', 'This procurement pack does not exist or has been removed.');
+                    return;
+                }
+                
+                if (res.status === 410) {
+                    showError('Pack Expired', 'This procurement pack link has expired. Shared links are valid for 90 days.');
+                    return;
+                }
+                
+                if (!res.ok) {
+                    throw new Error('Failed to load pack');
+                }
+                
+                const html = await res.text();
+                
+                // Wrap in container with header
+                document.getElementById('content').innerHTML = `
+                    <div class="pack-container">
+                        <div class="pack-header">
+                            <div class="logo">Tool<span>Intel</span> Procurement Pack</div>
+                            <div class="actions">
+                                <button class="btn" onclick="window.print()">🖨️ Print / Save PDF</button>
+                                <a href="/" class="btn">Visit ToolIntel</a>
+                            </div>
+                        </div>
+                        <div class="pack-content">
+                            ${html}
+                        </div>
+                    </div>
+                `;
+                
+            } catch (e) {
+                console.error(e);
+                showError('Error Loading Pack', 'Unable to load this procurement pack. Please try again later.');
+            }
+        }
+        
+        function showError(title, message) {
+            document.getElementById('content').innerHTML = `
+                <div class="error">
+                    <h1>⚠️</h1>
+                    <h2 style="color:#0f2744;margin-bottom:8px;">${title}</h2>
+                    <p>${message}</p>
+                    <a href="/">← Return to ToolIntel</a>
+                </div>
+            `;
+        }
+        
+        loadPack();
+    </script>
+</body>
+</html>

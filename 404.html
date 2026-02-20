@@ -5,13 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Page Not Found — ToolIntel</title>
     <script>
-        // Handle /tools/[slug]/pricing-history routes
+        // Handle dynamic routes
         const path = window.location.pathname;
-        const pricingHistoryMatch = path.match(/^\/tools\/([^/]+)\/pricing-history\/?$/);
         
+        // /tools/[slug]/pricing-history
+        const pricingHistoryMatch = path.match(/^\/tools\/([^/]+)\/pricing-history\/?$/);
         if (pricingHistoryMatch) {
-            // Redirect to pricing-history.html with tool parameter
             window.location.replace('/pricing-history.html?tool=' + encodeURIComponent(pricingHistoryMatch[1]));
+        }
+        
+        // /pack/[id] - shared procurement packs
+        const packMatch = path.match(/^\/pack\/([^/]+)\/?$/);
+        if (packMatch) {
+            window.location.replace('/pack.html?id=' + encodeURIComponent(packMatch[1]));
         }
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
