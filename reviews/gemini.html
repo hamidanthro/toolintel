@@ -393,6 +393,11 @@
                     <div id="securityIncidents"></div>
                 </div>
 
+                <div class="section">
+                    <h2>Policy Change History</h2>
+                    <div id="policyChanges"></div>
+                </div>
+
             </div>
         </div>
     </main>
@@ -401,6 +406,8 @@
         <p>© 2026 ToolIntel. <a href="/methodology.html">Methodology</a> is always public.</p>
     </footer>
     <script src="/js/security-incidents.js"></script>
-    <script>new SecurityIncidentsWidget('securityIncidents', 'gemini', 'Gemini');</script>
+    <script src="/js/policy-changes.js"></script>
+    <script>new SecurityIncidentsWidget('securityIncidents', 'gemini', 'Gemini');
+new PolicyChangesWidget('policyChanges', 'gemini', 'Gemini');</script>
 </body>
 </html>

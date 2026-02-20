@@ -232,6 +232,11 @@
                     <div id="securityIncidents"></div>
                 </div>
 
+                <div class="section">
+                    <h2>Policy Change History</h2>
+                    <div id="policyChanges"></div>
+                </div>
+
                 <div class="section community-section" id="community">
                     <h2>Community Reviews <span class="community-badge">VERIFIED USERS</span></h2>
                     <p>Reviews from verified users. These are separate from our editorial review and are manually approved to ensure authenticity.</p>
@@ -659,6 +664,8 @@
         initCertificationForm('elevenlabs', 'ElevenLabs');
     </script>
     <script src="/js/security-incidents.js"></script>
-    <script>new SecurityIncidentsWidget('securityIncidents', 'elevenlabs', 'ElevenLabs');</script>
+    <script src="/js/policy-changes.js"></script>
+    <script>new SecurityIncidentsWidget('securityIncidents', 'elevenlabs', 'ElevenLabs');
+new PolicyChangesWidget('policyChanges', 'elevenlabs', 'ElevenLabs');</script>
 </body>
 </html>
