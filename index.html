@@ -4,9 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tool Intel — Independent AI Tool Reviews</title>
-    <meta name="description" content="The most rigorous, independent resource for evaluating AI tools. No sponsored placements. No pay-to-play. Just honest, transparent reviews.">
+    <meta name="description" content="1,000+ AI tools reviewed independently. No sponsored placements. Find the best AI tools with transparent, rigorous scoring.">
     
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
@@ -23,512 +22,481 @@
             --gray-600: #4b5563;
             --gray-800: #1f2937;
             --white: #ffffff;
+            --green: #10b981;
+            --yellow: #f59e0b;
         }
         
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; color: var(--gray-800); line-height: 1.6; }
+        h1, h2, h3 { font-family: 'Merriweather', Georgia, serif; font-weight: 700; line-height: 1.3; }
         
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            color: var(--gray-800);
-            line-height: 1.6;
-            background: var(--white);
-        }
-        
-        /* Typography */
-        h1, h2, h3 {
-            font-family: 'Merriweather', Georgia, serif;
-            font-weight: 700;
-            line-height: 1.2;
-        }
-        
-        /* Layout */
-        .container {
-            max-width: 1120px;
-            margin: 0 auto;
-            padding: 0 24px;
-        }
-        
-        /* Header */
-        header {
-            padding: 20px 0;
-            border-bottom: 1px solid var(--gray-200);
-        }
-        
-        .header-inner {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            font-family: 'Merriweather', serif;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--navy);
-            text-decoration: none;
-        }
-        
-        .logo span {
-            color: var(--blue-accent);
-        }
-        
-        nav a {
-            color: var(--gray-600);
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            margin-left: 32px;
-            transition: color 0.2s;
-        }
-        
-        nav a:hover {
-            color: var(--navy);
-        }
+        header { padding: 16px 0; border-bottom: 1px solid var(--gray-200); background: var(--white); }
+        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        .logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.5rem; color: var(--navy); text-decoration: none; }
+        .logo span { color: var(--blue-accent); }
+        .nav-links { display: flex; gap: 32px; align-items: center; }
+        .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+        .nav-links a:hover { color: var(--navy); }
+        .nav-links a.primary { background: var(--navy); color: white; padding: 8px 16px; border-radius: 6px; }
+        .nav-links a.primary:hover { background: var(--navy-light); }
         
         /* Hero */
         .hero {
-            padding: 80px 0 60px;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+            color: var(--white);
+            padding: 80px 24px;
             text-align: center;
         }
+        .hero h1 { font-size: 2.75rem; margin-bottom: 16px; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .hero p { font-size: 1.25rem; opacity: 0.9; max-width: 600px; margin: 0 auto 32px; }
         
-        .hero h1 {
-            font-size: clamp(2rem, 5vw, 3rem);
-            color: var(--navy);
-            margin-bottom: 24px;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .hero .subtitle {
-            font-size: 1.25rem;
-            color: var(--gray-600);
+        .search-container {
             max-width: 600px;
-            margin: 0 auto 40px;
+            margin: 0 auto 24px;
+            position: relative;
+        }
+        .hero-search {
+            width: 100%;
+            padding: 16px 20px 16px 50px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 12px;
+            background: var(--white);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        .hero-search:focus { outline: none; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-400);
+            font-size: 1.2rem;
         }
         
-        /* Trust bar */
-        .trust-bar {
+        .hero-stats {
             display: flex;
             justify-content: center;
             gap: 48px;
-            flex-wrap: wrap;
-            padding: 24px 0;
-            border-top: 1px solid var(--gray-200);
-            border-bottom: 1px solid var(--gray-200);
-            margin-bottom: 60px;
+            margin-top: 32px;
         }
+        .hero-stat { text-align: center; }
+        .hero-stat .number { font-size: 2rem; font-weight: 700; }
+        .hero-stat .label { font-size: 0.9rem; opacity: 0.8; }
         
-        .trust-item {
+        .trust-badges {
             display: flex;
-            align-items: center;
-            gap: 8px;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 32px;
             font-size: 0.9rem;
-            color: var(--gray-600);
+            opacity: 0.85;
         }
+        .trust-badges span { display: flex; align-items: center; gap: 6px; }
         
-        .trust-item svg {
-            width: 20px;
-            height: 20px;
-            color: var(--blue-accent);
-        }
-        
-        /* Methodology Preview */
-        .methodology {
-            padding: 60px 0;
+        /* Featured Reviews */
+        .featured {
+            padding: 60px 24px;
             background: var(--gray-50);
         }
-        
-        .methodology h2 {
-            text-align: center;
-            font-size: 2rem;
-            color: var(--navy);
-            margin-bottom: 16px;
+        .featured-inner { max-width: 1200px; margin: 0 auto; }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
         }
+        .section-header h2 { font-size: 1.75rem; color: var(--navy); }
+        .section-header a { color: var(--blue-accent); text-decoration: none; font-weight: 500; }
         
-        .methodology .lead {
-            text-align: center;
-            color: var(--gray-600);
-            max-width: 700px;
-            margin: 0 auto 48px;
-        }
-        
-        .process-steps {
+        .reviews-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 24px;
-            margin-bottom: 60px;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
         }
-        
-        .step {
+        .review-card {
             background: var(--white);
-            padding: 24px;
-            border-radius: 8px;
             border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 24px;
+            text-decoration: none;
+            transition: all 0.2s;
+            display: flex;
+            gap: 16px;
         }
+        .review-card:hover { border-color: var(--blue-accent); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         
-        .step-number {
-            display: inline-flex;
+        .score-circle {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
             align-items: center;
             justify-content: center;
-            width: 32px;
-            height: 32px;
-            background: var(--navy);
-            color: var(--white);
-            border-radius: 50%;
-            font-size: 0.875rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-        
-        .step h3 {
-            font-family: 'Inter', sans-serif;
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--navy);
-            margin-bottom: 8px;
-        }
-        
-        .step p {
-            font-size: 0.875rem;
-            color: var(--gray-600);
-        }
-        
-        /* Scoring Framework */
-        .scoring {
-            padding: 60px 0;
-        }
-        
-        .scoring h2 {
-            text-align: center;
-            font-size: 2rem;
-            color: var(--navy);
-            margin-bottom: 16px;
-        }
-        
-        .scoring .lead {
-            text-align: center;
-            color: var(--gray-600);
-            max-width: 600px;
-            margin: 0 auto 48px;
-        }
-        
-        .categories {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 16px;
-        }
-        
-        .category {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 16px 20px;
-            background: var(--gray-50);
-            border-radius: 8px;
-        }
-        
-        .category-weight {
+            flex-shrink: 0;
             font-size: 1.25rem;
             font-weight: 700;
-            color: var(--navy);
-            min-width: 48px;
         }
+        .score-circle.green { background: #d1fae5; border: 3px solid #10b981; color: #065f46; }
+        .score-circle.yellow { background: #fef3c7; border: 3px solid #f59e0b; color: #92400e; }
         
-        .category-name {
-            font-weight: 500;
-            color: var(--gray-800);
+        .review-card .info { flex: 1; }
+        .review-card .name { font-weight: 600; color: var(--navy); font-size: 1.1rem; margin-bottom: 4px; }
+        .review-card .tagline { color: var(--gray-600); font-size: 0.9rem; margin-bottom: 8px; }
+        .review-card .meta { font-size: 0.8rem; color: var(--gray-400); }
+        
+        /* Categories */
+        .categories {
+            padding: 60px 24px;
+            background: var(--white);
         }
+        .categories-inner { max-width: 1200px; margin: 0 auto; }
+        .categories-inner h2 { font-size: 1.75rem; color: var(--navy); margin-bottom: 32px; text-align: center; }
         
-        /* Waitlist */
-        .waitlist {
-            padding: 80px 0;
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 16px;
+        }
+        .category-card {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .category-card:hover { border-color: var(--blue-accent); background: var(--white); }
+        .category-card .icon { font-size: 1.75rem; margin-bottom: 8px; }
+        .category-card .name { font-weight: 600; color: var(--navy); font-size: 0.95rem; margin-bottom: 4px; }
+        .category-card .count { font-size: 0.8rem; color: var(--gray-400); }
+        
+        /* Queue Preview */
+        .queue-preview {
+            padding: 60px 24px;
+            background: var(--gray-50);
+        }
+        .queue-inner { max-width: 1200px; margin: 0 auto; }
+        .queue-inner h2 { font-size: 1.75rem; color: var(--navy); margin-bottom: 8px; text-align: center; }
+        .queue-inner .subtitle { text-align: center; color: var(--gray-600); margin-bottom: 32px; }
+        
+        .queue-scroll {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 16px;
+        }
+        .queue-item {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 12px 16px;
+            min-width: 200px;
+            flex-shrink: 0;
+        }
+        .queue-item .name { font-weight: 500; color: var(--navy); }
+        .queue-item .cat { font-size: 0.8rem; color: var(--gray-400); }
+        
+        /* CTA */
+        .cta-section {
+            padding: 80px 24px;
             background: var(--navy);
+            color: var(--white);
             text-align: center;
         }
-        
-        .waitlist h2 {
-            color: var(--white);
-            font-size: 2rem;
-            margin-bottom: 16px;
-        }
-        
-        .waitlist p {
-            color: var(--gray-400);
-            max-width: 500px;
-            margin: 0 auto 32px;
-        }
+        .cta-section h2 { font-size: 2rem; margin-bottom: 16px; }
+        .cta-section p { opacity: 0.9; margin-bottom: 32px; max-width: 500px; margin-left: auto; margin-right: auto; }
         
         .waitlist-form {
             display: flex;
-            justify-content: center;
             gap: 12px;
-            flex-wrap: wrap;
-            max-width: 480px;
+            max-width: 450px;
             margin: 0 auto;
         }
-        
         .waitlist-form input {
             flex: 1;
-            min-width: 240px;
             padding: 14px 18px;
-            font-size: 1rem;
             border: none;
-            border-radius: 6px;
-            outline: none;
+            border-radius: 8px;
+            font-size: 1rem;
         }
-        
         .waitlist-form button {
-            padding: 14px 28px;
-            font-size: 1rem;
-            font-weight: 600;
+            padding: 14px 24px;
             background: var(--blue-accent);
-            color: var(--white);
+            color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
+            font-weight: 600;
             cursor: pointer;
-            transition: background 0.2s;
+            white-space: nowrap;
         }
+        .waitlist-form button:hover { background: #2563eb; }
         
-        .waitlist-form button:hover {
-            background: #2563eb;
-        }
-        
-        .waitlist-note {
-            margin-top: 16px;
-            font-size: 0.8rem;
-            color: var(--gray-400);
-        }
-        
-        /* Footer */
         footer {
-            padding: 40px 0;
+            padding: 40px 24px;
+            background: var(--white);
             border-top: 1px solid var(--gray-200);
             text-align: center;
         }
+        footer p { color: var(--gray-400); font-size: 0.9rem; }
+        footer a { color: var(--gray-600); margin: 0 12px; }
         
-        footer p {
-            font-size: 0.875rem;
-            color: var(--gray-600);
-        }
-        
-        footer a {
-            color: var(--navy);
-            text-decoration: none;
-        }
-        
-        /* Responsive */
-        @media (max-width: 640px) {
-            .trust-bar {
-                gap: 24px;
-            }
-            
-            nav {
-                display: none;
-            }
-            
-            .hero {
-                padding: 60px 0 40px;
-            }
-            
-            .process-steps {
-                grid-template-columns: 1fr;
-            }
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .hero-stats { flex-direction: column; gap: 16px; }
+            .trust-badges { flex-direction: column; gap: 8px; }
+            .reviews-grid { grid-template-columns: 1fr; }
+            .waitlist-form { flex-direction: column; }
+            .nav-links { gap: 16px; }
         }
     </style>
 </head>
 <body>
     <header>
-        <div class="container header-inner">
+        <nav>
             <a href="/" class="logo">Tool<span>Intel</span></a>
-            <nav>
-                <a href="/methodology.html">Methodology</a>
+            <div class="nav-links">
                 <a href="/reviews.html">Reviews</a>
-                <a href="/transparency.html">Transparency</a>
-            </nav>
-        </div>
+                <a href="/categories/index.html">Categories</a>
+                <a href="/methodology.html">Methodology</a>
+                <a href="/submit.html" class="primary">Submit Tool</a>
+            </div>
+        </nav>
     </header>
-    
-    <main>
-        <section class="hero">
-            <div class="container">
-                <h1>The Independent Authority for AI Tool Evaluation</h1>
-                <p class="subtitle">
-                    Rigorous, transparent reviews of AI tools. No sponsored placements. 
-                    No pay-to-play. Just the truth about what works.
-                </p>
+
+    <section class="hero">
+        <h1>Find the Best AI Tools — Reviewed Independently</h1>
+        <p>1,000+ AI tools evaluated with rigorous, transparent methodology. No sponsored placements. No pay-to-play.</p>
+        
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="hero-search" placeholder="Search AI tools (ChatGPT, Midjourney, Cursor...)" id="heroSearch">
+        </div>
+        
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <div class="number">1,000+</div>
+                <div class="label">Tools in Database</div>
+            </div>
+            <div class="hero-stat">
+                <div class="number">6</div>
+                <div class="label">Reviews Published</div>
+            </div>
+            <div class="hero-stat">
+                <div class="number">40+</div>
+                <div class="label">Categories</div>
+            </div>
+        </div>
+        
+        <div class="trust-badges">
+            <span>✓ No Sponsored Content</span>
+            <span>✓ Public Methodology</span>
+            <span>✓ Global Coverage</span>
+        </div>
+    </section>
+
+    <section class="featured">
+        <div class="featured-inner">
+            <div class="section-header">
+                <h2>Latest Reviews</h2>
+                <a href="/reviews.html">View All Reviews →</a>
             </div>
             
-            <div class="trust-bar">
-                <div class="trust-item">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <span>No Sponsored Content</span>
-                </div>
-                <div class="trust-item">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                    </svg>
-                    <span>Public Methodology</span>
-                </div>
-                <div class="trust-item">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                    </svg>
-                    <span>Full Transparency</span>
-                </div>
-            </div>
-        </section>
-        
-        <section class="methodology" id="methodology">
-            <div class="container">
-                <h2>How We Review</h2>
-                <p class="lead">
-                    Every AI tool undergoes a rigorous 5-step evaluation process. 
-                    No shortcuts. No exceptions.
-                </p>
+            <div class="reviews-grid">
+                <a href="/reviews/claude.html" class="review-card">
+                    <div class="score-circle green">89</div>
+                    <div class="info">
+                        <div class="name">Claude</div>
+                        <div class="tagline">Best-in-class reasoning, industry-leading safety</div>
+                        <div class="meta">Foundation Models • From $20/mo</div>
+                    </div>
+                </a>
                 
-                <div class="process-steps">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <h3>Independent Testing</h3>
-                        <p>Minimum 2 weeks of active use across realistic scenarios. We pay for every tool we test.</p>
+                <a href="/reviews/chatgpt.html" class="review-card">
+                    <div class="score-circle green">87</div>
+                    <div class="info">
+                        <div class="name">ChatGPT</div>
+                        <div class="tagline">Most complete multimodal AI ecosystem</div>
+                        <div class="meta">Foundation Models • From $20/mo</div>
                     </div>
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <h3>Documentation Review</h3>
-                        <p>Privacy policies, terms of service, and security certifications analyzed line by line.</p>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <h3>Developer Interview</h3>
-                        <p>Direct conversations with the team about architecture, data handling, and roadmap.</p>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">4</div>
-                        <h3>Expert Cross-Check</h3>
-                        <p>Independent researchers validate findings before publication.</p>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">5</div>
-                        <h3>Public Score</h3>
-                        <p>Transparent scoring with full rationale for every category. Companies can respond.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-        
-        <section class="scoring" id="scoring">
-            <div class="container">
-                <h2>10-Category Scoring Framework</h2>
-                <p class="lead">
-                    Every tool scored 0–100 across weighted categories that matter to buyers.
-                </p>
+                </a>
                 
-                <div class="categories">
-                    <div class="category">
-                        <span class="category-weight">25%</span>
-                        <span class="category-name">Core AI Performance</span>
+                <a href="/reviews/cursor.html" class="review-card">
+                    <div class="score-circle green">85</div>
+                    <div class="info">
+                        <div class="name">Cursor</div>
+                        <div class="tagline">The AI-native IDE developers actually want</div>
+                        <div class="meta">AI Coding • From $20/mo</div>
                     </div>
-                    <div class="category">
-                        <span class="category-weight">20%</span>
-                        <span class="category-name">Data Privacy & Security</span>
+                </a>
+                
+                <a href="/reviews/midjourney.html" class="review-card">
+                    <div class="score-circle green">81</div>
+                    <div class="info">
+                        <div class="name">Midjourney</div>
+                        <div class="tagline">Unmatched aesthetic quality, unique artistic style</div>
+                        <div class="meta">Image Generation • From $10/mo</div>
                     </div>
-                    <div class="category">
-                        <span class="category-weight">15%</span>
-                        <span class="category-name">Transparency & Explainability</span>
+                </a>
+                
+                <a href="/reviews/replyquik.html" class="review-card">
+                    <div class="score-circle yellow">76</div>
+                    <div class="info">
+                        <div class="name">ReplyQuik</div>
+                        <div class="tagline">Affordable SMB chatbot, solid basics</div>
+                        <div class="meta">AI Chatbots • From $19.99/mo</div>
                     </div>
-                    <div class="category">
-                        <span class="category-weight">10%</span>
-                        <span class="category-name">Reliability & Uptime</span>
+                </a>
+                
+                <a href="/reviews/jasper.html" class="review-card">
+                    <div class="score-circle yellow">74</div>
+                    <div class="info">
+                        <div class="name">Jasper</div>
+                        <div class="tagline">Enterprise marketing AI with a steep price tag</div>
+                        <div class="meta">AI Writing • From $69/mo</div>
                     </div>
-                    <div class="category">
-                        <span class="category-weight">10%</span>
-                        <span class="category-name">Compliance & Regulatory Fit</span>
-                    </div>
-                    <div class="category">
-                        <span class="category-weight">8%</span>
-                        <span class="category-name">Pricing Fairness</span>
-                    </div>
-                    <div class="category">
-                        <span class="category-weight">5%</span>
-                        <span class="category-name">Integration & Usability</span>
-                    </div>
-                    <div class="category">
-                        <span class="category-weight">4%</span>
-                        <span class="category-name">Human Override Capability</span>
-                    </div>
-                    <div class="category">
-                        <span class="category-weight">2%</span>
-                        <span class="category-name">Vendor Accountability</span>
-                    </div>
-                    <div class="category">
-                        <span class="category-weight">1%</span>
-                        <span class="category-name">Bias & Fairness</span>
-                    </div>
-                </div>
+                </a>
             </div>
-        </section>
-        
-        <section class="waitlist" id="waitlist">
-            <div class="container">
-                <h2>Coming Soon</h2>
-                <p>
-                    We're reviewing our first batch of AI tools now. 
-                    Get notified when we publish.
-                </p>
-                <form class="waitlist-form" id="waitlist-form">
-                    <input type="email" name="email" id="waitlist-email" placeholder="you@company.com" required>
-                    <button type="submit" id="waitlist-btn">Notify Me</button>
-                </form>
-                <p class="waitlist-note" id="waitlist-msg">No spam. Only launch updates.</p>
-            </div>
-        </section>
-    </main>
-    
-    <footer>
-        <div class="container">
-            <p>© 2026 Tool Intel. <a href="/methodology.html">Methodology</a> · <a href="/transparency.html">Transparency</a></p>
         </div>
+    </section>
+
+    <section class="categories">
+        <div class="categories-inner">
+            <h2>Browse by Category</h2>
+            
+            <div class="category-grid">
+                <a href="/categories/index.html" class="category-card">
+                    <div class="icon">🤖</div>
+                    <div class="name">Foundation Models</div>
+                    <div class="count">50+ tools</div>
+                </a>
+                <a href="/categories/coding.html" class="category-card">
+                    <div class="icon">💻</div>
+                    <div class="name">AI Coding</div>
+                    <div class="count">40+ tools</div>
+                </a>
+                <a href="/categories/index.html" class="category-card">
+                    <div class="icon">🎨</div>
+                    <div class="name">Image Generation</div>
+                    <div class="count">50+ tools</div>
+                </a>
+                <a href="/categories/index.html" class="category-card">
+                    <div class="icon">🎬</div>
+                    <div class="name">Video Generation</div>
+                    <div class="count">30+ tools</div>
+                </a>
+                <a href="/categories/writing.html" class="category-card">
+                    <div class="icon">✍️</div>
+                    <div class="name">AI Writing</div>
+                    <div class="count">40+ tools</div>
+                </a>
+                <a href="/categories/chatbots.html" class="category-card">
+                    <div class="icon">💬</div>
+                    <div class="name">Chatbots</div>
+                    <div class="count">35+ tools</div>
+                </a>
+                <a href="/categories/index.html" class="category-card">
+                    <div class="icon">🎙️</div>
+                    <div class="name">Voice & TTS</div>
+                    <div class="count">30+ tools</div>
+                </a>
+                <a href="/categories/index.html" class="category-card">
+                    <div class="icon">🔍</div>
+                    <div class="name">AI Search</div>
+                    <div class="count">15+ tools</div>
+                </a>
+                <a href="/categories/index.html" class="category-card">
+                    <div class="icon">⚡</div>
+                    <div class="name">Automation</div>
+                    <div class="count">20+ tools</div>
+                </a>
+                <a href="/categories/index.html" class="category-card">
+                    <div class="icon">📊</div>
+                    <div class="name">Data & Analytics</div>
+                    <div class="count">25+ tools</div>
+                </a>
+                <a href="/categories/index.html" class="category-card">
+                    <div class="icon">🎵</div>
+                    <div class="name">AI Music</div>
+                    <div class="count">15+ tools</div>
+                </a>
+                <a href="/categories/index.html" class="category-card">
+                    <div class="icon">📚</div>
+                    <div class="name">Education</div>
+                    <div class="count">20+ tools</div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="queue-preview">
+        <div class="queue-inner">
+            <h2>Coming Soon</h2>
+            <p class="subtitle">Tools we're currently reviewing — 5 new reviews published daily</p>
+            
+            <div class="queue-scroll">
+                <div class="queue-item"><div class="name">Gemini</div><div class="cat">Foundation Models</div></div>
+                <div class="queue-item"><div class="name">GitHub Copilot</div><div class="cat">AI Coding</div></div>
+                <div class="queue-item"><div class="name">Perplexity</div><div class="cat">AI Search</div></div>
+                <div class="queue-item"><div class="name">DALL-E 3</div><div class="cat">Image Gen</div></div>
+                <div class="queue-item"><div class="name">Stable Diffusion</div><div class="cat">Image Gen</div></div>
+                <div class="queue-item"><div class="name">DeepSeek</div><div class="cat">Foundation Models</div></div>
+                <div class="queue-item"><div class="name">ElevenLabs</div><div class="cat">Voice AI</div></div>
+                <div class="queue-item"><div class="name">Runway</div><div class="cat">Video Gen</div></div>
+                <div class="queue-item"><div class="name">Suno</div><div class="cat">AI Music</div></div>
+                <div class="queue-item"><div class="name">Notion AI</div><div class="cat">Productivity</div></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section" id="waitlist">
+        <h2>Get Notified of New Reviews</h2>
+        <p>Join 500+ professionals who get our weekly AI tool digest. Unsubscribe anytime.</p>
+        
+        <form class="waitlist-form" id="waitlistForm">
+            <input type="email" placeholder="you@company.com" required id="emailInput">
+            <button type="submit">Subscribe Free</button>
+        </form>
+        <p style="font-size: 0.85rem; opacity: 0.7; margin-top: 12px;">No spam. Just reviews.</p>
+    </section>
+
+    <footer>
+        <p>
+            <a href="/reviews.html">Reviews</a>
+            <a href="/methodology.html">Methodology</a>
+            <a href="/transparency.html">Transparency</a>
+            <a href="/submit.html">Submit Tool</a>
+        </p>
+        <p style="margin-top: 16px;">© 2026 Tool Intel. Independent AI tool reviews.</p>
     </footer>
 
     <script>
-        document.getElementById('waitlist-form').addEventListener('submit', async (e) => {
+        // Search redirect
+        document.getElementById('heroSearch').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                window.location.href = '/reviews.html?q=' + encodeURIComponent(this.value);
+            }
+        });
+        
+        // Waitlist form
+        document.getElementById('waitlistForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const btn = document.getElementById('waitlist-btn');
-            const msg = document.getElementById('waitlist-msg');
-            const email = document.getElementById('waitlist-email').value;
-            
-            btn.disabled = true;
+            const email = document.getElementById('emailInput').value;
+            const btn = this.querySelector('button');
             btn.textContent = 'Joining...';
             
             try {
-                const res = await fetch('https://v7086lxsji.execute-api.us-east-1.amazonaws.com/waitlist', {
+                await fetch('https://v7086lxsji.execute-api.us-east-1.amazonaws.com/waitlist', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email })
                 });
-                const data = await res.json();
-                
-                if (data.success) {
-                    msg.textContent = "✓ You're on the list! We'll notify you at launch.";
-                    msg.style.color = '#10b981';
-                    btn.textContent = 'Joined!';
-                    document.getElementById('waitlist-email').value = '';
-                } else {
-                    throw new Error(data.error || 'Something went wrong');
-                }
+                btn.textContent = '✓ Subscribed!';
+                document.getElementById('emailInput').value = '';
             } catch (err) {
-                msg.textContent = err.message || 'Error. Please try again.';
-                msg.style.color = '#ef4444';
-                btn.disabled = false;
-                btn.textContent = 'Try Again';
+                btn.textContent = 'Subscribe Free';
+                alert('Error. Please try again.');
             }
         });
     </script>
