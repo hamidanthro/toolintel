@@ -2,8 +2,8 @@
   "lastUpdated": "2026-02-20",
   "note": "Tools selected independently by Tool Intel editorial team - Global coverage",
   "stats": {
-    "reviewed": 6,
-    "inQueue": 1419,
+    "reviewed": 11,
+    "inQueue": 1414,
     "dailyTarget": 5
   },
   "reviewed": [
@@ -18,14 +18,39 @@
       "score": 87
     },
     {
+      "name": "GitHub Copilot",
+      "category": "coding",
+      "score": 86
+    },
+    {
       "name": "Cursor",
       "category": "coding",
       "score": 85
     },
     {
+      "name": "Gemini",
+      "category": "foundation-models",
+      "score": 84
+    },
+    {
+      "name": "Perplexity",
+      "category": "search",
+      "score": 82
+    },
+    {
       "name": "Midjourney",
       "category": "image-gen",
       "score": 81
+    },
+    {
+      "name": "DALL-E 3",
+      "category": "image-gen",
+      "score": 80
+    },
+    {
+      "name": "Stable Diffusion",
+      "category": "image-gen",
+      "score": 77
     },
     {
       "name": "ReplyQuik",
@@ -39,36 +64,6 @@
     }
   ],
   "queue": [
-    {
-      "name": "Gemini",
-      "vendor": "Google",
-      "category": "foundation-models",
-      "region": "US"
-    },
-    {
-      "name": "GitHub Copilot",
-      "vendor": "GitHub",
-      "category": "coding",
-      "region": "US"
-    },
-    {
-      "name": "Perplexity",
-      "vendor": "Perplexity AI",
-      "category": "search",
-      "region": "US"
-    },
-    {
-      "name": "DALL-E 3",
-      "vendor": "OpenAI",
-      "category": "image-gen",
-      "region": "US"
-    },
-    {
-      "name": "Stable Diffusion",
-      "vendor": "Stability AI",
-      "category": "image-gen",
-      "region": "UK"
-    },
     {
       "name": "DeepSeek",
       "vendor": "DeepSeek",
