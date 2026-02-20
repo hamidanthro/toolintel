@@ -65,6 +65,37 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
         .hero-search:focus { outline: none; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .search-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            margin-top: 8px;
+            max-height: 320px;
+            overflow-y: auto;
+            display: none;
+            z-index: 100;
+        }
+        .search-dropdown.active { display: block; }
+        .search-result {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.15s;
+        }
+        .search-result:last-child { border-bottom: none; }
+        .search-result:hover { background: #f8f9fa; }
+        .search-result .tool-name { font-weight: 500; color: var(--navy); }
+        .search-result .tool-cat { font-size: 0.85rem; color: var(--gray-400); margin-left: 8px; }
+        .search-result .tool-status { font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; margin-left: auto; }
+        .search-result .tool-status.reviewed { background: #d4edda; color: #155724; }
+        .search-result .tool-status.queue { background: #e2e8f0; color: #64748b; }
+        .search-no-results { padding: 16px 20px; color: var(--gray-400); text-align: center; }
         .search-icon {
             position: absolute;
             left: 18px;
@@ -279,7 +310,8 @@
         
         <div class="search-container">
             <span class="search-icon">🔍</span>
-            <input type="text" class="hero-search" placeholder="Search AI tools (ChatGPT, Midjourney, Cursor...)" id="heroSearch">
+            <input type="text" class="hero-search" placeholder="Search AI tools (ChatGPT, Midjourney, Cursor...)" id="heroSearch" autocomplete="off">
+            <div class="search-dropdown" id="searchDropdown"></div>
         </div>
         
         <div class="hero-stats">
@@ -484,7 +516,9 @@
     </footer>
 
     <script>
-        // Load dynamic stats
+        let allTools = [];
+        
+        // Load dynamic stats and tools
         fetch('/data/tools-queue.json')
             .then(r => r.json())
             .then(data => {
@@ -500,6 +534,12 @@
                 document.getElementById('queueCount').textContent = data.queue.length + ' in queue.';
                 document.getElementById('reviewCount').textContent = reviewCount;
                 document.getElementById('categoryCount').textContent = categories.size;
+                
+                // Build searchable tools list
+                allTools = [
+                    ...data.reviewed.map(t => ({ name: t.name, category: t.category, reviewed: true, slug: t.slug })),
+                    ...data.queue.map(t => ({ name: t.name, category: t.category, reviewed: false }))
+                ];
             })
             .catch(() => {
                 document.getElementById('toolCount').textContent = '10';
@@ -509,8 +549,58 @@
                 document.getElementById('categoryCount').textContent = '8';
             });
         
-        // Search redirect
-        document.getElementById('heroSearch').addEventListener('keypress', function(e) {
+        // Live search
+        const heroSearch = document.getElementById('heroSearch');
+        const dropdown = document.getElementById('searchDropdown');
+        
+        heroSearch.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            if (!query || query.length < 2) {
+                dropdown.classList.remove('active');
+                return;
+            }
+            
+            const matches = allTools.filter(t => 
+                t.name.toLowerCase().includes(query) || 
+                t.category.toLowerCase().includes(query)
+            ).slice(0, 8);
+            
+            if (matches.length === 0) {
+                dropdown.innerHTML = '<div class="search-no-results">No tools found</div>';
+            } else {
+                dropdown.innerHTML = matches.map(t => `
+                    <div class="search-result" data-name="${t.name}" data-slug="${t.slug || ''}">
+                        <span class="tool-name">${t.name}</span>
+                        <span class="tool-cat">${t.category}</span>
+                        <span class="tool-status ${t.reviewed ? 'reviewed' : 'queue'}">${t.reviewed ? 'Reviewed' : 'In Queue'}</span>
+                    </div>
+                `).join('');
+            }
+            dropdown.classList.add('active');
+        });
+        
+        // Click on search result
+        dropdown.addEventListener('click', function(e) {
+            const result = e.target.closest('.search-result');
+            if (result) {
+                const slug = result.dataset.slug;
+                if (slug) {
+                    window.location.href = '/reviews/' + slug + '.html';
+                } else {
+                    window.location.href = '/reviews.html?q=' + encodeURIComponent(result.dataset.name);
+                }
+            }
+        });
+        
+        // Hide dropdown on click outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.search-container')) {
+                dropdown.classList.remove('active');
+            }
+        });
+        
+        // Enter to go to reviews page
+        heroSearch.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 window.location.href = '/reviews.html?q=' + encodeURIComponent(this.value);
             }
