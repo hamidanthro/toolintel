@@ -23,21 +23,34 @@ async function sendReviewNotification(review) {
     const subject = `[ToolIntel] New Review: ${review.tool} by ${review.fullName}`;
     const body = `New community review submitted for moderation.
 
-Tool: ${review.tool}
-Reviewer: ${review.fullName}
-Email: ${review.email}
-Job: ${review.jobTitle}
-Usage: ${review.usageDuration}
-Tier: ${review.pricingTier}
-Score: ${'★'.repeat(review.overallScore)}${'☆'.repeat(5-review.overallScore)} (${review.overallScore}/5)
+REVIEWER INFO:
+- Name: ${review.fullName}
+- Email: ${review.email}
+- Job: ${review.jobTitle}
+- Use Case: ${review.useCase}
+- Usage Duration: ${review.usageDuration}
+- Pricing Tier: ${review.pricingTier}
+- Discovery Source: ${review.discoverySource} ${review.discoverySource === 'vendor-marketing' ? '⚠️ POTENTIAL ASTROTURFING' : ''}
 
-Ratings:
+OVERALL SCORE: ${'★'.repeat(review.overallScore)}${'☆'.repeat(5-review.overallScore)} (${review.overallScore}/5)
+
+DIMENSION SCORES:
+- Accuracy: ${review.dimAccuracy}/5
+- Privacy: ${review.dimPrivacy}/5
+- Value: ${review.dimValue}/5
+- Ease: ${review.dimEase}/5
+- Support: ${review.dimSupport}/5
+
+QUICK ASSESSMENT:
 - Does what it claims: ${review.ratingClaims}
 - Transparent pricing: ${review.ratingPricing}
 - Would recommend: ${review.ratingRecommend}
 
-Review:
+REVIEW:
 ${review.reviewText}
+
+💡 HIDDEN INSIGHT (What marketing doesn't tell you):
+${review.hiddenInsight}
 
 ---
 Approve/Reject: ${adminUrl}
@@ -110,15 +123,22 @@ exports.handler = async (event) => {
                 tool: r.tool,
                 fullName: r.fullName,
                 jobTitle: r.jobTitle,
+                useCase: r.useCase,
                 usageDuration: r.usageDuration,
                 pricingTier: r.pricingTier,
                 ratingClaims: r.ratingClaims,
                 ratingPricing: r.ratingPricing,
                 ratingRecommend: r.ratingRecommend,
                 overallScore: r.overallScore,
+                dimAccuracy: r.dimAccuracy,
+                dimPrivacy: r.dimPrivacy,
+                dimValue: r.dimValue,
+                dimEase: r.dimEase,
+                dimSupport: r.dimSupport,
                 reviewText: r.reviewText,
+                hiddenInsight: r.hiddenInsight,
                 createdAt: r.createdAt
-                // Excludes: email, disclosure, status, rejectReason
+                // Excludes: email, discoverySource, disclosures, status, rejectReason
             }));
             
             return { statusCode: 200, headers, body: JSON.stringify(publicReviews) };
@@ -142,13 +162,20 @@ exports.handler = async (event) => {
         if (method === 'POST' && path === '/reviews') {
             const body = JSON.parse(event.body || '{}');
             const { 
-                tool, fullName, email, jobTitle, usageDuration, pricingTier,
-                ratingClaims, ratingPricing, ratingRecommend, overallScore, reviewText, disclosure
+                tool, fullName, email, jobTitle, useCase, usageDuration, pricingTier, discoverySource,
+                ratingClaims, ratingPricing, ratingRecommend, overallScore,
+                dimAccuracy, dimPrivacy, dimValue, dimEase, dimSupport,
+                reviewText, hiddenInsight, disclosure1, disclosure2
             } = body;
             
             // Validate required fields
-            const requiredFields = { tool, fullName, email, jobTitle, usageDuration, pricingTier, ratingClaims, ratingPricing, ratingRecommend, overallScore, reviewText };
-            const missingFields = Object.entries(requiredFields).filter(([k, v]) => !v).map(([k]) => k);
+            const requiredFields = { 
+                tool, fullName, email, jobTitle, useCase, usageDuration, pricingTier, discoverySource,
+                ratingClaims, ratingPricing, ratingRecommend, overallScore,
+                dimAccuracy, dimPrivacy, dimValue, dimEase, dimSupport,
+                reviewText, hiddenInsight
+            };
+            const missingFields = Object.entries(requiredFields).filter(([k, v]) => !v && v !== 0).map(([k]) => k);
             if (missingFields.length > 0) {
                 return { statusCode: 400, headers, body: JSON.stringify({ error: `Missing required fields: ${missingFields.join(', ')}` }) };
             }
@@ -158,7 +185,7 @@ exports.handler = async (event) => {
                 return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid email format' }) };
             }
             
-            // Validate word count (100-500)
+            // Validate word count (100-500) for review
             const wordCount = getWordCount(reviewText);
             if (wordCount < 100) {
                 return { statusCode: 400, headers, body: JSON.stringify({ error: `Review must be at least 100 words (currently ${wordCount})` }) };
@@ -167,10 +194,25 @@ exports.handler = async (event) => {
                 return { statusCode: 400, headers, body: JSON.stringify({ error: `Review must be at most 500 words (currently ${wordCount})` }) };
             }
             
-            // Validate overall score (1-5, allows 0.5 increments)
-            const score = parseFloat(overallScore);
-            if (isNaN(score) || score < 1 || score > 5 || (score * 2) % 1 !== 0) {
-                return { statusCode: 400, headers, body: JSON.stringify({ error: 'Overall score must be 1-5 in 0.5 increments' }) };
+            // Validate hidden insight (max 50 words)
+            const insightWords = getWordCount(hiddenInsight);
+            if (insightWords > 50) {
+                return { statusCode: 400, headers, body: JSON.stringify({ error: `Hidden insight must be at most 50 words (currently ${insightWords})` }) };
+            }
+            
+            // Validate overall score (1-5, integers only)
+            const score = parseInt(overallScore);
+            if (isNaN(score) || score < 1 || score > 5) {
+                return { statusCode: 400, headers, body: JSON.stringify({ error: 'Overall score must be 1-5' }) };
+            }
+            
+            // Validate dimension scores (1-5, integers only)
+            const dims = { dimAccuracy, dimPrivacy, dimValue, dimEase, dimSupport };
+            for (const [name, val] of Object.entries(dims)) {
+                const d = parseInt(val);
+                if (isNaN(d) || d < 1 || d > 5) {
+                    return { statusCode: 400, headers, body: JSON.stringify({ error: `${name} must be 1-5` }) };
+                }
             }
             
             // Validate structured ratings
@@ -191,8 +233,20 @@ exports.handler = async (event) => {
                 return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid pricing tier' }) };
             }
             
-            // Validate disclosure
-            if (!disclosure) {
+            // Validate use case
+            const validUseCases = ['personal-productivity', 'business-operations', 'development-engineering', 'research-analysis', 'marketing-content', 'customer-support', 'healthcare', 'legal-compliance', 'education', 'other'];
+            if (!validUseCases.includes(useCase)) {
+                return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid use case' }) };
+            }
+            
+            // Validate discovery source
+            const validSources = ['colleague', 'vendor-marketing', 'social-media', 'search-engine', 'toolintel', 'other'];
+            if (!validSources.includes(discoverySource)) {
+                return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid discovery source' }) };
+            }
+            
+            // Validate both disclosures
+            if (!disclosure1 || !disclosure2) {
                 return { statusCode: 400, headers, body: JSON.stringify({ error: 'Disclosure checkbox must be confirmed' }) };
             }
             
@@ -202,14 +256,23 @@ exports.handler = async (event) => {
                 fullName: fullName.substring(0, 100),
                 email: email.toLowerCase().substring(0, 255),
                 jobTitle: jobTitle.substring(0, 200),
+                useCase,
                 usageDuration,
                 pricingTier,
+                discoverySource,
                 ratingClaims,
                 ratingPricing,
                 ratingRecommend,
-                overallScore: parseFloat(overallScore),
+                overallScore: parseInt(overallScore),
+                dimAccuracy: parseInt(dimAccuracy),
+                dimPrivacy: parseInt(dimPrivacy),
+                dimValue: parseInt(dimValue),
+                dimEase: parseInt(dimEase),
+                dimSupport: parseInt(dimSupport),
                 reviewText: reviewText.substring(0, 5000),
-                disclosure: true,
+                hiddenInsight: hiddenInsight.substring(0, 500),
+                disclosure1: true,
+                disclosure2: true,
                 status: 'pending',
                 createdAt: new Date().toISOString()
             };
