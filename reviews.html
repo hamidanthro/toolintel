@@ -334,15 +334,14 @@
         
         // Search functionality
         const searchInput = document.getElementById('searchInput');
-        const reviewCards = document.querySelectorAll('.review-card');
-        const queueItems = document.querySelectorAll('.queue-item');
+        let expanded = false; // Track if queue is expanded
         
         function performSearch(query) {
             query = query.toLowerCase().trim();
             let foundCount = 0;
             
-            // Search reviews
-            reviewCards.forEach(card => {
+            // Search reviews (re-query each time)
+            document.querySelectorAll('.review-card').forEach(card => {
                 const name = card.dataset.name || '';
                 const category = card.dataset.category || '';
                 const visible = !query || name.includes(query) || category.includes(query);
@@ -350,8 +349,13 @@
                 if (visible) foundCount++;
             });
             
-            // Also search queue items
-            queueItems.forEach(item => {
+            // Auto-expand queue if searching and not expanded
+            if (query && !expanded) {
+                document.getElementById('showMoreBtn').click();
+            }
+            
+            // Search queue items (re-query to include dynamic items)
+            document.querySelectorAll('.queue-item').forEach(item => {
                 const name = item.querySelector('.tool-name')?.textContent.toLowerCase() || '';
                 const cat = item.querySelector('.category')?.textContent.toLowerCase() || '';
                 const visible = !query || name.includes(query) || cat.includes(query);
@@ -431,7 +435,6 @@
             {name: "DeepSeek", cat: "Open Source"},
         ];
         
-        let expanded = false;
         document.getElementById('showMoreBtn').addEventListener('click', function() {
             const grid = document.getElementById('queueGrid');
             if (!expanded) {
