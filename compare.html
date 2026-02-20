@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Compare AI Tools — ToolIntel</title>
-    <meta name="description" content="Side-by-side comparison of AI tools across all 10 scoring categories.">
+    <meta name="description" content="Side-by-side comparison of AI tools with custom weighting for your priorities.">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -28,196 +28,142 @@
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: var(--gray-800); line-height: 1.6; background: var(--gray-50); }
+        h1, h2, h3, h4 { font-family: 'Merriweather', Georgia, serif; font-weight: 700; line-height: 1.3; }
         
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            color: var(--gray-800);
-            line-height: 1.6;
-            background: var(--gray-50);
-        }
-        
-        h1, h2, h3 { font-family: 'Merriweather', Georgia, serif; font-weight: 700; line-height: 1.3; }
-        
-        /* Header */
-        header {
-            padding: 16px 0;
-            border-bottom: 1px solid var(--gray-200);
-            background: var(--white);
-        }
-        
-        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1120px; margin: 0 auto; padding: 0 24px; }
-        
+        header { padding: 16px 0; border-bottom: 1px solid var(--gray-200); background: var(--white); position: sticky; top: 0; z-index: 100; }
+        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 0 auto; padding: 0 24px; }
         .logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.25rem; color: var(--navy); text-decoration: none; }
         .logo span { color: var(--blue-accent); }
-        
         .nav-links { display: flex; gap: 32px; }
         .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
         .nav-links a:hover { color: var(--navy); }
+        .nav-links a.active { color: var(--navy); font-weight: 600; }
         
-        /* Main */
-        main { max-width: 1000px; margin: 0 auto; padding: 60px 24px; }
+        .page-header { padding: 40px 0; background: var(--white); border-bottom: 1px solid var(--gray-200); }
+        .page-header .container { max-width: 1400px; margin: 0 auto; padding: 0 24px; }
+        .page-header h1 { font-size: 1.75rem; color: var(--navy); margin-bottom: 8px; }
+        .page-header p { color: var(--gray-600); }
         
-        h1 { font-size: 2rem; color: var(--navy); margin-bottom: 8px; text-align: center; }
-        .subtitle { text-align: center; color: var(--gray-600); margin-bottom: 40px; }
+        .main-content { max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
         
         /* Tool Selector */
-        .selector-section {
-            background: var(--white);
-            border: 1px solid var(--gray-200);
-            border-radius: 12px;
-            padding: 32px;
-            margin-bottom: 32px;
-        }
+        .tool-selector { background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+        .tool-selector h3 { font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 600; color: var(--navy); margin-bottom: 16px; }
+        .tool-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+        .tool-chip { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--gray-100); border: 1px solid var(--gray-200); border-radius: 20px; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; }
+        .tool-chip:hover { border-color: var(--blue-accent); }
+        .tool-chip.selected { background: var(--navy); color: white; border-color: var(--navy); }
+        .tool-chip .remove { font-size: 1.1rem; opacity: 0.7; }
+        .tool-chip .remove:hover { opacity: 1; }
+        .compare-btn { padding: 12px 24px; background: var(--navy); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+        .compare-btn:hover { background: var(--navy-light); }
+        .compare-btn:disabled { background: var(--gray-400); cursor: not-allowed; }
         
-        .selector-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 20px;
-        }
+        /* Comparison Layout */
+        .comparison-layout { display: grid; grid-template-columns: 1fr 300px; gap: 24px; }
+        .comparison-main { min-width: 0; }
+        .comparison-sidebar { position: sticky; top: 80px; align-self: start; }
         
-        .selector-card {
-            border: 2px solid var(--gray-200);
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
+        /* Toggle */
+        .comparison-toggle { display: flex; gap: 8px; margin-bottom: 20px; }
+        .toggle-btn { padding: 10px 20px; background: var(--white); border: 1px solid var(--gray-200); border-radius: 6px; font-size: 0.9rem; font-weight: 500; cursor: pointer; color: var(--gray-600); }
+        .toggle-btn.active { background: var(--navy); color: white; border-color: var(--navy); }
         
-        .selector-card:hover { border-color: var(--blue-accent); }
-        .selector-card.selected { border-color: var(--navy); background: var(--gray-50); }
+        /* Comparison Table */
+        .comparison-table-container { background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; overflow: hidden; margin-bottom: 24px; }
+        .comparison-table { width: 100%; border-collapse: collapse; }
+        .comparison-table th, .comparison-table td { padding: 14px 16px; text-align: center; border-bottom: 1px solid var(--gray-100); }
+        .comparison-table th { background: var(--gray-50); font-weight: 600; color: var(--navy); font-size: 0.9rem; }
+        .comparison-table th.category { text-align: left; }
+        .comparison-table td.category { text-align: left; font-weight: 500; color: var(--gray-600); }
+        .comparison-table td.score { font-weight: 600; font-size: 1.1rem; }
+        .comparison-table td.score.high { background: #d1fae5; color: #065f46; }
+        .comparison-table td.score.low { background: #fee2e2; color: #991b1b; }
+        .comparison-table td.score.mid { background: var(--gray-50); color: var(--gray-600); }
+        .comparison-table td.winner { font-weight: 600; color: var(--green); font-size: 0.85rem; }
+        .comparison-table tr.total { background: var(--gray-50); font-weight: 700; }
+        .comparison-table tr.total td { border-top: 2px solid var(--gray-200); }
         
-        .selector-card select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--gray-200);
-            border-radius: 6px;
-            font-size: 1rem;
-            cursor: pointer;
-        }
+        /* Sidebar - Weights */
+        .weights-panel { background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+        .weights-panel h4 { font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 600; color: var(--navy); margin-bottom: 8px; }
+        .weights-panel .hint { font-size: 0.8rem; color: var(--gray-400); margin-bottom: 16px; }
+        .weight-slider { margin-bottom: 12px; }
+        .weight-slider label { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--gray-600); margin-bottom: 4px; }
+        .weight-slider input[type="range"] { width: 100%; cursor: pointer; }
+        .weight-slider .weight-value { font-weight: 600; color: var(--navy); min-width: 40px; text-align: right; }
         
-        .selector-card label {
-            display: block;
-            font-size: 0.85rem;
-            color: var(--gray-400);
-            margin-bottom: 8px;
-        }
+        /* Presets */
+        .presets-panel { background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+        .presets-panel h4 { font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 600; color: var(--navy); margin-bottom: 12px; }
+        .preset-btn { display: block; width: 100%; padding: 10px 12px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 6px; text-align: left; cursor: pointer; margin-bottom: 8px; transition: all 0.2s; }
+        .preset-btn:hover { border-color: var(--blue-accent); background: #eff6ff; }
+        .preset-btn.active { border-color: var(--navy); background: #eff6ff; }
+        .preset-btn .name { font-weight: 600; font-size: 0.9rem; color: var(--navy); }
+        .preset-btn .desc { font-size: 0.75rem; color: var(--gray-400); margin-top: 2px; }
         
-        /* Coming Soon */
-        .coming-soon {
-            background: var(--white);
-            border: 1px solid var(--gray-200);
-            border-radius: 12px;
-            padding: 60px 40px;
-            text-align: center;
-        }
+        /* Save Profile */
+        .save-profile { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 16px; }
+        .save-profile h4 { font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 600; color: #1e40af; margin-bottom: 8px; }
+        .save-profile input { width: 100%; padding: 8px 12px; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 0.9rem; margin-bottom: 8px; }
+        .save-profile button { width: 100%; padding: 8px 16px; background: #1e40af; color: white; border: none; border-radius: 6px; font-weight: 500; cursor: pointer; }
         
-        .coming-soon h2 { font-size: 1.5rem; color: var(--navy); margin-bottom: 16px; }
-        .coming-soon p { color: var(--gray-600); max-width: 500px; margin: 0 auto 24px; }
+        /* Actions Bar */
+        .actions-bar { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+        .action-btn { padding: 10px 20px; background: var(--white); border: 1px solid var(--gray-200); border-radius: 8px; font-size: 0.9rem; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; color: var(--gray-600); }
+        .action-btn:hover { border-color: var(--navy); color: var(--navy); }
         
-        /* Comparison Table Preview */
-        .comparison-preview {
-            background: var(--white);
-            border: 1px solid var(--gray-200);
-            border-radius: 12px;
-            overflow: hidden;
-            margin-top: 32px;
-        }
+        /* Summary */
+        .comparison-summary { background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+        .comparison-summary h3 { font-size: 1rem; color: var(--navy); margin-bottom: 12px; }
+        .comparison-summary p { color: var(--gray-600); line-height: 1.7; }
         
-        .preview-header {
-            background: var(--navy);
-            color: var(--white);
-            padding: 16px 24px;
-            font-weight: 600;
-        }
+        /* Insights */
+        .insights-section { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+        .insights-section h3 { font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 600; color: #166534; margin-bottom: 4px; }
+        .insights-section .disclaimer { font-size: 0.8rem; color: #6b7280; margin-bottom: 16px; font-style: italic; }
+        .insight-item { padding: 12px 16px; background: rgba(255,255,255,0.7); border-radius: 8px; margin-bottom: 8px; }
+        .insight-item:last-child { margin-bottom: 0; }
+        .insight-item .label { font-size: 0.8rem; color: #059669; font-weight: 600; margin-bottom: 4px; }
+        .insight-item .text { color: #1f2937; font-size: 0.95rem; }
         
-        .preview-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+        /* Price vs Performance Chart */
+        .chart-section { background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+        .chart-section h3 { font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 600; color: var(--navy); margin-bottom: 16px; }
+        .chart-container { position: relative; height: 300px; border: 1px solid var(--gray-200); border-radius: 8px; background: var(--gray-50); }
+        .chart-axis-label { position: absolute; font-size: 0.75rem; color: var(--gray-400); }
+        .chart-axis-label.x { bottom: 8px; left: 50%; transform: translateX(-50%); }
+        .chart-axis-label.y { top: 50%; left: 8px; transform: rotate(-90deg) translateX(-50%); transform-origin: left center; }
+        .chart-quadrant { position: absolute; top: 0; left: 0; width: 50%; height: 50%; background: rgba(16, 185, 129, 0.1); border-right: 1px dashed var(--gray-300); border-bottom: 1px dashed var(--gray-300); }
+        .chart-quadrant-label { position: absolute; top: 8px; left: 8px; font-size: 0.7rem; color: var(--green); font-weight: 600; }
+        .chart-point { position: absolute; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; color: white; transform: translate(-50%, -50%); cursor: pointer; transition: transform 0.2s; }
+        .chart-point:hover { transform: translate(-50%, -50%) scale(1.1); }
+        .chart-point.best-value { box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.3); }
         
-        .preview-table th, .preview-table td {
-            padding: 16px 20px;
-            text-align: center;
-            border-bottom: 1px solid var(--gray-100);
-        }
+        /* Shared Watermark */
+        .shared-watermark { background: #fef3c7; border: 1px solid #fde68a; padding: 12px 20px; border-radius: 8px; margin-bottom: 24px; font-size: 0.9rem; color: #92400e; text-align: center; }
         
-        .preview-table th {
-            background: var(--gray-50);
-            font-weight: 600;
-            color: var(--navy);
-        }
-        
-        .preview-table th:first-child, .preview-table td:first-child {
-            text-align: left;
-            font-weight: 500;
-            color: var(--gray-600);
-        }
-        
-        .score-cell {
-            font-weight: 700;
-            font-size: 1.1rem;
-        }
-        
-        .score-cell.high { color: var(--green); }
-        .score-cell.mid { color: var(--yellow); }
-        .score-cell.low { color: var(--red); }
-        
-        .winner-badge {
-            background: var(--green);
-            color: white;
-            font-size: 0.7rem;
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-left: 4px;
-        }
-        
-        .preview-footer {
-            padding: 20px 24px;
-            background: var(--gray-50);
-            border-top: 1px solid var(--gray-200);
-        }
-        
-        .recommendation {
-            display: flex;
-            gap: 20px;
-        }
-        
-        .rec-card {
-            flex: 1;
-            background: var(--white);
-            border: 1px solid var(--gray-200);
-            border-radius: 8px;
-            padding: 16px;
-        }
-        
-        .rec-card h4 {
-            font-family: 'Inter', sans-serif;
-            font-size: 0.85rem;
-            color: var(--gray-400);
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .rec-card .tool { font-weight: 600; color: var(--navy); }
-        .rec-card .reason { font-size: 0.9rem; color: var(--gray-600); margin-top: 4px; }
-        
-        /* Footer */
-        footer {
-            padding: 40px 24px;
-            text-align: center;
-            border-top: 1px solid var(--gray-200);
-            background: var(--white);
-            margin-top: 60px;
-        }
-        
+        footer { padding: 40px 0; border-top: 1px solid var(--gray-200); text-align: center; background: var(--white); margin-top: 40px; }
         footer p { color: var(--gray-400); font-size: 0.9rem; }
-        footer a { color: var(--gray-600); }
+        
+        .hidden { display: none !important; }
+        
+        @media (max-width: 1024px) {
+            .comparison-layout { grid-template-columns: 1fr; }
+            .comparison-sidebar { position: static; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        }
         
         @media (max-width: 768px) {
-            .selector-grid { grid-template-columns: 1fr; }
-            .recommendation { flex-direction: column; }
+            .comparison-sidebar { grid-template-columns: 1fr; }
+            .comparison-table { font-size: 0.85rem; }
+            .comparison-table th, .comparison-table td { padding: 10px 8px; }
+        }
+        
+        @media print {
+            header, .tool-selector, .comparison-sidebar, .actions-bar, footer { display: none; }
+            .comparison-layout { grid-template-columns: 1fr; }
+            .shared-watermark { display: block !important; }
         }
     </style>
 </head>
@@ -226,120 +172,597 @@
         <nav>
             <a href="/" class="logo">Tool<span>Intel</span></a>
             <div class="nav-links">
-                <a href="/methodology">Methodology</a>
-                <a href="/reviews">Reviews</a>
-                <a href="/submit">Submit Tool</a>
+                <a href="/reviews.html">Reviews</a>
+                <a href="/compare.html" class="active">Compare</a>
+                <a href="/methodology.html">Methodology</a>
+                <a href="/about.html">About</a>
             </div>
         </nav>
     </header>
-
-    <main>
-        <h1>Compare AI Tools</h1>
-        <p class="subtitle">Side-by-side comparison across all 10 scoring categories</p>
+    
+    <div class="page-header">
+        <div class="container">
+            <h1>Compare AI Tools</h1>
+            <p>Side-by-side comparison with custom weighting for your priorities</p>
+        </div>
+    </div>
+    
+    <main class="main-content">
+        <!-- Shared Comparison Watermark (hidden by default) -->
+        <div class="shared-watermark hidden" id="sharedWatermark">
+            Generated on toolintel.ai — Independent AI Tool Intelligence — <span id="shareDate"></span>
+        </div>
         
-        <div class="selector-section">
-            <div class="selector-grid">
-                <div class="selector-card">
-                    <label>Tool 1</label>
-                    <select disabled>
-                        <option>Select a reviewed tool...</option>
-                    </select>
+        <!-- Tool Selector -->
+        <div class="tool-selector" id="toolSelector">
+            <h3>Select 2-4 tools to compare</h3>
+            <div class="tool-chips" id="toolChips"></div>
+            <button class="compare-btn" id="compareBtn" disabled onclick="runComparison()">Compare Selected Tools</button>
+        </div>
+        
+        <!-- Comparison Content (hidden until comparison) -->
+        <div id="comparisonContent" class="hidden">
+            <!-- Actions -->
+            <div class="actions-bar">
+                <button class="action-btn" onclick="shareComparison()">🔗 Share Comparison</button>
+                <button class="action-btn" onclick="downloadComparison()">📄 Download Report</button>
+            </div>
+            
+            <div class="comparison-layout">
+                <div class="comparison-main">
+                    <!-- Toggle -->
+                    <div class="comparison-toggle">
+                        <button class="toggle-btn active" id="toggleStandard" onclick="setMode('standard')">Standard Comparison</button>
+                        <button class="toggle-btn" id="toggleWeighted" onclick="setMode('weighted')">⚖️ Weighted Comparison</button>
+                    </div>
+                    
+                    <!-- Comparison Table -->
+                    <div class="comparison-table-container">
+                        <table class="comparison-table" id="comparisonTable">
+                            <!-- Populated by JS -->
+                        </table>
+                    </div>
+                    
+                    <!-- Summary -->
+                    <div class="comparison-summary">
+                        <h3>Key Differentiators</h3>
+                        <p id="summaryText"></p>
+                    </div>
+                    
+                    <!-- Insights -->
+                    <div class="insights-section">
+                        <h3>🧠 Comparison Intelligence</h3>
+                        <p class="disclaimer">Generated from score data — not editorial opinion</p>
+                        <div id="insightsContent"></div>
+                    </div>
+                    
+                    <!-- Price vs Performance Chart -->
+                    <div class="chart-section">
+                        <h3>📊 Price vs Performance</h3>
+                        <div class="chart-container" id="priceChart">
+                            <div class="chart-quadrant">
+                                <div class="chart-quadrant-label">✨ Best Value</div>
+                            </div>
+                            <span class="chart-axis-label x">Price (lower is left) →</span>
+                            <span class="chart-axis-label y">Score (higher is up) →</span>
+                            <!-- Points added by JS -->
+                        </div>
+                    </div>
                 </div>
-                <div class="selector-card">
-                    <label>Tool 2</label>
-                    <select disabled>
-                        <option>Select a reviewed tool...</option>
-                    </select>
-                </div>
-                <div class="selector-card">
-                    <label>Tool 3 (Optional)</label>
-                    <select disabled>
-                        <option>Select a reviewed tool...</option>
-                    </select>
+                
+                <!-- Sidebar -->
+                <div class="comparison-sidebar" id="weightsSidebar">
+                    <div class="weights-panel" id="weightsPanel">
+                        <h4>⚖️ Adjust Weights</h4>
+                        <p class="hint">Adjust weights to match your priorities — scores update in real time.</p>
+                        <div id="weightSliders"></div>
+                    </div>
+                    
+                    <div class="presets-panel">
+                        <h4>📋 Preset Profiles</h4>
+                        <div id="presetButtons"></div>
+                    </div>
+                    
+                    <div class="save-profile" id="saveProfileSection">
+                        <h4>💾 Save My Weights</h4>
+                        <input type="text" id="profileName" placeholder="My Company's Vendor Criteria">
+                        <button onclick="saveProfile()">Save Profile</button>
+                    </div>
                 </div>
             </div>
         </div>
+    </main>
+    
+    <footer>
+        <p>© 2026 ToolIntel. Independent. Transparent. No affiliate links.</p>
+    </footer>
+    
+    <script>
+        const COMPARE_API = 'https://v7086lxsji.execute-api.us-east-1.amazonaws.com';
         
-        <div class="coming-soon">
-            <h2>Comparison Tool Coming Soon</h2>
-            <p>Once we publish our first reviews, you'll be able to compare any reviewed tools side-by-side across all 10 scoring categories.</p>
-        </div>
+        // Categories with default 10% each
+        const CATEGORIES = [
+            { id: 'coreAI', name: 'Core AI Performance', weight: 10 },
+            { id: 'privacy', name: 'Data Privacy & Security', weight: 10 },
+            { id: 'transparency', name: 'Transparency', weight: 10 },
+            { id: 'pricing', name: 'Pricing Fairness', weight: 10 },
+            { id: 'reliability', name: 'Reliability', weight: 10 },
+            { id: 'vendor', name: 'Vendor Stability', weight: 10 },
+            { id: 'integration', name: 'Integration & Usability', weight: 10 },
+            { id: 'support', name: 'Support Quality', weight: 10 },
+            { id: 'ethics', name: 'Ethical AI Practices', weight: 10 },
+            { id: 'market', name: 'Market Position', weight: 10 }
+        ];
         
-        <!-- Preview of what it will look like -->
-        <div class="comparison-preview">
-            <div class="preview-header">Preview: What comparisons will look like</div>
-            <table class="preview-table">
+        // Presets
+        const PRESETS = {
+            enterprise: {
+                name: 'Enterprise Security Focus',
+                desc: 'For organizations prioritizing data protection and compliance',
+                weights: { privacy: 35, transparency: 15, reliability: 10, vendor: 5, coreAI: 5, pricing: 5, integration: 5, support: 5, ethics: 10, market: 5 }
+            },
+            startup: {
+                name: 'Startup Budget Focus',
+                desc: 'For cost-conscious teams needing strong core capabilities',
+                weights: { pricing: 30, coreAI: 25, integration: 20, privacy: 5, transparency: 5, reliability: 5, vendor: 2, support: 3, ethics: 3, market: 2 }
+            },
+            developer: {
+                name: 'Developer API Focus',
+                desc: 'For technical teams building AI-powered products',
+                weights: { integration: 30, coreAI: 25, reliability: 20, pricing: 5, privacy: 5, transparency: 5, vendor: 3, support: 4, ethics: 2, market: 1 }
+            },
+            regulated: {
+                name: 'Regulated Industry Focus',
+                desc: 'For healthcare, finance, and government buyers',
+                weights: { privacy: 25, transparency: 15, ethics: 15, reliability: 10, coreAI: 10, vendor: 10, pricing: 5, integration: 5, support: 3, market: 2 }
+            }
+        };
+        
+        // Sample tool data (in production, fetch from API)
+        const TOOLS_DATA = {
+            claude: { name: 'Claude', vendor: 'Anthropic', price: 20, scores: { coreAI: 94, privacy: 92, transparency: 95, pricing: 78, reliability: 88, vendor: 85, integration: 82, support: 80, ethics: 96, market: 88 }},
+            chatgpt: { name: 'ChatGPT', vendor: 'OpenAI', price: 20, scores: { coreAI: 92, privacy: 78, transparency: 75, pricing: 80, reliability: 90, vendor: 95, integration: 92, support: 85, ethics: 72, market: 98 }},
+            gemini: { name: 'Gemini', vendor: 'Google', price: 20, scores: { coreAI: 90, privacy: 75, transparency: 70, pricing: 85, reliability: 88, vendor: 98, integration: 88, support: 82, ethics: 75, market: 92 }},
+            perplexity: { name: 'Perplexity', vendor: 'Perplexity AI', price: 20, scores: { coreAI: 85, privacy: 80, transparency: 82, pricing: 82, reliability: 85, vendor: 70, integration: 78, support: 75, ethics: 80, market: 75 }},
+            copilot: { name: 'GitHub Copilot', vendor: 'GitHub/Microsoft', price: 19, scores: { coreAI: 88, privacy: 82, transparency: 78, pricing: 85, reliability: 92, vendor: 95, integration: 95, support: 88, ethics: 78, market: 90 }},
+            midjourney: { name: 'Midjourney', vendor: 'Midjourney Inc', price: 10, scores: { coreAI: 95, privacy: 70, transparency: 65, pricing: 88, reliability: 82, vendor: 65, integration: 60, support: 60, ethics: 68, market: 85 }},
+            jasper: { name: 'Jasper', vendor: 'Jasper AI', price: 49, scores: { coreAI: 78, privacy: 75, transparency: 72, pricing: 65, reliability: 80, vendor: 72, integration: 85, support: 82, ethics: 75, market: 70 }},
+            cursor: { name: 'Cursor', vendor: 'Anysphere', price: 20, scores: { coreAI: 88, privacy: 78, transparency: 75, pricing: 82, reliability: 85, vendor: 65, integration: 92, support: 75, ethics: 78, market: 72 }}
+        };
+        
+        let selectedTools = [];
+        let currentWeights = {};
+        let currentPreset = null;
+        let mode = 'standard';
+        let isSharedView = false;
+        
+        // Initialize
+        function init() {
+            // Reset weights to default
+            CATEGORIES.forEach(c => currentWeights[c.id] = c.weight);
+            
+            // Populate tool chips
+            const chipsContainer = document.getElementById('toolChips');
+            chipsContainer.innerHTML = Object.entries(TOOLS_DATA).map(([slug, tool]) => `
+                <div class="tool-chip" data-slug="${slug}" onclick="toggleTool('${slug}')">
+                    ${tool.name}
+                </div>
+            `).join('');
+            
+            // Populate weight sliders
+            renderWeightSliders();
+            
+            // Populate presets
+            const presetsContainer = document.getElementById('presetButtons');
+            presetsContainer.innerHTML = Object.entries(PRESETS).map(([id, preset]) => `
+                <button class="preset-btn" data-preset="${id}" onclick="applyPreset('${id}')">
+                    <div class="name">${preset.name}</div>
+                    <div class="desc">${preset.desc}</div>
+                </button>
+            `).join('');
+            
+            // Check for shared comparison
+            const params = new URLSearchParams(window.location.search);
+            const shareId = params.get('id');
+            if (shareId) {
+                loadSharedComparison(shareId);
+            }
+            
+            // Check for tools in URL
+            const toolsParam = params.get('tools');
+            if (toolsParam) {
+                toolsParam.split(',').forEach(slug => {
+                    if (TOOLS_DATA[slug]) toggleTool(slug);
+                });
+            }
+        }
+        
+        function toggleTool(slug) {
+            const chip = document.querySelector(`.tool-chip[data-slug="${slug}"]`);
+            
+            if (selectedTools.includes(slug)) {
+                selectedTools = selectedTools.filter(t => t !== slug);
+                chip.classList.remove('selected');
+            } else if (selectedTools.length < 4) {
+                selectedTools.push(slug);
+                chip.classList.add('selected');
+            }
+            
+            document.getElementById('compareBtn').disabled = selectedTools.length < 2;
+        }
+        
+        function renderWeightSliders() {
+            const container = document.getElementById('weightSliders');
+            container.innerHTML = CATEGORIES.map(c => `
+                <div class="weight-slider">
+                    <label>
+                        <span>${c.name}</span>
+                        <span class="weight-value" id="weight_${c.id}_val">${currentWeights[c.id]}%</span>
+                    </label>
+                    <input type="range" min="0" max="50" value="${currentWeights[c.id]}" 
+                           id="weight_${c.id}" oninput="updateWeight('${c.id}', this.value)">
+                </div>
+            `).join('');
+        }
+        
+        function updateWeight(categoryId, newValue) {
+            newValue = parseInt(newValue);
+            const oldValue = currentWeights[categoryId];
+            const diff = newValue - oldValue;
+            
+            currentWeights[categoryId] = newValue;
+            
+            // Distribute difference to other sliders proportionally
+            const otherCategories = CATEGORIES.filter(c => c.id !== categoryId);
+            const totalOthers = otherCategories.reduce((sum, c) => sum + currentWeights[c.id], 0);
+            
+            if (totalOthers > 0) {
+                const adjustFactor = (totalOthers - diff) / totalOthers;
+                otherCategories.forEach(c => {
+                    currentWeights[c.id] = Math.max(0, Math.round(currentWeights[c.id] * adjustFactor));
+                });
+            }
+            
+            // Normalize to 100%
+            const total = Object.values(currentWeights).reduce((a, b) => a + b, 0);
+            if (total !== 100) {
+                const correction = 100 - total;
+                // Add correction to largest weight
+                const maxCat = Object.entries(currentWeights).sort((a, b) => b[1] - a[1])[0][0];
+                currentWeights[maxCat] += correction;
+            }
+            
+            // Update UI
+            CATEGORIES.forEach(c => {
+                document.getElementById(`weight_${c.id}`).value = currentWeights[c.id];
+                document.getElementById(`weight_${c.id}_val`).textContent = `${currentWeights[c.id]}%`;
+            });
+            
+            currentPreset = null;
+            document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+            
+            if (mode === 'weighted' && selectedTools.length >= 2) {
+                renderComparison();
+            }
+        }
+        
+        function applyPreset(presetId) {
+            const preset = PRESETS[presetId];
+            if (!preset) return;
+            
+            currentWeights = { ...preset.weights };
+            currentPreset = presetId;
+            
+            // Update UI
+            CATEGORIES.forEach(c => {
+                document.getElementById(`weight_${c.id}`).value = currentWeights[c.id];
+                document.getElementById(`weight_${c.id}_val`).textContent = `${currentWeights[c.id]}%`;
+            });
+            
+            document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.preset-btn[data-preset="${presetId}"]`).classList.add('active');
+            
+            if (mode === 'weighted' && selectedTools.length >= 2) {
+                renderComparison();
+            }
+        }
+        
+        function setMode(newMode) {
+            mode = newMode;
+            document.getElementById('toggleStandard').classList.toggle('active', mode === 'standard');
+            document.getElementById('toggleWeighted').classList.toggle('active', mode === 'weighted');
+            document.getElementById('weightsSidebar').classList.toggle('hidden', mode === 'standard');
+            
+            if (selectedTools.length >= 2) {
+                renderComparison();
+            }
+        }
+        
+        function runComparison() {
+            if (selectedTools.length < 2) return;
+            
+            document.getElementById('toolSelector').classList.add('hidden');
+            document.getElementById('comparisonContent').classList.remove('hidden');
+            
+            // Track analytics
+            fetch(`${COMPARE_API}/compare/track`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tools: selectedTools, weights: mode === 'weighted' ? currentWeights : null, preset: currentPreset })
+            }).catch(() => {});
+            
+            renderComparison();
+        }
+        
+        function renderComparison() {
+            const tools = selectedTools.map(slug => ({ slug, ...TOOLS_DATA[slug] }));
+            
+            // Calculate weighted scores
+            tools.forEach(tool => {
+                if (mode === 'weighted') {
+                    tool.weightedScore = CATEGORIES.reduce((sum, c) => {
+                        return sum + (tool.scores[c.id] * currentWeights[c.id] / 100);
+                    }, 0);
+                } else {
+                    tool.weightedScore = CATEGORIES.reduce((sum, c) => sum + tool.scores[c.id], 0) / CATEGORIES.length;
+                }
+                tool.weightedScore = Math.round(tool.weightedScore * 10) / 10;
+            });
+            
+            // Build table
+            let tableHTML = `
                 <thead>
                     <tr>
-                        <th>Category</th>
-                        <th>Claude</th>
-                        <th>ChatGPT</th>
-                        <th>Gemini</th>
+                        <th class="category">Category${mode === 'weighted' ? ' (Weight)' : ''}</th>
+                        ${tools.map(t => `<th>${t.name}</th>`).join('')}
+                        <th>Winner</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Overall Score</td>
-                        <td class="score-cell high">87 <span class="winner-badge">Best</span></td>
-                        <td class="score-cell high">84</td>
-                        <td class="score-cell high">81</td>
-                    </tr>
-                    <tr>
-                        <td>Core AI Performance (25%)</td>
-                        <td class="score-cell high">88</td>
-                        <td class="score-cell high">90 <span class="winner-badge">Best</span></td>
-                        <td class="score-cell high">85</td>
-                    </tr>
-                    <tr>
-                        <td>Data Privacy (20%)</td>
-                        <td class="score-cell high">92 <span class="winner-badge">Best</span></td>
-                        <td class="score-cell high">82</td>
-                        <td class="score-cell mid">78</td>
-                    </tr>
-                    <tr>
-                        <td>Transparency (15%)</td>
-                        <td class="score-cell high">90 <span class="winner-badge">Best</span></td>
-                        <td class="score-cell mid">75</td>
-                        <td class="score-cell mid">72</td>
-                    </tr>
-                    <tr>
-                        <td>Pricing Fairness (8%)</td>
-                        <td class="score-cell mid">75</td>
-                        <td class="score-cell high">85 <span class="winner-badge">Best</span></td>
-                        <td class="score-cell high">88</td>
-                    </tr>
-                </tbody>
-            </table>
+            `;
             
-            <div class="preview-footer">
-                <h3 style="font-size: 1rem; color: var(--navy); margin-bottom: 16px;">Recommendation by Use Case</h3>
-                <div class="recommendation">
-                    <div class="rec-card">
-                        <h4>Best for Enterprise</h4>
-                        <div class="tool">Claude</div>
-                        <div class="reason">Highest privacy & compliance scores</div>
-                    </div>
-                    <div class="rec-card">
-                        <h4>Best for Performance</h4>
-                        <div class="tool">ChatGPT</div>
-                        <div class="reason">Top score in core AI capabilities</div>
-                    </div>
-                    <div class="rec-card">
-                        <h4>Best for Budget</h4>
-                        <div class="tool">Gemini</div>
-                        <div class="reason">Best pricing fairness score</div>
-                    </div>
-                </div>
-            </div>
-        </div>
+            CATEGORIES.forEach(cat => {
+                const scores = tools.map(t => t.scores[cat.id]);
+                const max = Math.max(...scores);
+                const min = Math.min(...scores);
+                const winner = tools.find(t => t.scores[cat.id] === max);
+                
+                tableHTML += `
+                    <tr>
+                        <td class="category">${cat.name}${mode === 'weighted' ? ` <span style="color:#9ca3af">(${currentWeights[cat.id]}%)</span>` : ''}</td>
+                        ${tools.map(t => {
+                            const score = t.scores[cat.id];
+                            const scoreClass = score === max ? 'high' : score === min && scores.length > 2 ? 'low' : 'mid';
+                            return `<td class="score ${scoreClass}">${score}</td>`;
+                        }).join('')}
+                        <td class="winner">${winner.name}</td>
+                    </tr>
+                `;
+            });
+            
+            // Total row
+            const sortedTools = [...tools].sort((a, b) => b.weightedScore - a.weightedScore);
+            const overallWinner = sortedTools[0];
+            
+            tableHTML += `
+                <tr class="total">
+                    <td class="category"><strong>${mode === 'weighted' ? 'Weighted' : 'Overall'} Score</strong></td>
+                    ${tools.map(t => `<td class="score ${t === overallWinner ? 'high' : ''}">${t.weightedScore}</td>`).join('')}
+                    <td class="winner">🏆 ${overallWinner.name}</td>
+                </tr>
+            `;
+            
+            tableHTML += '</tbody>';
+            document.getElementById('comparisonTable').innerHTML = tableHTML;
+            
+            // Summary
+            document.getElementById('summaryText').textContent = generateSummary(tools, sortedTools);
+            
+            // Insights
+            renderInsights(tools);
+            
+            // Price chart
+            renderPriceChart(tools);
+        }
         
-        <p style="text-align: center; color: var(--gray-400); margin-top: 24px; font-size: 0.9rem;">
-            <em>Above is a preview with sample data. Real comparisons will be available once reviews are published.</em>
-        </p>
-    </main>
-
-    <footer>
-        <p>© 2026 ToolIntel. <a href="/methodology">Methodology</a> is always public.</p>
-    </footer>
+        function generateSummary(tools, sortedTools) {
+            const winner = sortedTools[0];
+            const second = sortedTools[1];
+            
+            // Find biggest differentiators
+            let maxDiff = 0, maxCat = '';
+            CATEGORIES.forEach(cat => {
+                const diff = Math.abs(winner.scores[cat.id] - second.scores[cat.id]);
+                if (diff > maxDiff) {
+                    maxDiff = diff;
+                    maxCat = cat.name;
+                }
+            });
+            
+            return `${winner.name} leads this comparison with a ${mode === 'weighted' ? 'weighted ' : ''}score of ${winner.weightedScore}, followed by ${second.name} at ${second.weightedScore}. The largest gap between these tools is in ${maxCat} (${maxDiff} points). ${winner.name} is the stronger choice for users who prioritize the categories weighted highest in this comparison, while ${second.name} may be preferable for those with different priorities.`;
+        }
+        
+        function renderInsights(tools) {
+            // Find closest match
+            let minDiff = Infinity, closestCat = '';
+            CATEGORIES.forEach(cat => {
+                const scores = tools.map(t => t.scores[cat.id]);
+                const diff = Math.max(...scores) - Math.min(...scores);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    closestCat = cat.name;
+                }
+            });
+            
+            // Find largest gap
+            let maxDiff = 0, gapCat = '';
+            CATEGORIES.forEach(cat => {
+                const scores = tools.map(t => t.scores[cat.id]);
+                const diff = Math.max(...scores) - Math.min(...scores);
+                if (diff > maxDiff) {
+                    maxDiff = diff;
+                    gapCat = cat.name;
+                }
+            });
+            
+            // Use case recommendation
+            const sortedTools = [...tools].sort((a, b) => b.weightedScore - a.weightedScore);
+            const topTool = sortedTools[0];
+            const topStrength = CATEGORIES.reduce((best, cat) => {
+                return topTool.scores[cat.id] > topTool.scores[best.id] ? cat : best;
+            });
+            
+            document.getElementById('insightsContent').innerHTML = `
+                <div class="insight-item">
+                    <div class="label">🤝 Closest Match</div>
+                    <div class="text">These tools are most similar in <strong>${closestCat}</strong> (only ${minDiff} points apart) — this category likely won't be the deciding factor.</div>
+                </div>
+                <div class="insight-item">
+                    <div class="label">📏 Largest Gap</div>
+                    <div class="text">The biggest difference is in <strong>${gapCat}</strong> (${maxDiff} points apart) — if this matters to you, it should heavily influence your decision.</div>
+                </div>
+                <div class="insight-item">
+                    <div class="label">💡 Recommendation</div>
+                    <div class="text"><strong>${topTool.name}</strong> is best suited for users prioritizing ${topStrength.name.toLowerCase()}, while ${sortedTools[sortedTools.length - 1].name} may work better for budget-conscious users willing to trade off some capabilities.</div>
+                </div>
+            `;
+        }
+        
+        function renderPriceChart(tools) {
+            const container = document.getElementById('priceChart');
+            
+            // Remove old points
+            container.querySelectorAll('.chart-point').forEach(p => p.remove());
+            
+            // Calculate positions
+            const prices = tools.map(t => t.price);
+            const scores = tools.map(t => t.weightedScore);
+            const minPrice = Math.min(...prices) * 0.8;
+            const maxPrice = Math.max(...prices) * 1.2;
+            const minScore = Math.min(...scores) * 0.9;
+            const maxScore = Math.max(...scores) * 1.05;
+            
+            const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
+            
+            tools.forEach((tool, i) => {
+                const x = ((tool.price - minPrice) / (maxPrice - minPrice)) * 80 + 10; // 10-90% range
+                const y = 100 - (((tool.weightedScore - minScore) / (maxScore - minScore)) * 80 + 10); // Inverted
+                
+                const isBestValue = x < 50 && y < 50; // Upper left quadrant
+                
+                const point = document.createElement('div');
+                point.className = `chart-point ${isBestValue ? 'best-value' : ''}`;
+                point.style.left = `${x}%`;
+                point.style.top = `${y}%`;
+                point.style.background = colors[i % colors.length];
+                point.innerHTML = tool.name.slice(0, 2);
+                point.title = `${tool.name}: $${tool.price}/mo, Score: ${tool.weightedScore}`;
+                
+                container.appendChild(point);
+            });
+        }
+        
+        async function shareComparison() {
+            try {
+                const res = await fetch(`${COMPARE_API}/compare/share`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        tools: selectedTools,
+                        weights: mode === 'weighted' ? currentWeights : null,
+                        preset: currentPreset
+                    })
+                });
+                
+                const data = await res.json();
+                
+                // Copy to clipboard
+                await navigator.clipboard.writeText(data.shareUrl);
+                alert('Share link copied to clipboard!\n\n' + data.shareUrl);
+                
+            } catch (e) {
+                // Fallback: use URL params
+                const url = new URL(window.location.href);
+                url.searchParams.set('tools', selectedTools.join(','));
+                if (mode === 'weighted') {
+                    url.searchParams.set('weights', btoa(JSON.stringify(currentWeights)));
+                }
+                await navigator.clipboard.writeText(url.toString());
+                alert('Share link copied to clipboard!');
+            }
+        }
+        
+        async function loadSharedComparison(shareId) {
+            try {
+                const res = await fetch(`${COMPARE_API}/compare/shared/${shareId}`);
+                if (!res.ok) throw new Error('Not found');
+                
+                const data = await res.json();
+                
+                isSharedView = true;
+                selectedTools = data.tools;
+                
+                if (data.weights) {
+                    currentWeights = data.weights;
+                    mode = 'weighted';
+                }
+                if (data.preset) {
+                    currentPreset = data.preset;
+                }
+                
+                // Show watermark
+                document.getElementById('sharedWatermark').classList.remove('hidden');
+                document.getElementById('shareDate').textContent = new Date(data.createdAt).toLocaleDateString();
+                
+                // Mark selected tools
+                selectedTools.forEach(slug => {
+                    const chip = document.querySelector(`.tool-chip[data-slug="${slug}"]`);
+                    if (chip) chip.classList.add('selected');
+                });
+                
+                runComparison();
+                
+            } catch (e) {
+                console.error('Failed to load shared comparison:', e);
+            }
+        }
+        
+        function downloadComparison() {
+            // Open print dialog (user can save as PDF)
+            window.print();
+        }
+        
+        async function saveProfile() {
+            const name = document.getElementById('profileName').value.trim();
+            if (!name) {
+                alert('Please enter a profile name');
+                return;
+            }
+            
+            const userId = localStorage.getItem('toolintel_user_id') || 'anon_' + Math.random().toString(36).slice(2);
+            localStorage.setItem('toolintel_user_id', userId);
+            
+            try {
+                await fetch(`${COMPARE_API}/compare/profile`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId,
+                        profileName: name,
+                        weights: currentWeights
+                    })
+                });
+                
+                alert('Profile saved! You can reuse it in future comparisons.');
+                document.getElementById('profileName').value = '';
+                
+            } catch (e) {
+                alert('Failed to save profile');
+            }
+        }
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
 </body>
 </html>

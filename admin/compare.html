@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparison Analytics — ToolIntel Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0f2744;
+            --navy-light: #1e3a5f;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --green: #10b981;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--gray-50); color: var(--gray-800); }
+        
+        header { background: var(--navy); color: white; padding: 20px 24px; }
+        header h1 { font-size: 1.5rem; font-weight: 600; }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+        .stat-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--navy);
+        }
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            margin-top: 4px;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .section {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .section-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--gray-200);
+            background: var(--gray-50);
+        }
+        .section-header h2 {
+            font-size: 1rem;
+            color: var(--navy);
+        }
+        .section-header p {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            margin-top: 4px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 14px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-100);
+        }
+        th {
+            background: var(--gray-50);
+            font-weight: 600;
+            color: var(--gray-600);
+            font-size: 0.8rem;
+        }
+        tr:last-child td { border-bottom: none; }
+        
+        .rank {
+            font-weight: 700;
+            color: var(--gray-400);
+            width: 40px;
+        }
+        .rank.top { color: var(--navy); }
+        
+        .pair {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .pair-tool {
+            padding: 4px 10px;
+            background: var(--gray-100);
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .pair-vs {
+            color: var(--gray-400);
+            font-size: 0.8rem;
+        }
+        
+        .count {
+            font-weight: 600;
+            color: var(--green);
+        }
+        
+        .preset-name {
+            font-weight: 500;
+            color: var(--navy);
+        }
+        
+        .weight-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .weight-bar-track {
+            flex: 1;
+            height: 8px;
+            background: var(--gray-100);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .weight-bar-fill {
+            height: 100%;
+            background: var(--blue-accent);
+            border-radius: 4px;
+        }
+        .weight-bar-value {
+            font-weight: 600;
+            color: var(--navy);
+            min-width: 50px;
+            text-align: right;
+        }
+        
+        .insight-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        .insight-box h3 {
+            font-size: 1rem;
+            color: #1e40af;
+            margin-bottom: 8px;
+        }
+        .insight-box p {
+            color: #3b82f6;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--gray-400);
+        }
+        
+        @media (max-width: 1024px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>⚖️ Comparison Analytics</h1>
+    </header>
+    
+    <div class="container">
+        <div class="insight-box">
+            <h3>💡 Why This Matters</h3>
+            <p>This data reveals exactly what buyers prioritize when making real purchasing decisions. The most compared tool pairs show which products compete head-to-head. Weight adjustments show which methodology categories matter most to actual buyers — this should directly inform quarterly trend reports.</p>
+        </div>
+        
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalComparisons">-</div>
+                <div class="stat-label">Total Comparisons</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="uniquePairs">-</div>
+                <div class="stat-label">Unique Tool Pairs</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="topPreset">-</div>
+                <div class="stat-label">Most Used Preset</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="topCategory">-</div>
+                <div class="stat-label">Most Prioritized Category</div>
+            </div>
+        </div>
+        
+        <div class="grid-2">
+            <div class="section">
+                <div class="section-header">
+                    <h2>🔥 Most Compared Tool Pairs</h2>
+                    <p>Tools buyers are actively evaluating against each other</p>
+                </div>
+                <div id="pairsContent">
+                    <div class="empty-state">Loading...</div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-header">
+                    <h2>📋 Preset Usage</h2>
+                    <p>Which weighting profiles buyers choose</p>
+                </div>
+                <div id="presetsContent">
+                    <div class="empty-state">Loading...</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-header">
+                <h2>⚖️ Category Weight Adjustments</h2>
+                <p>When users customize weights, this shows which categories they prioritize (average weight vs. default 10%)</p>
+            </div>
+            <div id="weightsContent">
+                <div class="empty-state">Loading...</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = 'https://v7086lxsji.execute-api.us-east-1.amazonaws.com';
+        const urlParams = new URLSearchParams(window.location.search);
+        const ADMIN_KEY = urlParams.get('key');
+        
+        if (!ADMIN_KEY) {
+            document.body.innerHTML = '<div style="padding:60px;text-align:center;color:#999;">Access denied. Admin key required.</div>';
+        }
+        
+        const PRESET_NAMES = {
+            enterprise: 'Enterprise Security',
+            startup: 'Startup Budget',
+            developer: 'Developer API',
+            regulated: 'Regulated Industry'
+        };
+        
+        const CATEGORY_NAMES = {
+            coreAI: 'Core AI Performance',
+            privacy: 'Data Privacy & Security',
+            transparency: 'Transparency',
+            pricing: 'Pricing Fairness',
+            reliability: 'Reliability',
+            vendor: 'Vendor Stability',
+            integration: 'Integration & Usability',
+            support: 'Support Quality',
+            ethics: 'Ethical AI Practices',
+            market: 'Market Position'
+        };
+        
+        async function loadAnalytics() {
+            try {
+                const res = await fetch(`${API_BASE}/compare/admin/analytics?key=${ADMIN_KEY}`);
+                const data = await res.json();
+                
+                // Update stats
+                document.getElementById('totalComparisons').textContent = data.totalComparisons || 0;
+                document.getElementById('uniquePairs').textContent = data.toolPairs?.length || 0;
+                document.getElementById('topPreset').textContent = data.presets?.[0]?.preset 
+                    ? PRESET_NAMES[data.presets[0].preset] || data.presets[0].preset 
+                    : 'N/A';
+                document.getElementById('topCategory').textContent = data.weightAdjustments?.[0]?.category 
+                    ? CATEGORY_NAMES[data.weightAdjustments[0].category] || data.weightAdjustments[0].category 
+                    : 'N/A';
+                
+                // Tool pairs
+                if (!data.toolPairs || data.toolPairs.length === 0) {
+                    document.getElementById('pairsContent').innerHTML = '<div class="empty-state">No comparison data yet</div>';
+                } else {
+                    document.getElementById('pairsContent').innerHTML = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Tool Pair</th>
+                                    <th>Comparisons</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.toolPairs.slice(0, 15).map((pair, i) => `
+                                    <tr>
+                                        <td class="rank ${i < 3 ? 'top' : ''}">${i + 1}</td>
+                                        <td>
+                                            <div class="pair">
+                                                <span class="pair-tool">${pair.tools[0]}</span>
+                                                <span class="pair-vs">vs</span>
+                                                <span class="pair-tool">${pair.tools[1]}</span>
+                                            </div>
+                                        </td>
+                                        <td class="count">${pair.count}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                }
+                
+                // Presets
+                if (!data.presets || data.presets.length === 0) {
+                    document.getElementById('presetsContent').innerHTML = '<div class="empty-state">No preset usage yet</div>';
+                } else {
+                    const maxPreset = Math.max(...data.presets.map(p => p.count));
+                    document.getElementById('presetsContent').innerHTML = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Preset</th>
+                                    <th>Usage</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.presets.map(preset => `
+                                    <tr>
+                                        <td class="preset-name">${PRESET_NAMES[preset.preset] || preset.preset}</td>
+                                        <td>
+                                            <div class="weight-bar">
+                                                <div class="weight-bar-track">
+                                                    <div class="weight-bar-fill" style="width: ${(preset.count / maxPreset) * 100}%"></div>
+                                                </div>
+                                                <span class="weight-bar-value">${preset.count}</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                }
+                
+                // Weight adjustments
+                if (!data.weightAdjustments || data.weightAdjustments.length === 0) {
+                    document.getElementById('weightsContent').innerHTML = '<div class="empty-state">No custom weight data yet</div>';
+                } else {
+                    document.getElementById('weightsContent').innerHTML = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Average Weight (default: 10%)</th>
+                                    <th>Times Adjusted</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.weightAdjustments.map(w => `
+                                    <tr>
+                                        <td><strong>${CATEGORY_NAMES[w.category] || w.category}</strong></td>
+                                        <td>
+                                            <div class="weight-bar">
+                                                <div class="weight-bar-track">
+                                                    <div class="weight-bar-fill" style="width: ${Math.min(w.avgWeight * 2, 100)}%; background: ${w.avgWeight > 10 ? '#10b981' : w.avgWeight < 10 ? '#ef4444' : '#3b82f6'}"></div>
+                                                </div>
+                                                <span class="weight-bar-value">${w.avgWeight}%</span>
+                                            </div>
+                                        </td>
+                                        <td>${w.adjustmentCount}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                }
+                
+            } catch (e) {
+                console.error(e);
+                document.getElementById('pairsContent').innerHTML = `<div class="empty-state">Error: ${e.message}</div>`;
+            }
+        }
+        
+        if (ADMIN_KEY) loadAnalytics();
+    </script>
+</body>
+</html>
