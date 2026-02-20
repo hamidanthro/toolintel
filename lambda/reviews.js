@@ -167,9 +167,10 @@ exports.handler = async (event) => {
                 return { statusCode: 400, headers, body: JSON.stringify({ error: `Review must be at most 500 words (currently ${wordCount})` }) };
             }
             
-            // Validate overall score (1-5)
-            if (overallScore < 1 || overallScore > 5) {
-                return { statusCode: 400, headers, body: JSON.stringify({ error: 'Overall score must be 1-5' }) };
+            // Validate overall score (1-5, allows 0.5 increments)
+            const score = parseFloat(overallScore);
+            if (isNaN(score) || score < 1 || score > 5 || (score * 2) % 1 !== 0) {
+                return { statusCode: 400, headers, body: JSON.stringify({ error: 'Overall score must be 1-5 in 0.5 increments' }) };
             }
             
             // Validate structured ratings
@@ -206,7 +207,7 @@ exports.handler = async (event) => {
                 ratingClaims,
                 ratingPricing,
                 ratingRecommend,
-                overallScore: parseInt(overallScore),
+                overallScore: parseFloat(overallScore),
                 reviewText: reviewText.substring(0, 5000),
                 disclosure: true,
                 status: 'pending',
