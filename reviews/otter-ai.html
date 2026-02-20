@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Otter.ai Review — ToolIntel</title>
+    <meta name="description" content="Community reviews for Otter.ai by Otter.ai. Editorial review coming soon. Share your experience with this AI tool.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --navy: #0f2744;
+            --navy-light: #1e3a5f;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --green: #10b981;
+            --yellow: #f59e0b;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: var(--gray-800); line-height: 1.7; background: var(--gray-50); }
+        h1, h2, h3, h4 { font-family: 'Merriweather', Georgia, serif; font-weight: 700; line-height: 1.3; }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+        
+        header { padding: 16px 0; border-bottom: 1px solid var(--gray-200); background: var(--white); position: sticky; top: 0; z-index: 100; }
+        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+        .logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.25rem; color: var(--navy); text-decoration: none; }
+        .logo span { color: var(--blue-accent); }
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+        .nav-links a:hover { color: var(--navy); }
+        
+        .breadcrumb { background: var(--white); border-bottom: 1px solid var(--gray-200); padding: 12px 0; }
+        .breadcrumb-content { max-width: 900px; margin: 0 auto; padding: 0 24px; font-size: 0.9rem; color: var(--gray-400); }
+        .breadcrumb-content a { color: var(--gray-600); text-decoration: none; }
+        .breadcrumb-content a:hover { color: var(--navy); }
+        
+        .review-hero { background: var(--white); border-bottom: 1px solid var(--gray-200); padding: 40px 0; }
+        .hero-content { display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: start; }
+        .tool-badge { display: inline-block; background: #dbeafe; color: #1d4ed8; font-size: 0.8rem; font-weight: 500; padding: 4px 10px; border-radius: 4px; margin-bottom: 12px; }
+        .coming-soon-badge { display: inline-block; background: #fef3c7; color: #92400e; font-size: 0.8rem; font-weight: 500; padding: 4px 10px; border-radius: 4px; margin-left: 8px; }
+        .tool-info h1 { font-size: 2rem; color: var(--navy); margin-bottom: 8px; }
+        .tool-meta { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 16px; font-size: 0.9rem; color: var(--gray-600); }
+        .tool-meta a { color: var(--blue-accent); text-decoration: none; }
+        
+        .score-section { text-align: center; }
+        .score-pending { width: 140px; height: 140px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-direction: column; margin: 0 auto 12px; background: var(--gray-100); border: 4px dashed var(--gray-400); }
+        .score-pending-text { font-size: 0.9rem; color: var(--gray-600); text-align: center; padding: 10px; }
+        
+        .content { padding: 40px 0; }
+        .section { background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; padding: 32px; margin-bottom: 24px; }
+        .section h2 { font-size: 1.25rem; color: var(--navy); margin-bottom: 20px; }
+        .section p { color: var(--gray-600); margin-bottom: 16px; }
+        
+        .coming-soon-box { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 1px solid #f59e0b; border-radius: 12px; padding: 32px; text-align: center; margin-bottom: 24px; }
+        .coming-soon-box h2 { color: #92400e; margin-bottom: 12px; }
+        .coming-soon-box p { color: #78350f; margin-bottom: 0; }
+        
+        .community-badge { background: #dbeafe; color: #1d4ed8; font-size: 0.7rem; font-weight: 600; padding: 3px 8px; border-radius: 4px; margin-left: 8px; vertical-align: middle; }
+        
+        .user-reviews { margin: 24px 0; }
+        .no-reviews { text-align: center; padding: 40px; color: var(--gray-400); background: var(--gray-50); border-radius: 8px; }
+        .user-review { border: 1px solid var(--gray-200); border-radius: 8px; padding: 20px; margin-bottom: 16px; background: var(--white); }
+        .review-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+        .reviewer-info { display: flex; align-items: center; gap: 12px; }
+        .reviewer-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--navy); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; }
+        .reviewer-name { font-weight: 600; color: var(--navy); }
+        .reviewer-title { font-size: 0.85rem; color: var(--gray-600); }
+        .review-meta { font-size: 0.8rem; color: var(--gray-400); text-align: right; }
+        .review-stars { color: #f59e0b; letter-spacing: 2px; }
+        .review-text { color: var(--gray-600); line-height: 1.7; margin: 16px 0; }
+        .review-ratings { display: flex; gap: 16px; flex-wrap: wrap; font-size: 0.85rem; }
+        .review-ratings span { display: flex; align-items: center; gap: 4px; }
+        .review-ratings .label { color: var(--gray-400); }
+        .review-ratings .value { font-weight: 500; padding: 2px 6px; border-radius: 4px; }
+        .review-ratings .value.yes { background: #d1fae5; color: #065f46; }
+        .review-ratings .value.partial { background: #fef3c7; color: #92400e; }
+        .review-ratings .value.no { background: #fee2e2; color: #991b1b; }
+        
+        .review-form { margin-top: 32px; padding: 24px; background: var(--white); border: 1px solid var(--gray-200); border-radius: 8px; }
+        .review-form h4 { font-family: 'Inter', sans-serif; font-size: 1.1rem; font-weight: 600; color: var(--navy); margin-bottom: 8px; }
+        .review-form .form-intro { font-size: 0.9rem; color: var(--gray-600); margin-bottom: 24px; line-height: 1.6; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 0.9rem; font-weight: 500; color: var(--gray-800); margin-bottom: 6px; }
+        .label-hint { font-weight: 400; color: var(--gray-400); }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: 6px; font-size: 0.95rem; font-family: inherit; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--blue-accent); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        .form-group textarea { min-height: 120px; resize: vertical; }
+        .char-count { font-size: 0.8rem; color: var(--gray-400); margin-top: 4px; }
+        
+        .structured-ratings { background: var(--gray-50); border-radius: 8px; padding: 16px; }
+        .rating-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--gray-200); }
+        .rating-row:last-child { border-bottom: none; }
+        .rating-label { font-size: 0.9rem; color: var(--gray-600); }
+        .rating-options { display: flex; gap: 12px; }
+        .rating-options label { display: flex; align-items: center; gap: 4px; cursor: pointer; font-size: 0.9rem; }
+        .rating-options input { margin: 0; }
+        
+        .star-rating { display: flex; flex-direction: row-reverse; justify-content: flex-end; gap: 4px; }
+        .star-rating input { display: none; }
+        .star-rating label { font-size: 1.5rem; color: var(--gray-200); cursor: pointer; transition: color 0.2s; }
+        .star-rating input:checked ~ label, .star-rating label:hover, .star-rating label:hover ~ label { color: #f59e0b; }
+        
+        .disclosure-box { background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 6px; padding: 12px; margin: 20px 0; }
+        .disclosure-box label { display: flex; gap: 10px; align-items: flex-start; font-size: 0.85rem; color: var(--gray-600); cursor: pointer; }
+        .disclosure-box input { margin-top: 3px; }
+        
+        .submit-btn { width: 100%; padding: 14px; background: var(--navy); color: white; border: none; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+        .submit-btn:hover { background: var(--navy-light); }
+        .submit-btn:disabled { background: var(--gray-400); cursor: not-allowed; }
+        .form-note { font-size: 0.8rem; color: var(--gray-400); text-align: center; margin-top: 12px; }
+        
+        .form-success { display: none; background: #d1fae5; border: 1px solid #a7f3d0; color: #065f46; padding: 16px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
+        .form-error { display: none; background: #fee2e2; border: 1px solid #fecaca; color: #991b1b; padding: 16px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
+        
+        footer { border-top: 1px solid var(--gray-200); padding: 24px; text-align: center; font-size: 0.9rem; color: var(--gray-600); background: var(--white); margin-top: 40px; }
+        footer a { color: var(--gray-600); text-decoration: none; margin: 0 8px; }
+        footer a:hover { color: var(--navy); }
+        
+        @media (max-width: 768px) {
+            .hero-content { grid-template-columns: 1fr; }
+            .score-section { margin-top: 24px; }
+            .form-row { grid-template-columns: 1fr; }
+            .rating-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo">Tool<span>Intel</span></a>
+            <div class="nav-links">
+                <a href="/reviews.html">Reviews</a>
+                <a href="/methodology.html">Methodology</a>
+                <a href="/about.html">About</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="breadcrumb">
+        <div class="breadcrumb-content">
+            <a href="/">Home</a> → <a href="/reviews.html">Reviews</a> → Otter.ai
+        </div>
+    </div>
+
+    <main>
+        <section class="review-hero">
+            <div class="container">
+                <div class="hero-content">
+                    <div class="tool-info">
+                        <span class="tool-badge">Transcription</span>
+                        <span class="coming-soon-badge">Editorial Review Coming Soon</span>
+                        <h1>Otter.ai</h1>
+                        <div class="tool-meta">
+                            <span>by Otter.ai</span>
+                            <span>•</span>
+                            <a href="https://otter-ai.google.com" target="_blank" rel="nofollow noopener">otter-ai.google.com ↗</a>
+                        </div>
+                        <p style="color: var(--gray-600); max-width: 600px;">Otter.ai's multimodal AI assistant. Our editorial team is currently evaluating this tool using our rigorous methodology.</p>
+                    </div>
+                    <div class="score-section">
+                        <div class="score-pending">
+                            <div class="score-pending-text">Score<br>Pending</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="content">
+            <div class="container">
+                <div class="coming-soon-box">
+                    <h2>📝 Editorial Review In Progress</h2>
+                    <p>Our team is currently conducting an in-depth evaluation of Otter.ai. The full review will be published soon with detailed scoring across all criteria.</p>
+                </div>
+
+                <div class="section community-section" id="community">
+                    <h2>Community Reviews <span class="community-badge">VERIFIED USERS</span></h2>
+                    <p>Reviews from verified users. These are separate from our editorial review and are manually approved to ensure authenticity. Share your experience while we prepare our official review!</p>
+                    
+                    <div class="user-reviews" id="userReviews">
+                        <div class="no-reviews">No community reviews yet. Be the first to share your experience!</div>
+                    </div>
+                    
+                    <div class="review-form">
+                        <h4>Share Your Experience</h4>
+                        <p class="form-intro">All submissions are manually reviewed before publishing. We verify your email and check for authentic usage experience. No pseudonyms — your name will be displayed publicly.</p>
+                        
+                        <div class="form-success" id="formSuccess">Thank you! Your review has been submitted and is pending manual approval. We'll verify your email and review your submission within 48 hours.</div>
+                        <div class="form-error" id="formError">Please check all required fields and try again.</div>
+                        
+                        <form id="reviewForm">
+                            <input type="hidden" name="tool" value="otter-ai">
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Full Name <span class="label-hint">(displayed publicly)</span></label>
+                                    <input type="text" name="fullName" required placeholder="Jane Smith">
+                                </div>
+                                <div class="form-group">
+                                    <label>Professional Email <span class="label-hint">(for verification only)</span></label>
+                                    <input type="email" name="email" required placeholder="jane@company.com">
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Job Title & Company/Industry</label>
+                                    <input type="text" name="jobTitle" required placeholder="Software Engineer at TechCorp">
+                                </div>
+                                <div class="form-group">
+                                    <label>How long have you used this tool?</label>
+                                    <select name="usageDuration" required>
+                                        <option value="">Select...</option>
+                                        <option value="less-than-1-month">Less than 1 month</option>
+                                        <option value="1-6-months">1-6 months</option>
+                                        <option value="6-plus-months">6+ months</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Which pricing tier do you use?</label>
+                                <select name="pricingTier" required>
+                                    <option value="">Select...</option>
+                                    <option value="free">Free</option>
+                                    <option value="pro">Advanced/Ultra</option>
+                                    <option value="team">Otter.ai One AI Premium</option>
+                                    <option value="enterprise">Enterprise</option>
+                                    <option value="api">API</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Structured Ratings</label>
+                                <div class="structured-ratings">
+                                    <div class="rating-row">
+                                        <span class="rating-label">Does it do what it claims?</span>
+                                        <div class="rating-options">
+                                            <label><input type="radio" name="ratingClaims" value="yes" required><span>Yes</span></label>
+                                            <label><input type="radio" name="ratingClaims" value="partially"><span>Partially</span></label>
+                                            <label><input type="radio" name="ratingClaims" value="no"><span>No</span></label>
+                                        </div>
+                                    </div>
+                                    <div class="rating-row">
+                                        <span class="rating-label">Is pricing transparent?</span>
+                                        <div class="rating-options">
+                                            <label><input type="radio" name="ratingPricing" value="yes" required><span>Yes</span></label>
+                                            <label><input type="radio" name="ratingPricing" value="partially"><span>Partially</span></label>
+                                            <label><input type="radio" name="ratingPricing" value="no"><span>No</span></label>
+                                        </div>
+                                    </div>
+                                    <div class="rating-row">
+                                        <span class="rating-label">Would you recommend for your use case?</span>
+                                        <div class="rating-options">
+                                            <label><input type="radio" name="ratingRecommend" value="yes" required><span>Yes</span></label>
+                                            <label><input type="radio" name="ratingRecommend" value="partially"><span>Partially</span></label>
+                                            <label><input type="radio" name="ratingRecommend" value="no"><span>No</span></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Overall Score</label>
+                                <div class="star-rating">
+                                    <input type="radio" name="overallScore" value="5" id="star5" required><label for="star5">★</label>
+                                    <input type="radio" name="overallScore" value="4" id="star4"><label for="star4">★</label>
+                                    <input type="radio" name="overallScore" value="3" id="star3"><label for="star3">★</label>
+                                    <input type="radio" name="overallScore" value="2" id="star2"><label for="star2">★</label>
+                                    <input type="radio" name="overallScore" value="1" id="star1"><label for="star1">★</label>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Your Review <span class="label-hint">(100-500 words, describe your actual experience)</span></label>
+                                <textarea name="reviewText" id="reviewText" required placeholder="Describe your experience with this tool. What do you use it for? What works well? What could be improved? Be specific about features you've actually used."></textarea>
+                                <div class="char-count" id="charCount">0 words (minimum 100)</div>
+                            </div>
+                            
+                            <div class="disclosure-box">
+                                <label>
+                                    <input type="checkbox" name="disclosure" required>
+                                    <span>I confirm I have no financial relationship with this company and am not an employee, contractor, or investor. This review reflects my genuine experience as a user.</span>
+                                </label>
+                            </div>
+                            
+                            <button type="submit" class="submit-btn" id="submitBtn">Submit Review for Approval</button>
+                            <p class="form-note">All reviews are manually verified before publishing. We check email authenticity and review content for genuine usage experience.</p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>© 2026 ToolIntel. <a href="/methodology.html">Methodology</a> · <a href="/transparency.html">Transparency</a></p>
+        </div>
+    </footer>
+
+    <script>
+        const API_BASE = 'https://v7086lxsji.execute-api.us-east-1.amazonaws.com';
+        const TOOL_SLUG = 'otter-ai';
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function formatRating(value) {
+            const labels = { yes: 'Yes', partially: 'Partially', no: 'No' };
+            const classes = { yes: 'yes', partially: 'partial', no: 'no' };
+            return `<span class="value ${classes[value]}">${labels[value]}</span>`;
+        }
+        
+        async function loadReviews() {
+            try {
+                const res = await fetch(`${API_BASE}/reviews?tool=${TOOL_SLUG}&status=approved`);
+                const reviews = await res.json();
+                const container = document.getElementById('userReviews');
+                
+                if (!reviews.length) {
+                    container.innerHTML = '<div class="no-reviews">No community reviews yet. Be the first to share your experience!</div>';
+                    return;
+                }
+                
+                container.innerHTML = reviews.map(r => `
+                    <div class="user-review">
+                        <div class="review-header">
+                            <div class="reviewer-info">
+                                <div class="reviewer-avatar">${escapeHtml(r.fullName.charAt(0))}</div>
+                                <div>
+                                    <div class="reviewer-name">${escapeHtml(r.fullName)}</div>
+                                    <div class="reviewer-title">${escapeHtml(r.jobTitle)}</div>
+                                </div>
+                            </div>
+                            <div class="review-meta">
+                                <div class="review-stars">${'★'.repeat(r.overallScore)}${'☆'.repeat(5-r.overallScore)}</div>
+                                <div>${r.usageDuration.replace(/-/g, ' ')} • ${r.pricingTier}</div>
+                            </div>
+                        </div>
+                        <div class="review-text">${escapeHtml(r.reviewText)}</div>
+                        <div class="review-ratings">
+                            <span><span class="label">Does what it claims:</span> ${formatRating(r.ratingClaims)}</span>
+                            <span><span class="label">Transparent pricing:</span> ${formatRating(r.ratingPricing)}</span>
+                            <span><span class="label">Would recommend:</span> ${formatRating(r.ratingRecommend)}</span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.error('Failed to load reviews:', e);
+            }
+        }
+        
+        loadReviews();
+        
+        // Word counter
+        const reviewText = document.getElementById('reviewText');
+        const charCount = document.getElementById('charCount');
+        reviewText.addEventListener('input', () => {
+            const words = reviewText.value.trim().split(/\s+/).filter(w => w).length;
+            charCount.textContent = `${words} words (minimum 100)`;
+            charCount.style.color = words >= 100 ? '#10b981' : '#9ca3af';
+        });
+        
+        // Form submission
+        document.getElementById('reviewForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const btn = document.getElementById('submitBtn');
+            const successMsg = document.getElementById('formSuccess');
+            const errorMsg = document.getElementById('formError');
+            
+            const words = reviewText.value.trim().split(/\s+/).filter(w => w).length;
+            if (words < 100) {
+                errorMsg.textContent = 'Please write at least 100 words.';
+                errorMsg.style.display = 'block';
+                successMsg.style.display = 'none';
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.textContent = 'Submitting...';
+            
+            try {
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData.entries());
+                
+                const res = await fetch(`${API_BASE}/reviews`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                if (res.ok) {
+                    successMsg.style.display = 'block';
+                    errorMsg.style.display = 'none';
+                    form.reset();
+                    charCount.textContent = '0 words (minimum 100)';
+                } else {
+                    throw new Error('Submission failed');
+                }
+            } catch (err) {
+                errorMsg.textContent = 'Something went wrong. Please try again.';
+                errorMsg.style.display = 'block';
+                successMsg.style.display = 'none';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Submit Review for Approval';
+            }
+        });
+    </script>
+</body>
+</html>
