@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Moderation — ToolIntel Admin</title>
+    <style>
+        :root {
+            --navy: #0f2744;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --green: #10b981;
+            --yellow: #f59e0b;
+            --red: #ef4444;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--gray-100); min-height: 100vh; }
+        
+        .header { background: var(--navy); color: var(--white); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 1.25rem; font-weight: 600; }
+        .header a { color: var(--white); opacity: 0.8; text-decoration: none; }
+        .header a:hover { opacity: 1; }
+        
+        .container { max-width: 1000px; margin: 0 auto; padding: 24px; }
+        
+        .tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+        .tab { padding: 10px 20px; background: var(--white); border: 1px solid var(--gray-200); border-radius: 6px; cursor: pointer; font-weight: 500; color: var(--gray-600); }
+        .tab.active { background: var(--navy); color: var(--white); border-color: var(--navy); }
+        .tab .count { background: var(--gray-200); color: var(--gray-600); padding: 2px 8px; border-radius: 10px; font-size: 0.8rem; margin-left: 6px; }
+        .tab.active .count { background: rgba(255,255,255,0.2); color: var(--white); }
+        
+        .review-card { background: var(--white); border: 1px solid var(--gray-200); border-radius: 8px; padding: 20px; margin-bottom: 16px; }
+        .review-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px; }
+        .review-meta { font-size: 0.9rem; color: var(--gray-600); }
+        .review-meta strong { color: var(--navy); }
+        .review-tool { display: inline-block; background: var(--gray-100); padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; margin-left: 8px; }
+        .review-rating { display: flex; gap: 2px; }
+        .star { color: #fbbf24; }
+        .star.empty { color: var(--gray-200); }
+        .review-text { color: var(--gray-800); line-height: 1.6; margin: 12px 0; padding: 12px; background: var(--gray-50); border-radius: 6px; }
+        .review-date { font-size: 0.8rem; color: var(--gray-400); }
+        
+        .review-actions { display: flex; gap: 8px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--gray-100); }
+        .btn { padding: 8px 16px; border: none; border-radius: 6px; font-weight: 500; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; }
+        .btn-approve { background: #d1fae5; color: #065f46; }
+        .btn-approve:hover { background: #a7f3d0; }
+        .btn-reject { background: #fee2e2; color: #991b1b; }
+        .btn-reject:hover { background: #fecaca; }
+        .btn-delete { background: var(--gray-100); color: var(--gray-600); }
+        .btn-delete:hover { background: var(--gray-200); }
+        
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--gray-400); }
+        .empty-state h3 { color: var(--gray-600); margin-bottom: 8px; }
+        
+        .loading { text-align: center; padding: 40px; color: var(--gray-400); }
+        
+        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: var(--white); border: 1px solid var(--gray-200); border-radius: 8px; padding: 16px; text-align: center; }
+        .stat-number { font-size: 2rem; font-weight: 700; color: var(--navy); }
+        .stat-label { font-size: 0.85rem; color: var(--gray-400); margin-top: 4px; }
+        
+        .login-gate { max-width: 400px; margin: 100px auto; background: var(--white); padding: 32px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .login-gate h2 { margin-bottom: 20px; color: var(--navy); }
+        .login-gate input { width: 100%; padding: 12px; border: 1px solid var(--gray-200); border-radius: 6px; margin-bottom: 16px; }
+        .login-gate button { width: 100%; padding: 12px; background: var(--navy); color: var(--white); border: none; border-radius: 6px; font-weight: 500; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div id="loginGate" class="login-gate">
+        <h2>Admin Login</h2>
+        <input type="password" id="adminKey" placeholder="Enter admin key">
+        <button onclick="login()">Login</button>
+    </div>
+
+    <div id="app" style="display: none;">
+        <header class="header">
+            <h1>📋 Review Moderation</h1>
+            <a href="/">← Back to Site</a>
+        </header>
+        
+        <div class="container">
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="pendingCount">-</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="approvedCount">-</div>
+                    <div class="stat-label">Approved</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="rejectedCount">-</div>
+                    <div class="stat-label">Rejected</div>
+                </div>
+            </div>
+            
+            <div class="tabs">
+                <div class="tab active" data-status="pending">Pending <span class="count" id="pendingTab">0</span></div>
+                <div class="tab" data-status="approved">Approved <span class="count" id="approvedTab">0</span></div>
+                <div class="tab" data-status="rejected">Rejected <span class="count" id="rejectedTab">0</span></div>
+            </div>
+            
+            <div id="reviewList" class="loading">Loading reviews...</div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://v7086lxsji.execute-api.us-east-1.amazonaws.com';
+        let adminKey = '';
+        let currentStatus = 'pending';
+        let allReviews = [];
+        
+        function login() {
+            adminKey = document.getElementById('adminKey').value;
+            if (adminKey) {
+                document.getElementById('loginGate').style.display = 'none';
+                document.getElementById('app').style.display = 'block';
+                loadReviews();
+            }
+        }
+        
+        // Check for saved key
+        if (localStorage.getItem('toolintel_admin')) {
+            adminKey = localStorage.getItem('toolintel_admin');
+            document.getElementById('loginGate').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+            loadReviews();
+        }
+        
+        async function loadReviews() {
+            try {
+                const res = await fetch(`${API_BASE}/reviews/admin?key=${adminKey}`);
+                if (!res.ok) {
+                    alert('Invalid admin key');
+                    localStorage.removeItem('toolintel_admin');
+                    location.reload();
+                    return;
+                }
+                localStorage.setItem('toolintel_admin', adminKey);
+                allReviews = await res.json();
+                updateStats();
+                renderReviews();
+            } catch (err) {
+                document.getElementById('reviewList').innerHTML = '<div class="empty-state"><h3>Error loading reviews</h3></div>';
+            }
+        }
+        
+        function updateStats() {
+            const pending = allReviews.filter(r => r.status === 'pending').length;
+            const approved = allReviews.filter(r => r.status === 'approved').length;
+            const rejected = allReviews.filter(r => r.status === 'rejected').length;
+            
+            document.getElementById('pendingCount').textContent = pending;
+            document.getElementById('approvedCount').textContent = approved;
+            document.getElementById('rejectedCount').textContent = rejected;
+            document.getElementById('pendingTab').textContent = pending;
+            document.getElementById('approvedTab').textContent = approved;
+            document.getElementById('rejectedTab').textContent = rejected;
+        }
+        
+        function renderReviews() {
+            const filtered = allReviews.filter(r => r.status === currentStatus);
+            const container = document.getElementById('reviewList');
+            
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="empty-state"><h3>No ${currentStatus} reviews</h3><p>Reviews will appear here when available.</p></div>`;
+                return;
+            }
+            
+            container.innerHTML = filtered.map(r => `
+                <div class="review-card" data-id="${r.id}">
+                    <div class="review-header">
+                        <div class="review-meta">
+                            <strong>${escapeHtml(r.name)}</strong>
+                            <span class="review-tool">${r.tool}</span>
+                        </div>
+                        <div class="review-rating">
+                            ${'★'.repeat(r.rating).split('').map(() => '<span class="star">★</span>').join('')}
+                            ${'★'.repeat(5-r.rating).split('').map(() => '<span class="star empty">★</span>').join('')}
+                        </div>
+                    </div>
+                    <div class="review-text">${escapeHtml(r.review)}</div>
+                    <div class="review-date">Submitted: ${new Date(r.createdAt).toLocaleString()}</div>
+                    <div class="review-actions">
+                        ${r.status === 'pending' ? `
+                            <button class="btn btn-approve" onclick="updateStatus('${r.id}', 'approved')">✓ Approve</button>
+                            <button class="btn btn-reject" onclick="updateStatus('${r.id}', 'rejected')">✕ Reject</button>
+                        ` : ''}
+                        ${r.status === 'approved' ? `
+                            <button class="btn btn-reject" onclick="updateStatus('${r.id}', 'rejected')">✕ Reject</button>
+                        ` : ''}
+                        ${r.status === 'rejected' ? `
+                            <button class="btn btn-approve" onclick="updateStatus('${r.id}', 'approved')">✓ Approve</button>
+                        ` : ''}
+                        <button class="btn btn-delete" onclick="deleteReview('${r.id}')">🗑 Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        async function updateStatus(id, status) {
+            try {
+                await fetch(`${API_BASE}/reviews/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status, key: adminKey })
+                });
+                const review = allReviews.find(r => r.id === id);
+                if (review) review.status = status;
+                updateStats();
+                renderReviews();
+            } catch (err) {
+                alert('Failed to update review');
+            }
+        }
+        
+        async function deleteReview(id) {
+            if (!confirm('Delete this review permanently?')) return;
+            try {
+                await fetch(`${API_BASE}/reviews/${id}?key=${adminKey}`, { method: 'DELETE' });
+                allReviews = allReviews.filter(r => r.id !== id);
+                updateStats();
+                renderReviews();
+            } catch (err) {
+                alert('Failed to delete review');
+            }
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentStatus = tab.dataset.status;
+                renderReviews();
+            });
+        });
+    </script>
+</body>
+</html>

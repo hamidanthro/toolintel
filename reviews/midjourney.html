@@ -89,6 +89,30 @@
         .alt-card .score.mid { color: var(--yellow); }
         .alt-card .category { font-size: 0.8rem; color: var(--gray-400); margin-top: 4px; }
         .community-section { background: var(--gray-50); border: 1px dashed var(--gray-300); }
+        .user-reviews { margin-top: 24px; }
+        .user-review { padding: 16px; background: var(--white); border: 1px solid var(--gray-200); border-radius: 8px; margin-bottom: 12px; }
+        .user-review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .user-review-author { font-weight: 600; color: var(--navy); }
+        .user-review-rating .star { color: #fbbf24; }
+        .user-review-rating .star.empty { color: var(--gray-200); }
+        .user-review-text { color: var(--gray-600); font-size: 0.95rem; }
+        .user-review-date { font-size: 0.8rem; color: var(--gray-400); margin-top: 8px; }
+        .no-reviews { color: var(--gray-400); font-style: italic; padding: 20px; text-align: center; }
+        .review-form { margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--gray-200); }
+        .review-form h4 { font-size: 1rem; font-weight: 600; color: var(--navy); margin-bottom: 16px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 0.9rem; font-weight: 500; color: var(--gray-600); margin-bottom: 6px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: 6px; font-size: 0.95rem; }
+        .form-group textarea { min-height: 100px; resize: vertical; }
+        .star-rating { display: flex; flex-direction: row-reverse; justify-content: flex-end; gap: 4px; }
+        .star-rating input { display: none; }
+        .star-rating label { cursor: pointer; font-size: 1.5rem; color: var(--gray-200); }
+        .star-rating label:hover, .star-rating label:hover ~ label, .star-rating input:checked ~ label { color: #fbbf24; }
+        .submit-btn { background: var(--navy); color: #fff; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; }
+        .submit-btn:disabled { background: var(--gray-400); }
+        .form-note { font-size: 0.8rem; color: var(--gray-400); margin-top: 8px; }
+        .form-success { background: #d1fae5; color: #065f46; padding: 12px; border-radius: 6px; margin-bottom: 16px; display: none; }
+        .form-error { background: #fee2e2; color: #991b1b; padding: 12px; border-radius: 6px; margin-bottom: 16px; display: none; }
         .community-badge { font-size: 0.7rem; padding: 2px 8px; background: var(--gray-200); color: var(--gray-600); border-radius: 4px; }
         .changelog-item { display: flex; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--gray-100); }
         .changelog-date { font-size: 0.85rem; color: var(--gray-400); min-width: 100px; }
@@ -272,9 +296,22 @@
                     </div>
                 </div>
 
-                <div class="section community-section">
-                    <h2>Community Signal <span class="community-badge">SEPARATE FROM EDITORIAL</span></h2>
-                    <p style="color: var(--gray-400); font-style: italic;">Community ratings launching soon. <a href="/#waitlist">Get notified →</a></p>
+                <div class="section community-section" id="community">
+                    <h2>Community Reviews <span class="community-badge">USER SUBMITTED</span></h2>
+                    <p>Reviews from the community. These are separate from our editorial review.</p>
+                    <div class="user-reviews" id="userReviews"><div class="no-reviews">No community reviews yet. Be the first!</div></div>
+                    <div class="review-form">
+                        <h4>Share Your Experience</h4>
+                        <div class="form-success" id="formSuccess">Thank you! Your review is pending approval.</div>
+                        <div class="form-error" id="formError">Something went wrong. Please try again.</div>
+                        <form id="reviewForm">
+                            <div class="form-group"><label>Your Name</label><input type="text" name="name" required placeholder="John D."></div>
+                            <div class="form-group"><label>Rating</label><div class="star-rating"><input type="radio" name="rating" value="5" id="s5" required><label for="s5">★</label><input type="radio" name="rating" value="4" id="s4"><label for="s4">★</label><input type="radio" name="rating" value="3" id="s3"><label for="s3">★</label><input type="radio" name="rating" value="2" id="s2"><label for="s2">★</label><input type="radio" name="rating" value="1" id="s1"><label for="s1">★</label></div></div>
+                            <div class="form-group"><label>Your Review</label><textarea name="review" required placeholder="Share your experience..."></textarea></div>
+                            <button type="submit" class="submit-btn" id="submitBtn">Submit Review</button>
+                            <p class="form-note">All reviews are moderated before publishing.</p>
+                        </form>
+                    </div>
                 </div>
 
                 <div class="section">
@@ -286,6 +323,13 @@
     </main>
 
     <footer><div class="container"><p>© 2026 ToolIntel. <a href="/methodology.html">Methodology</a> · <a href="/transparency.html">Transparency</a></p></div></footer>
-    <script>document.querySelectorAll('.accordion-header').forEach(h=>{h.addEventListener('click',()=>{const c=h.parentElement.querySelector('.accordion-content');const o=c.style.display==='block';document.querySelectorAll('.accordion-content').forEach(x=>x.style.display='none');if(!o)c.style.display='block';});});</script>
+    <script>
+    document.querySelectorAll('.accordion-header').forEach(h=>{h.addEventListener('click',()=>{const c=h.parentElement.querySelector('.accordion-content');const o=c.style.display==='block';document.querySelectorAll('.accordion-content').forEach(x=>x.style.display='none');if(!o)c.style.display='block';});});
+    const API='https://v7086lxsji.execute-api.us-east-1.amazonaws.com',TOOL='midjourney';
+    async function loadReviews(){try{const r=await fetch(`${API}/reviews?tool=${TOOL}&status=approved`);const d=await r.json();const c=document.getElementById('userReviews');if(!d.length){c.innerHTML='<div class="no-reviews">No reviews yet. Be the first!</div>';return;}c.innerHTML=d.map(r=>`<div class="user-review"><div class="user-review-header"><span class="user-review-author">${esc(r.name)}</span><div class="user-review-rating">${'★'.repeat(r.rating).split('').map(()=>'<span class="star">★</span>').join('')}${'★'.repeat(5-r.rating).split('').map(()=>'<span class="star empty">★</span>').join('')}</div></div><p class="user-review-text">${esc(r.review)}</p><div class="user-review-date">${new Date(r.createdAt).toLocaleDateString()}</div></div>`).join('');}catch(e){}}
+    function esc(t){const d=document.createElement('div');d.textContent=t;return d.innerHTML;}
+    document.getElementById('reviewForm').addEventListener('submit',async function(e){e.preventDefault();const b=document.getElementById('submitBtn');b.disabled=true;b.textContent='Submitting...';document.getElementById('formSuccess').style.display='none';document.getElementById('formError').style.display='none';const f=new FormData(this);try{const r=await fetch(`${API}/reviews`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tool:TOOL,name:f.get('name'),rating:parseInt(f.get('rating')),review:f.get('review')})});if(r.ok){document.getElementById('formSuccess').style.display='block';this.reset();}else throw 0;}catch(e){document.getElementById('formError').style.display='block';}b.disabled=false;b.textContent='Submit Review';});
+    loadReviews();
+    </script>
 </body>
 </html>
