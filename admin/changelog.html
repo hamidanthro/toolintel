@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Changelog Management — ToolIntel Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0f2744;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --green: #10b981;
+            --yellow: #f59e0b;
+            --red: #ef4444;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--gray-50); color: var(--gray-800); }
+        
+        header { background: var(--navy); color: white; padding: 20px 24px; }
+        header h1 { font-size: 1.5rem; font-weight: 600; }
+        header .subtitle { color: var(--gray-400); font-size: 0.9rem; margin-top: 4px; }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+        
+        .tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+        .tab { padding: 10px 20px; border: none; background: var(--white); border-radius: 6px; cursor: pointer; font-size: 0.95rem; font-weight: 500; color: var(--gray-600); border: 1px solid var(--gray-200); }
+        .tab.active { background: var(--navy); color: white; border-color: var(--navy); }
+        .tab .badge { background: var(--red); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; margin-left: 8px; }
+        
+        .panel { display: none; }
+        .panel.active { display: block; }
+        
+        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: var(--white); border: 1px solid var(--gray-200); border-radius: 8px; padding: 16px; text-align: center; }
+        .stat-card .number { font-size: 2rem; font-weight: 700; color: var(--navy); }
+        .stat-card .label { font-size: 0.85rem; color: var(--gray-600); }
+        .stat-card.alert .number { color: var(--red); }
+        
+        .card { background: var(--white); border: 1px solid var(--gray-200); border-radius: 8px; padding: 20px; margin-bottom: 16px; }
+        .card.high-priority { border-left: 4px solid var(--red); }
+        
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .card-title { font-weight: 600; color: var(--navy); }
+        
+        .impact-badge { padding: 3px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+        .impact-badge.positive { background: #d1fae5; color: #065f46; }
+        .impact-badge.negative { background: #fee2e2; color: #991b1b; }
+        .impact-badge.neutral { background: var(--gray-100); color: var(--gray-600); }
+        .impact-badge.under-review { background: #fef3c7; color: #92400e; }
+        
+        .changelog-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.9rem; }
+        .changelog-table th, .changelog-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--gray-200); }
+        .changelog-table th { background: var(--gray-50); font-weight: 600; color: var(--navy); font-size: 0.85rem; }
+        .changelog-table tr:hover { background: var(--gray-50); }
+        .changelog-table a { color: var(--blue-accent); text-decoration: none; }
+        
+        .btn { padding: 8px 16px; border-radius: 6px; font-size: 0.9rem; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; }
+        .btn-primary { background: var(--navy); color: white; }
+        .btn-success { background: var(--green); color: white; }
+        .btn-danger { background: var(--red); color: white; }
+        .btn-secondary { background: var(--gray-100); color: var(--gray-600); border: 1px solid var(--gray-200); }
+        .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+        .btn-group { display: flex; gap: 8px; margin-top: 12px; }
+        
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 0.9rem; font-weight: 500; color: var(--gray-600); margin-bottom: 6px; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: 6px; font-size: 0.95rem; }
+        .form-group textarea { min-height: 80px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+        
+        .checkbox-group { display: flex; align-items: center; gap: 8px; margin-top: 16px; padding: 12px; background: #fef3c7; border-radius: 6px; }
+        .checkbox-group input { width: 18px; height: 18px; }
+        .checkbox-group label { font-size: 0.9rem; color: var(--gray-800); margin: 0; }
+        
+        .score-change-section { background: var(--gray-50); padding: 16px; border-radius: 8px; margin-top: 20px; }
+        .score-change-section h4 { margin-bottom: 16px; color: var(--navy); font-size: 0.95rem; }
+        
+        .empty-state { text-align: center; padding: 60px 24px; color: var(--gray-400); }
+        
+        .commitment-note { font-size: 0.8rem; color: var(--gray-400); padding: 12px; background: var(--gray-50); border-radius: 6px; margin-top: 24px; text-align: center; }
+        
+        @media (max-width: 768px) {
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .form-row, .form-row-3 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>📝 Changelog Management</h1>
+        <div class="subtitle">Product Change History & Subscriber Notifications</div>
+    </header>
+    
+    <div class="container">
+        <div class="stats-row">
+            <div class="stat-card"><div class="number" id="statTotalEntries">-</div><div class="label">Total Entries</div></div>
+            <div class="stat-card"><div class="number" id="statToolsTracked">-</div><div class="label">Tools with Changes</div></div>
+            <div class="stat-card alert"><div class="number" id="statReviewQueue">-</div><div class="label">Pending Re-review</div></div>
+            <div class="stat-card"><div class="number" id="statSubscribers">-</div><div class="label">Active Subscribers</div></div>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" data-panel="add">➕ Add Entry</button>
+            <button class="tab" data-panel="entries">📋 All Entries</button>
+            <button class="tab" data-panel="queue">🔄 Review Queue <span class="badge" id="queueBadge" style="display:none;">0</span></button>
+            <button class="tab" data-panel="subscribers">👥 Subscribers</button>
+        </div>
+        
+        <!-- Add Entry Panel -->
+        <div class="panel active" id="panel-add">
+            <div class="card">
+                <h3 style="margin-bottom: 16px;">Log New Changelog Entry</h3>
+                <form id="entryForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Tool Slug *</label>
+                            <input type="text" name="toolSlug" required placeholder="chatgpt">
+                        </div>
+                        <div class="form-group">
+                            <label>Tool Name</label>
+                            <input type="text" name="toolName" placeholder="ChatGPT">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Category</label>
+                            <input type="text" name="category" placeholder="Foundation Models & AI APIs">
+                        </div>
+                        <div class="form-group">
+                            <label>Date of Change *</label>
+                            <input type="date" name="date" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Change Type *</label>
+                            <select name="changeType" required>
+                                <option value="">Select...</option>
+                                <option value="New Feature">New Feature</option>
+                                <option value="Pricing Change">Pricing Change</option>
+                                <option value="Model Update">Model Update</option>
+                                <option value="API Change">API Change</option>
+                                <option value="Security Update">Security Update</option>
+                                <option value="Policy Change">Policy Change</option>
+                                <option value="Performance Change">Performance Change</option>
+                                <option value="Discontinued Feature">Discontinued Feature</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Score Impact *</label>
+                            <select name="scoreImpact" required>
+                                <option value="">Select...</option>
+                                <option value="Positive">Positive — Improves the tool</option>
+                                <option value="Negative">Negative — Reduces value or trust</option>
+                                <option value="Neutral">Neutral — No impact on score</option>
+                                <option value="Under Review">Under Review — Impact being assessed</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Description (plain English, 2 sentences max) *</label>
+                        <textarea name="description" required placeholder="What changed and why it matters to buyers." maxlength="300"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Source</label>
+                            <select name="source">
+                                <option value="vendor announcement">Vendor Announcement</option>
+                                <option value="independent discovery">Independent Discovery</option>
+                                <option value="community report">Community Report</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Source Link</label>
+                            <input type="url" name="sourceLink" placeholder="https://...">
+                        </div>
+                    </div>
+                    
+                    <div class="score-change-section">
+                        <h4>📊 Score Change (if applicable)</h4>
+                        <div class="form-row-3">
+                            <div class="form-group">
+                                <label>Old Score</label>
+                                <input type="number" name="oldScore" min="0" max="100" placeholder="87">
+                            </div>
+                            <div class="form-group">
+                                <label>New Score</label>
+                                <input type="number" name="newScore" min="0" max="100" placeholder="85">
+                            </div>
+                            <div class="form-group">
+                                <label>Category Affected</label>
+                                <select name="categoryAffected">
+                                    <option value="">None</option>
+                                    <option value="Core AI Performance">Core AI Performance</option>
+                                    <option value="Data Privacy & Security">Data Privacy & Security</option>
+                                    <option value="Transparency">Transparency</option>
+                                    <option value="Reliability & Uptime">Reliability & Uptime</option>
+                                    <option value="Compliance">Compliance</option>
+                                    <option value="Pricing Fairness">Pricing Fairness</option>
+                                    <option value="Integration & Usability">Integration & Usability</option>
+                                    <option value="Human Override">Human Override</option>
+                                    <option value="Vendor Accountability">Vendor Accountability</option>
+                                    <option value="Bias & Fairness">Bias & Fairness</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" name="requiresReview" id="requiresReview">
+                        <label for="requiresReview">⚠️ Flag for re-review (adds to review queue with HIGH priority)</label>
+                    </div>
+                    <div class="form-group" id="reviewTypeGroup" style="display: none; margin-top: 12px;">
+                        <label>Review Type</label>
+                        <select name="reviewType">
+                            <option value="partial">Partial — Update affected sections only</option>
+                            <option value="full">Full — Complete re-review required</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Add Changelog Entry</button>
+                </form>
+            </div>
+            
+            <div class="commitment-note">
+                ⚠️ Changelog entries are permanent and timestamped. Entries are never removed or backdated at vendor request.
+            </div>
+        </div>
+        
+        <!-- All Entries Panel -->
+        <div class="panel" id="panel-entries">
+            <div id="entriesList">
+                <div class="empty-state">Loading...</div>
+            </div>
+        </div>
+        
+        <!-- Review Queue Panel -->
+        <div class="panel" id="panel-queue">
+            <p style="color: var(--gray-600); margin-bottom: 16px;">Tools flagged for re-review based on changelog entries. High priority items appear first.</p>
+            <div id="queueList">
+                <div class="empty-state">Loading...</div>
+            </div>
+        </div>
+        
+        <!-- Subscribers Panel -->
+        <div class="panel" id="panel-subscribers">
+            <div style="margin-bottom: 16px;">
+                <button class="btn btn-secondary" onclick="sendDigests()">📧 Send Weekly Digests Now</button>
+            </div>
+            <div id="subscribersList">
+                <div class="empty-state">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const API = 'https://v7086lxsji.execute-api.us-east-1.amazonaws.com';
+    const KEY = new URLSearchParams(window.location.search).get('key') || '';
+    
+    if (!KEY) {
+        document.body.innerHTML = '<div style="padding:60px;text-align:center;color:#991b1b;">Admin key required. Add ?key=YOUR_KEY to URL.</div>';
+    }
+    
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById(`panel-${tab.dataset.panel}`).classList.add('active');
+        });
+    });
+    
+    // Toggle review type field
+    document.getElementById('requiresReview').addEventListener('change', function() {
+        document.getElementById('reviewTypeGroup').style.display = this.checked ? 'block' : 'none';
+    });
+    
+    function esc(t) { const d = document.createElement('div'); d.textContent = t || ''; return d.innerHTML; }
+    function formatDate(d) { return d ? new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '-'; }
+    
+    async function loadEntries() {
+        try {
+            const r = await fetch(`${API}/changelog/admin/all?key=${KEY}`);
+            const data = await r.json();
+            const container = document.getElementById('entriesList');
+            
+            document.getElementById('statTotalEntries').textContent = data.totalEntries || 0;
+            document.getElementById('statToolsTracked').textContent = data.tools?.length || 0;
+            
+            if (!data.tools?.length) {
+                container.innerHTML = '<div class="empty-state">No changelog entries yet.</div>';
+                return;
+            }
+            
+            container.innerHTML = data.tools.map(tool => `
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">${esc(tool.toolName || tool.toolSlug)}</span>
+                        <span style="font-size: 0.85rem; color: var(--gray-400);">${tool.stats?.count || 0} entries</span>
+                    </div>
+                    <table class="changelog-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Impact</th>
+                                <th>Score Change</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tool.entries.slice(0, 10).map(e => `
+                                <tr>
+                                    <td>${formatDate(e.date)}</td>
+                                    <td>${esc(e.changeType)}</td>
+                                    <td>${esc(e.description)}</td>
+                                    <td><span class="impact-badge ${(e.scoreImpact || '').toLowerCase().replace(' ', '-')}">${esc(e.scoreImpact)}</span></td>
+                                    <td>${e.oldScore !== undefined ? `${e.oldScore}→${e.newScore}` : '-'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `).join('');
+        } catch (e) {
+            console.error(e);
+        }
+    }
+    
+    async function loadQueue() {
+        try {
+            const r = await fetch(`${API}/changelog/admin/review-queue?key=${KEY}`);
+            const items = await r.json();
+            const container = document.getElementById('queueList');
+            
+            document.getElementById('statReviewQueue').textContent = items.length;
+            const queueBadge = document.getElementById('queueBadge');
+            if (items.length > 0) {
+                queueBadge.textContent = items.length;
+                queueBadge.style.display = 'inline';
+            } else {
+                queueBadge.style.display = 'none';
+            }
+            
+            if (!items.length) {
+                container.innerHTML = '<div class="empty-state">✅ No tools pending re-review.</div>';
+                return;
+            }
+            
+            container.innerHTML = items.map(item => `
+                <div class="card ${item.priority === 'high' ? 'high-priority' : ''}">
+                    <div class="card-header">
+                        <span class="card-title">${esc(item.toolName || item.toolSlug)}</span>
+                        <span class="impact-badge ${item.priority === 'high' ? 'negative' : 'neutral'}">${item.priority?.toUpperCase() || 'NORMAL'}</span>
+                    </div>
+                    <p style="color: var(--gray-600); margin-bottom: 8px;">${esc(item.reason)}</p>
+                    <p style="font-size: 0.85rem; color: var(--gray-400);">
+                        Review type: ${esc(item.reviewType)} · Added: ${formatDate(item.addedAt)}
+                    </p>
+                </div>
+            `).join('');
+        } catch (e) {
+            console.error(e);
+        }
+    }
+    
+    async function loadSubscribers() {
+        try {
+            const r = await fetch(`${API}/changelog/admin/subscriptions?key=${KEY}`);
+            const items = await r.json();
+            const container = document.getElementById('subscribersList');
+            
+            document.getElementById('statSubscribers').textContent = items.filter(i => i.active).length;
+            
+            if (!items.length) {
+                container.innerHTML = '<div class="empty-state">No subscribers yet.</div>';
+                return;
+            }
+            
+            const toolSubs = items.filter(i => i.subscriptionType === 'tool');
+            const catSubs = items.filter(i => i.subscriptionType === 'category');
+            
+            container.innerHTML = `
+                <div class="card">
+                    <h3 style="margin-bottom: 16px;">Tool Subscriptions (${toolSubs.length})</h3>
+                    ${toolSubs.length ? `
+                        <table class="changelog-table">
+                            <thead><tr><th>Email</th><th>Tool</th><th>Subscribed</th></tr></thead>
+                            <tbody>
+                                ${toolSubs.map(s => `
+                                    <tr>
+                                        <td>${esc(s.email)}</td>
+                                        <td>${esc(s.toolSlug)}</td>
+                                        <td>${formatDate(s.createdAt)}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    ` : '<p style="color: var(--gray-400);">No tool subscriptions.</p>'}
+                </div>
+                
+                <div class="card">
+                    <h3 style="margin-bottom: 16px;">Category Subscriptions (${catSubs.length})</h3>
+                    ${catSubs.length ? `
+                        <table class="changelog-table">
+                            <thead><tr><th>Email</th><th>Category</th><th>Subscribed</th></tr></thead>
+                            <tbody>
+                                ${catSubs.map(s => `
+                                    <tr>
+                                        <td>${esc(s.email)}</td>
+                                        <td>${esc(s.category)}</td>
+                                        <td>${formatDate(s.createdAt)}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    ` : '<p style="color: var(--gray-400);">No category subscriptions.</p>'}
+                </div>
+            `;
+        } catch (e) {
+            console.error(e);
+        }
+    }
+    
+    async function sendDigests() {
+        if (!confirm('Send weekly digests to all category subscribers now?')) return;
+        try {
+            const r = await fetch(`${API}/changelog/admin/send-digest`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ key: KEY })
+            });
+            const result = await r.json();
+            alert(`Digests sent. ${result.results?.length || 0} categories processed.`);
+        } catch (e) {
+            alert('Error: ' + e.message);
+        }
+    }
+    
+    document.getElementById('entryForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const form = new FormData(this);
+        
+        const data = {
+            key: KEY,
+            toolSlug: form.get('toolSlug'),
+            toolName: form.get('toolName'),
+            category: form.get('category'),
+            date: form.get('date'),
+            changeType: form.get('changeType'),
+            description: form.get('description'),
+            scoreImpact: form.get('scoreImpact'),
+            source: form.get('source'),
+            sourceLink: form.get('sourceLink'),
+            requiresReview: form.get('requiresReview') === 'on',
+            reviewType: form.get('reviewType')
+        };
+        
+        // Add score change if provided
+        if (form.get('oldScore')) data.oldScore = parseInt(form.get('oldScore'));
+        if (form.get('newScore')) data.newScore = parseInt(form.get('newScore'));
+        if (form.get('categoryAffected')) data.categoryAffected = form.get('categoryAffected');
+        
+        try {
+            const r = await fetch(`${API}/changelog/admin/add`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            
+            if (r.ok) {
+                alert('Changelog entry added' + (data.requiresReview ? ' and tool added to review queue' : ''));
+                this.reset();
+                document.getElementById('reviewTypeGroup').style.display = 'none';
+                loadEntries();
+                loadQueue();
+            } else {
+                const err = await r.json();
+                alert('Error: ' + (err.error || 'Unknown'));
+            }
+        } catch (e) {
+            alert('Error: ' + e.message);
+        }
+    });
+    
+    loadEntries();
+    loadQueue();
+    loadSubscribers();
+    </script>
+</body>
+</html>
