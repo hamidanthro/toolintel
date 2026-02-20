@@ -326,6 +326,18 @@
     </footer>
     
     <script>
+        // Load dynamic stats
+        fetch('/data/tools-queue.json')
+            .then(r => r.json())
+            .then(data => {
+                const queueCount = data.queue.length;
+                const reviewedCount = data.reviewed.length;
+                document.getElementById('queueCount').textContent = queueCount.toLocaleString();
+                document.getElementById('reviewedCount').textContent = reviewedCount;
+                document.getElementById('showMoreBtn').textContent = 'Show All ' + queueCount.toLocaleString() + ' Tools in Queue ↓';
+            })
+            .catch(() => {});
+        
         // Search functionality
         const searchInput = document.getElementById('searchInput');
         const reviewCards = document.querySelectorAll('.review-card');

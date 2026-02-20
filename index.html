@@ -276,15 +276,15 @@
         
         <div class="hero-stats">
             <div class="hero-stat">
-                <div class="number">1,400+</div>
+                <div class="number" id="toolCount">—</div>
                 <div class="label">Tools in Database</div>
             </div>
             <div class="hero-stat">
-                <div class="number">6</div>
+                <div class="number" id="reviewCount">—</div>
                 <div class="label">Reviews Published</div>
             </div>
             <div class="hero-stat">
-                <div class="number">40+</div>
+                <div class="number" id="categoryCount">—</div>
                 <div class="label">Categories</div>
             </div>
         </div>
@@ -472,6 +472,27 @@
     </footer>
 
     <script>
+        // Load dynamic stats
+        fetch('/data/tools-queue.json')
+            .then(r => r.json())
+            .then(data => {
+                const totalTools = data.reviewed.length + data.queue.length;
+                const reviewCount = data.reviewed.length;
+                const categories = new Set([
+                    ...data.reviewed.map(t => t.category),
+                    ...data.queue.map(t => t.category)
+                ]);
+                
+                document.getElementById('toolCount').textContent = totalTools.toLocaleString();
+                document.getElementById('reviewCount').textContent = reviewCount;
+                document.getElementById('categoryCount').textContent = categories.size;
+            })
+            .catch(() => {
+                document.getElementById('toolCount').textContent = '1,400+';
+                document.getElementById('reviewCount').textContent = '6';
+                document.getElementById('categoryCount').textContent = '40+';
+            });
+        
         // Search redirect
         document.getElementById('heroSearch').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
