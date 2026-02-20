@@ -28,7 +28,7 @@
         .header a { color: var(--white); opacity: 0.8; text-decoration: none; }
         .header a:hover { opacity: 1; }
         
-        .container { max-width: 1000px; margin: 0 auto; padding: 24px; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
         
         .tabs { display: flex; gap: 8px; margin-bottom: 24px; }
         .tab { padding: 10px 20px; background: var(--white); border: 1px solid var(--gray-200); border-radius: 6px; cursor: pointer; font-weight: 500; color: var(--gray-600); }
@@ -36,25 +36,63 @@
         .tab .count { background: var(--gray-200); color: var(--gray-600); padding: 2px 8px; border-radius: 10px; font-size: 0.8rem; margin-left: 6px; }
         .tab.active .count { background: rgba(255,255,255,0.2); color: var(--white); }
         
-        .review-card { background: var(--white); border: 1px solid var(--gray-200); border-radius: 8px; padding: 20px; margin-bottom: 16px; }
-        .review-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px; }
+        .review-card { background: var(--white); border: 1px solid var(--gray-200); border-radius: 8px; padding: 24px; margin-bottom: 20px; }
+        .review-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px; }
+        .review-title { display: flex; align-items: center; gap: 12px; }
+        .review-tool-badge { background: var(--navy); color: var(--white); padding: 4px 10px; border-radius: 4px; font-size: 0.8rem; font-weight: 500; }
         .review-meta { font-size: 0.9rem; color: var(--gray-600); }
-        .review-meta strong { color: var(--navy); }
-        .review-tool { display: inline-block; background: var(--gray-100); padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; margin-left: 8px; }
-        .review-rating { display: flex; gap: 2px; }
+        .review-meta strong { color: var(--navy); font-size: 1rem; }
+        .review-meta .email { color: var(--blue-accent); }
+        .review-meta .job { color: var(--gray-400); margin-top: 2px; }
+        
+        .review-badges { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+        .badge { font-size: 0.8rem; padding: 4px 10px; border-radius: 4px; background: var(--gray-100); color: var(--gray-600); }
+        .badge.tier { background: #dbeafe; color: #1d4ed8; }
+        .badge.duration { background: #fef3c7; color: #92400e; }
+        
+        .review-ratings { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 16px; background: var(--gray-50); border-radius: 6px; margin: 16px 0; }
+        .rating-item { text-align: center; }
+        .rating-item .label { font-size: 0.75rem; color: var(--gray-400); margin-bottom: 4px; }
+        .rating-item .value { font-weight: 600; }
+        .rating-item .value.yes { color: var(--green); }
+        .rating-item .value.partial { color: var(--yellow); }
+        .rating-item .value.no { color: var(--red); }
         .star { color: #fbbf24; }
         .star.empty { color: var(--gray-200); }
-        .review-text { color: var(--gray-800); line-height: 1.6; margin: 12px 0; padding: 12px; background: var(--gray-50); border-radius: 6px; }
+        
+        .review-text { color: var(--gray-800); line-height: 1.7; margin: 16px 0; padding: 16px; background: var(--gray-50); border-radius: 6px; border-left: 3px solid var(--gray-200); }
+        .review-text .word-count { font-size: 0.8rem; color: var(--gray-400); margin-top: 8px; }
         .review-date { font-size: 0.8rem; color: var(--gray-400); }
         
-        .review-actions { display: flex; gap: 8px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--gray-100); }
-        .btn { padding: 8px 16px; border: none; border-radius: 6px; font-weight: 500; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; }
+        /* Verification Checklist */
+        .verification-checklist { background: #fffbeb; border: 1px solid #fcd34d; border-radius: 6px; padding: 16px; margin: 16px 0; }
+        .verification-checklist h4 { font-size: 0.9rem; font-weight: 600; color: #92400e; margin-bottom: 12px; }
+        .checklist-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #fef3c7; }
+        .checklist-item:last-child { border-bottom: none; }
+        .checklist-item input { width: 18px; height: 18px; }
+        .checklist-item label { font-size: 0.9rem; color: var(--gray-800); flex: 1; }
+        .checklist-item .status { font-size: 0.8rem; padding: 2px 8px; border-radius: 4px; }
+        .checklist-item .status.pass { background: #d1fae5; color: #065f46; }
+        .checklist-item .status.fail { background: #fee2e2; color: #991b1b; }
+        .checklist-item .status.check { background: var(--gray-100); color: var(--gray-600); }
+        
+        .disclosure-status { display: flex; align-items: center; gap: 8px; padding: 12px; background: var(--gray-50); border-radius: 6px; margin: 12px 0; }
+        .disclosure-status.confirmed { background: #d1fae5; }
+        .disclosure-status .icon { font-size: 1.2rem; }
+        
+        .review-actions { display: flex; gap: 12px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--gray-100); align-items: end; }
+        .btn { padding: 10px 20px; border: none; border-radius: 6px; font-weight: 500; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; }
         .btn-approve { background: #d1fae5; color: #065f46; }
         .btn-approve:hover { background: #a7f3d0; }
+        .btn-approve:disabled { background: var(--gray-200); color: var(--gray-400); cursor: not-allowed; }
         .btn-reject { background: #fee2e2; color: #991b1b; }
         .btn-reject:hover { background: #fecaca; }
         .btn-delete { background: var(--gray-100); color: var(--gray-600); }
         .btn-delete:hover { background: var(--gray-200); }
+        
+        .reject-reason { flex: 1; }
+        .reject-reason input { width: 100%; padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: 6px; font-size: 0.9rem; }
+        .reject-reason label { display: block; font-size: 0.8rem; color: var(--gray-400); margin-bottom: 4px; }
         
         .empty-state { text-align: center; padding: 60px 20px; color: var(--gray-400); }
         .empty-state h3 { color: var(--gray-600); margin-bottom: 8px; }
@@ -70,6 +108,12 @@
         .login-gate h2 { margin-bottom: 20px; color: var(--navy); }
         .login-gate input { width: 100%; padding: 12px; border: 1px solid var(--gray-200); border-radius: 6px; margin-bottom: 16px; }
         .login-gate button { width: 100%; padding: 12px; background: var(--navy); color: var(--white); border: none; border-radius: 6px; font-weight: 500; cursor: pointer; }
+        
+        @media (max-width: 768px) {
+            .review-ratings { grid-template-columns: repeat(2, 1fr); }
+            .review-actions { flex-direction: column; }
+            .reject-reason { width: 100%; }
+        }
     </style>
 </head>
 <body>
@@ -89,7 +133,7 @@
             <div class="stats">
                 <div class="stat-card">
                     <div class="stat-number" id="pendingCount">-</div>
-                    <div class="stat-label">Pending</div>
+                    <div class="stat-label">Pending Review</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-number" id="approvedCount">-</div>
@@ -126,7 +170,6 @@
             }
         }
         
-        // Check for saved key
         if (localStorage.getItem('toolintel_admin')) {
             adminKey = localStorage.getItem('toolintel_admin');
             document.getElementById('loginGate').style.display = 'none';
@@ -165,6 +208,30 @@
             document.getElementById('rejectedTab').textContent = rejected;
         }
         
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function formatRating(value) {
+            const labels = { yes: 'Yes', partially: 'Partially', no: 'No' };
+            const classes = { yes: 'yes', partially: 'partial', no: 'no' };
+            return `<span class="value ${classes[value] || ''}">${labels[value] || value || '-'}</span>`;
+        }
+        
+        function getWordCount(text) {
+            return text ? text.trim().split(/\s+/).filter(w => w.length > 0).length : 0;
+        }
+        
+        function isValidEmailDomain(email) {
+            if (!email) return false;
+            const domain = email.split('@')[1];
+            const freeProviders = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com', 'icloud.com', 'mail.com', 'protonmail.com'];
+            return !freeProviders.includes(domain?.toLowerCase());
+        }
+        
         function renderReviews() {
             const filtered = allReviews.filter(r => r.status === currentStatus);
             const container = document.getElementById('reviewList');
@@ -174,55 +241,171 @@
                 return;
             }
             
-            container.innerHTML = filtered.map(r => `
+            container.innerHTML = filtered.map(r => {
+                const wordCount = getWordCount(r.reviewText);
+                const emailValid = isValidEmailDomain(r.email);
+                const wordCountOk = wordCount >= 100 && wordCount <= 500;
+                const disclosureOk = r.disclosure === true;
+                
+                return `
                 <div class="review-card" data-id="${r.id}">
                     <div class="review-header">
                         <div class="review-meta">
-                            <strong>${escapeHtml(r.name)}</strong>
-                            <span class="review-tool">${r.tool}</span>
+                            <strong>${escapeHtml(r.fullName)}</strong>
+                            <span class="review-tool-badge">${escapeHtml(r.tool)}</span>
+                            <div class="email">${escapeHtml(r.email)}</div>
+                            <div class="job">${escapeHtml(r.jobTitle)}</div>
                         </div>
-                        <div class="review-rating">
-                            ${'★'.repeat(r.rating).split('').map(() => '<span class="star">★</span>').join('')}
-                            ${'★'.repeat(5-r.rating).split('').map(() => '<span class="star empty">★</span>').join('')}
+                        <div class="review-date">Submitted: ${new Date(r.createdAt).toLocaleString()}</div>
+                    </div>
+                    
+                    <div class="review-badges">
+                        <span class="badge duration">${(r.usageDuration || '').replace(/-/g, ' ')}</span>
+                        <span class="badge tier">${r.pricingTier || '-'} tier</span>
+                    </div>
+                    
+                    <div class="review-ratings">
+                        <div class="rating-item">
+                            <div class="label">Does what it claims</div>
+                            ${formatRating(r.ratingClaims)}
+                        </div>
+                        <div class="rating-item">
+                            <div class="label">Pricing transparent</div>
+                            ${formatRating(r.ratingPricing)}
+                        </div>
+                        <div class="rating-item">
+                            <div class="label">Would recommend</div>
+                            ${formatRating(r.ratingRecommend)}
+                        </div>
+                        <div class="rating-item">
+                            <div class="label">Overall Score</div>
+                            <div>${'★'.repeat(r.overallScore || 0).split('').map(() => '<span class="star">★</span>').join('')}${'★'.repeat(5-(r.overallScore || 0)).split('').map(() => '<span class="star empty">★</span>').join('')}</div>
                         </div>
                     </div>
-                    <div class="review-text">${escapeHtml(r.review)}</div>
-                    <div class="review-date">Submitted: ${new Date(r.createdAt).toLocaleString()}</div>
+                    
+                    <div class="review-text">
+                        ${escapeHtml(r.reviewText)}
+                        <div class="word-count">${wordCount} words</div>
+                    </div>
+                    
+                    ${currentStatus === 'pending' ? `
+                    <div class="verification-checklist">
+                        <h4>⚠️ Verification Checklist (review before approving)</h4>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="check-email-${r.id}" ${emailValid ? 'checked' : ''}>
+                            <label for="check-email-${r.id}">Email domain verified (professional email, not free provider)</label>
+                            <span class="status ${emailValid ? 'pass' : 'fail'}">${emailValid ? 'Professional' : 'Free provider'}</span>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="check-words-${r.id}" ${wordCountOk ? 'checked' : ''}>
+                            <label for="check-words-${r.id}">Comment meets 100-500 word requirement</label>
+                            <span class="status ${wordCountOk ? 'pass' : 'fail'}">${wordCount} words</span>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="check-usage-${r.id}">
+                            <label for="check-usage-${r.id}">References actual usage experience (not marketing copy)</label>
+                            <span class="status check">Manual check</span>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="check-disclosure-${r.id}" ${disclosureOk ? 'checked' : ''}>
+                            <label for="check-disclosure-${r.id}">Disclosure checkbox confirmed</label>
+                            <span class="status ${disclosureOk ? 'pass' : 'fail'}">${disclosureOk ? 'Confirmed' : 'Not confirmed'}</span>
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    ${r.rejectReason ? `<div class="disclosure-status"><span class="icon">📝</span> <strong>Reject reason:</strong> ${escapeHtml(r.rejectReason)}</div>` : ''}
+                    
+                    <div class="disclosure-status ${disclosureOk ? 'confirmed' : ''}">
+                        <span class="icon">${disclosureOk ? '✅' : '⚠️'}</span>
+                        <span>${disclosureOk ? 'Disclosure confirmed: No financial relationship with company' : 'Disclosure NOT confirmed'}</span>
+                    </div>
+                    
                     <div class="review-actions">
                         ${r.status === 'pending' ? `
-                            <button class="btn btn-approve" onclick="updateStatus('${r.id}', 'approved')">✓ Approve</button>
-                            <button class="btn btn-reject" onclick="updateStatus('${r.id}', 'rejected')">✕ Reject</button>
+                            <div class="reject-reason">
+                                <label>Reject reason (required for rejection)</label>
+                                <input type="text" id="reason-${r.id}" placeholder="e.g., Marketing copy, fake review, etc.">
+                            </div>
+                            <button class="btn btn-approve" onclick="approveReview('${r.id}')" id="approve-${r.id}">✓ Approve</button>
+                            <button class="btn btn-reject" onclick="rejectReview('${r.id}')">✕ Reject</button>
                         ` : ''}
                         ${r.status === 'approved' ? `
-                            <button class="btn btn-reject" onclick="updateStatus('${r.id}', 'rejected')">✕ Reject</button>
+                            <button class="btn btn-reject" onclick="rejectReview('${r.id}')">✕ Revoke Approval</button>
                         ` : ''}
                         ${r.status === 'rejected' ? `
-                            <button class="btn btn-approve" onclick="updateStatus('${r.id}', 'approved')">✓ Approve</button>
+                            <button class="btn btn-approve" onclick="approveReview('${r.id}')">✓ Approve</button>
                         ` : ''}
                         <button class="btn btn-delete" onclick="deleteReview('${r.id}')">🗑 Delete</button>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
         
-        async function updateStatus(id, status) {
+        async function approveReview(id) {
+            // Check all boxes are checked for pending reviews
+            const review = allReviews.find(r => r.id === id);
+            if (review && review.status === 'pending') {
+                const checks = [
+                    document.getElementById(`check-email-${id}`),
+                    document.getElementById(`check-words-${id}`),
+                    document.getElementById(`check-usage-${id}`),
+                    document.getElementById(`check-disclosure-${id}`)
+                ];
+                const allChecked = checks.every(c => c && c.checked);
+                if (!allChecked) {
+                    alert('Please verify all checklist items before approving.');
+                    return;
+                }
+            }
+            
             try {
                 await fetch(`${API_BASE}/reviews/${id}`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ status, key: adminKey })
+                    body: JSON.stringify({ status: 'approved', key: adminKey })
                 });
-                const review = allReviews.find(r => r.id === id);
-                if (review) review.status = status;
+                const r = allReviews.find(r => r.id === id);
+                if (r) r.status = 'approved';
                 updateStats();
                 renderReviews();
             } catch (err) {
-                alert('Failed to update review');
+                alert('Failed to approve review');
+            }
+        }
+        
+        async function rejectReview(id) {
+            const reasonInput = document.getElementById(`reason-${id}`);
+            const reason = reasonInput ? reasonInput.value.trim() : '';
+            
+            // Require reason for pending reviews
+            const review = allReviews.find(r => r.id === id);
+            if (review && review.status === 'pending' && !reason) {
+                alert('Please provide a reject reason.');
+                reasonInput?.focus();
+                return;
+            }
+            
+            try {
+                await fetch(`${API_BASE}/reviews/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'rejected', rejectReason: reason, key: adminKey })
+                });
+                const r = allReviews.find(r => r.id === id);
+                if (r) {
+                    r.status = 'rejected';
+                    r.rejectReason = reason;
+                }
+                updateStats();
+                renderReviews();
+            } catch (err) {
+                alert('Failed to reject review');
             }
         }
         
         async function deleteReview(id) {
-            if (!confirm('Delete this review permanently?')) return;
+            if (!confirm('Delete this review permanently? This cannot be undone.')) return;
             try {
                 await fetch(`${API_BASE}/reviews/${id}?key=${adminKey}`, { method: 'DELETE' });
                 allReviews = allReviews.filter(r => r.id !== id);
@@ -231,12 +414,6 @@
             } catch (err) {
                 alert('Failed to delete review');
             }
-        }
-        
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
         }
         
         // Tab switching

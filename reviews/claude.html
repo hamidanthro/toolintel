@@ -139,35 +139,61 @@
         
         /* User Reviews */
         .user-reviews { margin-top: 24px; }
-        .user-review { padding: 16px; background: var(--white); border: 1px solid var(--gray-200); border-radius: 8px; margin-bottom: 12px; }
-        .user-review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .user-review { padding: 20px; background: var(--white); border: 1px solid var(--gray-200); border-radius: 8px; margin-bottom: 16px; }
+        .user-review-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
         .user-review-author { font-weight: 600; color: var(--navy); }
-        .user-review-rating { display: flex; gap: 2px; }
-        .user-review-rating .star { color: #fbbf24; }
-        .user-review-rating .star.empty { color: var(--gray-200); }
-        .user-review-text { color: var(--gray-600); font-size: 0.95rem; line-height: 1.6; }
-        .user-review-date { font-size: 0.8rem; color: var(--gray-400); margin-top: 8px; }
-        .no-reviews { color: var(--gray-400); font-style: italic; padding: 20px; text-align: center; }
+        .user-review-meta { font-size: 0.85rem; color: var(--gray-400); }
+        .user-review-badges { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0; }
+        .user-review-badge { font-size: 0.75rem; padding: 3px 8px; background: var(--gray-100); color: var(--gray-600); border-radius: 4px; }
+        .user-review-ratings { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 12px 0; padding: 12px; background: var(--gray-50); border-radius: 6px; }
+        .rating-item { text-align: center; }
+        .rating-item .label { font-size: 0.75rem; color: var(--gray-400); margin-bottom: 4px; }
+        .rating-item .value { font-weight: 600; font-size: 0.85rem; }
+        .rating-item .value.yes { color: var(--green); }
+        .rating-item .value.partial { color: var(--yellow); }
+        .rating-item .value.no { color: var(--red); }
+        .user-review-score { display: flex; align-items: center; gap: 4px; margin: 8px 0; }
+        .user-review-score .star { color: #fbbf24; }
+        .user-review-score .star.empty { color: var(--gray-200); }
+        .user-review-text { color: var(--gray-600); font-size: 0.95rem; line-height: 1.7; margin-top: 12px; }
+        .user-review-date { font-size: 0.8rem; color: var(--gray-400); margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--gray-100); }
+        .no-reviews { color: var(--gray-400); font-style: italic; padding: 24px; text-align: center; background: var(--white); border-radius: 8px; }
         
         /* Review Form */
-        .review-form { margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--gray-200); }
-        .review-form h4 { font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 600; color: var(--navy); margin-bottom: 16px; }
-        .form-group { margin-bottom: 16px; }
+        .review-form { margin-top: 32px; padding: 24px; background: var(--white); border: 1px solid var(--gray-200); border-radius: 8px; }
+        .review-form h4 { font-family: 'Inter', sans-serif; font-size: 1.1rem; font-weight: 600; color: var(--navy); margin-bottom: 8px; }
+        .review-form .form-intro { font-size: 0.9rem; color: var(--gray-600); margin-bottom: 24px; line-height: 1.6; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .form-group { margin-bottom: 20px; }
         .form-group label { display: block; font-size: 0.9rem; font-weight: 500; color: var(--gray-600); margin-bottom: 6px; }
-        .form-group input, .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: 6px; font-size: 0.95rem; font-family: inherit; }
-        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--blue-accent); }
-        .form-group textarea { min-height: 100px; resize: vertical; }
-        .star-rating { display: flex; gap: 4px; }
+        .form-group .label-hint { font-weight: 400; color: var(--gray-400); font-size: 0.8rem; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: 6px; font-size: 0.95rem; font-family: inherit; background: var(--white); }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: var(--blue-accent); }
+        .form-group textarea { min-height: 150px; resize: vertical; }
+        .form-group .char-count { font-size: 0.8rem; color: var(--gray-400); text-align: right; margin-top: 4px; }
+        .form-group .char-count.error { color: var(--red); }
+        .structured-ratings { display: grid; gap: 12px; }
+        .rating-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--gray-50); border-radius: 6px; }
+        .rating-row .rating-label { font-size: 0.9rem; color: var(--gray-600); flex: 1; }
+        .rating-row .rating-options { display: flex; gap: 8px; }
+        .rating-row .rating-options label { display: flex; align-items: center; gap: 4px; cursor: pointer; padding: 6px 12px; border-radius: 4px; font-size: 0.85rem; border: 1px solid var(--gray-200); background: var(--white); transition: all 0.15s; }
+        .rating-row .rating-options input { display: none; }
+        .rating-row .rating-options input:checked + span { background: var(--navy); color: var(--white); }
+        .rating-row .rating-options label:has(input:checked) { border-color: var(--navy); background: var(--navy); color: var(--white); }
+        .star-rating { display: flex; gap: 4px; flex-direction: row-reverse; justify-content: flex-end; }
         .star-rating input { display: none; }
-        .star-rating label { cursor: pointer; font-size: 1.5rem; color: var(--gray-200); transition: color 0.15s; }
+        .star-rating label { cursor: pointer; font-size: 1.8rem; color: var(--gray-200); transition: color 0.15s; }
         .star-rating label:hover, .star-rating label:hover ~ label, .star-rating input:checked ~ label { color: #fbbf24; }
-        .star-rating { flex-direction: row-reverse; justify-content: flex-end; }
-        .submit-btn { background: var(--navy); color: var(--white); border: none; padding: 12px 24px; font-size: 0.95rem; font-weight: 500; border-radius: 6px; cursor: pointer; transition: background 0.2s; }
+        .disclosure-box { padding: 16px; background: #fef3c7; border: 1px solid #fcd34d; border-radius: 6px; margin-bottom: 20px; }
+        .disclosure-box label { display: flex; align-items: start; gap: 12px; cursor: pointer; font-size: 0.9rem; color: var(--gray-800); line-height: 1.5; }
+        .disclosure-box input[type="checkbox"] { margin-top: 3px; width: 18px; height: 18px; flex-shrink: 0; }
+        .submit-btn { background: var(--navy); color: var(--white); border: none; padding: 14px 32px; font-size: 1rem; font-weight: 500; border-radius: 6px; cursor: pointer; transition: all 0.2s; width: 100%; }
         .submit-btn:hover { background: var(--navy-light); }
         .submit-btn:disabled { background: var(--gray-400); cursor: not-allowed; }
-        .form-note { font-size: 0.8rem; color: var(--gray-400); margin-top: 8px; }
-        .form-success { background: #d1fae5; color: #065f46; padding: 12px 16px; border-radius: 6px; margin-bottom: 16px; display: none; }
-        .form-error { background: #fee2e2; color: #991b1b; padding: 12px 16px; border-radius: 6px; margin-bottom: 16px; display: none; }
+        .form-note { font-size: 0.8rem; color: var(--gray-400); margin-top: 12px; text-align: center; }
+        .form-success { background: #d1fae5; color: #065f46; padding: 16px; border-radius: 6px; margin-bottom: 20px; display: none; }
+        .form-error { background: #fee2e2; color: #991b1b; padding: 16px; border-radius: 6px; margin-bottom: 20px; display: none; }
+        @media (max-width: 600px) { .form-row, .user-review-ratings { grid-template-columns: 1fr; } .rating-row { flex-direction: column; align-items: start; gap: 8px; } }
         
         footer { padding: 40px 0; border-top: 1px solid var(--gray-200); text-align: center; background: var(--white); }
         footer p { color: var(--gray-400); font-size: 0.9rem; }
@@ -639,8 +665,8 @@
                 </div>
 
                 <div class="section community-section" id="community">
-                    <h2>Community Reviews <span class="community-badge">USER SUBMITTED</span></h2>
-                    <p>Reviews from the community. These are separate from our editorial review and reflect individual experiences.</p>
+                    <h2>Community Reviews <span class="community-badge">VERIFIED USERS</span></h2>
+                    <p>Reviews from verified users. These are separate from our editorial review and are manually approved to ensure authenticity.</p>
                     
                     <div class="user-reviews" id="userReviews">
                         <div class="no-reviews">No community reviews yet. Be the first to share your experience!</div>
@@ -648,30 +674,109 @@
                     
                     <div class="review-form">
                         <h4>Share Your Experience</h4>
-                        <div class="form-success" id="formSuccess">Thank you! Your review has been submitted and is pending approval.</div>
-                        <div class="form-error" id="formError">Something went wrong. Please try again.</div>
+                        <p class="form-intro">All submissions are manually reviewed before publishing. We verify your email and check for authentic usage experience. No pseudonyms — your name will be displayed publicly.</p>
+                        
+                        <div class="form-success" id="formSuccess">Thank you! Your review has been submitted and is pending manual approval. We'll verify your email and review your submission within 48 hours.</div>
+                        <div class="form-error" id="formError">Please check all required fields and try again.</div>
+                        
                         <form id="reviewForm">
                             <input type="hidden" name="tool" value="claude">
-                            <div class="form-group">
-                                <label for="reviewName">Your Name</label>
-                                <input type="text" id="reviewName" name="name" required placeholder="John D.">
-                            </div>
-                            <div class="form-group">
-                                <label>Your Rating</label>
-                                <div class="star-rating">
-                                    <input type="radio" name="rating" value="5" id="star5" required><label for="star5">★</label>
-                                    <input type="radio" name="rating" value="4" id="star4"><label for="star4">★</label>
-                                    <input type="radio" name="rating" value="3" id="star3"><label for="star3">★</label>
-                                    <input type="radio" name="rating" value="2" id="star2"><label for="star2">★</label>
-                                    <input type="radio" name="rating" value="1" id="star1"><label for="star1">★</label>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Full Name <span class="label-hint">(displayed publicly)</span></label>
+                                    <input type="text" name="fullName" required placeholder="Jane Smith">
+                                </div>
+                                <div class="form-group">
+                                    <label>Professional Email <span class="label-hint">(for verification only)</span></label>
+                                    <input type="email" name="email" required placeholder="jane@company.com">
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label for="reviewText">Your Review</label>
-                                <textarea id="reviewText" name="review" required placeholder="Share your honest experience with this tool..."></textarea>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Job Title & Company/Industry</label>
+                                    <input type="text" name="jobTitle" required placeholder="Software Engineer at TechCorp">
+                                </div>
+                                <div class="form-group">
+                                    <label>How long have you used this tool?</label>
+                                    <select name="usageDuration" required>
+                                        <option value="">Select...</option>
+                                        <option value="less-than-1-month">Less than 1 month</option>
+                                        <option value="1-6-months">1-6 months</option>
+                                        <option value="6-plus-months">6+ months</option>
+                                    </select>
+                                </div>
                             </div>
-                            <button type="submit" class="submit-btn" id="submitBtn">Submit Review</button>
-                            <p class="form-note">All reviews are moderated before publishing to ensure quality and authenticity.</p>
+                            
+                            <div class="form-group">
+                                <label>Which pricing tier do you use?</label>
+                                <select name="pricingTier" required>
+                                    <option value="">Select...</option>
+                                    <option value="free">Free</option>
+                                    <option value="pro">Pro</option>
+                                    <option value="team">Team</option>
+                                    <option value="enterprise">Enterprise</option>
+                                    <option value="api">API</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Structured Ratings</label>
+                                <div class="structured-ratings">
+                                    <div class="rating-row">
+                                        <span class="rating-label">Does it do what it claims?</span>
+                                        <div class="rating-options">
+                                            <label><input type="radio" name="ratingClaims" value="yes" required><span>Yes</span></label>
+                                            <label><input type="radio" name="ratingClaims" value="partially"><span>Partially</span></label>
+                                            <label><input type="radio" name="ratingClaims" value="no"><span>No</span></label>
+                                        </div>
+                                    </div>
+                                    <div class="rating-row">
+                                        <span class="rating-label">Is pricing transparent?</span>
+                                        <div class="rating-options">
+                                            <label><input type="radio" name="ratingPricing" value="yes" required><span>Yes</span></label>
+                                            <label><input type="radio" name="ratingPricing" value="partially"><span>Partially</span></label>
+                                            <label><input type="radio" name="ratingPricing" value="no"><span>No</span></label>
+                                        </div>
+                                    </div>
+                                    <div class="rating-row">
+                                        <span class="rating-label">Would you recommend for your use case?</span>
+                                        <div class="rating-options">
+                                            <label><input type="radio" name="ratingRecommend" value="yes" required><span>Yes</span></label>
+                                            <label><input type="radio" name="ratingRecommend" value="partially"><span>Partially</span></label>
+                                            <label><input type="radio" name="ratingRecommend" value="no"><span>No</span></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Overall Score</label>
+                                <div class="star-rating">
+                                    <input type="radio" name="overallScore" value="5" id="star5" required><label for="star5">★</label>
+                                    <input type="radio" name="overallScore" value="4" id="star4"><label for="star4">★</label>
+                                    <input type="radio" name="overallScore" value="3" id="star3"><label for="star3">★</label>
+                                    <input type="radio" name="overallScore" value="2" id="star2"><label for="star2">★</label>
+                                    <input type="radio" name="overallScore" value="1" id="star1"><label for="star1">★</label>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Your Review <span class="label-hint">(100-500 words, describe your actual experience)</span></label>
+                                <textarea name="reviewText" id="reviewText" required placeholder="Describe your experience with this tool. What do you use it for? What works well? What could be improved? Be specific about features you've actually used."></textarea>
+                                <div class="char-count" id="charCount">0 words (minimum 100)</div>
+                            </div>
+                            
+                            <div class="disclosure-box">
+                                <label>
+                                    <input type="checkbox" name="disclosure" required>
+                                    <span>I confirm I have no financial relationship with this company and am not an employee, contractor, or investor. This review reflects my genuine experience as a user.</span>
+                                </label>
+                            </div>
+                            
+                            <button type="submit" class="submit-btn" id="submitBtn">Submit Review for Approval</button>
+                            <p class="form-note">All reviews are manually verified before publishing. We check email authenticity and review content for genuine usage experience.</p>
                         </form>
                     </div>
                 </div>
@@ -726,6 +831,18 @@
         const API_BASE = 'https://v7086lxsji.execute-api.us-east-1.amazonaws.com';
         const TOOL_SLUG = 'claude';
         
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function formatRating(value) {
+            const labels = { yes: 'Yes', partially: 'Partially', no: 'No' };
+            const classes = { yes: 'yes', partially: 'partial', no: 'no' };
+            return `<span class="value ${classes[value]}">${labels[value]}</span>`;
+        }
+        
         // Load approved reviews
         async function loadReviews() {
             try {
@@ -733,7 +850,7 @@
                 const reviews = await res.json();
                 const container = document.getElementById('userReviews');
                 
-                if (reviews.length === 0) {
+                if (!reviews.length) {
                     container.innerHTML = '<div class="no-reviews">No community reviews yet. Be the first to share your experience!</div>';
                     return;
                 }
@@ -741,11 +858,26 @@
                 container.innerHTML = reviews.map(r => `
                     <div class="user-review">
                         <div class="user-review-header">
-                            <span class="user-review-author">${escapeHtml(r.name)}</span>
-                            <div class="user-review-rating">${'★'.repeat(r.rating).split('').map(() => '<span class="star">★</span>').join('')}${'★'.repeat(5-r.rating).split('').map(() => '<span class="star empty">★</span>').join('')}</div>
+                            <div>
+                                <span class="user-review-author">${escapeHtml(r.fullName)}</span>
+                                <div class="user-review-meta">${escapeHtml(r.jobTitle)}</div>
+                            </div>
+                            <div class="user-review-score">
+                                ${'★'.repeat(r.overallScore).split('').map(() => '<span class="star">★</span>').join('')}
+                                ${'★'.repeat(5-r.overallScore).split('').map(() => '<span class="star empty">★</span>').join('')}
+                            </div>
                         </div>
-                        <p class="user-review-text">${escapeHtml(r.review)}</p>
-                        <div class="user-review-date">${new Date(r.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+                        <div class="user-review-badges">
+                            <span class="user-review-badge">${r.usageDuration.replace(/-/g, ' ')}</span>
+                            <span class="user-review-badge">${r.pricingTier} tier</span>
+                        </div>
+                        <div class="user-review-ratings">
+                            <div class="rating-item"><div class="label">Does what it claims</div>${formatRating(r.ratingClaims)}</div>
+                            <div class="rating-item"><div class="label">Pricing transparent</div>${formatRating(r.ratingPricing)}</div>
+                            <div class="rating-item"><div class="label">Would recommend</div>${formatRating(r.ratingRecommend)}</div>
+                        </div>
+                        <p class="user-review-text">${escapeHtml(r.reviewText)}</p>
+                        <div class="user-review-date">Verified review · ${new Date(r.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
                     </div>
                 `).join('');
             } catch (err) {
@@ -753,11 +885,15 @@
             }
         }
         
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
+        // Word count validation
+        const reviewText = document.getElementById('reviewText');
+        const charCount = document.getElementById('charCount');
+        
+        reviewText.addEventListener('input', function() {
+            const words = this.value.trim().split(/\s+/).filter(w => w.length > 0).length;
+            charCount.textContent = `${words} words ${words < 100 ? '(minimum 100)' : words > 500 ? '(maximum 500)' : '✓'}`;
+            charCount.className = 'char-count' + (words < 100 || words > 500 ? ' error' : '');
+        });
         
         // Submit review
         document.getElementById('reviewForm').addEventListener('submit', async function(e) {
@@ -765,6 +901,14 @@
             const btn = document.getElementById('submitBtn');
             const successMsg = document.getElementById('formSuccess');
             const errorMsg = document.getElementById('formError');
+            
+            // Validate word count
+            const words = reviewText.value.trim().split(/\s+/).filter(w => w.length > 0).length;
+            if (words < 100 || words > 500) {
+                errorMsg.textContent = 'Review must be between 100 and 500 words.';
+                errorMsg.style.display = 'block';
+                return;
+            }
             
             btn.disabled = true;
             btn.textContent = 'Submitting...';
@@ -774,9 +918,17 @@
             const formData = new FormData(this);
             const data = {
                 tool: TOOL_SLUG,
-                name: formData.get('name'),
-                rating: parseInt(formData.get('rating')),
-                review: formData.get('review')
+                fullName: formData.get('fullName'),
+                email: formData.get('email'),
+                jobTitle: formData.get('jobTitle'),
+                usageDuration: formData.get('usageDuration'),
+                pricingTier: formData.get('pricingTier'),
+                ratingClaims: formData.get('ratingClaims'),
+                ratingPricing: formData.get('ratingPricing'),
+                ratingRecommend: formData.get('ratingRecommend'),
+                overallScore: parseInt(formData.get('overallScore')),
+                reviewText: formData.get('reviewText'),
+                disclosure: formData.get('disclosure') === 'on'
             };
             
             try {
@@ -789,14 +941,17 @@
                 if (res.ok) {
                     successMsg.style.display = 'block';
                     this.reset();
+                    charCount.textContent = '0 words (minimum 100)';
                 } else {
-                    throw new Error('Failed');
+                    const err = await res.json();
+                    throw new Error(err.error || 'Failed');
                 }
             } catch (err) {
+                errorMsg.textContent = err.message || 'Something went wrong. Please try again.';
                 errorMsg.style.display = 'block';
             } finally {
                 btn.disabled = false;
-                btn.textContent = 'Submit Review';
+                btn.textContent = 'Submit Review for Approval';
             }
         });
         

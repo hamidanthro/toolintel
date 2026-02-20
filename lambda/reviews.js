@@ -1,4 +1,4 @@
-// Lambda for user reviews CRUD
+// Lambda for user reviews CRUD - Comprehensive version
 // DynamoDB table: toolintel-reviews
 // Required env: ADMIN_KEY
 
@@ -17,6 +17,16 @@ const headers = {
     'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type'
 };
+
+// Validate word count
+function getWordCount(text) {
+    return text ? text.trim().split(/\s+/).filter(w => w.length > 0).length : 0;
+}
+
+// Basic email validation
+function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
 
 exports.handler = async (event) => {
     // Handle CORS preflight
@@ -46,7 +56,24 @@ exports.handler = async (event) => {
                 ExpressionAttributeValues: { ':tool': tool, ':status': status }
             }));
             
-            return { statusCode: 200, headers, body: JSON.stringify(result.Items || []) };
+            // For public view, exclude sensitive fields
+            const publicReviews = (result.Items || []).map(r => ({
+                id: r.id,
+                tool: r.tool,
+                fullName: r.fullName,
+                jobTitle: r.jobTitle,
+                usageDuration: r.usageDuration,
+                pricingTier: r.pricingTier,
+                ratingClaims: r.ratingClaims,
+                ratingPricing: r.ratingPricing,
+                ratingRecommend: r.ratingRecommend,
+                overallScore: r.overallScore,
+                reviewText: r.reviewText,
+                createdAt: r.createdAt
+                // Excludes: email, disclosure, status, rejectReason
+            }));
+            
+            return { statusCode: 200, headers, body: JSON.stringify(publicReviews) };
         }
         
         // GET /reviews/admin?key=X - admin only, get all reviews
@@ -66,26 +93,74 @@ exports.handler = async (event) => {
         // POST /reviews - submit new review
         if (method === 'POST' && path === '/reviews') {
             const body = JSON.parse(event.body || '{}');
-            const { tool, name, rating, review } = body;
+            const { 
+                tool, fullName, email, jobTitle, usageDuration, pricingTier,
+                ratingClaims, ratingPricing, ratingRecommend, overallScore, reviewText, disclosure
+            } = body;
             
-            if (!tool || !name || !rating || !review) {
-                return { statusCode: 400, headers, body: JSON.stringify({ error: 'missing fields' }) };
+            // Validate required fields
+            const requiredFields = { tool, fullName, email, jobTitle, usageDuration, pricingTier, ratingClaims, ratingPricing, ratingRecommend, overallScore, reviewText };
+            const missingFields = Object.entries(requiredFields).filter(([k, v]) => !v).map(([k]) => k);
+            if (missingFields.length > 0) {
+                return { statusCode: 400, headers, body: JSON.stringify({ error: `Missing required fields: ${missingFields.join(', ')}` }) };
             }
             
-            if (rating < 1 || rating > 5) {
-                return { statusCode: 400, headers, body: JSON.stringify({ error: 'rating must be 1-5' }) };
+            // Validate email format
+            if (!isValidEmail(email)) {
+                return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid email format' }) };
             }
             
-            if (review.length > 2000) {
-                return { statusCode: 400, headers, body: JSON.stringify({ error: 'review too long' }) };
+            // Validate word count (100-500)
+            const wordCount = getWordCount(reviewText);
+            if (wordCount < 100) {
+                return { statusCode: 400, headers, body: JSON.stringify({ error: `Review must be at least 100 words (currently ${wordCount})` }) };
+            }
+            if (wordCount > 500) {
+                return { statusCode: 400, headers, body: JSON.stringify({ error: `Review must be at most 500 words (currently ${wordCount})` }) };
+            }
+            
+            // Validate overall score (1-5)
+            if (overallScore < 1 || overallScore > 5) {
+                return { statusCode: 400, headers, body: JSON.stringify({ error: 'Overall score must be 1-5' }) };
+            }
+            
+            // Validate structured ratings
+            const validRatings = ['yes', 'partially', 'no'];
+            if (!validRatings.includes(ratingClaims) || !validRatings.includes(ratingPricing) || !validRatings.includes(ratingRecommend)) {
+                return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid rating values' }) };
+            }
+            
+            // Validate usage duration
+            const validDurations = ['less-than-1-month', '1-6-months', '6-plus-months'];
+            if (!validDurations.includes(usageDuration)) {
+                return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid usage duration' }) };
+            }
+            
+            // Validate pricing tier
+            const validTiers = ['free', 'pro', 'team', 'enterprise', 'api'];
+            if (!validTiers.includes(pricingTier)) {
+                return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid pricing tier' }) };
+            }
+            
+            // Validate disclosure
+            if (!disclosure) {
+                return { statusCode: 400, headers, body: JSON.stringify({ error: 'Disclosure checkbox must be confirmed' }) };
             }
             
             const item = {
                 id: crypto.randomUUID(),
                 tool,
-                name: name.substring(0, 100),
-                rating: parseInt(rating),
-                review: review.substring(0, 2000),
+                fullName: fullName.substring(0, 100),
+                email: email.toLowerCase().substring(0, 255),
+                jobTitle: jobTitle.substring(0, 200),
+                usageDuration,
+                pricingTier,
+                ratingClaims,
+                ratingPricing,
+                ratingRecommend,
+                overallScore: parseInt(overallScore),
+                reviewText: reviewText.substring(0, 5000),
+                disclosure: true,
                 status: 'pending',
                 createdAt: new Date().toISOString()
             };
@@ -108,12 +183,20 @@ exports.handler = async (event) => {
                 return { statusCode: 400, headers, body: JSON.stringify({ error: 'invalid status' }) };
             }
             
+            const updateExpression = body.rejectReason 
+                ? 'SET #status = :status, rejectReason = :reason, updatedAt = :now'
+                : 'SET #status = :status, updatedAt = :now';
+            
+            const expressionValues = body.rejectReason
+                ? { ':status': body.status, ':reason': body.rejectReason, ':now': new Date().toISOString() }
+                : { ':status': body.status, ':now': new Date().toISOString() };
+            
             await ddb.send(new UpdateCommand({
                 TableName: TABLE,
                 Key: { id },
-                UpdateExpression: 'SET #status = :status, updatedAt = :now',
+                UpdateExpression: updateExpression,
                 ExpressionAttributeNames: { '#status': 'status' },
-                ExpressionAttributeValues: { ':status': body.status, ':now': new Date().toISOString() }
+                ExpressionAttributeValues: expressionValues
             }));
             
             return { statusCode: 200, headers, body: JSON.stringify({ success: true }) };
