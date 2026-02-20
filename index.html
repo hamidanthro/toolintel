@@ -267,7 +267,7 @@
 
     <section class="hero">
         <h1>Find the Best AI Tools — Reviewed Independently</h1>
-        <p>1,400+ AI tools evaluated with rigorous, transparent methodology. No sponsored placements. No pay-to-play.</p>
+        <p><span id="heroToolCount">1,425</span> AI tools evaluated with rigorous, transparent methodology. No sponsored placements. No pay-to-play.</p>
         
         <div class="search-container">
             <span class="search-icon">🔍</span>
@@ -484,13 +484,14 @@
                 ]);
                 
                 document.getElementById('toolCount').textContent = totalTools.toLocaleString();
+                document.getElementById('heroToolCount').textContent = totalTools.toLocaleString();
                 document.getElementById('reviewCount').textContent = reviewCount;
                 document.getElementById('categoryCount').textContent = categories.size;
             })
             .catch(() => {
-                document.getElementById('toolCount').textContent = '1,400+';
+                document.getElementById('toolCount').textContent = '1,425';
                 document.getElementById('reviewCount').textContent = '6';
-                document.getElementById('categoryCount').textContent = '40+';
+                document.getElementById('categoryCount').textContent = '60';
             });
         
         // Search redirect
