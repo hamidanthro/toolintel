@@ -19,6 +19,22 @@
         if (packMatch) {
             window.location.replace('/pack.html?id=' + encodeURIComponent(packMatch[1]));
         }
+        
+        // /recommend/[id] - shared recommendations
+        const recommendMatch = path.match(/^\/recommend\/([^/]+)\/?$/);
+        if (recommendMatch) {
+            window.location.replace('/recommend.html?id=' + encodeURIComponent(recommendMatch[1]));
+        }
+        
+        // /expert-network/apply
+        if (path === '/expert-network/apply' || path === '/expert-network/apply/') {
+            window.location.replace('/expert-network-apply.html');
+        }
+        
+        // /expert-network/code-of-conduct
+        if (path === '/expert-network/code-of-conduct' || path === '/expert-network/code-of-conduct/') {
+            window.location.replace('/expert-network-conduct.html');
+        }
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

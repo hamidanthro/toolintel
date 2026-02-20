@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expert Network Admin — ToolIntel</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+    
+    .header { background: #1e293b; padding: 20px 30px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+    .header h1 { font-size: 1.5rem; }
+    .header a { color: #60a5fa; text-decoration: none; }
+    
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; padding: 30px; }
+    .stat-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 20px; text-align: center; }
+    .stat-value { font-size: 2.5rem; font-weight: 700; color: #14b8a6; }
+    .stat-label { color: #94a3b8; font-size: 0.9rem; margin-top: 5px; }
+    
+    .tabs { display: flex; gap: 0; padding: 0 30px; border-bottom: 1px solid #334155; }
+    .tab { padding: 15px 25px; cursor: pointer; color: #94a3b8; border-bottom: 2px solid transparent; transition: all 0.2s; }
+    .tab:hover { color: #e2e8f0; }
+    .tab.active { color: #14b8a6; border-bottom-color: #14b8a6; }
+    
+    .panel { display: none; padding: 30px; }
+    .panel.active { display: block; }
+    
+    .table-container { background: #1e293b; border: 1px solid #334155; border-radius: 12px; overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; }
+    th { background: #334155; padding: 15px; text-align: left; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; color: #94a3b8; }
+    td { padding: 15px; border-bottom: 1px solid #334155; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover { background: rgba(255,255,255,0.02); }
+    
+    .badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+    .badge-pending { background: #fef3c7; color: #92400e; }
+    .badge-approved { background: #d1fae5; color: #065f46; }
+    .badge-high { background: #fee2e2; color: #991b1b; }
+    .badge-medium { background: #fef3c7; color: #92400e; }
+    
+    .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 500; transition: all 0.2s; }
+    .btn-approve { background: #10b981; color: white; }
+    .btn-approve:hover { background: #059669; }
+    .btn-reject { background: #ef4444; color: white; }
+    .btn-reject:hover { background: #dc2626; }
+    .btn-view { background: #3b82f6; color: white; }
+    .btn-view:hover { background: #2563eb; }
+    .btn-assign { background: #8b5cf6; color: white; }
+    .btn-assign:hover { background: #7c3aed; }
+    
+    .actions { display: flex; gap: 8px; }
+    
+    .expertise-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+    .expertise-tag { background: rgba(20, 184, 166, 0.2); color: #5eead4; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; }
+    
+    .queue-item { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 20px; margin-bottom: 15px; }
+    .queue-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .queue-tool { font-size: 1.2rem; font-weight: 600; }
+    .queue-expertise { color: #14b8a6; }
+    .queue-requests { color: #94a3b8; font-size: 0.9rem; }
+    
+    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
+    .modal.active { display: flex; }
+    .modal-content { background: #1e293b; border-radius: 12px; padding: 30px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; }
+    .modal-content h3 { margin-bottom: 20px; }
+    .modal-close { position: absolute; top: 15px; right: 20px; background: none; border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer; }
+    
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 6px; color: #94a3b8; font-size: 0.9rem; }
+    .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: white; }
+    .form-group textarea { min-height: 100px; resize: vertical; }
+    
+    .empty-state { text-align: center; padding: 60px 20px; color: #64748b; }
+    .empty-state h3 { margin-bottom: 10px; color: #94a3b8; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🎓 Expert Network Admin</h1>
+    <a href="/admin/">← Back to Admin</a>
+  </div>
+  
+  <div class="stats" id="statsGrid">
+    <div class="stat-card">
+      <div class="stat-value" id="activeExperts">-</div>
+      <div class="stat-label">Active Experts</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="pendingApps">-</div>
+      <div class="stat-label">Pending Applications</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="pendingContribs">-</div>
+      <div class="stat-label">Pending Contributions</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="queuedRequests">-</div>
+      <div class="stat-label">Queued Requests</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="monthlyContribs">-</div>
+      <div class="stat-label">Contributions (Month)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="avgReviewTime">-</div>
+      <div class="stat-label">Avg Review Time</div>
+    </div>
+  </div>
+  
+  <div class="tabs">
+    <div class="tab active" data-panel="applications">Applications</div>
+    <div class="tab" data-panel="contributions">Contributions</div>
+    <div class="tab" data-panel="queue">Assignment Queue</div>
+    <div class="tab" data-panel="experts">Active Experts</div>
+    <div class="tab" data-panel="transparency">Transparency Report</div>
+  </div>
+  
+  <!-- Applications Panel -->
+  <div class="panel active" id="applications">
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Applicant</th>
+            <th>Affiliation</th>
+            <th>Expertise</th>
+            <th>Submitted</th>
+            <th>Score</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="applicationsTable"></tbody>
+      </table>
+    </div>
+  </div>
+  
+  <!-- Contributions Panel -->
+  <div class="panel" id="contributions">
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Expert</th>
+            <th>Tool</th>
+            <th>Expertise Tag</th>
+            <th>Submitted</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="contributionsTable"></tbody>
+      </table>
+    </div>
+  </div>
+  
+  <!-- Assignment Queue Panel -->
+  <div class="panel" id="queue">
+    <div id="queueList"></div>
+  </div>
+  
+  <!-- Active Experts Panel -->
+  <div class="panel" id="experts">
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Expert</th>
+            <th>Affiliation</th>
+            <th>Expertise</th>
+            <th>Contributions</th>
+            <th>Last Active</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="expertsTable"></tbody>
+      </table>
+    </div>
+  </div>
+  
+  <!-- Transparency Report Panel -->
+  <div class="panel" id="transparency">
+    <div id="transparencyReport"></div>
+  </div>
+  
+  <!-- Application Detail Modal -->
+  <div class="modal" id="applicationModal">
+    <div class="modal-content" style="position: relative;">
+      <button class="modal-close" onclick="closeModal('applicationModal')">×</button>
+      <h3>Application Details</h3>
+      <div id="applicationDetail"></div>
+    </div>
+  </div>
+  
+  <!-- Reject Modal -->
+  <div class="modal" id="rejectModal">
+    <div class="modal-content" style="position: relative;">
+      <button class="modal-close" onclick="closeModal('rejectModal')">×</button>
+      <h3>Reject Application</h3>
+      <form onsubmit="submitReject(event)">
+        <input type="hidden" id="rejectAppId">
+        <div class="form-group">
+          <label>Rejection Reason</label>
+          <textarea id="rejectReason" required placeholder="Provide constructive feedback for the applicant..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-reject">Send Rejection</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const API = 'https://v7086lxsji.execute-api.us-east-1.amazonaws.com/experts';
+    
+    // Tab switching
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.panel).classList.add('active');
+      });
+    });
+    
+    async function loadStats() {
+      try {
+        const response = await fetch(`${API}/admin/stats`);
+        const stats = await response.json();
+        
+        document.getElementById('activeExperts').textContent = stats.activeExperts;
+        document.getElementById('pendingApps').textContent = stats.pendingApplications;
+        document.getElementById('pendingContribs').textContent = stats.pendingContributions;
+        document.getElementById('queuedRequests').textContent = stats.queuedRequests;
+        document.getElementById('monthlyContribs').textContent = stats.contributionsThisMonth;
+        document.getElementById('avgReviewTime').textContent = stats.avgReviewTime;
+      } catch (error) {
+        console.error('Failed to load stats:', error);
+      }
+    }
+    
+    async function loadApplications() {
+      try {
+        const response = await fetch(`${API}/admin/applications`);
+        const data = await response.json();
+        
+        const tbody = document.getElementById('applicationsTable');
+        if (data.applications.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#64748b;padding:40px;">No pending applications</td></tr>';
+          return;
+        }
+        
+        tbody.innerHTML = data.applications.map(app => `
+          <tr>
+            <td>
+              <strong>${app.name}</strong><br>
+              <span style="color:#94a3b8;font-size:0.85rem;">${app.email}</span>
+            </td>
+            <td>${app.employer}<br><span style="color:#94a3b8;font-size:0.85rem;">${app.title}</span></td>
+            <td>
+              <div class="expertise-tags">
+                ${app.expertise.map(e => `<span class="expertise-tag">${e}</span>`).join('')}
+              </div>
+            </td>
+            <td>${formatDate(app.submittedAt)}</td>
+            <td><span class="badge ${app.score >= 80 ? 'badge-approved' : 'badge-pending'}">${app.score}</span></td>
+            <td>
+              <div class="actions">
+                <button class="btn btn-view" onclick="viewApplication('${app.applicationId}')">View</button>
+                <button class="btn btn-approve" onclick="approveApplication('${app.applicationId}')">Approve</button>
+                <button class="btn btn-reject" onclick="showRejectModal('${app.applicationId}')">Reject</button>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+      } catch (error) {
+        console.error('Failed to load applications:', error);
+      }
+    }
+    
+    async function loadContributions() {
+      try {
+        const response = await fetch(`${API}/admin/contributions`);
+        const data = await response.json();
+        
+        const tbody = document.getElementById('contributionsTable');
+        if (data.contributions.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#64748b;padding:40px;">No pending contributions</td></tr>';
+          return;
+        }
+        
+        tbody.innerHTML = data.contributions.map(c => `
+          <tr>
+            <td><strong>${c.expertName}</strong></td>
+            <td>${c.toolSlug}</td>
+            <td><span class="expertise-tag">${c.expertiseTag}</span></td>
+            <td>${formatDate(c.submittedAt)}</td>
+            <td>
+              <div class="actions">
+                <button class="btn btn-view" onclick="viewContribution('${c.contributionId}')">Review</button>
+                <button class="btn btn-approve" onclick="approveContribution('${c.contributionId}')">Approve</button>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+      } catch (error) {
+        console.error('Failed to load contributions:', error);
+      }
+    }
+    
+    async function loadQueue() {
+      try {
+        const response = await fetch(`${API}/admin/queue`);
+        const data = await response.json();
+        
+        const list = document.getElementById('queueList');
+        if (data.queue.length === 0) {
+          list.innerHTML = '<div class="empty-state"><h3>No pending requests</h3><p>Users can request expert reviews from tool pages.</p></div>';
+          return;
+        }
+        
+        list.innerHTML = data.queue.map(item => `
+          <div class="queue-item">
+            <div class="queue-header">
+              <div>
+                <div class="queue-tool">${item.toolName}</div>
+                <div class="queue-expertise">Requested: ${item.requestedExpertise}</div>
+              </div>
+              <div>
+                <span class="badge badge-${item.priority}">${item.priority.toUpperCase()}</span>
+              </div>
+            </div>
+            <div class="queue-requests">${item.requestCount} user requests for this expertise</div>
+            <div style="margin-top:15px;">
+              <button class="btn btn-assign" onclick="assignExpert('${item.toolSlug}', '${item.requestedExpertise}')">Assign Expert</button>
+            </div>
+          </div>
+        `).join('');
+      } catch (error) {
+        console.error('Failed to load queue:', error);
+      }
+    }
+    
+    async function loadExperts() {
+      try {
+        const response = await fetch(API);
+        const data = await response.json();
+        
+        const tbody = document.getElementById('expertsTable');
+        tbody.innerHTML = data.experts.map(e => `
+          <tr>
+            <td>
+              <strong>${e.name}</strong><br>
+              <span style="color:#94a3b8;font-size:0.85rem;">${e.title}</span>
+            </td>
+            <td>${e.employer}</td>
+            <td>
+              <div class="expertise-tags">
+                ${e.expertise.map(ex => `<span class="expertise-tag">${ex}</span>`).join('')}
+              </div>
+            </td>
+            <td>${e.contributionCount}</td>
+            <td>${formatDate(e.lastContribution)}</td>
+            <td>
+              <div class="actions">
+                <button class="btn btn-view" onclick="viewExpert('${e.id}')">Profile</button>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+      } catch (error) {
+        console.error('Failed to load experts:', error);
+      }
+    }
+    
+    async function loadTransparencyReport() {
+      try {
+        const response = await fetch(`${API}/transparency-report`);
+        const report = await response.json();
+        
+        document.getElementById('transparencyReport').innerHTML = `
+          <div style="background:#1e293b;border:1px solid #334155;border-radius:12px;padding:30px;">
+            <h2 style="margin-bottom:20px;">${report.quarter} Transparency Report</h2>
+            <p style="color:#94a3b8;margin-bottom:30px;">Generated: ${formatDate(report.generatedAt)}</p>
+            
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin-bottom:30px;">
+              <div style="background:#0f172a;padding:20px;border-radius:8px;text-align:center;">
+                <div style="font-size:2rem;font-weight:700;color:#14b8a6;">${report.activeContributors}</div>
+                <div style="color:#94a3b8;">Active Contributors</div>
+              </div>
+              <div style="background:#0f172a;padding:20px;border-radius:8px;text-align:center;">
+                <div style="font-size:2rem;font-weight:700;color:#14b8a6;">${report.contributionsPublished}</div>
+                <div style="color:#94a3b8;">Contributions Published</div>
+              </div>
+              <div style="background:#0f172a;padding:20px;border-radius:8px;text-align:center;">
+                <div style="font-size:2rem;font-weight:700;color:#f59e0b;">${report.disagreementsWithEditorial.total}</div>
+                <div style="color:#94a3b8;">Editorial Disagreements</div>
+              </div>
+            </div>
+            
+            <h3 style="margin:30px 0 15px;">Application Statistics</h3>
+            <div style="background:#0f172a;padding:20px;border-radius:8px;">
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:15px;text-align:center;">
+                <div><div style="font-size:1.5rem;font-weight:600;">${report.applications.received}</div><div style="color:#94a3b8;font-size:0.85rem;">Received</div></div>
+                <div><div style="font-size:1.5rem;font-weight:600;color:#10b981;">${report.applications.approved}</div><div style="color:#94a3b8;font-size:0.85rem;">Approved</div></div>
+                <div><div style="font-size:1.5rem;font-weight:600;color:#ef4444;">${report.applications.rejected}</div><div style="color:#94a3b8;font-size:0.85rem;">Rejected</div></div>
+                <div><div style="font-size:1.5rem;font-weight:600;color:#f59e0b;">${report.applications.pending}</div><div style="color:#94a3b8;font-size:0.85rem;">Pending</div></div>
+              </div>
+              <div style="text-align:center;margin-top:15px;color:#94a3b8;">Approval Rate: <strong>${report.applications.approvalRate}</strong></div>
+            </div>
+            
+            <h3 style="margin:30px 0 15px;">Disagreements by Category</h3>
+            <div style="background:#0f172a;padding:20px;border-radius:8px;">
+              ${report.disagreementsWithEditorial.byCategory.map(d => `
+                <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #334155;">
+                  <span>${d.category}</span>
+                  <span style="color:#f59e0b;font-weight:600;">${d.count}</span>
+                </div>
+              `).join('')}
+            </div>
+            
+            <p style="margin-top:30px;padding:20px;background:rgba(59,130,246,0.1);border-radius:8px;color:#94a3b8;font-style:italic;">${report.note}</p>
+          </div>
+        `;
+      } catch (error) {
+        console.error('Failed to load transparency report:', error);
+      }
+    }
+    
+    async function approveApplication(appId) {
+      if (!confirm('Approve this application? A welcome email will be sent.')) return;
+      
+      try {
+        const response = await fetch(`${API}/admin/applications/${appId}/approve`, { method: 'POST' });
+        if (response.ok) {
+          alert('Application approved!');
+          loadApplications();
+          loadStats();
+        }
+      } catch (error) {
+        alert('Failed to approve: ' + error.message);
+      }
+    }
+    
+    function showRejectModal(appId) {
+      document.getElementById('rejectAppId').value = appId;
+      document.getElementById('rejectModal').classList.add('active');
+    }
+    
+    async function submitReject(event) {
+      event.preventDefault();
+      const appId = document.getElementById('rejectAppId').value;
+      const reason = document.getElementById('rejectReason').value;
+      
+      try {
+        const response = await fetch(`${API}/admin/applications/${appId}/reject`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reason })
+        });
+        if (response.ok) {
+          closeModal('rejectModal');
+          alert('Application rejected. Feedback sent.');
+          loadApplications();
+          loadStats();
+        }
+      } catch (error) {
+        alert('Failed to reject: ' + error.message);
+      }
+    }
+    
+    async function approveContribution(contribId) {
+      if (!confirm('Approve and publish this contribution?')) return;
+      
+      try {
+        const response = await fetch(`${API}/admin/contributions/${contribId}/approve`, { method: 'POST' });
+        if (response.ok) {
+          alert('Contribution approved and published!');
+          loadContributions();
+          loadStats();
+        }
+      } catch (error) {
+        alert('Failed to approve: ' + error.message);
+      }
+    }
+    
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+    
+    function formatDate(dateStr) {
+      if (!dateStr) return '-';
+      return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+    
+    function viewApplication(appId) { alert('View application details: ' + appId); }
+    function viewContribution(contribId) { alert('View contribution: ' + contribId); }
+    function viewExpert(expertId) { alert('View expert profile: ' + expertId); }
+    function assignExpert(toolSlug, expertise) { alert(`Assign expert for ${expertise} on ${toolSlug}`); }
+    
+    // Load all data
+    loadStats();
+    loadApplications();
+    loadContributions();
+    loadQueue();
+    loadExperts();
+    loadTransparencyReport();
+  </script>
+</body>
+</html>

@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apply to Become a Contributor — ToolIntel Expert Network</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0f2744;
+      --teal: #0d9488;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-400: #9ca3af;
+      --gray-600: #4b5563;
+      --gray-800: #1f2937;
+      --white: #ffffff;
+      --blue-accent: #3b82f6;
+      --red: #ef4444;
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', -apple-system, sans-serif; color: var(--gray-800); line-height: 1.7; background: var(--gray-50); }
+    h1, h2 { font-family: 'Merriweather', Georgia, serif; }
+    a { color: var(--blue-accent); }
+    
+    header { padding: 16px 0; border-bottom: 1px solid var(--gray-200); background: var(--white); }
+    nav { display: flex; justify-content: space-between; align-items: center; max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+    .logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.25rem; color: var(--navy); text-decoration: none; }
+    .logo span { color: var(--blue-accent); }
+    
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+    
+    h1 {
+      font-size: 2rem;
+      color: var(--navy);
+      margin-bottom: 16px;
+    }
+    
+    .intro {
+      background: linear-gradient(135deg, var(--navy) 0%, #1e3a5f 100%);
+      color: white;
+      padding: 24px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+    }
+    .intro p {
+      color: rgba(255,255,255,0.9);
+      font-size: 0.95rem;
+    }
+    
+    .form-section {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 24px;
+    }
+    .form-section h2 {
+      font-size: 1.2rem;
+      color: var(--navy);
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: var(--gray-800);
+    }
+    .form-group label .required {
+      color: var(--red);
+    }
+    .form-group .hint {
+      color: var(--gray-400);
+      font-size: 0.85rem;
+      margin-top: 4px;
+    }
+    
+    input[type="text"],
+    input[type="email"],
+    input[type="url"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--blue-accent);
+    }
+    textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+    
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--gray-50);
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .checkbox-item:hover {
+      background: var(--gray-100);
+    }
+    .checkbox-item input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--teal);
+    }
+    .checkbox-item span {
+      font-size: 0.9rem;
+    }
+    
+    .work-examples {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .confirmation-box {
+      background: #fef3c7;
+      border: 1px solid #fcd34d;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+    .confirmation-box label {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      cursor: pointer;
+    }
+    .confirmation-box input {
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
+      accent-color: var(--teal);
+    }
+    .confirmation-box span {
+      font-size: 0.95rem;
+      color: var(--gray-800);
+    }
+    
+    .code-link {
+      background: var(--gray-50);
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .code-link p {
+      color: var(--gray-600);
+      font-size: 0.9rem;
+    }
+    
+    .submit-btn {
+      background: var(--teal);
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s;
+    }
+    .submit-btn:hover {
+      background: #0f766e;
+    }
+    .submit-btn:disabled {
+      background: var(--gray-400);
+      cursor: not-allowed;
+    }
+    
+    .success-message {
+      background: #d1fae5;
+      border: 1px solid #10b981;
+      color: #065f46;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      display: none;
+    }
+    
+    .error-message {
+      background: #fee2e2;
+      border: 1px solid var(--red);
+      color: #991b1b;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+    }
+    
+    footer { padding: 40px 24px; text-align: center; border-top: 1px solid var(--gray-200); margin-top: 40px; }
+    footer p { color: var(--gray-400); font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="/" class="logo">Tool<span>Intel</span></a>
+      <a href="/expert-network.html">← Expert Network</a>
+    </nav>
+  </header>
+  
+  <div class="container">
+    <h1>Apply to Become a Contributor</h1>
+    
+    <div class="intro">
+      <p>Thank you for your interest in contributing to ToolIntel's Expert Network. We carefully vet all applicants to ensure the highest quality independent analysis. Applications are reviewed manually within 14 days, and you will receive a detailed response regardless of outcome.</p>
+    </div>
+    
+    <div class="error-message" id="errorMessage"></div>
+    
+    <div class="success-message" id="successMessage">
+      <h2 style="margin-bottom: 10px;">✓ Application Submitted</h2>
+      <p>Thank you for applying. You will receive a detailed response within 14 days.</p>
+    </div>
+    
+    <form id="applicationForm">
+      <div class="form-section">
+        <h2>Personal Information</h2>
+        
+        <div class="form-group">
+          <label>Full Name <span class="required">*</span></label>
+          <input type="text" id="name" required placeholder="Dr. Jane Smith">
+        </div>
+        
+        <div class="form-group">
+          <label>Professional Email <span class="required">*</span></label>
+          <input type="email" id="email" required placeholder="jane.smith@university.edu">
+          <div class="hint">Use your institutional or professional email address</div>
+        </div>
+        
+        <div class="form-group">
+          <label>Current Employer / Affiliation <span class="required">*</span></label>
+          <input type="text" id="employer" required placeholder="Stanford University">
+        </div>
+        
+        <div class="form-group">
+          <label>Title / Role <span class="required">*</span></label>
+          <input type="text" id="title" required placeholder="Associate Professor of Computer Science">
+        </div>
+        
+        <div class="form-group">
+          <label>LinkedIn or Institutional Profile URL <span class="required">*</span></label>
+          <input type="url" id="linkedin" required placeholder="https://linkedin.com/in/janesmith">
+        </div>
+      </div>
+      
+      <div class="form-section">
+        <h2>Domain Expertise</h2>
+        
+        <div class="form-group">
+          <label>Areas of Expertise <span class="required">*</span></label>
+          <div class="hint" style="margin-bottom: 10px;">Select up to 3 areas where you can provide expert analysis</div>
+          <div class="checkbox-group" id="expertiseCheckboxes">
+            <label class="checkbox-item"><input type="checkbox" name="expertise" value="AI Security"><span>AI Security</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="expertise" value="Healthcare AI"><span>Healthcare AI</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="expertise" value="Legal AI"><span>Legal AI</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="expertise" value="Financial AI"><span>Financial AI</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="expertise" value="NLP and Language Models"><span>NLP & Language Models</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="expertise" value="Computer Vision"><span>Computer Vision</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="expertise" value="AI Ethics and Bias"><span>AI Ethics & Bias</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="expertise" value="Regulatory Compliance"><span>Regulatory Compliance</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="expertise" value="Enterprise Architecture"><span>Enterprise Architecture</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="expertise" value="Developer Tools"><span>Developer Tools</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="expertise" value="Data Privacy Law"><span>Data Privacy Law</span></label>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Statement of Relevant Expertise <span class="required">*</span></label>
+          <textarea id="statement" required placeholder="Describe your expertise and why you're qualified to provide independent technical analysis of AI tools. (200 words maximum)" maxlength="2000"></textarea>
+          <div class="hint">Maximum 200 words</div>
+        </div>
+      </div>
+      
+      <div class="form-section">
+        <h2>Published Work Examples</h2>
+        
+        <div class="form-group">
+          <label>Two Verifiable Examples <span class="required">*</span></label>
+          <div class="hint" style="margin-bottom: 10px;">Provide links to papers, reports, articles, or code you've published</div>
+          <div class="work-examples">
+            <input type="url" id="work1" required placeholder="https://example.com/your-paper-or-article">
+            <input type="url" id="work2" required placeholder="https://example.com/second-example">
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-section">
+        <h2>Confirmations</h2>
+        
+        <div class="confirmation-box">
+          <label>
+            <input type="checkbox" id="noFinancial" required>
+            <span>I confirm that I have <strong>no financial relationship</strong> with any AI tool company currently in the ToolIntel database. This includes employment, consulting fees, equity, advisory roles, or any form of compensation.</span>
+          </label>
+        </div>
+        
+        <div class="code-link">
+          <p>By submitting this application, you agree to the <a href="/expert-network/code-of-conduct" target="_blank">Contributor Code of Conduct</a>, which requires:</p>
+          <ul style="margin: 10px 0 0 20px; color: var(--gray-600); font-size: 0.9rem;">
+            <li>Full real identity disclosure</li>
+            <li>No financial relationship with reviewed tools</li>
+            <li>Findings based on direct hands-on experience</li>
+            <li>Evidence-based disagreements, not opinion</li>
+            <li>7-day disclosure of any circumstance changes</li>
+          </ul>
+        </div>
+        
+        <div class="confirmation-box">
+          <label>
+            <input type="checkbox" id="agreeCode" required>
+            <span>I have read and agree to abide by the <strong>Contributor Code of Conduct</strong>.</span>
+          </label>
+        </div>
+      </div>
+      
+      <button type="submit" class="submit-btn" id="submitBtn">Submit Application</button>
+    </form>
+  </div>
+  
+  <footer>
+    <p>© 2026 ToolIntel. Independent. Transparent.</p>
+  </footer>
+
+  <script>
+    const API = 'https://v7086lxsji.execute-api.us-east-1.amazonaws.com/experts';
+    
+    // Limit expertise selection to 3
+    document.querySelectorAll('input[name="expertise"]').forEach(checkbox => {
+      checkbox.addEventListener('change', function() {
+        const checked = document.querySelectorAll('input[name="expertise"]:checked');
+        if (checked.length > 3) {
+          this.checked = false;
+          alert('Please select a maximum of 3 expertise areas.');
+        }
+      });
+    });
+    
+    document.getElementById('applicationForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const form = this;
+      const submitBtn = document.getElementById('submitBtn');
+      const errorDiv = document.getElementById('errorMessage');
+      const successDiv = document.getElementById('successMessage');
+      
+      // Gather expertise
+      const expertise = [...document.querySelectorAll('input[name="expertise"]:checked')].map(cb => cb.value);
+      
+      if (expertise.length === 0) {
+        errorDiv.textContent = 'Please select at least one area of expertise.';
+        errorDiv.style.display = 'block';
+        return;
+      }
+      
+      const data = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        employer: document.getElementById('employer').value,
+        title: document.getElementById('title').value,
+        linkedin: document.getElementById('linkedin').value,
+        expertise,
+        statement: document.getElementById('statement').value,
+        workExamples: [
+          document.getElementById('work1').value,
+          document.getElementById('work2').value
+        ],
+        noFinancialRelation: document.getElementById('noFinancial').checked,
+        agreeToCode: document.getElementById('agreeCode').checked
+      };
+      
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+      errorDiv.style.display = 'none';
+      
+      try {
+        const response = await fetch(`${API}/apply`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+          form.style.display = 'none';
+          successDiv.style.display = 'block';
+        } else {
+          throw new Error(result.error || 'Submission failed');
+        }
+      } catch (error) {
+        errorDiv.textContent = error.message;
+        errorDiv.style.display = 'block';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Application';
+      }
+    });
+  </script>
+</body>
+</html>
