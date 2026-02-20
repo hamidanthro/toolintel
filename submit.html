@@ -52,6 +52,8 @@
         .nav-links { display: flex; gap: 32px; }
         .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
         .nav-links a:hover { color: var(--navy); }
+        .nav-links a.primary { background: var(--navy); color: white; padding: 8px 16px; border-radius: 6px; }
+        .nav-links a.primary:hover { background: var(--navy-light); }
         
         /* Main */
         main { padding: 60px 24px; max-width: 700px; margin: 0 auto; }
@@ -166,9 +168,10 @@
         <nav>
             <a href="/" class="logo">Tool<span>Intel</span></a>
             <div class="nav-links">
-                <a href="/methodology">Methodology</a>
-                <a href="/reviews">Reviews</a>
-                <a href="/submit">Submit Tool</a>
+                <a href="/reviews.html">Reviews</a>
+                <a href="/categories/index.html">Categories</a>
+                <a href="/methodology.html">Methodology</a>
+                <a href="/submit.html" class="primary">Submit Tool</a>
             </div>
         </nav>
     </header>
@@ -270,7 +273,7 @@
     </main>
 
     <footer>
-        <p>© 2026 Tool Intel. <a href="/methodology">Methodology</a> is always public.</p>
+        <p>© 2026 Tool Intel. <a href="/reviews.html">Reviews</a> is always public.</p>
     </footer>
 
     <script>
