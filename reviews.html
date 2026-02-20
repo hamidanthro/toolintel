@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tool Reviews — Tool Intel</title>
+    <meta name="description" content="Independent, rigorous reviews of AI tools. Scored across 10 categories using our public methodology.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --navy: #0f2744;
+            --navy-light: #1e3a5f;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --green: #10b981;
+            --yellow: #f59e0b;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--gray-800);
+            line-height: 1.6;
+            background: var(--gray-50);
+        }
+        
+        h1, h2, h3 { font-family: 'Merriweather', Georgia, serif; font-weight: 700; line-height: 1.3; }
+        
+        /* Header */
+        header {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--gray-200);
+            background: var(--white);
+        }
+        
+        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+        
+        .logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.25rem; color: var(--navy); text-decoration: none; }
+        .logo span { color: var(--blue-accent); }
+        
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+        .nav-links a:hover { color: var(--navy); }
+        
+        /* Main */
+        main { max-width: 1120px; margin: 0 auto; padding: 60px 24px; }
+        
+        h1 { font-size: 2rem; color: var(--navy); margin-bottom: 8px; }
+        .subtitle { color: var(--gray-600); margin-bottom: 40px; }
+        
+        /* Categories */
+        .categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 40px;
+        }
+        
+        .category-btn {
+            padding: 8px 16px;
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .category-btn:hover, .category-btn.active {
+            background: var(--navy);
+            color: var(--white);
+            border-color: var(--navy);
+        }
+        
+        /* Coming Soon */
+        .coming-soon {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 60px 40px;
+            text-align: center;
+        }
+        
+        .coming-soon h2 { font-size: 1.5rem; color: var(--navy); margin-bottom: 16px; }
+        .coming-soon p { color: var(--gray-600); max-width: 500px; margin: 0 auto 24px; }
+        
+        .coming-soon .cta {
+            display: inline-block;
+            padding: 12px 24px;
+            background: var(--navy);
+            color: var(--white);
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        
+        .coming-soon .cta:hover { background: var(--navy-light); }
+        
+        /* Review Queue */
+        .queue {
+            margin-top: 60px;
+        }
+        
+        .queue h3 { font-size: 1.25rem; color: var(--navy); margin-bottom: 20px; }
+        
+        .queue-list {
+            display: grid;
+            gap: 16px;
+        }
+        
+        .queue-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 16px 20px;
+        }
+        
+        .queue-item .tool-name { font-weight: 600; color: var(--navy); }
+        .queue-item .category { font-size: 0.85rem; color: var(--gray-400); }
+        
+        .status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status.testing { background: #dbeafe; color: #1d4ed8; }
+        .status.writing { background: #fef3c7; color: #b45309; }
+        .status.scheduled { background: #d1fae5; color: #065f46; }
+        
+        /* Footer */
+        footer {
+            padding: 40px 24px;
+            text-align: center;
+            border-top: 1px solid var(--gray-200);
+            background: var(--white);
+            margin-top: 60px;
+        }
+        
+        footer p { color: var(--gray-400); font-size: 0.9rem; }
+        footer a { color: var(--gray-600); }
+        
+        @media (max-width: 640px) {
+            h1 { font-size: 1.5rem; }
+            .queue-item { flex-direction: column; align-items: flex-start; gap: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo">Tool<span>Intel</span></a>
+            <div class="nav-links">
+                <a href="/methodology">Methodology</a>
+                <a href="/reviews">Reviews</a>
+                <a href="/submit">Submit Tool</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <h1>AI Tool Reviews</h1>
+        <p class="subtitle">Independent evaluations using our <a href="/methodology">public methodology</a>.</p>
+        
+        <div class="categories">
+            <button class="category-btn active">All Categories</button>
+            <button class="category-btn">Chatbots</button>
+            <button class="category-btn">Writing</button>
+            <button class="category-btn">Coding</button>
+            <button class="category-btn">Image Gen</button>
+            <button class="category-btn">Data & BI</button>
+            <button class="category-btn">Automation</button>
+            <button class="category-btn">Voice</button>
+        </div>
+        
+        <div class="coming-soon">
+            <h2>First Reviews Coming Soon</h2>
+            <p>We're currently in our 2-week testing phase for our first batch of AI tools. Reviews will be published here as they complete our 5-step evaluation process.</p>
+            <a href="/#waitlist" class="cta">Get Notified at Launch</a>
+        </div>
+        
+        <div class="queue">
+            <h3>📋 Review Queue (Public)</h3>
+            <div class="queue-list">
+                <div class="queue-item">
+                    <div>
+                        <div class="tool-name">Claude (Anthropic)</div>
+                        <div class="category">Foundation Models & AI APIs</div>
+                    </div>
+                    <span class="status testing">Testing</span>
+                </div>
+                <div class="queue-item">
+                    <div>
+                        <div class="tool-name">ChatGPT (OpenAI)</div>
+                        <div class="category">Foundation Models & AI APIs</div>
+                    </div>
+                    <span class="status testing">Testing</span>
+                </div>
+                <div class="queue-item">
+                    <div>
+                        <div class="tool-name">Cursor</div>
+                        <div class="category">AI Coding Assistants</div>
+                    </div>
+                    <span class="status scheduled">Scheduled</span>
+                </div>
+                <div class="queue-item">
+                    <div>
+                        <div class="tool-name">Jasper</div>
+                        <div class="category">AI Writing & Content</div>
+                    </div>
+                    <span class="status scheduled">Scheduled</span>
+                </div>
+                <div class="queue-item">
+                    <div>
+                        <div class="tool-name">Midjourney</div>
+                        <div class="category">AI Image Generation</div>
+                    </div>
+                    <span class="status scheduled">Scheduled</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2026 Tool Intel. <a href="/methodology">Methodology</a> is always public.</p>
+    </footer>
+</body>
+</html>
