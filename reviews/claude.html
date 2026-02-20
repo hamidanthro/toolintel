@@ -126,8 +126,7 @@
         .alt-card { border: 1px solid var(--gray-200); border-radius: 8px; padding: 16px; text-align: center; background: var(--white); }
         .alt-card .name { font-weight: 600; color: var(--navy); margin-bottom: 4px; }
         .alt-card .score { font-size: 1.5rem; font-weight: 700; }
-        .alt-card .score.high { color: var(--green); }
-        .alt-card .score.mid { color: var(--yellow); }
+        .alt-card .score { color: var(--navy); }
         .alt-card .category { font-size: 0.8rem; color: var(--gray-400); margin-top: 4px; }
         
         .changelog-item { display: flex; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--gray-100); }
@@ -180,9 +179,9 @@
                             <span>•</span>
                             <a href="https://claude.ai" target="_blank" rel="noopener">claude.ai ↗</a>
                         </div>
-                        <p class="verdict-line">Best-in-class reasoning, industry-leading safety</p>
+                        <p class="verdict-line">Strong reasoning performance across analytical tasks, above-average safety documentation</p>
                         <p class="review-meta">
-                            Reviewed by <strong>Tool Intel</strong> · Feb 20, 2026 · Methodology v1.0<br>
+                            Reviewed by <strong>Hamid Ali</strong> · Feb 20, 2026 · Methodology v1.0<br>
                             <span style="color: #3b82f6;">🔄 Refresh scheduled: Aug 2026</span><br>
                             <span style="color: var(--green);">✓ Verified: We paid for and tested this product</span>
                         </p>
@@ -400,6 +399,13 @@
                 </div>
 
                 <div class="section">
+                    <h2>Vendor Interview</h2>
+                    <p><strong>Interview requested:</strong> February 2026</p>
+                    <p><strong>Status:</strong> No response received as of publication date.</p>
+                    <p style="color: var(--gray-400); font-style: italic;">This is noted in accordance with our <a href="/methodology.html">methodology</a> — vendor non-response is a data point, not a disqualifier.</p>
+                </div>
+
+                <div class="section">
                     <h2>Pricing Analysis</h2>
                     
                     <table class="pricing-table">
@@ -416,7 +422,7 @@
                                 <td>Free</td>
                                 <td>$0</td>
                                 <td>Basic access, limited messages, web search</td>
-                                <td>Data may train models</td>
+                                <td>Usage limits apply. Data not used for training by default.</td>
                             </tr>
                             <tr>
                                 <td>Pro</td>
@@ -459,6 +465,7 @@
                     <h2>How We Tested</h2>
                     <ul>
                         <li><strong>Duration:</strong> 30 days active testing (Jan-Feb 2026)</li>
+                        <li><strong>Tester:</strong> Hamid Ali · <strong>Cost of testing:</strong> $65 paid out of pocket</li>
                         <li><strong>Plans tested:</strong> Free, Pro ($20/mo), Team ($25/seat)</li>
                         <li><strong>Test scenarios:</strong> 500+ prompts across reasoning, coding, writing, analysis</li>
                         <li><strong>Benchmark suite:</strong> Custom + industry standard (MMLU, HumanEval)</li>
@@ -472,17 +479,17 @@
                     <div class="alternatives-grid">
                         <div class="alt-card">
                             <div class="name">ChatGPT</div>
-                            <div class="score high">87</div>
+                            <div class="score">87</div>
                             <div class="category">Better for multimodal (images, voice)</div>
                         </div>
                         <div class="alt-card">
                             <div class="name">Gemini</div>
-                            <div class="score mid">82</div>
+                            <div class="score">82</div>
                             <div class="category">Google ecosystem integration</div>
                         </div>
                         <div class="alt-card">
                             <div class="name">Llama (local)</div>
-                            <div class="score mid">75</div>
+                            <div class="score">75</div>
                             <div class="category">Full privacy, self-hosted</div>
                         </div>
                     </div>
@@ -513,19 +520,32 @@
     </footer>
 
     <script>
+        // Open all accordions by default on desktop
+        function initAccordions() {
+            const isDesktop = window.innerWidth >= 768;
+            document.querySelectorAll('.accordion-item').forEach(item => {
+                const content = item.querySelector('.accordion-content');
+                const arrow = item.querySelector('.accordion-header span:last-child');
+                if (isDesktop) {
+                    content.style.display = 'block';
+                    arrow.textContent = '↑';
+                }
+            });
+        }
+        
         document.querySelectorAll('.accordion-header').forEach(header => {
             header.addEventListener('click', () => {
                 const item = header.parentElement;
                 const content = item.querySelector('.accordion-content');
+                const arrow = header.querySelector('span:last-child');
                 const isOpen = content.style.display === 'block';
-                document.querySelectorAll('.accordion-content').forEach(c => c.style.display = 'none');
-                document.querySelectorAll('.accordion-header span:last-child').forEach(s => s.textContent = '↓');
-                if (!isOpen) {
-                    content.style.display = 'block';
-                    header.querySelector('span:last-child').textContent = '↑';
-                }
+                content.style.display = isOpen ? 'none' : 'block';
+                arrow.textContent = isOpen ? '↓' : '↑';
             });
         });
+        
+        initAccordions();
+        window.addEventListener('resize', initAccordions);
     </script>
 </body>
 </html>
