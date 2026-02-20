@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claim Verification Workflow — ToolIntel Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0f2744;
+            --navy-light: #1e3a5f;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --green: #10b981;
+            --yellow: #f59e0b;
+            --red: #ef4444;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--gray-50); color: var(--gray-800); }
+        
+        header { background: var(--navy); color: white; padding: 20px 24px; }
+        header h1 { font-size: 1.5rem; font-weight: 600; }
+        
+        .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+        
+        .tabs { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid var(--gray-200); padding-bottom: 16px; flex-wrap: wrap; }
+        .tab { padding: 10px 20px; border: none; background: var(--white); border-radius: 6px 6px 0 0; cursor: pointer; font-size: 0.95rem; font-weight: 500; color: var(--gray-600); border: 1px solid var(--gray-200); border-bottom: none; }
+        .tab.active { background: var(--navy); color: white; border-color: var(--navy); }
+        .tab .badge { background: var(--red); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; margin-left: 8px; }
+        .tab .badge.warning { background: var(--yellow); }
+        
+        .panel { display: none; }
+        .panel.active { display: block; }
+        
+        .card { background: var(--white); border: 1px solid var(--gray-200); border-radius: 8px; padding: 20px; margin-bottom: 16px; }
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; flex-wrap: wrap; gap: 12px; }
+        .card-title { font-weight: 600; color: var(--navy); font-size: 1rem; }
+        
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 0.8rem; font-weight: 500; }
+        .badge.warning { background: #fef3c7; color: #92400e; }
+        .badge.danger { background: #fee2e2; color: #991b1b; }
+        .badge.success { background: #d1fae5; color: #065f46; }
+        .badge.info { background: #dbeafe; color: #1e40af; }
+        
+        .btn { padding: 8px 16px; border-radius: 6px; font-size: 0.9rem; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-primary { background: var(--navy); color: white; }
+        .btn-primary:hover { background: var(--navy-light); }
+        .btn-success { background: var(--green); color: white; }
+        .btn-danger { background: var(--red); color: white; }
+        .btn-secondary { background: var(--gray-100); color: var(--gray-600); border: 1px solid var(--gray-200); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .detail-row { display: flex; gap: 16px; margin-bottom: 8px; font-size: 0.9rem; }
+        .detail-label { color: var(--gray-400); min-width: 120px; flex-shrink: 0; }
+        .detail-value { color: var(--gray-800); }
+        .detail-value a { color: var(--blue-accent); }
+        
+        .claim-text { font-style: italic; color: var(--gray-600); background: var(--gray-50); padding: 12px; border-radius: 6px; margin: 12px 0; }
+        
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 0.9rem; font-weight: 500; color: var(--gray-600); margin-bottom: 6px; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: 6px; font-size: 0.95rem; font-family: inherit; }
+        .form-group textarea { min-height: 100px; }
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+        
+        .section-title { font-size: 1rem; font-weight: 600; color: var(--navy); margin: 20px 0 12px; padding-top: 16px; border-top: 1px solid var(--gray-200); }
+        
+        .submission-count { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: #fee2e2; color: #991b1b; border-radius: 4px; font-size: 0.8rem; font-weight: 600; }
+        
+        .empty-state { text-align: center; padding: 40px; color: var(--gray-400); }
+        
+        .toast { position: fixed; bottom: 24px; right: 24px; background: var(--green); color: white; padding: 12px 20px; border-radius: 8px; display: none; z-index: 2000; }
+        .toast.active { display: block; }
+        
+        .action-buttons { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+        th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--gray-200); font-size: 0.9rem; }
+        th { background: var(--gray-50); font-weight: 500; color: var(--gray-600); }
+        
+        @media (max-width: 768px) {
+            .form-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🎯 Claim Verification Workflow</h1>
+    </header>
+    
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" data-panel="queue">📝 Community Reports <span class="badge" id="queueBadge">0</span></button>
+            <button class="tab" data-panel="evidence">📄 Vendor Evidence <span class="badge warning" id="evidenceBadge">0</span></button>
+            <button class="tab" data-panel="drafts">✏️ Draft Claims <span class="badge warning" id="draftsBadge">0</span></button>
+            <button class="tab" data-panel="create">➕ New Claim</button>
+            <button class="tab" data-panel="changes">🔄 Log Claim Change</button>
+        </div>
+        
+        <!-- Community Queue Panel -->
+        <div class="panel active" id="panel-queue">
+            <p style="color:var(--gray-600);margin-bottom:20px;">Claims flagged by community members, sorted by number of reports (most reported first).</p>
+            <div id="queueList">
+                <div class="empty-state">Loading...</div>
+            </div>
+        </div>
+        
+        <!-- Vendor Evidence Panel -->
+        <div class="panel" id="panel-evidence">
+            <p style="color:var(--gray-600);margin-bottom:20px;">Evidence submitted by vendors to contest claim verdicts.</p>
+            <div id="evidenceList">
+                <div class="empty-state">Loading...</div>
+            </div>
+        </div>
+        
+        <!-- Draft Claims Panel -->
+        <div class="panel" id="panel-drafts">
+            <p style="color:var(--gray-600);margin-bottom:20px;">Claims awaiting test results and publication.</p>
+            <div id="draftsList">
+                <div class="empty-state">Loading...</div>
+            </div>
+        </div>
+        
+        <!-- Create Claim Panel -->
+        <div class="panel" id="panel-create">
+            <div class="card">
+                <h3 style="margin-bottom: 16px;">Log New Claim to Test</h3>
+                <form id="createForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Tool Slug *</label>
+                            <input type="text" name="toolSlug" required placeholder="e.g., claude">
+                        </div>
+                        <div class="form-group">
+                            <label>Tool Name</label>
+                            <input type="text" name="toolName" placeholder="e.g., Claude">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>The Claim (exact quote) *</label>
+                        <textarea name="claimText" required placeholder='e.g., "Our AI achieves 99% accuracy on industry benchmarks"'></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Claim Source URL</label>
+                            <input type="url" name="claimSource" placeholder="https://vendor.com/features">
+                        </div>
+                        <div class="form-group">
+                            <label>Claim Type</label>
+                            <select name="claimType">
+                                <option value="performance">Performance</option>
+                                <option value="accuracy">Accuracy</option>
+                                <option value="speed">Speed</option>
+                                <option value="cost">Cost Savings</option>
+                                <option value="integration">Integration</option>
+                                <option value="security">Security</option>
+                                <option value="compliance">Compliance</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Priority</label>
+                            <select name="priority">
+                                <option value="normal">Normal</option>
+                                <option value="high">High</option>
+                                <option value="urgent">Urgent</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create Draft Claim</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Log Claim Change Panel -->
+        <div class="panel" id="panel-changes">
+            <div class="card">
+                <h3 style="margin-bottom: 16px;">Log Vendor Claim Change</h3>
+                <p style="color:var(--gray-600);font-size:0.9rem;margin-bottom:20px;">Record when a vendor modifies or removes a claim after our verdict was published.</p>
+                <form id="changeForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Tool Slug *</label>
+                            <input type="text" name="toolSlug" required placeholder="e.g., claude">
+                        </div>
+                        <div class="form-group">
+                            <label>Change Type *</label>
+                            <select name="changeType" required>
+                                <option value="removed">Claim Removed</option>
+                                <option value="modified">Claim Modified</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Original Claim Text *</label>
+                        <textarea name="originalClaim" required placeholder="The exact wording of the original claim"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Claim Published Date (on vendor site)</label>
+                            <input type="date" name="claimPublishedDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Our Verdict Published Date</label>
+                            <input type="date" name="verdictPublishedDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Change Detected Date</label>
+                            <input type="date" name="changeDetectedDate">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea name="notes" placeholder="Any additional context about the change"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Log Claim Change</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Update Claim Modal -->
+    <div id="updateModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;justify-content:center;align-items:flex-start;padding:40px 20px;overflow-y:auto;">
+        <div style="background:white;border-radius:12px;max-width:700px;width:100%;max-height:90vh;overflow-y:auto;">
+            <div style="padding:20px 24px;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;">
+                <h3 style="font-size:1.1rem;font-weight:600;color:#0f2744;">Update Claim Results</h3>
+                <button onclick="closeUpdateModal()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:#9ca3af;">×</button>
+            </div>
+            <div style="padding:24px;">
+                <form id="updateForm">
+                    <input type="hidden" name="toolSlug" id="updateToolSlug">
+                    <input type="hidden" name="claimId" id="updateClaimId">
+                    
+                    <div class="form-group">
+                        <label>Claim</label>
+                        <div id="updateClaimText" class="claim-text"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Verdict *</label>
+                        <select name="verdict" required>
+                            <option value="">-- Select --</option>
+                            <option value="verified">✓ Verified (Claim is accurate)</option>
+                            <option value="partial">◐ Partially True (Some caveats)</option>
+                            <option value="unverified">? Unverified (Could not confirm)</option>
+                            <option value="false">✗ False (Claim is inaccurate)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Evidence Summary (2-3 sentences) *</label>
+                        <textarea name="evidence" required placeholder="Describe exactly how the claim was tested and what was found"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Full Methodology</label>
+                        <textarea name="methodology" placeholder="Detailed test methodology for the claim detail page"></textarea>
+                    </div>
+                    
+                    <div style="display:flex;gap:12px;margin-top:20px;">
+                        <button type="button" class="btn btn-secondary" onclick="saveDraft()">Save Draft</button>
+                        <button type="submit" class="btn btn-success">Publish Verdict</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="toast" id="toast">✓ Action completed</div>
+    
+    <script>
+        const API_BASE = 'https://v7086lxsji.execute-api.us-east-1.amazonaws.com';
+        const urlParams = new URLSearchParams(window.location.search);
+        const ADMIN_KEY = urlParams.get('key');
+        
+        if (!ADMIN_KEY) {
+            document.body.innerHTML = '<div style="padding:60px;text-align:center;color:#999;">Access denied. Admin key required.</div>';
+        }
+        
+        function showToast(msg = '✓ Action completed') {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('active');
+            setTimeout(() => toast.classList.remove('active'), 3000);
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text || '';
+            return div.innerHTML;
+        }
+        
+        // Tabs
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+            });
+        });
+        
+        // Load queue
+        async function loadQueue() {
+            try {
+                const res = await fetch(`${API_BASE}/claims/admin/queue?key=${ADMIN_KEY}`);
+                const data = await res.json();
+                
+                document.getElementById('queueBadge').textContent = data.communitySubmissions?.length || 0;
+                document.getElementById('evidenceBadge').textContent = data.pendingEvidence?.length || 0;
+                document.getElementById('draftsBadge').textContent = data.draftClaims?.length || 0;
+                
+                // Community submissions
+                if (!data.communitySubmissions || data.communitySubmissions.length === 0) {
+                    document.getElementById('queueList').innerHTML = '<div class="empty-state">✓ No pending community reports</div>';
+                } else {
+                    document.getElementById('queueList').innerHTML = data.communitySubmissions.map(item => `
+                        <div class="card">
+                            <div class="card-header">
+                                <div>
+                                    <span class="card-title">${escapeHtml(item.toolName || item.toolSlug)}</span>
+                                    <span class="submission-count" style="margin-left:12px;">🚩 ${item.submissionCount} report${item.submissionCount > 1 ? 's' : ''}</span>
+                                </div>
+                                <span style="font-size:0.85rem;color:#9ca3af;">${new Date(item.submittedAt).toLocaleDateString()}</span>
+                            </div>
+                            <div class="claim-text">"${escapeHtml(item.claimText)}"</div>
+                            <div class="detail-row">
+                                <span class="detail-label">Source:</span>
+                                <span class="detail-value">${item.claimUrl ? `<a href="${item.claimUrl}" target="_blank">${escapeHtml(item.claimUrl)}</a>` : 'Not provided'}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Reasoning:</span>
+                                <span class="detail-value">${escapeHtml(item.reasoning)}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Reported by:</span>
+                                <span class="detail-value">${escapeHtml(item.submitterName)} (${item.submitterEmail})</span>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn btn-primary" onclick="createFromSubmission('${item.toolSlug}', '${escapeHtml(item.toolName || '')}', '${escapeHtml(item.claimText).replace(/'/g, "\\'")}', '${item.claimUrl || ''}')">Create Claim to Test</button>
+                                <button class="btn btn-secondary" onclick="dismissSubmission('${item.id}')">Dismiss</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+                
+                // Vendor evidence
+                if (!data.pendingEvidence || data.pendingEvidence.length === 0) {
+                    document.getElementById('evidenceList').innerHTML = '<div class="empty-state">✓ No pending vendor evidence</div>';
+                } else {
+                    document.getElementById('evidenceList').innerHTML = data.pendingEvidence.map(item => `
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">Claim ID: ${item.claimId.slice(0, 8)}...</span>
+                                <span class="badge info">${item.evidenceType}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Vendor:</span>
+                                <span class="detail-value">${escapeHtml(item.vendorName)} (${item.vendorEmail})</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Evidence:</span>
+                                <span class="detail-value">${escapeHtml(item.evidenceDescription)}</span>
+                            </div>
+                            ${item.evidenceUrl ? `<div class="detail-row"><span class="detail-label">Link:</span><span class="detail-value"><a href="${item.evidenceUrl}" target="_blank">${escapeHtml(item.evidenceUrl)}</a></span></div>` : ''}
+                            <div class="action-buttons">
+                                <button class="btn btn-success" onclick="reviewEvidence('${item.claimId}', '${item.submissionId}', 'accepted')">Accept & Update Verdict</button>
+                                <button class="btn btn-secondary" onclick="reviewEvidence('${item.claimId}', '${item.submissionId}', 'noted')">Note (Keep Verdict)</button>
+                                <button class="btn btn-danger" onclick="reviewEvidence('${item.claimId}', '${item.submissionId}', 'rejected')">Reject</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+                
+                // Draft claims
+                if (!data.draftClaims || data.draftClaims.length === 0) {
+                    document.getElementById('draftsList').innerHTML = '<div class="empty-state">No draft claims awaiting results</div>';
+                } else {
+                    document.getElementById('draftsList').innerHTML = data.draftClaims.map(item => `
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">${escapeHtml(item.toolName || item.toolSlug)}</span>
+                                <span class="badge ${item.priority === 'urgent' ? 'danger' : item.priority === 'high' ? 'warning' : 'info'}">${item.priority || 'normal'} priority</span>
+                            </div>
+                            <div class="claim-text">"${escapeHtml(item.claimText)}"</div>
+                            <div class="detail-row">
+                                <span class="detail-label">Type:</span>
+                                <span class="detail-value">${item.claimType || 'N/A'}</span>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn btn-primary" onclick="openUpdateModal('${item.toolSlug}', '${item.claimId}', '${escapeHtml(item.claimText).replace(/'/g, "\\'")}')">Enter Test Results</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+                
+            } catch (e) {
+                console.error(e);
+                document.getElementById('queueList').innerHTML = `<div class="empty-state">Error: ${e.message}</div>`;
+            }
+        }
+        
+        async function createFromSubmission(toolSlug, toolName, claimText, claimSource) {
+            try {
+                const res = await fetch(`${API_BASE}/claims/admin/create`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ key: ADMIN_KEY, toolSlug, toolName, claimText, claimSource })
+                });
+                if (!res.ok) throw new Error('Failed to create claim');
+                showToast('✓ Claim created - check Drafts tab');
+                loadQueue();
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        }
+        
+        async function dismissSubmission(id) {
+            if (!confirm('Dismiss this submission?')) return;
+            try {
+                await fetch(`${API_BASE}/claims/admin/submission`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ key: ADMIN_KEY, id, status: 'dismissed' })
+                });
+                showToast('Submission dismissed');
+                loadQueue();
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        }
+        
+        async function reviewEvidence(claimId, submissionId, decision) {
+            const reviewNotes = decision === 'rejected' ? prompt('Rejection reason (will be published):') : null;
+            let newVerdict = null;
+            if (decision === 'accepted') {
+                newVerdict = prompt('New verdict (verified/partial/unverified/false):');
+            }
+            
+            try {
+                await fetch(`${API_BASE}/claims/admin/evidence`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ key: ADMIN_KEY, claimId, submissionId, decision, reviewNotes, newVerdict })
+                });
+                showToast('Evidence reviewed');
+                loadQueue();
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        }
+        
+        function openUpdateModal(toolSlug, claimId, claimText) {
+            document.getElementById('updateToolSlug').value = toolSlug;
+            document.getElementById('updateClaimId').value = claimId;
+            document.getElementById('updateClaimText').textContent = '"' + claimText + '"';
+            document.getElementById('updateModal').style.display = 'flex';
+        }
+        
+        function closeUpdateModal() {
+            document.getElementById('updateModal').style.display = 'none';
+            document.getElementById('updateForm').reset();
+        }
+        
+        async function saveDraft() {
+            const form = document.getElementById('updateForm');
+            const data = {
+                key: ADMIN_KEY,
+                toolSlug: form.toolSlug.value,
+                claimId: form.claimId.value,
+                verdict: form.verdict.value || null,
+                evidence: form.evidence.value || null,
+                methodology: form.methodology.value || null,
+                publish: false
+            };
+            
+            try {
+                await fetch(`${API_BASE}/claims/admin/update`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                showToast('Draft saved');
+                closeUpdateModal();
+                loadQueue();
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        }
+        
+        document.getElementById('updateForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            
+            if (!form.verdict.value) {
+                alert('Verdict is required to publish');
+                return;
+            }
+            
+            const data = {
+                key: ADMIN_KEY,
+                toolSlug: form.toolSlug.value,
+                claimId: form.claimId.value,
+                verdict: form.verdict.value,
+                evidence: form.evidence.value,
+                methodology: form.methodology.value || null,
+                publish: true
+            };
+            
+            try {
+                await fetch(`${API_BASE}/claims/admin/update`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                showToast('✓ Verdict published');
+                closeUpdateModal();
+                loadQueue();
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        };
+        
+        // Create form
+        document.getElementById('createForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            
+            try {
+                const res = await fetch(`${API_BASE}/claims/admin/create`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        key: ADMIN_KEY,
+                        toolSlug: form.toolSlug.value,
+                        toolName: form.toolName.value || null,
+                        claimText: form.claimText.value,
+                        claimSource: form.claimSource.value || null,
+                        claimType: form.claimType.value,
+                        priority: form.priority.value
+                    })
+                });
+                
+                if (!res.ok) throw new Error('Failed');
+                showToast('✓ Claim created');
+                form.reset();
+                loadQueue();
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        };
+        
+        // Change form
+        document.getElementById('changeForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            
+            try {
+                const res = await fetch(`${API_BASE}/claims/admin/change`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        key: ADMIN_KEY,
+                        toolSlug: form.toolSlug.value,
+                        originalClaim: form.originalClaim.value,
+                        changeType: form.changeType.value,
+                        claimPublishedDate: form.claimPublishedDate.value || null,
+                        verdictPublishedDate: form.verdictPublishedDate.value || null,
+                        changeDetectedDate: form.changeDetectedDate.value || null,
+                        notes: form.notes.value || null
+                    })
+                });
+                
+                if (!res.ok) throw new Error('Failed');
+                showToast('✓ Claim change logged');
+                form.reset();
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        };
+        
+        // Close modal handlers
+        document.getElementById('updateModal').addEventListener('click', (e) => {
+            if (e.target.id === 'updateModal') closeUpdateModal();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeUpdateModal();
+        });
+        
+        if (ADMIN_KEY) loadQueue();
+    </script>
+</body>
+</html>
