@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Independent Research Submissions — ToolIntel</title>
+  <meta name="description" content="Submit your independent research findings on AI tools. ToolIntel accepts security vulnerabilities, accuracy studies, and bias analyses from researchers and academics.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0f2744;
+      --navy-light: #1e3a5f;
+      --teal: #0d9488;
+      --teal-light: #14b8a6;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-400: #9ca3af;
+      --gray-600: #4b5563;
+      --gray-800: #1f2937;
+      --white: #ffffff;
+      --blue-accent: #3b82f6;
+      --green: #10b981;
+      --yellow: #f59e0b;
+      --red: #ef4444;
+      --purple: #8b5cf6;
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', -apple-system, sans-serif; color: var(--gray-800); line-height: 1.7; background: var(--gray-50); }
+    h1, h2, h3 { font-family: 'Merriweather', Georgia, serif; font-weight: 700; }
+    a { color: var(--blue-accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    
+    header { padding: 16px 0; border-bottom: 1px solid var(--gray-200); background: var(--white); }
+    nav { display: flex; justify-content: space-between; align-items: center; max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+    .logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.25rem; color: var(--navy); text-decoration: none; }
+    .logo span { color: var(--blue-accent); }
+    .nav-links { display: flex; gap: 32px; }
+    .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+    .nav-links a:hover { color: var(--navy); }
+    
+    .hero {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+      color: white;
+      padding: 60px 24px;
+      text-align: center;
+    }
+    .hero h1 { font-size: 2.2rem; margin-bottom: 16px; }
+    .hero p { max-width: 800px; margin: 0 auto; color: rgba(255,255,255,0.9); font-size: 1.05rem; line-height: 1.8; }
+    
+    .container { max-width: 1120px; margin: 0 auto; padding: 40px 24px; }
+    
+    /* Submission Type Cards */
+    .submission-types {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 24px;
+      margin: 40px 0;
+    }
+    
+    .type-card {
+      background: white;
+      border: 2px solid var(--gray-200);
+      border-radius: 16px;
+      padding: 30px;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+    .type-card:hover {
+      border-color: var(--teal);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+      transform: translateY(-4px);
+    }
+    
+    .type-card.security { border-top: 4px solid var(--red); }
+    .type-card.accuracy { border-top: 4px solid var(--blue-accent); }
+    .type-card.bias { border-top: 4px solid var(--purple); }
+    
+    .type-icon {
+      font-size: 2.5rem;
+      margin-bottom: 16px;
+    }
+    .type-card h3 {
+      font-size: 1.3rem;
+      color: var(--navy);
+      margin-bottom: 12px;
+    }
+    .type-card p {
+      color: var(--gray-600);
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+    }
+    
+    .type-details {
+      background: var(--gray-50);
+      border-radius: 8px;
+      padding: 16px;
+      font-size: 0.85rem;
+    }
+    .type-details dt {
+      color: var(--gray-400);
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    .type-details dd {
+      color: var(--gray-600);
+      margin-bottom: 12px;
+    }
+    .type-details dd:last-child { margin-bottom: 0; }
+    
+    .submit-btn {
+      display: inline-block;
+      background: var(--teal);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      margin-top: 16px;
+      transition: background 0.2s;
+    }
+    .submit-btn:hover {
+      background: #0f766e;
+      text-decoration: none;
+    }
+    
+    /* Process Section */
+    .process-section {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 16px;
+      padding: 40px;
+      margin: 40px 0;
+    }
+    .process-section h2 {
+      text-align: center;
+      color: var(--navy);
+      margin-bottom: 30px;
+    }
+    
+    .process-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+    
+    .process-step {
+      text-align: center;
+      position: relative;
+    }
+    .process-step::after {
+      content: '→';
+      position: absolute;
+      right: -15px;
+      top: 30px;
+      color: var(--gray-300);
+      font-size: 1.5rem;
+    }
+    .process-step:last-child::after { display: none; }
+    
+    .step-number {
+      width: 50px;
+      height: 50px;
+      background: var(--teal);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin: 0 auto 16px;
+    }
+    .process-step h4 {
+      color: var(--navy);
+      font-size: 1rem;
+      margin-bottom: 8px;
+    }
+    .process-step p {
+      color: var(--gray-600);
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+    .process-step .timeline {
+      color: var(--teal);
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+    
+    .rejection-note {
+      background: #fef3c7;
+      border: 1px solid #fcd34d;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 30px;
+      text-align: center;
+    }
+    .rejection-note p {
+      color: #92400e;
+      font-size: 0.9rem;
+    }
+    
+    /* Published Research */
+    .published-section {
+      margin: 40px 0;
+    }
+    .published-section h2 {
+      color: var(--navy);
+      margin-bottom: 24px;
+    }
+    
+    .research-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .research-item {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 24px;
+      transition: box-shadow 0.2s;
+    }
+    .research-item:hover {
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    
+    .research-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .research-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .research-type {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .research-type.security { background: #fee2e2; color: #991b1b; }
+    .research-type.accuracy { background: #dbeafe; color: #1e40af; }
+    .research-type.bias { background: #ede9fe; color: #5b21b6; }
+    
+    .research-date {
+      color: var(--gray-400);
+      font-size: 0.85rem;
+    }
+    
+    .research-title {
+      font-size: 1.1rem;
+      color: var(--navy);
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .research-title a { color: var(--navy); }
+    
+    .research-author {
+      color: var(--gray-600);
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+    }
+    .research-author strong { color: var(--gray-800); }
+    
+    .research-tool {
+      display: inline-block;
+      background: var(--gray-100);
+      padding: 2px 10px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      color: var(--gray-600);
+      margin-bottom: 12px;
+    }
+    
+    .research-summary {
+      color: var(--gray-600);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    
+    /* Impact Tracker */
+    .impact-tracker {
+      display: flex;
+      gap: 16px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--gray-100);
+      flex-wrap: wrap;
+    }
+    .impact-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+    }
+    .impact-item.positive { color: var(--green); }
+    .impact-item.neutral { color: var(--gray-400); }
+    .impact-item .icon { font-size: 1rem; }
+    
+    /* Research Requests */
+    .requests-section {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 16px;
+      padding: 40px;
+      margin: 40px 0;
+    }
+    .requests-section h2 {
+      color: var(--navy);
+      margin-bottom: 12px;
+    }
+    .requests-section > p {
+      color: var(--gray-600);
+      margin-bottom: 24px;
+    }
+    
+    .request-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .request-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background: var(--gray-50);
+      border-radius: 8px;
+      border: 1px solid var(--gray-200);
+    }
+    .request-item.priority {
+      border-color: var(--teal);
+      background: rgba(13, 148, 136, 0.05);
+    }
+    
+    .request-content {
+      flex: 1;
+    }
+    .request-tool {
+      font-weight: 600;
+      color: var(--navy);
+    }
+    .request-question {
+      color: var(--gray-600);
+      font-size: 0.9rem;
+      margin-top: 4px;
+    }
+    .request-priority {
+      display: inline-block;
+      background: var(--teal);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-left: 10px;
+    }
+    
+    .request-votes {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .vote-count {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--teal);
+    }
+    .vote-btn {
+      background: white;
+      border: 1px solid var(--teal);
+      color: var(--teal);
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .vote-btn:hover {
+      background: var(--teal);
+      color: white;
+    }
+    
+    .request-form {
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid var(--gray-200);
+    }
+    .request-form h4 {
+      color: var(--navy);
+      margin-bottom: 12px;
+    }
+    .request-inputs {
+      display: grid;
+      grid-template-columns: 200px 1fr auto;
+      gap: 12px;
+    }
+    .request-inputs input {
+      padding: 10px 14px;
+      border: 1px solid var(--gray-200);
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+    .request-inputs button {
+      background: var(--navy);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.8);
+      z-index: 1000;
+      overflow-y: auto;
+      padding: 40px 20px;
+    }
+    .modal.active { display: block; }
+    
+    .modal-content {
+      background: white;
+      border-radius: 16px;
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 40px;
+      position: relative;
+    }
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--gray-400);
+    }
+    .modal-close:hover { color: var(--gray-800); }
+    
+    .modal-content h2 {
+      color: var(--navy);
+      margin-bottom: 8px;
+    }
+    .modal-subtitle {
+      color: var(--gray-600);
+      margin-bottom: 24px;
+      font-size: 0.95rem;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: var(--gray-800);
+    }
+    .form-group label .required { color: var(--red); }
+    .form-group .hint {
+      color: var(--gray-400);
+      font-size: 0.85rem;
+      margin-top: 4px;
+    }
+    
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+    .form-group textarea { min-height: 120px; resize: vertical; }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--gray-50);
+      padding: 8px 14px;
+      border-radius: 6px;
+    }
+    .checkbox-item input { width: 18px; height: 18px; accent-color: var(--teal); }
+    
+    .disclosure-box {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 20px 0;
+    }
+    .disclosure-box h4 {
+      color: #991b1b;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+    .disclosure-box p {
+      color: #7f1d1d;
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+    
+    .submit-form-btn {
+      background: var(--teal);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s;
+    }
+    .submit-form-btn:hover { background: #0f766e; }
+    
+    .success-message {
+      background: #d1fae5;
+      border: 1px solid #10b981;
+      color: #065f46;
+      padding: 24px;
+      border-radius: 8px;
+      text-align: center;
+      display: none;
+    }
+    
+    footer { padding: 40px 24px; text-align: center; border-top: 1px solid var(--gray-200); margin-top: 60px; background: white; }
+    footer p { color: var(--gray-400); font-size: 0.9rem; }
+    
+    @media (max-width: 768px) {
+      .submission-types { grid-template-columns: 1fr; }
+      .process-steps { grid-template-columns: 1fr 1fr; }
+      .process-step::after { display: none; }
+      .request-inputs { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="/" class="logo">Tool<span>Intel</span></a>
+      <div class="nav-links">
+        <a href="/reviews.html">Reviews</a>
+        <a href="/methodology.html">Methodology</a>
+        <a href="/expert-network.html">Experts</a>
+      </div>
+    </nav>
+  </header>
+  
+  <section class="hero">
+    <h1>Submit Your Research Findings on Any AI Tool</h1>
+    <p>ToolIntel accepts formal research submissions from independent researchers, academics, and security professionals. Accepted submissions are published in full with complete attribution. We do not edit findings — we verify methodology and authenticity before publication.</p>
+  </section>
+  
+  <div class="container">
+    <!-- Submission Type Cards -->
+    <div class="submission-types">
+      <div class="type-card security" onclick="openModal('securityModal')">
+        <div class="type-icon">🔐</div>
+        <h3>Security Vulnerability Disclosure</h3>
+        <p>For researchers who have discovered a security weakness or data exposure risk in a reviewed tool.</p>
+        <dl class="type-details">
+          <dt>Expected Format</dt>
+          <dd>Technical writeup with CVE (if assigned), proof of concept, and reproduction steps</dd>
+          <dt>Review Timeline</dt>
+          <dd>5 business days for authenticity, 14 days for methodology review</dd>
+          <dt>After Submission</dt>
+          <dd>Vendor notified immediately, 90-day disclosure timeline begins</dd>
+        </dl>
+        <span class="submit-btn">Submit Vulnerability →</span>
+      </div>
+      
+      <div class="type-card accuracy" onclick="openModal('accuracyModal')">
+        <div class="type-icon">📊</div>
+        <h3>Accuracy and Performance Study</h3>
+        <p>For researchers who have conducted systematic testing of a tool's outputs against a defined benchmark.</p>
+        <dl class="type-details">
+          <dt>Expected Format</dt>
+          <dd>Full study document (PDF) with methodology, sample size, and quantitative results</dd>
+          <dt>Review Timeline</dt>
+          <dd>5 business days for authenticity, 14 days for methodology review</dd>
+          <dt>After Submission</dt>
+          <dd>Published with full attribution after vendor response period</dd>
+        </dl>
+        <span class="submit-btn">Submit Study →</span>
+      </div>
+      
+      <div class="type-card bias" onclick="openModal('biasModal')">
+        <div class="type-icon">⚖️</div>
+        <h3>Bias and Fairness Analysis</h3>
+        <p>For researchers who have tested a tool for demographic bias, discriminatory outputs, or fairness failures.</p>
+        <dl class="type-details">
+          <dt>Expected Format</dt>
+          <dd>Study document with per-group sample sizes, disparity metrics, and qualitative analysis</dd>
+          <dt>Review Timeline</dt>
+          <dd>5 business days for authenticity, 14 days for methodology review</dd>
+          <dt>After Submission</dt>
+          <dd>Published with full attribution after vendor response period</dd>
+        </dl>
+        <span class="submit-btn">Submit Analysis →</span>
+      </div>
+    </div>
+    
+    <!-- Process Section -->
+    <div class="process-section">
+      <h2>Submission Review Process</h2>
+      
+      <div class="process-steps">
+        <div class="process-step">
+          <div class="step-number">1</div>
+          <h4>Authenticity Check</h4>
+          <p>We confirm the submitter is a real person with verifiable credentials</p>
+          <div class="timeline">Up to 5 business days</div>
+        </div>
+        
+        <div class="process-step">
+          <div class="step-number">2</div>
+          <h4>Methodology Review</h4>
+          <p>We assess whether the research methodology is sound and reproducible</p>
+          <div class="timeline">Up to 14 business days</div>
+        </div>
+        
+        <div class="process-step">
+          <div class="step-number">3</div>
+          <h4>Vendor Notification</h4>
+          <p>The vendor receives 14 days to respond with factual corrections only — not requests for suppression</p>
+          <div class="timeline">14 days</div>
+        </div>
+        
+        <div class="process-step">
+          <div class="step-number">4</div>
+          <h4>Publication</h4>
+          <p>Research is published with full attribution and unedited findings</p>
+          <div class="timeline">Immediately after vendor period</div>
+        </div>
+      </div>
+      
+      <div class="rejection-note">
+        <p><strong>We reject approximately 30% of submissions</strong> — not because findings are inconvenient, but because methodology does not meet our publication standard. All rejections receive a written explanation.</p>
+      </div>
+    </div>
+    
+    <!-- Published Research -->
+    <div class="published-section">
+      <h2>Published Research</h2>
+      
+      <div class="research-list" id="researchList">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+    
+    <!-- Research Requests -->
+    <div class="requests-section">
+      <h2>Request Research Coverage</h2>
+      <p>Nominate a specific tool and research question you want investigated. When a request reaches 10 supporters, it becomes a community priority and is actively shared with our expert contributor network.</p>
+      
+      <div class="request-list" id="requestList">
+        <!-- Populated by JS -->
+      </div>
+      
+      <div class="request-form">
+        <h4>Submit a New Research Request</h4>
+        <div class="request-inputs">
+          <input type="text" id="requestTool" placeholder="Tool name (e.g., HireVue)">
+          <input type="text" id="requestQuestion" placeholder="What research would you like to see? (e.g., Independent bias testing of video interview AI)">
+          <button onclick="submitRequest()">Submit Request</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Security Vulnerability Modal -->
+  <div class="modal" id="securityModal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('securityModal')">×</button>
+      <h2>🔐 Security Vulnerability Disclosure</h2>
+      <p class="modal-subtitle">Report a security weakness or data exposure risk in an AI tool.</p>
+      
+      <form id="securityForm" onsubmit="submitSecurity(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Full Name <span class="required">*</span></label>
+            <input type="text" name="researcherName" required>
+          </div>
+          <div class="form-group">
+            <label>Affiliation</label>
+            <input type="text" name="affiliation" placeholder="Institution or company">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Professional Email <span class="required">*</span></label>
+          <input type="email" name="email" required>
+          <div class="hint">Use your institutional or professional email for verification</div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>CVE Number (if assigned)</label>
+            <input type="text" name="cveNumber" placeholder="CVE-2026-XXXXX">
+          </div>
+          <div class="form-group">
+            <label>Tool Affected <span class="required">*</span></label>
+            <input type="text" name="toolAffected" required placeholder="e.g., Claude, GPT-4">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Version or API Endpoint (if applicable)</label>
+          <input type="text" name="versionOrEndpoint" placeholder="e.g., v2.1, /api/completions">
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Vulnerability Type <span class="required">*</span></label>
+            <select name="vulnerabilityType" required>
+              <option value="">Select type...</option>
+              <option value="Data Exposure">Data Exposure</option>
+              <option value="Prompt Injection">Prompt Injection</option>
+              <option value="Training Data Leakage">Training Data Leakage</option>
+              <option value="Authentication Bypass">Authentication Bypass</option>
+              <option value="Output Manipulation">Output Manipulation</option>
+              <option value="Privacy Violation">Privacy Violation</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Severity Rating (CVSS) <span class="required">*</span></label>
+            <select name="severityRating" required>
+              <option value="">Select severity...</option>
+              <option value="Critical">Critical</option>
+              <option value="High">High</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Technical Description <span class="required">*</span></label>
+          <textarea name="technicalDescription" required placeholder="Provide a detailed technical description of the vulnerability..."></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label>Proof of Concept / Reproduction Steps <span class="required">*</span></label>
+          <textarea name="proofOfConcept" required placeholder="Step-by-step instructions to reproduce the vulnerability..."></textarea>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Date Discovered <span class="required">*</span></label>
+            <input type="date" name="discoveryDate" required>
+          </div>
+          <div class="form-group">
+            <label>Vendor Notification Date</label>
+            <input type="date" name="vendorNotificationDate">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Vendor Response (if any)</label>
+          <textarea name="vendorResponse" placeholder="Describe any response from the vendor..."></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label>Disclosure Preference</label>
+          <select name="disclosurePreference">
+            <option value="standard">Standard 90-day timeline</option>
+            <option value="immediate">Immediate (if fix deployed)</option>
+            <option value="coordinated">Coordinated with vendor</option>
+          </select>
+        </div>
+        
+        <div class="disclosure-box">
+          <h4>⚠️ Responsible Disclosure Policy</h4>
+          <p>ToolIntel follows a 90-day responsible disclosure timeline. We notify the vendor upon receiving a submission and publish findings after 90 days or sooner if the vendor has deployed a fix. We do not suppress security findings at vendor request.</p>
+        </div>
+        
+        <button type="submit" class="submit-form-btn">Submit Vulnerability Report</button>
+      </form>
+      
+      <div class="success-message" id="securitySuccess">
+        <h3>✓ Submission Received</h3>
+        <p>Your security vulnerability report has been received. You will receive confirmation within 5 business days.</p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Accuracy Study Modal -->
+  <div class="modal" id="accuracyModal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('accuracyModal')">×</button>
+      <h2>📊 Accuracy and Performance Study</h2>
+      <p class="modal-subtitle">Submit systematic testing results of an AI tool's outputs against a defined benchmark.</p>
+      
+      <form id="accuracyForm" onsubmit="submitAccuracy(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Full Name <span class="required">*</span></label>
+            <input type="text" name="researcherName" required>
+          </div>
+          <div class="form-group">
+            <label>Affiliation <span class="required">*</span></label>
+            <input type="text" name="affiliation" required placeholder="Institution or company">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Professional Email <span class="required">*</span></label>
+          <input type="email" name="email" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Tool(s) Studied <span class="required">*</span></label>
+          <input type="text" name="toolsStudied" required placeholder="e.g., GPT-4, Claude, Gemini">
+        </div>
+        
+        <div class="form-group">
+          <label>Study Methodology <span class="required">*</span></label>
+          <textarea name="methodology" required placeholder="Describe your methodology including sample size, test prompts or tasks used, scoring criteria, and comparison baseline..."></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label>Key Findings Summary <span class="required">*</span></label>
+          <textarea name="keyFindings" required placeholder="Summarize your key findings (300 words maximum)..." maxlength="2000"></textarea>
+          <div class="hint">Maximum 300 words</div>
+        </div>
+        
+        <div class="form-group">
+          <label>Study Document URL</label>
+          <input type="url" name="studyDocumentUrl" placeholder="Link to PDF or published paper">
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Peer Reviewed?</label>
+            <select name="peerReviewed">
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+              <option value="in_review">In review</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Dataset Availability</label>
+            <select name="datasetAvailability">
+              <option value="public">Publicly available</option>
+              <option value="on_request">Available on request</option>
+              <option value="proprietary">Proprietary</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Published Elsewhere? (link if applicable)</label>
+          <input type="url" name="publishedLink" placeholder="https://arxiv.org/abs/...">
+        </div>
+        
+        <div class="form-group">
+          <label><input type="checkbox" name="noFinancialRelationship" required> I declare I have no financial relationship with any tool studied <span class="required">*</span></label>
+        </div>
+        
+        <div class="form-group">
+          <label><input type="checkbox" name="irbApproval"> IRB approval obtained (if human subjects involved)</label>
+        </div>
+        
+        <button type="submit" class="submit-form-btn">Submit Accuracy Study</button>
+      </form>
+      
+      <div class="success-message" id="accuracySuccess">
+        <h3>✓ Submission Received</h3>
+        <p>Your accuracy study has been received. Authenticity check begins within 5 business days.</p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Bias Analysis Modal -->
+  <div class="modal" id="biasModal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('biasModal')">×</button>
+      <h2>⚖️ Bias and Fairness Analysis</h2>
+      <p class="modal-subtitle">Submit testing results for demographic bias, discriminatory outputs, or fairness failures.</p>
+      
+      <form id="biasForm" onsubmit="submitBias(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Full Name <span class="required">*</span></label>
+            <input type="text" name="researcherName" required>
+          </div>
+          <div class="form-group">
+            <label>Affiliation <span class="required">*</span></label>
+            <input type="text" name="affiliation" required placeholder="Institution or company">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Professional Email <span class="required">*</span></label>
+          <input type="email" name="email" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Tool Studied <span class="required">*</span></label>
+          <input type="text" name="toolStudied" required placeholder="e.g., GPT-4, Midjourney">
+        </div>
+        
+        <div class="form-group">
+          <label>Protected Characteristics Examined <span class="required">*</span></label>
+          <div class="checkbox-group">
+            <label class="checkbox-item"><input type="checkbox" name="characteristics" value="Age"><span>Age</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="characteristics" value="Gender"><span>Gender</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="characteristics" value="Race and Ethnicity"><span>Race & Ethnicity</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="characteristics" value="Religion"><span>Religion</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="characteristics" value="Disability"><span>Disability</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="characteristics" value="National Origin"><span>National Origin</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="characteristics" value="Sexual Orientation"><span>Sexual Orientation</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="characteristics" value="Socioeconomic Status"><span>Socioeconomic Status</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="characteristics" value="Other"><span>Other</span></label>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Testing Methodology <span class="required">*</span></label>
+          <textarea name="testingMethodology" required placeholder="Describe your prompt design, evaluation criteria, and sample sizes per demographic group..."></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label>Quantitative Findings <span class="required">*</span></label>
+          <textarea name="quantitativeFindings" required placeholder="Report the measured disparity between groups with specific metrics..."></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label>Qualitative Analysis <span class="required">*</span></label>
+          <textarea name="qualitativeAnalysis" required placeholder="Explain the potential real-world impact of the observed bias..."></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label>Recommendations for Mitigation</label>
+          <textarea name="recommendations" placeholder="If applicable, suggest how the vendor could address the identified bias..."></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label>Study Document URL</label>
+          <input type="url" name="studyDocumentUrl" placeholder="Link to PDF or published paper">
+        </div>
+        
+        <div class="form-group">
+          <label><input type="checkbox" name="noFinancialRelationship" required> I declare I have no financial relationship with the tool studied <span class="required">*</span></label>
+        </div>
+        
+        <button type="submit" class="submit-form-btn">Submit Bias Analysis</button>
+      </form>
+      
+      <div class="success-message" id="biasSuccess">
+        <h3>✓ Submission Received</h3>
+        <p>Your bias analysis has been received. Authenticity check begins within 5 business days.</p>
+      </div>
+    </div>
+  </div>
+  
+  <footer>
+    <p>© 2026 ToolIntel. Independent. Transparent. No affiliate links.</p>
+  </footer>
+
+  <script>
+    const API = 'https://v7086lxsji.execute-api.us-east-1.amazonaws.com/research';
+    
+    // Load portal data
+    async function loadPortalData() {
+      try {
+        const response = await fetch(API);
+        const data = await response.json();
+        
+        renderPublishedResearch(data.publishedResearch || []);
+        renderResearchRequests(data.researchRequests || []);
+      } catch (error) {
+        console.error('Failed to load portal data:', error);
+        renderSampleData();
+      }
+    }
+    
+    function renderPublishedResearch(research) {
+      const list = document.getElementById('researchList');
+      
+      if (research.length === 0) {
+        list.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 40px;">No published research yet. Be the first to submit!</p>';
+        return;
+      }
+      
+      list.innerHTML = research.map(r => `
+        <div class="research-item">
+          <div class="research-header">
+            <div class="research-meta">
+              <span class="research-type ${r.type}">${r.typeLabel}</span>
+              ${r.severityRating ? `<span style="color: ${r.severityRating === 'Critical' || r.severityRating === 'High' ? '#ef4444' : '#f59e0b'}; font-weight: 600; font-size: 0.8rem;">${r.severityRating}</span>` : ''}
+            </div>
+            <span class="research-date">${formatDate(r.publishedAt)}</span>
+          </div>
+          
+          <div class="research-title"><a href="/research/${r.submissionId}">${r.title}</a></div>
+          <div class="research-author">By <strong>${r.researcherName}</strong>, ${r.affiliation}</div>
+          <span class="research-tool">📦 ${r.toolStudied}</span>
+          <p class="research-summary">${r.summary}</p>
+          
+          <div class="impact-tracker">
+            ${r.impact.scoreChanged ? 
+              `<div class="impact-item positive"><span class="icon">📊</span> Score impact: ${r.impact.scoreChangeDetails}</div>` :
+              `<div class="impact-item neutral"><span class="icon">📊</span> No score change</div>`
+            }
+            ${r.impact.vendorAcknowledged ?
+              `<div class="impact-item positive"><span class="icon">✅</span> Vendor acknowledged${r.impact.vendorFixed ? ' & fixed' : ''}</div>` :
+              `<div class="impact-item neutral"><span class="icon">⏳</span> Pending vendor response</div>`
+            }
+            ${r.impact.externalCitations?.length > 0 ?
+              `<div class="impact-item positive"><span class="icon">📰</span> ${r.impact.externalCitations.length} external citation${r.impact.externalCitations.length > 1 ? 's' : ''}</div>` : ''
+            }
+          </div>
+          
+          <div style="margin-top: 16px; padding-top: 16px; border-top: 1px dashed #e5e7eb; font-size: 0.8rem; color: #6b7280; font-style: italic;">
+            This research was submitted independently and published without editorial modification to the findings. ToolIntel verified the researcher's identity and assessed the methodology before publication. The researcher has no financial relationship with the tool studied.
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    function renderResearchRequests(requests) {
+      const list = document.getElementById('requestList');
+      
+      if (requests.length === 0) {
+        list.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">No research requests yet. Submit the first one!</p>';
+        return;
+      }
+      
+      list.innerHTML = requests.map(r => `
+        <div class="request-item ${r.isPriority ? 'priority' : ''}">
+          <div class="request-content">
+            <div class="request-tool">
+              ${r.toolName}
+              ${r.isPriority ? '<span class="request-priority">🔥 COMMUNITY PRIORITY</span>' : ''}
+            </div>
+            <div class="request-question">${r.question}</div>
+          </div>
+          <div class="request-votes">
+            <span class="vote-count">${r.votes}</span>
+            <button class="vote-btn" onclick="voteRequest('${r.requestId}')">👍 Support</button>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    function renderSampleData() {
+      // Fallback sample data if API fails
+      const sampleResearch = [
+        {
+          submissionId: 'sec_001',
+          type: 'security',
+          typeLabel: 'Security Vulnerability',
+          researcherName: 'Dr. Alex Rivera',
+          affiliation: 'MIT CSAIL',
+          toolStudied: 'Claude',
+          title: 'Prompt Injection Vulnerability in System Message Parsing',
+          summary: 'Discovered a method to override system instructions through carefully crafted Unicode characters.',
+          publishedAt: '2026-02-10T00:00:00Z',
+          severityRating: 'High',
+          impact: { scoreChanged: true, scoreChangeDetails: 'Privacy score -3', vendorAcknowledged: true, vendorFixed: true, externalCitations: [{}, {}] }
+        },
+        {
+          submissionId: 'bias_001',
+          type: 'bias',
+          typeLabel: 'Bias Analysis',
+          researcherName: 'Prof. Maria Santos',
+          affiliation: 'Stanford HAI',
+          toolStudied: 'GPT-4',
+          title: 'Gender Bias in Career Recommendation Outputs',
+          summary: 'GPT-4 recommends technical careers 34% more often for male-coded names vs female-coded names.',
+          publishedAt: '2026-02-05T00:00:00Z',
+          impact: { scoreChanged: true, scoreChangeDetails: 'Bias score -7', vendorAcknowledged: true, externalCitations: [{}] }
+        }
+      ];
+      
+      const sampleRequests = [
+        { requestId: 'req_001', toolName: 'HireVue', question: 'Independent bias testing of AI-powered video interview assessments', votes: 23, isPriority: true },
+        { requestId: 'req_002', toolName: 'GitHub Copilot', question: 'Security analysis of code suggestions for vulnerable patterns', votes: 12, isPriority: true },
+        { requestId: 'req_003', toolName: 'ChatGPT', question: 'Systematic testing of refusal consistency', votes: 8, isPriority: false }
+      ];
+      
+      renderPublishedResearch(sampleResearch);
+      renderResearchRequests(sampleRequests);
+    }
+    
+    function formatDate(dateStr) {
+      return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+    
+    // Modal functions
+    function openModal(modalId) {
+      document.getElementById(modalId).classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+      document.body.style.overflow = '';
+    }
+    
+    // Close modal on background click
+    document.querySelectorAll('.modal').forEach(modal => {
+      modal.addEventListener('click', function(e) {
+        if (e.target === this) closeModal(this.id);
+      });
+    });
+    
+    // Form submissions
+    async function submitSecurity(event) {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+      
+      try {
+        const response = await fetch(`${API}/submit/security`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        
+        if (response.ok) {
+          form.style.display = 'none';
+          document.getElementById('securitySuccess').style.display = 'block';
+        } else {
+          const error = await response.json();
+          alert('Submission failed: ' + (error.error || 'Unknown error'));
+        }
+      } catch (error) {
+        alert('Submission failed: ' + error.message);
+      }
+    }
+    
+    async function submitAccuracy(event) {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+      data.noFinancialRelationship = formData.get('noFinancialRelationship') === 'on';
+      data.irbApproval = formData.get('irbApproval') === 'on';
+      
+      try {
+        const response = await fetch(`${API}/submit/accuracy`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        
+        if (response.ok) {
+          form.style.display = 'none';
+          document.getElementById('accuracySuccess').style.display = 'block';
+        } else {
+          const error = await response.json();
+          alert('Submission failed: ' + (error.error || 'Unknown error'));
+        }
+      } catch (error) {
+        alert('Submission failed: ' + error.message);
+      }
+    }
+    
+    async function submitBias(event) {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+      
+      const data = {
+        researcherName: formData.get('researcherName'),
+        affiliation: formData.get('affiliation'),
+        email: formData.get('email'),
+        toolStudied: formData.get('toolStudied'),
+        protectedCharacteristics: formData.getAll('characteristics'),
+        testingMethodology: formData.get('testingMethodology'),
+        quantitativeFindings: formData.get('quantitativeFindings'),
+        qualitativeAnalysis: formData.get('qualitativeAnalysis'),
+        recommendations: formData.get('recommendations'),
+        studyDocumentUrl: formData.get('studyDocumentUrl'),
+        noFinancialRelationship: formData.get('noFinancialRelationship') === 'on'
+      };
+      
+      if (data.protectedCharacteristics.length === 0) {
+        alert('Please select at least one protected characteristic.');
+        return;
+      }
+      
+      try {
+        const response = await fetch(`${API}/submit/bias`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        
+        if (response.ok) {
+          form.style.display = 'none';
+          document.getElementById('biasSuccess').style.display = 'block';
+        } else {
+          const error = await response.json();
+          alert('Submission failed: ' + (error.error || 'Unknown error'));
+        }
+      } catch (error) {
+        alert('Submission failed: ' + error.message);
+      }
+    }
+    
+    async function submitRequest() {
+      const tool = document.getElementById('requestTool').value;
+      const question = document.getElementById('requestQuestion').value;
+      
+      if (!tool || !question) {
+        alert('Please enter both a tool name and research question.');
+        return;
+      }
+      
+      try {
+        const response = await fetch(`${API}/requests`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ toolSlug: tool.toLowerCase().replace(/\s+/g, '-'), toolName: tool, question })
+        });
+        
+        if (response.ok) {
+          alert('Research request submitted! Others can now vote to prioritize this research.');
+          document.getElementById('requestTool').value = '';
+          document.getElementById('requestQuestion').value = '';
+          loadPortalData();
+        }
+      } catch (error) {
+        alert('Failed to submit request: ' + error.message);
+      }
+    }
+    
+    async function voteRequest(requestId) {
+      try {
+        const response = await fetch(`${API}/requests/${requestId}/vote`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: localStorage.getItem('toolintel_user') || 'anonymous' })
+        });
+        
+        if (response.ok) {
+          loadPortalData();
+        }
+      } catch (error) {
+        alert('Failed to vote: ' + error.message);
+      }
+    }
+    
+    // Initialize
+    loadPortalData();
+  </script>
+</body>
+</html>

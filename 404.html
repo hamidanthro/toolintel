@@ -35,6 +35,17 @@
         if (path === '/expert-network/code-of-conduct' || path === '/expert-network/code-of-conduct/') {
             window.location.replace('/expert-network-conduct.html');
         }
+        
+        // /research-portal
+        if (path === '/research-portal' || path === '/research-portal/') {
+            window.location.replace('/research-portal.html');
+        }
+        
+        // /research/[id] - individual research submission
+        const researchMatch = path.match(/^\/research\/([^/]+)\/?$/);
+        if (researchMatch) {
+            window.location.replace('/research-portal.html?submission=' + encodeURIComponent(researchMatch[1]));
+        }
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Research Portal Admin — ToolIntel</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+    
+    .header { background: #1e293b; padding: 20px 30px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+    .header h1 { font-size: 1.5rem; }
+    .header a { color: #60a5fa; text-decoration: none; }
+    
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; padding: 24px 30px; }
+    .stat-card { background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 16px; text-align: center; }
+    .stat-value { font-size: 2rem; font-weight: 700; color: #14b8a6; }
+    .stat-label { color: #94a3b8; font-size: 0.8rem; margin-top: 4px; }
+    
+    .tabs { display: flex; gap: 0; padding: 0 30px; border-bottom: 1px solid #334155; }
+    .tab { padding: 14px 22px; cursor: pointer; color: #94a3b8; border-bottom: 2px solid transparent; transition: all 0.2s; font-size: 0.9rem; }
+    .tab:hover { color: #e2e8f0; }
+    .tab.active { color: #14b8a6; border-bottom-color: #14b8a6; }
+    
+    .panel { display: none; padding: 24px 30px; }
+    .panel.active { display: block; }
+    
+    .table-container { background: #1e293b; border: 1px solid #334155; border-radius: 10px; overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th { background: #334155; padding: 12px 16px; text-align: left; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; color: #94a3b8; }
+    td { padding: 14px 16px; border-bottom: 1px solid #334155; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover { background: rgba(255,255,255,0.02); }
+    
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 0.7rem; font-weight: 600; }
+    .badge-security { background: #fee2e2; color: #991b1b; }
+    .badge-accuracy { background: #dbeafe; color: #1e40af; }
+    .badge-bias { background: #ede9fe; color: #5b21b6; }
+    .badge-pending { background: #fef3c7; color: #92400e; }
+    .badge-published { background: #d1fae5; color: #065f46; }
+    .badge-rejected { background: #fee2e2; color: #991b1b; }
+    .badge-priority { background: #14b8a6; color: white; }
+    
+    .stage-badge { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 500; }
+    .stage-authenticity { background: #fef3c7; color: #92400e; }
+    .stage-methodology { background: #dbeafe; color: #1e40af; }
+    .stage-vendor { background: #ede9fe; color: #5b21b6; }
+    
+    .days-elapsed { color: #f59e0b; font-weight: 600; font-size: 0.85rem; }
+    .days-elapsed.overdue { color: #ef4444; }
+    
+    .btn { padding: 6px 14px; border: none; border-radius: 5px; cursor: pointer; font-size: 0.8rem; font-weight: 500; transition: all 0.2s; }
+    .btn-advance { background: #10b981; color: white; }
+    .btn-advance:hover { background: #059669; }
+    .btn-reject { background: #ef4444; color: white; }
+    .btn-reject:hover { background: #dc2626; }
+    .btn-publish { background: #8b5cf6; color: white; }
+    .btn-publish:hover { background: #7c3aed; }
+    .btn-view { background: #3b82f6; color: white; }
+    .btn-view:hover { background: #2563eb; }
+    .btn-impact { background: #f59e0b; color: white; }
+    .btn-impact:hover { background: #d97706; }
+    
+    .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    
+    .rejection-reason {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 8px;
+      font-size: 0.85rem;
+      color: #94a3b8;
+      max-width: 400px;
+    }
+    
+    .impact-indicators {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .impact-tag {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+    .impact-tag.positive { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+    .impact-tag.neutral { background: rgba(107, 114, 128, 0.2); color: #6b7280; }
+    
+    .request-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .request-card.priority { border-color: #14b8a6; }
+    .request-info h4 { color: #e2e8f0; font-size: 1rem; margin-bottom: 4px; }
+    .request-info p { color: #94a3b8; font-size: 0.85rem; }
+    .request-votes { font-size: 1.8rem; font-weight: 700; color: #14b8a6; }
+    
+    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
+    .modal.active { display: flex; }
+    .modal-content { background: #1e293b; border-radius: 12px; padding: 30px; max-width: 500px; width: 90%; position: relative; }
+    .modal-content h3 { margin-bottom: 20px; color: #e2e8f0; }
+    .modal-close { position: absolute; top: 15px; right: 20px; background: none; border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer; }
+    
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; margin-bottom: 6px; color: #94a3b8; font-size: 0.9rem; }
+    .form-group textarea, .form-group input, .form-group select {
+      width: 100%;
+      padding: 10px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      color: white;
+      font-size: 0.95rem;
+    }
+    .form-group textarea { min-height: 100px; resize: vertical; }
+    
+    .empty-state { text-align: center; padding: 50px 20px; color: #64748b; }
+    .empty-state h3 { margin-bottom: 8px; color: #94a3b8; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>📚 Research Portal Admin</h1>
+    <a href="/admin/">← Back to Admin</a>
+  </div>
+  
+  <div class="stats" id="statsGrid">
+    <div class="stat-card">
+      <div class="stat-value" id="totalSubmissions">-</div>
+      <div class="stat-label">Total Submissions</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="pendingAuth">-</div>
+      <div class="stat-label">Pending Auth</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="pendingMethod">-</div>
+      <div class="stat-label">Pending Method</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="pendingVendor">-</div>
+      <div class="stat-label">Pending Vendor</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="published">-</div>
+      <div class="stat-label">Published</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="rejected">-</div>
+      <div class="stat-label">Rejected</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="rejectionRate">-</div>
+      <div class="stat-label">Rejection Rate</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="priorityRequests">-</div>
+      <div class="stat-label">Priority Requests</div>
+    </div>
+  </div>
+  
+  <div class="tabs">
+    <div class="tab active" data-panel="pending">Pending Submissions</div>
+    <div class="tab" data-panel="published">Published Research</div>
+    <div class="tab" data-panel="rejected">Rejected Submissions</div>
+    <div class="tab" data-panel="requests">Research Requests</div>
+  </div>
+  
+  <!-- Pending Submissions Panel -->
+  <div class="panel active" id="pending">
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Researcher</th>
+            <th>Type</th>
+            <th>Tool</th>
+            <th>Stage</th>
+            <th>Days in Stage</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="pendingTable"></tbody>
+      </table>
+    </div>
+  </div>
+  
+  <!-- Published Research Panel -->
+  <div class="panel" id="published">
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Researcher</th>
+            <th>Type</th>
+            <th>Tool</th>
+            <th>Impact</th>
+            <th>Citations</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="publishedTable"></tbody>
+      </table>
+    </div>
+  </div>
+  
+  <!-- Rejected Submissions Panel -->
+  <div class="panel" id="rejected">
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Researcher</th>
+            <th>Type</th>
+            <th>Tool</th>
+            <th>Rejected</th>
+            <th>Reason</th>
+          </tr>
+        </thead>
+        <tbody id="rejectedTable"></tbody>
+      </table>
+    </div>
+  </div>
+  
+  <!-- Research Requests Panel -->
+  <div class="panel" id="requests">
+    <div id="requestsList"></div>
+  </div>
+  
+  <!-- Reject Modal -->
+  <div class="modal" id="rejectModal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('rejectModal')">×</button>
+      <h3>Reject Submission</h3>
+      <form onsubmit="submitRejection(event)">
+        <input type="hidden" id="rejectSubmissionId">
+        <div class="form-group">
+          <label>Rejection Reason (will be sent to researcher)</label>
+          <textarea id="rejectionReason" required placeholder="Provide a detailed explanation of why this submission does not meet publication standards..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-reject" style="width: 100%; padding: 12px;">Send Rejection</button>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Impact Modal -->
+  <div class="modal" id="impactModal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('impactModal')">×</button>
+      <h3>Update Impact Tracker</h3>
+      <form onsubmit="submitImpact(event)">
+        <input type="hidden" id="impactSubmissionId">
+        <div class="form-group">
+          <label><input type="checkbox" id="impactScoreChanged"> Score Changed on Platform</label>
+        </div>
+        <div class="form-group">
+          <label>Score Change Details</label>
+          <input type="text" id="impactScoreDetails" placeholder="e.g., Privacy score reduced from 94 to 91">
+        </div>
+        <div class="form-group">
+          <label><input type="checkbox" id="impactVendorAck"> Vendor Acknowledged</label>
+        </div>
+        <div class="form-group">
+          <label><input type="checkbox" id="impactVendorFixed"> Vendor Fixed Issue</label>
+        </div>
+        <div class="form-group">
+          <label>Add External Citation</label>
+          <input type="text" id="citationSource" placeholder="Source name (e.g., Ars Technica)">
+          <input type="url" id="citationUrl" placeholder="URL" style="margin-top: 8px;">
+        </div>
+        <button type="submit" class="btn btn-impact" style="width: 100%; padding: 12px;">Update Impact</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const API = 'https://v7086lxsji.execute-api.us-east-1.amazonaws.com/research';
+    
+    // Tab switching
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.panel).classList.add('active');
+      });
+    });
+    
+    async function loadStats() {
+      try {
+        const response = await fetch(`${API}/admin/stats`);
+        const stats = await response.json();
+        
+        document.getElementById('totalSubmissions').textContent = stats.totalSubmissions;
+        document.getElementById('pendingAuth').textContent = stats.pendingAuthenticity;
+        document.getElementById('pendingMethod').textContent = stats.pendingMethodology;
+        document.getElementById('pendingVendor').textContent = stats.pendingVendor;
+        document.getElementById('published').textContent = stats.published;
+        document.getElementById('rejected').textContent = stats.rejected;
+        document.getElementById('rejectionRate').textContent = stats.rejectionRate;
+        document.getElementById('priorityRequests').textContent = stats.priorityRequests;
+      } catch (error) {
+        console.error('Failed to load stats:', error);
+      }
+    }
+    
+    async function loadPending() {
+      try {
+        const response = await fetch(`${API}/admin/pending`);
+        const data = await response.json();
+        
+        const tbody = document.getElementById('pendingTable');
+        if (!data.submissions || data.submissions.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#64748b;padding:40px;">No pending submissions</td></tr>';
+          return;
+        }
+        
+        tbody.innerHTML = data.submissions.map(s => `
+          <tr>
+            <td>
+              <strong>${s.researcherName}</strong>
+              ${s.affiliation ? `<br><span style="color:#94a3b8;font-size:0.8rem;">${s.affiliation}</span>` : ''}
+            </td>
+            <td><span class="badge badge-${s.type}">${s.type}</span></td>
+            <td>${s.toolAffected || s.toolStudied || s.toolsStudied || '-'}</td>
+            <td><span class="stage-badge ${getStageClass(s.status)}">${formatStage(s.status)}</span></td>
+            <td><span class="days-elapsed ${s.daysInStage > 14 ? 'overdue' : ''}">${s.daysInStage} days</span></td>
+            <td>
+              <div class="actions">
+                <button class="btn btn-view" onclick="viewSubmission('${s.submissionId}')">View</button>
+                ${s.status === 'pending_vendor' ?
+                  `<button class="btn btn-publish" onclick="publishSubmission('${s.submissionId}')">Publish</button>` :
+                  `<button class="btn btn-advance" onclick="advanceSubmission('${s.submissionId}')">Advance</button>`
+                }
+                <button class="btn btn-reject" onclick="showRejectModal('${s.submissionId}')">Reject</button>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+      } catch (error) {
+        console.error('Failed to load pending:', error);
+      }
+    }
+    
+    async function loadPublished() {
+      try {
+        const response = await fetch(`${API}/admin/published`);
+        const data = await response.json();
+        
+        const tbody = document.getElementById('publishedTable');
+        if (!data.submissions || data.submissions.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#64748b;padding:40px;">No published research yet</td></tr>';
+          return;
+        }
+        
+        tbody.innerHTML = data.submissions.map(s => `
+          <tr>
+            <td style="max-width:200px;">
+              <strong style="color:#e2e8f0;">${s.title}</strong>
+            </td>
+            <td>${s.researcherName}<br><span style="color:#94a3b8;font-size:0.8rem;">${s.affiliation}</span></td>
+            <td><span class="badge badge-${s.type}">${s.typeLabel}</span></td>
+            <td>${s.toolStudied}</td>
+            <td>
+              <div class="impact-indicators">
+                ${s.hasScoreImpact ? '<span class="impact-tag positive">📊 Score changed</span>' : '<span class="impact-tag neutral">No score change</span>'}
+                ${s.impact?.vendorAcknowledged ? '<span class="impact-tag positive">✅ Vendor ack</span>' : ''}
+              </div>
+            </td>
+            <td style="text-align:center;">${s.citationCount}</td>
+            <td>
+              <div class="actions">
+                <button class="btn btn-view" onclick="viewSubmission('${s.submissionId}')">View</button>
+                <button class="btn btn-impact" onclick="showImpactModal('${s.submissionId}')">Impact</button>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+      } catch (error) {
+        console.error('Failed to load published:', error);
+      }
+    }
+    
+    async function loadRejected() {
+      try {
+        const response = await fetch(`${API}/admin/rejected`);
+        const data = await response.json();
+        
+        const tbody = document.getElementById('rejectedTable');
+        if (!data.submissions || data.submissions.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#64748b;padding:40px;">No rejected submissions</td></tr>';
+          return;
+        }
+        
+        tbody.innerHTML = data.submissions.map(s => `
+          <tr>
+            <td>${s.researcherName}</td>
+            <td><span class="badge badge-${s.type}">${s.type}</span></td>
+            <td>${s.toolAffected || s.toolStudied || '-'}</td>
+            <td>${formatDate(s.rejectedAt)}</td>
+            <td>
+              <div class="rejection-reason">${s.rejectionReason}</div>
+            </td>
+          </tr>
+        `).join('');
+      } catch (error) {
+        console.error('Failed to load rejected:', error);
+      }
+    }
+    
+    async function loadRequests() {
+      try {
+        const response = await fetch(`${API}/admin/requests`);
+        const data = await response.json();
+        
+        const list = document.getElementById('requestsList');
+        if (!data.requests || data.requests.length === 0) {
+          list.innerHTML = '<div class="empty-state"><h3>No research requests</h3><p>Community requests will appear here.</p></div>';
+          return;
+        }
+        
+        list.innerHTML = data.requests.map(r => `
+          <div class="request-card ${r.isPriority ? 'priority' : ''}">
+            <div class="request-info">
+              <h4>${r.toolName} ${r.isPriority ? '<span class="badge badge-priority">PRIORITY</span>' : ''}</h4>
+              <p>${r.question}</p>
+            </div>
+            <div class="request-votes">${r.votes}</div>
+          </div>
+        `).join('');
+      } catch (error) {
+        console.error('Failed to load requests:', error);
+      }
+    }
+    
+    function getStageClass(status) {
+      if (status.includes('authenticity')) return 'stage-authenticity';
+      if (status.includes('methodology')) return 'stage-methodology';
+      if (status.includes('vendor')) return 'stage-vendor';
+      return '';
+    }
+    
+    function formatStage(status) {
+      if (status.includes('authenticity')) return 'Auth Check';
+      if (status.includes('methodology')) return 'Methodology';
+      if (status.includes('vendor')) return 'Vendor Review';
+      return status;
+    }
+    
+    function formatDate(dateStr) {
+      if (!dateStr) return '-';
+      return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+    
+    async function advanceSubmission(submissionId) {
+      if (!confirm('Advance this submission to the next review stage?')) return;
+      
+      try {
+        const response = await fetch(`${API}/admin/submission/${submissionId}/advance`, { method: 'POST' });
+        if (response.ok) {
+          alert('Submission advanced.');
+          loadPending();
+          loadStats();
+        }
+      } catch (error) {
+        alert('Failed: ' + error.message);
+      }
+    }
+    
+    async function publishSubmission(submissionId) {
+      if (!confirm('Publish this submission? It will be publicly visible with full attribution.')) return;
+      
+      try {
+        const response = await fetch(`${API}/admin/submission/${submissionId}/publish`, { method: 'POST' });
+        if (response.ok) {
+          alert('Submission published!');
+          loadPending();
+          loadPublished();
+          loadStats();
+        }
+      } catch (error) {
+        alert('Failed: ' + error.message);
+      }
+    }
+    
+    function showRejectModal(submissionId) {
+      document.getElementById('rejectSubmissionId').value = submissionId;
+      document.getElementById('rejectModal').classList.add('active');
+    }
+    
+    async function submitRejection(event) {
+      event.preventDefault();
+      const submissionId = document.getElementById('rejectSubmissionId').value;
+      const reason = document.getElementById('rejectionReason').value;
+      
+      try {
+        const response = await fetch(`${API}/admin/submission/${submissionId}/reject`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reason })
+        });
+        
+        if (response.ok) {
+          closeModal('rejectModal');
+          alert('Submission rejected. Researcher notified.');
+          loadPending();
+          loadRejected();
+          loadStats();
+        }
+      } catch (error) {
+        alert('Failed: ' + error.message);
+      }
+    }
+    
+    function showImpactModal(submissionId) {
+      document.getElementById('impactSubmissionId').value = submissionId;
+      document.getElementById('impactModal').classList.add('active');
+    }
+    
+    async function submitImpact(event) {
+      event.preventDefault();
+      const submissionId = document.getElementById('impactSubmissionId').value;
+      
+      const data = {
+        scoreChanged: document.getElementById('impactScoreChanged').checked,
+        scoreChangeDetails: document.getElementById('impactScoreDetails').value,
+        vendorAcknowledged: document.getElementById('impactVendorAck').checked,
+        vendorFixed: document.getElementById('impactVendorFixed').checked
+      };
+      
+      const citationSource = document.getElementById('citationSource').value;
+      const citationUrl = document.getElementById('citationUrl').value;
+      if (citationSource && citationUrl) {
+        data.externalCitation = { source: citationSource, url: citationUrl, date: new Date().toISOString().split('T')[0] };
+      }
+      
+      try {
+        const response = await fetch(`${API}/admin/submission/${submissionId}/impact`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        
+        if (response.ok) {
+          closeModal('impactModal');
+          alert('Impact tracker updated.');
+          loadPublished();
+        }
+      } catch (error) {
+        alert('Failed: ' + error.message);
+      }
+    }
+    
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+    
+    function viewSubmission(submissionId) {
+      alert('View submission: ' + submissionId);
+    }
+    
+    // Initialize
+    loadStats();
+    loadPending();
+    loadPublished();
+    loadRejected();
+    loadRequests();
+  </script>
+</body>
+</html>
