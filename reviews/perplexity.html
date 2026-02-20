@@ -227,6 +227,11 @@
                     <button onclick="openCertModal()" style="background: var(--navy); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 0.95rem; font-weight: 500; cursor: pointer; margin-top: 12px;">Submit Certification</button>
                 </div>
 
+                <div class="section">
+                    <h2>Security Incident History</h2>
+                    <div id="securityIncidents"></div>
+                </div>
+
                 <div class="section community-section" id="community">
                     <h2>Community Reviews <span class="community-badge">VERIFIED USERS</span></h2>
                     <p>Reviews from verified users. These are separate from our editorial review and are manually approved to ensure authenticity.</p>
@@ -653,5 +658,7 @@
         // Initialize certification form
         initCertificationForm('perplexity', 'Perplexity');
     </script>
+    <script src="/js/security-incidents.js"></script>
+    <script>new SecurityIncidentsWidget('securityIncidents', 'perplexity', 'Perplexity');</script>
 </body>
 </html>

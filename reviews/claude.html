@@ -664,6 +664,11 @@
                     </div>
                 </div>
 
+                <div class="section">
+                    <h2>Security Incident History</h2>
+                    <div id="securityIncidents"></div>
+                </div>
+
                 <div class="section community-section" id="community">
                     <h2>Community Reviews <span class="community-badge">VERIFIED USERS</span></h2>
                     <p>Reviews from verified users. These are separate from our editorial review and are manually approved to ensure authenticity.</p>
@@ -957,5 +962,7 @@
         
         loadReviews();
     </script>
+    <script src="/js/security-incidents.js"></script>
+    <script>new SecurityIncidentsWidget('securityIncidents', 'claude', 'Claude');</script>
 </body>
 </html>

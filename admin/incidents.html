@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Incident Monitoring — ToolIntel Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0f2744;
+            --navy-light: #1e3a5f;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --green: #10b981;
+            --yellow: #f59e0b;
+            --red: #ef4444;
+            --purple: #8b5cf6;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--gray-50); color: var(--gray-800); }
+        
+        header { background: var(--navy); color: white; padding: 20px 24px; }
+        header h1 { font-size: 1.5rem; font-weight: 600; }
+        header .subtitle { color: var(--gray-400); font-size: 0.9rem; margin-top: 4px; }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+        
+        .tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+        .tab { padding: 10px 20px; border: none; background: var(--white); border-radius: 6px; cursor: pointer; font-size: 0.95rem; font-weight: 500; color: var(--gray-600); border: 1px solid var(--gray-200); }
+        .tab.active { background: var(--navy); color: white; border-color: var(--navy); }
+        .tab .badge { background: var(--red); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; margin-left: 8px; }
+        .tab .badge.warning { background: var(--yellow); }
+        .tab .badge.urgent { background: var(--red); animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+        
+        .panel { display: none; }
+        .panel.active { display: block; }
+        
+        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: var(--white); border: 1px solid var(--gray-200); border-radius: 8px; padding: 16px; text-align: center; }
+        .stat-card .number { font-size: 2rem; font-weight: 700; color: var(--navy); }
+        .stat-card .label { font-size: 0.85rem; color: var(--gray-600); }
+        .stat-card.alert .number { color: var(--red); }
+        .stat-card.warning .number { color: var(--yellow); }
+        
+        .card { background: var(--white); border: 1px solid var(--gray-200); border-radius: 8px; padding: 20px; margin-bottom: 16px; }
+        .card.urgent { border-left: 4px solid var(--red); background: #fef2f2; }
+        .card.pending { border-left: 4px solid var(--yellow); }
+        
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .card-title { font-weight: 600; color: var(--navy); }
+        .card-time { font-size: 0.8rem; color: var(--gray-400); }
+        .card-time.urgent { color: var(--red); font-weight: 600; }
+        
+        .status-badge { padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 500; display: inline-block; }
+        .status-badge.green { background: #d1fae5; color: #065f46; }
+        .status-badge.yellow { background: #fef3c7; color: #92400e; }
+        .status-badge.red { background: #fee2e2; color: #991b1b; }
+        .status-badge.pending { background: #fef3c7; color: #92400e; }
+        .status-badge.verified { background: #d1fae5; color: #065f46; }
+        .status-badge.rejected { background: var(--gray-100); color: var(--gray-600); }
+        .status-badge.needs-more-info { background: #dbeafe; color: #1e40af; }
+        
+        .disclosure-badge { padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 500; }
+        .disclosure-badge.proactive { background: #d1fae5; color: #065f46; }
+        .disclosure-badge.reactive { background: #fef3c7; color: #92400e; }
+        .disclosure-badge.undisclosed { background: #fee2e2; color: #991b1b; }
+        
+        .incident-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.9rem; }
+        .incident-table th, .incident-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--gray-200); }
+        .incident-table th { background: var(--gray-50); font-weight: 600; color: var(--navy); }
+        .incident-table tr:hover { background: var(--gray-50); }
+        
+        .btn { padding: 8px 16px; border-radius: 6px; font-size: 0.9rem; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; }
+        .btn-primary { background: var(--navy); color: white; }
+        .btn-success { background: var(--green); color: white; }
+        .btn-danger { background: var(--red); color: white; }
+        .btn-warning { background: var(--yellow); color: white; }
+        .btn-secondary { background: var(--gray-100); color: var(--gray-600); border: 1px solid var(--gray-200); }
+        .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-group { display: flex; gap: 8px; margin-top: 12px; }
+        
+        .detail-row { display: flex; gap: 24px; margin-bottom: 8px; font-size: 0.9rem; }
+        .detail-label { color: var(--gray-400); min-width: 120px; }
+        .detail-value { color: var(--gray-800); }
+        .detail-value a { color: var(--blue-accent); text-decoration: none; }
+        
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 0.9rem; font-weight: 500; color: var(--gray-600); margin-bottom: 6px; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: 6px; font-size: 0.95rem; }
+        .form-group textarea { min-height: 100px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        
+        .empty-state { text-align: center; padding: 60px 24px; color: var(--gray-400); }
+        
+        .alert-banner { background: #fee2e2; border: 1px solid #fecaca; color: #991b1b; padding: 12px 16px; border-radius: 8px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
+        .alert-banner.warning { background: #fef3c7; border-color: #fcd34d; color: #92400e; }
+        .alert-banner .icon { font-size: 1.25rem; }
+        
+        .description-text { background: var(--gray-50); padding: 12px; border-radius: 6px; margin: 12px 0; font-size: 0.9rem; line-height: 1.6; white-space: pre-wrap; }
+        
+        .commitment-note { font-size: 0.8rem; color: var(--gray-400); padding: 12px; background: var(--gray-50); border-radius: 6px; margin-top: 24px; text-align: center; }
+        
+        @media (max-width: 768px) {
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .form-row { grid-template-columns: 1fr; }
+            .detail-row { flex-direction: column; gap: 4px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🔒 Security Incident Monitoring</h1>
+        <div class="subtitle">Data Breach & Incident Verification Dashboard</div>
+    </header>
+    
+    <div class="container">
+        <div id="alertBanner" class="alert-banner" style="display:none;">
+            <span class="icon">🚨</span>
+            <span id="alertText">Reports pending review</span>
+        </div>
+        
+        <div class="stats-row">
+            <div class="stat-card"><div class="number" id="statToolsWithIncidents">-</div><div class="label">Tools with Incidents</div></div>
+            <div class="stat-card"><div class="number" id="statTotalIncidents">-</div><div class="label">Total Verified Incidents</div></div>
+            <div class="stat-card alert"><div class="number" id="statPendingReports">-</div><div class="label">Pending Reports</div></div>
+            <div class="stat-card warning"><div class="number" id="statUrgentReports">-</div><div class="label">Urgent (>20h)</div></div>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" data-panel="queue">⏰ Verification Queue <span class="badge urgent" id="queueBadge" style="display:none;">0</span></button>
+            <button class="tab" data-panel="incidents">📋 All Incidents</button>
+            <button class="tab" data-panel="reports">📝 All Reports</button>
+            <button class="tab" data-panel="add">➕ Add Incident</button>
+        </div>
+        
+        <!-- Verification Queue Panel -->
+        <div class="panel active" id="panel-queue">
+            <p style="color: var(--gray-600); margin-bottom: 16px;">Reports requiring verification within 24 hours of submission. Oldest first.</p>
+            <div id="queueList">
+                <div class="empty-state">Loading...</div>
+            </div>
+        </div>
+        
+        <!-- All Incidents Panel -->
+        <div class="panel" id="panel-incidents">
+            <div id="incidentsList">
+                <div class="empty-state">Loading...</div>
+            </div>
+        </div>
+        
+        <!-- All Reports Panel -->
+        <div class="panel" id="panel-reports">
+            <div id="reportsList">
+                <div class="empty-state">Loading...</div>
+            </div>
+        </div>
+        
+        <!-- Add Incident Panel -->
+        <div class="panel" id="panel-add">
+            <div class="card">
+                <h3 style="margin-bottom: 16px;">Add Verified Security Incident</h3>
+                <p style="color: var(--gray-600); margin-bottom: 20px; font-size: 0.9rem;">
+                    Add incidents that have been verified against public sources. All incidents require a source link.
+                </p>
+                <form id="incidentForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Tool Slug *</label>
+                            <input type="text" name="toolSlug" required placeholder="chatgpt">
+                        </div>
+                        <div class="form-group">
+                            <label>Tool Name</label>
+                            <input type="text" name="toolName" placeholder="ChatGPT">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Incident Date *</label>
+                            <input type="date" name="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Incident Type *</label>
+                            <select name="incidentType" required>
+                                <option value="">Select type...</option>
+                                <option value="Data Breach">Data Breach</option>
+                                <option value="Service Compromise">Service Compromise</option>
+                                <option value="Unauthorized Access">Unauthorized Access</option>
+                                <option value="Data Exposure">Data Exposure</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Scope (how many users/records affected)</label>
+                        <input type="text" name="scope" placeholder="e.g., 100,000 users, All enterprise customers">
+                    </div>
+                    <div class="form-group">
+                        <label>Vendor Response</label>
+                        <textarea name="vendorResponse" placeholder="How quickly they disclosed and what actions they took"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Source Name *</label>
+                            <input type="text" name="sourceName" required placeholder="e.g., SEC Filing, HaveIBeenPwned, Vendor Blog">
+                        </div>
+                        <div class="form-group">
+                            <label>Source Link *</label>
+                            <input type="url" name="sourceLink" required placeholder="https://...">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Vendor Disclosure Quality *</label>
+                        <select name="disclosureQuality" required>
+                            <option value="">Select...</option>
+                            <option value="Proactive">Proactive — Vendor disclosed before external discovery</option>
+                            <option value="Reactive">Reactive — Vendor disclosed after external discovery</option>
+                            <option value="Undisclosed">Undisclosed — Confirmed through third party, no vendor acknowledgment</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea name="description" placeholder="Brief summary of the incident"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Verified Incident</button>
+                </form>
+            </div>
+            
+            <div class="commitment-note">
+                ⚠️ ToolIntel does not remove incident records at vendor request. Historical accuracy is a non-negotiable platform commitment.
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const API = 'https://v7086lxsji.execute-api.us-east-1.amazonaws.com';
+    const KEY = new URLSearchParams(window.location.search).get('key') || '';
+    
+    if (!KEY) {
+        document.body.innerHTML = '<div style="padding:60px;text-align:center;color:#991b1b;">Admin key required. Add ?key=YOUR_KEY to URL.</div>';
+    }
+    
+    // Tab switching
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById(`panel-${tab.dataset.panel}`).classList.add('active');
+        });
+    });
+    
+    function esc(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+    
+    function formatDate(d) {
+        return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+    
+    function getStatusBadgeClass(status) {
+        const map = { green: 'green', yellow: 'yellow', red: 'red' };
+        return map[status] || 'yellow';
+    }
+    
+    function getDisclosureBadgeClass(quality) {
+        const map = { Proactive: 'proactive', Reactive: 'reactive', Undisclosed: 'undisclosed' };
+        return map[quality] || '';
+    }
+    
+    // Load verification queue
+    async function loadQueue() {
+        try {
+            const r = await fetch(`${API}/incidents/admin/queue?key=${KEY}`);
+            const items = await r.json();
+            const container = document.getElementById('queueList');
+            
+            document.getElementById('statPendingReports').textContent = items.length;
+            const urgentCount = items.filter(i => i.urgent).length;
+            document.getElementById('statUrgentReports').textContent = urgentCount;
+            
+            const queueBadge = document.getElementById('queueBadge');
+            if (items.length > 0) {
+                queueBadge.textContent = items.length;
+                queueBadge.style.display = 'inline';
+                document.getElementById('alertBanner').style.display = 'flex';
+                document.getElementById('alertText').textContent = urgentCount > 0 
+                    ? `${urgentCount} reports approaching 24h deadline!`
+                    : `${items.length} reports pending verification`;
+            } else {
+                queueBadge.style.display = 'none';
+                document.getElementById('alertBanner').style.display = 'none';
+            }
+            
+            if (!items.length) {
+                container.innerHTML = '<div class="empty-state">✅ No pending reports. All caught up!</div>';
+                return;
+            }
+            
+            container.innerHTML = items.map(item => `
+                <div class="card ${item.urgent ? 'urgent' : 'pending'}" id="queue-${item.id}">
+                    <div class="card-header">
+                        <span class="card-title">${esc(item.toolName || item.toolSlug)}</span>
+                        <span class="card-time ${item.urgent ? 'urgent' : ''}">${item.hoursAgo}h ago ${item.urgent ? '⚠️ URGENT' : ''}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Incident Date:</span>
+                        <span class="detail-value">${formatDate(item.incidentDate)}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Type:</span>
+                        <span class="detail-value">${esc(item.incidentType || 'Not specified')}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Submitted by:</span>
+                        <span class="detail-value">${esc(item.submitterName)} (${esc(item.submitterEmail)})</span>
+                    </div>
+                    ${item.sourceLink ? `
+                    <div class="detail-row">
+                        <span class="detail-label">Source:</span>
+                        <span class="detail-value"><a href="${esc(item.sourceLink)}" target="_blank">${esc(item.sourceLink)}</a></span>
+                    </div>` : ''}
+                    <div class="description-text">${esc(item.description)}</div>
+                    <div class="btn-group">
+                        <button class="btn btn-success btn-sm" onclick="updateReport('${item.id}', 'verified')">✓ Verify & Publish</button>
+                        <button class="btn btn-warning btn-sm" onclick="updateReport('${item.id}', 'needs-more-info')">? Need More Info</button>
+                        <button class="btn btn-danger btn-sm" onclick="updateReport('${item.id}', 'rejected')">✗ Reject</button>
+                    </div>
+                </div>
+            `).join('');
+        } catch (e) {
+            console.error(e);
+        }
+    }
+    
+    // Load all incidents
+    async function loadIncidents() {
+        try {
+            const r = await fetch(`${API}/incidents/admin/all?key=${KEY}`);
+            const tools = await r.json();
+            const container = document.getElementById('incidentsList');
+            
+            const totalTools = tools.filter(t => t.incidentCount > 0).length;
+            const totalIncidents = tools.reduce((sum, t) => sum + t.incidentCount, 0);
+            
+            document.getElementById('statToolsWithIncidents').textContent = totalTools;
+            document.getElementById('statTotalIncidents').textContent = totalIncidents;
+            
+            if (!tools.length || totalIncidents === 0) {
+                container.innerHTML = '<div class="empty-state">No verified incidents recorded yet.</div>';
+                return;
+            }
+            
+            container.innerHTML = tools.filter(t => t.incidentCount > 0).map(tool => `
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">${esc(tool.toolSlug)}</span>
+                        <span class="status-badge ${getStatusBadgeClass(tool.statusBadge?.color)}">${esc(tool.statusBadge?.text || '')}</span>
+                    </div>
+                    <table class="incident-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Scope</th>
+                                <th>Disclosure</th>
+                                <th>Source</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tool.incidents.sort((a,b) => new Date(b.date) - new Date(a.date)).map(inc => `
+                                <tr>
+                                    <td>${formatDate(inc.date)}</td>
+                                    <td>${esc(inc.incidentType)}</td>
+                                    <td>${esc(inc.scope || 'Unknown')}</td>
+                                    <td>${inc.disclosureQuality ? `<span class="disclosure-badge ${getDisclosureBadgeClass(inc.disclosureQuality)}">${esc(inc.disclosureQuality)}</span>` : '-'}</td>
+                                    <td>${inc.sourceLink ? `<a href="${esc(inc.sourceLink)}" target="_blank">${esc(inc.sourceName || 'Source')}</a>` : esc(inc.sourceName || '-')}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `).join('');
+        } catch (e) {
+            console.error(e);
+        }
+    }
+    
+    // Load all reports
+    async function loadReports() {
+        try {
+            const r = await fetch(`${API}/incidents/reports/admin?key=${KEY}`);
+            const items = await r.json();
+            const container = document.getElementById('reportsList');
+            
+            if (!items.length) {
+                container.innerHTML = '<div class="empty-state">No reports submitted yet.</div>';
+                return;
+            }
+            
+            container.innerHTML = items.map(item => `
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">${esc(item.toolName || item.toolSlug)}</span>
+                        <span class="status-badge ${item.status}">${esc(item.status)}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Submitted:</span>
+                        <span class="detail-value">${formatDate(item.submittedAt)} by ${esc(item.submitterName)}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Incident Date:</span>
+                        <span class="detail-value">${formatDate(item.incidentDate)}</span>
+                    </div>
+                    ${item.reviewedAt ? `
+                    <div class="detail-row">
+                        <span class="detail-label">Reviewed:</span>
+                        <span class="detail-value">${formatDate(item.reviewedAt)}</span>
+                    </div>` : ''}
+                    ${item.reviewNotes ? `
+                    <div class="detail-row">
+                        <span class="detail-label">Notes:</span>
+                        <span class="detail-value">${esc(item.reviewNotes)}</span>
+                    </div>` : ''}
+                </div>
+            `).join('');
+        } catch (e) {
+            console.error(e);
+        }
+    }
+    
+    // Update report status
+    async function updateReport(id, status) {
+        const notes = status === 'rejected' || status === 'needs-more-info' 
+            ? prompt('Review notes (optional):') 
+            : '';
+        
+        try {
+            const r = await fetch(`${API}/incidents/report/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ key: KEY, status, reviewNotes: notes || '' })
+            });
+            
+            if (r.ok) {
+                document.getElementById(`queue-${id}`)?.remove();
+                loadQueue();
+                loadReports();
+                alert(`Report ${status}`);
+            } else {
+                const err = await r.json();
+                alert('Error: ' + (err.error || 'Unknown'));
+            }
+        } catch (e) {
+            alert('Error: ' + e.message);
+        }
+    }
+    
+    // Add incident form
+    document.getElementById('incidentForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const form = new FormData(this);
+        const data = {
+            key: KEY,
+            toolSlug: form.get('toolSlug'),
+            toolName: form.get('toolName'),
+            date: form.get('date'),
+            incidentType: form.get('incidentType'),
+            scope: form.get('scope'),
+            vendorResponse: form.get('vendorResponse'),
+            sourceName: form.get('sourceName'),
+            sourceLink: form.get('sourceLink'),
+            disclosureQuality: form.get('disclosureQuality'),
+            description: form.get('description')
+        };
+        
+        try {
+            const r = await fetch(`${API}/incidents/admin/add`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            
+            if (r.ok) {
+                alert('Incident added successfully');
+                this.reset();
+                loadIncidents();
+            } else {
+                const err = await r.json();
+                alert('Error: ' + (err.error || 'Unknown'));
+            }
+        } catch (e) {
+            alert('Error: ' + e.message);
+        }
+    });
+    
+    // Initial load
+    loadQueue();
+    loadIncidents();
+    loadReports();
+    </script>
+</body>
+</html>

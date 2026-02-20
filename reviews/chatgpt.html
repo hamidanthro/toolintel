@@ -321,6 +321,11 @@
                     </div>
                 </div>
 
+                <div class="section">
+                    <h2>Security Incident History</h2>
+                    <div id="securityIncidents"></div>
+                </div>
+
                 <div class="section community-section" id="community">
                     <h2>Community Reviews <span class="community-badge">VERIFIED USERS</span></h2>
                     <p>Reviews from verified users. These are separate from our editorial review and are manually approved to ensure authenticity.</p>
@@ -376,5 +381,7 @@
     document.getElementById('reviewForm').addEventListener('submit',async function(e){e.preventDefault();const b=document.getElementById('submitBtn'),words=reviewText.value.trim().split(/\s+/).filter(w=>w.length>0).length;if(words<100||words>500){document.getElementById('formError').textContent='Review must be 100-500 words.';document.getElementById('formError').style.display='block';return;}b.disabled=true;b.textContent='Submitting...';document.getElementById('formSuccess').style.display='none';document.getElementById('formError').style.display='none';const f=new FormData(this);try{const r=await fetch(`${API}/reviews`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tool:TOOL,fullName:f.get('fullName'),email:f.get('email'),jobTitle:f.get('jobTitle'),usageDuration:f.get('usageDuration'),pricingTier:f.get('pricingTier'),ratingClaims:f.get('ratingClaims'),ratingPricing:f.get('ratingPricing'),ratingRecommend:f.get('ratingRecommend'),overallScore:parseInt(f.get('overallScore')),reviewText:f.get('reviewText'),disclosure:f.get('disclosure')==='on'})});if(r.ok){document.getElementById('formSuccess').style.display='block';this.reset();charCount.textContent='0 words (minimum 100)';}else{const err=await r.json();throw new Error(err.error);}}catch(e){document.getElementById('formError').textContent=e.message||'Something went wrong.';document.getElementById('formError').style.display='block';}b.disabled=false;b.textContent='Submit Review for Approval';});
     loadReviews();
     </script>
+    <script src="/js/security-incidents.js"></script>
+    <script>new SecurityIncidentsWidget('securityIncidents', 'chatgpt', 'ChatGPT');</script>
 </body>
 </html>
