@@ -483,11 +483,11 @@
                     We're reviewing our first batch of AI tools now. 
                     Get notified when we publish.
                 </p>
-                <form class="waitlist-form" action="#" method="POST">
-                    <input type="email" name="email" placeholder="you@company.com" required>
-                    <button type="submit">Notify Me</button>
+                <form class="waitlist-form" id="waitlist-form">
+                    <input type="email" name="email" id="waitlist-email" placeholder="you@company.com" required>
+                    <button type="submit" id="waitlist-btn">Notify Me</button>
                 </form>
-                <p class="waitlist-note">No spam. Only launch updates.</p>
+                <p class="waitlist-note" id="waitlist-msg">No spam. Only launch updates.</p>
             </div>
         </section>
     </main>
@@ -497,5 +497,40 @@
             <p>© 2026 Tool Intel. <a href="/methodology">Methodology</a> is always public.</p>
         </div>
     </footer>
+
+    <script>
+        document.getElementById('waitlist-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('waitlist-btn');
+            const msg = document.getElementById('waitlist-msg');
+            const email = document.getElementById('waitlist-email').value;
+            
+            btn.disabled = true;
+            btn.textContent = 'Joining...';
+            
+            try {
+                const res = await fetch('https://v7086lxsji.execute-api.us-east-1.amazonaws.com/waitlist', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    msg.textContent = "✓ You're on the list! We'll notify you at launch.";
+                    msg.style.color = '#10b981';
+                    btn.textContent = 'Joined!';
+                    document.getElementById('waitlist-email').value = '';
+                } else {
+                    throw new Error(data.error || 'Something went wrong');
+                }
+            } catch (err) {
+                msg.textContent = err.message || 'Error. Please try again.';
+                msg.style.color = '#ef4444';
+                btn.disabled = false;
+                btn.textContent = 'Try Again';
+            }
+        });
+    </script>
 </body>
 </html>
