@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trust Score Explained — ToolIntel</title>
+    <meta name="description" content="How the ToolIntel Trust Score works. Eight components measuring vendor transparency — independent of product quality.">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --navy: #0f2744;
+            --navy-light: #1e3a5f;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --green: #10b981;
+            --green-light: #ecfdf5;
+            --yellow: #f59e0b;
+            --yellow-light: #fffbeb;
+            --purple: #8b5cf6;
+            --purple-light: #f5f3ff;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; color: var(--gray-800); line-height: 1.7; background: var(--white); }
+        h1, h2, h3, h4 { font-family: 'Merriweather', Georgia, serif; font-weight: 700; line-height: 1.3; }
+        
+        .container { max-width: 850px; margin: 0 auto; padding: 0 24px; }
+        
+        header { padding: 16px 0; border-bottom: 1px solid var(--gray-200); background: var(--white); }
+        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+        .logo { font-weight: 700; font-size: 1.25rem; color: var(--navy); text-decoration: none; }
+        .logo span { color: var(--blue-accent); }
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+        
+        .hero {
+            padding: 60px 0 40px;
+            text-align: center;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .hero h1 { font-size: 2.25rem; color: var(--navy); margin-bottom: 16px; }
+        .hero p { color: var(--gray-600); max-width: 650px; margin: 0 auto; }
+        
+        .content { padding: 48px 0 60px; }
+        
+        .section { margin-bottom: 48px; }
+        .section h2 { font-size: 1.4rem; color: var(--navy); margin-bottom: 16px; }
+        .section p { margin-bottom: 16px; color: var(--gray-600); }
+        
+        /* Why Section */
+        .why-box {
+            background: linear-gradient(135deg, var(--purple-light) 0%, #ede9fe 100%);
+            border: 1px solid var(--purple);
+            border-radius: 12px;
+            padding: 28px;
+            margin: 24px 0;
+        }
+        
+        .why-box h3 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            color: #5b21b6;
+            margin-bottom: 12px;
+        }
+        
+        .why-box p { color: #6b7280; margin: 0; }
+        
+        /* Component Cards */
+        .component-grid {
+            display: grid;
+            gap: 20px;
+            margin: 24px 0;
+        }
+        
+        .component-card {
+            border: 1px solid var(--gray-200);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .component-header {
+            background: var(--gray-50);
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .component-header h4 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            color: var(--navy);
+            margin: 0;
+        }
+        
+        .component-weight {
+            background: var(--purple);
+            color: var(--white);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .component-body { padding: 20px; }
+        
+        .component-body p { margin-bottom: 12px; font-size: 0.95rem; }
+        
+        .scoring-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        
+        .scoring-table th, .scoring-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-100);
+        }
+        
+        .scoring-table th {
+            background: var(--gray-50);
+            font-weight: 600;
+            color: var(--gray-600);
+            font-size: 0.8rem;
+        }
+        
+        .scoring-table td:first-child { width: 80px; text-align: center; font-weight: 600; }
+        
+        .scoring-table .full { color: var(--green); }
+        .scoring-table .partial { color: var(--yellow); }
+        .scoring-table .none { color: var(--gray-400); }
+        
+        /* Scenarios */
+        .scenario-cards {
+            display: grid;
+            gap: 20px;
+            margin: 24px 0;
+        }
+        
+        .scenario-card {
+            border: 1px solid var(--gray-200);
+            border-radius: 10px;
+            padding: 24px;
+        }
+        
+        .scenario-card h4 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            color: var(--navy);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .scenario-card .context {
+            background: var(--gray-50);
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            margin-bottom: 16px;
+        }
+        
+        .scenario-card .recommendation {
+            font-size: 0.95rem;
+            color: var(--gray-600);
+        }
+        
+        .scenario-card .recommendation strong { color: var(--navy); }
+        
+        /* Callouts */
+        .callout {
+            padding: 20px 24px;
+            border-radius: 8px;
+            margin: 24px 0;
+        }
+        
+        .callout.yellow {
+            background: var(--yellow-light);
+            border: 1px solid var(--yellow);
+        }
+        
+        .callout.green {
+            background: var(--green-light);
+            border: 1px solid var(--green);
+        }
+        
+        .callout p { margin: 0; font-size: 0.95rem; }
+        .callout.yellow p { color: #92400e; }
+        .callout.green p { color: #065f46; }
+        
+        /* Update Section */
+        .update-section {
+            background: var(--gray-50);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 24px 0;
+        }
+        
+        .update-section h3 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            color: var(--navy);
+            margin-bottom: 16px;
+        }
+        
+        .update-section ul {
+            padding-left: 20px;
+            color: var(--gray-600);
+        }
+        
+        .update-section li { margin-bottom: 8px; }
+        
+        footer {
+            padding: 40px 0;
+            border-top: 1px solid var(--gray-200);
+            text-align: center;
+        }
+        
+        footer p { color: var(--gray-400); font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo">Tool<span>Intel</span></a>
+            <div class="nav-links">
+                <a href="/trust-scores/">Trust Leaderboard</a>
+                <a href="/trust-scores/improve.html">Improve Your Score</a>
+                <a href="/reviews.html">Reviews</a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Trust Score Explained</h1>
+            <p>A separate score measuring vendor transparency and verifiability — not product quality. Here's why it exists and how it's calculated.</p>
+        </div>
+    </section>
+
+    <main class="content">
+        <div class="container">
+            
+            <!-- Why It Exists -->
+            <section class="section">
+                <h2>Why Trust Score Exists</h2>
+                <p>The Product Score answers: <strong>how well does this tool perform?</strong> That's useful, but it's not the only question buyers have.</p>
+                <p>Enterprise procurement teams, regulated industries, and security-conscious organizations need to know: <strong>how much can we verify about this vendor?</strong> A tool can be excellent and score low on transparency. A tool can be average and score high on transparency. These are different questions with different answers.</p>
+                
+                <div class="why-box">
+                    <h3>The Trust Score measures transparency — not quality</h3>
+                    <p>A high Trust Score means: this vendor's claims are verifiable, their practices are documented, and they engage transparently with the review process. It does not mean their product is better. A low Trust Score means: we can verify less about this vendor. It does not mean their product is worse.</p>
+                </div>
+            </section>
+
+            <!-- Components -->
+            <section class="section">
+                <h2>Eight Components (12.5 Points Each)</h2>
+                <p>The Trust Score is calculated from eight equally weighted components, each worth up to 12.5 points for a maximum of 100.</p>
+                
+                <div class="component-grid">
+                    
+                    <div class="component-card">
+                        <div class="component-header">
+                            <h4>1. Review Process Participation</h4>
+                            <span class="component-weight">12.5 pts</span>
+                        </div>
+                        <div class="component-body">
+                            <p>Did the vendor participate in our review process when invited?</p>
+                            <table class="scoring-table">
+                                <tr><th>Points</th><th>Criteria</th></tr>
+                                <tr><td class="full">12.5</td><td>Participated in developer interview</td></tr>
+                                <tr><td class="partial">6</td><td>Contacted but did not respond</td></tr>
+                                <tr><td class="none">0</td><td>Actively declined participation</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="component-card">
+                        <div class="component-header">
+                            <h4>2. Certification Transparency</h4>
+                            <span class="component-weight">12.5 pts</span>
+                        </div>
+                        <div class="component-body">
+                            <p>Are the vendor's claimed certifications independently verifiable?</p>
+                            <table class="scoring-table">
+                                <tr><th>Points</th><th>Criteria</th></tr>
+                                <tr><td class="full">12.5</td><td>All claimed certifications independently verified</td></tr>
+                                <tr><td class="partial">6</td><td>Some verified, some vendor-reported only</td></tr>
+                                <tr><td class="none">0</td><td>No certifications independently verifiable</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="component-card">
+                        <div class="component-header">
+                            <h4>3. Pricing Transparency</h4>
+                            <span class="component-weight">12.5 pts</span>
+                        </div>
+                        <div class="component-body">
+                            <p>Is pricing fully documented with no hidden costs?</p>
+                            <table class="scoring-table">
+                                <tr><th>Points</th><th>Criteria</th></tr>
+                                <tr><td class="full">12.5</td><td>All pricing publicly documented, no hidden costs discovered</td></tr>
+                                <tr><td class="partial">6</td><td>Mostly transparent with minor undisclosed costs</td></tr>
+                                <tr><td class="none">0</td><td>Significant hidden costs or pricing requires sales contact</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="component-card">
+                        <div class="component-header">
+                            <h4>4. Terms of Service Stability</h4>
+                            <span class="component-weight">12.5 pts</span>
+                        </div>
+                        <div class="component-body">
+                            <p>How stable are the vendor's terms of service?</p>
+                            <table class="scoring-table">
+                                <tr><th>Points</th><th>Criteria</th></tr>
+                                <tr><td class="full">12.5</td><td>No terms changes in 24 months</td></tr>
+                                <tr><td class="partial">8</td><td>1-2 changes with advance notice given</td></tr>
+                                <tr><td class="partial">4</td><td>3+ changes or changes without notice</td></tr>
+                                <tr><td class="none">0</td><td>Material data rights changes without clear notification</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="component-card">
+                        <div class="component-header">
+                            <h4>5. Incident Response Quality</h4>
+                            <span class="component-weight">12.5 pts</span>
+                        </div>
+                        <div class="component-body">
+                            <p>How does the vendor handle security and service incidents?</p>
+                            <table class="scoring-table">
+                                <tr><th>Points</th><th>Criteria</th></tr>
+                                <tr><td class="full">12.5</td><td>No incidents recorded, or all incidents proactively disclosed</td></tr>
+                                <tr><td class="partial">6</td><td>Incidents disclosed reactively after external discovery</td></tr>
+                                <tr><td class="none">0</td><td>Incidents confirmed through third parties, no vendor acknowledgment</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="component-card">
+                        <div class="component-header">
+                            <h4>6. Marketing Claim Accuracy</h4>
+                            <span class="component-weight">12.5 pts</span>
+                        </div>
+                        <div class="component-body">
+                            <p>Do the vendor's marketing claims hold up under testing?</p>
+                            <table class="scoring-table">
+                                <tr><th>Points</th><th>Criteria</th></tr>
+                                <tr><td class="full">12.5</td><td>All tested claims verified</td></tr>
+                                <tr><td class="partial">8</td><td>Most claims verified with minor inaccuracies</td></tr>
+                                <tr><td class="partial">4</td><td>Significant claims unverified</td></tr>
+                                <tr><td class="none">0</td><td>Any claims rated False</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="component-card">
+                        <div class="component-header">
+                            <h4>7. Community Review Engagement</h4>
+                            <span class="component-weight">12.5 pts</span>
+                        </div>
+                        <div class="component-body">
+                            <p>Does the vendor engage with the review process and community feedback?</p>
+                            <table class="scoring-table">
+                                <tr><th>Points</th><th>Criteria</th></tr>
+                                <tr><td class="full">12.5</td><td>Submitted formal response + engaged with community feedback</td></tr>
+                                <tr><td class="partial">6</td><td>Submitted vendor response only</td></tr>
+                                <tr><td class="none">0</td><td>No engagement with the platform</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="component-card">
+                        <div class="component-header">
+                            <h4>8. Data Rights Clarity</h4>
+                            <span class="component-weight">12.5 pts</span>
+                        </div>
+                        <div class="component-body">
+                            <p>How clear and user-favorable are the vendor's data usage policies?</p>
+                            <table class="scoring-table">
+                                <tr><th>Points</th><th>Criteria</th></tr>
+                                <tr><td class="full">12.5</td><td>Policies explicit, plain-English, and user-favorable</td></tr>
+                                <tr><td class="partial">6</td><td>Policies exist but require legal interpretation</td></tr>
+                                <tr><td class="none">0</td><td>Rights ambiguous, buried, or claim broad IP over user inputs</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                </div>
+            </section>
+
+            <!-- How It Updates -->
+            <section class="section">
+                <h2>How the Trust Score Updates</h2>
+                <p>The Trust Score is designed to reward improving behavior, not just punish past failures.</p>
+                
+                <div class="update-section">
+                    <h3>Score updates immediately when:</h3>
+                    <ul>
+                        <li>A vendor participates in an interview after initially declining</li>
+                        <li>A certification is independently verified</li>
+                        <li>A vendor proactively discloses an incident</li>
+                        <li>A vendor submits a formal response to their review</li>
+                        <li>Pricing transparency improves</li>
+                        <li>Data rights policies are clarified</li>
+                    </ul>
+                </div>
+                
+                <p>Every Trust Score change is logged with a date and reason, visible in the Trust Score History section of each tool's review page.</p>
+            </section>
+
+            <!-- Score Gap Callouts -->
+            <section class="section">
+                <h2>Understanding Score Gaps</h2>
+                <p>When a significant gap (15+ points) exists between Product Score and Trust Score, we display a callout to help buyers interpret what it means.</p>
+                
+                <div class="callout yellow">
+                    <p><strong>When Product Score exceeds Trust Score by 15+ points:</strong> "High performer, low transparency — this tool scores well on capability but the vendor has limited verifiable transparency. Enterprise buyers in regulated industries should review the Trust Score breakdown before procurement."</p>
+                </div>
+                
+                <div class="callout green">
+                    <p><strong>When Trust Score exceeds Product Score by 15+ points:</strong> "High transparency, moderate performance — this vendor demonstrates strong transparency practices. The product may have limitations but the vendor's integrity signals are positive."</p>
+                </div>
+            </section>
+
+            <!-- Procurement Scenarios -->
+            <section class="section">
+                <h2>Procurement Scenarios</h2>
+                <p>How should buyers use Product Score and Trust Score together? Here are three concrete scenarios:</p>
+                
+                <div class="scenario-cards">
+                    <div class="scenario-card">
+                        <h4>🚀 Startup Choosing Tools Quickly</h4>
+                        <div class="context">
+                            Fast-moving startup, small team, minimal compliance requirements, optimizing for capability and speed.
+                        </div>
+                        <div class="recommendation">
+                            <strong>Focus on Product Score.</strong> Trust Score is informative but not decisive. Choose the tool that performs best for your use case. Monitor Trust Score if you expect to scale into enterprise contracts later — starting with a low-Trust vendor can create switching costs.
+                        </div>
+                    </div>
+                    
+                    <div class="scenario-card">
+                        <h4>🏛️ Enterprise in Regulated Industry</h4>
+                        <div class="context">
+                            Large organization in healthcare, finance, or government. Compliance requirements, vendor risk management, procurement committee approval needed.
+                        </div>
+                        <div class="recommendation">
+                            <strong>Require minimum Trust Score threshold.</strong> Set a Trust Score floor (e.g., 70+) for vendor approval. Review the Trust Score breakdown — low scores in Certification Transparency or Data Rights Clarity may disqualify a vendor regardless of product capability. Use the Trust Score API to automate procurement workflow gates.
+                        </div>
+                    </div>
+                    
+                    <div class="scenario-card">
+                        <h4>👩‍💻 Developer Building on AI APIs</h4>
+                        <div class="context">
+                            Building a product that depends on AI APIs. Concerned about upstream vendor stability, pricing changes, and terms of service that could affect your product.
+                        </div>
+                        <div class="recommendation">
+                            <strong>Weight Terms of Service Stability and Pricing Transparency heavily.</strong> A vendor with frequent ToS changes or opaque pricing creates business risk even if their API is technically excellent. Check the Trust Score History — a declining trend signals potential instability.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- API -->
+            <section class="section">
+                <h2>Trust Score API</h2>
+                <p>Enterprise procurement systems can query both scores programmatically:</p>
+                
+                <div style="background: var(--gray-800); color: #e5e7eb; padding: 20px; border-radius: 8px; font-family: monospace; font-size: 0.9rem; overflow-x: auto;">
+                    GET /api/tools/{tool-slug}/trust-score<br><br>
+                    Response:<br>
+                    {<br>
+                    &nbsp;&nbsp;"tool": "chatgpt",<br>
+                    &nbsp;&nbsp;"trustScore": 87,<br>
+                    &nbsp;&nbsp;"productScore": 87,<br>
+                    &nbsp;&nbsp;"components": {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;"reviewParticipation": { "score": 12.5, "reason": "Completed developer interview" },<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;"certificationTransparency": { "score": 12.5, "reason": "All certifications verified" },<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;"pricingTransparency": { "score": 12.5, "reason": "Public pricing, no hidden costs" },<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;...<br>
+                    &nbsp;&nbsp;},<br>
+                    &nbsp;&nbsp;"lastUpdated": "2026-02-20T..."<br>
+                    }
+                </div>
+                
+                <p style="margin-top: 16px;"><a href="/api.html">View full API documentation →</a></p>
+            </section>
+
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2026 ToolIntel. Trust Score measures transparency, not quality.</p>
+    </footer>
+</body>
+</html>

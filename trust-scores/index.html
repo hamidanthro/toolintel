@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trust Score Leaderboard — ToolIntel</title>
+    <meta name="description" content="AI tools ranked by Trust Score — measuring vendor transparency and verifiability, independent of product quality.">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --navy: #0f2744;
+            --navy-light: #1e3a5f;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --green: #10b981;
+            --green-light: #ecfdf5;
+            --yellow: #f59e0b;
+            --yellow-light: #fffbeb;
+            --purple: #8b5cf6;
+            --purple-light: #f5f3ff;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; color: var(--gray-800); line-height: 1.6; background: var(--gray-50); }
+        h1, h2, h3 { font-family: 'Merriweather', Georgia, serif; font-weight: 700; line-height: 1.3; }
+        
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+        
+        header { padding: 16px 0; border-bottom: 1px solid var(--gray-200); background: var(--white); }
+        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+        .logo { font-weight: 700; font-size: 1.25rem; color: var(--navy); text-decoration: none; }
+        .logo span { color: var(--blue-accent); }
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+        
+        .hero {
+            background: linear-gradient(135deg, var(--purple) 0%, #7c3aed 100%);
+            color: var(--white);
+            padding: 60px 0;
+            text-align: center;
+        }
+        
+        .hero h1 { font-size: 2.25rem; margin-bottom: 12px; }
+        .hero p { opacity: 0.9; max-width: 650px; margin: 0 auto; }
+        
+        .hero-links {
+            margin-top: 24px;
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+        
+        .hero-link {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+        
+        .hero-link.primary { background: var(--white); color: var(--purple); }
+        .hero-link.secondary { background: rgba(255,255,255,0.15); color: var(--white); border: 1px solid rgba(255,255,255,0.3); }
+        
+        .content { padding: 40px 0 60px; }
+        
+        /* Permanent Statement */
+        .permanent-statement {
+            background: var(--navy);
+            color: var(--white);
+            padding: 24px 28px;
+            border-radius: 12px;
+            margin-bottom: 40px;
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+        
+        .permanent-statement strong { color: var(--yellow); }
+        
+        /* Section */
+        .section { margin-bottom: 48px; }
+        .section h2 { font-size: 1.3rem; color: var(--navy); margin-bottom: 20px; }
+        
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        
+        .filter-group select {
+            padding: 10px 14px;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            background: var(--white);
+            min-width: 180px;
+        }
+        
+        /* Category Leaders */
+        .leaders-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .leader-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .leader-card h3 {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .leader-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+        }
+        
+        .leader-rank {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.8rem;
+            background: linear-gradient(135deg, var(--purple-light) 0%, #ede9fe 100%);
+            color: var(--purple);
+        }
+        
+        .leader-info { flex: 1; }
+        .leader-info .name { font-weight: 600; color: var(--navy); font-size: 0.95rem; }
+        .leader-info .vendor { font-size: 0.8rem; color: var(--gray-400); }
+        
+        .trust-score-badge {
+            background: linear-gradient(135deg, var(--purple-light) 0%, #ede9fe 100%);
+            color: var(--purple);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+        
+        /* Improved Section */
+        .improved-section {
+            background: var(--green-light);
+            border: 1px solid var(--green);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 40px;
+        }
+        
+        .improved-section h2 {
+            color: #065f46;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .improved-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        
+        .improved-item:last-child { border-bottom: none; }
+        
+        .improved-info .name { font-weight: 600; color: #065f46; }
+        .improved-info .vendor { font-size: 0.85rem; color: #047857; }
+        .improved-info .action { font-size: 0.9rem; color: #059669; margin-top: 4px; }
+        
+        .improved-change {
+            text-align: right;
+        }
+        
+        .improved-change .delta {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--green);
+        }
+        
+        .improved-change .period {
+            font-size: 0.8rem;
+            color: #059669;
+        }
+        
+        /* Leaderboard Table */
+        .leaderboard-wrapper {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .leaderboard-table th, .leaderboard-table td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .leaderboard-table th {
+            background: var(--gray-50);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--gray-600);
+        }
+        
+        .leaderboard-table tbody tr:hover { background: var(--gray-50); }
+        .leaderboard-table tbody tr:last-child td { border-bottom: none; }
+        
+        .rank-cell { width: 60px; text-align: center; }
+        
+        .rank-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        
+        .rank-badge.top { background: linear-gradient(135deg, var(--purple-light) 0%, #ede9fe 100%); color: var(--purple); }
+        .rank-badge.regular { background: var(--gray-100); color: var(--gray-600); }
+        
+        .tool-info .name { font-weight: 600; color: var(--navy); }
+        .tool-info .vendor { font-size: 0.85rem; color: var(--gray-400); }
+        
+        .score-cell {
+            text-align: center;
+        }
+        
+        .trust-score {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--purple);
+        }
+        
+        .product-score {
+            font-size: 1rem;
+            color: var(--gray-600);
+        }
+        
+        .score-gap {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .score-gap.high-trust { background: var(--green-light); color: #065f46; }
+        .score-gap.low-trust { background: var(--yellow-light); color: #92400e; }
+        .score-gap.balanced { background: var(--gray-100); color: var(--gray-600); }
+        
+        .view-btn {
+            padding: 6px 12px;
+            background: var(--navy);
+            color: var(--white);
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        footer {
+            padding: 40px 0;
+            border-top: 1px solid var(--gray-200);
+            text-align: center;
+            background: var(--white);
+        }
+        
+        footer p { color: var(--gray-400); font-size: 0.9rem; }
+        
+        @media (max-width: 768px) {
+            .leaders-grid { grid-template-columns: 1fr; }
+            .hero-links { flex-direction: column; align-items: center; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo">Tool<span>Intel</span></a>
+            <div class="nav-links">
+                <a href="/reviews.html">Reviews</a>
+                <a href="/trust-scores/methodology.html">How It Works</a>
+                <a href="/trust-scores/improve.html">For Vendors</a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>🛡️ Trust Score Leaderboard</h1>
+            <p>AI tools ranked by vendor transparency and verifiability — independent of product quality. The Trust Score answers: how much can you verify about this vendor?</p>
+            <div class="hero-links">
+                <a href="/trust-scores/methodology.html" class="hero-link primary">How Trust Score Works</a>
+                <a href="/trust-scores/improve.html" class="hero-link secondary">Improve Your Score</a>
+            </div>
+        </div>
+    </section>
+
+    <main class="content">
+        <div class="container">
+            
+            <div class="permanent-statement">
+                <strong>The Trust Score does not replace the Product Score.</strong> A low Trust Score does not mean a tool is bad. A high Trust Score does not mean a tool is good. They answer different questions. The Product Score answers — how well does this tool perform? The Trust Score answers — how much can you verify about this vendor? Used together, they give buyers a more complete picture than either score alone. <strong>That is the point.</strong>
+            </div>
+            
+            <!-- Most Trusted in Each Category -->
+            <section class="section">
+                <h2>Most Trusted in Each Category</h2>
+                <div class="leaders-grid">
+                    <div class="leader-card">
+                        <h3>🤖 LLMs & Chatbots</h3>
+                        <div class="leader-item">
+                            <div class="leader-rank">1</div>
+                            <div class="leader-info">
+                                <div class="name">Claude</div>
+                                <div class="vendor">Anthropic</div>
+                            </div>
+                            <div class="trust-score-badge">91</div>
+                        </div>
+                        <div class="leader-item">
+                            <div class="leader-rank">2</div>
+                            <div class="leader-info">
+                                <div class="name">ChatGPT</div>
+                                <div class="vendor">OpenAI</div>
+                            </div>
+                            <div class="trust-score-badge">87</div>
+                        </div>
+                        <div class="leader-item">
+                            <div class="leader-rank">3</div>
+                            <div class="leader-info">
+                                <div class="name">Gemini</div>
+                                <div class="vendor">Google</div>
+                            </div>
+                            <div class="trust-score-badge">84</div>
+                        </div>
+                    </div>
+                    
+                    <div class="leader-card">
+                        <h3>💻 Coding Assistants</h3>
+                        <div class="leader-item">
+                            <div class="leader-rank">1</div>
+                            <div class="leader-info">
+                                <div class="name">GitHub Copilot</div>
+                                <div class="vendor">GitHub/Microsoft</div>
+                            </div>
+                            <div class="trust-score-badge">94</div>
+                        </div>
+                        <div class="leader-item">
+                            <div class="leader-rank">2</div>
+                            <div class="leader-info">
+                                <div class="name">Cursor</div>
+                                <div class="vendor">Anysphere</div>
+                            </div>
+                            <div class="trust-score-badge">81</div>
+                        </div>
+                        <div class="leader-item">
+                            <div class="leader-rank">3</div>
+                            <div class="leader-info">
+                                <div class="name">Replit AI</div>
+                                <div class="vendor">Replit</div>
+                            </div>
+                            <div class="trust-score-badge">78</div>
+                        </div>
+                    </div>
+                    
+                    <div class="leader-card">
+                        <h3>✍️ Writing & Content</h3>
+                        <div class="leader-item">
+                            <div class="leader-rank">1</div>
+                            <div class="leader-info">
+                                <div class="name">Jasper</div>
+                                <div class="vendor">Jasper AI</div>
+                            </div>
+                            <div class="trust-score-badge">88</div>
+                        </div>
+                        <div class="leader-item">
+                            <div class="leader-rank">2</div>
+                            <div class="leader-info">
+                                <div class="name">Copy.ai</div>
+                                <div class="vendor">Copy.ai</div>
+                            </div>
+                            <div class="trust-score-badge">82</div>
+                        </div>
+                        <div class="leader-item">
+                            <div class="leader-rank">3</div>
+                            <div class="leader-info">
+                                <div class="name">Notion AI</div>
+                                <div class="vendor">Notion Labs</div>
+                            </div>
+                            <div class="trust-score-badge">79</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Most Improved -->
+            <section class="improved-section">
+                <h2>📈 Most Improved Trust Scores (Last 90 Days)</h2>
+                <div class="improved-item">
+                    <div class="improved-info">
+                        <div class="name">Cursor</div>
+                        <div class="vendor">Anysphere</div>
+                        <div class="action">Completed developer interview, verified SOC 2 Type II</div>
+                    </div>
+                    <div class="improved-change">
+                        <div class="delta">+19 pts</div>
+                        <div class="period">62 → 81</div>
+                    </div>
+                </div>
+                <div class="improved-item">
+                    <div class="improved-info">
+                        <div class="name">ElevenLabs</div>
+                        <div class="vendor">ElevenLabs</div>
+                        <div class="action">Published clear data rights policy, added pricing transparency</div>
+                    </div>
+                    <div class="improved-change">
+                        <div class="delta">+15 pts</div>
+                        <div class="period">58 → 73</div>
+                    </div>
+                </div>
+                <div class="improved-item">
+                    <div class="improved-info">
+                        <div class="name">Midjourney</div>
+                        <div class="vendor">Midjourney Inc</div>
+                        <div class="action">Proactively disclosed service incident, improved ToS clarity</div>
+                    </div>
+                    <div class="improved-change">
+                        <div class="delta">+12 pts</div>
+                        <div class="period">54 → 66</div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Filters -->
+            <div class="filters">
+                <div class="filter-group">
+                    <label>Category</label>
+                    <select id="filterCategory">
+                        <option value="all">All Categories</option>
+                        <option value="llm">LLMs & Chatbots</option>
+                        <option value="coding">Coding Assistants</option>
+                        <option value="writing">Writing & Content</option>
+                        <option value="image">Image Generation</option>
+                        <option value="voice">Voice & Audio</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Min Product Score</label>
+                    <select id="filterMinProduct">
+                        <option value="0">Any</option>
+                        <option value="60">60+</option>
+                        <option value="70">70+</option>
+                        <option value="80">80+</option>
+                        <option value="90">90+</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Full Leaderboard -->
+            <section class="section">
+                <h2>Full Trust Score Rankings</h2>
+                <div class="leaderboard-wrapper">
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th class="rank-cell">Rank</th>
+                                <th>Tool</th>
+                                <th style="text-align: center;">Trust Score</th>
+                                <th style="text-align: center;">Product Score</th>
+                                <th style="text-align: center;">Gap</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardBody">
+                            <tr>
+                                <td class="rank-cell"><span class="rank-badge top">1</span></td>
+                                <td><div class="tool-info"><div class="name">GitHub Copilot</div><div class="vendor">GitHub/Microsoft</div></div></td>
+                                <td class="score-cell"><span class="trust-score">94</span></td>
+                                <td class="score-cell"><span class="product-score">89</span></td>
+                                <td class="score-cell"><span class="score-gap high-trust">+5 Trust</span></td>
+                                <td><a href="/reviews/github-copilot.html" class="view-btn">View</a></td>
+                            </tr>
+                            <tr>
+                                <td class="rank-cell"><span class="rank-badge top">2</span></td>
+                                <td><div class="tool-info"><div class="name">Claude</div><div class="vendor">Anthropic</div></div></td>
+                                <td class="score-cell"><span class="trust-score">91</span></td>
+                                <td class="score-cell"><span class="product-score">92</span></td>
+                                <td class="score-cell"><span class="score-gap balanced">Balanced</span></td>
+                                <td><a href="/reviews/claude.html" class="view-btn">View</a></td>
+                            </tr>
+                            <tr>
+                                <td class="rank-cell"><span class="rank-badge top">3</span></td>
+                                <td><div class="tool-info"><div class="name">Jasper</div><div class="vendor">Jasper AI</div></div></td>
+                                <td class="score-cell"><span class="trust-score">88</span></td>
+                                <td class="score-cell"><span class="product-score">76</span></td>
+                                <td class="score-cell"><span class="score-gap high-trust">+12 Trust</span></td>
+                                <td><a href="/reviews/jasper.html" class="view-btn">View</a></td>
+                            </tr>
+                            <tr>
+                                <td class="rank-cell"><span class="rank-badge regular">4</span></td>
+                                <td><div class="tool-info"><div class="name">ChatGPT</div><div class="vendor">OpenAI</div></div></td>
+                                <td class="score-cell"><span class="trust-score">87</span></td>
+                                <td class="score-cell"><span class="product-score">87</span></td>
+                                <td class="score-cell"><span class="score-gap balanced">Balanced</span></td>
+                                <td><a href="/reviews/chatgpt.html" class="view-btn">View</a></td>
+                            </tr>
+                            <tr>
+                                <td class="rank-cell"><span class="rank-badge regular">5</span></td>
+                                <td><div class="tool-info"><div class="name">Gemini</div><div class="vendor">Google</div></div></td>
+                                <td class="score-cell"><span class="trust-score">84</span></td>
+                                <td class="score-cell"><span class="product-score">85</span></td>
+                                <td class="score-cell"><span class="score-gap balanced">Balanced</span></td>
+                                <td><a href="/reviews/gemini.html" class="view-btn">View</a></td>
+                            </tr>
+                            <tr>
+                                <td class="rank-cell"><span class="rank-badge regular">6</span></td>
+                                <td><div class="tool-info"><div class="name">Copy.ai</div><div class="vendor">Copy.ai</div></div></td>
+                                <td class="score-cell"><span class="trust-score">82</span></td>
+                                <td class="score-cell"><span class="product-score">72</span></td>
+                                <td class="score-cell"><span class="score-gap high-trust">+10 Trust</span></td>
+                                <td><a href="/reviews/copy-ai.html" class="view-btn">View</a></td>
+                            </tr>
+                            <tr>
+                                <td class="rank-cell"><span class="rank-badge regular">7</span></td>
+                                <td><div class="tool-info"><div class="name">Cursor</div><div class="vendor">Anysphere</div></div></td>
+                                <td class="score-cell"><span class="trust-score">81</span></td>
+                                <td class="score-cell"><span class="product-score">91</span></td>
+                                <td class="score-cell"><span class="score-gap low-trust">-10 Trust</span></td>
+                                <td><a href="/reviews/cursor.html" class="view-btn">View</a></td>
+                            </tr>
+                            <tr>
+                                <td class="rank-cell"><span class="rank-badge regular">8</span></td>
+                                <td><div class="tool-info"><div class="name">Perplexity</div><div class="vendor">Perplexity AI</div></div></td>
+                                <td class="score-cell"><span class="trust-score">75</span></td>
+                                <td class="score-cell"><span class="product-score">86</span></td>
+                                <td class="score-cell"><span class="score-gap low-trust">-11 Trust</span></td>
+                                <td><a href="/reviews/perplexity.html" class="view-btn">View</a></td>
+                            </tr>
+                            <tr>
+                                <td class="rank-cell"><span class="rank-badge regular">9</span></td>
+                                <td><div class="tool-info"><div class="name">Midjourney</div><div class="vendor">Midjourney Inc</div></div></td>
+                                <td class="score-cell"><span class="trust-score">66</span></td>
+                                <td class="score-cell"><span class="product-score">93</span></td>
+                                <td class="score-cell"><span class="score-gap low-trust">-27 Trust</span></td>
+                                <td><a href="/reviews/midjourney.html" class="view-btn">View</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2026 ToolIntel. Trust Score measures transparency, not quality. <a href="/trust-scores/methodology.html">Learn more</a></p>
+    </footer>
+
+    <script>
+        const API_BASE = 'https://v7086lxsji.execute-api.us-east-1.amazonaws.com';
+        
+        document.getElementById('filterCategory').addEventListener('change', filterLeaderboard);
+        document.getElementById('filterMinProduct').addEventListener('change', filterLeaderboard);
+        
+        function filterLeaderboard() {
+            // In production, fetch filtered data from API
+        }
+        
+        async function loadLeaderboard() {
+            try {
+                const res = await fetch(`${API_BASE}/trust-scores/leaderboard`);
+                if (res.ok) {
+                    const data = await res.json();
+                    // Render data
+                }
+            } catch (e) {
+                console.log('Using sample data');
+            }
+        }
+        
+        loadLeaderboard();
+    </script>
+</body>
+</html>

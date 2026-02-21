@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trust Score Management — ToolIntel Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0f2744;
+            --navy-light: #1e3a5f;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --green: #10b981;
+            --green-light: #ecfdf5;
+            --yellow: #f59e0b;
+            --yellow-light: #fffbeb;
+            --red: #ef4444;
+            --purple: #8b5cf6;
+            --purple-light: #f5f3ff;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--gray-50); color: var(--gray-800); }
+        
+        header { background: var(--purple); color: white; padding: 20px 24px; }
+        header h1 { font-size: 1.5rem; font-weight: 600; }
+        header p { color: rgba(255,255,255,0.7); font-size: 0.9rem; margin-top: 4px; }
+        
+        .header-actions { display: flex; gap: 12px; margin-top: 12px; }
+        .header-btn { padding: 8px 16px; border-radius: 6px; font-size: 0.9rem; font-weight: 500; text-decoration: none; border: none; cursor: pointer; }
+        .header-btn.primary { background: var(--white); color: var(--purple); }
+        .header-btn.secondary { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); }
+        
+        .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+        
+        /* Stats */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .stat-card .number { font-size: 2rem; font-weight: 700; color: var(--navy); line-height: 1; }
+        .stat-card .label { font-size: 0.8rem; color: var(--gray-600); margin-top: 8px; }
+        .stat-card.purple .number { color: var(--purple); }
+        .stat-card.green .number { color: var(--green); }
+        .stat-card.yellow .number { color: var(--yellow); }
+        
+        /* Tabs */
+        .tabs { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 1px solid var(--gray-200); }
+        .tab { padding: 12px 20px; border: none; background: none; font-size: 0.95rem; font-weight: 500; color: var(--gray-600); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -1px; }
+        .tab:hover { color: var(--navy); }
+        .tab.active { color: var(--purple); border-bottom-color: var(--purple); }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        /* Panel */
+        .panel { background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; overflow: hidden; margin-bottom: 24px; }
+        .panel-header { padding: 16px 20px; border-bottom: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center; background: var(--gray-50); }
+        .panel-header h2 { font-size: 1rem; font-weight: 600; color: var(--navy); }
+        .panel-body { padding: 0; }
+        
+        /* Table */
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th, .data-table td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--gray-200); }
+        .data-table th { background: var(--gray-50); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray-600); }
+        .data-table tbody tr:hover { background: var(--gray-50); }
+        .data-table tbody tr:last-child td { border-bottom: none; }
+        
+        /* Score Display */
+        .trust-score-display {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .trust-score-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--purple);
+        }
+        
+        .product-score-value {
+            font-size: 1rem;
+            color: var(--gray-600);
+        }
+        
+        .score-change {
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .score-change.up { color: var(--green); }
+        .score-change.down { color: var(--red); }
+        
+        /* Component Breakdown */
+        .component-breakdown {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .component-mini {
+            background: var(--gray-50);
+            padding: 6px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+        }
+        
+        .component-mini .name { color: var(--gray-600); }
+        .component-mini .score { font-weight: 600; color: var(--navy); float: right; }
+        
+        /* Buttons */
+        .btn { padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 500; cursor: pointer; border: none; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
+        .btn-sm { padding: 4px 10px; font-size: 0.8rem; }
+        .btn-primary { background: var(--purple); color: white; }
+        .btn-secondary { background: var(--gray-100); color: var(--gray-600); border: 1px solid var(--gray-200); }
+        .btn-success { background: var(--green); color: white; }
+        
+        /* Update Queue Item */
+        .update-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .update-item:last-child { border-bottom: none; }
+        
+        .update-info .tool-name { font-weight: 600; color: var(--navy); }
+        .update-info .update-reason { font-size: 0.9rem; color: var(--gray-600); margin-top: 4px; }
+        .update-info .update-date { font-size: 0.8rem; color: var(--gray-400); margin-top: 4px; }
+        
+        .update-impact {
+            text-align: right;
+        }
+        
+        .update-impact .delta {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--green);
+        }
+        
+        .update-impact .component {
+            font-size: 0.8rem;
+            color: var(--gray-400);
+        }
+        
+        /* Calculator */
+        .calculator-form {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            padding: 20px;
+        }
+        
+        .calc-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .calc-group label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--gray-600);
+        }
+        
+        .calc-group select {
+            padding: 10px;
+            border: 1px solid var(--gray-200);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+        
+        .calc-result {
+            grid-column: 1 / -1;
+            background: var(--purple-light);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .calc-result .score {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--purple);
+        }
+        
+        .calc-result .label {
+            color: var(--gray-600);
+        }
+        
+        /* Request Item */
+        .request-item {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .request-item:last-child { border-bottom: none; }
+        
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .request-header .vendor { font-weight: 600; color: var(--navy); }
+        .request-header .date { font-size: 0.8rem; color: var(--gray-400); }
+        
+        .request-tool { font-size: 0.9rem; color: var(--gray-600); margin-bottom: 8px; }
+        .request-message { font-size: 0.9rem; color: var(--gray-600); background: var(--gray-50); padding: 12px; border-radius: 6px; margin-bottom: 12px; }
+        
+        .request-actions { display: flex; gap: 8px; }
+        
+        .status-badge { display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 500; }
+        .status-badge.pending { background: var(--yellow-light); color: #92400e; }
+        .status-badge.responded { background: var(--green-light); color: #065f46; }
+        
+        @media (max-width: 1024px) {
+            .stats-row { grid-template-columns: repeat(3, 1fr); }
+            .calculator-form { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🛡️ Trust Score Management</h1>
+        <p>Calculate, update, and track Trust Scores across all reviewed tools</p>
+        <div class="header-actions">
+            <a href="/trust-scores/" class="header-btn secondary" target="_blank">View Public Leaderboard →</a>
+            <button class="header-btn primary" onclick="recalculateAll()">Recalculate All Scores</button>
+        </div>
+    </header>
+    
+    <div class="container">
+        <!-- Stats -->
+        <div class="stats-row">
+            <div class="stat-card purple">
+                <div class="number" id="avgTrust">78</div>
+                <div class="label">Avg Trust Score</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="avgProduct">82</div>
+                <div class="label">Avg Product Score</div>
+            </div>
+            <div class="stat-card green">
+                <div class="number" id="highTrust">5</div>
+                <div class="label">Trust > Product</div>
+            </div>
+            <div class="stat-card yellow">
+                <div class="number" id="lowTrust">3</div>
+                <div class="label">Trust < Product (15+)</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="pendingUpdates">2</div>
+                <div class="label">Pending Updates</div>
+            </div>
+        </div>
+        
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" data-tab="calculator">Score Calculator</button>
+            <button class="tab" data-tab="updates">Update Queue</button>
+            <button class="tab" data-tab="requests">Improvement Requests</button>
+            <button class="tab" data-tab="all">All Tools</button>
+        </div>
+        
+        <!-- Tab: Calculator -->
+        <div class="tab-content active" id="tab-calculator">
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>Trust Score Calculator</h2>
+                    <select id="calcToolSelect" style="padding: 8px; border-radius: 4px; border: 1px solid var(--gray-200);">
+                        <option value="">Select a tool...</option>
+                        <option value="chatgpt">ChatGPT</option>
+                        <option value="claude">Claude</option>
+                        <option value="cursor">Cursor</option>
+                        <option value="midjourney">Midjourney</option>
+                    </select>
+                </div>
+                <div class="panel-body">
+                    <div class="calculator-form">
+                        <div class="calc-group">
+                            <label>1. Review Process Participation</label>
+                            <select id="comp1">
+                                <option value="12.5">12.5 - Participated in interview</option>
+                                <option value="6">6 - No response to contact</option>
+                                <option value="0">0 - Actively declined</option>
+                            </select>
+                        </div>
+                        <div class="calc-group">
+                            <label>2. Certification Transparency</label>
+                            <select id="comp2">
+                                <option value="12.5">12.5 - All certs verified</option>
+                                <option value="6">6 - Some verified, some reported</option>
+                                <option value="0">0 - None verifiable</option>
+                            </select>
+                        </div>
+                        <div class="calc-group">
+                            <label>3. Pricing Transparency</label>
+                            <select id="comp3">
+                                <option value="12.5">12.5 - Fully transparent</option>
+                                <option value="6">6 - Minor hidden costs</option>
+                                <option value="0">0 - Significant hidden costs</option>
+                            </select>
+                        </div>
+                        <div class="calc-group">
+                            <label>4. Terms of Service Stability</label>
+                            <select id="comp4">
+                                <option value="12.5">12.5 - No changes (24mo)</option>
+                                <option value="8">8 - 1-2 changes with notice</option>
+                                <option value="4">4 - 3+ changes or no notice</option>
+                                <option value="0">0 - Material changes, no notification</option>
+                            </select>
+                        </div>
+                        <div class="calc-group">
+                            <label>5. Incident Response Quality</label>
+                            <select id="comp5">
+                                <option value="12.5">12.5 - No incidents or proactive disclosure</option>
+                                <option value="6">6 - Reactive disclosure</option>
+                                <option value="0">0 - Third-party confirmed, no ack</option>
+                            </select>
+                        </div>
+                        <div class="calc-group">
+                            <label>6. Marketing Claim Accuracy</label>
+                            <select id="comp6">
+                                <option value="12.5">12.5 - All claims verified</option>
+                                <option value="8">8 - Minor inaccuracies</option>
+                                <option value="4">4 - Significant unverified</option>
+                                <option value="0">0 - False claims</option>
+                            </select>
+                        </div>
+                        <div class="calc-group">
+                            <label>7. Community Review Engagement</label>
+                            <select id="comp7">
+                                <option value="12.5">12.5 - Response + community engagement</option>
+                                <option value="6">6 - Response only</option>
+                                <option value="0">0 - No engagement</option>
+                            </select>
+                        </div>
+                        <div class="calc-group">
+                            <label>8. Data Rights Clarity</label>
+                            <select id="comp8">
+                                <option value="12.5">12.5 - Clear, user-favorable</option>
+                                <option value="6">6 - Requires legal interpretation</option>
+                                <option value="0">0 - Ambiguous or broad IP claims</option>
+                            </select>
+                        </div>
+                        <div class="calc-result">
+                            <div class="score" id="calcResult">100</div>
+                            <div class="label">Calculated Trust Score</div>
+                        </div>
+                        <div style="grid-column: 1 / -1; text-align: center;">
+                            <button class="btn btn-primary" onclick="saveScore()">Save Trust Score</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Update Queue -->
+        <div class="tab-content" id="tab-updates">
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>Trust Score Updates Required</h2>
+                    <span style="color: var(--gray-400);">Components changed, score needs recalculation</span>
+                </div>
+                <div class="panel-body">
+                    <div class="update-item">
+                        <div class="update-info">
+                            <div class="tool-name">Cursor</div>
+                            <div class="update-reason">Developer interview completed on Feb 18, 2026</div>
+                            <div class="update-date">Triggered 2 days ago</div>
+                        </div>
+                        <div class="update-impact">
+                            <div class="delta">+6.5</div>
+                            <div class="component">Review Participation: 6 → 12.5</div>
+                        </div>
+                        <button class="btn btn-sm btn-success">Apply Update</button>
+                    </div>
+                    <div class="update-item">
+                        <div class="update-info">
+                            <div class="tool-name">ElevenLabs</div>
+                            <div class="update-reason">SOC 2 Type II certification verified</div>
+                            <div class="update-date">Triggered 3 days ago</div>
+                        </div>
+                        <div class="update-impact">
+                            <div class="delta">+6.5</div>
+                            <div class="component">Certification: 6 → 12.5</div>
+                        </div>
+                        <button class="btn btn-sm btn-success">Apply Update</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Improvement Requests -->
+        <div class="tab-content" id="tab-requests">
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>Vendor Improvement Requests</h2>
+                </div>
+                <div class="panel-body">
+                    <div class="request-item">
+                        <div class="request-header">
+                            <span class="vendor">Midjourney Inc</span>
+                            <span class="date">Feb 19, 2026</span>
+                        </div>
+                        <div class="request-tool">Tool: Midjourney</div>
+                        <div class="request-message">"We'd like guidance on improving our Trust Score. Specifically interested in what we can do about the Data Rights Clarity component. We've updated our ToS to be clearer about user IP rights."</div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div class="request-actions">
+                                <button class="btn btn-sm btn-primary">Draft Response</button>
+                                <button class="btn btn-sm btn-secondary">View Current Score</button>
+                            </div>
+                            <span class="status-badge pending">Pending Response</span>
+                        </div>
+                    </div>
+                    <div class="request-item">
+                        <div class="request-header">
+                            <span class="vendor">Perplexity AI</span>
+                            <span class="date">Feb 15, 2026</span>
+                        </div>
+                        <div class="request-tool">Tool: Perplexity</div>
+                        <div class="request-message">"We'd like to schedule a developer interview to improve our Review Participation score."</div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div class="request-actions">
+                                <button class="btn btn-sm btn-secondary">View Response</button>
+                            </div>
+                            <span class="status-badge responded">Responded</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: All Tools -->
+        <div class="tab-content" id="tab-all">
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>All Tool Trust Scores</h2>
+                    <input type="text" placeholder="Search tools..." style="padding: 8px 12px; border: 1px solid var(--gray-200); border-radius: 6px;">
+                </div>
+                <div class="panel-body">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Tool</th>
+                                <th>Trust Score</th>
+                                <th>Product Score</th>
+                                <th>Gap</th>
+                                <th>Components</th>
+                                <th>Last Updated</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>GitHub Copilot</strong><br><span style="color: var(--gray-400); font-size: 0.85rem;">GitHub/Microsoft</span></td>
+                                <td><span class="trust-score-value">94</span></td>
+                                <td><span class="product-score-value">89</span></td>
+                                <td><span class="score-change up">+5</span></td>
+                                <td>
+                                    <div class="component-breakdown">
+                                        <div class="component-mini"><span class="name">Interview</span><span class="score">12.5</span></div>
+                                        <div class="component-mini"><span class="name">Certs</span><span class="score">12.5</span></div>
+                                        <div class="component-mini"><span class="name">Pricing</span><span class="score">12.5</span></div>
+                                        <div class="component-mini"><span class="name">ToS</span><span class="score">12.5</span></div>
+                                    </div>
+                                </td>
+                                <td>Feb 20</td>
+                                <td><button class="btn btn-sm btn-secondary">Edit</button></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Midjourney</strong><br><span style="color: var(--gray-400); font-size: 0.85rem;">Midjourney Inc</span></td>
+                                <td><span class="trust-score-value">66</span></td>
+                                <td><span class="product-score-value">93</span></td>
+                                <td><span class="score-change down">-27</span></td>
+                                <td>
+                                    <div class="component-breakdown">
+                                        <div class="component-mini"><span class="name">Interview</span><span class="score">0</span></div>
+                                        <div class="component-mini"><span class="name">Certs</span><span class="score">6</span></div>
+                                        <div class="component-mini"><span class="name">Pricing</span><span class="score">12.5</span></div>
+                                        <div class="component-mini"><span class="name">ToS</span><span class="score">4</span></div>
+                                    </div>
+                                </td>
+                                <td>Feb 18</td>
+                                <td><button class="btn btn-sm btn-secondary">Edit</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(`tab-${tab.dataset.tab}`).classList.add('active');
+            });
+        });
+        
+        // Calculator
+        function calculateScore() {
+            let total = 0;
+            for (let i = 1; i <= 8; i++) {
+                total += parseFloat(document.getElementById(`comp${i}`).value);
+            }
+            document.getElementById('calcResult').textContent = total;
+        }
+        
+        document.querySelectorAll('.calculator-form select').forEach(sel => {
+            sel.addEventListener('change', calculateScore);
+        });
+        
+        function saveScore() {
+            const score = document.getElementById('calcResult').textContent;
+            alert(`Trust Score ${score} saved!`);
+        }
+        
+        function recalculateAll() {
+            alert('Recalculating all Trust Scores...');
+        }
+        
+        calculateScore();
+    </script>
+</body>
+</html>
