@@ -722,5 +722,31 @@ new PolicyChangesWidget('policyChanges', 'notion-ai', 'Notion AI');
 new ProductChangelogWidget('productChangelog', 'notion-ai', 'Notion AI');
 new HypeIndexWidget('hypeIndex', 'notion-ai', 'Notion AI');</script>
 <script src="https://api.replyquik.com/widget.js" data-id="1d52142d-7e4e-41e0-9ba0-707276f595ce"></script>
+
+<script>
+// Mobile menu toggle
+document.addEventListener('DOMContentLoaded', function() {
+    const menuBtn = document.querySelector('.mobile-menu-btn');
+    const navLinks = document.querySelector('.nav-links');
+    const dropdown = document.querySelector('.nav-dropdown');
+    
+    if (menuBtn) {
+        menuBtn.addEventListener('click', function() {
+            navLinks.classList.toggle('active');
+            menuBtn.textContent = navLinks.classList.contains('active') ? '✕' : '☰';
+        });
+    }
+    
+    if (dropdown) {
+        dropdown.querySelector('.nav-dropdown-trigger').addEventListener('click', function(e) {
+            if (window.innerWidth <= 768) {
+                e.preventDefault();
+                dropdown.classList.toggle('active');
+            }
+        });
+    }
+});
+</script>
+
 </body>
 </html>

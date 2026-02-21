@@ -167,6 +167,35 @@
         .nav-dropdown-menu a:hover { background: var(--gray-100); color: var(--navy) !important; }
         .nav-dropdown-divider { height: 1px; background: var(--gray-200); margin: 8px 0; }
 
+        
+        /* Mobile Navigation */
+        .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; padding: 8px; }
+        
+        @media (max-width: 768px) {
+            .nav-links { 
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: var(--white);
+                flex-direction: column;
+                padding: 16px 24px;
+                gap: 16px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                border-top: 1px solid var(--gray-200);
+            }
+            .nav-links.active { display: flex; }
+            .nav-links a { padding: 8px 0; }
+            .nav-dropdown { width: 100%; }
+            .nav-dropdown-menu { position: static; box-shadow: none; padding-left: 16px; margin-top: 8px; }
+            .nav-dropdown:hover .nav-dropdown-menu { display: none; }
+            .nav-dropdown.active .nav-dropdown-menu { display: block; }
+            .mobile-menu-btn { display: block; }
+            nav { flex-wrap: wrap; position: relative; }
+            .logo { font-size: 1.5rem; }
+        }
+
         </style>
 </head>
 <body>
@@ -208,5 +237,31 @@
         <p>© 2026 ToolIntel. Independent. Transparent. No affiliate links.</p>
     </footer>
 <script src="https://api.replyquik.com/widget.js" data-id="1d52142d-7e4e-41e0-9ba0-707276f595ce"></script>
+
+<script>
+// Mobile menu toggle
+document.addEventListener('DOMContentLoaded', function() {
+    const menuBtn = document.querySelector('.mobile-menu-btn');
+    const navLinks = document.querySelector('.nav-links');
+    const dropdown = document.querySelector('.nav-dropdown');
+    
+    if (menuBtn) {
+        menuBtn.addEventListener('click', function() {
+            navLinks.classList.toggle('active');
+            menuBtn.textContent = navLinks.classList.contains('active') ? '✕' : '☰';
+        });
+    }
+    
+    if (dropdown) {
+        dropdown.querySelector('.nav-dropdown-trigger').addEventListener('click', function(e) {
+            if (window.innerWidth <= 768) {
+                e.preventDefault();
+                dropdown.classList.toggle('active');
+            }
+        });
+    }
+});
+</script>
+
 </body>
 </html>
