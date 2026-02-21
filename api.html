@@ -31,13 +31,24 @@
     a { color: var(--blue); text-decoration: none; }
     a:hover { text-decoration: underline; }
     
-    header { background: var(--navy); color: white; padding: 16px 0; }
+    header { padding: 16px 0; border-bottom: 1px solid var(--gray-200); background: var(--white); }
     nav { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-    .logo { font-weight: 700; font-size: 1.25rem; color: white; text-decoration: none; }
-    .logo span { color: var(--teal-light); }
-    .nav-links { display: flex; gap: 24px; }
-    .nav-links a { color: var(--gray-400); font-size: 0.9rem; }
-    .nav-links a:hover { color: white; text-decoration: none; }
+    .logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.75rem; color: var(--navy); text-decoration: none; display: flex; align-items: center; gap: 6px; }
+    .logo-icon { width: 24px; height: 28px; flex-shrink: 0; }
+    .logo-text span { color: #3b82f6; }
+    .nav-links { display: flex; gap: 32px; align-items: center; }
+    .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+    .nav-links a:hover { color: var(--navy); text-decoration: none; }
+    .nav-links a.primary { color: var(--navy); font-weight: 600; }
+    .nav-links a.primary:hover { color: #3b82f6; }
+    .nav-dropdown { position: relative; display: flex; align-items: center; }
+    .nav-dropdown-trigger { cursor: pointer; display: flex; align-items: center; gap: 6px; color: var(--gray-600); font-size: 0.95rem; font-weight: 500; }
+    .nav-dropdown-trigger::after { content: '▼'; font-size: 0.6rem; }
+    .nav-dropdown-trigger:hover { color: var(--navy); }
+    .nav-dropdown-menu { display: none; position: absolute; top: 100%; right: 0; background: var(--white); border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); min-width: 200px; padding: 8px 0; z-index: 1000; }
+    .nav-dropdown:hover .nav-dropdown-menu { display: block; }
+    .nav-dropdown-menu a { display: block; padding: 10px 16px; color: var(--gray-600) !important; font-size: 0.9rem !important; }
+    .nav-dropdown-menu a:hover { background: var(--gray-100); color: var(--navy) !important; }
     
     .hero {
       background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
