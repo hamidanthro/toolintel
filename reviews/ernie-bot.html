@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeepSeek Review — ToolIntel</title>
-    <meta name="description" content="Independent review of DeepSeek. Scored 83/100. Best for developers seeking powerful reasoning at ultra-low API costs.">
+    <title>Ernie Bot (文心一言) Review — ToolIntel</title>
+    <meta name="description" content="Independent review of Baidu's Ernie Bot. Scored 75/100. Best for Chinese search integration and Baidu ecosystem users.">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,17 +33,21 @@
         .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
         
         header { padding: 16px 0; border-bottom: 1px solid var(--gray-200); background: var(--white); position: sticky; top: 0; z-index: 100; }
-        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1120px; margin: 0 auto; padding: 0 24px; }
-        .logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.25rem; color: var(--navy); text-decoration: none; }
+        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        .logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.75rem; color: var(--navy); text-decoration: none; display: flex; align-items: center; gap: 6px; }
+        .logo-icon { width: 24px; height: 28px; flex-shrink: 0; }
         .logo span { color: var(--blue-accent); }
-        .nav-links { display: flex; gap: 32px; }
+        .nav-links { display: flex; gap: 32px; align-items: center; }
         .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
         .nav-links a:hover { color: var(--navy); }
-        
-        .breadcrumb { background: var(--white); border-bottom: 1px solid var(--gray-200); padding: 12px 0; }
-        .breadcrumb-content { max-width: 900px; margin: 0 auto; padding: 0 24px; font-size: 0.9rem; color: var(--gray-400); }
-        .breadcrumb-content a { color: var(--gray-600); text-decoration: none; }
-        .breadcrumb-content a:hover { color: var(--navy); }
+        .nav-links a.primary { color: var(--navy); font-weight: 600; }
+        .nav-dropdown { position: relative; display: flex; align-items: center; }
+        .nav-dropdown-trigger { cursor: pointer; display: flex; align-items: center; gap: 6px; color: var(--gray-600); font-size: 0.95rem; font-weight: 500; }
+        .nav-dropdown-trigger::after { content: '▼'; font-size: 0.6rem; }
+        .nav-dropdown-menu { display: none; position: absolute; top: 100%; right: 0; background: var(--white); border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); min-width: 200px; padding: 8px 0; z-index: 1000; }
+        .nav-dropdown:hover .nav-dropdown-menu { display: block; }
+        .nav-dropdown-menu a { display: block; padding: 10px 16px; color: var(--gray-600) !important; font-size: 0.9rem !important; }
+        .nav-dropdown-menu a:hover { background: var(--gray-100); color: var(--navy) !important; }
         
         .review-hero { background: var(--white); border-bottom: 1px solid var(--gray-200); padding: 40px 0; }
         .hero-content { display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: start; }
@@ -71,7 +75,7 @@
         .score-bar-item { display: grid; grid-template-columns: 200px 1fr 50px; gap: 16px; align-items: center; margin-bottom: 12px; }
         .score-bar-label { font-size: 0.9rem; color: var(--gray-600); }
         .score-bar-track { height: 10px; background: var(--gray-100); border-radius: 5px; overflow: hidden; }
-        .score-bar-fill { height: 100%; border-radius: 5px; transition: width 0.5s ease; }
+        .score-bar-fill { height: 100%; border-radius: 5px; }
         .score-bar-fill.high { background: var(--green); }
         .score-bar-fill.mid { background: var(--yellow); }
         .score-bar-fill.low { background: var(--red); }
@@ -80,7 +84,6 @@
         .content { padding: 40px 0; }
         .section { background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; padding: 32px; margin-bottom: 24px; }
         .section h2 { font-size: 1.25rem; color: var(--navy); margin-bottom: 20px; }
-        .section h3 { font-size: 1rem; color: var(--navy); margin: 24px 0 12px; }
         .section p { color: var(--gray-600); margin-bottom: 16px; }
         .section ul { padding-left: 20px; color: var(--gray-600); margin-bottom: 16px; }
         .section li { margin-bottom: 8px; }
@@ -98,16 +101,16 @@
         
         .sw-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .sw-card { padding: 16px 0; }
-        .sw-card h4 { font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; color: var(--navy); }
+        .sw-card h4 { font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 600; margin-bottom: 12px; color: var(--navy); }
         .sw-card ul { margin: 0; padding-left: 18px; }
         
         .callout { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 20px; margin: 24px 0; }
-        .callout-title { font-weight: 600; color: #92400e; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .callout-title { font-weight: 600; color: #92400e; margin-bottom: 8px; }
         .callout p { color: #78350f; margin: 0; }
         
-        .pricing-table { width: 100%; border-collapse: collapse; margin: 16px 0; }
-        .pricing-table th, .pricing-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--gray-200); }
-        .pricing-table th { background: var(--gray-50); font-weight: 600; color: var(--navy); }
+        .region-notice { background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px; padding: 16px; margin-bottom: 24px; }
+        .region-notice strong { color: #92400e; }
+        .region-notice p { color: #78350f; margin: 0; font-size: 0.9rem; }
         
         .privacy-summary { background: var(--gray-50); border-radius: 8px; padding: 20px; margin: 16px 0; }
         .privacy-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
@@ -123,37 +126,15 @@
         .alt-card .score { font-size: 1.5rem; font-weight: 700; color: var(--navy); }
         .alt-card .category { font-size: 0.8rem; color: var(--gray-400); margin-top: 4px; }
         
-        .region-notice { background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px; padding: 16px; margin-bottom: 24px; }
-        .region-notice strong { color: #92400e; }
-        .region-notice p { color: #78350f; margin: 0; font-size: 0.9rem; }
-        
         footer { padding: 40px 0; border-top: 1px solid var(--gray-200); text-align: center; background: var(--white); }
         footer p { color: var(--gray-400); font-size: 0.9rem; }
         footer a { color: var(--gray-600); }
         
         @media (max-width: 768px) {
             .hero-content { grid-template-columns: 1fr; }
-            .score-section { margin-top: 24px; }
             .verdict-grid, .sw-grid, .alternatives-grid { grid-template-columns: 1fr; }
             .score-bar-item { grid-template-columns: 1fr; gap: 8px; }
         }
-        
-        header { padding: 16px 0; border-bottom: 1px solid var(--gray-200); background: var(--white); }
-        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-        .logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.75rem; color: var(--navy); text-decoration: none; display: flex; align-items: center; gap: 6px; }
-        .logo-icon { width: 24px; height: 28px; flex-shrink: 0; }
-        .logo span { color: var(--blue-accent); }
-        .nav-links { display: flex; gap: 32px; align-items: center; }
-        .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
-        .nav-links a:hover { color: var(--navy); }
-        .nav-links a.primary { color: var(--navy); font-weight: 600; }
-        .nav-dropdown { position: relative; display: flex; align-items: center; }
-        .nav-dropdown-trigger { cursor: pointer; display: flex; align-items: center; gap: 6px; color: var(--gray-600); font-size: 0.95rem; font-weight: 500; }
-        .nav-dropdown-trigger::after { content: '▼'; font-size: 0.6rem; }
-        .nav-dropdown-menu { display: none; position: absolute; top: 100%; right: 0; background: var(--white); border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); min-width: 200px; padding: 8px 0; z-index: 1000; }
-        .nav-dropdown:hover .nav-dropdown-menu { display: block; }
-        .nav-dropdown-menu a { display: block; padding: 10px 16px; color: var(--gray-600) !important; font-size: 0.9rem !important; }
-        .nav-dropdown-menu a:hover { background: var(--gray-100); color: var(--navy) !important; }
     </style>
 </head>
 <body>
@@ -168,15 +149,14 @@
                 <a href="/categories/">Categories</a>
                 <a href="/methodology.html">Methodology</a>
                 <a href="/transparency.html">Transparency</a>
-                <a href="/submit.html">Submit Tool</a>
                 <div class="nav-dropdown">
                     <span class="nav-dropdown-trigger">More</span>
                     <div class="nav-dropdown-menu">
                         <a href="/about.html">About the Reviewer</a>
                         <a href="/conflict-of-interest.html">Conflict of Interest Policy</a>
-                        <a href="/corrections.html">Correction Policy</a>
                     </div>
                 </div>
+                <a href="/submit.html" class="primary">Submit Tool</a>
             </div>
         </nav>
     </header>
@@ -187,22 +167,22 @@
                 <div class="hero-content">
                     <div class="tool-info">
                         <span class="tool-badge">Foundation Models & AI APIs</span>
-                        <h1>DeepSeek</h1>
+                        <h1>Ernie Bot (文心一言)</h1>
                         <div class="tool-meta">
-                            <span>by DeepSeek (China)</span>
+                            <span>by Baidu (China)</span>
                             <span>•</span>
-                            <a href="https://deepseek.com" target="_blank" rel="noopener">deepseek.com ↗</a>
+                            <a href="https://yiyan.baidu.com" target="_blank" rel="noopener">yiyan.baidu.com ↗</a>
                         </div>
-                        <p class="verdict-line">Exceptional reasoning at disruptive pricing — the cost leader shaking up the AI industry</p>
+                        <p class="verdict-line">Baidu's search-integrated AI — strong Chinese knowledge, best for Baidu ecosystem</p>
                         <p class="review-meta">
                             Reviewed by <strong>Hamid Ali</strong> · Feb 21, 2026 · Methodology v1.0<br>
                             <span style="color: #3b82f6;">🔄 Refresh scheduled: Aug 2026</span><br>
-                            <span style="color: var(--green);">✓ Verified: We paid for and tested this product</span>
+                            <span style="color: var(--green);">✓ Verified: We tested this product</span>
                         </p>
                     </div>
                     <div class="score-section">
-                        <div class="score-ring green">
-                            <span class="score-number">83</span>
+                        <div class="score-ring yellow">
+                            <span class="score-number">75</span>
                             <span class="score-label">out of 100</span>
                         </div>
                         <div class="action-buttons">
@@ -218,7 +198,7 @@
         <div class="container">
             <div class="region-notice">
                 <strong>🌏 Regional Context:</strong>
-                <p>DeepSeek is a Chinese AI company. Data is processed in China. Consider compliance implications for regulated industries. This review evaluates from a global user perspective.</p>
+                <p>Ernie Bot is developed by Baidu and primarily serves China. Integrated with Baidu Search. Limited international availability and documentation.</p>
             </div>
             
             <div class="score-breakdown">
@@ -226,20 +206,20 @@
                 
                 <div class="score-bar-item">
                     <span class="score-bar-label">Core AI Performance (25%)</span>
-                    <div class="score-bar-track"><div class="score-bar-fill high" style="width: 91%"></div></div>
-                    <span class="score-bar-value">91</span>
+                    <div class="score-bar-track"><div class="score-bar-fill high" style="width: 80%"></div></div>
+                    <span class="score-bar-value">80</span>
                 </div>
                 
                 <div class="score-bar-item">
                     <span class="score-bar-label">Data Privacy & Security (20%)</span>
-                    <div class="score-bar-track"><div class="score-bar-fill mid" style="width: 68%"></div></div>
-                    <span class="score-bar-value">68</span>
+                    <div class="score-bar-track"><div class="score-bar-fill mid" style="width: 62%"></div></div>
+                    <span class="score-bar-value">62</span>
                 </div>
                 
                 <div class="score-bar-item">
                     <span class="score-bar-label">Transparency (15%)</span>
-                    <div class="score-bar-track"><div class="score-bar-fill high" style="width: 85%"></div></div>
-                    <span class="score-bar-value">85</span>
+                    <div class="score-bar-track"><div class="score-bar-fill mid" style="width: 68%"></div></div>
+                    <span class="score-bar-value">68</span>
                 </div>
                 
                 <div class="score-bar-item">
@@ -250,26 +230,26 @@
                 
                 <div class="score-bar-item">
                     <span class="score-bar-label">Compliance (10%)</span>
-                    <div class="score-bar-track"><div class="score-bar-fill mid" style="width: 65%"></div></div>
-                    <span class="score-bar-value">65</span>
+                    <div class="score-bar-track"><div class="score-bar-fill mid" style="width: 60%"></div></div>
+                    <span class="score-bar-value">60</span>
                 </div>
                 
                 <div class="score-bar-item">
                     <span class="score-bar-label">Pricing Fairness (8%)</span>
-                    <div class="score-bar-track"><div class="score-bar-fill high" style="width: 98%"></div></div>
-                    <span class="score-bar-value">98</span>
+                    <div class="score-bar-track"><div class="score-bar-fill high" style="width: 85%"></div></div>
+                    <span class="score-bar-value">85</span>
                 </div>
                 
                 <div class="score-bar-item">
                     <span class="score-bar-label">Integration & Usability (5%)</span>
-                    <div class="score-bar-track"><div class="score-bar-fill high" style="width: 88%"></div></div>
-                    <span class="score-bar-value">88</span>
+                    <div class="score-bar-track"><div class="score-bar-fill mid" style="width: 78%"></div></div>
+                    <span class="score-bar-value">78</span>
                 </div>
                 
                 <div class="score-bar-item">
                     <span class="score-bar-label">Human Override (4%)</span>
-                    <div class="score-bar-track"><div class="score-bar-fill high" style="width: 80%"></div></div>
-                    <span class="score-bar-value">80</span>
+                    <div class="score-bar-track"><div class="score-bar-fill mid" style="width: 70%"></div></div>
+                    <span class="score-bar-value">70</span>
                 </div>
                 
                 <div class="score-bar-item">
@@ -280,8 +260,8 @@
                 
                 <div class="score-bar-item">
                     <span class="score-bar-label">Bias & Fairness (1%)</span>
-                    <div class="score-bar-track"><div class="score-bar-fill mid" style="width: 75%"></div></div>
-                    <span class="score-bar-value">75</span>
+                    <div class="score-bar-track"><div class="score-bar-fill mid" style="width: 65%"></div></div>
+                    <span class="score-bar-value">65</span>
                 </div>
             </div>
         </div>
@@ -296,21 +276,21 @@
                         <div class="verdict-card ideal">
                             <h4>✓ Ideal For</h4>
                             <ul>
-                                <li>Developers seeking Claude-level reasoning at 90% lower cost</li>
-                                <li>Startups and indie hackers on tight budgets</li>
-                                <li>Complex reasoning and coding tasks</li>
-                                <li>Research and experimentation</li>
-                                <li>Projects where data residency isn't a concern</li>
+                                <li>Chinese search-augmented tasks</li>
+                                <li>Baidu Cloud and ecosystem users</li>
+                                <li>Chinese content creation</li>
+                                <li>Enterprise developers in China</li>
+                                <li>Tasks requiring current Chinese web knowledge</li>
                             </ul>
                         </div>
                         <div class="verdict-card not-ideal">
                             <h4>✗ Not Ideal For</h4>
                             <ul>
-                                <li>Enterprise with strict data sovereignty requirements</li>
-                                <li>HIPAA/GDPR-regulated workloads</li>
-                                <li>Government or defense applications</li>
-                                <li>Teams requiring Western compliance certifications</li>
-                                <li>Image generation (text-only)</li>
+                                <li>International users (limited English support)</li>
+                                <li>Complex reasoning tasks (DeepSeek better)</li>
+                                <li>Western compliance requirements</li>
+                                <li>Coding (Qwen and DeepSeek stronger)</li>
+                                <li>Open-source self-hosting (models not available)</li>
                             </ul>
                         </div>
                     </div>
@@ -319,66 +299,30 @@
                         <div class="sw-card">
                             <h4>💪 Top Strengths</h4>
                             <ul>
-                                <li><strong>Disruptive pricing:</strong> ¥2/MTok (~$0.27) — 10-50x cheaper than Western models</li>
-                                <li><strong>Reasoning on par with GPT-4:</strong> V3.2 with thinking mode rivals Claude Opus</li>
-                                <li><strong>128K context window:</strong> Handle large documents natively</li>
-                                <li><strong>Open-source models:</strong> Self-host for full control</li>
-                                <li><strong>OpenAI-compatible API:</strong> Drop-in replacement</li>
+                                <li><strong>Baidu Search integration:</strong> Real-time Chinese web knowledge</li>
+                                <li><strong>Chinese cultural understanding:</strong> Idioms, context, nuance</li>
+                                <li><strong>Enterprise platform:</strong> Qianfan offers model fine-tuning, agents</li>
+                                <li><strong>Image generation:</strong> Built-in Wensheng image model</li>
+                                <li><strong>Baidu ecosystem:</strong> Deep integration with Baidu services</li>
                             </ul>
                         </div>
                         <div class="sw-card">
                             <h4>⚠️ Top Weaknesses</h4>
                             <ul>
-                                <li><strong>Data processed in China:</strong> Privacy concerns for some use cases</li>
-                                <li><strong>No Western compliance certs:</strong> No SOC 2, HIPAA, FedRAMP</li>
-                                <li><strong>Censorship on sensitive topics:</strong> Political, Tiananmen, etc.</li>
-                                <li><strong>English docs limited:</strong> Most resources in Chinese</li>
-                                <li><strong>Support in Chinese time zones:</strong> Response delays for Western users</li>
+                                <li><strong>Lags competitors in reasoning:</strong> DeepSeek and Qwen surpass it</li>
+                                <li><strong>English performance weak:</strong> Clearly designed for Chinese</li>
+                                <li><strong>Heavy censorship:</strong> More restrictive than competitors</li>
+                                <li><strong>No open-source models:</strong> Can't self-host</li>
+                                <li><strong>International access difficult:</strong> Requires Chinese phone/ID</li>
                             </ul>
                         </div>
                     </div>
                     
                     <div class="callout">
                         <div class="callout-title">💡 What the marketing page doesn't tell you</div>
-                        <p style="margin-bottom: 12px;"><strong>1. The censorship is real.</strong> DeepSeek refuses queries about Tiananmen, Taiwan independence, and Chinese political topics. For business use, this rarely matters. For research or journalism, it's a blocker.</p>
-                        <p style="margin-bottom: 12px;"><strong>2. "Free" consumer app isn't unlimited.</strong> The web/app interface is free but has usage caps. Heavy users will need the API (still incredibly cheap).</p>
-                        <p style="margin-bottom: 0;"><strong>3. The cache pricing is the real story.</strong> Cache hits at ¥0.2/MTok (~$0.03) mean repeated queries are essentially free. Design your apps to leverage this.</p>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <h2>Pricing Analysis</h2>
-                    
-                    <table class="pricing-table">
-                        <thead>
-                            <tr>
-                                <th>Model</th>
-                                <th>Input (Cache Miss)</th>
-                                <th>Input (Cache Hit)</th>
-                                <th>Output</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>deepseek-chat (V3.2)</td>
-                                <td>¥2/MTok (~$0.27)</td>
-                                <td>¥0.2/MTok (~$0.03)</td>
-                                <td>¥3/MTok (~$0.41)</td>
-                            </tr>
-                            <tr>
-                                <td>deepseek-reasoner (V3.2 thinking)</td>
-                                <td>¥2/MTok (~$0.27)</td>
-                                <td>¥0.2/MTok (~$0.03)</td>
-                                <td>¥3/MTok (~$0.41)</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    
-                    <div class="callout" style="background: #f0f9ff; border-color: #bae6fd;">
-                        <div class="callout-title" style="color: #0369a1;">💰 Cost comparison reality check</div>
-                        <p style="color: #0c4a6e; margin-bottom: 8px;"><strong>vs Claude Sonnet:</strong> DeepSeek is ~10x cheaper on input, ~5x cheaper on output.</p>
-                        <p style="color: #0c4a6e; margin-bottom: 8px;"><strong>vs GPT-4o:</strong> DeepSeek is ~8x cheaper overall.</p>
-                        <p style="color: #0c4a6e; margin-bottom: 0;"><strong>Monthly example:</strong> 10M tokens/month on Claude = ~$45. On DeepSeek = ~$4.</p>
+                        <p style="margin-bottom: 12px;"><strong>1. It's falling behind.</strong> Ernie was first to market in China but DeepSeek and Qwen have surpassed it on benchmarks. Baidu is playing catch-up.</p>
+                        <p style="margin-bottom: 12px;"><strong>2. The enterprise platform (Qianfan) is actually good.</strong> Model fine-tuning, agent building, and deployment tools are polished, even if the base model isn't best-in-class.</p>
+                        <p style="margin-bottom: 0;"><strong>3. Search integration is genuinely useful.</strong> For current events and Chinese web research, the Baidu Search backbone gives it an edge that pure LLMs lack.</p>
                     </div>
                 </div>
 
@@ -388,37 +332,31 @@
                     <div class="privacy-summary">
                         <div class="privacy-item">
                             <span class="privacy-icon warning">⚠</span>
-                            <span>Data processed and stored in mainland China</span>
+                            <span>Data processed in China by Baidu</span>
                         </div>
                         <div class="privacy-item">
                             <span class="privacy-icon warning">⚠</span>
                             <span>Subject to Chinese data laws and potential government access</span>
                         </div>
                         <div class="privacy-item">
-                            <span class="privacy-icon good">✓</span>
-                            <span>API data not used for training by default</span>
+                            <span class="privacy-icon bad">✗</span>
+                            <span>No open-source models for self-hosting</span>
                         </div>
                         <div class="privacy-item">
                             <span class="privacy-icon warning">⚠</span>
-                            <span>No SOC 2, HIPAA, or FedRAMP certifications</span>
-                        </div>
-                        <div class="privacy-item">
-                            <span class="privacy-icon good">✓</span>
-                            <span>Open-source models available for self-hosting</span>
+                            <span>No Western compliance certifications</span>
                         </div>
                     </div>
-                    
-                    <p><strong>Our take:</strong> For non-sensitive workloads (coding help, content generation, research), DeepSeek is fine. For anything involving PII, healthcare, or enterprise secrets, consider self-hosting their open-source models or using Western alternatives.</p>
                 </div>
 
                 <div class="section">
                     <h2>How We Tested</h2>
                     <ul>
-                        <li><strong>Duration:</strong> 14 days active testing (Feb 2026)</li>
-                        <li><strong>Tester:</strong> Hamid Ali · <strong>Cost of testing:</strong> ~$8 via API</li>
-                        <li><strong>Models tested:</strong> deepseek-chat, deepseek-reasoner (V3.2)</li>
-                        <li><strong>Test scenarios:</strong> 300+ prompts across reasoning, coding, analysis</li>
-                        <li><strong>Compared against:</strong> Claude Sonnet, GPT-4o, Gemini Pro</li>
+                        <li><strong>Duration:</strong> 7 days active testing (Feb 2026)</li>
+                        <li><strong>Tester:</strong> Hamid Ali</li>
+                        <li><strong>Access method:</strong> Consumer app + Qianfan API</li>
+                        <li><strong>Test scenarios:</strong> 150+ prompts, Chinese focus</li>
+                        <li><strong>Compared against:</strong> DeepSeek, Qwen, Doubao</li>
                     </ul>
                 </div>
 
@@ -427,19 +365,19 @@
                     
                     <div class="alternatives-grid">
                         <div class="alt-card">
-                            <div class="name">Claude</div>
-                            <div class="score">89</div>
-                            <div class="category">Best reasoning, Western compliance</div>
+                            <div class="name">DeepSeek</div>
+                            <div class="score">83</div>
+                            <div class="category">Better reasoning</div>
                         </div>
                         <div class="alt-card">
                             <div class="name">Qwen</div>
                             <div class="score">80</div>
-                            <div class="category">Alibaba's alternative</div>
+                            <div class="category">Better multimodal</div>
                         </div>
                         <div class="alt-card">
-                            <div class="name">Llama (local)</div>
-                            <div class="score">75</div>
-                            <div class="category">Self-hosted, full privacy</div>
+                            <div class="name">Doubao</div>
+                            <div class="score">78</div>
+                            <div class="category">ByteDance alternative</div>
                         </div>
                     </div>
                 </div>
