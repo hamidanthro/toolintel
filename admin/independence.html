@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Independence Management — ToolIntel Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0f2744;
+            --navy-light: #1e3a5f;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --green: #10b981;
+            --green-light: #ecfdf5;
+            --yellow: #f59e0b;
+            --yellow-light: #fffbeb;
+            --red: #ef4444;
+            --red-light: #fef2f2;
+            --orange: #f97316;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--gray-50); color: var(--gray-800); }
+        
+        header { background: var(--navy); color: white; padding: 20px 24px; }
+        header h1 { font-size: 1.5rem; font-weight: 600; }
+        header p { color: var(--gray-400); font-size: 0.9rem; margin-top: 4px; }
+        
+        .header-actions { display: flex; gap: 12px; margin-top: 12px; }
+        .header-btn { padding: 8px 16px; border-radius: 6px; font-size: 0.9rem; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+        .header-btn.primary { background: var(--blue-accent); color: white; }
+        .header-btn.secondary { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+        
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 24px; }
+        
+        .panel {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .panel-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .panel-header h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--navy);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .panel-body { padding: 20px; }
+        
+        /* Declaration Schedule */
+        .schedule-card {
+            background: var(--gray-50);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .schedule-date {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 4px;
+        }
+        
+        .schedule-label {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            margin-bottom: 16px;
+        }
+        
+        .days-remaining {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .days-remaining.ok { background: var(--green-light); color: #065f46; }
+        .days-remaining.warning { background: var(--yellow-light); color: #92400e; }
+        .days-remaining.urgent { background: var(--red-light); color: #991b1b; }
+        
+        .schedule-actions { margin-top: 20px; }
+        
+        /* Relationship Register */
+        .relationship-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .relationship-item {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--gray-100);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        .relationship-item:last-child { border-bottom: none; }
+        
+        .relationship-info h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 2px;
+        }
+        
+        .relationship-info p {
+            font-size: 0.85rem;
+            color: var(--gray-400);
+        }
+        
+        .relationship-badge {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .relationship-badge.active { background: var(--yellow-light); color: #92400e; }
+        .relationship-badge.former { background: var(--gray-100); color: var(--gray-600); }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray-400);
+        }
+        
+        .empty-state p { margin-bottom: 16px; }
+        
+        /* Conflict Concerns Queue */
+        .concern-item {
+            padding: 16px;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .concern-item:last-child { margin-bottom: 0; }
+        
+        .concern-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+        
+        .concern-tool {
+            font-weight: 600;
+            color: var(--navy);
+        }
+        
+        .concern-status {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .concern-status.pending { background: var(--yellow-light); color: #92400e; }
+        .concern-status.investigating { background: #dbeafe; color: #1d4ed8; }
+        .concern-status.resolved { background: var(--green-light); color: #065f46; }
+        .concern-status.dismissed { background: var(--gray-100); color: var(--gray-600); }
+        
+        .concern-preview {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .concern-meta {
+            font-size: 0.8rem;
+            color: var(--gray-400);
+            display: flex;
+            gap: 16px;
+        }
+        
+        .concern-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--gray-100);
+        }
+        
+        /* Full Width Sections */
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .stat-card .number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--navy);
+            line-height: 1;
+        }
+        
+        .stat-card .label {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            margin-top: 8px;
+        }
+        
+        .stat-card.green .number { color: var(--green); }
+        .stat-card.yellow .number { color: var(--yellow); }
+        .stat-card.red .number { color: var(--red); }
+        
+        /* Buttons */
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+        
+        .btn-primary { background: var(--navy); color: white; }
+        .btn-primary:hover { background: var(--navy-light); }
+        
+        .btn-success { background: var(--green); color: white; }
+        .btn-success:hover { background: #059669; }
+        
+        .btn-warning { background: var(--yellow); color: white; }
+        .btn-warning:hover { background: #d97706; }
+        
+        .btn-danger { background: var(--red); color: white; }
+        .btn-danger:hover { background: #dc2626; }
+        
+        .btn-secondary {
+            background: var(--gray-100);
+            color: var(--gray-600);
+            border: 1px solid var(--gray-200);
+        }
+        .btn-secondary:hover { background: var(--gray-200); }
+        
+        .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+        
+        /* Table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th, .data-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .data-table th {
+            background: var(--gray-50);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--gray-600);
+        }
+        
+        .data-table tbody tr:hover { background: var(--gray-50); }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+        
+        .status-dot.green { background: var(--green); }
+        .status-dot.yellow { background: var(--yellow); }
+        .status-dot.red { background: var(--red); }
+        
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .modal-overlay.active { display: flex; }
+        
+        .modal {
+            background: var(--white);
+            border-radius: 12px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--navy);
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-400);
+        }
+        
+        .modal-body { padding: 24px; }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--gray-800);
+            margin-bottom: 6px;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--gray-200);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+        
+        .form-group textarea { min-height: 100px; resize: vertical; }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+        
+        @media (max-width: 1024px) {
+            .grid { grid-template-columns: 1fr; }
+            .stats-row { grid-template-columns: repeat(3, 1fr); }
+        }
+        
+        @media (max-width: 640px) {
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .form-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🛡️ Independence Management</h1>
+        <p>Manage quarterly certifications, relationship disclosures, and conflict concerns</p>
+        <div class="header-actions">
+            <a href="/independence.html" class="header-btn secondary" target="_blank">View Public Ledger →</a>
+            <button class="header-btn primary" onclick="openCertModal()">+ New Quarterly Certification</button>
+        </div>
+    </header>
+    
+    <div class="container">
+        <!-- Stats Overview -->
+        <div class="stats-row">
+            <div class="stat-card green">
+                <div class="number" id="statIndependent">0</div>
+                <div class="label">Full Independence</div>
+            </div>
+            <div class="stat-card yellow">
+                <div class="number" id="statDisclosed">0</div>
+                <div class="label">Disclosed Relationships</div>
+            </div>
+            <div class="stat-card red">
+                <div class="number" id="statUnderReview">0</div>
+                <div class="label">Under Review</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="statConcerns">0</div>
+                <div class="label">Pending Concerns</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="statRelationships">0</div>
+                <div class="label">Disclosed Relationships</div>
+            </div>
+        </div>
+        
+        <!-- Three Panel Grid -->
+        <div class="grid">
+            <!-- Declaration Schedule -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>📅 Declaration Schedule</h2>
+                </div>
+                <div class="panel-body">
+                    <div class="schedule-card">
+                        <div class="schedule-date" id="nextCertDate">May 15</div>
+                        <div class="schedule-label">Next Quarterly Certification Due</div>
+                        <div class="days-remaining ok" id="daysRemaining">84 days remaining</div>
+                        <div class="schedule-actions">
+                            <button class="btn btn-primary" onclick="openCertModal()">Prepare Certification</button>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--gray-200);">
+                        <p style="font-size: 0.85rem; color: var(--gray-600); margin-bottom: 8px;"><strong>Recent Certifications:</strong></p>
+                        <div style="font-size: 0.9rem; color: var(--gray-600);">
+                            <div style="display: flex; justify-content: space-between; padding: 6px 0;">
+                                <span>Q1 2026</span>
+                                <span style="color: var(--green);">✓ Certified Feb 15</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 6px 0;">
+                                <span>Q4 2025</span>
+                                <span style="color: var(--green);">✓ Certified Nov 15</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Relationship Register -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>🔗 Relationship Register</h2>
+                    <button class="btn btn-sm btn-secondary" onclick="openRelationshipModal()">+ Add</button>
+                </div>
+                <div class="panel-body">
+                    <div class="relationship-list" id="relationshipList">
+                        <div class="empty-state">
+                            <p>No professional relationships disclosed.</p>
+                            <button class="btn btn-sm btn-secondary" onclick="openRelationshipModal()">Add Relationship</button>
+                        </div>
+                    </div>
+                    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--gray-200);">
+                        <p style="font-size: 0.8rem; color: var(--gray-400);">
+                            ⚠️ Review quarterly. Next review: <strong>May 15, 2026</strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Conflict Concerns Queue -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>⚠️ Conflict Concerns Queue</h2>
+                    <span class="concern-status pending" id="pendingCount">0 pending</span>
+                </div>
+                <div class="panel-body">
+                    <div id="concernsList">
+                        <div class="empty-state">
+                            <p>No pending conflict concerns.</p>
+                            <span style="font-size: 0.85rem;">Concerns submitted via the public ledger will appear here.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Full Independence Table -->
+        <div class="panel full-width">
+            <div class="panel-header">
+                <h2>📋 Independence Declaration Table</h2>
+                <div style="display: flex; gap: 12px;">
+                    <input type="text" id="tableSearch" placeholder="Search tools..." style="padding: 8px 12px; border: 1px solid var(--gray-200); border-radius: 6px; font-size: 0.9rem;">
+                    <button class="btn btn-secondary" onclick="exportData()">📥 Export</button>
+                </div>
+            </div>
+            <div class="panel-body" style="padding: 0;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Tool</th>
+                            <th>Vendor</th>
+                            <th>Review Date</th>
+                            <th>Reviewer</th>
+                            <th>Status</th>
+                            <th>Last Verified</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Certification Modal -->
+    <div class="modal-overlay" id="certModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>New Quarterly Certification</h3>
+                <button class="modal-close" onclick="closeCertModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Certification Period</label>
+                    <div class="form-row">
+                        <input type="date" id="periodStart" placeholder="Start Date">
+                        <input type="date" id="periodEnd" placeholder="End Date">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Declaration Text</label>
+                    <textarea id="certText" readonly style="background: var(--gray-50);">As of [date], I, Hamid Ali, confirm that I hold no equity stake, advisory role, employment relationship, consulting arrangement, affiliate agreement, or any other financial interest in any company whose tools are listed in the ToolIntel review database.
+
+I have received no payment, free extended access beyond standard review testing, gifts, or other compensation from any reviewed vendor.
+
+This declaration covers the period from [start date] to [end date] and supersedes all previous declarations. Any change to this declaration will be published within 24 hours of the change occurring.</textarea>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="certConfirm" style="width: auto; margin-right: 8px;">
+                        I confirm this declaration is accurate and complete
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeCertModal()">Cancel</button>
+                <button class="btn btn-success" onclick="submitCertification()">Sign & Publish</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Relationship Modal -->
+    <div class="modal-overlay" id="relationshipModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Add Professional Relationship</h3>
+                <button class="modal-close" onclick="closeRelationshipModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Company Name</label>
+                    <input type="text" id="relCompany" placeholder="e.g., OpenAI, Anthropic">
+                </div>
+                <div class="form-group">
+                    <label>Relationship Type</label>
+                    <select id="relType">
+                        <option value="">Select type...</option>
+                        <option value="former-employer">Former Employer</option>
+                        <option value="client">Client</option>
+                        <option value="investor">Investor</option>
+                        <option value="advisor">Advisor</option>
+                        <option value="personal">Personal Connection</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Period of Relationship</label>
+                    <div class="form-row">
+                        <input type="text" id="relStart" placeholder="Start (e.g., Jan 2020)">
+                        <input type="text" id="relEnd" placeholder="End (e.g., Dec 2023 or Present)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Does this company have a reviewed tool?</label>
+                    <select id="relHasTool">
+                        <option value="no">No</option>
+                        <option value="yes">Yes</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Notes (optional)</label>
+                    <textarea id="relNotes" placeholder="Any additional context..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeRelationshipModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="submitRelationship()">Add Relationship</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Concern Detail Modal -->
+    <div class="modal-overlay" id="concernModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Conflict Concern Details</h3>
+                <button class="modal-close" onclick="closeConcernModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="concernModalBody">
+                <!-- Populated dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeConcernModal()">Close</button>
+                <button class="btn btn-warning" onclick="investigateConcern()">Begin Investigation</button>
+                <button class="btn btn-danger" onclick="dismissConcern()">Dismiss</button>
+                <button class="btn btn-success" onclick="resolveConcern()">Mark Resolved</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://v7086lxsji.execute-api.us-east-1.amazonaws.com';
+        const urlParams = new URLSearchParams(window.location.search);
+        const ADMIN_KEY = urlParams.get('key');
+        
+        // Sample data
+        const independenceData = [
+            { tool: 'ChatGPT', vendor: 'OpenAI', published: '2026-02-15', reviewer: 'Hamid Ali', status: 'green', verified: '2026-02-15' },
+            { tool: 'Claude', vendor: 'Anthropic', published: '2026-02-14', reviewer: 'Hamid Ali', status: 'green', verified: '2026-02-14' },
+            { tool: 'Gemini', vendor: 'Google', published: '2026-02-13', reviewer: 'Hamid Ali', status: 'green', verified: '2026-02-13' },
+            { tool: 'Midjourney', vendor: 'Midjourney Inc', published: '2026-02-12', reviewer: 'Hamid Ali', status: 'green', verified: '2026-02-12' },
+            { tool: 'DALL-E 3', vendor: 'OpenAI', published: '2026-02-11', reviewer: 'Hamid Ali', status: 'green', verified: '2026-02-11' },
+            { tool: 'Cursor', vendor: 'Anysphere', published: '2026-02-10', reviewer: 'Hamid Ali', status: 'green', verified: '2026-02-10' },
+            { tool: 'GitHub Copilot', vendor: 'GitHub/Microsoft', published: '2026-02-09', reviewer: 'Hamid Ali', status: 'green', verified: '2026-02-09' },
+            { tool: 'Perplexity', vendor: 'Perplexity AI', published: '2026-02-08', reviewer: 'Hamid Ali', status: 'green', verified: '2026-02-08' },
+            { tool: 'Jasper', vendor: 'Jasper AI', published: '2026-02-07', reviewer: 'Hamid Ali', status: 'green', verified: '2026-02-07' },
+            { tool: 'Copy.ai', vendor: 'Copy.ai', published: '2026-02-06', reviewer: 'Hamid Ali', status: 'green', verified: '2026-02-06' },
+            { tool: 'ElevenLabs', vendor: 'ElevenLabs', published: '2026-02-05', reviewer: 'Hamid Ali', status: 'green', verified: '2026-02-05' },
+            { tool: 'Runway', vendor: 'Runway ML', published: '2026-02-04', reviewer: 'Hamid Ali', status: 'green', verified: '2026-02-04' },
+            { tool: 'Notion AI', vendor: 'Notion Labs', published: '2026-02-03', reviewer: 'Hamid Ali', status: 'green', verified: '2026-02-03' },
+            { tool: 'Otter.ai', vendor: 'Otter.ai', published: '2026-02-02', reviewer: 'Hamid Ali', status: 'green', verified: '2026-02-02' },
+            { tool: 'Stable Diffusion', vendor: 'Stability AI', published: '2026-02-01', reviewer: 'Hamid Ali', status: 'green', verified: '2026-02-01' },
+            { tool: 'Suno', vendor: 'Suno AI', published: '2026-01-31', reviewer: 'Hamid Ali', status: 'green', verified: '2026-01-31' },
+            { tool: 'DeepSeek', vendor: 'DeepSeek', published: '2026-01-30', reviewer: 'Hamid Ali', status: 'green', verified: '2026-01-30' },
+            { tool: 'Intercom Fin', vendor: 'Intercom', published: '2026-01-29', reviewer: 'Hamid Ali', status: 'green', verified: '2026-01-29' }
+        ];
+        
+        let concerns = [];
+        let relationships = [];
+        
+        function updateStats() {
+            document.getElementById('statIndependent').textContent = independenceData.filter(d => d.status === 'green').length;
+            document.getElementById('statDisclosed').textContent = independenceData.filter(d => d.status === 'yellow').length;
+            document.getElementById('statUnderReview').textContent = independenceData.filter(d => d.status === 'red').length;
+            document.getElementById('statConcerns').textContent = concerns.filter(c => c.status === 'pending').length;
+            document.getElementById('statRelationships').textContent = relationships.length;
+            document.getElementById('pendingCount').textContent = `${concerns.filter(c => c.status === 'pending').length} pending`;
+        }
+        
+        function updateSchedule() {
+            const nextCert = new Date('2026-05-15');
+            const today = new Date();
+            const daysLeft = Math.ceil((nextCert - today) / (1000 * 60 * 60 * 24));
+            
+            document.getElementById('nextCertDate').textContent = nextCert.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            
+            const daysEl = document.getElementById('daysRemaining');
+            daysEl.textContent = `${daysLeft} days remaining`;
+            
+            if (daysLeft <= 7) {
+                daysEl.className = 'days-remaining urgent';
+            } else if (daysLeft <= 14) {
+                daysEl.className = 'days-remaining warning';
+            } else {
+                daysEl.className = 'days-remaining ok';
+            }
+        }
+        
+        function renderTable() {
+            const search = document.getElementById('tableSearch').value.toLowerCase();
+            const filtered = independenceData.filter(d => 
+                d.tool.toLowerCase().includes(search) || 
+                d.vendor.toLowerCase().includes(search)
+            );
+            
+            document.getElementById('tableBody').innerHTML = filtered.map(item => `
+                <tr>
+                    <td><strong>${item.tool}</strong></td>
+                    <td>${item.vendor}</td>
+                    <td>${formatDate(item.published)}</td>
+                    <td>${item.reviewer}</td>
+                    <td><span class="status-dot ${item.status}"></span>${getStatusLabel(item.status)}</td>
+                    <td>${formatDate(item.verified)}</td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary" onclick="editStatus('${item.tool}')">Edit</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        function renderConcerns() {
+            if (concerns.length === 0) {
+                document.getElementById('concernsList').innerHTML = `
+                    <div class="empty-state">
+                        <p>No pending conflict concerns.</p>
+                        <span style="font-size: 0.85rem;">Concerns submitted via the public ledger will appear here.</span>
+                    </div>
+                `;
+                return;
+            }
+            
+            document.getElementById('concernsList').innerHTML = concerns.map((c, i) => `
+                <div class="concern-item">
+                    <div class="concern-header">
+                        <span class="concern-tool">${c.toolVendor}</span>
+                        <span class="concern-status ${c.status}">${c.status}</span>
+                    </div>
+                    <div class="concern-preview">${c.concern}</div>
+                    <div class="concern-meta">
+                        <span>From: ${c.name}</span>
+                        <span>Submitted: ${formatDate(c.submitted)}</span>
+                    </div>
+                    <div class="concern-actions">
+                        <button class="btn btn-sm btn-secondary" onclick="viewConcern(${i})">View Details</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function renderRelationships() {
+            if (relationships.length === 0) {
+                document.getElementById('relationshipList').innerHTML = `
+                    <div class="empty-state">
+                        <p>No professional relationships disclosed.</p>
+                        <button class="btn btn-sm btn-secondary" onclick="openRelationshipModal()">Add Relationship</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            document.getElementById('relationshipList').innerHTML = relationships.map(r => `
+                <div class="relationship-item">
+                    <div class="relationship-info">
+                        <h4>${r.company}</h4>
+                        <p>${r.type} • ${r.period}</p>
+                    </div>
+                    <span class="relationship-badge ${r.current ? 'active' : 'former'}">${r.current ? 'Active' : 'Former'}</span>
+                </div>
+            `).join('');
+        }
+        
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+        
+        function getStatusLabel(status) {
+            const labels = {
+                green: 'Full Independence',
+                yellow: 'Disclosed',
+                red: 'Under Review'
+            };
+            return labels[status];
+        }
+        
+        // Modal functions
+        function openCertModal() {
+            document.getElementById('certModal').classList.add('active');
+            const today = new Date();
+            const threeMonthsAgo = new Date(today);
+            threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+            document.getElementById('periodStart').value = threeMonthsAgo.toISOString().split('T')[0];
+            document.getElementById('periodEnd').value = today.toISOString().split('T')[0];
+        }
+        
+        function closeCertModal() {
+            document.getElementById('certModal').classList.remove('active');
+        }
+        
+        function openRelationshipModal() {
+            document.getElementById('relationshipModal').classList.add('active');
+        }
+        
+        function closeRelationshipModal() {
+            document.getElementById('relationshipModal').classList.remove('active');
+        }
+        
+        function closeConcernModal() {
+            document.getElementById('concernModal').classList.remove('active');
+        }
+        
+        function viewConcern(index) {
+            const c = concerns[index];
+            document.getElementById('concernModalBody').innerHTML = `
+                <div class="form-group">
+                    <label>Submitter</label>
+                    <p>${c.name} (${c.email})</p>
+                </div>
+                <div class="form-group">
+                    <label>Tool/Vendor</label>
+                    <p>${c.toolVendor}</p>
+                </div>
+                <div class="form-group">
+                    <label>Concern</label>
+                    <p>${c.concern}</p>
+                </div>
+                <div class="form-group">
+                    <label>Evidence</label>
+                    <p>${c.evidence || 'None provided'}</p>
+                </div>
+                <div class="form-group">
+                    <label>Submitted</label>
+                    <p>${formatDate(c.submitted)}</p>
+                </div>
+            `;
+            document.getElementById('concernModal').classList.add('active');
+        }
+        
+        async function submitCertification() {
+            if (!document.getElementById('certConfirm').checked) {
+                alert('Please confirm the declaration is accurate.');
+                return;
+            }
+            
+            alert('Certification published successfully!');
+            closeCertModal();
+        }
+        
+        function submitRelationship() {
+            const company = document.getElementById('relCompany').value;
+            const type = document.getElementById('relType').value;
+            
+            if (!company || !type) {
+                alert('Please fill in required fields.');
+                return;
+            }
+            
+            relationships.push({
+                company,
+                type: document.getElementById('relType').options[document.getElementById('relType').selectedIndex].text,
+                period: `${document.getElementById('relStart').value} - ${document.getElementById('relEnd').value}`,
+                current: document.getElementById('relEnd').value.toLowerCase() === 'present',
+                hasTool: document.getElementById('relHasTool').value === 'yes'
+            });
+            
+            renderRelationships();
+            updateStats();
+            closeRelationshipModal();
+            alert('Relationship added.');
+        }
+        
+        function editStatus(tool) {
+            const newStatus = prompt(`Update status for ${tool}:\n\nEnter: green, yellow, or red`);
+            if (newStatus && ['green', 'yellow', 'red'].includes(newStatus)) {
+                const item = independenceData.find(d => d.tool === tool);
+                if (item) {
+                    item.status = newStatus;
+                    item.verified = new Date().toISOString().split('T')[0];
+                    renderTable();
+                    updateStats();
+                }
+            }
+        }
+        
+        function exportData() {
+            const csv = [
+                ['Tool', 'Vendor', 'Published', 'Reviewer', 'Status', 'Verified'].join(','),
+                ...independenceData.map(d => [d.tool, d.vendor, d.published, d.reviewer, d.status, d.verified].join(','))
+            ].join('\n');
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'independence-ledger.csv';
+            a.click();
+        }
+        
+        function investigateConcern() {
+            alert('Concern marked as under investigation. Independent reviewer will be notified.');
+            closeConcernModal();
+        }
+        
+        function dismissConcern() {
+            if (confirm('Are you sure you want to dismiss this concern? A finding will be published.')) {
+                alert('Concern dismissed. No-conflict finding will be published.');
+                closeConcernModal();
+            }
+        }
+        
+        function resolveConcern() {
+            alert('Concern resolved. The resolution will be published.');
+            closeConcernModal();
+        }
+        
+        // Search listener
+        document.getElementById('tableSearch').addEventListener('input', renderTable);
+        
+        // Load concerns from API
+        async function loadConcerns() {
+            try {
+                const res = await fetch(`${API_BASE}/independence/concerns?key=${ADMIN_KEY}`);
+                if (res.ok) {
+                    concerns = await res.json();
+                    renderConcerns();
+                    updateStats();
+                }
+            } catch (e) {
+                console.log('Could not load concerns');
+            }
+        }
+        
+        // Initialize
+        updateStats();
+        updateSchedule();
+        renderTable();
+        renderConcerns();
+        renderRelationships();
+        
+        if (ADMIN_KEY) {
+            loadConcerns();
+        }
+    </script>
+</body>
+</html>
