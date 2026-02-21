@@ -56,6 +56,34 @@
         .nav-links a:hover { color: var(--navy); }
         .nav-links a.primary { background: var(--navy); color: white; padding: 8px 16px; border-radius: 6px; }
         .nav-links a.primary:hover { background: var(--navy-light); }
+        /* Dropdown */
+        .nav-dropdown { position: relative; }
+        .nav-dropdown-trigger { cursor: pointer; display: flex; align-items: center; gap: 4px; }
+        .nav-dropdown-trigger::after { content: '▾'; font-size: 0.7rem; }
+        .nav-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            min-width: 200px;
+            padding: 8px 0;
+            margin-top: 8px;
+            z-index: 1000;
+        }
+        .nav-dropdown:hover .nav-dropdown-menu { display: block; }
+        .nav-dropdown-menu a {
+            display: block;
+            padding: 10px 16px;
+            color: var(--gray-600) !important;
+            font-size: 0.9rem !important;
+        }
+        .nav-dropdown-menu a:hover { background: var(--gray-100); color: var(--navy) !important; }
+        .nav-dropdown-divider { height: 1px; background: var(--gray-200); margin: 8px 0; }
+        
+
         
         .hero {
             padding: 80px 0 60px;
@@ -195,6 +223,21 @@
                 <a href="/methodology.html">Methodology</a>
                 <a href="/transparency.html">Transparency</a>
                 <a href="/reviews.html">Reviews</a>
+                <div class="nav-dropdown">
+                    <span class="nav-dropdown-trigger">More</span>
+                    <div class="nav-dropdown-menu">
+                        <a href="/compare.html">Compare Tools</a>
+                        <a href="/intelligence.html">Market Intelligence</a>
+                        <a href="/hype-index.html">Hype Index</a>
+                        <a href="/pricing-history.html">Pricing History</a>
+                        <div class="nav-dropdown-divider"></div>
+                        <a href="/independence.html">Independence Ledger</a>
+                        <a href="/expert-network.html">Expert Network</a>
+                        <a href="/api.html">API</a>
+                        <div class="nav-dropdown-divider"></div>
+                        <a href="/about.html">About</a>
+                    </div>
+                </div>
                 <a href="/submit.html" class="primary">Submit Tool</a>
             </div>
         </nav>
