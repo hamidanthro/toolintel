@@ -1,304 +1,343 @@
-// Lambda for certification verification system
-// DynamoDB table: toolintel-certifications
-// S3 bucket: toolintel-certifications-pdfs
-
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
-const { DynamoDBDocumentClient, PutCommand, QueryCommand, ScanCommand, UpdateCommand, GetCommand } = require('@aws-sdk/lib-dynamodb');
-const { S3Client, PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3');
-const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
-const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses');
-const crypto = require('crypto');
+const { DynamoDBDocumentClient, PutCommand, ScanCommand, UpdateCommand, GetCommand, QueryCommand } = require('@aws-sdk/lib-dynamodb');
 
-const ddbClient = new DynamoDBClient({ region: 'us-east-1' });
-const ddb = DynamoDBDocumentClient.from(ddbClient);
-const s3 = new S3Client({ region: 'us-east-1' });
-const ses = new SESClient({ region: 'us-east-1' });
+const client = new DynamoDBClient({ region: 'us-east-1' });
+const ddb = DynamoDBDocumentClient.from(client);
 
-const TABLE = 'toolintel-certifications';
-const BUCKET = 'toolintel-certifications-pdfs';
-const ADMIN_KEY = process.env.ADMIN_KEY || 'toolintel-admin-2026';
-const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || 'hamid.ali87@gmail.com';
-const FROM_EMAIL = process.env.FROM_EMAIL || 'wealthdeskpro@gmail.com';
+const TABLE_CERTS = 'toolintel-certifications';
+const TABLE_VERIFICATIONS = 'toolintel-cert-verifications';
+const TABLE_SUBMISSIONS = 'toolintel-cert-submissions';
 
-const headers = {
-    'Content-Type': 'application/json',
+const CORS = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, PATCH, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS'
 };
 
-const CERT_TYPES = [
-    'SOC 2 Type I',
-    'SOC 2 Type II', 
-    'ISO 27001',
-    'HIPAA BAA',
-    'GDPR Compliance Documentation',
-    'EU AI Act Conformity Assessment',
-    'FedRAMP',
-    'HITRUST',
-    'Other'
-];
-
-function isValidEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-function isValidDate(dateStr) {
-    const d = new Date(dateStr);
-    return d instanceof Date && !isNaN(d);
-}
-
-async function sendNotificationEmail(subject, body) {
-    try {
-        await ses.send(new SendEmailCommand({
-            Source: FROM_EMAIL,
-            Destination: { ToAddresses: [NOTIFY_EMAIL] },
-            Message: {
-                Subject: { Data: subject },
-                Body: { Text: { Data: body } }
-            }
-        }));
-    } catch (err) {
-        console.error('Email failed:', err);
-    }
-}
+const ADMIN_KEY = process.env.ADMIN_KEY;
 
 exports.handler = async (event) => {
-    const path = event.path || event.rawPath || '';
-    const method = event.httpMethod || event.requestContext?.http?.method;
-    const query = event.queryStringParameters || {};
-
-    // Handle CORS preflight
+    const method = event.requestContext?.http?.method || event.httpMethod;
+    
     if (method === 'OPTIONS') {
-        return { statusCode: 200, headers, body: '' };
+        return { statusCode: 200, headers: CORS, body: '' };
     }
 
+    const path = event.rawPath || event.path;
+
     try {
-        // GET /certifications/upload-url - get presigned URL for PDF upload
-        if (method === 'GET' && path === '/certifications/upload-url') {
-            const filename = query.filename;
-            if (!filename) {
-                return { statusCode: 400, headers, body: JSON.stringify({ error: 'filename required' }) };
-            }
-            
-            const key = `pending/${crypto.randomUUID()}-${filename.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-            const command = new PutObjectCommand({
-                Bucket: BUCKET,
-                Key: key,
-                ContentType: 'application/pdf'
-            });
-            
-            const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 300 });
-            return { statusCode: 200, headers, body: JSON.stringify({ uploadUrl, key }) };
+        // Get public stats
+        if (path === '/certifications/stats' && method === 'GET') {
+            const [certs, submissions] = await Promise.all([
+                ddb.send(new ScanCommand({ TableName: TABLE_CERTS })),
+                ddb.send(new ScanCommand({ TableName: TABLE_SUBMISSIONS }))
+            ]);
+
+            const certItems = certs.Items || [];
+            const subItems = submissions.Items || [];
+
+            const verified = certItems.filter(c => c.status === 'verified').length;
+            const tools = [...new Set(certItems.map(c => c.toolId))].length;
+            const pending = subItems.filter(s => s.status === 'pending').length;
+
+            return {
+                statusCode: 200,
+                headers: CORS,
+                body: JSON.stringify({ verified, tools, pending })
+            };
         }
 
-        // GET /certifications?toolSlug=X&status=verified - get verified certs for a tool (public)
-        if (method === 'GET' && path === '/certifications' && query.toolSlug) {
-            const status = query.status || 'verified';
-            
-            const result = await ddb.send(new QueryCommand({
-                TableName: TABLE,
-                IndexName: 'tool-status-index',
-                KeyConditionExpression: 'toolSlug = :tool AND #status = :status',
-                ExpressionAttributeNames: { '#status': 'status' },
-                ExpressionAttributeValues: { ':tool': query.toolSlug, ':status': status }
+        // Submit certification for verification (public)
+        if (path === '/certifications/submit' && method === 'POST') {
+            const body = JSON.parse(event.body);
+            const submission = {
+                id: `sub-${Date.now()}`,
+                toolName: body.toolName,
+                vendorName: body.vendorName,
+                contactName: body.contactName,
+                contactEmail: body.contactEmail,
+                certType: body.certType,
+                issuingBody: body.issuingBody,
+                issueDate: body.issueDate,
+                expirationDate: body.expirationDate,
+                certNumber: body.certNumber || '',
+                registryUrl: body.registryUrl || '',
+                status: 'pending',
+                submitted: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+
+            await ddb.send(new PutCommand({
+                TableName: TABLE_SUBMISSIONS,
+                Item: submission
             }));
-            
-            // Return public fields only
-            const certs = (result.Items || []).map(c => ({
-                id: c.id,
-                toolSlug: c.toolSlug,
-                companyName: c.companyName,
-                toolName: c.toolName,
-                certType: c.certType,
-                issuingBody: c.issuingBody,
-                auditDate: c.auditDate,
-                expirationDate: c.expirationDate,
-                verifiedAt: c.verifiedAt,
-                status: c.status
-            }));
-            
-            return { statusCode: 200, headers, body: JSON.stringify(certs) };
+
+            return {
+                statusCode: 200,
+                headers: CORS,
+                body: JSON.stringify({ success: true, id: submission.id })
+            };
         }
 
-        // GET /certifications/public - get all verified certs (public registry)
-        if (method === 'GET' && path === '/certifications/public') {
+        // Get leaderboard (public)
+        if (path === '/certifications/leaderboard' && method === 'GET') {
             const result = await ddb.send(new ScanCommand({
-                TableName: TABLE,
+                TableName: TABLE_CERTS,
                 FilterExpression: '#status = :verified',
                 ExpressionAttributeNames: { '#status': 'status' },
                 ExpressionAttributeValues: { ':verified': 'verified' }
             }));
-            
-            const certs = (result.Items || []).map(c => ({
-                id: c.id,
-                toolSlug: c.toolSlug,
-                companyName: c.companyName,
-                toolName: c.toolName,
-                certType: c.certType,
-                issuingBody: c.issuingBody,
-                auditDate: c.auditDate,
-                expirationDate: c.expirationDate,
-                verifiedAt: c.verifiedAt
-            })).sort((a, b) => a.toolName.localeCompare(b.toolName));
-            
-            return { statusCode: 200, headers, body: JSON.stringify(certs) };
-        }
 
-        // GET /certifications/admin - get all certs (admin only)
-        if (method === 'GET' && path === '/certifications/admin') {
-            if (query.key !== ADMIN_KEY) {
-                return { statusCode: 401, headers, body: JSON.stringify({ error: 'unauthorized' }) };
-            }
+            const certs = result.Items || [];
             
-            const result = await ddb.send(new ScanCommand({ TableName: TABLE }));
-            const items = (result.Items || []).sort((a, b) => 
-                new Date(b.submittedAt) - new Date(a.submittedAt)
-            );
-            
-            // Add expiring soon flag (within 60 days)
-            const now = new Date();
-            const sixtyDays = 60 * 24 * 60 * 60 * 1000;
-            items.forEach(item => {
-                if (item.status === 'verified' && item.expirationDate) {
-                    const exp = new Date(item.expirationDate);
-                    item.expiringSoon = (exp - now) < sixtyDays && (exp - now) > 0;
-                    item.isExpired = exp < now;
+            // Group by tool and count
+            const toolCounts = {};
+            certs.forEach(cert => {
+                if (!toolCounts[cert.toolId]) {
+                    toolCounts[cert.toolId] = {
+                        toolId: cert.toolId,
+                        toolName: cert.toolName,
+                        vendorName: cert.vendorName,
+                        certs: []
+                    };
                 }
+                toolCounts[cert.toolId].certs.push(cert.certType);
             });
-            
-            return { statusCode: 200, headers, body: JSON.stringify(items) };
-        }
 
-        // GET /certifications/pdf/:key - get presigned URL to view PDF (admin)
-        if (method === 'GET' && path.startsWith('/certifications/pdf/')) {
-            if (query.key !== ADMIN_KEY) {
-                return { statusCode: 401, headers, body: JSON.stringify({ error: 'unauthorized' }) };
-            }
-            
-            const pdfKey = decodeURIComponent(path.replace('/certifications/pdf/', ''));
-            const command = new GetObjectCommand({ Bucket: BUCKET, Key: pdfKey });
-            const viewUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
-            
-            return { statusCode: 200, headers, body: JSON.stringify({ viewUrl }) };
-        }
+            // Sort by count
+            const leaderboard = Object.values(toolCounts)
+                .map(t => ({ ...t, count: t.certs.length }))
+                .sort((a, b) => b.count - a.count);
 
-        // POST /certifications - submit new certification
-        if (method === 'POST' && path === '/certifications') {
-            const body = JSON.parse(event.body || '{}');
-            const {
-                toolSlug, companyName, toolName, certType, issuingBody,
-                auditDate, expirationDate, pdfKey, contactEmail, confirmation
-            } = body;
-            
-            // Validate required fields
-            const required = { toolSlug, companyName, toolName, certType, issuingBody, auditDate, expirationDate, pdfKey, contactEmail };
-            const missing = Object.entries(required).filter(([k, v]) => !v).map(([k]) => k);
-            if (missing.length > 0) {
-                return { statusCode: 400, headers, body: JSON.stringify({ error: `Missing required fields: ${missing.join(', ')}` }) };
-            }
-            
-            if (!confirmation) {
-                return { statusCode: 400, headers, body: JSON.stringify({ error: 'Confirmation checkbox required' }) };
-            }
-            
-            if (!isValidEmail(contactEmail)) {
-                return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid email format' }) };
-            }
-            
-            if (!CERT_TYPES.includes(certType)) {
-                return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid certification type' }) };
-            }
-            
-            if (!isValidDate(auditDate) || !isValidDate(expirationDate)) {
-                return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid date format' }) };
-            }
-            
-            const item = {
-                id: crypto.randomUUID(),
-                toolSlug,
-                companyName: companyName.substring(0, 200),
-                toolName: toolName.substring(0, 200),
-                certType,
-                issuingBody: issuingBody.substring(0, 200),
-                auditDate,
-                expirationDate,
-                pdfKey,
-                contactEmail: contactEmail.toLowerCase(),
-                status: 'pending',
-                submittedAt: new Date().toISOString()
+            return {
+                statusCode: 200,
+                headers: CORS,
+                body: JSON.stringify(leaderboard)
             };
-            
-            await ddb.send(new PutCommand({ TableName: TABLE, Item: item }));
-            
-            // Send notification
-            await sendNotificationEmail(
-                `[ToolIntel] New Certification: ${toolName} - ${certType}`,
-                `New certification submission for verification.
-
-Tool: ${toolName} (${toolSlug})
-Company: ${companyName}
-Certification: ${certType}
-Issuing Body: ${issuingBody}
-Audit Date: ${auditDate}
-Expiration: ${expirationDate}
-Contact: ${contactEmail}
-
-Review: https://toolintel.ai/admin/certifications.html?key=${ADMIN_KEY}
-`
-            );
-            
-            return { statusCode: 201, headers, body: JSON.stringify({ success: true, id: item.id }) };
         }
 
-        // PATCH /certifications/:id - update status (admin only)
-        if (method === 'PATCH' && path.startsWith('/certifications/') && !path.includes('/pdf/')) {
-            const id = path.split('/').pop();
-            const body = JSON.parse(event.body || '{}');
+        // Get certifications for a tool (public)
+        if (path.startsWith('/certifications/tool/') && method === 'GET') {
+            const toolId = path.split('/').pop();
             
-            if (body.key !== ADMIN_KEY) {
-                return { statusCode: 401, headers, body: JSON.stringify({ error: 'unauthorized' }) };
-            }
-            
-            const validStatuses = ['pending', 'under-review', 'verified', 'rejected'];
-            if (!validStatuses.includes(body.status)) {
-                return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid status' }) };
-            }
-            
-            if (body.status === 'rejected' && !body.rejectionReason) {
-                return { statusCode: 400, headers, body: JSON.stringify({ error: 'Rejection reason required' }) };
-            }
-            
-            const updateExpr = body.status === 'verified'
-                ? 'SET #status = :status, verifiedAt = :now, verificationNotes = :notes'
-                : body.status === 'rejected'
-                    ? 'SET #status = :status, rejectedAt = :now, rejectionReason = :reason, verificationNotes = :notes'
-                    : 'SET #status = :status, verificationNotes = :notes';
-            
-            const exprValues = {
-                ':status': body.status,
-                ':now': new Date().toISOString(),
-                ':notes': body.verificationNotes || ''
-            };
-            if (body.status === 'rejected') {
-                exprValues[':reason'] = body.rejectionReason;
-            }
-            
-            await ddb.send(new UpdateCommand({
-                TableName: TABLE,
-                Key: { id },
-                UpdateExpression: updateExpr,
-                ExpressionAttributeNames: { '#status': 'status' },
-                ExpressionAttributeValues: exprValues
+            const result = await ddb.send(new ScanCommand({
+                TableName: TABLE_CERTS,
+                FilterExpression: 'toolId = :toolId',
+                ExpressionAttributeValues: { ':toolId': toolId }
             }));
-            
-            return { statusCode: 200, headers, body: JSON.stringify({ success: true }) };
+
+            return {
+                statusCode: 200,
+                headers: CORS,
+                body: JSON.stringify(result.Items || [])
+            };
         }
 
-        return { statusCode: 404, headers, body: JSON.stringify({ error: 'not found' }) };
+        // Admin: Get all submissions
+        if (path === '/certifications/admin/submissions' && method === 'GET') {
+            const key = event.queryStringParameters?.key;
+            if (key !== ADMIN_KEY) {
+                return { statusCode: 401, headers: CORS, body: JSON.stringify({ error: 'Unauthorized' }) };
+            }
+
+            const result = await ddb.send(new ScanCommand({
+                TableName: TABLE_SUBMISSIONS
+            }));
+
+            return {
+                statusCode: 200,
+                headers: CORS,
+                body: JSON.stringify(result.Items || [])
+            };
+        }
+
+        // Admin: Get all certifications
+        if (path === '/certifications/admin' && method === 'GET') {
+            const key = event.queryStringParameters?.key;
+            if (key !== ADMIN_KEY) {
+                return { statusCode: 401, headers: CORS, body: JSON.stringify({ error: 'Unauthorized' }) };
+            }
+
+            const result = await ddb.send(new ScanCommand({
+                TableName: TABLE_CERTS
+            }));
+
+            const items = result.Items || [];
+            const now = new Date();
+            const in90Days = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000);
+
+            return {
+                statusCode: 200,
+                headers: CORS,
+                body: JSON.stringify({
+                    certifications: items,
+                    stats: {
+                        verified: items.filter(c => c.status === 'verified').length,
+                        pending: items.filter(c => c.status === 'pending').length,
+                        verifying: items.filter(c => c.status === 'verifying').length,
+                        expiring: items.filter(c => c.status === 'verified' && new Date(c.expirationDate) <= in90Days && new Date(c.expirationDate) > now).length,
+                        expired: items.filter(c => c.status === 'expired' || (c.status === 'verified' && new Date(c.expirationDate) <= now)).length
+                    }
+                })
+            };
+        }
+
+        // Admin: Start verification
+        if (path === '/certifications/admin/verify' && method === 'POST') {
+            const key = event.queryStringParameters?.key;
+            if (key !== ADMIN_KEY) {
+                return { statusCode: 401, headers: CORS, body: JSON.stringify({ error: 'Unauthorized' }) };
+            }
+
+            const body = JSON.parse(event.body);
+            
+            // Update submission status
+            await ddb.send(new UpdateCommand({
+                TableName: TABLE_SUBMISSIONS,
+                Key: { id: body.submissionId },
+                UpdateExpression: 'SET #status = :status, updatedAt = :now',
+                ExpressionAttributeNames: { '#status': 'status' },
+                ExpressionAttributeValues: {
+                    ':status': 'verifying',
+                    ':now': new Date().toISOString()
+                }
+            }));
+
+            return {
+                statusCode: 200,
+                headers: CORS,
+                body: JSON.stringify({ success: true })
+            };
+        }
+
+        // Admin: Complete verification
+        if (path === '/certifications/admin/complete' && method === 'POST') {
+            const key = event.queryStringParameters?.key;
+            if (key !== ADMIN_KEY) {
+                return { statusCode: 401, headers: CORS, body: JSON.stringify({ error: 'Unauthorized' }) };
+            }
+
+            const body = JSON.parse(event.body);
+            const now = new Date().toISOString();
+
+            // Create certification record
+            const certification = {
+                id: `cert-${Date.now()}`,
+                toolId: body.toolId,
+                toolName: body.toolName,
+                vendorName: body.vendorName,
+                certType: body.certType,
+                issuingBody: body.issuingBody,
+                issueDate: body.issueDate,
+                expirationDate: body.expirationDate,
+                certNumber: body.certNumber || '',
+                status: body.outcome === 'verified' ? 'verified' : 'not-verified',
+                verifiedAt: now,
+                verificationMethod: body.method,
+                verificationSource: body.source,
+                verificationDocument: body.document,
+                createdAt: now,
+                updatedAt: now
+            };
+
+            await ddb.send(new PutCommand({
+                TableName: TABLE_CERTS,
+                Item: certification
+            }));
+
+            // Log verification
+            const verification = {
+                id: `ver-${Date.now()}`,
+                certificationId: certification.id,
+                toolName: body.toolName,
+                certType: body.certType,
+                action: 'verification',
+                method: body.method,
+                source: body.source,
+                document: body.document,
+                outcome: body.outcome,
+                notes: body.notes || '',
+                timestamp: now
+            };
+
+            await ddb.send(new PutCommand({
+                TableName: TABLE_VERIFICATIONS,
+                Item: verification
+            }));
+
+            // Update submission status
+            if (body.submissionId) {
+                await ddb.send(new UpdateCommand({
+                    TableName: TABLE_SUBMISSIONS,
+                    Key: { id: body.submissionId },
+                    UpdateExpression: 'SET #status = :status, certificationId = :certId, updatedAt = :now',
+                    ExpressionAttributeNames: { '#status': 'status' },
+                    ExpressionAttributeValues: {
+                        ':status': 'completed',
+                        ':certId': certification.id,
+                        ':now': now
+                    }
+                }));
+            }
+
+            return {
+                statusCode: 200,
+                headers: CORS,
+                body: JSON.stringify({ success: true, certificationId: certification.id })
+            };
+        }
+
+        // Admin: Get verification history
+        if (path === '/certifications/admin/history' && method === 'GET') {
+            const key = event.queryStringParameters?.key;
+            if (key !== ADMIN_KEY) {
+                return { statusCode: 401, headers: CORS, body: JSON.stringify({ error: 'Unauthorized' }) };
+            }
+
+            const result = await ddb.send(new ScanCommand({
+                TableName: TABLE_VERIFICATIONS
+            }));
+
+            const sorted = (result.Items || []).sort((a, b) => 
+                new Date(b.timestamp) - new Date(a.timestamp)
+            );
+
+            return {
+                statusCode: 200,
+                headers: CORS,
+                body: JSON.stringify(sorted)
+            };
+        }
+
+        // Get verification evidence for a certification (public)
+        if (path.startsWith('/certifications/evidence/') && method === 'GET') {
+            const certId = path.split('/').pop();
+            
+            const result = await ddb.send(new ScanCommand({
+                TableName: TABLE_VERIFICATIONS,
+                FilterExpression: 'certificationId = :certId',
+                ExpressionAttributeValues: { ':certId': certId }
+            }));
+
+            return {
+                statusCode: 200,
+                headers: CORS,
+                body: JSON.stringify(result.Items || [])
+            };
+        }
+
+        return {
+            statusCode: 404,
+            headers: CORS,
+            body: JSON.stringify({ error: 'Not found' })
+        };
 
     } catch (err) {
-        console.error(err);
-        return { statusCode: 500, headers, body: JSON.stringify({ error: 'internal error', details: err.message }) };
+        console.error('Error:', err);
+        return {
+            statusCode: 500,
+            headers: CORS,
+            body: JSON.stringify({ error: 'Internal server error' })
+        };
     }
 };

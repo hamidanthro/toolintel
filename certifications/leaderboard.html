@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certification Leaderboard — ToolIntel</title>
+    <meta name="description" content="AI tools ranked by verified compliance certifications. Find the most certified tools in each category.">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --navy: #0f2744;
+            --navy-light: #1e3a5f;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --green: #10b981;
+            --green-light: #ecfdf5;
+            --yellow: #f59e0b;
+            --gold: #fbbf24;
+            --silver: #9ca3af;
+            --bronze: #d97706;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; color: var(--gray-800); line-height: 1.6; background: var(--gray-50); }
+        h1, h2, h3 { font-family: 'Merriweather', Georgia, serif; font-weight: 700; line-height: 1.3; }
+        
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+        
+        header { padding: 16px 0; border-bottom: 1px solid var(--gray-200); background: var(--white); }
+        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+        .logo { font-weight: 700; font-size: 1.25rem; color: var(--navy); text-decoration: none; }
+        .logo span { color: var(--blue-accent); }
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+        
+        .hero {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+            color: var(--white);
+            padding: 60px 0;
+            text-align: center;
+        }
+        
+        .hero h1 { font-size: 2.25rem; margin-bottom: 12px; }
+        .hero p { opacity: 0.9; max-width: 600px; margin: 0 auto; }
+        
+        .content { padding: 40px 0 60px; }
+        
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .filter-group label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .filter-group select {
+            padding: 10px 14px;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            background: var(--white);
+            min-width: 180px;
+        }
+        
+        /* Category Leaders */
+        .category-leaders {
+            margin-bottom: 48px;
+        }
+        
+        .category-leaders h2 {
+            font-size: 1.3rem;
+            color: var(--navy);
+            margin-bottom: 20px;
+        }
+        
+        .leaders-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        
+        .category-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .category-card h3 {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .leader-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+        }
+        
+        .leader-rank {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+        
+        .leader-rank.gold { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); color: #92400e; }
+        .leader-rank.silver { background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%); color: #4b5563; }
+        .leader-rank.bronze { background: linear-gradient(135deg, #fef3c7 0%, #fcd34d 100%); color: #92400e; }
+        
+        .leader-info { flex: 1; }
+        .leader-info .name { font-weight: 600; color: var(--navy); font-size: 0.95rem; }
+        .leader-info .vendor { font-size: 0.8rem; color: var(--gray-400); }
+        
+        .leader-count {
+            background: var(--green-light);
+            color: #065f46;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        /* Main Table */
+        .leaderboard-section h2 {
+            font-size: 1.3rem;
+            color: var(--navy);
+            margin-bottom: 20px;
+        }
+        
+        .leaderboard-table-wrapper {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .leaderboard-table th, .leaderboard-table td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .leaderboard-table th {
+            background: var(--gray-50);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--gray-600);
+        }
+        
+        .leaderboard-table tbody tr:hover { background: var(--gray-50); }
+        .leaderboard-table tbody tr:last-child td { border-bottom: none; }
+        
+        .rank-cell {
+            width: 60px;
+            text-align: center;
+        }
+        
+        .rank-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        
+        .rank-badge.top-3 { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); color: #92400e; }
+        .rank-badge.regular { background: var(--gray-100); color: var(--gray-600); }
+        
+        .tool-cell { display: flex; align-items: center; gap: 12px; }
+        .tool-cell .icon { font-size: 1.5rem; }
+        .tool-cell .name { font-weight: 600; color: var(--navy); }
+        .tool-cell .vendor { font-size: 0.85rem; color: var(--gray-400); }
+        
+        .cert-count {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--green);
+        }
+        
+        .cert-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        
+        .cert-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            background: var(--gray-100);
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--gray-600);
+        }
+        
+        .cert-badge.verified {
+            background: var(--green-light);
+            color: #065f46;
+        }
+        
+        .view-btn {
+            padding: 6px 12px;
+            background: var(--navy);
+            color: var(--white);
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .view-btn:hover { background: var(--navy-light); }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 24px;
+            color: var(--gray-400);
+        }
+        
+        footer {
+            padding: 40px 0;
+            border-top: 1px solid var(--gray-200);
+            text-align: center;
+            background: var(--white);
+        }
+        
+        footer p { color: var(--gray-400); font-size: 0.9rem; }
+        
+        @media (max-width: 768px) {
+            .leaders-grid { grid-template-columns: 1fr; }
+            .filters { flex-direction: column; }
+            .cert-badges { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo">Tool<span>Intel</span></a>
+            <div class="nav-links">
+                <a href="/certifications/">Certifications</a>
+                <a href="/reviews.html">Reviews</a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>🏆 Certification Leaderboard</h1>
+            <p>AI tools ranked by number of independently verified compliance certifications. The fastest answer to "which tools have the strongest compliance posture?"</p>
+        </div>
+    </section>
+
+    <main class="content">
+        <div class="container">
+            
+            <!-- Filters -->
+            <div class="filters">
+                <div class="filter-group">
+                    <label>Certification Type</label>
+                    <select id="filterCertType">
+                        <option value="all">All Certifications</option>
+                        <optgroup label="Security & Privacy">
+                            <option value="soc2">SOC 2</option>
+                            <option value="iso27001">ISO 27001</option>
+                            <option value="csa-star">CSA STAR</option>
+                        </optgroup>
+                        <optgroup label="Healthcare">
+                            <option value="hipaa">HIPAA</option>
+                            <option value="hitrust">HITRUST</option>
+                        </optgroup>
+                        <optgroup label="Government">
+                            <option value="fedramp">FedRAMP</option>
+                            <option value="cmmc">CMMC</option>
+                        </optgroup>
+                        <optgroup label="AI Specific">
+                            <option value="iso42001">ISO 42001</option>
+                            <option value="eu-ai-act">EU AI Act</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Category</label>
+                    <select id="filterCategory">
+                        <option value="all">All Categories</option>
+                        <option value="llm">LLMs & Chatbots</option>
+                        <option value="coding">Coding Assistants</option>
+                        <option value="writing">Writing & Content</option>
+                        <option value="image">Image Generation</option>
+                        <option value="voice">Voice & Audio</option>
+                        <option value="video">Video & Animation</option>
+                        <option value="analytics">Data & Analytics</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Category Leaders -->
+            <section class="category-leaders">
+                <h2>Most Certified in Each Category</h2>
+                <div class="leaders-grid">
+                    <div class="category-card">
+                        <h3>🤖 LLMs & Chatbots</h3>
+                        <div class="leader-item">
+                            <div class="leader-rank gold">1</div>
+                            <div class="leader-info">
+                                <div class="name">ChatGPT</div>
+                                <div class="vendor">OpenAI</div>
+                            </div>
+                            <div class="leader-count">8 certs</div>
+                        </div>
+                        <div class="leader-item">
+                            <div class="leader-rank silver">2</div>
+                            <div class="leader-info">
+                                <div class="name">Claude</div>
+                                <div class="vendor">Anthropic</div>
+                            </div>
+                            <div class="leader-count">7 certs</div>
+                        </div>
+                        <div class="leader-item">
+                            <div class="leader-rank bronze">3</div>
+                            <div class="leader-info">
+                                <div class="name">Gemini</div>
+                                <div class="vendor">Google</div>
+                            </div>
+                            <div class="leader-count">6 certs</div>
+                        </div>
+                    </div>
+                    
+                    <div class="category-card">
+                        <h3>💻 Coding Assistants</h3>
+                        <div class="leader-item">
+                            <div class="leader-rank gold">1</div>
+                            <div class="leader-info">
+                                <div class="name">GitHub Copilot</div>
+                                <div class="vendor">GitHub/Microsoft</div>
+                            </div>
+                            <div class="leader-count">9 certs</div>
+                        </div>
+                        <div class="leader-item">
+                            <div class="leader-rank silver">2</div>
+                            <div class="leader-info">
+                                <div class="name">Cursor</div>
+                                <div class="vendor">Anysphere</div>
+                            </div>
+                            <div class="leader-count">5 certs</div>
+                        </div>
+                        <div class="leader-item">
+                            <div class="leader-rank bronze">3</div>
+                            <div class="leader-info">
+                                <div class="name">Replit AI</div>
+                                <div class="vendor">Replit</div>
+                            </div>
+                            <div class="leader-count">4 certs</div>
+                        </div>
+                    </div>
+                    
+                    <div class="category-card">
+                        <h3>✍️ Writing & Content</h3>
+                        <div class="leader-item">
+                            <div class="leader-rank gold">1</div>
+                            <div class="leader-info">
+                                <div class="name">Jasper</div>
+                                <div class="vendor">Jasper AI</div>
+                            </div>
+                            <div class="leader-count">7 certs</div>
+                        </div>
+                        <div class="leader-item">
+                            <div class="leader-rank silver">2</div>
+                            <div class="leader-info">
+                                <div class="name">Copy.ai</div>
+                                <div class="vendor">Copy.ai</div>
+                            </div>
+                            <div class="leader-count">5 certs</div>
+                        </div>
+                        <div class="leader-item">
+                            <div class="leader-rank bronze">3</div>
+                            <div class="leader-info">
+                                <div class="name">Notion AI</div>
+                                <div class="vendor">Notion Labs</div>
+                            </div>
+                            <div class="leader-count">4 certs</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Full Leaderboard -->
+            <section class="leaderboard-section">
+                <h2>Full Certification Leaderboard</h2>
+                <div class="leaderboard-table-wrapper">
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th class="rank-cell">Rank</th>
+                                <th>Tool</th>
+                                <th>Verified Certs</th>
+                                <th>Certifications</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardBody">
+                            <tr>
+                                <td class="rank-cell"><span class="rank-badge top-3">1</span></td>
+                                <td>
+                                    <div class="tool-cell">
+                                        <div>
+                                            <div class="name">GitHub Copilot</div>
+                                            <div class="vendor">GitHub/Microsoft</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="cert-count">9</span></td>
+                                <td>
+                                    <div class="cert-badges">
+                                        <span class="cert-badge verified">SOC 2 II</span>
+                                        <span class="cert-badge verified">ISO 27001</span>
+                                        <span class="cert-badge verified">ISO 27701</span>
+                                        <span class="cert-badge verified">FedRAMP</span>
+                                        <span class="cert-badge verified">HIPAA</span>
+                                        <span class="cert-badge">+4 more</span>
+                                    </div>
+                                </td>
+                                <td><a href="/reviews/github-copilot.html" class="view-btn">View</a></td>
+                            </tr>
+                            <tr>
+                                <td class="rank-cell"><span class="rank-badge top-3">2</span></td>
+                                <td>
+                                    <div class="tool-cell">
+                                        <div>
+                                            <div class="name">ChatGPT</div>
+                                            <div class="vendor">OpenAI</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="cert-count">8</span></td>
+                                <td>
+                                    <div class="cert-badges">
+                                        <span class="cert-badge verified">SOC 2 II</span>
+                                        <span class="cert-badge verified">ISO 27001</span>
+                                        <span class="cert-badge verified">GDPR</span>
+                                        <span class="cert-badge verified">CCPA</span>
+                                        <span class="cert-badge">+4 more</span>
+                                    </div>
+                                </td>
+                                <td><a href="/reviews/chatgpt.html" class="view-btn">View</a></td>
+                            </tr>
+                            <tr>
+                                <td class="rank-cell"><span class="rank-badge top-3">3</span></td>
+                                <td>
+                                    <div class="tool-cell">
+                                        <div>
+                                            <div class="name">Claude</div>
+                                            <div class="vendor">Anthropic</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="cert-count">7</span></td>
+                                <td>
+                                    <div class="cert-badges">
+                                        <span class="cert-badge verified">SOC 2 II</span>
+                                        <span class="cert-badge verified">ISO 27001</span>
+                                        <span class="cert-badge verified">HIPAA</span>
+                                        <span class="cert-badge">+4 more</span>
+                                    </div>
+                                </td>
+                                <td><a href="/reviews/claude.html" class="view-btn">View</a></td>
+                            </tr>
+                            <tr>
+                                <td class="rank-cell"><span class="rank-badge regular">4</span></td>
+                                <td>
+                                    <div class="tool-cell">
+                                        <div>
+                                            <div class="name">Jasper</div>
+                                            <div class="vendor">Jasper AI</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="cert-count">7</span></td>
+                                <td>
+                                    <div class="cert-badges">
+                                        <span class="cert-badge verified">SOC 2 II</span>
+                                        <span class="cert-badge verified">GDPR</span>
+                                        <span class="cert-badge verified">CCPA</span>
+                                        <span class="cert-badge">+4 more</span>
+                                    </div>
+                                </td>
+                                <td><a href="/reviews/jasper.html" class="view-btn">View</a></td>
+                            </tr>
+                            <tr>
+                                <td class="rank-cell"><span class="rank-badge regular">5</span></td>
+                                <td>
+                                    <div class="tool-cell">
+                                        <div>
+                                            <div class="name">Gemini</div>
+                                            <div class="vendor">Google</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="cert-count">6</span></td>
+                                <td>
+                                    <div class="cert-badges">
+                                        <span class="cert-badge verified">SOC 2 II</span>
+                                        <span class="cert-badge verified">ISO 27001</span>
+                                        <span class="cert-badge verified">FedRAMP</span>
+                                        <span class="cert-badge">+3 more</span>
+                                    </div>
+                                </td>
+                                <td><a href="/reviews/gemini.html" class="view-btn">View</a></td>
+                            </tr>
+                            <tr>
+                                <td class="rank-cell"><span class="rank-badge regular">6</span></td>
+                                <td>
+                                    <div class="tool-cell">
+                                        <div>
+                                            <div class="name">Cursor</div>
+                                            <div class="vendor">Anysphere</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="cert-count">5</span></td>
+                                <td>
+                                    <div class="cert-badges">
+                                        <span class="cert-badge verified">SOC 2 II</span>
+                                        <span class="cert-badge verified">GDPR</span>
+                                        <span class="cert-badge">+3 more</span>
+                                    </div>
+                                </td>
+                                <td><a href="/reviews/cursor.html" class="view-btn">View</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2026 ToolIntel. Independent AI tool intelligence. Certifications verified independently.</p>
+    </footer>
+
+    <script>
+        const API_BASE = 'https://v7086lxsji.execute-api.us-east-1.amazonaws.com';
+        
+        document.getElementById('filterCertType').addEventListener('change', filterLeaderboard);
+        document.getElementById('filterCategory').addEventListener('change', filterLeaderboard);
+        
+        function filterLeaderboard() {
+            // In production, this would fetch filtered data from the API
+            console.log('Filter changed');
+        }
+        
+        async function loadLeaderboard() {
+            try {
+                const res = await fetch(`${API_BASE}/certifications/leaderboard`);
+                if (res.ok) {
+                    const data = await res.json();
+                    // Render data
+                }
+            } catch (e) {
+                console.log('Using sample data');
+            }
+        }
+        
+        loadLeaderboard();
+    </script>
+</body>
+</html>

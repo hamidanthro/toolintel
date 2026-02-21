@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Certification for Verification — ToolIntel</title>
+    <meta name="description" content="Submit your AI tool's compliance certifications for independent verification by ToolIntel.">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --navy: #0f2744;
+            --navy-light: #1e3a5f;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --green: #10b981;
+            --green-light: #ecfdf5;
+            --yellow: #f59e0b;
+            --yellow-light: #fffbeb;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; color: var(--gray-800); line-height: 1.7; background: var(--gray-50); }
+        h1, h2, h3 { font-family: 'Merriweather', Georgia, serif; font-weight: 700; line-height: 1.3; }
+        
+        .container { max-width: 800px; margin: 0 auto; padding: 0 24px; }
+        
+        header { padding: 16px 0; border-bottom: 1px solid var(--gray-200); background: var(--white); }
+        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+        .logo { font-weight: 700; font-size: 1.25rem; color: var(--navy); text-decoration: none; }
+        .logo span { color: var(--blue-accent); }
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+        
+        .hero {
+            background: var(--white);
+            padding: 60px 0 40px;
+            border-bottom: 1px solid var(--gray-200);
+            text-align: center;
+        }
+        
+        .hero h1 { font-size: 2rem; color: var(--navy); margin-bottom: 12px; }
+        .hero p { color: var(--gray-600); max-width: 600px; margin: 0 auto; }
+        
+        .content { padding: 40px 0 60px; }
+        
+        /* Fee Disclosure */
+        .fee-disclosure {
+            background: var(--yellow-light);
+            border: 1px solid var(--yellow);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .fee-disclosure h3 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            color: #92400e;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .fee-disclosure p {
+            color: #78350f;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+        
+        .fee-amount {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #92400e;
+        }
+        
+        /* Form */
+        .form-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 32px;
+        }
+        
+        .form-section {
+            margin-bottom: 32px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .form-section:last-of-type {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .form-section h3 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            color: var(--navy);
+            margin-bottom: 20px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--gray-800);
+            margin-bottom: 6px;
+        }
+        
+        .form-group label .required {
+            color: #ef4444;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--blue-accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .form-group textarea { min-height: 80px; resize: vertical; }
+        
+        .form-note {
+            font-size: 0.85rem;
+            color: var(--gray-400);
+            margin-top: 6px;
+        }
+        
+        /* File Upload */
+        .file-upload {
+            border: 2px dashed var(--gray-200);
+            border-radius: 8px;
+            padding: 32px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .file-upload:hover {
+            border-color: var(--blue-accent);
+            background: var(--gray-50);
+        }
+        
+        .file-upload input { display: none; }
+        
+        .file-upload .icon { font-size: 2rem; margin-bottom: 8px; }
+        .file-upload .text { color: var(--gray-600); font-size: 0.95rem; }
+        .file-upload .subtext { color: var(--gray-400); font-size: 0.85rem; margin-top: 4px; }
+        
+        .file-upload.has-file {
+            border-color: var(--green);
+            background: var(--green-light);
+        }
+        
+        .file-upload.has-file .text { color: #065f46; }
+        
+        /* Declaration */
+        .declaration {
+            background: var(--gray-50);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .declaration-text {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            line-height: 1.7;
+            margin-bottom: 16px;
+        }
+        
+        .declaration-checkbox {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .declaration-checkbox input {
+            width: auto;
+            margin-top: 3px;
+        }
+        
+        .declaration-checkbox label {
+            font-weight: 500;
+            color: var(--gray-800);
+        }
+        
+        /* Submit */
+        .submit-section {
+            text-align: center;
+            padding-top: 24px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary { background: var(--navy); color: white; }
+        .btn-primary:hover { background: var(--navy-light); }
+        .btn-primary:disabled { background: var(--gray-400); cursor: not-allowed; }
+        
+        .submit-note {
+            font-size: 0.85rem;
+            color: var(--gray-400);
+            margin-top: 16px;
+        }
+        
+        /* Process Info */
+        .process-info {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 32px;
+        }
+        
+        .process-info h3 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            color: var(--navy);
+            margin-bottom: 16px;
+        }
+        
+        .process-steps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+        
+        .process-step {
+            text-align: center;
+        }
+        
+        .process-step .number {
+            width: 32px;
+            height: 32px;
+            background: var(--navy);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin: 0 auto 8px;
+        }
+        
+        .process-step .title {
+            font-weight: 600;
+            color: var(--navy);
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+        
+        .process-step .desc {
+            font-size: 0.8rem;
+            color: var(--gray-400);
+        }
+        
+        footer {
+            padding: 40px 0;
+            border-top: 1px solid var(--gray-200);
+            text-align: center;
+            background: var(--white);
+        }
+        
+        footer p { color: var(--gray-400); font-size: 0.9rem; }
+        
+        @media (max-width: 640px) {
+            .form-row { grid-template-columns: 1fr; }
+            .process-steps { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo">Tool<span>Intel</span></a>
+            <div class="nav-links">
+                <a href="/certifications/">Certifications</a>
+                <a href="/reviews.html">Reviews</a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Submit Certification for Verification</h1>
+            <p>Get your AI tool's compliance certifications independently verified and displayed on ToolIntel.</p>
+        </div>
+    </section>
+
+    <main class="content">
+        <div class="container">
+            
+            <div class="fee-disclosure">
+                <h3>💰 Verification Fee Disclosure</h3>
+                <p>Certification verification requires editorial time and direct contact with issuing bodies. We charge a one-time verification fee of <span class="fee-amount">$199</span> per certification to cover this cost.</p>
+                <p style="margin-top: 12px;">The fee covers verification only — it does not influence whether a certification is displayed as verified or expired. <strong>If we cannot verify a submitted certification, the fee is refunded in full.</strong> We do not charge ongoing fees to maintain a verified badge — we re-verify automatically at renewal.</p>
+            </div>
+            
+            <div class="form-card">
+                <form id="certificationForm">
+                    
+                    <div class="form-section">
+                        <h3>1. Tool & Contact Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Tool Name <span class="required">*</span></label>
+                                <input type="text" name="toolName" required placeholder="e.g., ChatGPT, Claude">
+                            </div>
+                            <div class="form-group">
+                                <label>Vendor/Company Name <span class="required">*</span></label>
+                                <input type="text" name="vendorName" required placeholder="e.g., OpenAI, Anthropic">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Contact Name <span class="required">*</span></label>
+                                <input type="text" name="contactName" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Contact Email <span class="required">*</span></label>
+                                <input type="email" name="contactEmail" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>2. Certification Details</h3>
+                        <div class="form-group">
+                            <label>Certification Type <span class="required">*</span></label>
+                            <select name="certType" required>
+                                <option value="">Select certification...</option>
+                                <optgroup label="Security & Privacy">
+                                    <option value="soc2-type1">SOC 2 Type I</option>
+                                    <option value="soc2-type2">SOC 2 Type II</option>
+                                    <option value="iso27001">ISO 27001</option>
+                                    <option value="iso27701">ISO 27701</option>
+                                    <option value="csa-star">CSA STAR</option>
+                                </optgroup>
+                                <optgroup label="Healthcare">
+                                    <option value="hipaa-baa">HIPAA BAA</option>
+                                    <option value="hitrust">HITRUST CSF</option>
+                                    <option value="fda-21cfr11">FDA 21 CFR Part 11</option>
+                                    <option value="hitech">HITECH Compliance</option>
+                                </optgroup>
+                                <optgroup label="Government & Regulatory">
+                                    <option value="fedramp-authorized">FedRAMP Authorized</option>
+                                    <option value="fedramp-inprocess">FedRAMP In Process</option>
+                                    <option value="stateramp">StateRAMP</option>
+                                    <option value="cmmc">CMMC</option>
+                                </optgroup>
+                                <optgroup label="Data Protection">
+                                    <option value="gdpr">GDPR Compliance</option>
+                                    <option value="ccpa">CCPA Compliance</option>
+                                    <option value="pipeda">PIPEDA</option>
+                                    <option value="lgpd">LGPD</option>
+                                    <option value="pdpa">PDPA</option>
+                                </optgroup>
+                                <optgroup label="AI Specific">
+                                    <option value="eu-ai-act">EU AI Act Conformity</option>
+                                    <option value="nist-ai-rmf">NIST AI RMF Alignment</option>
+                                    <option value="ieee-certifaied">IEEE CertifAIEd</option>
+                                    <option value="iso42001">ISO 42001</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Issuing Body Name <span class="required">*</span></label>
+                            <input type="text" name="issuingBody" required placeholder="e.g., Ernst & Young, BSI Group">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Issue Date <span class="required">*</span></label>
+                                <input type="date" name="issueDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Expiration Date <span class="required">*</span></label>
+                                <input type="date" name="expirationDate" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Certificate Number / Registry ID</label>
+                            <input type="text" name="certNumber" placeholder="If applicable">
+                            <div class="form-note">The unique identifier on your certificate or in the issuing body's registry</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Public Registry URL</label>
+                            <input type="url" name="registryUrl" placeholder="https://...">
+                            <div class="form-note">Link to the issuing body's public registry where we can verify, if one exists</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>3. Certificate Document</h3>
+                        <div class="form-group">
+                            <label>Upload Certificate (PDF) <span class="required">*</span></label>
+                            <div class="file-upload" id="fileUpload">
+                                <div class="icon">📄</div>
+                                <div class="text">Click to upload or drag and drop</div>
+                                <div class="subtext">PDF only, max 10MB</div>
+                                <input type="file" name="certificate" accept=".pdf" required>
+                            </div>
+                            <div class="form-note">We will contact the issuing body to verify. The document itself is stored securely and not published.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>4. Declaration</h3>
+                        <div class="declaration">
+                            <div class="declaration-text">
+                                "I confirm this certification is current, was legitimately obtained, and accurately represents our organization's compliance posture. I understand that ToolIntel will verify this certification independently through the issuing body and that any misrepresentation will result in permanent notation on our tool's review page."
+                            </div>
+                            <div class="declaration-checkbox">
+                                <input type="checkbox" id="declaration" name="declaration" required>
+                                <label for="declaration">I agree to this declaration and understand the verification process</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="submit-section">
+                        <button type="submit" class="btn btn-primary">Submit for Verification — $199</button>
+                        <div class="submit-note">You will be redirected to payment after submission. Fee refunded if verification fails.</div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="process-info">
+                <h3>What Happens Next</h3>
+                <div class="process-steps">
+                    <div class="process-step">
+                        <div class="number">1</div>
+                        <div class="title">Submit & Pay</div>
+                        <div class="desc">Complete form and $199 verification fee</div>
+                    </div>
+                    <div class="process-step">
+                        <div class="number">2</div>
+                        <div class="title">We Verify</div>
+                        <div class="desc">Contact issuing body within 5-10 business days</div>
+                    </div>
+                    <div class="process-step">
+                        <div class="number">3</div>
+                        <div class="title">Badge Added</div>
+                        <div class="desc">Verified badge appears on your tool's review</div>
+                    </div>
+                    <div class="process-step">
+                        <div class="number">4</div>
+                        <div class="title">Auto-Monitor</div>
+                        <div class="desc">We track expiration and notify you 90 days out</div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2026 ToolIntel. Independent AI tool intelligence.</p>
+    </footer>
+
+    <script>
+        const fileUpload = document.getElementById('fileUpload');
+        const fileInput = fileUpload.querySelector('input');
+        
+        fileUpload.addEventListener('click', () => fileInput.click());
+        
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                const file = e.target.files[0];
+                fileUpload.classList.add('has-file');
+                fileUpload.querySelector('.text').textContent = file.name;
+                fileUpload.querySelector('.subtext').textContent = `${(file.size / 1024 / 1024).toFixed(2)} MB`;
+            }
+        });
+        
+        document.getElementById('certificationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            
+            // In production, this would upload to S3 and create Stripe checkout
+            alert('Redirecting to payment... (Demo: In production, this would process the $199 verification fee via Stripe)');
+        });
+    </script>
+</body>
+</html>

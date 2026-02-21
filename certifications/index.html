@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verified AI Tool Certifications — ToolIntel</title>
+    <meta name="description" content="Independently verified compliance certifications for AI tools. SOC 2, ISO 27001, HIPAA, FedRAMP, and more — verified through issuing bodies, not vendor self-reporting.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --navy: #0f2744;
+            --navy-light: #1e3a5f;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --red: #ef4444;
+            --red-light: #fef2f2;
+            --green: #10b981;
+            --green-light: #ecfdf5;
+            --yellow: #f59e0b;
+            --yellow-light: #fffbeb;
+            --purple: #8b5cf6;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--gray-800);
+            line-height: 1.7;
+            background: var(--white);
+        }
+        
+        h1, h2, h3 { font-family: 'Merriweather', Georgia, serif; font-weight: 700; line-height: 1.3; }
+        
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+        
+        header {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--gray-200);
+            position: sticky;
+            top: 0;
+            background: var(--white);
+            z-index: 100;
+        }
+        
+        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+        
+        .logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.25rem; color: var(--navy); text-decoration: none; }
+        .logo span { color: var(--blue-accent); }
+        
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+        .nav-links a:hover { color: var(--navy); }
+        .nav-links a.primary { background: var(--navy); color: white; padding: 8px 16px; border-radius: 6px; }
+        
+        .hero {
+            padding: 60px 0 40px;
+            text-align: center;
+            border-bottom: 1px solid var(--gray-200);
+            background: linear-gradient(180deg, var(--gray-50) 0%, var(--white) 100%);
+        }
+        
+        .hero h1 { font-size: 2.25rem; color: var(--navy); margin-bottom: 16px; }
+        .hero .subtitle { font-size: 1rem; color: var(--gray-600); max-width: 750px; margin: 0 auto; line-height: 1.8; }
+        
+        .integrity-statement {
+            background: var(--navy);
+            color: var(--white);
+            padding: 24px 32px;
+            border-radius: 12px;
+            margin: -30px auto 40px;
+            max-width: 900px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .integrity-statement p {
+            font-size: 0.9rem;
+            line-height: 1.7;
+            margin: 0;
+        }
+        
+        .content { padding: 40px 0 60px; }
+        
+        .section { margin-bottom: 60px; }
+        .section h2 { font-size: 1.5rem; color: var(--navy); margin-bottom: 16px; }
+        .section > p { margin-bottom: 16px; color: var(--gray-600); }
+        
+        /* Quick Links */
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+        
+        .quick-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        
+        .quick-link:hover {
+            border-color: var(--blue-accent);
+            background: var(--white);
+        }
+        
+        .quick-link .icon { font-size: 1.5rem; }
+        .quick-link .text { color: var(--navy); font-weight: 600; font-size: 0.95rem; }
+        .quick-link .desc { color: var(--gray-600); font-size: 0.85rem; }
+        
+        /* Certification Groups */
+        .cert-group {
+            margin-bottom: 40px;
+        }
+        
+        .cert-group h3 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.1rem;
+            color: var(--navy);
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .cert-group h3 .icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+        
+        .cert-group.security h3 .icon { background: #dbeafe; }
+        .cert-group.healthcare h3 .icon { background: #fce7f3; }
+        .cert-group.government h3 .icon { background: #e0e7ff; }
+        .cert-group.data h3 .icon { background: #d1fae5; }
+        .cert-group.ai h3 .icon { background: #f3e8ff; }
+        
+        .cert-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        
+        .cert-card {
+            border: 1px solid var(--gray-200);
+            border-radius: 10px;
+            padding: 20px;
+            background: var(--white);
+            transition: all 0.2s;
+        }
+        
+        .cert-card:hover {
+            border-color: var(--blue-accent);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        
+        .cert-card h4 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            color: var(--navy);
+            margin-bottom: 8px;
+        }
+        
+        .cert-card .issuer {
+            font-size: 0.85rem;
+            color: var(--gray-400);
+            margin-bottom: 12px;
+        }
+        
+        .cert-card p {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            line-height: 1.6;
+        }
+        
+        .cert-card .verification-method {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--gray-100);
+            font-size: 0.85rem;
+        }
+        
+        .cert-card .verification-method strong {
+            color: var(--green);
+        }
+        
+        /* Verification Methodology */
+        .method-list { margin: 24px 0; }
+        
+        .method-item {
+            display: flex;
+            gap: 16px;
+            padding: 16px;
+            background: var(--gray-50);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--green);
+        }
+        
+        .method-item .cert-type {
+            min-width: 140px;
+            font-weight: 600;
+            color: var(--navy);
+            font-size: 0.9rem;
+        }
+        
+        .method-item .method {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+        }
+        
+        .verification-warning {
+            background: var(--yellow-light);
+            border: 1px solid var(--yellow);
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin: 24px 0;
+            font-size: 0.95rem;
+            color: #92400e;
+        }
+        
+        /* Stats */
+        .cert-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin: 24px 0;
+        }
+        
+        .stat-box {
+            text-align: center;
+            padding: 20px;
+            background: var(--gray-50);
+            border-radius: 8px;
+        }
+        
+        .stat-box .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--navy);
+        }
+        
+        .stat-box .label {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            margin-top: 4px;
+        }
+        
+        .stat-box.green .number { color: var(--green); }
+        
+        /* CTA */
+        .cta-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 40px;
+        }
+        
+        .cta-card {
+            padding: 28px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .cta-card.vendor {
+            background: linear-gradient(135deg, var(--green-light) 0%, #d1fae5 100%);
+            border: 1px solid var(--green);
+        }
+        
+        .cta-card.buyer {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border: 1px solid var(--blue-accent);
+        }
+        
+        .cta-card h3 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+        
+        .cta-card.vendor h3 { color: #065f46; }
+        .cta-card.buyer h3 { color: #1e40af; }
+        
+        .cta-card p {
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+        
+        .cta-card.vendor p { color: #047857; }
+        .cta-card.buyer p { color: #1d4ed8; }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary { background: var(--navy); color: white; }
+        .btn-primary:hover { background: var(--navy-light); }
+        
+        footer {
+            padding: 40px 0;
+            border-top: 1px solid var(--gray-200);
+            text-align: center;
+        }
+        
+        footer p { color: var(--gray-400); font-size: 0.9rem; }
+        
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 1.75rem; }
+            .quick-links { grid-template-columns: 1fr; }
+            .cert-cards { grid-template-columns: 1fr; }
+            .cert-stats { grid-template-columns: repeat(2, 1fr); }
+            .cta-section { grid-template-columns: 1fr; }
+            .method-item { flex-direction: column; gap: 8px; }
+            .method-item .cert-type { min-width: auto; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo">Tool<span>Intel</span></a>
+            <div class="nav-links">
+                <a href="/methodology.html">Methodology</a>
+                <a href="/transparency.html">Transparency</a>
+                <a href="/reviews.html">Reviews</a>
+                <a href="/submit.html" class="primary">Submit Tool</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Independently Verified Compliance Certifications</h1>
+                <p class="subtitle">Every certification displayed on this platform has been verified directly through the issuing body or official registry. We do not display certifications based on vendor self-reporting. A verified badge on ToolIntel means we confirmed it ourselves.</p>
+            </div>
+        </section>
+
+        <div class="container">
+            <div class="integrity-statement">
+                <p><strong>Certification Integrity Statement:</strong> ToolIntel has never displayed a Verified badge for a certification we could not independently confirm. We have never accepted payment to display a certification as verified when it was not. We have never removed an Expired badge at vendor request. Every certification status on this platform reflects our honest independent assessment at the time of last verification. The complete verification history for every certification is permanently archived and available on request.</p>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="container">
+                
+                <!-- Quick Links -->
+                <div class="quick-links">
+                    <a href="/certifications/submit.html" class="quick-link">
+                        <div class="icon">📤</div>
+                        <div>
+                            <div class="text">Submit Certification</div>
+                            <div class="desc">Vendors: Get verified</div>
+                        </div>
+                    </a>
+                    <a href="/certifications/leaderboard.html" class="quick-link">
+                        <div class="icon">🏆</div>
+                        <div>
+                            <div class="text">Certification Leaderboard</div>
+                            <div class="desc">Most certified tools</div>
+                        </div>
+                    </a>
+                    <a href="/compare.html" class="quick-link">
+                        <div class="icon">⚖️</div>
+                        <div>
+                            <div class="text">Certification Gap Analysis</div>
+                            <div class="desc">Compare compliance</div>
+                        </div>
+                    </a>
+                </div>
+                
+                <!-- Stats -->
+                <div class="cert-stats">
+                    <div class="stat-box green">
+                        <div class="number" id="statVerified">0</div>
+                        <div class="label">Verified Certifications</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="number" id="statTools">0</div>
+                        <div class="label">Tools With Certs</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="number" id="statTypes">20</div>
+                        <div class="label">Certification Types</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="number" id="statPending">0</div>
+                        <div class="label">Pending Verification</div>
+                    </div>
+                </div>
+
+                <!-- Certification Directory -->
+                <section class="section">
+                    <h2>Certification Directory</h2>
+                    <p>All certifications tracked by ToolIntel, with plain-English explanations of what each means and how we verify it.</p>
+                    
+                    <!-- Security & Privacy -->
+                    <div class="cert-group security">
+                        <h3><span class="icon">🔒</span> Security & Privacy</h3>
+                        <div class="cert-cards">
+                            <div class="cert-card">
+                                <h4>SOC 2 Type I</h4>
+                                <div class="issuer">Issued by: Licensed CPA firms</div>
+                                <p>A point-in-time audit that evaluates whether a company's security controls are properly designed. It's a snapshot assessment — it says "on this date, these controls existed" but doesn't confirm they work consistently over time. Typically takes 2-4 months to obtain. Does not guarantee ongoing security; Type II is more rigorous.</p>
+                                <div class="verification-method"><strong>Verification:</strong> We contact the auditing firm directly to confirm the report exists and covers the stated period.</div>
+                            </div>
+                            <div class="cert-card">
+                                <h4>SOC 2 Type II</h4>
+                                <div class="issuer">Issued by: Licensed CPA firms</div>
+                                <p>A continuous audit over 6-12 months that evaluates whether security controls work effectively over time — not just that they exist. Significantly more rigorous than Type I. Typically takes 6-12 months after Type I. The gold standard for SaaS security assurance in enterprise procurement.</p>
+                                <div class="verification-method"><strong>Verification:</strong> We contact the auditing firm directly and confirm both the report existence and the audit period coverage.</div>
+                            </div>
+                            <div class="cert-card">
+                                <h4>ISO 27001</h4>
+                                <div class="issuer">Issued by: Accredited certification bodies</div>
+                                <p>An international standard for information security management systems (ISMS). Requires establishing formal policies, risk assessment processes, and controls across the organization. Valid for 3 years with annual surveillance audits. Widely recognized globally, especially in European procurement.</p>
+                                <div class="verification-method"><strong>Verification:</strong> We search the accreditation body's public certificate database to confirm active certification status.</div>
+                            </div>
+                            <div class="cert-card">
+                                <h4>ISO 27701</h4>
+                                <div class="issuer">Issued by: Accredited certification bodies</div>
+                                <p>An extension to ISO 27001 specifically for privacy information management. Helps organizations demonstrate GDPR and other privacy regulation compliance. Requires existing ISO 27001 certification as a prerequisite. Increasingly important for tools handling personal data.</p>
+                                <div class="verification-method"><strong>Verification:</strong> Verified through accreditation body certificate search, confirming both ISO 27701 and prerequisite ISO 27001.</div>
+                            </div>
+                            <div class="cert-card">
+                                <h4>CSA STAR</h4>
+                                <div class="issuer">Issued by: Cloud Security Alliance</div>
+                                <p>Cloud-specific security certification with three levels: Self-Assessment (Level 1), Third-Party Audit (Level 2), and Continuous Monitoring (Level 3). The STAR Registry is publicly searchable. Particularly relevant for cloud-native AI tools and SaaS platforms.</p>
+                                <div class="verification-method"><strong>Verification:</strong> We search the public CSA STAR Registry at cloudsecurityalliance.org/star/registry.</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Healthcare -->
+                    <div class="cert-group healthcare">
+                        <h3><span class="icon">🏥</span> Healthcare</h3>
+                        <div class="cert-cards">
+                            <div class="cert-card">
+                                <h4>HIPAA BAA</h4>
+                                <div class="issuer">Contractual agreement (not issued by a body)</div>
+                                <p>A Business Associate Agreement is a legal contract required when a vendor handles Protected Health Information (PHI) on behalf of a healthcare organization. Not a certification per se — it's a willingness to sign a legally binding agreement. Essential for any AI tool used in US healthcare contexts.</p>
+                                <div class="verification-method"><strong>Verification:</strong> We request a sample BAA from the vendor and confirm it meets HHS requirements for required provisions.</div>
+                            </div>
+                            <div class="cert-card">
+                                <h4>HITRUST CSF</h4>
+                                <div class="issuer">Issued by: HITRUST Alliance</div>
+                                <p>A comprehensive, certifiable framework that harmonizes healthcare and security regulations including HIPAA, NIST, and ISO 27001. Three certification levels: e1 (essential), i1 (implemented), and r2 (risk-based). R2 is the most rigorous. Takes 6-18 months depending on level.</p>
+                                <div class="verification-method"><strong>Verification:</strong> We search the HITRUST Central portal or contact HITRUST directly to confirm certification status and level.</div>
+                            </div>
+                            <div class="cert-card">
+                                <h4>FDA 21 CFR Part 11</h4>
+                                <div class="issuer">Compliance standard (FDA)</div>
+                                <p>Requirements for electronic records and signatures in FDA-regulated industries. Not a certification but a compliance standard — vendors self-attest to compliance. Critical for AI tools used in pharmaceutical, medical device, or clinical trial contexts.</p>
+                                <div class="verification-method"><strong>Verification:</strong> We review vendor's Part 11 compliance documentation and technical controls against FDA requirements.</div>
+                            </div>
+                            <div class="cert-card">
+                                <h4>HITECH Compliance</h4>
+                                <div class="issuer">Compliance standard (HHS)</div>
+                                <p>The HITECH Act strengthens HIPAA enforcement and adds breach notification requirements. Compliance means the vendor follows enhanced data protection practices and will notify appropriately in case of breach. Often demonstrated alongside HIPAA BAA availability.</p>
+                                <div class="verification-method"><strong>Verification:</strong> Reviewed as part of HIPAA BAA verification, confirming breach notification procedures are documented.</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Government & Regulatory -->
+                    <div class="cert-group government">
+                        <h3><span class="icon">🏛️</span> Government & Regulatory</h3>
+                        <div class="cert-cards">
+                            <div class="cert-card">
+                                <h4>FedRAMP Authorized</h4>
+                                <div class="issuer">Issued by: FedRAMP PMO / JAB</div>
+                                <p>The federal government's standardized approach to cloud security assessment. Authorization means the product has been assessed against NIST 800-53 controls and approved for federal agency use. Three impact levels: Low, Moderate, High. Takes 12-18 months on average.</p>
+                                <div class="verification-method"><strong>Verification:</strong> We confirm status directly through the official FedRAMP Marketplace at marketplace.fedramp.gov.</div>
+                            </div>
+                            <div class="cert-card">
+                                <h4>FedRAMP In Process</h4>
+                                <div class="issuer">Listed by: FedRAMP PMO</div>
+                                <p>"In Process" means a vendor is actively working toward FedRAMP authorization with an agency sponsor. Not yet authorized, but indicates commitment and progress. Useful for procurement planning but cannot be used for federal contracts requiring full authorization.</p>
+                                <div class="verification-method"><strong>Verification:</strong> Confirmed through FedRAMP Marketplace "In Process" listing with sponsoring agency identified.</div>
+                            </div>
+                            <div class="cert-card">
+                                <h4>StateRAMP</h4>
+                                <div class="issuer">Issued by: StateRAMP PMO</div>
+                                <p>A standardized security authorization program for state and local government cloud adoption. Similar framework to FedRAMP but tailored for non-federal government. Growing in importance as states formalize cloud procurement requirements.</p>
+                                <div class="verification-method"><strong>Verification:</strong> We search the StateRAMP Authorized Product List at stateramp.org.</div>
+                            </div>
+                            <div class="cert-card">
+                                <h4>CMMC (Level 1-3)</h4>
+                                <div class="issuer">Issued by: CMMC Accreditation Body</div>
+                                <p>Cybersecurity Maturity Model Certification required for Department of Defense contractors. Level 1 is basic cyber hygiene, Level 2 aligns with NIST 800-171, Level 3 requires advanced practices. Essential for any AI tool handling Controlled Unclassified Information (CUI).</p>
+                                <div class="verification-method"><strong>Verification:</strong> We confirm through the CMMC-AB Marketplace or by contacting the certified third-party assessment organization (C3PAO).</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Data Protection -->
+                    <div class="cert-group data">
+                        <h3><span class="icon">🛡️</span> Data Protection</h3>
+                        <div class="cert-cards">
+                            <div class="cert-card">
+                                <h4>GDPR Compliance Documentation</h4>
+                                <div class="issuer">Self-attested (EU regulation)</div>
+                                <p>GDPR is a regulation, not a certification — there is no official "GDPR Certified" status. What we verify is that the vendor has documented Data Processing Agreements, privacy policies, data subject rights procedures, and appointed a DPO if required. Necessary for any tool processing EU resident data.</p>
+                                <div class="verification-method"><strong>Verification:</strong> We review DPA availability, privacy policy completeness, and documented data subject rights procedures.</div>
+                            </div>
+                            <div class="cert-card">
+                                <h4>CCPA Compliance Documentation</h4>
+                                <div class="issuer">Self-attested (California regulation)</div>
+                                <p>California Consumer Privacy Act compliance requires specific disclosures, opt-out mechanisms, and data handling procedures. Like GDPR, no official certification exists. We verify documented procedures and consumer rights mechanisms are in place.</p>
+                                <div class="verification-method"><strong>Verification:</strong> We review privacy policy for CCPA-specific disclosures and confirm opt-out mechanisms are functional.</div>
+                            </div>
+                            <div class="cert-card">
+                                <h4>PIPEDA Compliance</h4>
+                                <div class="issuer">Self-attested (Canadian regulation)</div>
+                                <p>Canada's federal private sector privacy law. Compliance requires fair information principles including consent, limiting collection, and accountability. Important for AI tools with Canadian users or handling Canadian personal information.</p>
+                                <div class="verification-method"><strong>Verification:</strong> We review privacy policy and documented procedures against PIPEDA's 10 fair information principles.</div>
+                            </div>
+                            <div class="cert-card">
+                                <h4>LGPD Compliance</h4>
+                                <div class="issuer">Self-attested (Brazilian regulation)</div>
+                                <p>Brazil's General Data Protection Law, similar in structure to GDPR. Requires legal basis for processing, data subject rights, and security measures. Increasingly important for AI tools with Brazilian market presence.</p>
+                                <div class="verification-method"><strong>Verification:</strong> We review documented legal bases, DPO appointment (if required), and data subject rights procedures.</div>
+                            </div>
+                            <div class="cert-card">
+                                <h4>PDPA Compliance</h4>
+                                <div class="issuer">Self-attested (Singapore/Thailand regulations)</div>
+                                <p>Personal Data Protection Acts in Singapore and Thailand establish consent-based frameworks for personal data processing. Requirements vary by jurisdiction but generally include notification, consent, and security obligations.</p>
+                                <div class="verification-method"><strong>Verification:</strong> We review documented compliance procedures against the specific PDPA requirements of claimed jurisdictions.</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Specific -->
+                    <div class="cert-group ai">
+                        <h3><span class="icon">🤖</span> AI Specific</h3>
+                        <div class="cert-cards">
+                            <div class="cert-card">
+                                <h4>EU AI Act Conformity Assessment</h4>
+                                <div class="issuer">Issued by: EU Notified Bodies</div>
+                                <p>For high-risk AI systems under the EU AI Act, conformity assessments will be required starting 2025-2026. Assessments evaluate risk management, data governance, transparency, human oversight, and accuracy. The most significant AI-specific compliance requirement globally.</p>
+                                <div class="verification-method"><strong>Verification:</strong> We confirm through the notified body that conducted the assessment and check the EU database once operational.</div>
+                            </div>
+                            <div class="cert-card">
+                                <h4>NIST AI RMF Alignment</h4>
+                                <div class="issuer">Self-attested (NIST framework)</div>
+                                <p>The NIST AI Risk Management Framework provides voluntary guidance for managing AI risks. Not a certification, but vendors can document alignment with its Govern, Map, Measure, and Manage functions. Increasingly referenced in US federal AI procurement.</p>
+                                <div class="verification-method"><strong>Verification:</strong> We review vendor's documented alignment to specific AI RMF functions and subcategories.</div>
+                            </div>
+                            <div class="cert-card">
+                                <h4>IEEE CertifAIEd</h4>
+                                <div class="issuer">Issued by: IEEE Standards Association</div>
+                                <p>A mark program assessing AI systems against criteria including transparency, accountability, algorithmic bias, and privacy. Multiple specialty marks available. One of the first third-party AI ethics certification programs with global recognition.</p>
+                                <div class="verification-method"><strong>Verification:</strong> We confirm through IEEE's CertifAIEd program registry and verify mark validity.</div>
+                            </div>
+                            <div class="cert-card">
+                                <h4>ISO 42001</h4>
+                                <div class="issuer">Issued by: Accredited certification bodies</div>
+                                <p>The first international standard specifically for AI management systems. Establishes requirements for responsible AI development and deployment including risk assessment, transparency, and human oversight. Published in 2023, adoption is growing rapidly.</p>
+                                <div class="verification-method"><strong>Verification:</strong> We search accreditation body certificate databases to confirm active ISO 42001 certification.</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Verification Methodology -->
+                <section class="section">
+                    <h2>How We Verify Certifications</h2>
+                    <p>Our verification process for each certification type:</p>
+                    
+                    <div class="method-list">
+                        <div class="method-item">
+                            <div class="cert-type">SOC 2 Reports</div>
+                            <div class="method">Contact the auditing firm directly and confirm the report exists, covers the stated period, and was issued to the named entity.</div>
+                        </div>
+                        <div class="method-item">
+                            <div class="cert-type">ISO Certificates</div>
+                            <div class="method">Search the accreditation body's public certificate database to confirm the certificate is active and covers the stated scope.</div>
+                        </div>
+                        <div class="method-item">
+                            <div class="cert-type">HIPAA BAA</div>
+                            <div class="method">Request a sample Business Associate Agreement from the vendor and confirm it includes all HHS-required provisions.</div>
+                        </div>
+                        <div class="method-item">
+                            <div class="cert-type">FedRAMP</div>
+                            <div class="method">Confirm status through the official FedRAMP Marketplace at marketplace.fedramp.gov, verifying authorization level and sponsoring agency.</div>
+                        </div>
+                        <div class="method-item">
+                            <div class="cert-type">EU AI Act</div>
+                            <div class="method">Contact the notified body that conducted the conformity assessment and verify through the EU database once operational.</div>
+                        </div>
+                        <div class="method-item">
+                            <div class="cert-type">No Public Registry</div>
+                            <div class="method">For certifications without a public registry, we contact the issuing body directly, document their response, and archive the verification evidence.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="verification-warning">
+                        <strong>Important:</strong> If we cannot independently verify a certification through a primary source, it will not display as "Verified" on this platform — regardless of how credible the documentation appears.
+                    </div>
+                </section>
+
+                <!-- CTA Section -->
+                <div class="cta-section">
+                    <div class="cta-card vendor">
+                        <h3>🏢 For Vendors</h3>
+                        <p>Submit your certifications for independent verification. One-time $199 fee per certification (refunded if unverifiable).</p>
+                        <a href="/certifications/submit.html" class="btn btn-primary">Submit Certification →</a>
+                    </div>
+                    <div class="cta-card buyer">
+                        <h3>🔍 For Buyers</h3>
+                        <p>See which tools have the strongest verified compliance posture in your category.</p>
+                        <a href="/certifications/leaderboard.html" class="btn btn-primary">View Leaderboard →</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>© 2026 ToolIntel. Independent AI tool intelligence. No sponsored content. No pay-to-play.</p>
+        </div>
+    </footer>
+
+    <script>
+        const API_BASE = 'https://v7086lxsji.execute-api.us-east-1.amazonaws.com';
+        
+        async function loadStats() {
+            try {
+                const res = await fetch(`${API_BASE}/certifications/stats`);
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('statVerified').textContent = data.verified || 0;
+                    document.getElementById('statTools').textContent = data.tools || 0;
+                    document.getElementById('statPending').textContent = data.pending || 0;
+                }
+            } catch (e) {
+                console.log('Could not load stats');
+            }
+        }
+        
+        loadStats();
+    </script>
+</body>
+</html>
