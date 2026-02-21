@@ -17,12 +17,13 @@ const CORS = {
 const ADMIN_KEY = process.env.ADMIN_KEY;
 
 exports.handler = async (event) => {
-    if (event.httpMethod === 'OPTIONS') {
+    const method = event.requestContext?.http?.method || event.httpMethod;
+    
+    if (method === 'OPTIONS') {
         return { statusCode: 200, headers: CORS, body: '' };
     }
 
-    const path = event.path;
-    const method = event.httpMethod;
+    const path = event.rawPath || event.path;
 
     try {
         // Submit a conflict concern (public)
