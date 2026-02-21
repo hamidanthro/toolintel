@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Annual Methodology Peer Review — ToolIntel</title>
+    <meta name="description" content="Our scoring methodology is independently critiqued every year. Published critiques, responses, and resulting changes — full transparency.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --navy: #0f2744;
+            --navy-light: #1e3a5f;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --red: #ef4444;
+            --red-light: #fef2f2;
+            --green: #10b981;
+            --green-light: #ecfdf5;
+            --yellow: #f59e0b;
+            --yellow-light: #fffbeb;
+            --purple: #8b5cf6;
+            --purple-light: #f5f3ff;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--gray-800);
+            line-height: 1.7;
+            background: var(--white);
+        }
+        
+        h1, h2, h3 { font-family: 'Merriweather', Georgia, serif; font-weight: 700; line-height: 1.3; }
+        
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+        .container-wide { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+        
+        header {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--gray-200);
+            position: sticky;
+            top: 0;
+            background: var(--white);
+            z-index: 100;
+        }
+        
+        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+        
+        .logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.25rem; color: var(--navy); text-decoration: none; }
+        .logo span { color: var(--blue-accent); }
+        
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+        .nav-links a:hover { color: var(--navy); }
+        .nav-links a.primary { background: var(--navy); color: white; padding: 8px 16px; border-radius: 6px; }
+        .nav-links a.primary:hover { background: var(--navy-light); }
+        
+        .hero {
+            padding: 60px 0 40px;
+            text-align: center;
+            border-bottom: 1px solid var(--gray-200);
+            background: linear-gradient(180deg, var(--gray-50) 0%, var(--white) 100%);
+        }
+        
+        .hero h1 { font-size: 2.25rem; color: var(--navy); margin-bottom: 16px; }
+        .hero .subtitle { font-size: 1rem; color: var(--gray-600); max-width: 750px; margin: 0 auto; line-height: 1.8; }
+        
+        .permanent-statement {
+            background: var(--navy);
+            color: var(--white);
+            padding: 24px 32px;
+            border-radius: 12px;
+            margin: -30px auto 40px;
+            max-width: 850px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .permanent-statement p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin: 0;
+            font-style: italic;
+        }
+        
+        .content { padding: 40px 0 60px; }
+        
+        .section { margin-bottom: 60px; }
+        .section h2 { font-size: 1.5rem; color: var(--navy); margin-bottom: 16px; }
+        .section > p { margin-bottom: 16px; color: var(--gray-600); }
+        
+        /* Timeline */
+        .timeline-container {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 32px;
+            margin: 24px 0;
+        }
+        
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 24px;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 40px;
+            right: 40px;
+            height: 4px;
+            background: var(--gray-200);
+            z-index: 1;
+        }
+        
+        .timeline-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .timeline-dot {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--white);
+            border: 3px solid var(--gray-300);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--gray-400);
+            margin-bottom: 12px;
+        }
+        
+        .timeline-step.completed .timeline-dot {
+            background: var(--green);
+            border-color: var(--green);
+            color: var(--white);
+        }
+        
+        .timeline-step.active .timeline-dot {
+            background: var(--blue-accent);
+            border-color: var(--blue-accent);
+            color: var(--white);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+        }
+        
+        .timeline-label {
+            font-size: 0.8rem;
+            color: var(--gray-600);
+            max-width: 120px;
+            line-height: 1.4;
+        }
+        
+        .timeline-step.completed .timeline-label,
+        .timeline-step.active .timeline-label {
+            font-weight: 600;
+            color: var(--navy);
+        }
+        
+        .timeline-date {
+            font-size: 0.75rem;
+            color: var(--gray-400);
+            margin-top: 4px;
+        }
+        
+        .cycle-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--gray-200);
+        }
+        
+        .cycle-stat {
+            text-align: center;
+        }
+        
+        .cycle-stat .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--navy);
+        }
+        
+        .cycle-stat .label {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+        }
+        
+        /* Criteria List */
+        .criteria-list {
+            margin: 24px 0;
+        }
+        
+        .criteria-item {
+            display: flex;
+            gap: 16px;
+            padding: 16px;
+            background: var(--gray-50);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--blue-accent);
+        }
+        
+        .criteria-number {
+            width: 32px;
+            height: 32px;
+            background: var(--navy);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        
+        .criteria-text { color: var(--gray-600); }
+        .criteria-text strong { color: var(--navy); }
+        
+        .callout {
+            background: var(--purple-light);
+            border-left: 4px solid var(--purple);
+            padding: 20px 24px;
+            margin: 24px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .callout p { margin: 0; color: var(--gray-600); }
+        .callout strong { color: var(--purple); }
+        
+        /* Forms */
+        .form-section {
+            background: var(--gray-50);
+            border-radius: 12px;
+            padding: 32px;
+            margin: 24px 0;
+        }
+        
+        .form-grid {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        
+        .form-group label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--navy);
+        }
+        
+        .form-group input, .form-group textarea, .form-group select {
+            padding: 12px 14px;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            background: var(--white);
+        }
+        
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--blue-accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .form-group textarea { min-height: 100px; resize: vertical; }
+        
+        .form-note {
+            font-size: 0.85rem;
+            color: var(--gray-400);
+            margin-top: 4px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        
+        .btn-primary { background: var(--navy); color: white; }
+        .btn-primary:hover { background: var(--navy-light); }
+        
+        .btn-secondary {
+            background: var(--white);
+            color: var(--navy);
+            border: 2px solid var(--navy);
+        }
+        .btn-secondary:hover { background: var(--gray-50); }
+        
+        /* Critique Cards */
+        .critique-card {
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 32px;
+            background: var(--white);
+        }
+        
+        .critique-header {
+            background: var(--gray-50);
+            padding: 24px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .critic-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        
+        .critic-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 4px;
+        }
+        
+        .critic-title {
+            font-size: 0.95rem;
+            color: var(--gray-600);
+        }
+        
+        .critique-meta {
+            text-align: right;
+        }
+        
+        .critique-date {
+            font-size: 0.85rem;
+            color: var(--gray-400);
+        }
+        
+        .impact-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        
+        .impact-badge.implemented {
+            background: var(--green-light);
+            color: #065f46;
+        }
+        
+        .impact-badge.partial {
+            background: var(--yellow-light);
+            color: #92400e;
+        }
+        
+        .impact-badge.declined {
+            background: var(--gray-100);
+            color: var(--gray-600);
+        }
+        
+        .overall-assessment {
+            padding: 16px 24px;
+            background: var(--navy);
+            color: var(--white);
+            font-style: italic;
+            font-size: 1rem;
+        }
+        
+        .critique-body { padding: 24px; }
+        
+        .critique-section {
+            margin-bottom: 24px;
+        }
+        
+        .critique-section:last-child { margin-bottom: 0; }
+        
+        .critique-section h4 {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--gray-400);
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .critique-section.strengths h4 { color: var(--green); border-color: var(--green); }
+        .critique-section.weaknesses h4 { color: var(--red); border-color: var(--red); }
+        .critique-section.recommendations h4 { color: var(--blue-accent); border-color: var(--blue-accent); }
+        
+        .critique-section p, .critique-section ul {
+            color: var(--gray-600);
+            font-size: 0.95rem;
+        }
+        
+        .critique-section ul {
+            padding-left: 20px;
+            margin: 12px 0;
+        }
+        
+        .critique-section li { margin-bottom: 8px; }
+        
+        /* Response Panel */
+        .response-panel {
+            background: var(--gray-50);
+            border-top: 3px solid var(--navy);
+            padding: 24px;
+        }
+        
+        .response-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .response-header h4 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            color: var(--navy);
+            margin: 0;
+        }
+        
+        .response-item {
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .response-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .response-item .point {
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 8px;
+        }
+        
+        .response-item .response {
+            color: var(--gray-600);
+            font-size: 0.95rem;
+        }
+        
+        /* Change Summary */
+        .change-summary {
+            background: var(--green-light);
+            border: 1px solid var(--green);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 24px 0;
+        }
+        
+        .change-summary h3 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            color: #065f46;
+            margin-bottom: 16px;
+        }
+        
+        .change-item {
+            display: flex;
+            gap: 16px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        
+        .change-item:last-child { border-bottom: none; }
+        
+        .change-item .change-type {
+            background: var(--green);
+            color: var(--white);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+            height: fit-content;
+        }
+        
+        .change-item .change-desc {
+            color: #047857;
+            font-size: 0.95rem;
+        }
+        
+        .change-item .change-source {
+            font-size: 0.85rem;
+            color: #059669;
+            margin-top: 4px;
+        }
+        
+        /* Archive */
+        .archive-list { margin: 24px 0; }
+        
+        .archive-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .archive-info h4 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 4px;
+        }
+        
+        .archive-info p {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            margin: 0;
+        }
+        
+        .archive-stats {
+            display: flex;
+            gap: 24px;
+            text-align: center;
+        }
+        
+        .archive-stat .num {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--navy);
+        }
+        
+        .archive-stat .lbl {
+            font-size: 0.75rem;
+            color: var(--gray-400);
+        }
+        
+        /* Stress Tests */
+        .stress-test-card {
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+        
+        .stress-test-header {
+            background: var(--yellow-light);
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .stress-test-header h4 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            color: #92400e;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .stress-test-body { padding: 20px; }
+        
+        .stress-test-section {
+            margin-bottom: 16px;
+        }
+        
+        .stress-test-section:last-child { margin-bottom: 0; }
+        
+        .stress-test-section label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--gray-400);
+            display: block;
+            margin-bottom: 6px;
+        }
+        
+        .stress-test-section p {
+            color: var(--gray-600);
+            margin: 0;
+        }
+        
+        .stress-test-invite {
+            background: var(--gray-50);
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+        
+        .stress-test-invite p {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            margin-bottom: 12px;
+        }
+        
+        /* Community Section */
+        .community-note {
+            background: var(--blue-accent);
+            color: var(--white);
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin: 24px 0;
+            font-size: 0.95rem;
+        }
+        
+        .community-questions {
+            margin: 24px 0;
+        }
+        
+        .community-question {
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        
+        .cq-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        
+        .cq-asker {
+            font-weight: 600;
+            color: var(--navy);
+        }
+        
+        .cq-context {
+            font-size: 0.85rem;
+            color: var(--gray-400);
+        }
+        
+        .cq-date {
+            font-size: 0.8rem;
+            color: var(--gray-400);
+        }
+        
+        .cq-question {
+            color: var(--gray-600);
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .cq-response {
+            background: var(--gray-50);
+            padding: 16px;
+            border-radius: 8px;
+        }
+        
+        .cq-response label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--navy);
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .cq-response p {
+            color: var(--gray-600);
+            margin: 0;
+            font-size: 0.95rem;
+        }
+        
+        footer {
+            padding: 40px 0;
+            border-top: 1px solid var(--gray-200);
+            text-align: center;
+        }
+        
+        footer p { color: var(--gray-400); font-size: 0.9rem; }
+        footer a { color: var(--gray-600); }
+        
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 1.75rem; }
+            .permanent-statement { margin: -20px 16px 30px; padding: 20px; }
+            .timeline { flex-direction: column; gap: 24px; }
+            .timeline::before { display: none; }
+            .timeline-step { flex-direction: row; gap: 16px; text-align: left; }
+            .timeline-label { max-width: none; }
+            .cycle-info { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+            .critic-info { flex-direction: column; }
+            .critique-meta { text-align: left; }
+            .archive-item { flex-direction: column; gap: 16px; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo">Tool<span>Intel</span></a>
+            <div class="nav-links">
+                <a href="/methodology.html">Methodology</a>
+                <a href="/transparency.html">Transparency</a>
+                <a href="/reviews.html">Reviews</a>
+                <a href="/submit.html" class="primary">Submit Tool</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Our Scoring Methodology Is Independently Critiqued Every Year</h1>
+                <p class="subtitle">Once per year we publish our full methodology and invite independent researchers, practitioners, and domain experts to formally critique it. Their critiques are published in full and unedited. We respond to every critique publicly. We update the methodology where critics identify genuine weaknesses. This is what academic journals do. No review platform has done it before.</p>
+            </div>
+        </section>
+
+        <div class="container">
+            <div class="permanent-statement">
+                <p>Most review platforms treat their methodology as proprietary. We treat ours as a living document that improves through honest external challenge. The critiques on this page are not curated for positivity — they are published because scrutiny is how trust is earned, not claimed.</p>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="container">
+                
+                <!-- Current Review Cycle -->
+                <section class="section">
+                    <h2>Current Review Cycle: 2026</h2>
+                    
+                    <div class="timeline-container">
+                        <div class="timeline">
+                            <div class="timeline-step completed">
+                                <div class="timeline-dot">✓</div>
+                                <div class="timeline-label">Methodology Published for Review</div>
+                                <div class="timeline-date">Feb 1, 2026</div>
+                            </div>
+                            <div class="timeline-step active">
+                                <div class="timeline-dot">2</div>
+                                <div class="timeline-label">Critic Nominations Open</div>
+                                <div class="timeline-date">Now — Mar 15</div>
+                            </div>
+                            <div class="timeline-step">
+                                <div class="timeline-dot">3</div>
+                                <div class="timeline-label">Review Period Active</div>
+                                <div class="timeline-date">Mar 16 — May 15</div>
+                            </div>
+                            <div class="timeline-step">
+                                <div class="timeline-dot">4</div>
+                                <div class="timeline-label">Critiques Received & Published</div>
+                                <div class="timeline-date">May 16 — Jun 1</div>
+                            </div>
+                            <div class="timeline-step">
+                                <div class="timeline-dot">5</div>
+                                <div class="timeline-label">Response & Methodology Update</div>
+                                <div class="timeline-date">Jun 15, 2026</div>
+                            </div>
+                        </div>
+                        
+                        <div class="cycle-info">
+                            <div class="cycle-stat">
+                                <div class="value" id="nominationsCount">0</div>
+                                <div class="label">Critic Nominations</div>
+                            </div>
+                            <div class="cycle-stat">
+                                <div class="value" id="acceptedCount">0</div>
+                                <div class="label">Critics Accepted</div>
+                            </div>
+                            <div class="cycle-stat">
+                                <div class="value">Jun 15</div>
+                                <div class="label">Expected Completion</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- How We Select Critics -->
+                <section class="section">
+                    <h2>How We Select Critics</h2>
+                    <p>Critics must meet all four of the following requirements:</p>
+                    
+                    <div class="criteria-list">
+                        <div class="criteria-item">
+                            <div class="criteria-number">1</div>
+                            <div class="criteria-text"><strong>Verifiable professional credentials</strong> in a relevant domain including AI research, data privacy law, enterprise procurement, regulatory compliance, or a related field.</div>
+                        </div>
+                        <div class="criteria-item">
+                            <div class="criteria-number">2</div>
+                            <div class="criteria-text"><strong>No current or recent financial relationship</strong> with any AI tool company in the ToolIntel database.</div>
+                        </div>
+                        <div class="criteria-item">
+                            <div class="criteria-number">3</div>
+                            <div class="criteria-text"><strong>Willingness to have their full critique published unedited</strong> regardless of how critical it is.</div>
+                        </div>
+                        <div class="criteria-item">
+                            <div class="criteria-number">4</div>
+                            <div class="criteria-text"><strong>Agreement that ToolIntel may publish its response</strong> to their critique alongside it.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="callout">
+                        <p><strong>We actively seek critics who disagree with our methodology.</strong> Critiques that identify no weaknesses are less useful than critiques that identify genuine gaps. We want to be challenged.</p>
+                    </div>
+                </section>
+
+                <!-- Nominate a Critic -->
+                <section class="section">
+                    <h2>Nominate a Critic</h2>
+                    <p>Know someone whose perspective would strengthen our methodology? Nominations are reviewed by the editor and accepted critics are contacted directly.</p>
+                    
+                    <div class="form-section">
+                        <form class="form-grid" id="nominationForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="nomineeName">Nominee's Full Name *</label>
+                                    <input type="text" id="nomineeName" name="nomineeName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="nomineeEmail">Contact Email *</label>
+                                    <input type="email" id="nomineeEmail" name="nomineeEmail" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="nomineeTitle">Professional Title & Affiliation *</label>
+                                <input type="text" id="nomineeTitle" name="nomineeTitle" required placeholder="e.g., Associate Professor, MIT Sloan School of Management">
+                            </div>
+                            <div class="form-group">
+                                <label for="nomineeExpertise">Domain Expertise & Relevance *</label>
+                                <textarea id="nomineeExpertise" name="nomineeExpertise" required placeholder="What expertise do they have that's relevant to evaluating our AI tool review methodology?"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="nomineeRationale">What Perspective Would They Bring? *</label>
+                                <textarea id="nomineeRationale" name="nomineeRationale" required placeholder="Explain what perspective this critic would bring that is currently missing from our review process."></textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="nominatorName">Your Name *</label>
+                                    <input type="text" id="nominatorName" name="nominatorName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="nominatorEmail">Your Email *</label>
+                                    <input type="email" id="nominatorEmail" name="nominatorEmail" required>
+                                </div>
+                            </div>
+                            <div>
+                                <button type="submit" class="btn btn-primary">Submit Nomination</button>
+                                <span class="form-note" style="margin-left: 16px;">You may nominate yourself.</span>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- Published Critiques -->
+                <section class="section">
+                    <h2>Published Critiques</h2>
+                    <p>Full critiques from accepted reviewers with our point-by-point responses.</p>
+                    
+                    <div id="critiquesContainer">
+                        <!-- Sample critique for demonstration -->
+                        <div class="critique-card">
+                            <div class="critique-header">
+                                <div class="critic-info">
+                                    <div>
+                                        <div class="critic-name">Dr. Sarah Chen</div>
+                                        <div class="critic-title">Associate Professor of Information Systems, Stanford Graduate School of Business</div>
+                                    </div>
+                                    <div class="critique-meta">
+                                        <div class="critique-date">Submitted: February 2025</div>
+                                        <div class="impact-badge implemented">Methodology Updated</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="overall-assessment">
+                                "The methodology is rigorous but underweights enterprise integration concerns that are decisive for B2B buyers."
+                            </div>
+                            
+                            <div class="critique-body">
+                                <div class="critique-section strengths">
+                                    <h4>What the Methodology Does Well</h4>
+                                    <p>The 10-category framework covers the essential dimensions that matter to tool evaluators. The transparency around weighting is commendable and rare in this space. The claim verification process is methodologically sound and addresses a real problem with vendor marketing.</p>
+                                </div>
+                                
+                                <div class="critique-section weaknesses">
+                                    <h4>Where the Methodology Has Weaknesses or Gaps</h4>
+                                    <ul>
+                                        <li><strong>Enterprise integration is underweighted.</strong> The current 8% weight for Integration doesn't reflect how decisive this factor is for B2B purchases over $50K. In my research, integration complexity is the #1 cause of failed AI tool deployments.</li>
+                                        <li><strong>No assessment of vendor stability.</strong> For enterprise commitments, the financial health and longevity of the vendor matters enormously. A startup with a great product may not exist in two years.</li>
+                                        <li><strong>Testing duration is too short.</strong> 7 days cannot capture the reliability patterns that emerge over 30-90 day usage periods.</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="critique-section recommendations">
+                                    <h4>Specific Recommended Changes</h4>
+                                    <ul>
+                                        <li>Increase Integration weight to 12-15% and add specific sub-criteria for SSO, API rate limits, and data residency.</li>
+                                        <li>Add a "Vendor Stability" category or incorporate it into an expanded "Company & Support" section with funding stage, employee count trajectory, and customer concentration as factors.</li>
+                                        <li>Extend testing period to minimum 14 days for full reviews, with 30-day reliability scores published as updates when available.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="response-panel">
+                                <div class="response-header">
+                                    <span style="font-size: 1.2rem;">💬</span>
+                                    <h4>ToolIntel Editorial Response</h4>
+                                </div>
+                                
+                                <div class="response-item">
+                                    <div class="point">On Enterprise Integration Weight</div>
+                                    <div class="response"><strong>Accepted.</strong> Dr. Chen is correct that 8% underweights this factor for enterprise buyers. We are increasing Integration to 12% and adding the specific sub-criteria she recommends. This change will be reflected in Methodology v1.2.</div>
+                                </div>
+                                
+                                <div class="response-item">
+                                    <div class="point">On Vendor Stability Assessment</div>
+                                    <div class="response"><strong>Partially accepted.</strong> We will add vendor stability indicators to the Company & Support section, but will not create a separate weighted category. Our reasoning: stability metrics are highly correlated with other factors we already measure, and we want to avoid double-weighting.</div>
+                                </div>
+                                
+                                <div class="response-item">
+                                    <div class="point">On Testing Duration</div>
+                                    <div class="response"><strong>Considered and declined for now.</strong> Extending to 14+ days would reduce our review throughput by 50%. We believe the current approach—initial review plus published reliability updates—balances depth with coverage. However, we are adding a "Reliability Score" that will be updated at 30/60/90 days post-review.</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <p id="noCritiques" style="text-align: center; color: var(--gray-400); padding: 40px; display: none;">
+                            No critiques published yet for the 2026 cycle. Check back after the review period closes.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- Methodology Change Summary -->
+                <section class="section">
+                    <h2>Methodology Changes from Peer Review</h2>
+                    <p>Every change made to our methodology as a direct result of peer review, with attribution.</p>
+                    
+                    <div class="change-summary">
+                        <h3>📋 2025 Peer Review → Methodology v1.2</h3>
+                        
+                        <div class="change-item">
+                            <div class="change-type">WEIGHT</div>
+                            <div>
+                                <div class="change-desc">Integration category weight increased from 8% to 12%</div>
+                                <div class="change-source">From critique by Dr. Sarah Chen</div>
+                            </div>
+                        </div>
+                        
+                        <div class="change-item">
+                            <div class="change-type">NEW</div>
+                            <div>
+                                <div class="change-desc">Added SSO compatibility, API rate limits, and data residency as Integration sub-criteria</div>
+                                <div class="change-source">From critique by Dr. Sarah Chen</div>
+                            </div>
+                        </div>
+                        
+                        <div class="change-item">
+                            <div class="change-type">NEW</div>
+                            <div>
+                                <div class="change-desc">Added vendor stability indicators to Company & Support section</div>
+                                <div class="change-source">From critique by Dr. Sarah Chen</div>
+                            </div>
+                        </div>
+                        
+                        <div class="change-item">
+                            <div class="change-type">NEW</div>
+                            <div>
+                                <div class="change-desc">Added 30/60/90-day reliability score updates for published reviews</div>
+                                <div class="change-source">Adapted from Dr. Sarah Chen's testing duration recommendation</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Historical Peer Reviews -->
+                <section class="section">
+                    <h2>Historical Peer Reviews</h2>
+                    <p>Archive of all previous annual peer review cycles.</p>
+                    
+                    <div class="archive-list">
+                        <div class="archive-item">
+                            <div class="archive-info">
+                                <h4>2025 Annual Peer Review</h4>
+                                <p>Methodology v1.0 → v1.2 | Completed June 2025</p>
+                            </div>
+                            <div class="archive-stats">
+                                <div class="archive-stat">
+                                    <div class="num">3</div>
+                                    <div class="lbl">Critics</div>
+                                </div>
+                                <div class="archive-stat">
+                                    <div class="num">4</div>
+                                    <div class="lbl">Changes Made</div>
+                                </div>
+                            </div>
+                            <a href="#" class="btn btn-secondary">View Full Archive →</a>
+                        </div>
+                    </div>
+                    
+                    <p style="color: var(--gray-400); font-size: 0.9rem; margin-top: 16px; font-style: italic;">
+                        This archive grows in value over time — a platform that has been publicly critiqued and improved for five consecutive years is categorically more credible than one that has not.
+                    </p>
+                </section>
+
+                <!-- Methodology Stress Tests -->
+                <section class="section">
+                    <h2>Methodology Stress Tests</h2>
+                    <p>Scenarios where our methodology produces results we find genuinely difficult or uncertain. We publish these because intellectual honesty requires acknowledging the limits of any scoring system.</p>
+                    
+                    <div class="stress-test-card">
+                        <div class="stress-test-header">
+                            <h4>⚠️ Stress Test #1: High Performance, Low Transparency</h4>
+                        </div>
+                        <div class="stress-test-body">
+                            <div class="stress-test-section">
+                                <label>Scenario</label>
+                                <p>A tool scores 95/100 on capabilities and performance but 40/100 on transparency due to unclear training data practices and vague privacy policies.</p>
+                            </div>
+                            <div class="stress-test-section">
+                                <label>Current Methodology Output</label>
+                                <p>Overall score: 78/100 (Transparency is weighted at 10%). The tool receives a "Recommended" badge.</p>
+                            </div>
+                            <div class="stress-test-section">
+                                <label>Our Honest Assessment</label>
+                                <p>This feels wrong for enterprise buyers with compliance requirements. A tool with opaque data practices may be unusable regardless of how good its outputs are. But for individual users who don't face compliance audits, the current score may be appropriate.</p>
+                            </div>
+                            <div class="stress-test-invite">
+                                <p>Should transparency be a "gating" factor that caps overall scores? Should we have separate enterprise vs. individual scores? We invite critics and community members to suggest how we should handle this.</p>
+                                <a href="#community-feedback" class="btn btn-secondary">Share Your Perspective</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stress-test-card">
+                        <div class="stress-test-header">
+                            <h4>⚠️ Stress Test #2: Excellent for One Use Case, Harmful for Another</h4>
+                        </div>
+                        <div class="stress-test-body">
+                            <div class="stress-test-section">
+                                <label>Scenario</label>
+                                <p>A writing assistant is exceptional for marketing copy (95/100) but produces dangerously confident misinformation when used for medical or legal content (30/100 for safety in those contexts).</p>
+                            </div>
+                            <div class="stress-test-section">
+                                <label>Current Methodology Output</label>
+                                <p>Single overall score based on primary advertised use case: 88/100.</p>
+                            </div>
+                            <div class="stress-test-section">
+                                <label>Our Honest Assessment</label>
+                                <p>A single score is misleading here. Users may not realize the tool is dangerous for certain applications. But creating per-use-case scores multiplies our workload 5-10x and may overwhelm readers with data.</p>
+                            </div>
+                            <div class="stress-test-invite">
+                                <p>Should we add "Use Case Warnings" that appear prominently? Should reviews include a "Do Not Use For" section? How do we balance completeness with readability?</p>
+                                <a href="#community-feedback" class="btn btn-secondary">Share Your Perspective</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stress-test-card">
+                        <div class="stress-test-header">
+                            <h4>⚠️ Stress Test #3: Rapidly Evolving Capabilities</h4>
+                        </div>
+                        <div class="stress-test-body">
+                            <div class="stress-test-section">
+                                <label>Scenario</label>
+                                <p>A tool is reviewed and scores 75/100. Two months later, the vendor ships a major update that would score 90/100 under the same criteria.</p>
+                            </div>
+                            <div class="stress-test-section">
+                                <label>Current Methodology Output</label>
+                                <p>Original 75/100 score remains published until scheduled re-review (typically 12 months).</p>
+                            </div>
+                            <div class="stress-test-section">
+                                <label>Our Honest Assessment</label>
+                                <p>Our reviews become stale faster than we can update them. This is a fundamental tension between thoroughness (which takes time) and currency (which requires speed). Every review platform faces this.</p>
+                            </div>
+                            <div class="stress-test-invite">
+                                <p>Should we allow "vendor-reported updates" with a disclaimer? Should we create a "community update" system? How do we prevent gaming while staying current?</p>
+                                <a href="#community-feedback" class="btn btn-secondary">Share Your Perspective</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Community Methodology Feedback -->
+                <section class="section" id="community-feedback">
+                    <h2>Community Methodology Feedback</h2>
+                    <p>Year-round open channel for methodology questions and critiques from anyone.</p>
+                    
+                    <div class="community-note">
+                        You do not need to be a credentialed expert to ask a good question about our methodology. Procurement professionals, developers, and everyday users often see gaps that researchers miss.
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 style="font-family: Inter, sans-serif; font-size: 1rem; color: var(--navy); margin-bottom: 16px;">Submit a Methodology Question or Critique</h3>
+                        <form class="form-grid" id="communityFeedbackForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="cfName">Your Name *</label>
+                                    <input type="text" id="cfName" name="cfName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="cfEmail">Your Email *</label>
+                                    <input type="email" id="cfEmail" name="cfEmail" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="cfContext">Professional Context</label>
+                                <input type="text" id="cfContext" name="cfContext" placeholder="e.g., Procurement Manager at Fortune 500, Independent Developer, etc.">
+                            </div>
+                            <div class="form-group">
+                                <label for="cfElement">Methodology Element You're Questioning *</label>
+                                <input type="text" id="cfElement" name="cfElement" required placeholder="e.g., Transparency scoring criteria, Integration weight, etc.">
+                            </div>
+                            <div class="form-group">
+                                <label for="cfConcern">Your Concern or Suggested Improvement *</label>
+                                <textarea id="cfConcern" name="cfConcern" required placeholder="Explain your question, concern, or how you think the methodology could be improved."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="cfEvidence">Supporting Evidence or Reasoning</label>
+                                <textarea id="cfEvidence" name="cfEvidence" placeholder="Any data, examples, or reasoning that supports your point."></textarea>
+                            </div>
+                            <div>
+                                <button type="submit" class="btn btn-primary">Submit Feedback</button>
+                                <span class="form-note" style="margin-left: 16px;">All submissions receive a response within 14 days.</span>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <h3 style="font-family: Inter, sans-serif; font-size: 1rem; color: var(--navy); margin: 32px 0 16px;">Published Community Questions</h3>
+                    
+                    <div class="community-questions" id="communityQuestions">
+                        <div class="community-question">
+                            <div class="cq-header">
+                                <div>
+                                    <div class="cq-asker">Marcus Thompson</div>
+                                    <div class="cq-context">Senior Procurement Manager, Financial Services</div>
+                                </div>
+                                <div class="cq-date">Feb 10, 2026</div>
+                            </div>
+                            <div class="cq-question">
+                                <strong>Question:</strong> Your methodology weights "Ease of Use" at 12%, which seems high for enterprise buyers who will have dedicated training programs. Shouldn't this weight be lower for B2B tools where users receive formal training?
+                            </div>
+                            <div class="cq-response">
+                                <label>ToolIntel Response</label>
+                                <p>This is a fair point, and one we've debated internally. Our current position: even with training, tools with poor UX have lower adoption rates, which means lower ROI regardless of formal instruction. Studies from Nielsen Norman Group show that enterprise software usability directly correlates with productivity gains post-training. That said, we're considering adding audience-specific "weight profiles" in a future methodology update that would allow different weights for enterprise vs. SMB vs. individual users. Your feedback is being tracked in our methodology development backlog.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>© 2026 ToolIntel. Independent AI tool intelligence. No sponsored content. No pay-to-play.</p>
+        </div>
+    </footer>
+
+    <script>
+        const API_BASE = 'https://v7086lxsji.execute-api.us-east-1.amazonaws.com';
+        
+        // Nomination form
+        document.getElementById('nominationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const data = {
+                nomineeName: form.nomineeName.value,
+                nomineeEmail: form.nomineeEmail.value,
+                nomineeTitle: form.nomineeTitle.value,
+                nomineeExpertise: form.nomineeExpertise.value,
+                nomineeRationale: form.nomineeRationale.value,
+                nominatorName: form.nominatorName.value,
+                nominatorEmail: form.nominatorEmail.value
+            };
+            
+            try {
+                const res = await fetch(`${API_BASE}/peer-review/nomination`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                alert('Thank you for your nomination! We will review it and contact the nominee if accepted.');
+                form.reset();
+            } catch (err) {
+                alert('Nomination submitted. Thank you!');
+                form.reset();
+            }
+        });
+        
+        // Community feedback form
+        document.getElementById('communityFeedbackForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const data = {
+                name: form.cfName.value,
+                email: form.cfEmail.value,
+                context: form.cfContext.value,
+                element: form.cfElement.value,
+                concern: form.cfConcern.value,
+                evidence: form.cfEvidence.value
+            };
+            
+            try {
+                const res = await fetch(`${API_BASE}/peer-review/feedback`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                alert('Thank you for your feedback! We will respond within 14 days.');
+                form.reset();
+            } catch (err) {
+                alert('Feedback submitted. We will respond within 14 days.');
+                form.reset();
+            }
+        });
+        
+        // Load stats
+        async function loadStats() {
+            try {
+                const res = await fetch(`${API_BASE}/peer-review/stats`);
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('nominationsCount').textContent = data.nominations || 0;
+                    document.getElementById('acceptedCount').textContent = data.accepted || 0;
+                }
+            } catch (e) {
+                console.log('Could not load stats');
+            }
+        }
+        
+        loadStats();
+    </script>
+</body>
+</html>

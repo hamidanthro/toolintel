@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peer Review Management — ToolIntel Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0f2744;
+            --navy-light: #1e3a5f;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --green: #10b981;
+            --green-light: #ecfdf5;
+            --yellow: #f59e0b;
+            --yellow-light: #fffbeb;
+            --red: #ef4444;
+            --red-light: #fef2f2;
+            --purple: #8b5cf6;
+            --purple-light: #f5f3ff;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--gray-50); color: var(--gray-800); }
+        
+        header { background: var(--navy); color: white; padding: 20px 24px; }
+        header h1 { font-size: 1.5rem; font-weight: 600; }
+        header p { color: var(--gray-400); font-size: 0.9rem; margin-top: 4px; }
+        
+        .header-actions { display: flex; gap: 12px; margin-top: 12px; }
+        .header-btn { padding: 8px 16px; border-radius: 6px; font-size: 0.9rem; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; border: none; cursor: pointer; }
+        .header-btn.primary { background: var(--blue-accent); color: white; }
+        .header-btn.secondary { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
+        
+        .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+        
+        /* Stats Row */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--navy);
+            line-height: 1;
+        }
+        
+        .stat-card .label {
+            font-size: 0.8rem;
+            color: var(--gray-600);
+            margin-top: 8px;
+        }
+        
+        .stat-card.green .number { color: var(--green); }
+        .stat-card.yellow .number { color: var(--yellow); }
+        .stat-card.blue .number { color: var(--blue-accent); }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--gray-200);
+            padding-bottom: 0;
+        }
+        
+        .tab {
+            padding: 12px 20px;
+            border: none;
+            background: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--gray-600);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -1px;
+        }
+        
+        .tab:hover { color: var(--navy); }
+        .tab.active { color: var(--navy); border-bottom-color: var(--navy); }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        /* Panels */
+        .panel {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        
+        .panel-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--gray-50);
+        }
+        
+        .panel-header h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--navy);
+        }
+        
+        .panel-body { padding: 20px; }
+        
+        /* Pipeline Columns */
+        .pipeline-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+        }
+        
+        .pipeline-column {
+            background: var(--gray-50);
+            border-radius: 8px;
+            padding: 16px;
+            min-height: 400px;
+        }
+        
+        .pipeline-column h3 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray-600);
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .pipeline-column h3 .count {
+            background: var(--gray-200);
+            color: var(--gray-600);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+        }
+        
+        .pipeline-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .pipeline-card:hover {
+            border-color: var(--blue-accent);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .pipeline-card .name {
+            font-weight: 600;
+            color: var(--navy);
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+        
+        .pipeline-card .title {
+            font-size: 0.8rem;
+            color: var(--gray-600);
+            margin-bottom: 8px;
+        }
+        
+        .pipeline-card .meta {
+            font-size: 0.75rem;
+            color: var(--gray-400);
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .pipeline-card .actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--gray-100);
+        }
+        
+        /* Timeline */
+        .review-timeline {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 0;
+            position: relative;
+        }
+        
+        .review-timeline::before {
+            content: '';
+            position: absolute;
+            top: 36px;
+            left: 40px;
+            right: 40px;
+            height: 4px;
+            background: var(--gray-200);
+        }
+        
+        .timeline-stage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+            flex: 1;
+        }
+        
+        .timeline-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--white);
+            border: 3px solid var(--gray-300);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--gray-400);
+        }
+        
+        .timeline-stage.completed .timeline-dot {
+            background: var(--green);
+            border-color: var(--green);
+            color: var(--white);
+        }
+        
+        .timeline-stage.active .timeline-dot {
+            background: var(--blue-accent);
+            border-color: var(--blue-accent);
+            color: var(--white);
+        }
+        
+        .timeline-label {
+            font-size: 0.75rem;
+            color: var(--gray-600);
+            text-align: center;
+            margin-top: 8px;
+            max-width: 100px;
+        }
+        
+        .timeline-date {
+            font-size: 0.7rem;
+            color: var(--gray-400);
+        }
+        
+        /* Critique Editor */
+        .critique-editor {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        
+        .critique-preview {
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 20px;
+            background: var(--gray-50);
+        }
+        
+        .critique-preview h4 {
+            font-size: 0.9rem;
+            color: var(--navy);
+            margin-bottom: 16px;
+        }
+        
+        /* Change Tracker */
+        .change-list { margin: 0; }
+        
+        .change-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 120px;
+            gap: 16px;
+            padding: 16px;
+            border-bottom: 1px solid var(--gray-200);
+            align-items: center;
+        }
+        
+        .change-row:last-child { border-bottom: none; }
+        
+        .change-row .change-desc {
+            font-size: 0.95rem;
+            color: var(--gray-800);
+        }
+        
+        .change-row .change-source {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+        }
+        
+        .change-status {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        .change-status.pending { background: var(--yellow-light); color: #92400e; }
+        .change-status.accepted { background: var(--green-light); color: #065f46; }
+        .change-status.declined { background: var(--gray-100); color: var(--gray-600); }
+        .change-status.implemented { background: var(--blue-accent); color: white; }
+        
+        /* Archive */
+        .archive-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .archive-table th, .archive-table td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .archive-table th {
+            background: var(--gray-50);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--gray-600);
+        }
+        
+        .archive-table tbody tr:hover { background: var(--gray-50); }
+        
+        /* Buttons */
+        .btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .btn-sm { padding: 4px 10px; font-size: 0.8rem; }
+        
+        .btn-primary { background: var(--navy); color: white; }
+        .btn-primary:hover { background: var(--navy-light); }
+        
+        .btn-success { background: var(--green); color: white; }
+        .btn-success:hover { background: #059669; }
+        
+        .btn-warning { background: var(--yellow); color: white; }
+        .btn-warning:hover { background: #d97706; }
+        
+        .btn-danger { background: var(--red); color: white; }
+        .btn-danger:hover { background: #dc2626; }
+        
+        .btn-secondary {
+            background: var(--gray-100);
+            color: var(--gray-600);
+            border: 1px solid var(--gray-200);
+        }
+        .btn-secondary:hover { background: var(--gray-200); }
+        
+        /* Forms */
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--gray-800);
+            margin-bottom: 6px;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--gray-200);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+        
+        .form-group textarea { min-height: 150px; resize: vertical; }
+        
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .modal-overlay.active { display: flex; }
+        
+        .modal {
+            background: var(--white);
+            border-radius: 12px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--navy);
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-400);
+        }
+        
+        .modal-body { padding: 24px; }
+        
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+        
+        /* Feedback Queue */
+        .feedback-item {
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        
+        .feedback-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        
+        .feedback-header .name {
+            font-weight: 600;
+            color: var(--navy);
+        }
+        
+        .feedback-header .context {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+        }
+        
+        .feedback-header .date {
+            font-size: 0.8rem;
+            color: var(--gray-400);
+        }
+        
+        .feedback-element {
+            background: var(--gray-50);
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+        
+        .feedback-element strong {
+            color: var(--navy);
+        }
+        
+        .feedback-concern {
+            color: var(--gray-600);
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+        }
+        
+        .feedback-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        @media (max-width: 1200px) {
+            .pipeline-grid { grid-template-columns: repeat(3, 1fr); }
+            .stats-row { grid-template-columns: repeat(3, 1fr); }
+        }
+        
+        @media (max-width: 768px) {
+            .pipeline-grid { grid-template-columns: 1fr; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .critique-editor { grid-template-columns: 1fr; }
+            .change-row { grid-template-columns: 1fr; gap: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>📚 Peer Review Management</h1>
+        <p>Manage critic nominations, review cycles, and methodology changes</p>
+        <div class="header-actions">
+            <a href="/methodology/peer-review.html" class="header-btn secondary" target="_blank">View Public Page →</a>
+            <button class="header-btn primary" onclick="openCycleModal()">+ New Review Cycle</button>
+        </div>
+    </header>
+    
+    <div class="container">
+        <!-- Stats -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="number" id="statNominations">0</div>
+                <div class="label">Nominations</div>
+            </div>
+            <div class="stat-card blue">
+                <div class="number" id="statAccepted">0</div>
+                <div class="label">Critics Accepted</div>
+            </div>
+            <div class="stat-card yellow">
+                <div class="number" id="statPending">0</div>
+                <div class="label">Critiques Pending</div>
+            </div>
+            <div class="stat-card green">
+                <div class="number" id="statPublished">0</div>
+                <div class="label">Critiques Published</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="statChanges">0</div>
+                <div class="label">Changes Proposed</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="statFeedback">0</div>
+                <div class="label">Community Feedback</div>
+            </div>
+        </div>
+        
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" data-tab="pipeline">Critic Pipeline</button>
+            <button class="tab" data-tab="active">Active Review</button>
+            <button class="tab" data-tab="changes">Methodology Updates</button>
+            <button class="tab" data-tab="feedback">Community Feedback</button>
+            <button class="tab" data-tab="archive">Archive</button>
+        </div>
+        
+        <!-- Tab: Critic Pipeline -->
+        <div class="tab-content active" id="tab-pipeline">
+            <div class="pipeline-grid">
+                <div class="pipeline-column" id="col-nominated">
+                    <h3>Nominated <span class="count">0</span></h3>
+                    <!-- Cards populated by JS -->
+                </div>
+                <div class="pipeline-column" id="col-contacted">
+                    <h3>Contacted <span class="count">0</span></h3>
+                </div>
+                <div class="pipeline-column" id="col-accepted">
+                    <h3>Accepted <span class="count">0</span></h3>
+                </div>
+                <div class="pipeline-column" id="col-reviewing">
+                    <h3>Reviewing <span class="count">0</span></h3>
+                </div>
+                <div class="pipeline-column" id="col-submitted">
+                    <h3>Critique Submitted <span class="count">0</span></h3>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Active Review -->
+        <div class="tab-content" id="tab-active">
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>2026 Annual Review Cycle</h2>
+                    <span style="color: var(--blue-accent); font-weight: 600;">Stage 2 of 5</span>
+                </div>
+                <div class="panel-body">
+                    <div class="review-timeline">
+                        <div class="timeline-stage completed">
+                            <div class="timeline-dot">✓</div>
+                            <div class="timeline-label">Methodology Published</div>
+                            <div class="timeline-date">Feb 1</div>
+                        </div>
+                        <div class="timeline-stage active">
+                            <div class="timeline-dot">2</div>
+                            <div class="timeline-label">Nominations Open</div>
+                            <div class="timeline-date">Now</div>
+                        </div>
+                        <div class="timeline-stage">
+                            <div class="timeline-dot">3</div>
+                            <div class="timeline-label">Review Period</div>
+                            <div class="timeline-date">Mar 16</div>
+                        </div>
+                        <div class="timeline-stage">
+                            <div class="timeline-dot">4</div>
+                            <div class="timeline-label">Critiques Published</div>
+                            <div class="timeline-date">May 16</div>
+                        </div>
+                        <div class="timeline-stage">
+                            <div class="timeline-dot">5</div>
+                            <div class="timeline-label">Response & Update</div>
+                            <div class="timeline-date">Jun 15</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>Received Critiques</h2>
+                    <button class="btn btn-primary" onclick="openCritiqueModal()">+ Add Critique</button>
+                </div>
+                <div class="panel-body" id="receivedCritiques">
+                    <p style="color: var(--gray-400); text-align: center; padding: 40px;">No critiques received yet for the 2026 cycle.</p>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>Response Workspace</h2>
+                </div>
+                <div class="panel-body">
+                    <div class="critique-editor">
+                        <div>
+                            <div class="form-group">
+                                <label>Select Critique to Respond To</label>
+                                <select id="critiqueSelect">
+                                    <option value="">Select a critique...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Response Point</label>
+                                <input type="text" id="responsePoint" placeholder="e.g., On Enterprise Integration Weight">
+                            </div>
+                            <div class="form-group">
+                                <label>Response Text</label>
+                                <textarea id="responseText" placeholder="Write your point-by-point response..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Impact Decision</label>
+                                <select id="impactDecision">
+                                    <option value="accepted">Accepted — Will implement</option>
+                                    <option value="partial">Partially Accepted</option>
+                                    <option value="declined">Considered and Declined</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary">Save Response</button>
+                        </div>
+                        <div class="critique-preview">
+                            <h4>Preview</h4>
+                            <p style="color: var(--gray-400);">Select a critique to see preview...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Methodology Updates -->
+        <div class="tab-content" id="tab-changes">
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>Proposed Methodology Changes</h2>
+                    <button class="btn btn-primary" onclick="openChangeModal()">+ Add Change</button>
+                </div>
+                <div class="panel-body" style="padding: 0;">
+                    <div class="change-list">
+                        <div class="change-row" style="background: var(--gray-50); font-weight: 600; font-size: 0.8rem; color: var(--gray-600);">
+                            <div>PROPOSED CHANGE</div>
+                            <div>SOURCE</div>
+                            <div>STATUS</div>
+                            <div>ACTIONS</div>
+                        </div>
+                        <div class="change-row">
+                            <div class="change-desc">Increase Integration category weight from 8% to 12%</div>
+                            <div class="change-source">Dr. Sarah Chen (2025)</div>
+                            <div><span class="change-status implemented">Implemented</span></div>
+                            <div><button class="btn btn-sm btn-secondary">View</button></div>
+                        </div>
+                        <div class="change-row">
+                            <div class="change-desc">Add SSO, API rate limits, and data residency as Integration sub-criteria</div>
+                            <div class="change-source">Dr. Sarah Chen (2025)</div>
+                            <div><span class="change-status implemented">Implemented</span></div>
+                            <div><button class="btn btn-sm btn-secondary">View</button></div>
+                        </div>
+                        <div class="change-row">
+                            <div class="change-desc">Add vendor stability indicators to Company & Support section</div>
+                            <div class="change-source">Dr. Sarah Chen (2025)</div>
+                            <div><span class="change-status implemented">Implemented</span></div>
+                            <div><button class="btn btn-sm btn-secondary">View</button></div>
+                        </div>
+                        <div class="change-row">
+                            <div class="change-desc">Add 30/60/90-day reliability score updates</div>
+                            <div class="change-source">Adapted from Dr. Sarah Chen</div>
+                            <div><span class="change-status implemented">Implemented</span></div>
+                            <div><button class="btn btn-sm btn-secondary">View</button></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>Version History</h2>
+                </div>
+                <div class="panel-body" style="padding: 0;">
+                    <table class="archive-table">
+                        <thead>
+                            <tr>
+                                <th>Version</th>
+                                <th>Date</th>
+                                <th>Changes</th>
+                                <th>Source</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>v1.2</strong></td>
+                                <td>Jun 15, 2025</td>
+                                <td>4 changes</td>
+                                <td>2025 Peer Review</td>
+                                <td><button class="btn btn-sm btn-secondary">View Changelog</button></td>
+                            </tr>
+                            <tr>
+                                <td><strong>v1.0</strong></td>
+                                <td>Feb 20, 2025</td>
+                                <td>Initial release</td>
+                                <td>—</td>
+                                <td><button class="btn btn-sm btn-secondary">View</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Community Feedback -->
+        <div class="tab-content" id="tab-feedback">
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>Community Methodology Feedback</h2>
+                    <div style="display: flex; gap: 12px;">
+                        <select id="feedbackFilter" style="padding: 6px 12px; border: 1px solid var(--gray-200); border-radius: 4px;">
+                            <option value="all">All</option>
+                            <option value="pending">Pending Response</option>
+                            <option value="responded">Responded</option>
+                            <option value="published">Published</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="panel-body" id="feedbackList">
+                    <div class="feedback-item">
+                        <div class="feedback-header">
+                            <div>
+                                <div class="name">Marcus Thompson</div>
+                                <div class="context">Senior Procurement Manager, Financial Services</div>
+                            </div>
+                            <div class="date">Feb 10, 2026</div>
+                        </div>
+                        <div class="feedback-element">
+                            <strong>Element:</strong> Ease of Use weighting (12%)
+                        </div>
+                        <div class="feedback-concern">
+                            Your methodology weights "Ease of Use" at 12%, which seems high for enterprise buyers who will have dedicated training programs. Shouldn't this weight be lower for B2B tools where users receive formal training?
+                        </div>
+                        <div class="feedback-actions">
+                            <button class="btn btn-sm btn-primary">Draft Response</button>
+                            <button class="btn btn-sm btn-success">Mark Published</button>
+                            <button class="btn btn-sm btn-secondary">Archive</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Archive -->
+        <div class="tab-content" id="tab-archive">
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>Historical Peer Review Cycles</h2>
+                </div>
+                <div class="panel-body" style="padding: 0;">
+                    <table class="archive-table">
+                        <thead>
+                            <tr>
+                                <th>Year</th>
+                                <th>Critics</th>
+                                <th>Critiques</th>
+                                <th>Changes Made</th>
+                                <th>Version</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>2026</strong></td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>—</td>
+                                <td>v1.3 (planned)</td>
+                                <td><span class="change-status pending">In Progress</span></td>
+                                <td><button class="btn btn-sm btn-secondary">View</button></td>
+                            </tr>
+                            <tr>
+                                <td><strong>2025</strong></td>
+                                <td>3</td>
+                                <td>3</td>
+                                <td>4</td>
+                                <td>v1.0 → v1.2</td>
+                                <td><span class="change-status accepted">Completed</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-secondary">View</button>
+                                    <button class="btn btn-sm btn-secondary">Export PDF</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Nomination Detail Modal -->
+    <div class="modal-overlay" id="nominationModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Nomination Details</h3>
+                <button class="modal-close" onclick="closeNominationModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="nominationModalBody">
+                <!-- Populated dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeNominationModal()">Close</button>
+                <button class="btn btn-danger" onclick="declineNomination()">Decline</button>
+                <button class="btn btn-success" onclick="acceptNomination()">Accept & Contact</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Critique Modal -->
+    <div class="modal-overlay" id="critiqueModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Add Critique</h3>
+                <button class="modal-close" onclick="closeCritiqueModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Critic</label>
+                    <select id="critiqueCretic">
+                        <option value="">Select accepted critic...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Overall Assessment (one sentence)</label>
+                    <input type="text" id="critiqueAssessment" placeholder="e.g., The methodology is rigorous but underweights...">
+                </div>
+                <div class="form-group">
+                    <label>What the Methodology Does Well</label>
+                    <textarea id="critiqueStrengths"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Where the Methodology Has Weaknesses</label>
+                    <textarea id="critiqueWeaknesses"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Specific Recommended Changes</label>
+                    <textarea id="critiqueRecommendations"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeCritiqueModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveCritique()">Save Critique</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://v7086lxsji.execute-api.us-east-1.amazonaws.com';
+        const urlParams = new URLSearchParams(window.location.search);
+        const ADMIN_KEY = urlParams.get('key');
+        
+        // Sample data
+        let nominations = [];
+        let critiques = [];
+        let feedback = [];
+        
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(`tab-${tab.dataset.tab}`).classList.add('active');
+            });
+        });
+        
+        // Pipeline card rendering
+        function renderPipeline() {
+            const stages = ['nominated', 'contacted', 'accepted', 'reviewing', 'submitted'];
+            stages.forEach(stage => {
+                const col = document.getElementById(`col-${stage}`);
+                const items = nominations.filter(n => n.stage === stage);
+                col.querySelector('.count').textContent = items.length;
+                
+                const cards = items.map(n => `
+                    <div class="pipeline-card" onclick="viewNomination('${n.id}')">
+                        <div class="name">${n.nomineeName}</div>
+                        <div class="title">${n.nomineeTitle}</div>
+                        <div class="meta">
+                            <span>${formatDate(n.submitted)}</span>
+                            <span>${n.expertise?.substring(0, 20)}...</span>
+                        </div>
+                    </div>
+                `).join('');
+                
+                col.innerHTML = `<h3>${stage.charAt(0).toUpperCase() + stage.slice(1)} <span class="count">${items.length}</span></h3>${cards}`;
+            });
+        }
+        
+        function viewNomination(id) {
+            const n = nominations.find(nom => nom.id === id);
+            if (!n) return;
+            
+            document.getElementById('nominationModalBody').innerHTML = `
+                <div class="form-group">
+                    <label>Nominee</label>
+                    <p><strong>${n.nomineeName}</strong><br>${n.nomineeTitle}</p>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <p>${n.nomineeEmail}</p>
+                </div>
+                <div class="form-group">
+                    <label>Expertise & Relevance</label>
+                    <p>${n.expertise}</p>
+                </div>
+                <div class="form-group">
+                    <label>What Perspective They Would Bring</label>
+                    <p>${n.rationale}</p>
+                </div>
+                <div class="form-group">
+                    <label>Nominated By</label>
+                    <p>${n.nominatorName} (${n.nominatorEmail})</p>
+                </div>
+            `;
+            
+            document.getElementById('nominationModal').classList.add('active');
+        }
+        
+        function closeNominationModal() {
+            document.getElementById('nominationModal').classList.remove('active');
+        }
+        
+        function closeCritiqueModal() {
+            document.getElementById('critiqueModal').classList.remove('active');
+        }
+        
+        function openCritiqueModal() {
+            document.getElementById('critiqueModal').classList.add('active');
+        }
+        
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+        
+        function updateStats() {
+            document.getElementById('statNominations').textContent = nominations.length;
+            document.getElementById('statAccepted').textContent = nominations.filter(n => n.stage === 'accepted' || n.stage === 'reviewing' || n.stage === 'submitted').length;
+            document.getElementById('statPending').textContent = nominations.filter(n => n.stage === 'reviewing').length;
+            document.getElementById('statPublished').textContent = critiques.filter(c => c.published).length;
+            document.getElementById('statChanges').textContent = 4; // Sample
+            document.getElementById('statFeedback').textContent = feedback.length;
+        }
+        
+        async function loadNominations() {
+            try {
+                const res = await fetch(`${API_BASE}/peer-review/nominations?key=${ADMIN_KEY}`);
+                if (res.ok) {
+                    nominations = await res.json();
+                    renderPipeline();
+                    updateStats();
+                }
+            } catch (e) {
+                console.log('Could not load nominations');
+            }
+        }
+        
+        async function loadFeedback() {
+            try {
+                const res = await fetch(`${API_BASE}/peer-review/feedback/admin?key=${ADMIN_KEY}`);
+                if (res.ok) {
+                    feedback = await res.json();
+                    updateStats();
+                }
+            } catch (e) {
+                console.log('Could not load feedback');
+            }
+        }
+        
+        // Initialize
+        updateStats();
+        renderPipeline();
+        
+        if (ADMIN_KEY) {
+            loadNominations();
+            loadFeedback();
+        }
+    </script>
+</body>
+</html>
