@@ -364,8 +364,8 @@
                 <div class="label">Tools in Database</div>
             </a>
             <a href="/reviews.html" class="hero-stat">
-                <div class="number" id="reviewCount">—</div>
-                <div class="label">Reviews Published</div>
+                <div class="number" id="avgScore">—</div>
+                <div class="label">Avg Score</div>
             </a>
             <a href="/reviews.html" class="hero-stat">
                 <div class="number" id="categoryCount">—</div>
@@ -576,8 +576,9 @@
                 
                 document.getElementById('toolCount').textContent = totalTools.toLocaleString();
                 document.getElementById('heroToolCount').textContent = reviewCount;
-                document.getElementById('queueCount').textContent = data.queue.length + ' in queue.';
-                document.getElementById('reviewCount').textContent = reviewCount;
+                document.getElementById('queueCount').textContent = data.queue.length.toLocaleString() + ' in queue.';
+                const avgScore = Math.round(data.reviewed.reduce((sum, t) => sum + (t.score || 0), 0) / data.reviewed.length);
+                document.getElementById('avgScore').textContent = avgScore;
                 document.getElementById('categoryCount').textContent = categories.size;
                 
                 // Build searchable tools list
@@ -590,7 +591,7 @@
                 document.getElementById('toolCount').textContent = '1,425';
                 document.getElementById('heroToolCount').textContent = '16';
                 document.getElementById('queueCount').textContent = '1,409 in queue.';
-                document.getElementById('reviewCount').textContent = '16';
+                document.getElementById('avgScore').textContent = '81';
                 document.getElementById('categoryCount').textContent = '53';
             });
         
