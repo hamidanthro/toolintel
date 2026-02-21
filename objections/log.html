@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Public Objection Log — ToolIntel</title>
+    <meta name="description" content="Complete public record of all vendor objections submitted to ToolIntel reviews and their outcomes.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --navy: #0f2744;
+            --navy-light: #1e3a5f;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --green: #10b981;
+            --yellow: #f59e0b;
+            --red: #ef4444;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; color: var(--gray-800); line-height: 1.7; }
+        h1, h2, h3 { font-family: 'Merriweather', Georgia, serif; font-weight: 700; line-height: 1.3; }
+        
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+        
+        header { padding: 16px 0; border-bottom: 1px solid var(--gray-200); background: var(--white); }
+        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        .logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.75rem; color: var(--navy); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+        .logo-icon { font-size: 1.25rem; }
+        .logo span { color: var(--blue-accent); }
+        .nav-links { display: flex; gap: 32px; align-items: center; }
+        .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+        .nav-links a:hover { color: var(--navy); }
+        .nav-links a.primary { background: var(--white); color: var(--navy); padding: 8px 16px; border-radius: 6px; border: 2px solid var(--navy); }
+        .nav-links a.primary:hover { background: var(--gray-50); }
+        
+        /* Dropdown */
+        .nav-dropdown { position: relative; }
+        .nav-dropdown-trigger { cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 8px 0; }
+        .nav-dropdown-trigger::after { content: '▼'; font-size: 0.6rem; }
+        .nav-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            min-width: 200px;
+            padding: 8px 0;
+            z-index: 1000;
+        }
+        .nav-dropdown:hover .nav-dropdown-menu { display: block; }
+        .nav-dropdown-menu a { display: block; padding: 10px 16px; color: var(--gray-600) !important; font-size: 0.9rem !important; }
+        .nav-dropdown-menu a:hover { background: var(--gray-100); color: var(--navy) !important; }
+        
+        .hero {
+            background: var(--navy);
+            color: var(--white);
+            padding: 48px 24px;
+            text-align: center;
+        }
+        .hero h1 { font-size: 2rem; margin-bottom: 12px; }
+        .hero p { font-size: 1rem; opacity: 0.9; max-width: 700px; margin: 0 auto; }
+        
+        .content { padding: 48px 0; }
+        
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+            padding: 24px;
+            background: var(--gray-50);
+            border-radius: 12px;
+            margin-bottom: 32px;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--navy);
+        }
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+        }
+        
+        .filters {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        .filter-select {
+            padding: 10px 16px;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            background: var(--white);
+        }
+        
+        .log-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .log-table th {
+            background: var(--gray-50);
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--navy);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .log-table td {
+            padding: 16px;
+            border-top: 1px solid var(--gray-100);
+            color: var(--gray-600);
+        }
+        .log-table tr:hover td {
+            background: var(--gray-50);
+        }
+        
+        .tool-link {
+            color: var(--navy);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .tool-link:hover { text-decoration: underline; }
+        
+        .outcome-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .outcome-badge.correction {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .outcome-badge.partial {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .outcome-badge.not-upheld {
+            background: var(--gray-100);
+            color: var(--gray-600);
+        }
+        .outcome-badge.pending {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .view-link {
+            color: var(--blue-accent);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .view-link:hover { text-decoration: underline; }
+        
+        .empty-state {
+            text-align: center;
+            padding: 64px 24px;
+            color: var(--gray-400);
+        }
+        .empty-state h3 {
+            font-family: 'Inter', sans-serif;
+            color: var(--gray-600);
+            margin-bottom: 12px;
+        }
+        
+        .note {
+            background: var(--gray-50);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 32px;
+            font-size: 0.95rem;
+            color: var(--gray-600);
+        }
+        .note strong { color: var(--navy); }
+        
+        footer {
+            padding: 40px 0;
+            border-top: 1px solid var(--gray-200);
+            text-align: center;
+        }
+        footer p { color: var(--gray-400); font-size: 0.9rem; }
+        
+        @media (max-width: 768px) {
+            .stats-bar { flex-direction: column; gap: 24px; }
+            .log-table { font-size: 0.9rem; }
+            .log-table th, .log-table td { padding: 12px 8px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo"><span class="logo-icon">✓</span>Tool<span>Intel</span></a>
+            <div class="nav-links">
+                <a href="/reviews.html">Reviews</a>
+                <a href="/categories/">Categories</a>
+                <a href="/methodology.html">Methodology</a>
+                <a href="/transparency.html">Transparency</a>
+                <div class="nav-dropdown">
+                    <span class="nav-dropdown-trigger">More</span>
+                    <div class="nav-dropdown-menu">
+                        <a href="/about.html">About the Reviewer</a>
+                        <a href="/conflict-of-interest.html">Conflict of Interest Policy</a>
+                        <a href="/corrections.html">Correction Policy</a>
+                        <a href="/research-portal.html">Research Portal</a>
+                        <a href="/expert-network.html">Expert Network</a>
+                        <a href="/api.html">API</a>
+                    </div>
+                </div>
+                <a href="/submit.html" class="primary">Submit Tool</a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Public Objection Log</h1>
+            <p>Complete record of all vendor objections submitted to ToolIntel reviews. Every objection and its outcome is published here regardless of result.</p>
+        </div>
+    </section>
+
+    <div class="content">
+        <div class="container">
+            
+            <div class="stats-bar">
+                <div class="stat">
+                    <div class="stat-number" id="totalObjections">0</div>
+                    <div class="stat-label">Total Objections</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="correctionsIssued">0</div>
+                    <div class="stat-label">Corrections Issued</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="partiallyUpheld">0</div>
+                    <div class="stat-label">Partially Upheld</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="notUpheld">0</div>
+                    <div class="stat-label">Not Upheld</div>
+                </div>
+            </div>
+
+            <div class="filters">
+                <select class="filter-select" id="outcomeFilter">
+                    <option value="">All Outcomes</option>
+                    <option value="correction">Correction Issued</option>
+                    <option value="partial">Partially Upheld</option>
+                    <option value="not-upheld">Not Upheld</option>
+                    <option value="pending">Pending Review</option>
+                </select>
+                <select class="filter-select" id="typeFilter">
+                    <option value="">All Types</option>
+                    <option value="factual-error">Factual Error</option>
+                    <option value="outdated-info">Outdated Information</option>
+                    <option value="methodology-concern">Methodology Concern</option>
+                    <option value="material-omission">Material Omission</option>
+                </select>
+                <select class="filter-select" id="yearFilter">
+                    <option value="">All Years</option>
+                    <option value="2025">2025</option>
+                </select>
+            </div>
+
+            <table class="log-table">
+                <thead>
+                    <tr>
+                        <th>Date Submitted</th>
+                        <th>Tool</th>
+                        <th>Objection Type</th>
+                        <th>Date Resolved</th>
+                        <th>Outcome</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody id="logTableBody">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+
+            <div class="empty-state" id="emptyState">
+                <h3>No Objections Yet</h3>
+                <p>No vendor objections have been submitted to date. When objections are received, they will appear here with full details and outcomes.</p>
+            </div>
+
+            <div class="note">
+                <strong>About this log:</strong> This log makes the entire objection history of the platform permanently visible. A log showing mostly "Not Upheld" outcomes with rigorous reasoning demonstrates the review process is solid. A log showing regular corrections demonstrates the reviewer takes accuracy seriously and fixes mistakes promptly. Both are credibility assets.
+            </div>
+
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>© 2025 ToolIntel. Independent AI tool intelligence.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Sample data structure - in production this would come from a database
+        const objections = [
+            // Example entries (currently empty for launch)
+            // {
+            //     dateSubmitted: '2025-02-15',
+            //     tool: 'ChatGPT',
+            //     toolSlug: 'chatgpt',
+            //     type: 'Factual Error',
+            //     typeSlug: 'factual-error',
+            //     dateResolved: '2025-02-28',
+            //     outcome: 'Correction Issued',
+            //     outcomeSlug: 'correction',
+            //     recordId: 'OBJ-2025-001'
+            // }
+        ];
+
+        function renderTable() {
+            const tbody = document.getElementById('logTableBody');
+            const emptyState = document.getElementById('emptyState');
+            
+            const outcomeFilter = document.getElementById('outcomeFilter').value;
+            const typeFilter = document.getElementById('typeFilter').value;
+            const yearFilter = document.getElementById('yearFilter').value;
+            
+            let filtered = objections.filter(obj => {
+                if (outcomeFilter && obj.outcomeSlug !== outcomeFilter) return false;
+                if (typeFilter && obj.typeSlug !== typeFilter) return false;
+                if (yearFilter && !obj.dateSubmitted.startsWith(yearFilter)) return false;
+                return true;
+            });
+            
+            if (filtered.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            
+            tbody.innerHTML = filtered.map(obj => `
+                <tr>
+                    <td>${obj.dateSubmitted}</td>
+                    <td><a href="/reviews/${obj.toolSlug}.html" class="tool-link">${obj.tool}</a></td>
+                    <td>${obj.type}</td>
+                    <td>${obj.dateResolved || '<span class="outcome-badge pending">Pending</span>'}</td>
+                    <td><span class="outcome-badge ${obj.outcomeSlug}">${obj.outcome}</span></td>
+                    <td><a href="/reviews/${obj.toolSlug}.html#objection-${obj.recordId}" class="view-link">View Record →</a></td>
+                </tr>
+            `).join('');
+        }
+        
+        function updateStats() {
+            document.getElementById('totalObjections').textContent = objections.length;
+            document.getElementById('correctionsIssued').textContent = objections.filter(o => o.outcomeSlug === 'correction').length;
+            document.getElementById('partiallyUpheld').textContent = objections.filter(o => o.outcomeSlug === 'partial').length;
+            document.getElementById('notUpheld').textContent = objections.filter(o => o.outcomeSlug === 'not-upheld').length;
+        }
+        
+        // Event listeners
+        document.getElementById('outcomeFilter').addEventListener('change', renderTable);
+        document.getElementById('typeFilter').addEventListener('change', renderTable);
+        document.getElementById('yearFilter').addEventListener('change', renderTable);
+        
+        // Initial render
+        renderTable();
+        updateStats();
+    </script>
+</body>
+</html>

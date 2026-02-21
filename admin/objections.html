@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Objection Management — ToolIntel Admin</title>
+    <style>
+        :root {
+            --navy: #0f2744;
+            --navy-light: #1e3a5f;
+            --blue: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #fff;
+            --green: #10b981;
+            --yellow: #f59e0b;
+            --red: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--gray-100); color: var(--gray-800); }
+        
+        .layout { display: flex; min-height: 100vh; }
+        
+        .sidebar {
+            width: 240px;
+            background: var(--navy);
+            color: white;
+            padding: 20px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        .sidebar-logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .sidebar-logo span { color: var(--blue); }
+        .sidebar-nav { padding: 20px 0; }
+        .sidebar-nav a {
+            display: block;
+            padding: 10px 20px;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .sidebar-nav a:hover, .sidebar-nav a.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .sidebar-nav .section-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.4);
+            padding: 20px 20px 10px;
+        }
+        
+        .main { flex: 1; margin-left: 240px; padding: 24px; }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .header h1 { font-size: 1.5rem; }
+        
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .stat-card .label { font-size: 0.85rem; color: var(--gray-600); margin-bottom: 8px; }
+        .stat-card .value { font-size: 1.75rem; font-weight: 700; color: var(--navy); }
+        .stat-card.warning .value { color: var(--yellow); }
+        .stat-card.danger .value { color: var(--red); }
+        
+        .panel {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+        .panel-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .panel-header h2 { font-size: 1rem; font-weight: 600; }
+        .panel-body { padding: 20px; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            text-align: left;
+            padding: 12px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--gray-600);
+            background: var(--gray-50);
+            border-bottom: 1px solid var(--gray-200);
+        }
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--gray-100);
+            font-size: 0.9rem;
+        }
+        tr:hover td { background: var(--gray-50); }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge.pending { background: #dbeafe; color: #1e40af; }
+        .badge.reviewing { background: #fef3c7; color: #92400e; }
+        .badge.decision { background: #f3e8ff; color: #7c3aed; }
+        .badge.correction { background: #d1fae5; color: #065f46; }
+        .badge.partial { background: #fef3c7; color: #92400e; }
+        .badge.not-upheld { background: var(--gray-100); color: var(--gray-600); }
+        
+        .days-elapsed { font-weight: 600; }
+        .days-elapsed.warning { color: var(--yellow); }
+        .days-elapsed.danger { color: var(--red); }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .btn-primary { background: var(--navy); color: white; }
+        .btn-primary:hover { background: var(--navy-light); }
+        .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+        
+        .action-link {
+            color: var(--blue);
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+        .action-link:hover { text-decoration: underline; }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--gray-400);
+        }
+        
+        .filters {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .filters select, .filters input {
+            padding: 8px 12px;
+            border: 1px solid var(--gray-200);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sidebar-logo">Tool<span>Intel</span> Admin</div>
+            <nav class="sidebar-nav">
+                <div class="section-title">Dashboard</div>
+                <a href="/admin/">Overview</a>
+                <a href="/admin/reviews.html">Reviews</a>
+                <a href="/admin/intelligence.html">Intelligence</a>
+                
+                <div class="section-title">Editorial</div>
+                <a href="/admin/objections.html" class="active">Objections</a>
+                <a href="/admin/corrections.html">Corrections</a>
+                <a href="/admin/peer-review.html">Peer Review</a>
+                
+                <div class="section-title">Trust & Transparency</div>
+                <a href="/admin/independence.html">Independence</a>
+                <a href="/admin/trust-scores.html">Trust Scores</a>
+                <a href="/admin/certifications.html">Certifications</a>
+                
+                <div class="section-title">Research</div>
+                <a href="/admin/experts.html">Expert Network</a>
+                <a href="/admin/research.html">Research Portal</a>
+                
+                <div class="section-title">System</div>
+                <a href="/admin/api.html">API</a>
+                <a href="/admin/policies.html">Policies</a>
+            </nav>
+        </aside>
+        
+        <main class="main">
+            <div class="header">
+                <h1>Objection Management</h1>
+                <button class="btn btn-primary">Export Log</button>
+            </div>
+            
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="label">Total Objections</div>
+                    <div class="value" id="totalCount">0</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="label">Pending Review</div>
+                    <div class="value" id="pendingCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Avg. Resolution Time</div>
+                    <div class="value" id="avgTime">—</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Correction Rate</div>
+                    <div class="value" id="correctionRate">—</div>
+                </div>
+            </div>
+            
+            <!-- Pending Objections -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>📥 Pending Objections</h2>
+                    <span class="badge pending">0 items</span>
+                </div>
+                <div class="panel-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ref #</th>
+                                <th>Date Received</th>
+                                <th>Tool</th>
+                                <th>Vendor</th>
+                                <th>Type</th>
+                                <th>Days Elapsed</th>
+                                <th>Stage</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pendingTable">
+                            <tr>
+                                <td colspan="8" class="empty-state">No pending objections</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Evidence Evaluation -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>🔍 Evidence Evaluation</h2>
+                    <span class="badge reviewing">0 items</span>
+                </div>
+                <div class="panel-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ref #</th>
+                                <th>Tool</th>
+                                <th>Claim Summary</th>
+                                <th>Sources Being Consulted</th>
+                                <th>Evaluator</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="evaluationTable">
+                            <tr>
+                                <td colspan="6" class="empty-state">No objections under evaluation</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Decisions Pending Publication -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>📝 Decisions Pending Publication</h2>
+                    <span class="badge decision">0 items</span>
+                </div>
+                <div class="panel-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ref #</th>
+                                <th>Tool</th>
+                                <th>Decision</th>
+                                <th>Summary</th>
+                                <th>Final Review</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="decisionTable">
+                            <tr>
+                                <td colspan="6" class="empty-state">No decisions pending publication</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Objection History -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>📋 Objection History</h2>
+                </div>
+                <div class="panel-body">
+                    <div class="filters">
+                        <select id="historyOutcome">
+                            <option value="">All Outcomes</option>
+                            <option value="correction">Correction Issued</option>
+                            <option value="partial">Partially Upheld</option>
+                            <option value="not-upheld">Not Upheld</option>
+                        </select>
+                        <select id="historyYear">
+                            <option value="">All Years</option>
+                            <option value="2025">2025</option>
+                        </select>
+                        <input type="text" placeholder="Search by tool or vendor..." id="historySearch">
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ref #</th>
+                                <th>Date</th>
+                                <th>Tool</th>
+                                <th>Vendor</th>
+                                <th>Type</th>
+                                <th>Outcome</th>
+                                <th>Resolution Time</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTable">
+                            <tr>
+                                <td colspan="8" class="empty-state">No objection history yet</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+        </main>
+    </div>
+
+    <script>
+        // Sample data structure for objections
+        const objections = {
+            pending: [],
+            evaluation: [],
+            decision: [],
+            history: []
+        };
+        
+        function renderTables() {
+            // Update counts
+            document.getElementById('totalCount').textContent = 
+                objections.pending.length + objections.evaluation.length + 
+                objections.decision.length + objections.history.length;
+            document.getElementById('pendingCount').textContent = 
+                objections.pending.length + objections.evaluation.length + objections.decision.length;
+            
+            // Calculate stats
+            if (objections.history.length > 0) {
+                const corrections = objections.history.filter(o => o.outcome === 'correction').length;
+                document.getElementById('correctionRate').textContent = 
+                    Math.round((corrections / objections.history.length) * 100) + '%';
+            }
+        }
+        
+        // Initial render
+        renderTables();
+    </script>
+</body>
+</html>
