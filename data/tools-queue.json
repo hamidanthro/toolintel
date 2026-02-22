@@ -1,9 +1,9 @@
 {
-  "lastUpdated": "2026-02-21",
+  "lastUpdated": "2026-02-22",
   "note": "Tools selected independently by Tool Intel editorial team - Global coverage",
   "stats": {
-    "reviewed": 16,
-    "inQueue": 1409,
+    "reviewed": 21,
+    "inQueue": 1404,
     "dailyTarget": 5
   },
   "reviewed": [
@@ -86,39 +86,34 @@
       "name": "Jasper",
       "category": "writing",
       "score": 74
-    }
-  ],
-  "queue": [
-    {
-      "name": "Zhipu AI (GLM)",
-      "vendor": "Zhipu",
-      "category": "foundation-models",
-      "region": "China"
     },
     {
-      "name": "Baichuan",
-      "vendor": "Baichuan",
+      "name": "Zhipu AI (GLM)",
       "category": "foundation-models",
-      "region": "China"
+      "score": 82
     },
     {
       "name": "Yi",
-      "vendor": "01.AI",
       "category": "foundation-models",
-      "region": "China"
+      "score": 81
+    },
+    {
+      "name": "Baichuan",
+      "category": "foundation-models",
+      "score": 80
     },
     {
       "name": "InternLM",
-      "vendor": "Shanghai AI Lab",
       "category": "foundation-models",
-      "region": "China"
+      "score": 79
     },
     {
       "name": "MiniMax",
-      "vendor": "MiniMax",
       "category": "foundation-models",
-      "region": "China"
-    },
+      "score": 78
+    }
+  ],
+  "queue": [
     {
       "name": "Mistral AI",
       "vendor": "Mistral",
