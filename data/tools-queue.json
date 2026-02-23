@@ -1,9 +1,9 @@
 {
-  "lastUpdated": "2026-02-22",
+  "lastUpdated": "2026-02-23",
   "note": "Tools selected independently by Tool Intel editorial team - Global coverage",
   "stats": {
-    "reviewed": 21,
-    "inQueue": 1404,
+    "reviewed": 26,
+    "inQueue": 1399,
     "dailyTarget": 5
   },
   "reviewed": [
@@ -111,39 +111,34 @@
       "name": "MiniMax",
       "category": "foundation-models",
       "score": 78
-    }
-  ],
-  "queue": [
-    {
-      "name": "Mistral AI",
-      "vendor": "Mistral",
-      "category": "foundation-models",
-      "region": "France"
     },
     {
-      "name": "Aleph Alpha",
-      "vendor": "Aleph Alpha",
+      "name": "Mistral AI",
       "category": "foundation-models",
-      "region": "Germany"
+      "score": 83
     },
     {
       "name": "Cohere",
-      "vendor": "Cohere",
       "category": "foundation-models",
-      "region": "Canada"
+      "score": 81
+    },
+    {
+      "name": "Aleph Alpha",
+      "category": "foundation-models",
+      "score": 79
     },
     {
       "name": "AI21 Labs",
-      "vendor": "AI21",
       "category": "foundation-models",
-      "region": "Israel"
+      "score": 78
     },
     {
       "name": "Inflection Pi",
-      "vendor": "Inflection",
-      "category": "foundation-models",
-      "region": "US"
-    },
+      "category": "chatbots",
+      "score": 76
+    }
+  ],
+  "queue": [
     {
       "name": "xAI Grok",
       "vendor": "xAI",
