@@ -1,9 +1,9 @@
 {
-  "lastUpdated": "2026-02-23",
+  "lastUpdated": "2026-02-24",
   "note": "Tools selected independently by Tool Intel editorial team - Global coverage",
   "stats": {
-    "reviewed": 26,
-    "inQueue": 1399,
+    "reviewed": 31,
+    "inQueue": 1394,
     "dailyTarget": 5
   },
   "reviewed": [
@@ -136,39 +136,34 @@
       "name": "Inflection Pi",
       "category": "chatbots",
       "score": 76
-    }
-  ],
-  "queue": [
-    {
-      "name": "xAI Grok",
-      "vendor": "xAI",
-      "category": "foundation-models",
-      "region": "US"
     },
     {
-      "name": "Reka",
-      "vendor": "Reka AI",
+      "name": "NAVER HyperCLOVA X",
       "category": "foundation-models",
-      "region": "US"
-    },
-    {
-      "name": "Sakana AI",
-      "vendor": "Sakana",
-      "category": "foundation-models",
-      "region": "Japan"
+      "score": 81
     },
     {
       "name": "Preferred Networks",
-      "vendor": "PFN",
       "category": "foundation-models",
-      "region": "Japan"
+      "score": 80
     },
     {
-      "name": "NAVER HyperCLOVA",
-      "vendor": "NAVER",
+      "name": "Reka AI",
       "category": "foundation-models",
-      "region": "Korea"
+      "score": 79
     },
+    {
+      "name": "xAI Grok",
+      "category": "foundation-models",
+      "score": 78
+    },
+    {
+      "name": "Sakana AI",
+      "category": "foundation-models",
+      "score": 76
+    }
+  ],
+  "queue": [
     {
       "name": "Kakao KoGPT",
       "vendor": "Kakao",
