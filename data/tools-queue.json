@@ -1,9 +1,9 @@
 {
-  "lastUpdated": "2026-02-24",
+  "lastUpdated": "2026-02-25",
   "note": "Tools selected independently by Tool Intel editorial team - Global coverage",
   "stats": {
-    "reviewed": 31,
-    "inQueue": 1394,
+    "reviewed": 36,
+    "inQueue": 1389,
     "dailyTarget": 5
   },
   "reviewed": [
@@ -161,39 +161,34 @@
       "name": "Sakana AI",
       "category": "foundation-models",
       "score": 76
-    }
-  ],
-  "queue": [
-    {
-      "name": "Kakao KoGPT",
-      "vendor": "Kakao",
-      "category": "foundation-models",
-      "region": "Korea"
     },
     {
       "name": "Upstage Solar",
-      "vendor": "Upstage",
       "category": "foundation-models",
-      "region": "Korea"
+      "score": 78
+    },
+    {
+      "name": "Kakao KoGPT",
+      "category": "foundation-models",
+      "score": 73
     },
     {
       "name": "LG Exaone",
-      "vendor": "LG AI Research",
       "category": "foundation-models",
-      "region": "Korea"
+      "score": 72
     },
     {
       "name": "Sarvam AI",
-      "vendor": "Sarvam",
       "category": "foundation-models",
-      "region": "India"
+      "score": 70
     },
     {
       "name": "Krutrim",
-      "vendor": "Ola",
       "category": "foundation-models",
-      "region": "India"
-    },
+      "score": 68
+    }
+  ],
+  "queue": [
     {
       "name": "Hanooman",
       "vendor": "BharatGPT",

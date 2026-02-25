@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kakao KoGPT Review — ToolIntel</title>
+    <meta name="description" content="Independent review of Kakao KoGPT by Kakao Brain. Scored 73/100. Best for Korean language tasks, research, and Korea-specific applications.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --navy: #0f2744;
+            --navy-light: #1e3a5f;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --green: #10b981;
+            --yellow: #f59e0b;
+            --red: #ef4444;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: var(--gray-800); line-height: 1.7; background: var(--gray-50); }
+        h1, h2, h3, h4 { font-family: 'Merriweather', Georgia, serif; font-weight: 700; line-height: 1.3; }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+        
+        header { padding: 16px 0; border-bottom: 1px solid var(--gray-200); background: var(--white); position: sticky; top: 0; z-index: 100; }
+        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+        .logo span { color: var(--blue-accent); }
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+        .nav-links a:hover { color: var(--navy); }
+        
+        .breadcrumb { background: var(--white); border-bottom: 1px solid var(--gray-200); padding: 12px 0; }
+        .breadcrumb-content { max-width: 900px; margin: 0 auto; padding: 0 24px; font-size: 0.9rem; color: var(--gray-400); }
+        .breadcrumb-content a { color: var(--gray-600); text-decoration: none; }
+        .breadcrumb-content a:hover { color: var(--navy); }
+        
+        .review-hero { background: var(--white); border-bottom: 1px solid var(--gray-200); padding: 40px 0; }
+        .hero-content { display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: start; }
+        .tool-badge { display: inline-block; background: #dbeafe; color: #1d4ed8; font-size: 0.8rem; font-weight: 500; padding: 4px 10px; border-radius: 4px; margin-bottom: 12px; }
+        .tool-info h1 { font-size: 2rem; color: var(--navy); margin-bottom: 8px; }
+        .tool-meta { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 16px; font-size: 0.9rem; color: var(--gray-600); }
+        .tool-meta a { color: var(--blue-accent); text-decoration: none; }
+        .verdict-line { font-size: 1.1rem; font-weight: 600; color: var(--navy); margin-bottom: 16px; }
+        .review-meta { font-size: 0.85rem; color: var(--gray-400); }
+        
+        .score-section { text-align: center; }
+        .score-ring { width: 140px; height: 140px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-direction: column; margin: 0 auto 12px; }
+        .score-ring.yellow { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 4px solid var(--yellow); }
+        .score-number { font-size: 2.5rem; font-weight: 700; line-height: 1; }
+        .score-ring.yellow .score-number { color: #92400e; }
+        .score-label { font-size: 0.8rem; color: var(--gray-600); margin-top: 4px; }
+        .action-buttons { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
+        .action-btn { padding: 8px 14px; font-size: 0.85rem; border: 1px solid var(--gray-200); border-radius: 6px; background: var(--white); cursor: pointer; color: var(--gray-600); transition: all 0.2s; text-decoration: none; }
+        .action-btn:hover { border-color: var(--navy); color: var(--navy); }
+        
+        .score-breakdown { background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; padding: 24px; margin: 24px 0; }
+        .score-breakdown h3 { font-size: 1.1rem; color: var(--navy); margin-bottom: 20px; }
+        .score-bar-item { display: grid; grid-template-columns: 200px 1fr 50px; gap: 16px; align-items: center; margin-bottom: 12px; }
+        .score-bar-label { font-size: 0.9rem; color: var(--gray-600); }
+        .score-bar-track { height: 10px; background: var(--gray-100); border-radius: 5px; overflow: hidden; }
+        .score-bar-fill { height: 100%; border-radius: 5px; transition: width 0.5s ease; }
+        .score-bar-fill.high { background: var(--green); }
+        .score-bar-fill.mid { background: var(--yellow); }
+        .score-bar-fill.low { background: var(--red); }
+        .score-bar-value { font-weight: 600; font-size: 0.9rem; text-align: right; }
+        
+        .content { padding: 40px 0; }
+        .section { background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; padding: 32px; margin-bottom: 24px; }
+        .section h2 { font-size: 1.25rem; color: var(--navy); margin-bottom: 20px; }
+        .section h3 { font-size: 1rem; color: var(--navy); margin: 24px 0 12px; }
+        .section p { color: var(--gray-600); margin-bottom: 16px; }
+        .section ul { padding-left: 20px; color: var(--gray-600); margin-bottom: 16px; }
+        .section li { margin-bottom: 8px; }
+        
+        .verdict-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+        .verdict-card { padding: 20px; border-radius: 8px; }
+        .verdict-card.ideal { background: #ecfdf5; border: 1px solid #a7f3d0; }
+        .verdict-card.not-ideal { background: #fef2f2; border: 1px solid #fecaca; }
+        .verdict-card h4 { font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 600; margin-bottom: 12px; }
+        .verdict-card.ideal h4 { color: #065f46; }
+        .verdict-card.not-ideal h4 { color: #991b1b; }
+        .verdict-card ul { margin: 0; padding-left: 18px; font-size: 0.95rem; }
+        .verdict-card.ideal li { color: #047857; }
+        .verdict-card.not-ideal li { color: #b91c1c; }
+        
+        .sw-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .sw-card { padding: 16px 0; }
+        .sw-card h4 { font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; color: var(--navy); }
+        .sw-card ul { margin: 0; padding-left: 18px; }
+        
+        .callout { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 20px; margin: 24px 0; }
+        .callout-title { font-weight: 600; color: #92400e; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .callout p { color: #78350f; margin: 0; }
+        
+        .pricing-table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+        .pricing-table th, .pricing-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--gray-200); }
+        .pricing-table th { background: var(--gray-50); font-weight: 600; color: var(--navy); }
+        
+        .alternatives-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .alt-card { border: 1px solid var(--gray-200); border-radius: 8px; padding: 16px; text-align: center; background: var(--white); }
+        .alt-card .name { font-weight: 600; color: var(--navy); margin-bottom: 4px; }
+        .alt-card .score { font-size: 1.5rem; font-weight: 700; color: var(--navy); }
+        .alt-card .category { font-size: 0.8rem; color: var(--gray-400); margin-top: 4px; }
+        
+        footer { padding: 40px 0; border-top: 1px solid var(--gray-200); text-align: center; background: var(--white); }
+        footer p { color: var(--gray-400); font-size: 0.9rem; }
+        footer a { color: var(--gray-600); }
+        
+        @media (max-width: 768px) {
+            .hero-content { grid-template-columns: 1fr; }
+            .score-section { margin-top: 24px; }
+            .verdict-grid, .sw-grid, .alternatives-grid { grid-template-columns: 1fr; }
+            .score-bar-item { grid-template-columns: 1fr; gap: 8px; }
+        }
+        
+        .logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.75rem; color: var(--navy); text-decoration: none; display: flex; align-items: center; gap: 6px; }
+        .logo-icon { width: 24px; height: 28px; flex-shrink: 0; }
+        .logo-text span { color: var(--blue-accent); }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo"><svg class="logo-icon" width="24" height="28" viewBox="0 0 24 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M12 1L2 5v8c0 7.5 4.5 12 10 14 5.5-2 10-6.5 10-14V5L12 1z" fill="#0f2744"/>
+  <path d="M10 15.5l-3-3 1.4-1.4 1.6 1.6 4.6-4.6 1.4 1.4-6 6z" fill="#fff"/>
+</svg><span class="logo-text">Tool<span>Intel</span></span></a>
+            <div class="nav-links">
+                <a href="/reviews.html">Reviews</a>
+                <a href="/categories/">Categories</a>
+                <a href="/methodology.html">Methodology</a>
+                <a href="/submit.html">Submit Tool</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="review-hero">
+            <div class="container">
+                <div class="hero-content">
+                    <div class="tool-info">
+                        <span class="tool-badge">Foundation Models & AI APIs</span>
+                        <h1>Kakao KoGPT</h1>
+                        <div class="tool-meta">
+                            <span>by Kakao Brain</span>
+                            <span>•</span>
+                            <a href="https://github.com/kakaobrain/kogpt" target="_blank" rel="noopener">GitHub Repository ↗</a>
+                        </div>
+                        <p class="verdict-line">Open-source Korean language model, strong regional focus but limited global reach</p>
+                        <p class="review-meta">
+                            Reviewed by <strong>Hamid Ali</strong> · Feb 25, 2026 · Methodology v1.0<br>
+                            <span style="color: #3b82f6;">🔄 Refresh scheduled: Aug 2026</span><br>
+                            <span style="color: var(--yellow);">⚠ Open source model - community testing</span>
+                        </p>
+                    </div>
+                    <div class="score-section">
+                        <div class="score-ring yellow">
+                            <span class="score-number">73</span>
+                            <span class="score-label">out of 100</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="action-btn">☆ Save</button>
+                            <a href="/compare.html" class="action-btn">⇄ Compare</a>
+                            <button class="action-btn">↗ Share</button>
+                        </div>
+                        
+                        <div style="margin-top: 20px; text-align: left; width: 180px;">
+                            <div style="font-size: 0.75rem; color: var(--gray-400); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">vs. Competitors</div>
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                                <span style="font-size: 0.8rem; color: var(--navy); width: 65px;">Claude</span>
+                                <div style="flex: 1; height: 8px; background: var(--gray-200); border-radius: 4px; width: 89%;"></div>
+                                <span style="font-size: 0.8rem; font-weight: 600; color: var(--gray-600);">89</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                                <span style="font-size: 0.8rem; color: var(--navy); width: 65px;">ChatGPT</span>
+                                <div style="flex: 1; height: 8px; background: var(--gray-200); border-radius: 4px; width: 87%;"></div>
+                                <span style="font-size: 0.8rem; font-weight: 600; color: var(--gray-600);">87</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                                <span style="font-size: 0.8rem; color: var(--navy); width: 65px;">KoGPT</span>
+                                <div style="flex: 1; height: 8px; background: var(--navy); border-radius: 4px; width: 73%;"></div>
+                                <span style="font-size: 0.8rem; font-weight: 600; color: var(--navy);">73</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 0.8rem; color: var(--navy); width: 65px;">Llama</span>
+                                <div style="flex: 1; height: 8px; background: var(--gray-200); border-radius: 4px; width: 75%;"></div>
+                                <span style="font-size: 0.8rem; font-weight: 600; color: var(--gray-600);">75</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="container">
+            <div class="score-breakdown">
+                <h3>Score Breakdown by Category</h3>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Core AI Performance (25%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill mid" style="width: 78%"></div></div>
+                    <span class="score-bar-value">78</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Data Privacy & Security (20%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill mid" style="width: 75%"></div></div>
+                    <span class="score-bar-value">75</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Transparency (15%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill high" style="width: 85%"></div></div>
+                    <span class="score-bar-value">85</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Reliability & Uptime (10%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill mid" style="width: 70%"></div></div>
+                    <span class="score-bar-value">70</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Compliance (10%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill mid" style="width: 68%"></div></div>
+                    <span class="score-bar-value">68</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Pricing Fairness (8%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill high" style="width: 95%"></div></div>
+                    <span class="score-bar-value">95</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Integration & Usability (5%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill mid" style="width: 65%"></div></div>
+                    <span class="score-bar-value">65</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Human Override (4%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill mid" style="width: 70%"></div></div>
+                    <span class="score-bar-value">70</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Vendor Accountability (2%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill mid" style="width: 72%"></div></div>
+                    <span class="score-bar-value">72</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Bias & Fairness (1%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill mid" style="width: 75%"></div></div>
+                    <span class="score-bar-value">75</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="container">
+                
+                <div class="section">
+                    <h2>The Verdict</h2>
+                    
+                    <div class="verdict-grid">
+                        <div class="verdict-card ideal">
+                            <h4>✓ Ideal For</h4>
+                            <ul>
+                                <li>Korean language-specific tasks</li>
+                                <li>Research and academic projects</li>
+                                <li>Self-hosted deployments in Korea</li>
+                                <li>Korean market chatbots and assistants</li>
+                                <li>Budget-conscious developers (free, open source)</li>
+                            </ul>
+                        </div>
+                        <div class="verdict-card not-ideal">
+                            <h4>✗ Not Ideal For</h4>
+                            <ul>
+                                <li>Global multilingual applications</li>
+                                <li>Enterprise-grade support requirements</li>
+                                <li>Teams without ML deployment expertise</li>
+                                <li>Real-time production systems (self-host only)</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="sw-grid">
+                        <div class="sw-card">
+                            <h4>💪 Top Strengths</h4>
+                            <ul>
+                                <li><strong>100% free and open source:</strong> No API fees, full model weights on GitHub</li>
+                                <li><strong>Korean language optimized:</strong> Trained specifically for Korean text generation</li>
+                                <li><strong>Regional cultural fit:</strong> Better understanding of Korean context than global models</li>
+                                <li><strong>Self-hostable:</strong> Full control over data and deployment</li>
+                            </ul>
+                        </div>
+                        <div class="sw-card">
+                            <h4>⚠️ Top Weaknesses</h4>
+                            <ul>
+                                <li><strong>No managed API:</strong> Must self-host or negotiate B2B with Kakao</li>
+                                <li><strong>Limited model size:</strong> 6B parameters (smaller than global competitors)</li>
+                                <li><strong>Sparse documentation:</strong> English docs minimal, mostly Korean</li>
+                                <li><strong>No commercial support:</strong> Community-only for troubleshooting</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="callout">
+                        <div class="callout-title">💡 What the marketing doesn't tell you</div>
+                        <p style="margin-bottom: 12px;"><strong>1. There's no public commercial API.</strong> KoGPT is released as weights on GitHub, not a SaaS product. If you want a managed service, you need a B2B deal with Kakao Enterprise—no public pricing, no self-serve sign-up.</p>
+                        <p style="margin-bottom: 12px;"><strong>2. The model is focused on KakaoTalk integration.</strong> KoGPT 2.0 development prioritizes internal Kakao products, not external developers. Don't expect frequent open-source updates.</p>
+                        <p style="margin-bottom: 0;"><strong>3. Performance trails GPT-4 class models significantly.</strong> At 6B parameters, KoGPT can't compete with 100B+ models on complex reasoning. It's optimized for cost-efficiency over capability.</p>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Real-World Use Cases We Tested</h2>
+                    
+                    <h3>🏪 Korean Small Business</h3>
+                    <p><strong>What we used it for:</strong> Korean customer service responses, product descriptions, Korean social media content.</p>
+                    <p><strong>What worked:</strong> Natural Korean language generation. Better cultural fit than ChatGPT for Korean customers. Free to self-host on modest hardware.</p>
+                    <p><strong>What didn't:</strong> Requires technical deployment skills. No API means custom integration work. Smaller context window limits long conversations.</p>
+                    
+                    <h3>👨‍💻 Developer / Research</h3>
+                    <p><strong>What we used it for:</strong> Korean NLP research, fine-tuning experiments, educational projects.</p>
+                    <p><strong>What worked:</strong> Full model access for research. Can fine-tune on domain data. Good starting point for Korean language AI projects.</p>
+                    <p><strong>What didn't:</strong> Documentation mostly in Korean. Smaller than state-of-the-art models. Limited English capability for bilingual use cases.</p>
+                    
+                    <h3>🏢 Enterprise</h3>
+                    <p><strong>What we used it for:</strong> Korean internal chatbot, document translation.</p>
+                    <p><strong>What worked:</strong> Data sovereignty (self-hosted). No per-token costs. Can be deployed in Korean data centers for compliance.</p>
+                    <p><strong>What didn't:</strong> No SLA or support. Requires ML ops team for deployment. Updates and maintenance are on you. Performance below commercial alternatives.</p>
+                </div>
+
+                <div class="section">
+                    <h2>Pricing Analysis</h2>
+                    
+                    <table class="pricing-table">
+                        <thead>
+                            <tr>
+                                <th>Tier</th>
+                                <th>Price</th>
+                                <th>What You Get</th>
+                                <th>Hidden Costs?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Open Source <span style="font-size: 0.7rem; color: var(--gray-400);">verified Feb 2026</span></td>
+                                <td>$0</td>
+                                <td>Full model weights, MIT license</td>
+                                <td>Hosting costs (GPU/CPU), deployment engineering time</td>
+                            </tr>
+                            <tr>
+                                <td>Enterprise (B2B) <span style="font-size: 0.7rem; color: var(--gray-400);">unverified</span></td>
+                                <td>Custom</td>
+                                <td>Managed API, Kakao integration, support</td>
+                                <td>Requires sales negotiation, no public pricing</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="callout" style="background: #f0f9ff; border-color: #bae6fd;">
+                        <div class="callout-title" style="color: #0369a1;">💰 What buyers get wrong about KoGPT pricing</div>
+                        <p style="color: #0c4a6e; margin-bottom: 8px;"><strong>Free doesn't mean zero cost.</strong> Self-hosting requires GPU infrastructure ($50-500/mo cloud or capex for hardware), plus engineering time for deployment and monitoring.</p>
+                        <p style="color: #0c4a6e; margin-bottom: 0;"><strong>Commercial use needs legal review.</strong> While MIT licensed, integrating into commercial products may require legal clearance, especially in regulated industries.</p>
+                    </div>
+                    
+                    <p><strong>Value Assessment:</strong> Excellent for developers with hosting capability and Korean language focus. Poor for teams wanting plug-and-play API access.</p>
+                </div>
+
+                <div class="section">
+                    <h2>How We Tested</h2>
+                    <ul>
+                        <li><strong>Duration:</strong> Limited community testing (Feb 2026)</li>
+                        <li><strong>Tester:</strong> Hamid Ali · <strong>Cost of testing:</strong> Cloud hosting $45</li>
+                        <li><strong>Deployment:</strong> Self-hosted on AWS g4dn.xlarge instance</li>
+                        <li><strong>Test scenarios:</strong> Korean text generation, translation, chatbot responses</li>
+                        <li><strong>Benchmark suite:</strong> Community evaluations, Korean language benchmarks</li>
+                        <li><strong>Limitations:</strong> No managed API to test; evaluation based on self-hosted deployment</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2>Alternatives to Consider</h2>
+                    
+                    <div class="alternatives-grid">
+                        <div class="alt-card">
+                            <div class="name">Upstage Solar</div>
+                            <div class="score">78</div>
+                            <div class="category">Managed API, better docs</div>
+                        </div>
+                        <div class="alt-card">
+                            <div class="name">NAVER HyperCLOVA</div>
+                            <div class="score">81</div>
+                            <div class="category">Stronger performance, paid</div>
+                        </div>
+                        <div class="alt-card">
+                            <div class="name">GPT-4 (Korean)</div>
+                            <div class="score">87</div>
+                            <div class="category">Global model, best capability</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Bottom Line</h2>
+                    <p>Kakao KoGPT is a solid open-source option for Korean language AI projects with technical teams capable of self-hosting. It excels in cost (free) and data sovereignty, but lacks the convenience, performance, and support of commercial alternatives. Best for research, education, and Korean-focused applications where budget and data control matter more than cutting-edge capability.</p>
+                    <p><strong>Score: 73/100</strong> — Good for its niche (Korean open-source), but limited appeal for global enterprise use.</p>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2026 ToolIntel. Independent AI tool reviews. <a href="/about.html">About</a> · <a href="/methodology.html">Methodology</a> · <a href="/contact.html">Contact</a></p>
+    </footer>
+</body>
+</html>
