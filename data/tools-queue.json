@@ -1,9 +1,9 @@
 {
-  "lastUpdated": "2026-02-25",
+  "lastUpdated": "2026-02-26",
   "note": "Tools selected independently by Tool Intel editorial team - Global coverage",
   "stats": {
-    "reviewed": 36,
-    "inQueue": 1389,
+    "reviewed": 41,
+    "inQueue": 1384,
     "dailyTarget": 5
   },
   "reviewed": [
@@ -186,39 +186,34 @@
       "name": "Krutrim",
       "category": "foundation-models",
       "score": 68
-    }
-  ],
-  "queue": [
-    {
-      "name": "Hanooman",
-      "vendor": "BharatGPT",
-      "category": "foundation-models",
-      "region": "India"
-    },
-    {
-      "name": "Falcon",
-      "vendor": "TII",
-      "category": "foundation-models",
-      "region": "UAE"
-    },
-    {
-      "name": "Jais",
-      "vendor": "G42/MBZUAI",
-      "category": "foundation-models",
-      "region": "UAE"
     },
     {
       "name": "Llama",
-      "vendor": "Meta",
       "category": "open-source",
-      "region": "US"
+      "score": 82
     },
     {
       "name": "Phi-3",
-      "vendor": "Microsoft",
       "category": "open-source",
-      "region": "US"
+      "score": 79
     },
+    {
+      "name": "Falcon",
+      "category": "open-source",
+      "score": 78
+    },
+    {
+      "name": "Jais",
+      "category": "foundation-models",
+      "score": 76
+    },
+    {
+      "name": "Hanooman",
+      "category": "foundation-models",
+      "score": 70
+    }
+  ],
+  "queue": [
     {
       "name": "Gemma",
       "vendor": "Google",
