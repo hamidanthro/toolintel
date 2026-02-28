@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-21",
+  "lastUpdated": "2026-02-28",
   "tools": [
     {
       "id": "claude",
@@ -77,13 +77,13 @@
       "score": 82,
       "priority": "high",
       "reviewPublished": "2026-02-20",
-      "lastMonitored": "2026-02-21",
+      "lastMonitored": "2026-02-28",
       "healthStatus": "red",
-      "activeRedFlags": 1,
+      "activeRedFlags": 3,
       "pricingUrl": "https://perplexity.ai/pro",
       "statusUrl": null,
       "tosUrl": "https://perplexity.ai/terms",
-      "notes": "BLOCKED: Website returns 403 to automated requests. Manual browser verification required within 48h."
+      "notes": "RED FLAG: Website restructured - pricing page returns 404, ToS page returns 404. Unable to verify current pricing publicly. Previous cache (Feb 26): Pro $17/mo, Max $167/mo. Requires manual verification. Next check: Mar 7 (continue 7-day monitoring)."
     },
     {
       "id": "midjourney",
@@ -91,13 +91,13 @@
       "score": 81,
       "priority": "high",
       "reviewPublished": "2026-02-20",
-      "lastMonitored": "2026-02-21",
-      "healthStatus": "red",
-      "activeRedFlags": 1,
-      "pricingUrl": "https://docs.midjourney.com/docs/plans",
+      "lastMonitored": "2026-02-28",
+      "healthStatus": "green",
+      "activeRedFlags": 0,
+      "pricingUrl": "https://docs.midjourney.com/hc/en-us/articles/27870484040333-Comparing-Midjourney-Plans",
       "statusUrl": "https://status.midjourney.com",
-      "tosUrl": "https://docs.midjourney.com/docs/terms-of-service",
-      "notes": "BLOCKED: Website returns 403 to automated requests. Manual browser verification required within 48h."
+      "tosUrl": "https://docs.midjourney.com/hc/en-us/articles/32083055291277-Terms-of-Service",
+      "notes": "Feb 28 check: All verified unchanged. Pricing: Basic $10/mo, Standard $30/mo, Pro $60/mo, Mega $120/mo. ToS dated Feb 12, 2026 (before review published). Cached in Redis (24hr). Next check: Mar 7 (may extend to 14-day cycle if stable)."
     },
     {
       "id": "dall-e-3",

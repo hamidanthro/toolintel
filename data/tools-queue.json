@@ -1,9 +1,9 @@
 {
-  "lastUpdated": "2026-02-26",
+  "lastUpdated": "2026-02-28",
   "note": "Tools selected independently by Tool Intel editorial team - Global coverage",
   "stats": {
-    "reviewed": 41,
-    "inQueue": 1384,
+    "reviewed": 46,
+    "inQueue": 1379,
     "dailyTarget": 5
   },
   "reviewed": [
@@ -211,39 +211,34 @@
       "name": "Hanooman",
       "category": "foundation-models",
       "score": 70
-    }
-  ],
-  "queue": [
-    {
-      "name": "Gemma",
-      "vendor": "Google",
-      "category": "open-source",
-      "region": "US"
     },
     {
       "name": "Mixtral",
-      "vendor": "Mistral",
       "category": "open-source",
-      "region": "France"
+      "score": 81
     },
     {
-      "name": "BLOOM",
-      "vendor": "BigScience",
+      "name": "Gemma",
       "category": "open-source",
-      "region": "International"
-    },
-    {
-      "name": "Vicuna",
-      "vendor": "LMSYS",
-      "category": "open-source",
-      "region": "US"
+      "score": 79
     },
     {
       "name": "WizardLM",
-      "vendor": "Microsoft",
       "category": "open-source",
-      "region": "US"
+      "score": 78
     },
+    {
+      "name": "Vicuna",
+      "category": "open-source",
+      "score": 77
+    },
+    {
+      "name": "BLOOM",
+      "category": "open-source",
+      "score": 74
+    }
+  ],
+  "queue": [
     {
       "name": "OpenChat",
       "vendor": "OpenChat",

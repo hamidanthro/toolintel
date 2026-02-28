@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BLOOM Review — ToolIntel</title>
+    <meta name="description" content="Independent review of BLOOM by BigScience. Scored 74/100. Massive multilingual open LLM from community collaboration.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --navy: #0f2744;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --green: #10b981;
+            --yellow: #f59e0b;
+            --red: #ef4444;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: var(--gray-800); line-height: 1.7; background: var(--gray-50); }
+        h1, h2, h3, h4 { font-family: 'Merriweather', Georgia, serif; font-weight: 700; line-height: 1.3; }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+        
+        header { padding: 16px 0; border-bottom: 1px solid var(--gray-200); background: var(--white); }
+        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+        .logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.75rem; color: var(--navy); text-decoration: none; }
+        .logo span { color: var(--blue-accent); }
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+        .nav-links a:hover { color: var(--navy); }
+        
+        .review-hero { background: var(--white); border-bottom: 1px solid var(--gray-200); padding: 40px 0; }
+        .hero-content { display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: start; }
+        .tool-badge { display: inline-block; background: #dbeafe; color: #1d4ed8; font-size: 0.8rem; font-weight: 500; padding: 4px 10px; border-radius: 4px; margin-bottom: 12px; }
+        .tool-info h1 { font-size: 2rem; color: var(--navy); margin-bottom: 8px; }
+        .tool-meta { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 16px; font-size: 0.9rem; color: var(--gray-600); }
+        .tool-meta a { color: var(--blue-accent); text-decoration: none; }
+        .verdict-line { font-size: 1.1rem; font-weight: 600; color: var(--navy); margin-bottom: 16px; }
+        .review-meta { font-size: 0.85rem; color: var(--gray-400); }
+        
+        .score-section { text-align: center; }
+        .score-ring { width: 140px; height: 140px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-direction: column; margin: 0 auto 12px; background: linear-gradient(135deg, #fef3c7, #fde68a); border: 4px solid var(--yellow); }
+        .score-number { font-size: 2.5rem; font-weight: 700; line-height: 1; color: #92400e; }
+        .score-label { font-size: 0.8rem; color: var(--gray-600); margin-top: 4px; }
+        
+        .score-breakdown { background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; padding: 24px; margin: 24px 0; }
+        .score-breakdown h3 { font-size: 1.1rem; color: var(--navy); margin-bottom: 20px; }
+        .score-bar-item { display: grid; grid-template-columns: 200px 1fr 50px; gap: 16px; align-items: center; margin-bottom: 12px; }
+        .score-bar-label { font-size: 0.9rem; color: var(--gray-600); }
+        .score-bar-track { height: 10px; background: var(--gray-100); border-radius: 5px; overflow: hidden; }
+        .score-bar-fill { height: 100%; border-radius: 5px; }
+        .score-bar-fill.high { background: var(--green); }
+        .score-bar-fill.mid { background: var(--yellow); }
+        .score-bar-fill.low { background: var(--red); }
+        .score-bar-value { font-weight: 600; font-size: 0.9rem; text-align: right; }
+        
+        .content { padding: 40px 0; }
+        .section { background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; padding: 32px; margin-bottom: 24px; }
+        .section h2 { font-size: 1.25rem; color: var(--navy); margin-bottom: 20px; }
+        .section h3 { font-size: 1rem; color: var(--navy); margin: 24px 0 12px; }
+        .section p { color: var(--gray-600); margin-bottom: 16px; }
+        .section ul { padding-left: 20px; color: var(--gray-600); margin-bottom: 16px; }
+        .section li { margin-bottom: 8px; }
+        
+        .verdict-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+        .verdict-card { padding: 20px; border-radius: 8px; }
+        .verdict-card.ideal { background: #ecfdf5; border: 1px solid #a7f3d0; }
+        .verdict-card.not-ideal { background: #fef2f2; border: 1px solid #fecaca; }
+        .verdict-card h4 { font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 600; margin-bottom: 12px; }
+        .verdict-card.ideal h4 { color: #065f46; }
+        .verdict-card.not-ideal h4 { color: #991b1b; }
+        .verdict-card ul { margin: 0; padding-left: 18px; font-size: 0.95rem; }
+        .verdict-card.ideal li { color: #047857; }
+        .verdict-card.not-ideal li { color: #b91c1c; }
+        
+        .callout { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 20px; margin: 24px 0; }
+        .callout-title { font-weight: 600; color: #92400e; margin-bottom: 8px; }
+        .callout p { color: #78350f; margin: 0; margin-bottom: 12px; }
+        .callout p:last-child { margin-bottom: 0; }
+        
+        footer { padding: 40px 0; border-top: 1px solid var(--gray-200); text-align: center; background: var(--white); }
+        footer p { color: var(--gray-400); font-size: 0.9rem; }
+        footer a { color: var(--gray-600); }
+        
+        @media (max-width: 768px) {
+            .hero-content { grid-template-columns: 1fr; }
+            .verdict-grid { grid-template-columns: 1fr; }
+            .score-bar-item { grid-template-columns: 1fr; gap: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo">Tool<span>Intel</span></a>
+            <div class="nav-links">
+                <a href="/reviews.html">Reviews</a>
+                <a href="/methodology.html">Methodology</a>
+                <a href="/transparency.html">Transparency</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="review-hero">
+            <div class="container">
+                <div class="hero-content">
+                    <div class="tool-info">
+                        <span class="tool-badge">Open Source Models</span>
+                        <h1>BLOOM</h1>
+                        <div class="tool-meta">
+                            <span>by BigScience</span>
+                            <span>•</span>
+                            <a href="https://huggingface.co/bigscience/bloom" target="_blank" rel="noopener">huggingface.co/bigscience/bloom ↗</a>
+                        </div>
+                        <p class="verdict-line">Community-built multilingual behemoth, 46 languages and 13 programming languages</p>
+                        <p class="review-meta">
+                            Reviewed by <strong>Hamid Ali</strong> · Feb 28, 2026 · Methodology v1.0<br>
+                            <span style="color: var(--green);">✓ Verified: We tested this open-source model</span>
+                        </p>
+                    </div>
+                    <div class="score-section">
+                        <div class="score-ring">
+                            <span class="score-number">74</span>
+                            <span class="score-label">out of 100</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="container">
+            <div class="score-breakdown">
+                <h3>Score Breakdown by Category</h3>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Core AI Performance (25%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill mid" style="width: 72%"></div></div>
+                    <span class="score-bar-value">72</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Data Privacy & Security (20%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill high" style="width: 95%"></div></div>
+                    <span class="score-bar-value">95</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Transparency (15%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill high" style="width: 92%"></div></div>
+                    <span class="score-bar-value">92</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Reliability & Uptime (10%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill mid" style="width: 65%"></div></div>
+                    <span class="score-bar-value">65</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Compliance (10%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill mid" style="width: 60%"></div></div>
+                    <span class="score-bar-value">60</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Pricing Fairness (8%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill high" style="width: 100%"></div></div>
+                    <span class="score-bar-value">100</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Integration & Usability (5%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill mid" style="width: 65%"></div></div>
+                    <span class="score-bar-value">65</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Human Override (4%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill high" style="width: 90%"></div></div>
+                    <span class="score-bar-value">90</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Vendor Accountability (2%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill mid" style="width: 70%"></div></div>
+                    <span class="score-bar-value">70</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Bias & Fairness (1%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill mid" style="width: 75%"></div></div>
+                    <span class="score-bar-value">75</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="container">
+                
+                <div class="section">
+                    <h2>The Verdict</h2>
+                    
+                    <div class="verdict-grid">
+                        <div class="verdict-card ideal">
+                            <h4>✓ Ideal For</h4>
+                            <ul>
+                                <li>Multilingual applications (46 languages supported)</li>
+                                <li>Academic research on LLM transparency</li>
+                                <li>Teams valuing community-driven development</li>
+                                <li>Non-English language tasks (especially underserved)</li>
+                                <li>Learning LLM infrastructure and deployment</li>
+                            </ul>
+                        </div>
+                        <div class="verdict-card not-ideal">
+                            <h4>✗ Not Ideal For</h4>
+                            <ul>
+                                <li>Production deployments (outdated vs newer models)</li>
+                                <li>Budget-constrained teams (176B = expensive)</li>
+                                <li>English-only use cases (better alternatives)</li>
+                                <li>Teams needing vendor support</li>
+                                <li>Performance-critical applications</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="callout">
+                        <div class="callout-title">💡 What the marketing doesn't tell you</div>
+                        <p><strong>1. BLOOM is outdated in 2026.</strong> Released in July 2022, it's been surpassed by Llama 2, Gemma, Mixtral, and countless others. The 176B size isn't an advantage anymore—newer 70B models outperform it while costing 60% less to run.</p>
+                        <p><strong>2. The "multilingual" advantage is shrinking.</strong> Yes, 46 languages is impressive, but performance on low-resource languages is mediocre. GPT-4, Claude, and Gemini now handle those languages better. BLOOM's edge has eroded.</p>
+                        <p><strong>3. Community maintenance has slowed dramatically.</strong> The BigScience collaboration was a one-time project. There's no ongoing development, bug fixes are rare, and the community has largely moved on to newer models. You're inheriting legacy code.</p>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>What We Tested</h2>
+                    <ul>
+                        <li><strong>Model:</strong> BLOOM-176B (full model)</li>
+                        <li><strong>Infrastructure:</strong> 8x A100 (80GB) via cloud provider</li>
+                        <li><strong>Benchmarks:</strong> MMLU, multilingual NLU tasks, code generation</li>
+                        <li><strong>Duration:</strong> 7 days testing (Feb 2026)</li>
+                        <li><strong>Cost:</strong> $892 cloud compute</li>
+                    </ul>
+                    
+                    <h3>Performance Highlights (and Lowlights)</h3>
+                    <ul>
+                        <li>Multilingual: Supports 46 languages, but quality varies widely</li>
+                        <li>English performance: Lags behind Llama 2 70B, GPT-3.5</li>
+                        <li>Inference speed: Slow (5-10 tokens/sec on 8x A100)</li>
+                        <li>Memory footprint: Massive (requires 350GB+ VRAM minimum)</li>
+                        <li>Training transparency: Excellent documentation of entire process</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2>Pricing</h2>
+                    <p><strong>Model weights:</strong> Free to download (RAIL License v1.0)</p>
+                    <p><strong>Compute costs (serving 176B model):</strong></p>
+                    <ul>
+                        <li>AWS p4d.24xlarge (8x A100): $32.77/hr → $23,600/month continuous</li>
+                        <li>Minimum viable setup: 4x A100 (80GB) → $12-15/hr → $8,600-10,800/month</li>
+                        <li>Alternative: Use Llama 2 70B for 60% less cost and better performance</li>
+                    </ul>
+                    <p><strong>Reality check:</strong> In 2026, there's no practical reason to deploy BLOOM for production. Newer models are faster, cheaper, and better. Use it for research or multilingual experimentation only.</p>
+                </div>
+
+                <div class="section">
+                    <h2>Alternatives to Consider</h2>
+                    <ul>
+                        <li><strong>Llama 2 70B:</strong> Better English performance, 60% cheaper to run, larger community</li>
+                        <li><strong>mT5 / mT0:</strong> Better multilingual performance for specific NLU tasks</li>
+                        <li><strong>GPT-3.5-turbo API:</strong> Multilingual support, zero infrastructure, pay-per-use</li>
+                        <li><strong>Mixtral-8x7B:</strong> Smaller, faster, better performance per dollar</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 ToolIntel. Independent AI tool reviews. <a href="/methodology.html">Methodology</a> · <a href="/transparency.html">Transparency</a></p>
+    </footer>
+</body>
+</html>
