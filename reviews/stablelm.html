@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StableLM Zephyr 3B Review — ToolIntel</title>
+    <meta name="description" content="Independent review of StableLM Zephyr 3B by Stability AI. Scored 74/100. Efficient 3B model for edge devices with strong performance.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { --navy: #0f2744; --blue-accent: #3b82f6; --gray-50: #f9fafb; --gray-200: #e5e7eb; --gray-600: #4b5563; --gray-800: #1f2937; --white: #ffffff; --green: #10b981; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; color: var(--gray-800); line-height: 1.7; background: var(--gray-50); }
+        h1, h2 { font-family: 'Merriweather', serif; font-weight: 700; }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+        header { padding: 16px 0; border-bottom: 1px solid var(--gray-200); background: var(--white); }
+        .logo { font-size: 1.75rem; color: var(--navy); text-decoration: none; }
+        .logo span { color: var(--blue-accent); }
+        .review-hero { background: var(--white); padding: 40px 0; }
+        .tool-badge { background: #dbeafe; color: #1d4ed8; font-size: 0.8rem; padding: 4px 10px; border-radius: 4px; display: inline-block; }
+        .score-ring { width: 140px; height: 140px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #d1fae5, #a7f3d0); border: 4px solid var(--green); margin: 20px auto; }
+        .score-number { font-size: 2.5rem; font-weight: 700; color: #065f46; }
+        .section { background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; padding: 32px; margin: 24px auto; }
+        .section ul { padding-left: 20px; color: var(--gray-600); }
+        footer { padding: 40px 0; text-align: center; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="/" class="logo">Tool<span>Intel</span></a>
+        </div>
+    </header>
+
+    <main>
+        <section class="review-hero">
+            <div class="container">
+                <span class="tool-badge">Open Source LLMs · Edge-Optimized</span>
+                <h1>StableLM Zephyr 3B</h1>
+                <p>by Stability AI · 3 billion parameters · Inspired by Zephyr 7B</p>
+                <div class="score-ring">
+                    <span class="score-number">74</span>
+                </div>
+            </div>
+        </section>
+
+        <div class="content">
+            <div class="container">
+                <div class="section">
+                    <h2>What Makes It Different</h2>
+                    <p>StableLM Zephyr 3B is a <strong>60% smaller</strong> alternative to 7B models, designed for edge devices and resource-constrained environments.</p>
+                    <ul>
+                        <li><strong>3B parameters</strong> vs. 7B for Zephyr/OpenChat/Neural Chat</li>
+                        <li>Trained using DPO (Direct Preference Optimization) like Zephyr 7B</li>
+                        <li>Can run on consumer GPUs (8GB VRAM) and even high-end CPUs</li>
+                        <li>Competitive performance despite smaller size</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2>Performance</h2>
+                    <p>Benchmarked on MT-Bench and AlpacaEval, StableLM Zephyr 3B achieves:</p>
+                    <ul>
+                        <li>Performance surpassing many 7B models on instruction-following</li>
+                        <li>Strong contextual relevance and coherent text generation</li>
+                        <li>Efficient inference: 2-3x faster than 7B models on same hardware</li>
+                    </ul>
+                    <p><strong>Tradeoff:</strong> Lower absolute accuracy than 7B models, but exceptional <em>performance per parameter</em>.</p>
+                </div>
+
+                <div class="section">
+                    <h2>Training Details</h2>
+                    <ul>
+                        <li>Base model: Stable LM 3B-4e1t</li>
+                        <li>Fine-tuning datasets: UltraChat, MetaMathQA, Evol Wizard, Capybara</li>
+                        <li>Alignment: DPO using UltraFeedback (64k prompts ranked by GPT-4)</li>
+                        <li>Result: Instruction-tuned model optimized for Q&A and task completion</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2>Best Use Cases</h2>
+                    <ul>
+                        <li><strong>Edge deployments:</strong> Mobile apps, IoT devices, on-premise systems</li>
+                        <li><strong>Cost optimization:</strong> Lower GPU rental costs, consumer hardware viable</li>
+                        <li><strong>Copywriting & summarization:</strong> Strong creative content generation</li>
+                        <li><strong>Content personalization:</strong> Adaptive content for e-learning, marketing</li>
+                        <li><strong>Prototyping:</strong> Fast iteration without expensive infrastructure</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2>Limitations</h2>
+                    <ul>
+                        <li><strong>Accuracy ceiling:</strong> Won't match GPT-4 or Claude on complex reasoning</li>
+                        <li><strong>Commercial use:</strong> Requires Stability AI contact for licensing</li>
+                        <li><strong>Smaller community:</strong> Fewer integrations than Llama/Mistral ecosystems</li>
+                        <li><strong>Safety:</strong> Limited alignment; needs additional filtering for sensitive applications</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2>Pricing & Licensing</h2>
+                    <p><strong>Free for research.</strong> Commercial use requires contacting Stability AI.</p>
+                    <p><strong>Infrastructure cost:</strong> ~$0.20-0.40/hr cloud GPU (vs. $0.50-0.80 for 7B models)</p>
+                </div>
+
+                <div class="section">
+                    <h2>Verdict</h2>
+                    <p>StableLM Zephyr 3B scores <strong>74/100</strong> because it's optimized for a specific niche: edge deployment and cost efficiency. If you need maximum accuracy, use a larger model. If you need to run AI on limited hardware or minimize costs, this is a strong choice.</p>
+                    <p><strong>Best for:</strong> Edge AI, mobile apps, budget-conscious teams, rapid prototyping</p>
+                    <p><strong>Not for:</strong> Critical reasoning tasks, production apps needing highest accuracy, teams wanting fully open commercial license</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 ToolIntel</p>
+    </footer>
+</body>
+</html>

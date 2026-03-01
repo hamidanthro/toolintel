@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orca Review — ToolIntel</title>
+    <meta name="description" content="Independent review of Orca by Microsoft Research. Scored 76/100. Research framework for synthetic data generation and model improvement.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { --navy: #0f2744; --blue-accent: #3b82f6; --gray-50: #f9fafb; --gray-200: #e5e7eb; --gray-600: #4b5563; --gray-800: #1f2937; --white: #ffffff; --green: #10b981; --yellow: #f59e0b; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; color: var(--gray-800); line-height: 1.7; background: var(--gray-50); }
+        h1, h2 { font-family: 'Merriweather', serif; font-weight: 700; }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+        header { padding: 16px 0; border-bottom: 1px solid var(--gray-200); background: var(--white); }
+        nav { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.75rem; color: var(--navy); text-decoration: none; }
+        .logo span { color: var(--blue-accent); }
+        .review-hero { background: var(--white); padding: 40px 0; }
+        .tool-badge { background: #fef3c7; color: #92400e; font-size: 0.8rem; padding: 4px 10px; border-radius: 4px; display: inline-block; margin-bottom: 12px; }
+        .tool-info h1 { font-size: 2rem; color: var(--navy); margin: 8px 0; }
+        .score-ring { width: 140px; height: 140px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #d1fae5, #a7f3d0); border: 4px solid var(--green); margin: 0 auto; }
+        .score-number { font-size: 2.5rem; font-weight: 700; color: #065f46; }
+        .content { padding: 40px 0; }
+        .section { background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; padding: 32px; margin-bottom: 24px; }
+        .section ul { padding-left: 20px; color: var(--gray-600); }
+        footer { padding: 40px 0; text-align: center; }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <a href="/" class="logo">Tool<span>Intel</span></a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="review-hero">
+            <div class="container">
+                <span class="tool-badge">Research Framework</span>
+                <h1>Orca</h1>
+                <p>by Microsoft Research · Research-only (not for production)</p>
+                <div class="score-ring">
+                    <span class="score-number">76</span>
+                </div>
+            </div>
+        </section>
+
+        <div class="content">
+            <div class="container">
+                <div class="section">
+                    <h2>What It Is</h2>
+                    <p>Orca is a <strong>research initiative</strong> from Microsoft, not a production-ready model. It focuses on:</p>
+                    <ul>
+                        <li>Automated pipelines for generating high-quality synthetic data at scale</li>
+                        <li>Teaching smaller models to imitate larger models' reasoning processes</li>
+                        <li>Self-improvement strategies and specialization techniques</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2>Key Contributions</h2>
+                    <ul>
+                        <li><strong>Orca-1:</strong> Progressive learning from complex explanation traces (100%+ improvement over Vicuna-13B on BBH)</li>
+                        <li><strong>Orca-2:</strong> Teaching small models different reasoning strategies for varied tasks</li>
+                        <li><strong>AgentInstruct:</strong> Framework for creating 25M+ high-quality synthetic training pairs</li>
+                        <li><strong>Orca-3:</strong> Mistral-7b post-trained with AgentInstruct data (40% improvement on AGIEval)</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2>Best For</h2>
+                    <ul>
+                        <li>Researchers studying knowledge distillation and synthetic data generation</li>
+                        <li>Teams building custom training pipelines (learn from Orca's methodology)</li>
+                        <li>Understanding how to teach smaller models advanced reasoning</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2>NOT For</h2>
+                    <ul>
+                        <li><strong>Production deployments:</strong> Models are research prototypes only</li>
+                        <li><strong>Direct use:</strong> No public API or easy deployment option</li>
+                        <li><strong>Commercial applications:</strong> "Should not be used in downstream applications"</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2>Why It Scores Lower</h2>
+                    <p>Orca scores 76/100 not because the research is weak (it's excellent), but because:</p>
+                    <ul>
+                        <li>Not production-ready (research setting only)</li>
+                        <li>Models not publicly available for deployment</li>
+                        <li>No support, no SLA, no enterprise features</li>
+                        <li>Limited accessibility compared to open-source alternatives</li>
+                    </ul>
+                    <p><strong>Value:</strong> As a methodology and research direction, Orca is groundbreaking. As a tool you can use today, it's limited.</p>
+                </div>
+
+                <div class="section">
+                    <h2>How to Use Orca's Insights</h2>
+                    <p>Instead of using Orca directly, apply its techniques:</p>
+                    <ul>
+                        <li>Read the AgentInstruct paper to build your own synthetic data pipelines</li>
+                        <li>Use explanation tuning (teaching with reasoning traces) in your fine-tuning</li>
+                        <li>Apply progressive learning strategies to smaller models</li>
+                        <li>Study the Orca publications for state-of-the-art distillation techniques</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 ToolIntel</p>
+    </footer>
+</body>
+</html>

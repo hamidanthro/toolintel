@@ -1,9 +1,9 @@
 {
-  "lastUpdated": "2026-02-28",
+  "lastUpdated": "2026-03-01",
   "note": "Tools selected independently by Tool Intel editorial team - Global coverage",
   "stats": {
-    "reviewed": 46,
-    "inQueue": 1379,
+    "reviewed": 51,
+    "inQueue": 1374,
     "dailyTarget": 5
   },
   "reviewed": [
@@ -236,39 +236,34 @@
       "name": "BLOOM",
       "category": "open-source",
       "score": 74
-    }
-  ],
-  "queue": [
+    },
     {
       "name": "OpenChat",
-      "vendor": "OpenChat",
       "category": "open-source",
-      "region": "US"
+      "score": 82
     },
     {
       "name": "Zephyr",
-      "vendor": "Hugging Face",
       "category": "open-source",
-      "region": "US"
+      "score": 80
     },
     {
       "name": "Neural Chat",
-      "vendor": "Intel",
       "category": "open-source",
-      "region": "US"
+      "score": 78
     },
     {
       "name": "Orca",
-      "vendor": "Microsoft",
       "category": "open-source",
-      "region": "US"
+      "score": 76
     },
     {
       "name": "StableLM",
-      "vendor": "Stability AI",
       "category": "open-source",
-      "region": "UK"
-    },
+      "score": 74
+    }
+  ],
+  "queue": [
     {
       "name": "OpenHermes",
       "vendor": "Teknium",
