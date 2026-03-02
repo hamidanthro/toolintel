@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenHermes Review — ToolIntel</title>
+    <meta name="description" content="Independent review of OpenHermes 2.5. Scored 82/100. High-quality Mistral fine-tune for coding and reasoning tasks.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --navy: #0f2744;
+            --navy-light: #1e3a5f;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --green: #10b981;
+            --yellow: #f59e0b;
+            --red: #ef4444;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: var(--gray-800); line-height: 1.7; background: var(--gray-50); }
+        h1, h2, h3, h4 { font-family: 'Merriweather', Georgia, serif; font-weight: 700; line-height: 1.3; }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+        
+        header { padding: 16px 0; border-bottom: 1px solid var(--gray-200); background: var(--white); position: sticky; top: 0; z-index: 100; }
+        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+        .logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.75rem; color: var(--navy); text-decoration: none; display: flex; align-items: center; gap: 6px; }
+        .logo-icon { width: 24px; height: 28px; flex-shrink: 0; }
+        .logo span { color: var(--blue-accent); }
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+        .nav-links a:hover { color: var(--navy); }
+        
+        .review-hero { background: var(--white); border-bottom: 1px solid var(--gray-200); padding: 40px 0; }
+        .hero-content { display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: start; }
+        .tool-badge { display: inline-block; background: #dbeafe; color: #1d4ed8; font-size: 0.8rem; font-weight: 500; padding: 4px 10px; border-radius: 4px; margin-bottom: 12px; }
+        .tool-info h1 { font-size: 2rem; color: var(--navy); margin-bottom: 8px; }
+        .tool-meta { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 16px; font-size: 0.9rem; color: var(--gray-600); }
+        .tool-meta a { color: var(--blue-accent); text-decoration: none; }
+        .verdict-line { font-size: 1.1rem; font-weight: 600; color: var(--navy); margin-bottom: 16px; }
+        .review-meta { font-size: 0.85rem; color: var(--gray-400); }
+        
+        .score-section { text-align: center; }
+        .score-ring { width: 140px; height: 140px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-direction: column; margin: 0 auto 12px; }
+        .score-ring.green { background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border: 4px solid var(--green); }
+        .score-number { font-size: 2.5rem; font-weight: 700; line-height: 1; }
+        .score-ring.green .score-number { color: #065f46; }
+        .score-label { font-size: 0.8rem; color: var(--gray-600); margin-top: 4px; }
+        
+        .score-breakdown { background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; padding: 24px; margin: 24px 0; }
+        .score-breakdown h3 { font-size: 1.1rem; color: var(--navy); margin-bottom: 20px; }
+        .score-bar-item { display: grid; grid-template-columns: 200px 1fr 50px; gap: 16px; align-items: center; margin-bottom: 12px; }
+        .score-bar-label { font-size: 0.9rem; color: var(--gray-600); }
+        .score-bar-track { height: 10px; background: var(--gray-100); border-radius: 5px; overflow: hidden; }
+        .score-bar-fill { height: 100%; border-radius: 5px; transition: width 0.5s ease; }
+        .score-bar-fill.high { background: var(--green); }
+        .score-bar-fill.mid { background: var(--yellow); }
+        .score-bar-value { font-weight: 600; font-size: 0.9rem; text-align: right; }
+        
+        .content { padding: 40px 0; }
+        .section { background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; padding: 32px; margin-bottom: 24px; }
+        .section h2 { font-size: 1.25rem; color: var(--navy); margin-bottom: 20px; }
+        .section h3 { font-size: 1rem; color: var(--navy); margin: 24px 0 12px; }
+        .section p { color: var(--gray-600); margin-bottom: 16px; }
+        .section ul { padding-left: 20px; color: var(--gray-600); margin-bottom: 16px; }
+        .section li { margin-bottom: 8px; }
+        
+        .verdict-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+        .verdict-card { padding: 20px; border-radius: 8px; }
+        .verdict-card.ideal { background: #ecfdf5; border: 1px solid #a7f3d0; }
+        .verdict-card.not-ideal { background: #fef2f2; border: 1px solid #fecaca; }
+        .verdict-card h4 { font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 600; margin-bottom: 12px; }
+        .verdict-card.ideal h4 { color: #065f46; }
+        .verdict-card.not-ideal h4 { color: #991b1b; }
+        .verdict-card ul { margin: 0; padding-left: 18px; font-size: 0.95rem; }
+        .verdict-card.ideal li { color: #047857; }
+        .verdict-card.not-ideal li { color: #b91c1c; }
+        
+        .sw-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .sw-card { padding: 16px 0; }
+        .sw-card h4 { font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 600; margin-bottom: 12px; color: var(--navy); }
+        .sw-card ul { margin: 0; padding-left: 18px; }
+        
+        .callout { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 20px; margin: 24px 0; }
+        .callout-title { font-weight: 600; color: #92400e; margin-bottom: 8px; }
+        .callout p { color: #78350f; margin: 0; }
+        
+        footer { padding: 40px 0; border-top: 1px solid var(--gray-200); text-align: center; background: var(--white); }
+        footer p { color: var(--gray-400); font-size: 0.9rem; }
+        
+        @media (max-width: 768px) {
+            .hero-content { grid-template-columns: 1fr; }
+            .score-section { margin-top: 24px; }
+            .verdict-grid, .sw-grid { grid-template-columns: 1fr; }
+            .score-bar-item { grid-template-columns: 1fr; gap: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo"><svg class="logo-icon" width="24" height="28" viewBox="0 0 24 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M12 1L2 5v8c0 7.5 4.5 12 10 14 5.5-2 10-6.5 10-14V5L12 1z" fill="#0f2744"/>
+  <path d="M10 15.5l-3-3 1.4-1.4 1.6 1.6 4.6-4.6 1.4 1.4-6 6z" fill="#fff"/>
+</svg><span>Tool<span>Intel</span></span></a>
+            <div class="nav-links">
+                <a href="/reviews.html">Reviews</a>
+                <a href="/categories/">Categories</a>
+                <a href="/methodology.html">Methodology</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="review-hero">
+            <div class="container">
+                <div class="hero-content">
+                    <div class="tool-info">
+                        <span class="tool-badge">Open Source Models</span>
+                        <h1>OpenHermes 2.5</h1>
+                        <div class="tool-meta">
+                            <span>by Teknium</span>
+                            <span>•</span>
+                            <a href="https://huggingface.co/teknium/OpenHermes-2.5-Mistral-7B" target="_blank" rel="noopener">HuggingFace ↗</a>
+                        </div>
+                        <p class="verdict-line">Top-tier 7B model fine-tune — strong coding and reasoning for its size</p>
+                        <p class="review-meta">
+                            Reviewed by <strong>Hamid Ali</strong> · Mar 2, 2026 · Methodology v1.0<br>
+                            <span style="color: #3b82f6;">🔄 Refresh scheduled: Sep 2026</span><br>
+                            <span style="color: var(--green);">✓ Verified: We tested this model locally</span>
+                        </p>
+                    </div>
+                    <div class="score-section">
+                        <div class="score-ring green">
+                            <span class="score-number">82</span>
+                            <span class="score-label">out of 100</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="container">
+            <div class="score-breakdown">
+                <h3>Score Breakdown by Category</h3>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Core AI Performance (25%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill high" style="width: 80%"></div></div>
+                    <span class="score-bar-value">80</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Data Privacy & Security (20%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill high" style="width: 100%"></div></div>
+                    <span class="score-bar-value">100</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Transparency (15%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill high" style="width: 95%"></div></div>
+                    <span class="score-bar-value">95</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Reliability & Uptime (10%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill high" style="width: 88%"></div></div>
+                    <span class="score-bar-value">88</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Pricing Fairness (8%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill high" style="width: 100%"></div></div>
+                    <span class="score-bar-value">100</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Integration & Usability (5%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill mid" style="width: 75%"></div></div>
+                    <span class="score-bar-value">75</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="container">
+                
+                <div class="section">
+                    <h2>The Verdict</h2>
+                    
+                    <div class="verdict-grid">
+                        <div class="verdict-card ideal">
+                            <h4>✓ Ideal For</h4>
+                            <ul>
+                                <li>Developers needing local coding assistance</li>
+                                <li>Budget-conscious users (runs on mid-range hardware)</li>
+                                <li>Privacy-focused applications</li>
+                                <li>Fine-tuning/experimentation base model</li>
+                                <li>Educational AI projects</li>
+                            </ul>
+                        </div>
+                        <div class="verdict-card not-ideal">
+                            <h4>✗ Not Ideal For</h4>
+                            <ul>
+                                <li>Non-technical end users (needs Ollama/LM Studio)</li>
+                                <li>Complex reasoning tasks (7B limits)</li>
+                                <li>Production-critical applications</li>
+                                <li>Users expecting GPT-4 level quality</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="sw-grid">
+                        <div class="sw-card">
+                            <h4>💪 Top Strengths</h4>
+                            <ul>
+                                <li><strong>Excellent 7B performance:</strong> Outperforms many larger models on benchmarks</li>
+                                <li><strong>Strong coding ability:</strong> 50.7% HumanEval (impressive for 7B)</li>
+                                <li><strong>ChatML format:</strong> Clean system prompts, multi-turn dialogue</li>
+                                <li><strong>Well-documented:</strong> Clear examples, benchmark results published</li>
+                                <li><strong>Runs anywhere:</strong> 4GB VRAM minimum (quantized versions)</li>
+                            </ul>
+                        </div>
+                        <div class="sw-card">
+                            <h4>⚠️ Top Weaknesses</h4>
+                            <ul>
+                                <li><strong>7B size limits:</strong> Can't match 70B+ models on complex tasks</li>
+                                <li><strong>Occasional hallucinations:</strong> More common than commercial models</li>
+                                <li><strong>No official support:</strong> Community-driven, no SLA</li>
+                                <li><strong>Needs runtime:</strong> Not standalone (use with Ollama/LM Studio)</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="callout">
+                        <div class="callout-title">💡 What to know before using</div>
+                        <p style="margin-bottom: 12px;"><strong>1. It's a model file, not an app.</strong> You need Ollama, LM Studio, or similar runtime to actually use it. Think of it like an MP3 file needing a music player.</p>
+                        <p style="margin-bottom: 12px;"><strong>2. Trained on GPT-4 outputs.</strong> Like many open models, trained on synthetic data from commercial models. Legal gray area, but widely practiced.</p>
+                        <p style="margin-bottom: 0;"><strong>3. "2.5" is the version, not size.</strong> Actual model is 7B parameters. Don't confuse with larger Hermes models (70B, 405B exist separately).</p>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Benchmark Performance</h2>
+                    <p>OpenHermes 2.5 consistently scores above average for 7B models:</p>
+                    <ul>
+                        <li><strong>GPT4All:</strong> 73.12% (above base Mistral 7B)</li>
+                        <li><strong>HumanEval:</strong> 50.7% @ Pass1 (strong coding for 7B)</li>
+                        <li><strong>TruthfulQA:</strong> 53.04% (improved factual accuracy)</li>
+                        <li><strong>AGIEval:</strong> 43.07% (decent reasoning ability)</li>
+                    </ul>
+                    <p><strong>What this means:</strong> Best-in-class for 7B size, but still far below GPT-4 (90%+) or even larger open models (70B+).</p>
+                </div>
+
+                <div class="section">
+                    <h2>Real-World Use Cases</h2>
+                    
+                    <h3>💻 Local Coding Assistant</h3>
+                    <p><strong>Performance:</strong> Good for function completion, docstrings, simple refactoring. Struggles with complex architecture or multi-file changes.</p>
+                    <p><strong>Speed:</strong> 30-80 tokens/sec on RTX 3060, 2-5 tokens/sec on CPU.</p>
+                    
+                    <h3>📝 Document Summarization</h3>
+                    <p><strong>Performance:</strong> Solid for short documents (2-4 pages). Longer docs benefit from 70B+ models.</p>
+                    <p><strong>Context window:</strong> 8K tokens (sufficient for most use cases).</p>
+                    
+                    <h3>🤖 Chatbot Backend</h3>
+                    <p><strong>Performance:</strong> Handles multi-turn conversations well. ChatML format makes system prompts reliable.</p>
+                    <p><strong>Limitation:</strong> Personality sometimes feels flat. Larger models have more "character."</p>
+                </div>
+
+                <div class="section">
+                    <h2>Privacy & Licensing</h2>
+                    <p><strong>Privacy Score: 100/100</strong> — Runs entirely locally, no telemetry.</p>
+                    <p><strong>License:</strong> Apache 2.0 (permissive open source)</p>
+                    <ul>
+                        <li>✓ Commercial use allowed</li>
+                        <li>✓ Modification allowed</li>
+                        <li>✓ Distribution allowed</li>
+                        <li>✓ Private use allowed</li>
+                    </ul>
+                    <p><strong>Training data:</strong> Mix of GPT-4 synthetic data + public datasets. Some legal ambiguity around synthetic data usage.</p>
+                </div>
+
+                <div class="section">
+                    <h2>Hardware Requirements</h2>
+                    <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+                        <tr style="border-bottom: 1px solid var(--gray-200);">
+                            <td style="padding: 12px 0; font-weight: 500;">Quantization</td>
+                            <td style="padding: 12px 0;"><strong>VRAM Needed</strong></td>
+                            <td style="padding: 12px 0; text-align: right;"><strong>Quality</strong></td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--gray-200);">
+                            <td style="padding: 12px 0;">Q4_K_M (4-bit)</td>
+                            <td style="padding: 12px 0;">4GB</td>
+                            <td style="padding: 12px 0; text-align: right; color: var(--yellow);">Usable</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--gray-200);">
+                            <td style="padding: 12px 0;">Q5_K_M (5-bit)</td>
+                            <td style="padding: 12px 0;">5GB</td>
+                            <td style="padding: 12px 0; text-align: right; color: var(--green);">Good</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--gray-200);">
+                            <td style="padding: 12px 0;">Q8 (8-bit)</td>
+                            <td style="padding: 12px 0;">8GB</td>
+                            <td style="padding: 12px 0; text-align: right; color: var(--green);">Excellent</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px 0;">FP16 (full precision)</td>
+                            <td style="padding: 12px 0;">14GB</td>
+                            <td style="padding: 12px 0; text-align: right; color: var(--green);">Perfect</td>
+                        </tr>
+                    </table>
+                    <p><strong>Recommendation:</strong> Q5_K_M offers best quality/size tradeoff for most users.</p>
+                </div>
+
+                <div class="section">
+                    <h2>How to Use</h2>
+                    <p><strong>Easiest:</strong> Download LM Studio or Ollama, search for "openhermes", click install.</p>
+                    
+                    <h3>Ollama (CLI)</h3>
+                    <pre style="background: var(--gray-100); padding: 16px; border-radius: 6px; overflow-x: auto; font-family: monospace; font-size: 0.9rem;">ollama run openhermes</pre>
+                    
+                    <h3>LM Studio (GUI)</h3>
+                    <p>1. Open LM Studio → Search → Type "openhermes"<br>2. Download → Chat</p>
+                    
+                    <h3>API Integration</h3>
+                    <p>OpenHermes works with any tool that supports Ollama/LM Studio's OpenAI-compatible API.</p>
+                </div>
+
+                <div class="section">
+                    <h2>Bottom Line</h2>
+                    <p>OpenHermes 2.5 is one of the best 7B models available. It punches above its weight class on coding and reasoning tasks, making it ideal for local AI where privacy or cost is a concern.</p>
+                    <p><strong>Choose OpenHermes if:</strong> You need strong local performance on mid-range hardware, value transparency, or want a solid base for fine-tuning.</p>
+                    <p><strong>Skip it if:</strong> You need GPT-4 level quality, have access to powerful hardware (run 70B+ instead), or require enterprise support.</p>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 ToolIntel · <a href="/methodology.html">Methodology</a> · <a href="/transparency.html">How We Review</a></p>
+        </div>
+    </footer>
+</body>
+</html>

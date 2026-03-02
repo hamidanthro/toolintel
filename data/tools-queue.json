@@ -1,12 +1,37 @@
 {
-  "lastUpdated": "2026-03-01",
+  "lastUpdated": "2026-03-02",
   "note": "Tools selected independently by Tool Intel editorial team - Global coverage",
   "stats": {
-    "reviewed": 51,
-    "inQueue": 1374,
+    "reviewed": 56,
+    "inQueue": 1369,
     "dailyTarget": 5
   },
   "reviewed": [
+    {
+      "name": "LM Studio",
+      "category": "local-ai",
+      "score": 86
+    },
+    {
+      "name": "Ollama",
+      "category": "local-ai",
+      "score": 84
+    },
+    {
+      "name": "Nous Hermes",
+      "category": "open-source",
+      "score": 83
+    },
+    {
+      "name": "OpenHermes",
+      "category": "open-source",
+      "score": 82
+    },
+    {
+      "name": "Dolphin",
+      "category": "open-source",
+      "score": 78
+    },
     {
       "name": "Claude",
       "category": "foundation-models",
@@ -264,36 +289,6 @@
     }
   ],
   "queue": [
-    {
-      "name": "OpenHermes",
-      "vendor": "Teknium",
-      "category": "open-source",
-      "region": "US"
-    },
-    {
-      "name": "Nous Hermes",
-      "vendor": "Nous Research",
-      "category": "open-source",
-      "region": "US"
-    },
-    {
-      "name": "Dolphin",
-      "vendor": "Cognitive Computations",
-      "category": "open-source",
-      "region": "US"
-    },
-    {
-      "name": "Ollama",
-      "vendor": "Ollama",
-      "category": "local-ai",
-      "region": "US"
-    },
-    {
-      "name": "LM Studio",
-      "vendor": "LM Studio",
-      "category": "local-ai",
-      "region": "US"
-    },
     {
       "name": "Jan",
       "vendor": "Jan",
@@ -751,7 +746,7 @@
       "region": "US"
     },
     {
-      "name": "Wensheng (文生图)",
+      "name": "Wensheng (\u6587\u751f\u56fe)",
       "vendor": "Baidu",
       "category": "image-gen",
       "region": "China"
