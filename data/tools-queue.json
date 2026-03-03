@@ -1,12 +1,37 @@
 {
-  "lastUpdated": "2026-03-02",
+  "lastUpdated": "2026-03-03",
   "note": "Tools selected independently by Tool Intel editorial team - Global coverage",
   "stats": {
-    "reviewed": 56,
-    "inQueue": 1369,
+    "reviewed": 61,
+    "inQueue": 1364,
     "dailyTarget": 5
   },
   "reviewed": [
+    {
+      "name": "Jan",
+      "category": "local-ai",
+      "score": 85
+    },
+    {
+      "name": "GPT4All",
+      "category": "local-ai",
+      "score": 84
+    },
+    {
+      "name": "Llamafile",
+      "category": "local-ai",
+      "score": 83
+    },
+    {
+      "name": "PrivateGPT",
+      "category": "local-ai",
+      "score": 82
+    },
+    {
+      "name": "LocalAI",
+      "category": "local-ai",
+      "score": 81
+    },
     {
       "name": "LM Studio",
       "category": "local-ai",
@@ -289,36 +314,6 @@
     }
   ],
   "queue": [
-    {
-      "name": "Jan",
-      "vendor": "Jan",
-      "category": "local-ai",
-      "region": "Vietnam"
-    },
-    {
-      "name": "GPT4All",
-      "vendor": "Nomic",
-      "category": "local-ai",
-      "region": "US"
-    },
-    {
-      "name": "Llamafile",
-      "vendor": "Mozilla",
-      "category": "local-ai",
-      "region": "US"
-    },
-    {
-      "name": "PrivateGPT",
-      "vendor": "Zylon",
-      "category": "local-ai",
-      "region": "Spain"
-    },
-    {
-      "name": "LocalAI",
-      "vendor": "Open Source",
-      "category": "local-ai",
-      "region": "Italy"
-    },
     {
       "name": "Koboldcpp",
       "vendor": "Open Source",
