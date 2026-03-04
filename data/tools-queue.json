@@ -1,9 +1,9 @@
 {
-  "lastUpdated": "2026-03-03",
+  "lastUpdated": "2026-03-04",
   "note": "Tools selected independently by Tool Intel editorial team - Global coverage",
   "stats": {
-    "reviewed": 61,
-    "inQueue": 1364,
+    "reviewed": 66,
+    "inQueue": 1359,
     "dailyTarget": 5
   },
   "reviewed": [
@@ -311,39 +311,34 @@
       "name": "StableLM",
       "category": "open-source",
       "score": 74
-    }
-  ],
-  "queue": [
+    },
     {
       "name": "Koboldcpp",
-      "vendor": "Open Source",
       "category": "local-ai",
-      "region": "US"
+      "score": 84
     },
     {
       "name": "Text Generation WebUI",
-      "vendor": "oobabooga",
       "category": "local-ai",
-      "region": "US"
+      "score": 83
     },
     {
       "name": "AnythingLLM",
-      "vendor": "Mintplex Labs",
       "category": "local-ai",
-      "region": "US"
+      "score": 80
     },
     {
       "name": "Open WebUI",
-      "vendor": "Open WebUI",
       "category": "local-ai",
-      "region": "US"
+      "score": 86
     },
     {
       "name": "Codeium",
-      "vendor": "Codeium",
       "category": "coding",
-      "region": "US"
-    },
+      "score": 85
+    }
+  ],
+  "queue": [
     {
       "name": "Tabnine",
       "vendor": "Tabnine",

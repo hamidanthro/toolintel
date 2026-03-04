@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-28",
+  "lastUpdated": "2026-03-04",
   "tools": [
     {
       "id": "claude",
@@ -77,13 +77,13 @@
       "score": 82,
       "priority": "high",
       "reviewPublished": "2026-02-20",
-      "lastMonitored": "2026-02-28",
+      "lastMonitored": "2026-03-04",
       "healthStatus": "red",
       "activeRedFlags": 3,
       "pricingUrl": "https://perplexity.ai/pro",
       "statusUrl": null,
       "tosUrl": "https://perplexity.ai/terms",
-      "notes": "RED FLAG: Website restructured - pricing page returns 404, ToS page returns 404. Unable to verify current pricing publicly. Previous cache (Feb 26): Pro $17/mo, Max $167/mo. Requires manual verification. Next check: Mar 7 (continue 7-day monitoring)."
+      "notes": "RED FLAG (PERSISTING): All pages blocked by Cloudflare challenges. Cannot verify pricing (/pro), ToS (/terms), or any product info. Issue persists since Feb 28. Unable to complete any monitoring checklist items. CRITICAL: Manual browser verification required for all review aspects. Next check: Mar 7 (7-day monitoring until resolved)."
     },
     {
       "id": "midjourney",
