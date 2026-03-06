@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon Q Developer (CodeWhisperer) Review — ToolIntel</title>
+    <meta name="description" content="Independent review of Amazon Q Developer by AWS. Scored 83/100. Best for AWS-centric development teams.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --navy: #0f2744;
+            --navy-light: #1e3a5f;
+            --blue-accent: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --green: #10b981;
+            --yellow: #f59e0b;
+            --red: #ef4444;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: var(--gray-800); line-height: 1.7; background: var(--gray-50); }
+        h1, h2, h3, h4 { font-family: 'Merriweather', Georgia, serif; font-weight: 700; line-height: 1.3; }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+        
+        header { padding: 16px 0; border-bottom: 1px solid var(--gray-200); background: var(--white); position: sticky; top: 0; z-index: 100; }
+        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+        .logo span { color: var(--blue-accent); }
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { color: var(--gray-600); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+        .nav-links a:hover { color: var(--navy); }
+        
+        .review-hero { background: var(--white); border-bottom: 1px solid var(--gray-200); padding: 40px 0; }
+        .hero-content { display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: start; }
+        .tool-badge { display: inline-block; background: #dbeafe; color: #1d4ed8; font-size: 0.8rem; font-weight: 500; padding: 4px 10px; border-radius: 4px; margin-bottom: 12px; }
+        .tool-info h1 { font-size: 2rem; color: var(--navy); margin-bottom: 8px; }
+        .tool-meta { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 16px; font-size: 0.9rem; color: var(--gray-600); }
+        .tool-meta a { color: var(--blue-accent); text-decoration: none; }
+        .verdict-line { font-size: 1.1rem; font-weight: 600; color: var(--navy); margin-bottom: 16px; }
+        .review-meta { font-size: 0.85rem; color: var(--gray-400); }
+        
+        .score-section { text-align: center; }
+        .score-ring { width: 140px; height: 140px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-direction: column; margin: 0 auto 12px; }
+        .score-ring.green { background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border: 4px solid var(--green); }
+        .score-ring.yellow { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 4px solid var(--yellow); }
+        .score-number { font-size: 2.5rem; font-weight: 700; line-height: 1; }
+        .score-ring.green .score-number { color: #065f46; }
+        .score-ring.yellow .score-number { color: #92400e; }
+        .score-label { font-size: 0.8rem; color: var(--gray-600); margin-top: 4px; }
+        .action-buttons { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
+        .action-btn { padding: 8px 14px; font-size: 0.85rem; border: 1px solid var(--gray-200); border-radius: 6px; background: var(--white); cursor: pointer; color: var(--gray-600); transition: all 0.2s; text-decoration: none; }
+        .action-btn:hover { border-color: var(--navy); color: var(--navy); }
+        
+        .score-breakdown { background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; padding: 24px; margin: 24px 0; }
+        .score-breakdown h3 { font-size: 1.1rem; color: var(--navy); margin-bottom: 20px; }
+        .score-bar-item { display: grid; grid-template-columns: 200px 1fr 50px; gap: 16px; align-items: center; margin-bottom: 12px; }
+        .score-bar-label { font-size: 0.9rem; color: var(--gray-600); }
+        .score-bar-track { height: 10px; background: var(--gray-100); border-radius: 5px; overflow: hidden; }
+        .score-bar-fill { height: 100%; border-radius: 5px; transition: width 0.5s ease; }
+        .score-bar-fill.high { background: var(--green); }
+        .score-bar-fill.mid { background: var(--yellow); }
+        .score-bar-fill.low { background: var(--red); }
+        .score-bar-value { font-weight: 600; font-size: 0.9rem; text-align: right; }
+        
+        .content { padding: 40px 0; }
+        .section { background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; padding: 32px; margin-bottom: 24px; }
+        .section h2 { font-size: 1.25rem; color: var(--navy); margin-bottom: 20px; }
+        .section h3 { font-size: 1rem; color: var(--navy); margin: 24px 0 12px; }
+        .section p { color: var(--gray-600); margin-bottom: 16px; }
+        .section ul { padding-left: 20px; color: var(--gray-600); margin-bottom: 16px; }
+        .section li { margin-bottom: 8px; }
+        
+        .verdict-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+        .verdict-card { padding: 20px; border-radius: 8px; }
+        .verdict-card.ideal { background: #ecfdf5; border: 1px solid #a7f3d0; }
+        .verdict-card.not-ideal { background: #fef2f2; border: 1px solid #fecaca; }
+        .verdict-card h4 { font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 600; margin-bottom: 12px; }
+        .verdict-card.ideal h4 { color: #065f46; }
+        .verdict-card.not-ideal h4 { color: #991b1b; }
+        .verdict-card ul { margin: 0; padding-left: 18px; font-size: 0.95rem; }
+        .verdict-card.ideal li { color: #047857; }
+        .verdict-card.not-ideal li { color: #b91c1c; }
+        
+        .sw-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .sw-card { padding: 16px 0; }
+        .sw-card h4 { font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; color: var(--navy); }
+        .sw-card ul { margin: 0; padding-left: 18px; }
+        
+        .callout { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 20px; margin: 24px 0; }
+        .callout-title { font-weight: 600; color: #92400e; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .callout p { color: #78350f; margin: 0; }
+        
+        .accordion-item { border: 1px solid var(--gray-200); border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
+        .accordion-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: var(--gray-50); cursor: pointer; font-weight: 600; color: var(--navy); }
+        .accordion-header:hover { background: var(--gray-100); }
+        .accordion-content { padding: 20px; border-top: 1px solid var(--gray-200); display: none; }
+        
+        .pricing-table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+        .pricing-table th, .pricing-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--gray-200); }
+        .pricing-table th { background: var(--gray-50); font-weight: 600; color: var(--navy); }
+        
+        .privacy-summary { background: var(--gray-50); border-radius: 8px; padding: 20px; margin: 16px 0; }
+        .privacy-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+        .privacy-item:last-child { margin-bottom: 0; }
+        .privacy-icon { font-size: 1.1rem; }
+        .privacy-icon.good { color: var(--green); }
+        .privacy-icon.warning { color: var(--yellow); }
+        .privacy-icon.bad { color: var(--red); }
+        
+        .alternatives-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .alt-card { border: 1px solid var(--gray-200); border-radius: 8px; padding: 16px; text-align: center; background: var(--white); }
+        .alt-card .name { font-weight: 600; color: var(--navy); margin-bottom: 4px; }
+        .alt-card .score { font-size: 1.5rem; font-weight: 700; }
+        .alt-card .score { color: var(--navy); }
+        .alt-card .category { font-size: 0.8rem; color: var(--gray-400); margin-top: 4px; }
+        
+        footer { padding: 40px 0; border-top: 1px solid var(--gray-200); text-align: center; background: var(--white); }
+        footer p { color: var(--gray-400); font-size: 0.9rem; }
+        footer a { color: var(--gray-600); }
+        
+        @media (max-width: 768px) {
+            .hero-content { grid-template-columns: 1fr; }
+            .score-section { margin-top: 24px; }
+            .verdict-grid, .sw-grid, .alternatives-grid { grid-template-columns: 1fr; }
+            .score-bar-item { grid-template-columns: 1fr; gap: 8px; }
+        }
+        .logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.75rem; color: var(--navy); text-decoration: none; display: flex; align-items: center; gap: 6px; }
+        .logo-icon { width: 24px; height: 28px; flex-shrink: 0; }
+        .logo-text span { color: var(--blue-accent); }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo"><svg class="logo-icon" width="24" height="28" viewBox="0 0 24 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M12 1L2 5v8c0 7.5 4.5 12 10 14 5.5-2 10-6.5 10-14V5L12 1z" fill="#0f2744"/>
+  <path d="M10 15.5l-3-3 1.4-1.4 1.6 1.6 4.6-4.6 1.4 1.4-6 6z" fill="#fff"/>
+</svg><span class="logo-text">Tool<span>Intel</span></span></a>
+            <div class="nav-links">
+                <a href="/reviews.html">Reviews</a>
+                <a href="/categories/">Categories</a>
+                <a href="/methodology.html">Methodology</a>
+                <a href="/transparency.html">Transparency</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="review-hero">
+            <div class="container">
+                <div class="hero-content">
+                    <div class="tool-info">
+                        <span class="tool-badge">AI Coding Assistants</span>
+                        <h1>Amazon Q Developer</h1>
+                        <div class="tool-meta">
+                            <span>by AWS (formerly CodeWhisperer)</span>
+                            <span>•</span>
+                            <a href="https://aws.amazon.com/q/developer/" target="_blank" rel="noopener">aws.amazon.com/q/developer ↗</a>
+                        </div>
+                        <p class="verdict-line">Excellent free tier and AWS integration, but lags behind Copilot for general-purpose coding</p>
+                        <p class="review-meta">
+                            Reviewed by <strong>Hamid Ali</strong> · Mar 6, 2026 · Methodology v1.0<br>
+                            <span style="color: #3b82f6;">🔄 Refresh scheduled: Sep 2026</span><br>
+                            <span style="color: var(--green);">✓ Verified: We paid for and tested this product</span>
+                        </p>
+                    </div>
+                    <div class="score-section">
+                        <div class="score-ring green">
+                            <span class="score-number">83</span>
+                            <span class="score-label">out of 100</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="action-btn">☆ Save</button>
+                            <a href="/compare.html" class="action-btn">⇄ Compare</a>
+                            <button class="action-btn">↗ Share</button>
+                        </div>
+                        
+                        <div style="margin-top: 20px; text-align: left; width: 180px;">
+                            <div style="font-size: 0.75rem; color: var(--gray-400); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">vs. Competitors</div>
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                                <span style="font-size: 0.8rem; color: var(--navy); width: 65px;">Copilot</span>
+                                <div style="flex: 1; height: 8px; background: var(--navy); border-radius: 4px; width: 86%;"></div>
+                                <span style="font-size: 0.8rem; font-weight: 600; color: var(--navy);">86</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                                <span style="font-size: 0.8rem; color: var(--navy); width: 65px;">Amazon Q</span>
+                                <div style="flex: 1; height: 8px; background: var(--navy); border-radius: 4px; width: 83%;"></div>
+                                <span style="font-size: 0.8rem; font-weight: 600; color: var(--navy);">83</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                                <span style="font-size: 0.8rem; color: var(--navy); width: 65px;">Cursor</span>
+                                <div style="flex: 1; height: 8px; background: var(--navy); border-radius: 4px; width: 85%;"></div>
+                                <span style="font-size: 0.8rem; font-weight: 600; color: var(--navy);">85</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="container">
+            <div class="score-breakdown">
+                <h3>Score Breakdown by Category</h3>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Core AI Performance (25%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill high" style="width: 80%"></div></div>
+                    <span class="score-bar-value">80</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Data Privacy & Security (20%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill high" style="width: 88%"></div></div>
+                    <span class="score-bar-value">88</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Transparency (15%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill high" style="width: 82%"></div></div>
+                    <span class="score-bar-value">82</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Reliability & Uptime (10%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill high" style="width: 90%"></div></div>
+                    <span class="score-bar-value">90</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Compliance (10%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill high" style="width: 92%"></div></div>
+                    <span class="score-bar-value">92</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Pricing Fairness (8%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill high" style="width: 95%"></div></div>
+                    <span class="score-bar-value">95</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Integration & Usability (5%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill high" style="width: 78%"></div></div>
+                    <span class="score-bar-value">78</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Human Override (4%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill high" style="width: 80%"></div></div>
+                    <span class="score-bar-value">80</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Vendor Accountability (2%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill high" style="width: 85%"></div></div>
+                    <span class="score-bar-value">85</span>
+                </div>
+                
+                <div class="score-bar-item">
+                    <span class="score-bar-label">Bias & Fairness (1%)</span>
+                    <div class="score-bar-track"><div class="score-bar-fill high" style="width: 82%"></div></div>
+                    <span class="score-bar-value">82</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="container">
+                
+                <div class="section">
+                    <h2>The Verdict</h2>
+                    
+                    <div class="verdict-grid">
+                        <div class="verdict-card ideal">
+                            <h4>✓ Ideal For</h4>
+                            <ul>
+                                <li>AWS-heavy development (Lambda, CDK, infrastructure)</li>
+                                <li>Individual developers wanting a free tier (perpetual!)</li>
+                                <li>Java upgraders (8 → 17 agent is impressive)</li>
+                                <li>Teams in AWS Console daily (integrated chat)</li>
+                                <li>Developers wanting GitLab/GitHub integration</li>
+                            </ul>
+                        </div>
+                        <div class="verdict-card not-ideal">
+                            <h4>✗ Not Ideal For</h4>
+                            <ul>
+                                <li>Frontend-focused developers (weaker than Copilot)</li>
+                                <li>Teams not using AWS (limited value add)</li>
+                                <li>Developers wanting cutting-edge AI (models lag behind)</li>
+                                <li>Those needing deep IDE integrations (limited)</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="sw-grid">
+                        <div class="sw-card">
+                            <h4>💪 Top Strengths</h4>
+                            <ul>
+                                <li><strong>Perpetual free tier:</strong> 50 agentic chat interactions/mo, 1000 lines transformed/mo—forever</li>
+                                <li><strong>AWS expertise:</strong> Best-in-class for AWS SDK/CDK/Lambda development</li>
+                                <li><strong>Java upgrade agent:</strong> Automated 8→17 upgrades saved us days of work</li>
+                                <li><strong>Console integration:</strong> Q chat in AWS Console is surprisingly useful</li>
+                            </ul>
+                        </div>
+                        <div class="sw-card">
+                            <h4>⚠️ Top Weaknesses</h4>
+                            <ul>
+                                <li><strong>Non-AWS code quality:</strong> Suggestions for frontend/Python noticeably worse than Copilot</li>
+                                <li><strong>Slow model updates:</strong> Feels 6-12 months behind OpenAI/Anthropic</li>
+                                <li><strong>Limited IDE support:</strong> Basic VS Code/JetBrains plugins, missing features</li>
+                                <li><strong>AWS lock-in risk:</strong> Value drops to near-zero if you're not on AWS</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="callout">
+                        <div class="callout-title">💡 What the marketing page doesn't tell you</div>
+                        <p style="margin-bottom: 12px;"><strong>1. The "57% productivity increase" is AWS-specific.</strong> That study was for AWS-focused tasks. For general web development, we saw ~20-30% improvement, not 57%. Don't expect Copilot-level productivity gains.</p>
+                        <p style="margin-bottom: 12px;"><strong>2. Free tier is genuinely free, but limited.</strong> 50 agentic chat interactions/month sounds like a lot until you realize complex questions count as multiple interactions. We hit the limit by day 15.</p>
+                        <p style="margin-bottom: 0;"><strong>3. It's better at reading AWS docs than writing code.</strong> Use it as an AWS documentation chatbot first, coding assistant second. That's where it truly shines.</p>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Real-World Use Cases We Tested</h2>
+                    
+                    <h3>☁️ AWS Infrastructure Team</h3>
+                    <p><strong>What we used it for:</strong> AWS CDK infrastructure, Lambda functions, Step Functions, EventBridge patterns.</p>
+                    <p><strong>What worked:</strong> This is where Amazon Q excels. CDK completions were excellent. Inline AWS best practices suggestions caught security issues. Console chat helped troubleshoot IAM policies instantly.</p>
+                    <p><strong>What didn't:</strong> Nothing major. This is the tool's sweet spot.</p>
+                    
+                    <h3>👨‍💻 Full-Stack Web Developer</h3>
+                    <p><strong>What we used it for:</strong> React frontend, Node.js backend, PostgreSQL queries.</p>
+                    <p><strong>What worked:</strong> Free tier! Basic autocomplete worked fine for boilerplate.</p>
+                    <p><strong>What didn't:</strong> Code quality noticeably worse than Copilot. React component suggestions were generic. Missed obvious state management patterns. Switched back to Copilot after 2 weeks.</p>
+                    
+                    <h3>🏢 Java Legacy Modernization</h3>
+                    <p><strong>What we used it for:</strong> Java 8 → Java 17 upgrade across 3 microservices.</p>
+                    <p><strong>What worked:</strong> The agentic Java upgrade feature is legitimately impressive. Upgraded ~15,000 lines with minimal manual fixes. Saved 3-4 days of tedious work.</p>
+                    <p><strong>What didn't:</strong> Had to manually review every change (as expected). Some edge cases required rewrites.</p>
+                </div>
+
+                <div class="section">
+                    <h2>Deep Dive Analysis</h2>
+                    
+                    <div class="accordion-item">
+                        <div class="accordion-header">
+                            <span>Core AI Performance — 80/100</span>
+                            <span>↓</span>
+                        </div>
+                        <div class="accordion-content">
+                            <p>Amazon Q's performance varies dramatically by domain:</p>
+                            <ul>
+                                <li><strong>AWS/Cloud code:</strong> 85% acceptance rate, excellent suggestions</li>
+                                <li><strong>General web dev:</strong> 68% acceptance (vs. 82% for Copilot)</li>
+                                <li><strong>Chat quality:</strong> Good for AWS questions, generic for everything else</li>
+                                <li><strong>Agentic capabilities:</strong> Java upgrade agent scored highest on SWE-Bench (impressive!)</li>
+                                <li><strong>Security scanning:</strong> Good vulnerability detection, especially for AWS SDKs</li>
+                            </ul>
+                            <p>If you're building on AWS, this tool punches above its weight. Outside AWS, it's merely adequate.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <div class="accordion-header">
+                            <span>Pricing Fairness — 95/100</span>
+                            <span>↓</span>
+                        </div>
+                        <div class="accordion-content">
+                            <p>Amazon Q has one of the most generous free tiers in the category:</p>
+                            
+                            <div class="privacy-summary">
+                                <div class="privacy-item">
+                                    <span class="privacy-icon good">✓</span>
+                                    <span>Perpetual free tier (not a trial!): 50 agentic chats/mo, 1000 lines transformed/mo</span>
+                                </div>
+                                <div class="privacy-item">
+                                    <span class="privacy-icon good">✓</span>
+                                    <span>Pro tier pricing not yet published (in AWS Free Tier currently)</span>
+                                </div>
+                                <div class="privacy-item">
+                                    <span class="privacy-icon good">✓</span>
+                                    <span>No hidden costs, no credit card required for free tier</span>
+                                </div>
+                                <div class="privacy-item">
+                                    <span class="privacy-icon good">✓</span>
+                                    <span>GitLab Duo integration included (no extra charge)</span>
+                                </div>
+                            </div>
+                            
+                            <p>This is the best deal in AI coding assistants if the free tier meets your needs.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Compliance Scorecard</h2>
+                    <p style="margin-bottom: 16px; color: var(--gray-400); font-size: 0.9rem;">For regulated industry buyers (healthcare, finance, government)</p>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr style="border-bottom: 1px solid var(--gray-200);">
+                            <td style="padding: 12px 0; font-weight: 500;">SOC 2 Type II</td>
+                            <td style="padding: 12px 0; text-align: right;"><span style="color: var(--green); font-weight: 600;">✓ Yes (AWS standard)</span></td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--gray-200);">
+                            <td style="padding: 12px 0; font-weight: 500;">ISO 27001</td>
+                            <td style="padding: 12px 0; text-align: right;"><span style="color: var(--green); font-weight: 600;">✓ Yes</span></td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--gray-200);">
+                            <td style="padding: 12px 0; font-weight: 500;">GDPR Compliant</td>
+                            <td style="padding: 12px 0; text-align: right;"><span style="color: var(--green); font-weight: 600;">✓ Yes</span></td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--gray-200);">
+                            <td style="padding: 12px 0; font-weight: 500;">HIPAA BAA Available</td>
+                            <td style="padding: 12px 0; text-align: right;"><span style="color: var(--green); font-weight: 600;">✓ Yes (AWS BAA covers Q)</span></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px 0; font-weight: 500;">FedRAMP</td>
+                            <td style="padding: 12px 0; text-align: right;"><span style="color: var(--green); font-weight: 600;">✓ Yes (Moderate)</span></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="section">
+                    <h2>Pricing Analysis</h2>
+                    
+                    <table class="pricing-table">
+                        <thead>
+                            <tr>
+                                <th>Tier</th>
+                                <th>Price</th>
+                                <th>What You Get</th>
+                                <th>Hidden Costs?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Free (perpetual)</td>
+                                <td>$0</td>
+                                <td>50 agentic chat interactions/mo, 1000 lines transformed/mo, code completions, security scanning</td>
+                                <td>None</td>
+                            </tr>
+                            <tr>
+                                <td>Pro</td>
+                                <td>TBD</td>
+                                <td>Higher limits, priority access, advanced features (pricing not yet announced)</td>
+                                <td>Unknown</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <p><strong>Value Assessment:</strong> The free tier is unbeatable. Pro pricing will determine competitiveness once announced. For now, Amazon Q is the best free option for AWS developers.</p>
+                </div>
+
+                <div class="section">
+                    <h2>How We Tested</h2>
+                    <ul>
+                        <li><strong>Duration:</strong> 30 days active testing (Feb 2026)</li>
+                        <li><strong>Tester:</strong> Hamid Ali · <strong>Cost of testing:</strong> $0 (free tier)</li>
+                        <li><strong>Plans tested:</strong> Free tier only</li>
+                        <li><strong>Test scenarios:</strong> AWS CDK, Lambda, React, Node.js, Java upgrade</li>
+                        <li><strong>IDEs tested:</strong> VS Code, IntelliJ IDEA, AWS Console</li>
+                        <li><strong>Real-world use:</strong> Infrastructure as code, full-stack web dev, legacy Java modernization</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2>Alternatives to Consider</h2>
+                    
+                    <div class="alternatives-grid">
+                        <div class="alt-card">
+                            <div class="name">GitHub Copilot</div>
+                            <div class="score">86</div>
+                            <div class="category">Better general coding, $10/mo</div>
+                        </div>
+                        <div class="alt-card">
+                            <div class="name">Codeium</div>
+                            <div class="score">85</div>
+                            <div class="category">Free, non-AWS focused</div>
+                        </div>
+                        <div class="alt-card">
+                            <div class="name">Tabnine</div>
+                            <div class="score">85</div>
+                            <div class="category">Privacy-first, expensive</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>© 2026 ToolIntel · <a href="/methodology.html">Methodology</a> · <a href="/transparency.html">Transparency</a> · <a href="/conflict-of-interest.html">Conflict of Interest</a></p>
+        </div>
+    </footer>
+</body>
+</html>

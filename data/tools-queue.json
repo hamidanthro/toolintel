@@ -1,9 +1,9 @@
 {
-  "lastUpdated": "2026-03-04",
+  "lastUpdated": "2026-03-06",
   "note": "Tools selected independently by Tool Intel editorial team - Global coverage",
   "stats": {
-    "reviewed": 66,
-    "inQueue": 1359,
+    "reviewed": 71,
+    "inQueue": 1348,
     "dailyTarget": 5
   },
   "reviewed": [
@@ -336,39 +336,34 @@
       "name": "Codeium",
       "category": "coding",
       "score": 85
-    }
-  ],
-  "queue": [
+    },
     {
       "name": "Tabnine",
-      "vendor": "Tabnine",
       "category": "coding",
-      "region": "Israel"
+      "score": 85
     },
     {
       "name": "Amazon CodeWhisperer",
-      "vendor": "AWS",
       "category": "coding",
-      "region": "US"
+      "score": 83
     },
     {
       "name": "Sourcegraph Cody",
-      "vendor": "Sourcegraph",
       "category": "coding",
-      "region": "US"
+      "score": 82
     },
     {
       "name": "Replit AI",
-      "vendor": "Replit",
       "category": "coding",
-      "region": "US"
+      "score": 80
     },
     {
       "name": "Windsurf",
-      "vendor": "Codeium",
       "category": "coding",
-      "region": "US"
-    },
+      "score": 84
+    }
+  ],
+  "queue": [
     {
       "name": "Aider",
       "vendor": "Open Source",
@@ -736,7 +731,7 @@
       "region": "US"
     },
     {
-      "name": "Wensheng (\u6587\u751f\u56fe)",
+      "name": "Wensheng (文生图)",
       "vendor": "Baidu",
       "category": "image-gen",
       "region": "China"
@@ -1152,12 +1147,6 @@
     {
       "name": "Google Cloud TTS",
       "vendor": "Google",
-      "category": "voice",
-      "region": "US"
-    },
-    {
-      "name": "Amazon Polly",
-      "vendor": "AWS",
       "category": "voice",
       "region": "US"
     },
@@ -1614,12 +1603,6 @@
     {
       "name": "Dialogflow",
       "vendor": "Google",
-      "category": "chatbots",
-      "region": "US"
-    },
-    {
-      "name": "Amazon Lex",
-      "vendor": "AWS",
       "category": "chatbots",
       "region": "US"
     },
@@ -3448,12 +3431,6 @@
       "region": "US"
     },
     {
-      "name": "Amazon Titan",
-      "vendor": "AWS",
-      "category": "foundation-models",
-      "region": "US"
-    },
-    {
       "name": "Command R",
       "vendor": "Cohere",
       "category": "foundation-models",
@@ -4104,16 +4081,6 @@
       "priority": "Low",
       "website": "sonarsource.com",
       "description": "Clean code AI"
-    },
-    {
-      "name": "Amazon Q Developer",
-      "vendor": "Amazon Q Developer",
-      "category": "coding",
-      "subcategory": "Code Assistant",
-      "region": "USA",
-      "priority": "High",
-      "website": "aws.amazon.com",
-      "description": "AWS AI developer"
     },
     {
       "name": "Google Jules",
@@ -7246,16 +7213,6 @@
       "description": "Azure translation"
     },
     {
-      "name": "Amazon Translate",
-      "vendor": "Amazon Translate",
-      "category": "translation",
-      "subcategory": "Translation API",
-      "region": "USA",
-      "priority": "Medium",
-      "website": "aws.amazon.com",
-      "description": "AWS translation"
-    },
-    {
       "name": "Systran AI",
       "vendor": "Systran AI",
       "category": "translation",
@@ -9364,16 +9321,6 @@
       "priority": "Low",
       "website": "buildt.ai",
       "description": "Semantic code search"
-    },
-    {
-      "name": "Replit Ghostwriter",
-      "vendor": "Replit Ghostwriter",
-      "category": "coding",
-      "subcategory": "Code Completion",
-      "region": "USA",
-      "priority": "Medium",
-      "website": "replit.com",
-      "description": "Replit inline AI"
     },
     {
       "name": "SonarQube AI",
