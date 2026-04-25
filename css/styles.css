@@ -1127,3 +1127,24 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
 }
 .unit-card.unit-mastered { border-color: #fcd34d; box-shadow: 0 0 0 2px rgba(252, 211, 77, 0.25); }
 .lesson-mastered > a { background: rgba(254, 243, 199, 0.5); }
+
+.modal-card { position: relative; }
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+.modal-close:hover { background: #f3f4f6; color: var(--navy); }

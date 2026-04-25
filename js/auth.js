@@ -56,12 +56,23 @@
     closeModal();
     const overlay = document.createElement('div');
     overlay.className = 'modal-overlay auth-modal';
-    overlay.innerHTML = `<div class="modal-card" role="dialog" aria-modal="true">${html}</div>`;
+    overlay.innerHTML = `<div class="modal-card" role="dialog" aria-modal="true">
+      <button type="button" class="modal-close" aria-label="Close" data-act="close">&times;</button>
+      ${html}
+    </div>`;
     document.body.appendChild(overlay);
     requestAnimationFrame(() => overlay.classList.add('open'));
-    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+    overlay.addEventListener('click', e => { if (e.target === overlay) dismissModal(); });
+    overlay.querySelector('[data-act="close"]').addEventListener('click', dismissModal);
     document.addEventListener('keydown', escClose);
     return overlay;
+  }
+  function dismissModal() {
+    closeModal();
+    // If this page requires login and the user bailed out, send them home.
+    if (window.STAARAuth && window.STAARAuth.requireLoginOnLoad && !currentUser()) {
+      location.href = 'index.html';
+    }
   }
   function closeModal() {
     const m = document.querySelector('.modal-overlay.auth-modal');
@@ -71,7 +82,7 @@
     }
     document.removeEventListener('keydown', escClose);
   }
-  function escClose(e) { if (e.key === 'Escape') closeModal(); }
+  function escClose(e) { if (e.key === 'Escape') dismissModal(); }
 
   function setBusy(btn, busy, label) {
     if (!btn) return;
