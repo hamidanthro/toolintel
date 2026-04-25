@@ -58,12 +58,16 @@
     }
     $('toys-table').innerHTML = `
       <table class="admin-table">
-        <thead><tr><th></th><th>Name</th><th>Price</th><th>Stock</th><th>Active</th><th></th></tr></thead>
+        <thead><tr><th></th><th>Name</th><th>Description</th><th>Price</th><th>Stock</th><th>Active</th><th></th></tr></thead>
         <tbody>
-          ${toys.map(t => `
+          ${toys.map(t => {
+            const desc = t.description || '';
+            const short = desc.length > 80 ? desc.slice(0, 80).trim() + '…' : desc;
+            return `
             <tr data-id="${escapeHtml(t.toyId)}">
               <td>${t.imageUrl ? `<img src="${escapeHtml(t.imageUrl)}" alt="" />` : ''}</td>
               <td>${escapeHtml(t.name)}</td>
+              <td style="max-width:280px;color:var(--muted);font-size:0.88rem;" title="${escapeHtml(desc)}">${escapeHtml(short)}</td>
               <td>${Auth.formatCents(t.priceCents)}</td>
               <td>${t.stock == null ? '\u221E' : t.stock}</td>
               <td>${t.active === false ? 'no' : 'yes'}</td>
@@ -72,7 +76,8 @@
                 <button class="btn btn-ghost" data-act="del" style="color:var(--error);">Delete</button>
               </td>
             </tr>
-          `).join('')}
+          `;
+          }).join('')}
         </tbody>
       </table>`;
     $('toys-table').querySelectorAll('tr[data-id]').forEach(tr => {

@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Admin · STAAR Prep</title>
-  <link rel="stylesheet" href="css/styles.css?v=20260425v" />
+  <link rel="stylesheet" href="css/styles.css?v=20260425w" />
 </head>
 <body>
   <header class="site-header">
@@ -44,7 +44,8 @@
             <div class="row col1">
               <label>
                 <span class="auth-label">Description</span>
-                <input type="text" class="auth-input" id="toy-desc" maxlength="600" />
+                <textarea class="auth-input" id="toy-desc" maxlength="600" rows="4" style="resize:vertical;font-family:inherit;line-height:1.5;"></textarea>
+                <div style="font-size:0.8rem;color:var(--muted);margin-top:4px;">Up to 600 characters. Line breaks are allowed.</div>
               </label>
             </div>
             <div class="row">
@@ -93,7 +94,7 @@
   <script src="js/auth.js?v=20260425u"></script>
   <script>window.STAARAuth = window.STAARAuth || {}; window.STAARAuth.requireLoginOnLoad = true;</script>
   <script>window.STAAR_TUTOR_ENDPOINT = 'https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com/';</script>
-  <script src="js/admin.js?v=20260425k"></script>
+  <script src="js/admin.js?v=20260425b"></script>
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>

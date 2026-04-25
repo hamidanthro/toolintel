@@ -986,6 +986,7 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
   -webkit-box-orient: vertical;
   overflow: hidden;
   flex: 1;
+  white-space: pre-line;
 }
 .toy-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 4px; min-height: 18px; }
 .toy-stock { color: var(--muted); font-size: 0.75rem; }
