@@ -100,22 +100,57 @@
     });
   }
 
-  // Build a 25-question curriculum-only set immediately.
+  // ---- No-repeat tracking ----------------------------------------------
+  // Per student + grade, remember which question ids have been served so the
+  // kid never sees the same item twice until the bank is exhausted.
+  function seenKey() {
+    const u = (window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser());
+    const who = (u && u.username) ? u.username : 'anon';
+    return `staar.seen.${who}.${slug}`;
+  }
+  function loadSeen() {
+    try {
+      const raw = localStorage.getItem(seenKey());
+      if (!raw) return new Set();
+      return new Set(JSON.parse(raw));
+    } catch (_) { return new Set(); }
+  }
+  function saveSeen(set) {
+    try { localStorage.setItem(seenKey(), JSON.stringify(Array.from(set))); } catch (_) {}
+  }
+  function markSeen(id) {
+    if (!id) return;
+    const s = loadSeen();
+    if (!s.has(id)) {
+      s.add(id);
+      saveSeen(s);
+    }
+  }
+
+  // Build a 25-question curriculum-only set immediately, preferring unseen.
   function buildInitialSet(pool) {
     const TARGET = 25;
-    const merged = [];
-    const padPool = shuffle(pool.slice());
-    let prevId = null;
-    while (merged.length < TARGET) {
-      let added = 0;
-      for (const q of padPool) {
+    const seen = loadSeen();
+    const unseen = pool.filter(q => q.id && !seen.has(q.id));
+    const seenPool = pool.filter(q => q.id && seen.has(q.id));
+    const noId = pool.filter(q => !q.id);
+
+    let merged = shuffle(unseen.slice()).slice(0, TARGET);
+
+    // If unseen is fully exhausted, recycle from the seen pool and tell the kid.
+    if (merged.length === 0 && (seenPool.length || noId.length)) {
+      try { localStorage.removeItem(seenKey()); } catch (_) {}
+      showToast('Nice — you\u2019ve answered every question we have here! Recycling for review.');
+      return shuffle(pool.slice()).slice(0, TARGET);
+    }
+
+    // Top up if we don't have enough unseen questions yet.
+    if (merged.length < TARGET) {
+      const filler = shuffle(seenPool.concat(noId));
+      for (const q of filler) {
         if (merged.length >= TARGET) break;
-        if (q.id && q.id === prevId) continue;
         merged.push(q);
-        prevId = q.id || null;
-        added++;
       }
-      if (added === 0) break;
     }
     return shuffle(merged).slice(0, TARGET);
   }
@@ -305,6 +340,7 @@
       progressNum.textContent = i + 1;
       bar.style.width = `${(i / questions.length) * 100}%`;
       const q = questions[i];
+      markSeen(q.id);
       qbox.innerHTML = renderQuestion(q, isLocked);
       attachQuestionHandlers(q);
     }

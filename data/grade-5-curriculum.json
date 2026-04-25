@@ -8,7 +8,11 @@
       "order": 1,
       "title": "Place Value with Decimals",
       "reportingCategory": "Numerical Representations and Relationships",
-      "teks": ["5.2A", "5.2B", "5.2C"],
+      "teks": [
+        "5.2A",
+        "5.2B",
+        "5.2C"
+      ],
       "summary": "Read, write, compare, and round decimals to the thousandths.",
       "lessons": [
         {
@@ -21,9 +25,314 @@
               "id": "u1l1q1",
               "type": "multiple_choice",
               "prompt": "What is the value of the 7 in 4.187?",
-              "choices": ["7 tenths", "7 hundredths", "7 thousandths", "7 ones"],
+              "choices": [
+                "7 tenths",
+                "7 hundredths",
+                "7 thousandths",
+                "7 ones"
+              ],
               "answer": "7 thousandths",
               "explanation": "The 7 is in the third position after the decimal point, the thousandths place."
+            },
+            {
+              "type": "numeric",
+              "prompt": "What digit is in the thousandths place of 919.413?",
+              "answer": "3",
+              "explanation": "Tenths is the 1st digit after the decimal, hundredths the 2nd, thousandths the 3rd. In 919.413 the thousandths digit is 3.",
+              "acceptable": [
+                "3"
+              ],
+              "id": "gen-u1l1-001"
+            },
+            {
+              "type": "numeric",
+              "prompt": "What digit is in the thousandths place of 952.289?",
+              "answer": "9",
+              "explanation": "Tenths is the 1st digit after the decimal, hundredths the 2nd, thousandths the 3rd. In 952.289 the thousandths digit is 9.",
+              "acceptable": [
+                "9"
+              ],
+              "id": "gen-u1l1-002"
+            },
+            {
+              "type": "numeric",
+              "prompt": "What digit is in the tenths place of 603.133?",
+              "answer": "1",
+              "explanation": "Tenths is the 1st digit after the decimal, hundredths the 2nd, thousandths the 3rd. In 603.133 the tenths digit is 1.",
+              "acceptable": [
+                "1"
+              ],
+              "id": "gen-u1l1-003"
+            },
+            {
+              "type": "numeric",
+              "prompt": "What digit is in the tenths place of 9.955?",
+              "answer": "9",
+              "explanation": "Tenths is the 1st digit after the decimal, hundredths the 2nd, thousandths the 3rd. In 9.955 the tenths digit is 9.",
+              "acceptable": [
+                "9"
+              ],
+              "id": "gen-u1l1-004"
+            },
+            {
+              "type": "numeric",
+              "prompt": "What digit is in the hundredths place of 569.046?",
+              "answer": "4",
+              "explanation": "Tenths is the 1st digit after the decimal, hundredths the 2nd, thousandths the 3rd. In 569.046 the hundredths digit is 4.",
+              "acceptable": [
+                "4"
+              ],
+              "id": "gen-u1l1-005"
+            },
+            {
+              "type": "numeric",
+              "prompt": "What digit is in the hundredths place of 692.168?",
+              "answer": "6",
+              "explanation": "Tenths is the 1st digit after the decimal, hundredths the 2nd, thousandths the 3rd. In 692.168 the hundredths digit is 6.",
+              "acceptable": [
+                "6"
+              ],
+              "id": "gen-u1l1-006"
+            },
+            {
+              "type": "numeric",
+              "prompt": "What digit is in the thousandths place of 764.426?",
+              "answer": "6",
+              "explanation": "Tenths is the 1st digit after the decimal, hundredths the 2nd, thousandths the 3rd. In 764.426 the thousandths digit is 6.",
+              "acceptable": [
+                "6"
+              ],
+              "id": "gen-u1l1-007"
+            },
+            {
+              "type": "numeric",
+              "prompt": "What digit is in the tenths place of 403.309?",
+              "answer": "3",
+              "explanation": "Tenths is the 1st digit after the decimal, hundredths the 2nd, thousandths the 3rd. In 403.309 the tenths digit is 3.",
+              "acceptable": [
+                "3"
+              ],
+              "id": "gen-u1l1-008"
+            },
+            {
+              "type": "numeric",
+              "prompt": "What digit is in the thousandths place of 79.046?",
+              "answer": "6",
+              "explanation": "Tenths is the 1st digit after the decimal, hundredths the 2nd, thousandths the 3rd. In 79.046 the thousandths digit is 6.",
+              "acceptable": [
+                "6"
+              ],
+              "id": "gen-u1l1-009"
+            },
+            {
+              "type": "numeric",
+              "prompt": "What digit is in the hundredths place of 192.731?",
+              "answer": "3",
+              "explanation": "Tenths is the 1st digit after the decimal, hundredths the 2nd, thousandths the 3rd. In 192.731 the hundredths digit is 3.",
+              "acceptable": [
+                "3"
+              ],
+              "id": "gen-u1l1-010"
+            },
+            {
+              "type": "numeric",
+              "prompt": "What digit is in the thousandths place of 320.625?",
+              "answer": "5",
+              "explanation": "Tenths is the 1st digit after the decimal, hundredths the 2nd, thousandths the 3rd. In 320.625 the thousandths digit is 5.",
+              "acceptable": [
+                "5"
+              ],
+              "id": "gen-u1l1-011"
+            },
+            {
+              "type": "numeric",
+              "prompt": "What digit is in the hundredths place of 108.112?",
+              "answer": "1",
+              "explanation": "Tenths is the 1st digit after the decimal, hundredths the 2nd, thousandths the 3rd. In 108.112 the hundredths digit is 1.",
+              "acceptable": [
+                "1"
+              ],
+              "id": "gen-u1l1-012"
+            },
+            {
+              "type": "numeric",
+              "prompt": "What digit is in the thousandths place of 471.484?",
+              "answer": "4",
+              "explanation": "Tenths is the 1st digit after the decimal, hundredths the 2nd, thousandths the 3rd. In 471.484 the thousandths digit is 4.",
+              "acceptable": [
+                "4"
+              ],
+              "id": "gen-u1l1-013"
+            },
+            {
+              "type": "numeric",
+              "prompt": "What digit is in the tenths place of 191.595?",
+              "answer": "5",
+              "explanation": "Tenths is the 1st digit after the decimal, hundredths the 2nd, thousandths the 3rd. In 191.595 the tenths digit is 5.",
+              "acceptable": [
+                "5"
+              ],
+              "id": "gen-u1l1-014"
+            },
+            {
+              "type": "numeric",
+              "prompt": "What digit is in the tenths place of 757.219?",
+              "answer": "2",
+              "explanation": "Tenths is the 1st digit after the decimal, hundredths the 2nd, thousandths the 3rd. In 757.219 the tenths digit is 2.",
+              "acceptable": [
+                "2"
+              ],
+              "id": "gen-u1l1-015"
+            },
+            {
+              "type": "numeric",
+              "prompt": "What digit is in the thousandths place of 175.168?",
+              "answer": "8",
+              "explanation": "Tenths is the 1st digit after the decimal, hundredths the 2nd, thousandths the 3rd. In 175.168 the thousandths digit is 8.",
+              "acceptable": [
+                "8"
+              ],
+              "id": "gen-u1l1-016"
+            },
+            {
+              "type": "numeric",
+              "prompt": "What digit is in the tenths place of 126.563?",
+              "answer": "5",
+              "explanation": "Tenths is the 1st digit after the decimal, hundredths the 2nd, thousandths the 3rd. In 126.563 the tenths digit is 5.",
+              "acceptable": [
+                "5"
+              ],
+              "id": "gen-u1l1-017"
+            },
+            {
+              "type": "numeric",
+              "prompt": "What digit is in the thousandths place of 984.574?",
+              "answer": "4",
+              "explanation": "Tenths is the 1st digit after the decimal, hundredths the 2nd, thousandths the 3rd. In 984.574 the thousandths digit is 4.",
+              "acceptable": [
+                "4"
+              ],
+              "id": "gen-u1l1-018"
+            },
+            {
+              "type": "numeric",
+              "prompt": "What digit is in the tenths place of 450.779?",
+              "answer": "7",
+              "explanation": "Tenths is the 1st digit after the decimal, hundredths the 2nd, thousandths the 3rd. In 450.779 the tenths digit is 7.",
+              "acceptable": [
+                "7"
+              ],
+              "id": "gen-u1l1-019"
+            },
+            {
+              "type": "numeric",
+              "prompt": "What digit is in the thousandths place of 235.653?",
+              "answer": "3",
+              "explanation": "Tenths is the 1st digit after the decimal, hundredths the 2nd, thousandths the 3rd. In 235.653 the thousandths digit is 3.",
+              "acceptable": [
+                "3"
+              ],
+              "id": "gen-u1l1-020"
+            },
+            {
+              "type": "numeric",
+              "prompt": "What digit is in the thousandths place of 535.008?",
+              "answer": "8",
+              "explanation": "Tenths is the 1st digit after the decimal, hundredths the 2nd, thousandths the 3rd. In 535.008 the thousandths digit is 8.",
+              "acceptable": [
+                "8"
+              ],
+              "id": "gen-u1l1-021"
+            },
+            {
+              "type": "numeric",
+              "prompt": "What digit is in the thousandths place of 718.913?",
+              "answer": "3",
+              "explanation": "Tenths is the 1st digit after the decimal, hundredths the 2nd, thousandths the 3rd. In 718.913 the thousandths digit is 3.",
+              "acceptable": [
+                "3"
+              ],
+              "id": "gen-u1l1-022"
+            },
+            {
+              "type": "numeric",
+              "prompt": "What digit is in the thousandths place of 528.284?",
+              "answer": "4",
+              "explanation": "Tenths is the 1st digit after the decimal, hundredths the 2nd, thousandths the 3rd. In 528.284 the thousandths digit is 4.",
+              "acceptable": [
+                "4"
+              ],
+              "id": "gen-u1l1-023"
+            },
+            {
+              "type": "numeric",
+              "prompt": "What digit is in the tenths place of 86.908?",
+              "answer": "9",
+              "explanation": "Tenths is the 1st digit after the decimal, hundredths the 2nd, thousandths the 3rd. In 86.908 the tenths digit is 9.",
+              "acceptable": [
+                "9"
+              ],
+              "id": "gen-u1l1-024"
+            },
+            {
+              "type": "numeric",
+              "prompt": "What digit is in the hundredths place of 580.328?",
+              "answer": "2",
+              "explanation": "Tenths is the 1st digit after the decimal, hundredths the 2nd, thousandths the 3rd. In 580.328 the hundredths digit is 2.",
+              "acceptable": [
+                "2"
+              ],
+              "id": "gen-u1l1-025"
+            },
+            {
+              "type": "numeric",
+              "prompt": "What digit is in the tenths place of 570.077?",
+              "answer": "0",
+              "explanation": "Tenths is the 1st digit after the decimal, hundredths the 2nd, thousandths the 3rd. In 570.077 the tenths digit is 0.",
+              "acceptable": [
+                "0"
+              ],
+              "id": "gen-u1l1-026"
+            },
+            {
+              "type": "numeric",
+              "prompt": "What digit is in the hundredths place of 996.951?",
+              "answer": "5",
+              "explanation": "Tenths is the 1st digit after the decimal, hundredths the 2nd, thousandths the 3rd. In 996.951 the hundredths digit is 5.",
+              "acceptable": [
+                "5"
+              ],
+              "id": "gen-u1l1-027"
+            },
+            {
+              "type": "numeric",
+              "prompt": "What digit is in the tenths place of 366.074?",
+              "answer": "0",
+              "explanation": "Tenths is the 1st digit after the decimal, hundredths the 2nd, thousandths the 3rd. In 366.074 the tenths digit is 0.",
+              "acceptable": [
+                "0"
+              ],
+              "id": "gen-u1l1-028"
+            },
+            {
+              "type": "numeric",
+              "prompt": "What digit is in the hundredths place of 194.036?",
+              "answer": "3",
+              "explanation": "Tenths is the 1st digit after the decimal, hundredths the 2nd, thousandths the 3rd. In 194.036 the hundredths digit is 3.",
+              "acceptable": [
+                "3"
+              ],
+              "id": "gen-u1l1-029"
+            },
+            {
+              "type": "numeric",
+              "prompt": "What digit is in the hundredths place of 619.398?",
+              "answer": "9",
+              "explanation": "Tenths is the 1st digit after the decimal, hundredths the 2nd, thousandths the 3rd. In 619.398 the hundredths digit is 9.",
+              "acceptable": [
+                "9"
+              ],
+              "id": "gen-u1l1-030"
             }
           ]
         },
@@ -58,9 +367,264 @@
               "id": "u1l3q1",
               "type": "multiple_choice",
               "prompt": "Round 6.357 to the nearest hundredth.",
-              "choices": ["6.3", "6.35", "6.36", "6.4"],
+              "choices": [
+                "6.3",
+                "6.35",
+                "6.36",
+                "6.4"
+              ],
               "answer": "6.36",
               "explanation": "The digit after the hundredths place is 7, so round 6.35 up to 6.36."
+            },
+            {
+              "type": "numeric",
+              "prompt": "Round 1.458 to the nearest hundredth.",
+              "answer": "1.46",
+              "explanation": "Look at the digit right of the hundredths place. 1.458 rounds to 1.46.",
+              "acceptable": [
+                "1.46"
+              ],
+              "id": "gen-u1l3-001"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Round 8.030 to the nearest hundredth.",
+              "answer": "8.03",
+              "explanation": "Look at the digit right of the hundredths place. 8.030 rounds to 8.03.",
+              "acceptable": [
+                "8.03"
+              ],
+              "id": "gen-u1l3-002"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Round 3.373 to the nearest hundredth.",
+              "answer": "3.37",
+              "explanation": "Look at the digit right of the hundredths place. 3.373 rounds to 3.37.",
+              "acceptable": [
+                "3.37"
+              ],
+              "id": "gen-u1l3-003"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Round 8.920 to the nearest tenth.",
+              "answer": "8.9",
+              "explanation": "Look at the digit right of the tenths place. 8.920 rounds to 8.9.",
+              "acceptable": [
+                "8.9"
+              ],
+              "id": "gen-u1l3-004"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Round 1.671 to the nearest hundredth.",
+              "answer": "1.67",
+              "explanation": "Look at the digit right of the hundredths place. 1.671 rounds to 1.67.",
+              "acceptable": [
+                "1.67"
+              ],
+              "id": "gen-u1l3-005"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Round 8.781 to the nearest hundredth.",
+              "answer": "8.78",
+              "explanation": "Look at the digit right of the hundredths place. 8.781 rounds to 8.78.",
+              "acceptable": [
+                "8.78"
+              ],
+              "id": "gen-u1l3-006"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Round 2.973 to the nearest tenth.",
+              "answer": "3.0",
+              "explanation": "Look at the digit right of the tenths place. 2.973 rounds to 3.0.",
+              "acceptable": [
+                "3.0"
+              ],
+              "id": "gen-u1l3-007"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Round 0.959 to the nearest hundredth.",
+              "answer": "0.96",
+              "explanation": "Look at the digit right of the hundredths place. 0.959 rounds to 0.96.",
+              "acceptable": [
+                "0.96"
+              ],
+              "id": "gen-u1l3-008"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Round 7.115 to the nearest hundredth.",
+              "answer": "7.12",
+              "explanation": "Look at the digit right of the hundredths place. 7.115 rounds to 7.12.",
+              "acceptable": [
+                "7.12"
+              ],
+              "id": "gen-u1l3-009"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Round 2.617 to the nearest hundredth.",
+              "answer": "2.62",
+              "explanation": "Look at the digit right of the hundredths place. 2.617 rounds to 2.62.",
+              "acceptable": [
+                "2.62"
+              ],
+              "id": "gen-u1l3-010"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Round 1.664 to the nearest hundredth.",
+              "answer": "1.66",
+              "explanation": "Look at the digit right of the hundredths place. 1.664 rounds to 1.66.",
+              "acceptable": [
+                "1.66"
+              ],
+              "id": "gen-u1l3-011"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Round 8.488 to the nearest hundredth.",
+              "answer": "8.49",
+              "explanation": "Look at the digit right of the hundredths place. 8.488 rounds to 8.49.",
+              "acceptable": [
+                "8.49"
+              ],
+              "id": "gen-u1l3-012"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Round 9.521 to the nearest tenth.",
+              "answer": "9.5",
+              "explanation": "Look at the digit right of the tenths place. 9.521 rounds to 9.5.",
+              "acceptable": [
+                "9.5"
+              ],
+              "id": "gen-u1l3-013"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Round 7.114 to the nearest tenth.",
+              "answer": "7.1",
+              "explanation": "Look at the digit right of the tenths place. 7.114 rounds to 7.1.",
+              "acceptable": [
+                "7.1"
+              ],
+              "id": "gen-u1l3-014"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Round 9.963 to the nearest tenth.",
+              "answer": "10.0",
+              "explanation": "Look at the digit right of the tenths place. 9.963 rounds to 10.0.",
+              "acceptable": [
+                "10.0"
+              ],
+              "id": "gen-u1l3-015"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Round 0.388 to the nearest hundredth.",
+              "answer": "0.39",
+              "explanation": "Look at the digit right of the hundredths place. 0.388 rounds to 0.39.",
+              "acceptable": [
+                "0.39"
+              ],
+              "id": "gen-u1l3-016"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Round 7.806 to the nearest tenth.",
+              "answer": "7.8",
+              "explanation": "Look at the digit right of the tenths place. 7.806 rounds to 7.8.",
+              "acceptable": [
+                "7.8"
+              ],
+              "id": "gen-u1l3-017"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Round 7.001 to the nearest hundredth.",
+              "answer": "7.00",
+              "explanation": "Look at the digit right of the hundredths place. 7.001 rounds to 7.00.",
+              "acceptable": [
+                "7.00"
+              ],
+              "id": "gen-u1l3-018"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Round 3.904 to the nearest hundredth.",
+              "answer": "3.90",
+              "explanation": "Look at the digit right of the hundredths place. 3.904 rounds to 3.90.",
+              "acceptable": [
+                "3.90"
+              ],
+              "id": "gen-u1l3-019"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Round 2.909 to the nearest hundredth.",
+              "answer": "2.91",
+              "explanation": "Look at the digit right of the hundredths place. 2.909 rounds to 2.91.",
+              "acceptable": [
+                "2.91"
+              ],
+              "id": "gen-u1l3-020"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Round 4.662 to the nearest hundredth.",
+              "answer": "4.66",
+              "explanation": "Look at the digit right of the hundredths place. 4.662 rounds to 4.66.",
+              "acceptable": [
+                "4.66"
+              ],
+              "id": "gen-u1l3-021"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Round 5.483 to the nearest hundredth.",
+              "answer": "5.48",
+              "explanation": "Look at the digit right of the hundredths place. 5.483 rounds to 5.48.",
+              "acceptable": [
+                "5.48"
+              ],
+              "id": "gen-u1l3-022"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Round 6.808 to the nearest hundredth.",
+              "answer": "6.81",
+              "explanation": "Look at the digit right of the hundredths place. 6.808 rounds to 6.81.",
+              "acceptable": [
+                "6.81"
+              ],
+              "id": "gen-u1l3-023"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Round 3.769 to the nearest hundredth.",
+              "answer": "3.77",
+              "explanation": "Look at the digit right of the hundredths place. 3.769 rounds to 3.77.",
+              "acceptable": [
+                "3.77"
+              ],
+              "id": "gen-u1l3-024"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Round 8.748 to the nearest tenth.",
+              "answer": "8.7",
+              "explanation": "Look at the digit right of the tenths place. 8.748 rounds to 8.7.",
+              "acceptable": [
+                "8.7"
+              ],
+              "id": "gen-u1l3-025"
             }
           ]
         }
@@ -71,7 +635,10 @@
       "order": 2,
       "title": "Adding & Subtracting Decimals",
       "reportingCategory": "Computations and Algebraic Relationships",
-      "teks": ["5.3A", "5.3K"],
+      "teks": [
+        "5.3A",
+        "5.3K"
+      ],
       "summary": "Add and subtract decimals using the standard algorithm.",
       "lessons": [
         {
@@ -86,6 +653,306 @@
               "prompt": "What is 4.27 + 3.6?",
               "answer": "7.87",
               "explanation": "Line up the decimal points (3.6 = 3.60). 4.27 + 3.60 = 7.87."
+            },
+            {
+              "type": "numeric",
+              "prompt": "51.18 + 44.73 = ?",
+              "answer": "95.91",
+              "explanation": "Line up the decimal points, then add. Result: 95.91.",
+              "acceptable": [
+                "95.91"
+              ],
+              "id": "gen-u2l1-001"
+            },
+            {
+              "type": "numeric",
+              "prompt": "12.97 + 82.04 = ?",
+              "answer": "95.01",
+              "explanation": "Line up the decimal points, then add. Result: 95.01.",
+              "acceptable": [
+                "95.01"
+              ],
+              "id": "gen-u2l1-002"
+            },
+            {
+              "type": "numeric",
+              "prompt": "62.70 + 89.52 = ?",
+              "answer": "152.22",
+              "explanation": "Line up the decimal points, then add. Result: 152.22.",
+              "acceptable": [
+                "152.22"
+              ],
+              "id": "gen-u2l1-003"
+            },
+            {
+              "type": "numeric",
+              "prompt": "47.19 + 14.39 = ?",
+              "answer": "61.58",
+              "explanation": "Line up the decimal points, then add. Result: 61.58.",
+              "acceptable": [
+                "61.58"
+              ],
+              "id": "gen-u2l1-004"
+            },
+            {
+              "type": "numeric",
+              "prompt": "29.46 + 88.31 = ?",
+              "answer": "117.77",
+              "explanation": "Line up the decimal points, then add. Result: 117.77.",
+              "acceptable": [
+                "117.77"
+              ],
+              "id": "gen-u2l1-005"
+            },
+            {
+              "type": "numeric",
+              "prompt": "58.55 + 34.96 = ?",
+              "answer": "93.51",
+              "explanation": "Line up the decimal points, then add. Result: 93.51.",
+              "acceptable": [
+                "93.51"
+              ],
+              "id": "gen-u2l1-006"
+            },
+            {
+              "type": "numeric",
+              "prompt": "13.55 + 55.64 = ?",
+              "answer": "69.19",
+              "explanation": "Line up the decimal points, then add. Result: 69.19.",
+              "acceptable": [
+                "69.19"
+              ],
+              "id": "gen-u2l1-007"
+            },
+            {
+              "type": "numeric",
+              "prompt": "97.51 + 38.46 = ?",
+              "answer": "135.97",
+              "explanation": "Line up the decimal points, then add. Result: 135.97.",
+              "acceptable": [
+                "135.97"
+              ],
+              "id": "gen-u2l1-008"
+            },
+            {
+              "type": "numeric",
+              "prompt": "67.51 + 55.52 = ?",
+              "answer": "123.03",
+              "explanation": "Line up the decimal points, then add. Result: 123.03.",
+              "acceptable": [
+                "123.03"
+              ],
+              "id": "gen-u2l1-009"
+            },
+            {
+              "type": "numeric",
+              "prompt": "94.86 + 49.00 = ?",
+              "answer": "143.86",
+              "explanation": "Line up the decimal points, then add. Result: 143.86.",
+              "acceptable": [
+                "143.86"
+              ],
+              "id": "gen-u2l1-010"
+            },
+            {
+              "type": "numeric",
+              "prompt": "84.95 + 34.63 = ?",
+              "answer": "119.58",
+              "explanation": "Line up the decimal points, then add. Result: 119.58.",
+              "acceptable": [
+                "119.58"
+              ],
+              "id": "gen-u2l1-011"
+            },
+            {
+              "type": "numeric",
+              "prompt": "44.95 + 36.53 = ?",
+              "answer": "81.48",
+              "explanation": "Line up the decimal points, then add. Result: 81.48.",
+              "acceptable": [
+                "81.48"
+              ],
+              "id": "gen-u2l1-012"
+            },
+            {
+              "type": "numeric",
+              "prompt": "78.61 + 86.60 = ?",
+              "answer": "165.21",
+              "explanation": "Line up the decimal points, then add. Result: 165.21.",
+              "acceptable": [
+                "165.21"
+              ],
+              "id": "gen-u2l1-013"
+            },
+            {
+              "type": "numeric",
+              "prompt": "64.07 + 88.51 = ?",
+              "answer": "152.58",
+              "explanation": "Line up the decimal points, then add. Result: 152.58.",
+              "acceptable": [
+                "152.58"
+              ],
+              "id": "gen-u2l1-014"
+            },
+            {
+              "type": "numeric",
+              "prompt": "97.23 + 83.58 = ?",
+              "answer": "180.81",
+              "explanation": "Line up the decimal points, then add. Result: 180.81.",
+              "acceptable": [
+                "180.81"
+              ],
+              "id": "gen-u2l1-015"
+            },
+            {
+              "type": "numeric",
+              "prompt": "91.06 + 20.16 = ?",
+              "answer": "111.22",
+              "explanation": "Line up the decimal points, then add. Result: 111.22.",
+              "acceptable": [
+                "111.22"
+              ],
+              "id": "gen-u2l1-016"
+            },
+            {
+              "type": "numeric",
+              "prompt": "36.17 + 48.27 = ?",
+              "answer": "84.44",
+              "explanation": "Line up the decimal points, then add. Result: 84.44.",
+              "acceptable": [
+                "84.44"
+              ],
+              "id": "gen-u2l1-017"
+            },
+            {
+              "type": "numeric",
+              "prompt": "93.78 + 31.18 = ?",
+              "answer": "124.96",
+              "explanation": "Line up the decimal points, then add. Result: 124.96.",
+              "acceptable": [
+                "124.96"
+              ],
+              "id": "gen-u2l1-018"
+            },
+            {
+              "type": "numeric",
+              "prompt": "29.90 + 85.59 = ?",
+              "answer": "115.49",
+              "explanation": "Line up the decimal points, then add. Result: 115.49.",
+              "acceptable": [
+                "115.49"
+              ],
+              "id": "gen-u2l1-019"
+            },
+            {
+              "type": "numeric",
+              "prompt": "45.49 + 12.96 = ?",
+              "answer": "58.45",
+              "explanation": "Line up the decimal points, then add. Result: 58.45.",
+              "acceptable": [
+                "58.45"
+              ],
+              "id": "gen-u2l1-020"
+            },
+            {
+              "type": "numeric",
+              "prompt": "6.67 + 51.87 = ?",
+              "answer": "58.54",
+              "explanation": "Line up the decimal points, then add. Result: 58.54.",
+              "acceptable": [
+                "58.54"
+              ],
+              "id": "gen-u2l1-021"
+            },
+            {
+              "type": "numeric",
+              "prompt": "42.16 + 94.03 = ?",
+              "answer": "136.19",
+              "explanation": "Line up the decimal points, then add. Result: 136.19.",
+              "acceptable": [
+                "136.19"
+              ],
+              "id": "gen-u2l1-022"
+            },
+            {
+              "type": "numeric",
+              "prompt": "79.14 + 29.81 = ?",
+              "answer": "108.95",
+              "explanation": "Line up the decimal points, then add. Result: 108.95.",
+              "acceptable": [
+                "108.95"
+              ],
+              "id": "gen-u2l1-023"
+            },
+            {
+              "type": "numeric",
+              "prompt": "94.85 + 45.60 = ?",
+              "answer": "140.45",
+              "explanation": "Line up the decimal points, then add. Result: 140.45.",
+              "acceptable": [
+                "140.45"
+              ],
+              "id": "gen-u2l1-024"
+            },
+            {
+              "type": "numeric",
+              "prompt": "39.85 + 84.36 = ?",
+              "answer": "124.21",
+              "explanation": "Line up the decimal points, then add. Result: 124.21.",
+              "acceptable": [
+                "124.21"
+              ],
+              "id": "gen-u2l1-025"
+            },
+            {
+              "type": "numeric",
+              "prompt": "66.43 + 66.82 = ?",
+              "answer": "133.25",
+              "explanation": "Line up the decimal points, then add. Result: 133.25.",
+              "acceptable": [
+                "133.25"
+              ],
+              "id": "gen-u2l1-026"
+            },
+            {
+              "type": "numeric",
+              "prompt": "91.09 + 68.82 = ?",
+              "answer": "159.91",
+              "explanation": "Line up the decimal points, then add. Result: 159.91.",
+              "acceptable": [
+                "159.91"
+              ],
+              "id": "gen-u2l1-027"
+            },
+            {
+              "type": "numeric",
+              "prompt": "39.79 + 71.18 = ?",
+              "answer": "110.97",
+              "explanation": "Line up the decimal points, then add. Result: 110.97.",
+              "acceptable": [
+                "110.97"
+              ],
+              "id": "gen-u2l1-028"
+            },
+            {
+              "type": "numeric",
+              "prompt": "46.34 + 61.74 = ?",
+              "answer": "108.08",
+              "explanation": "Line up the decimal points, then add. Result: 108.08.",
+              "acceptable": [
+                "108.08"
+              ],
+              "id": "gen-u2l1-029"
+            },
+            {
+              "type": "numeric",
+              "prompt": "12.02 + 95.49 = ?",
+              "answer": "107.51",
+              "explanation": "Line up the decimal points, then add. Result: 107.51.",
+              "acceptable": [
+                "107.51"
+              ],
+              "id": "gen-u2l1-030"
             }
           ]
         },
@@ -101,6 +968,306 @@
               "prompt": "What is 9.5 − 2.83?",
               "answer": "6.67",
               "explanation": "Line up decimals (9.50 − 2.83). Subtract: 9.50 − 2.83 = 6.67."
+            },
+            {
+              "type": "numeric",
+              "prompt": "29.42 − 22.79 = ?",
+              "answer": "6.63",
+              "explanation": "Line up the decimal points, regroup as needed, and subtract. Result: 6.63.",
+              "acceptable": [
+                "6.63"
+              ],
+              "id": "gen-u2l2-001"
+            },
+            {
+              "type": "numeric",
+              "prompt": "76.86 − 47.91 = ?",
+              "answer": "28.95",
+              "explanation": "Line up the decimal points, regroup as needed, and subtract. Result: 28.95.",
+              "acceptable": [
+                "28.95"
+              ],
+              "id": "gen-u2l2-002"
+            },
+            {
+              "type": "numeric",
+              "prompt": "82.85 − 70.06 = ?",
+              "answer": "12.79",
+              "explanation": "Line up the decimal points, regroup as needed, and subtract. Result: 12.79.",
+              "acceptable": [
+                "12.79"
+              ],
+              "id": "gen-u2l2-003"
+            },
+            {
+              "type": "numeric",
+              "prompt": "94.20 − 42.40 = ?",
+              "answer": "51.80",
+              "explanation": "Line up the decimal points, regroup as needed, and subtract. Result: 51.80.",
+              "acceptable": [
+                "51.80"
+              ],
+              "id": "gen-u2l2-004"
+            },
+            {
+              "type": "numeric",
+              "prompt": "77.76 − 35.90 = ?",
+              "answer": "41.86",
+              "explanation": "Line up the decimal points, regroup as needed, and subtract. Result: 41.86.",
+              "acceptable": [
+                "41.86"
+              ],
+              "id": "gen-u2l2-005"
+            },
+            {
+              "type": "numeric",
+              "prompt": "63.48 − 31.92 = ?",
+              "answer": "31.56",
+              "explanation": "Line up the decimal points, regroup as needed, and subtract. Result: 31.56.",
+              "acceptable": [
+                "31.56"
+              ],
+              "id": "gen-u2l2-006"
+            },
+            {
+              "type": "numeric",
+              "prompt": "76.64 − 68.36 = ?",
+              "answer": "8.28",
+              "explanation": "Line up the decimal points, regroup as needed, and subtract. Result: 8.28.",
+              "acceptable": [
+                "8.28"
+              ],
+              "id": "gen-u2l2-007"
+            },
+            {
+              "type": "numeric",
+              "prompt": "77.23 − 22.81 = ?",
+              "answer": "54.42",
+              "explanation": "Line up the decimal points, regroup as needed, and subtract. Result: 54.42.",
+              "acceptable": [
+                "54.42"
+              ],
+              "id": "gen-u2l2-008"
+            },
+            {
+              "type": "numeric",
+              "prompt": "71.66 − 12.95 = ?",
+              "answer": "58.71",
+              "explanation": "Line up the decimal points, regroup as needed, and subtract. Result: 58.71.",
+              "acceptable": [
+                "58.71"
+              ],
+              "id": "gen-u2l2-009"
+            },
+            {
+              "type": "numeric",
+              "prompt": "98.49 − 10.88 = ?",
+              "answer": "87.61",
+              "explanation": "Line up the decimal points, regroup as needed, and subtract. Result: 87.61.",
+              "acceptable": [
+                "87.61"
+              ],
+              "id": "gen-u2l2-010"
+            },
+            {
+              "type": "numeric",
+              "prompt": "87.84 − 18.06 = ?",
+              "answer": "69.78",
+              "explanation": "Line up the decimal points, regroup as needed, and subtract. Result: 69.78.",
+              "acceptable": [
+                "69.78"
+              ],
+              "id": "gen-u2l2-011"
+            },
+            {
+              "type": "numeric",
+              "prompt": "80.86 − 72.50 = ?",
+              "answer": "8.36",
+              "explanation": "Line up the decimal points, regroup as needed, and subtract. Result: 8.36.",
+              "acceptable": [
+                "8.36"
+              ],
+              "id": "gen-u2l2-012"
+            },
+            {
+              "type": "numeric",
+              "prompt": "71.52 − 26.75 = ?",
+              "answer": "44.77",
+              "explanation": "Line up the decimal points, regroup as needed, and subtract. Result: 44.77.",
+              "acceptable": [
+                "44.77"
+              ],
+              "id": "gen-u2l2-013"
+            },
+            {
+              "type": "numeric",
+              "prompt": "83.34 − 65.39 = ?",
+              "answer": "17.95",
+              "explanation": "Line up the decimal points, regroup as needed, and subtract. Result: 17.95.",
+              "acceptable": [
+                "17.95"
+              ],
+              "id": "gen-u2l2-014"
+            },
+            {
+              "type": "numeric",
+              "prompt": "36.29 − 33.74 = ?",
+              "answer": "2.55",
+              "explanation": "Line up the decimal points, regroup as needed, and subtract. Result: 2.55.",
+              "acceptable": [
+                "2.55"
+              ],
+              "id": "gen-u2l2-015"
+            },
+            {
+              "type": "numeric",
+              "prompt": "47.69 − 20.73 = ?",
+              "answer": "26.96",
+              "explanation": "Line up the decimal points, regroup as needed, and subtract. Result: 26.96.",
+              "acceptable": [
+                "26.96"
+              ],
+              "id": "gen-u2l2-016"
+            },
+            {
+              "type": "numeric",
+              "prompt": "88.09 − 15.02 = ?",
+              "answer": "73.07",
+              "explanation": "Line up the decimal points, regroup as needed, and subtract. Result: 73.07.",
+              "acceptable": [
+                "73.07"
+              ],
+              "id": "gen-u2l2-017"
+            },
+            {
+              "type": "numeric",
+              "prompt": "12.55 − 2.75 = ?",
+              "answer": "9.80",
+              "explanation": "Line up the decimal points, regroup as needed, and subtract. Result: 9.80.",
+              "acceptable": [
+                "9.80"
+              ],
+              "id": "gen-u2l2-018"
+            },
+            {
+              "type": "numeric",
+              "prompt": "57.10 − 12.65 = ?",
+              "answer": "44.45",
+              "explanation": "Line up the decimal points, regroup as needed, and subtract. Result: 44.45.",
+              "acceptable": [
+                "44.45"
+              ],
+              "id": "gen-u2l2-019"
+            },
+            {
+              "type": "numeric",
+              "prompt": "71.86 − 6.23 = ?",
+              "answer": "65.63",
+              "explanation": "Line up the decimal points, regroup as needed, and subtract. Result: 65.63.",
+              "acceptable": [
+                "65.63"
+              ],
+              "id": "gen-u2l2-020"
+            },
+            {
+              "type": "numeric",
+              "prompt": "94.73 − 3.91 = ?",
+              "answer": "90.82",
+              "explanation": "Line up the decimal points, regroup as needed, and subtract. Result: 90.82.",
+              "acceptable": [
+                "90.82"
+              ],
+              "id": "gen-u2l2-021"
+            },
+            {
+              "type": "numeric",
+              "prompt": "23.18 − 19.07 = ?",
+              "answer": "4.11",
+              "explanation": "Line up the decimal points, regroup as needed, and subtract. Result: 4.11.",
+              "acceptable": [
+                "4.11"
+              ],
+              "id": "gen-u2l2-022"
+            },
+            {
+              "type": "numeric",
+              "prompt": "62.08 − 8.82 = ?",
+              "answer": "53.26",
+              "explanation": "Line up the decimal points, regroup as needed, and subtract. Result: 53.26.",
+              "acceptable": [
+                "53.26"
+              ],
+              "id": "gen-u2l2-023"
+            },
+            {
+              "type": "numeric",
+              "prompt": "86.79 − 48.33 = ?",
+              "answer": "38.46",
+              "explanation": "Line up the decimal points, regroup as needed, and subtract. Result: 38.46.",
+              "acceptable": [
+                "38.46"
+              ],
+              "id": "gen-u2l2-024"
+            },
+            {
+              "type": "numeric",
+              "prompt": "40.36 − 8.96 = ?",
+              "answer": "31.40",
+              "explanation": "Line up the decimal points, regroup as needed, and subtract. Result: 31.40.",
+              "acceptable": [
+                "31.40"
+              ],
+              "id": "gen-u2l2-025"
+            },
+            {
+              "type": "numeric",
+              "prompt": "41.83 − 25.90 = ?",
+              "answer": "15.93",
+              "explanation": "Line up the decimal points, regroup as needed, and subtract. Result: 15.93.",
+              "acceptable": [
+                "15.93"
+              ],
+              "id": "gen-u2l2-026"
+            },
+            {
+              "type": "numeric",
+              "prompt": "90.93 − 16.55 = ?",
+              "answer": "74.38",
+              "explanation": "Line up the decimal points, regroup as needed, and subtract. Result: 74.38.",
+              "acceptable": [
+                "74.38"
+              ],
+              "id": "gen-u2l2-027"
+            },
+            {
+              "type": "numeric",
+              "prompt": "92.79 − 7.76 = ?",
+              "answer": "85.03",
+              "explanation": "Line up the decimal points, regroup as needed, and subtract. Result: 85.03.",
+              "acceptable": [
+                "85.03"
+              ],
+              "id": "gen-u2l2-028"
+            },
+            {
+              "type": "numeric",
+              "prompt": "44.81 − 15.81 = ?",
+              "answer": "29.00",
+              "explanation": "Line up the decimal points, regroup as needed, and subtract. Result: 29.00.",
+              "acceptable": [
+                "29.00"
+              ],
+              "id": "gen-u2l2-029"
+            },
+            {
+              "type": "numeric",
+              "prompt": "86.27 − 53.59 = ?",
+              "answer": "32.68",
+              "explanation": "Line up the decimal points, regroup as needed, and subtract. Result: 32.68.",
+              "acceptable": [
+                "32.68"
+              ],
+              "id": "gen-u2l2-030"
             }
           ]
         }
@@ -111,7 +1278,12 @@
       "order": 3,
       "title": "Multiplying & Dividing Decimals",
       "reportingCategory": "Computations and Algebraic Relationships",
-      "teks": ["5.3D", "5.3E", "5.3F", "5.3G"],
+      "teks": [
+        "5.3D",
+        "5.3E",
+        "5.3F",
+        "5.3G"
+      ],
       "summary": "Multiply and divide decimals by whole numbers and other decimals.",
       "lessons": [
         {
@@ -126,6 +1298,246 @@
               "prompt": "What is 0.6 × 7?",
               "answer": "4.2",
               "explanation": "6 × 7 = 42, then place one decimal: 4.2."
+            },
+            {
+              "type": "numeric",
+              "prompt": "9.7 × 5 = ?",
+              "answer": "48.5",
+              "explanation": "Multiply ignoring the decimal: 97 × 5 = 485, then place 1 decimal: 48.5.",
+              "acceptable": [
+                "48.5"
+              ],
+              "id": "gen-u3l1-001"
+            },
+            {
+              "type": "numeric",
+              "prompt": "2.3 × 3 = ?",
+              "answer": "6.9",
+              "explanation": "Multiply ignoring the decimal: 23 × 3 = 69, then place 1 decimal: 6.9.",
+              "acceptable": [
+                "6.9"
+              ],
+              "id": "gen-u3l1-002"
+            },
+            {
+              "type": "numeric",
+              "prompt": "7.1 × 4 = ?",
+              "answer": "28.4",
+              "explanation": "Multiply ignoring the decimal: 71 × 4 = 284, then place 1 decimal: 28.4.",
+              "acceptable": [
+                "28.4"
+              ],
+              "id": "gen-u3l1-003"
+            },
+            {
+              "type": "numeric",
+              "prompt": "3.0 × 5 = ?",
+              "answer": "15.0",
+              "explanation": "Multiply ignoring the decimal: 30 × 5 = 150, then place 1 decimal: 15.0.",
+              "acceptable": [
+                "15.0"
+              ],
+              "id": "gen-u3l1-004"
+            },
+            {
+              "type": "numeric",
+              "prompt": "1.4 × 5 = ?",
+              "answer": "7.0",
+              "explanation": "Multiply ignoring the decimal: 14 × 5 = 70, then place 1 decimal: 7.0.",
+              "acceptable": [
+                "7.0"
+              ],
+              "id": "gen-u3l1-005"
+            },
+            {
+              "type": "numeric",
+              "prompt": "9.8 × 9 = ?",
+              "answer": "88.2",
+              "explanation": "Multiply ignoring the decimal: 98 × 9 = 882, then place 1 decimal: 88.2.",
+              "acceptable": [
+                "88.2"
+              ],
+              "id": "gen-u3l1-006"
+            },
+            {
+              "type": "numeric",
+              "prompt": "4.5 × 4 = ?",
+              "answer": "18.0",
+              "explanation": "Multiply ignoring the decimal: 45 × 4 = 180, then place 1 decimal: 18.0.",
+              "acceptable": [
+                "18.0"
+              ],
+              "id": "gen-u3l1-007"
+            },
+            {
+              "type": "numeric",
+              "prompt": "8.5 × 2 = ?",
+              "answer": "17.0",
+              "explanation": "Multiply ignoring the decimal: 85 × 2 = 170, then place 1 decimal: 17.0.",
+              "acceptable": [
+                "17.0"
+              ],
+              "id": "gen-u3l1-008"
+            },
+            {
+              "type": "numeric",
+              "prompt": "2.0 × 8 = ?",
+              "answer": "16.0",
+              "explanation": "Multiply ignoring the decimal: 20 × 8 = 160, then place 1 decimal: 16.0.",
+              "acceptable": [
+                "16.0"
+              ],
+              "id": "gen-u3l1-009"
+            },
+            {
+              "type": "numeric",
+              "prompt": "1.3 × 4 = ?",
+              "answer": "5.2",
+              "explanation": "Multiply ignoring the decimal: 13 × 4 = 52, then place 1 decimal: 5.2.",
+              "acceptable": [
+                "5.2"
+              ],
+              "id": "gen-u3l1-010"
+            },
+            {
+              "type": "numeric",
+              "prompt": "8.5 × 9 = ?",
+              "answer": "76.5",
+              "explanation": "Multiply ignoring the decimal: 85 × 9 = 765, then place 1 decimal: 76.5.",
+              "acceptable": [
+                "76.5"
+              ],
+              "id": "gen-u3l1-011"
+            },
+            {
+              "type": "numeric",
+              "prompt": "6.8 × 3 = ?",
+              "answer": "20.4",
+              "explanation": "Multiply ignoring the decimal: 68 × 3 = 204, then place 1 decimal: 20.4.",
+              "acceptable": [
+                "20.4"
+              ],
+              "id": "gen-u3l1-012"
+            },
+            {
+              "type": "numeric",
+              "prompt": "9.5 × 5 = ?",
+              "answer": "47.5",
+              "explanation": "Multiply ignoring the decimal: 95 × 5 = 475, then place 1 decimal: 47.5.",
+              "acceptable": [
+                "47.5"
+              ],
+              "id": "gen-u3l1-013"
+            },
+            {
+              "type": "numeric",
+              "prompt": "7.0 × 6 = ?",
+              "answer": "42.0",
+              "explanation": "Multiply ignoring the decimal: 70 × 6 = 420, then place 1 decimal: 42.0.",
+              "acceptable": [
+                "42.0"
+              ],
+              "id": "gen-u3l1-014"
+            },
+            {
+              "type": "numeric",
+              "prompt": "3.0 × 2 = ?",
+              "answer": "6.0",
+              "explanation": "Multiply ignoring the decimal: 30 × 2 = 60, then place 1 decimal: 6.0.",
+              "acceptable": [
+                "6.0"
+              ],
+              "id": "gen-u3l1-015"
+            },
+            {
+              "type": "numeric",
+              "prompt": "5.5 × 4 = ?",
+              "answer": "22.0",
+              "explanation": "Multiply ignoring the decimal: 55 × 4 = 220, then place 1 decimal: 22.0.",
+              "acceptable": [
+                "22.0"
+              ],
+              "id": "gen-u3l1-016"
+            },
+            {
+              "type": "numeric",
+              "prompt": "7.6 × 4 = ?",
+              "answer": "30.4",
+              "explanation": "Multiply ignoring the decimal: 76 × 4 = 304, then place 1 decimal: 30.4.",
+              "acceptable": [
+                "30.4"
+              ],
+              "id": "gen-u3l1-017"
+            },
+            {
+              "type": "numeric",
+              "prompt": "4.2 × 2 = ?",
+              "answer": "8.4",
+              "explanation": "Multiply ignoring the decimal: 42 × 2 = 84, then place 1 decimal: 8.4.",
+              "acceptable": [
+                "8.4"
+              ],
+              "id": "gen-u3l1-018"
+            },
+            {
+              "type": "numeric",
+              "prompt": "6.5 × 2 = ?",
+              "answer": "13.0",
+              "explanation": "Multiply ignoring the decimal: 65 × 2 = 130, then place 1 decimal: 13.0.",
+              "acceptable": [
+                "13.0"
+              ],
+              "id": "gen-u3l1-019"
+            },
+            {
+              "type": "numeric",
+              "prompt": "5.7 × 5 = ?",
+              "answer": "28.5",
+              "explanation": "Multiply ignoring the decimal: 57 × 5 = 285, then place 1 decimal: 28.5.",
+              "acceptable": [
+                "28.5"
+              ],
+              "id": "gen-u3l1-020"
+            },
+            {
+              "type": "numeric",
+              "prompt": "6.6 × 3 = ?",
+              "answer": "19.8",
+              "explanation": "Multiply ignoring the decimal: 66 × 3 = 198, then place 1 decimal: 19.8.",
+              "acceptable": [
+                "19.8"
+              ],
+              "id": "gen-u3l1-021"
+            },
+            {
+              "type": "numeric",
+              "prompt": "2.6 × 4 = ?",
+              "answer": "10.4",
+              "explanation": "Multiply ignoring the decimal: 26 × 4 = 104, then place 1 decimal: 10.4.",
+              "acceptable": [
+                "10.4"
+              ],
+              "id": "gen-u3l1-022"
+            },
+            {
+              "type": "numeric",
+              "prompt": "2.1 × 5 = ?",
+              "answer": "10.5",
+              "explanation": "Multiply ignoring the decimal: 21 × 5 = 105, then place 1 decimal: 10.5.",
+              "acceptable": [
+                "10.5"
+              ],
+              "id": "gen-u3l1-023"
+            },
+            {
+              "type": "numeric",
+              "prompt": "5.0 × 7 = ?",
+              "answer": "35.0",
+              "explanation": "Multiply ignoring the decimal: 50 × 7 = 350, then place 1 decimal: 35.0.",
+              "acceptable": [
+                "35.0"
+              ],
+              "id": "gen-u3l1-024"
             }
           ]
         },
@@ -141,6 +1553,256 @@
               "prompt": "What is 0.4 × 0.3?",
               "answer": "0.12",
               "explanation": "4 × 3 = 12; total decimal places = 2; answer = 0.12."
+            },
+            {
+              "type": "numeric",
+              "prompt": "2.0 × 9.6 = ?",
+              "answer": "19.20",
+              "explanation": "Multiply as whole numbers, then place 2 decimal points (one from each factor). Result: 19.20.",
+              "acceptable": [
+                "19.20"
+              ],
+              "id": "gen-u3l2-001"
+            },
+            {
+              "type": "numeric",
+              "prompt": "3.3 × 6.2 = ?",
+              "answer": "20.46",
+              "explanation": "Multiply as whole numbers, then place 2 decimal points (one from each factor). Result: 20.46.",
+              "acceptable": [
+                "20.46"
+              ],
+              "id": "gen-u3l2-002"
+            },
+            {
+              "type": "numeric",
+              "prompt": "7.1 × 4.1 = ?",
+              "answer": "29.11",
+              "explanation": "Multiply as whole numbers, then place 2 decimal points (one from each factor). Result: 29.11.",
+              "acceptable": [
+                "29.11"
+              ],
+              "id": "gen-u3l2-003"
+            },
+            {
+              "type": "numeric",
+              "prompt": "1.1 × 7.6 = ?",
+              "answer": "8.36",
+              "explanation": "Multiply as whole numbers, then place 2 decimal points (one from each factor). Result: 8.36.",
+              "acceptable": [
+                "8.36"
+              ],
+              "id": "gen-u3l2-004"
+            },
+            {
+              "type": "numeric",
+              "prompt": "3.7 × 6.9 = ?",
+              "answer": "25.53",
+              "explanation": "Multiply as whole numbers, then place 2 decimal points (one from each factor). Result: 25.53.",
+              "acceptable": [
+                "25.53"
+              ],
+              "id": "gen-u3l2-005"
+            },
+            {
+              "type": "numeric",
+              "prompt": "2.6 × 3.6 = ?",
+              "answer": "9.36",
+              "explanation": "Multiply as whole numbers, then place 2 decimal points (one from each factor). Result: 9.36.",
+              "acceptable": [
+                "9.36"
+              ],
+              "id": "gen-u3l2-006"
+            },
+            {
+              "type": "numeric",
+              "prompt": "5.8 × 9.3 = ?",
+              "answer": "53.94",
+              "explanation": "Multiply as whole numbers, then place 2 decimal points (one from each factor). Result: 53.94.",
+              "acceptable": [
+                "53.94"
+              ],
+              "id": "gen-u3l2-007"
+            },
+            {
+              "type": "numeric",
+              "prompt": "6.1 × 9.0 = ?",
+              "answer": "54.90",
+              "explanation": "Multiply as whole numbers, then place 2 decimal points (one from each factor). Result: 54.90.",
+              "acceptable": [
+                "54.90"
+              ],
+              "id": "gen-u3l2-008"
+            },
+            {
+              "type": "numeric",
+              "prompt": "7.3 × 6.1 = ?",
+              "answer": "44.53",
+              "explanation": "Multiply as whole numbers, then place 2 decimal points (one from each factor). Result: 44.53.",
+              "acceptable": [
+                "44.53"
+              ],
+              "id": "gen-u3l2-009"
+            },
+            {
+              "type": "numeric",
+              "prompt": "7.5 × 7.8 = ?",
+              "answer": "58.50",
+              "explanation": "Multiply as whole numbers, then place 2 decimal points (one from each factor). Result: 58.50.",
+              "acceptable": [
+                "58.50"
+              ],
+              "id": "gen-u3l2-010"
+            },
+            {
+              "type": "numeric",
+              "prompt": "6.8 × 5.7 = ?",
+              "answer": "38.76",
+              "explanation": "Multiply as whole numbers, then place 2 decimal points (one from each factor). Result: 38.76.",
+              "acceptable": [
+                "38.76"
+              ],
+              "id": "gen-u3l2-011"
+            },
+            {
+              "type": "numeric",
+              "prompt": "4.1 × 8.8 = ?",
+              "answer": "36.08",
+              "explanation": "Multiply as whole numbers, then place 2 decimal points (one from each factor). Result: 36.08.",
+              "acceptable": [
+                "36.08"
+              ],
+              "id": "gen-u3l2-012"
+            },
+            {
+              "type": "numeric",
+              "prompt": "4.6 × 5.4 = ?",
+              "answer": "24.84",
+              "explanation": "Multiply as whole numbers, then place 2 decimal points (one from each factor). Result: 24.84.",
+              "acceptable": [
+                "24.84"
+              ],
+              "id": "gen-u3l2-013"
+            },
+            {
+              "type": "numeric",
+              "prompt": "4.5 × 6.7 = ?",
+              "answer": "30.15",
+              "explanation": "Multiply as whole numbers, then place 2 decimal points (one from each factor). Result: 30.15.",
+              "acceptable": [
+                "30.15"
+              ],
+              "id": "gen-u3l2-014"
+            },
+            {
+              "type": "numeric",
+              "prompt": "4.5 × 9.2 = ?",
+              "answer": "41.40",
+              "explanation": "Multiply as whole numbers, then place 2 decimal points (one from each factor). Result: 41.40.",
+              "acceptable": [
+                "41.40"
+              ],
+              "id": "gen-u3l2-015"
+            },
+            {
+              "type": "numeric",
+              "prompt": "6.1 × 7.4 = ?",
+              "answer": "45.14",
+              "explanation": "Multiply as whole numbers, then place 2 decimal points (one from each factor). Result: 45.14.",
+              "acceptable": [
+                "45.14"
+              ],
+              "id": "gen-u3l2-016"
+            },
+            {
+              "type": "numeric",
+              "prompt": "2.9 × 9.0 = ?",
+              "answer": "26.10",
+              "explanation": "Multiply as whole numbers, then place 2 decimal points (one from each factor). Result: 26.10.",
+              "acceptable": [
+                "26.10"
+              ],
+              "id": "gen-u3l2-017"
+            },
+            {
+              "type": "numeric",
+              "prompt": "4.2 × 7.5 = ?",
+              "answer": "31.50",
+              "explanation": "Multiply as whole numbers, then place 2 decimal points (one from each factor). Result: 31.50.",
+              "acceptable": [
+                "31.50"
+              ],
+              "id": "gen-u3l2-018"
+            },
+            {
+              "type": "numeric",
+              "prompt": "5.7 × 8.7 = ?",
+              "answer": "49.59",
+              "explanation": "Multiply as whole numbers, then place 2 decimal points (one from each factor). Result: 49.59.",
+              "acceptable": [
+                "49.59"
+              ],
+              "id": "gen-u3l2-019"
+            },
+            {
+              "type": "numeric",
+              "prompt": "2.5 × 4.4 = ?",
+              "answer": "11.00",
+              "explanation": "Multiply as whole numbers, then place 2 decimal points (one from each factor). Result: 11.00.",
+              "acceptable": [
+                "11.00"
+              ],
+              "id": "gen-u3l2-020"
+            },
+            {
+              "type": "numeric",
+              "prompt": "6.2 × 3.9 = ?",
+              "answer": "24.18",
+              "explanation": "Multiply as whole numbers, then place 2 decimal points (one from each factor). Result: 24.18.",
+              "acceptable": [
+                "24.18"
+              ],
+              "id": "gen-u3l2-021"
+            },
+            {
+              "type": "numeric",
+              "prompt": "6.2 × 2.7 = ?",
+              "answer": "16.74",
+              "explanation": "Multiply as whole numbers, then place 2 decimal points (one from each factor). Result: 16.74.",
+              "acceptable": [
+                "16.74"
+              ],
+              "id": "gen-u3l2-022"
+            },
+            {
+              "type": "numeric",
+              "prompt": "7.0 × 6.4 = ?",
+              "answer": "44.80",
+              "explanation": "Multiply as whole numbers, then place 2 decimal points (one from each factor). Result: 44.80.",
+              "acceptable": [
+                "44.80"
+              ],
+              "id": "gen-u3l2-023"
+            },
+            {
+              "type": "numeric",
+              "prompt": "8.2 × 5.2 = ?",
+              "answer": "42.64",
+              "explanation": "Multiply as whole numbers, then place 2 decimal points (one from each factor). Result: 42.64.",
+              "acceptable": [
+                "42.64"
+              ],
+              "id": "gen-u3l2-024"
+            },
+            {
+              "type": "numeric",
+              "prompt": "6.0 × 2.8 = ?",
+              "answer": "16.80",
+              "explanation": "Multiply as whole numbers, then place 2 decimal points (one from each factor). Result: 16.80.",
+              "acceptable": [
+                "16.80"
+              ],
+              "id": "gen-u3l2-025"
             }
           ]
         },
@@ -156,6 +1818,246 @@
               "prompt": "What is 5.6 ÷ 4?",
               "answer": "1.4",
               "explanation": "56 ÷ 4 = 14, then place one decimal: 1.4."
+            },
+            {
+              "type": "numeric",
+              "prompt": "15.6 ÷ 2 = ?",
+              "answer": "7.8",
+              "explanation": "15.6 ÷ 2 = 7.8 because 7.8 × 2 = 15.6.",
+              "acceptable": [
+                "7.8"
+              ],
+              "id": "gen-u3l3-001"
+            },
+            {
+              "type": "numeric",
+              "prompt": "19.6 ÷ 4 = ?",
+              "answer": "4.9",
+              "explanation": "19.6 ÷ 4 = 4.9 because 4.9 × 4 = 19.6.",
+              "acceptable": [
+                "4.9"
+              ],
+              "id": "gen-u3l3-002"
+            },
+            {
+              "type": "numeric",
+              "prompt": "58.8 ÷ 7 = ?",
+              "answer": "8.4",
+              "explanation": "58.8 ÷ 7 = 8.4 because 8.4 × 7 = 58.8.",
+              "acceptable": [
+                "8.4"
+              ],
+              "id": "gen-u3l3-003"
+            },
+            {
+              "type": "numeric",
+              "prompt": "18.0 ÷ 6 = ?",
+              "answer": "3.0",
+              "explanation": "18.0 ÷ 6 = 3.0 because 3.0 × 6 = 18.0.",
+              "acceptable": [
+                "3.0"
+              ],
+              "id": "gen-u3l3-004"
+            },
+            {
+              "type": "numeric",
+              "prompt": "14.1 ÷ 3 = ?",
+              "answer": "4.7",
+              "explanation": "14.1 ÷ 3 = 4.7 because 4.7 × 3 = 14.1.",
+              "acceptable": [
+                "4.7"
+              ],
+              "id": "gen-u3l3-005"
+            },
+            {
+              "type": "numeric",
+              "prompt": "23.4 ÷ 3 = ?",
+              "answer": "7.8",
+              "explanation": "23.4 ÷ 3 = 7.8 because 7.8 × 3 = 23.4.",
+              "acceptable": [
+                "7.8"
+              ],
+              "id": "gen-u3l3-006"
+            },
+            {
+              "type": "numeric",
+              "prompt": "6.6 ÷ 2 = ?",
+              "answer": "3.3",
+              "explanation": "6.6 ÷ 2 = 3.3 because 3.3 × 2 = 6.6.",
+              "acceptable": [
+                "3.3"
+              ],
+              "id": "gen-u3l3-007"
+            },
+            {
+              "type": "numeric",
+              "prompt": "72.0 ÷ 9 = ?",
+              "answer": "8.0",
+              "explanation": "72.0 ÷ 9 = 8.0 because 8.0 × 9 = 72.0.",
+              "acceptable": [
+                "8.0"
+              ],
+              "id": "gen-u3l3-008"
+            },
+            {
+              "type": "numeric",
+              "prompt": "62.4 ÷ 8 = ?",
+              "answer": "7.8",
+              "explanation": "62.4 ÷ 8 = 7.8 because 7.8 × 8 = 62.4.",
+              "acceptable": [
+                "7.8"
+              ],
+              "id": "gen-u3l3-009"
+            },
+            {
+              "type": "numeric",
+              "prompt": "10.8 ÷ 2 = ?",
+              "answer": "5.4",
+              "explanation": "10.8 ÷ 2 = 5.4 because 5.4 × 2 = 10.8.",
+              "acceptable": [
+                "5.4"
+              ],
+              "id": "gen-u3l3-010"
+            },
+            {
+              "type": "numeric",
+              "prompt": "50.4 ÷ 8 = ?",
+              "answer": "6.3",
+              "explanation": "50.4 ÷ 8 = 6.3 because 6.3 × 8 = 50.4.",
+              "acceptable": [
+                "6.3"
+              ],
+              "id": "gen-u3l3-011"
+            },
+            {
+              "type": "numeric",
+              "prompt": "16.1 ÷ 7 = ?",
+              "answer": "2.3",
+              "explanation": "16.1 ÷ 7 = 2.3 because 2.3 × 7 = 16.1.",
+              "acceptable": [
+                "2.3"
+              ],
+              "id": "gen-u3l3-012"
+            },
+            {
+              "type": "numeric",
+              "prompt": "45.0 ÷ 9 = ?",
+              "answer": "5.0",
+              "explanation": "45.0 ÷ 9 = 5.0 because 5.0 × 9 = 45.0.",
+              "acceptable": [
+                "5.0"
+              ],
+              "id": "gen-u3l3-013"
+            },
+            {
+              "type": "numeric",
+              "prompt": "10.4 ÷ 2 = ?",
+              "answer": "5.2",
+              "explanation": "10.4 ÷ 2 = 5.2 because 5.2 × 2 = 10.4.",
+              "acceptable": [
+                "5.2"
+              ],
+              "id": "gen-u3l3-014"
+            },
+            {
+              "type": "numeric",
+              "prompt": "42.3 ÷ 9 = ?",
+              "answer": "4.7",
+              "explanation": "42.3 ÷ 9 = 4.7 because 4.7 × 9 = 42.3.",
+              "acceptable": [
+                "4.7"
+              ],
+              "id": "gen-u3l3-015"
+            },
+            {
+              "type": "numeric",
+              "prompt": "7.8 ÷ 6 = ?",
+              "answer": "1.3",
+              "explanation": "7.8 ÷ 6 = 1.3 because 1.3 × 6 = 7.8.",
+              "acceptable": [
+                "1.3"
+              ],
+              "id": "gen-u3l3-016"
+            },
+            {
+              "type": "numeric",
+              "prompt": "12.0 ÷ 6 = ?",
+              "answer": "2.0",
+              "explanation": "12.0 ÷ 6 = 2.0 because 2.0 × 6 = 12.0.",
+              "acceptable": [
+                "2.0"
+              ],
+              "id": "gen-u3l3-017"
+            },
+            {
+              "type": "numeric",
+              "prompt": "45.9 ÷ 9 = ?",
+              "answer": "5.1",
+              "explanation": "45.9 ÷ 9 = 5.1 because 5.1 × 9 = 45.9.",
+              "acceptable": [
+                "5.1"
+              ],
+              "id": "gen-u3l3-018"
+            },
+            {
+              "type": "numeric",
+              "prompt": "54.4 ÷ 8 = ?",
+              "answer": "6.8",
+              "explanation": "54.4 ÷ 8 = 6.8 because 6.8 × 8 = 54.4.",
+              "acceptable": [
+                "6.8"
+              ],
+              "id": "gen-u3l3-019"
+            },
+            {
+              "type": "numeric",
+              "prompt": "72.9 ÷ 9 = ?",
+              "answer": "8.1",
+              "explanation": "72.9 ÷ 9 = 8.1 because 8.1 × 9 = 72.9.",
+              "acceptable": [
+                "8.1"
+              ],
+              "id": "gen-u3l3-020"
+            },
+            {
+              "type": "numeric",
+              "prompt": "32.0 ÷ 8 = ?",
+              "answer": "4.0",
+              "explanation": "32.0 ÷ 8 = 4.0 because 4.0 × 8 = 32.0.",
+              "acceptable": [
+                "4.0"
+              ],
+              "id": "gen-u3l3-021"
+            },
+            {
+              "type": "numeric",
+              "prompt": "39.2 ÷ 8 = ?",
+              "answer": "4.9",
+              "explanation": "39.2 ÷ 8 = 4.9 because 4.9 × 8 = 39.2.",
+              "acceptable": [
+                "4.9"
+              ],
+              "id": "gen-u3l3-022"
+            },
+            {
+              "type": "numeric",
+              "prompt": "65.8 ÷ 7 = ?",
+              "answer": "9.4",
+              "explanation": "65.8 ÷ 7 = 9.4 because 9.4 × 7 = 65.8.",
+              "acceptable": [
+                "9.4"
+              ],
+              "id": "gen-u3l3-023"
+            },
+            {
+              "type": "numeric",
+              "prompt": "11.7 ÷ 3 = ?",
+              "answer": "3.9",
+              "explanation": "11.7 ÷ 3 = 3.9 because 3.9 × 3 = 11.7.",
+              "acceptable": [
+                "3.9"
+              ],
+              "id": "gen-u3l3-024"
             }
           ]
         }
@@ -166,7 +2068,9 @@
       "order": 4,
       "title": "Adding & Subtracting Fractions (Unlike Denominators)",
       "reportingCategory": "Computations and Algebraic Relationships",
-      "teks": ["5.3H"],
+      "teks": [
+        "5.3H"
+      ],
       "summary": "Add and subtract fractions and mixed numbers with unlike denominators.",
       "lessons": [
         {
@@ -179,9 +2083,244 @@
               "id": "u4l1q1",
               "type": "multiple_choice",
               "prompt": "What is 1/3 + 1/4?",
-              "choices": ["2/7", "1/12", "7/12", "5/7"],
+              "choices": [
+                "2/7",
+                "1/12",
+                "7/12",
+                "5/7"
+              ],
               "answer": "7/12",
               "explanation": "Common denominator 12: 1/3 = 4/12 and 1/4 = 3/12. 4/12 + 3/12 = 7/12."
+            },
+            {
+              "type": "numeric",
+              "prompt": "2/3 + 3/6 = ?  (give answer in simplest form, like 3/4 or 1)",
+              "answer": "7/6",
+              "explanation": "Common denominator is 6. Convert: 2/3 = 4/6, 3/6 = 3/6. Sum = 7/6 = 7/6.",
+              "acceptable": [
+                "7/6"
+              ],
+              "id": "gen-u4l1-001"
+            },
+            {
+              "type": "numeric",
+              "prompt": "1/3 + 1/5 = ?  (give answer in simplest form, like 3/4 or 1)",
+              "answer": "8/15",
+              "explanation": "Common denominator is 15. Convert: 1/3 = 5/15, 1/5 = 3/15. Sum = 8/15 = 8/15.",
+              "acceptable": [
+                "8/15"
+              ],
+              "id": "gen-u4l1-002"
+            },
+            {
+              "type": "numeric",
+              "prompt": "1/3 + 1/2 = ?  (give answer in simplest form, like 3/4 or 1)",
+              "answer": "5/6",
+              "explanation": "Common denominator is 6. Convert: 1/3 = 2/6, 1/2 = 3/6. Sum = 5/6 = 5/6.",
+              "acceptable": [
+                "5/6"
+              ],
+              "id": "gen-u4l1-003"
+            },
+            {
+              "type": "numeric",
+              "prompt": "2/5 + 2/8 = ?  (give answer in simplest form, like 3/4 or 1)",
+              "answer": "13/20",
+              "explanation": "Common denominator is 40. Convert: 2/5 = 16/40, 2/8 = 10/40. Sum = 26/40 = 13/20.",
+              "acceptable": [
+                "13/20"
+              ],
+              "id": "gen-u4l1-004"
+            },
+            {
+              "type": "numeric",
+              "prompt": "2/3 + 4/12 = ?  (give answer in simplest form, like 3/4 or 1)",
+              "answer": "1",
+              "explanation": "Common denominator is 12. Convert: 2/3 = 8/12, 4/12 = 4/12. Sum = 12/12 = 1.",
+              "acceptable": [
+                "1"
+              ],
+              "id": "gen-u4l1-005"
+            },
+            {
+              "type": "numeric",
+              "prompt": "1/8 + 5/12 = ?  (give answer in simplest form, like 3/4 or 1)",
+              "answer": "13/24",
+              "explanation": "Common denominator is 24. Convert: 1/8 = 3/24, 5/12 = 10/24. Sum = 13/24 = 13/24.",
+              "acceptable": [
+                "13/24"
+              ],
+              "id": "gen-u4l1-006"
+            },
+            {
+              "type": "numeric",
+              "prompt": "3/5 + 3/4 = ?  (give answer in simplest form, like 3/4 or 1)",
+              "answer": "27/20",
+              "explanation": "Common denominator is 20. Convert: 3/5 = 12/20, 3/4 = 15/20. Sum = 27/20 = 27/20.",
+              "acceptable": [
+                "27/20"
+              ],
+              "id": "gen-u4l1-007"
+            },
+            {
+              "type": "numeric",
+              "prompt": "1/5 + 1/2 = ?  (give answer in simplest form, like 3/4 or 1)",
+              "answer": "7/10",
+              "explanation": "Common denominator is 10. Convert: 1/5 = 2/10, 1/2 = 5/10. Sum = 7/10 = 7/10.",
+              "acceptable": [
+                "7/10"
+              ],
+              "id": "gen-u4l1-008"
+            },
+            {
+              "type": "numeric",
+              "prompt": "3/6 + 6/8 = ?  (give answer in simplest form, like 3/4 or 1)",
+              "answer": "5/4",
+              "explanation": "Common denominator is 24. Convert: 3/6 = 12/24, 6/8 = 18/24. Sum = 30/24 = 5/4.",
+              "acceptable": [
+                "5/4"
+              ],
+              "id": "gen-u4l1-009"
+            },
+            {
+              "type": "numeric",
+              "prompt": "1/5 + 2/6 = ?  (give answer in simplest form, like 3/4 or 1)",
+              "answer": "8/15",
+              "explanation": "Common denominator is 30. Convert: 1/5 = 6/30, 2/6 = 10/30. Sum = 16/30 = 8/15.",
+              "acceptable": [
+                "8/15"
+              ],
+              "id": "gen-u4l1-010"
+            },
+            {
+              "type": "numeric",
+              "prompt": "3/8 + 1/5 = ?  (give answer in simplest form, like 3/4 or 1)",
+              "answer": "23/40",
+              "explanation": "Common denominator is 40. Convert: 3/8 = 15/40, 1/5 = 8/40. Sum = 23/40 = 23/40.",
+              "acceptable": [
+                "23/40"
+              ],
+              "id": "gen-u4l1-011"
+            },
+            {
+              "type": "numeric",
+              "prompt": "2/8 + 2/6 = ?  (give answer in simplest form, like 3/4 or 1)",
+              "answer": "7/12",
+              "explanation": "Common denominator is 24. Convert: 2/8 = 6/24, 2/6 = 8/24. Sum = 14/24 = 7/12.",
+              "acceptable": [
+                "7/12"
+              ],
+              "id": "gen-u4l1-012"
+            },
+            {
+              "type": "numeric",
+              "prompt": "1/3 + 10/12 = ?  (give answer in simplest form, like 3/4 or 1)",
+              "answer": "7/6",
+              "explanation": "Common denominator is 12. Convert: 1/3 = 4/12, 10/12 = 10/12. Sum = 14/12 = 7/6.",
+              "acceptable": [
+                "7/6"
+              ],
+              "id": "gen-u4l1-013"
+            },
+            {
+              "type": "numeric",
+              "prompt": "3/5 + 1/6 = ?  (give answer in simplest form, like 3/4 or 1)",
+              "answer": "23/30",
+              "explanation": "Common denominator is 30. Convert: 3/5 = 18/30, 1/6 = 5/30. Sum = 23/30 = 23/30.",
+              "acceptable": [
+                "23/30"
+              ],
+              "id": "gen-u4l1-014"
+            },
+            {
+              "type": "numeric",
+              "prompt": "1/4 + 9/10 = ?  (give answer in simplest form, like 3/4 or 1)",
+              "answer": "23/20",
+              "explanation": "Common denominator is 20. Convert: 1/4 = 5/20, 9/10 = 18/20. Sum = 23/20 = 23/20.",
+              "acceptable": [
+                "23/20"
+              ],
+              "id": "gen-u4l1-015"
+            },
+            {
+              "type": "numeric",
+              "prompt": "1/4 + 4/8 = ?  (give answer in simplest form, like 3/4 or 1)",
+              "answer": "3/4",
+              "explanation": "Common denominator is 8. Convert: 1/4 = 2/8, 4/8 = 4/8. Sum = 6/8 = 3/4.",
+              "acceptable": [
+                "3/4"
+              ],
+              "id": "gen-u4l1-016"
+            },
+            {
+              "type": "numeric",
+              "prompt": "3/4 + 1/6 = ?  (give answer in simplest form, like 3/4 or 1)",
+              "answer": "11/12",
+              "explanation": "Common denominator is 12. Convert: 3/4 = 9/12, 1/6 = 2/12. Sum = 11/12 = 11/12.",
+              "acceptable": [
+                "11/12"
+              ],
+              "id": "gen-u4l1-017"
+            },
+            {
+              "type": "numeric",
+              "prompt": "1/4 + 1/3 = ?  (give answer in simplest form, like 3/4 or 1)",
+              "answer": "7/12",
+              "explanation": "Common denominator is 12. Convert: 1/4 = 3/12, 1/3 = 4/12. Sum = 7/12 = 7/12.",
+              "acceptable": [
+                "7/12"
+              ],
+              "id": "gen-u4l1-018"
+            },
+            {
+              "type": "numeric",
+              "prompt": "3/8 + 1/2 = ?  (give answer in simplest form, like 3/4 or 1)",
+              "answer": "7/8",
+              "explanation": "Common denominator is 8. Convert: 3/8 = 3/8, 1/2 = 4/8. Sum = 7/8 = 7/8.",
+              "acceptable": [
+                "7/8"
+              ],
+              "id": "gen-u4l1-019"
+            },
+            {
+              "type": "numeric",
+              "prompt": "1/8 + 4/5 = ?  (give answer in simplest form, like 3/4 or 1)",
+              "answer": "37/40",
+              "explanation": "Common denominator is 40. Convert: 1/8 = 5/40, 4/5 = 32/40. Sum = 37/40 = 37/40.",
+              "acceptable": [
+                "37/40"
+              ],
+              "id": "gen-u4l1-020"
+            },
+            {
+              "type": "numeric",
+              "prompt": "1/6 + 5/8 = ?  (give answer in simplest form, like 3/4 or 1)",
+              "answer": "19/24",
+              "explanation": "Common denominator is 24. Convert: 1/6 = 4/24, 5/8 = 15/24. Sum = 19/24 = 19/24.",
+              "acceptable": [
+                "19/24"
+              ],
+              "id": "gen-u4l1-021"
+            },
+            {
+              "type": "numeric",
+              "prompt": "3/4 + 1/3 = ?  (give answer in simplest form, like 3/4 or 1)",
+              "answer": "13/12",
+              "explanation": "Common denominator is 12. Convert: 3/4 = 9/12, 1/3 = 4/12. Sum = 13/12 = 13/12.",
+              "acceptable": [
+                "13/12"
+              ],
+              "id": "gen-u4l1-022"
+            },
+            {
+              "type": "numeric",
+              "prompt": "6/8 + 1/3 = ?  (give answer in simplest form, like 3/4 or 1)",
+              "answer": "13/12",
+              "explanation": "Common denominator is 24. Convert: 6/8 = 18/24, 1/3 = 8/24. Sum = 26/24 = 13/12.",
+              "acceptable": [
+                "13/12"
+              ],
+              "id": "gen-u4l1-023"
             }
           ]
         },
@@ -195,9 +2334,254 @@
               "id": "u4l2q1",
               "type": "multiple_choice",
               "prompt": "What is 5/6 − 1/2?",
-              "choices": ["4/4", "1/3", "2/3", "1/2"],
+              "choices": [
+                "4/4",
+                "1/3",
+                "2/3",
+                "1/2"
+              ],
               "answer": "1/3",
               "explanation": "1/2 = 3/6. 5/6 − 3/6 = 2/6 = 1/3."
+            },
+            {
+              "type": "numeric",
+              "prompt": "3/4 − 2/3 = ?  (simplest form)",
+              "answer": "1/12",
+              "explanation": "Common denominator 12: 3/4 = 9/12, 2/3 = 8/12. Difference = 1/12 = 1/12.",
+              "acceptable": [
+                "1/12"
+              ],
+              "id": "gen-u4l2-001"
+            },
+            {
+              "type": "numeric",
+              "prompt": "2/3 − 1/2 = ?  (simplest form)",
+              "answer": "1/6",
+              "explanation": "Common denominator 6: 2/3 = 4/6, 1/2 = 3/6. Difference = 1/6 = 1/6.",
+              "acceptable": [
+                "1/6"
+              ],
+              "id": "gen-u4l2-002"
+            },
+            {
+              "type": "numeric",
+              "prompt": "3/6 − 1/4 = ?  (simplest form)",
+              "answer": "1/4",
+              "explanation": "Common denominator 12: 3/6 = 6/12, 1/4 = 3/12. Difference = 3/12 = 1/4.",
+              "acceptable": [
+                "1/4"
+              ],
+              "id": "gen-u4l2-003"
+            },
+            {
+              "type": "numeric",
+              "prompt": "3/4 − 7/12 = ?  (simplest form)",
+              "answer": "1/6",
+              "explanation": "Common denominator 12: 3/4 = 9/12, 7/12 = 7/12. Difference = 2/12 = 1/6.",
+              "acceptable": [
+                "1/6"
+              ],
+              "id": "gen-u4l2-004"
+            },
+            {
+              "type": "numeric",
+              "prompt": "8/10 − 3/6 = ?  (simplest form)",
+              "answer": "3/10",
+              "explanation": "Common denominator 30: 8/10 = 24/30, 3/6 = 15/30. Difference = 9/30 = 3/10.",
+              "acceptable": [
+                "3/10"
+              ],
+              "id": "gen-u4l2-005"
+            },
+            {
+              "type": "numeric",
+              "prompt": "1/3 − 1/5 = ?  (simplest form)",
+              "answer": "2/15",
+              "explanation": "Common denominator 15: 1/3 = 5/15, 1/5 = 3/15. Difference = 2/15 = 2/15.",
+              "acceptable": [
+                "2/15"
+              ],
+              "id": "gen-u4l2-006"
+            },
+            {
+              "type": "numeric",
+              "prompt": "3/5 − 3/6 = ?  (simplest form)",
+              "answer": "1/10",
+              "explanation": "Common denominator 30: 3/5 = 18/30, 3/6 = 15/30. Difference = 3/30 = 1/10.",
+              "acceptable": [
+                "1/10"
+              ],
+              "id": "gen-u4l2-007"
+            },
+            {
+              "type": "numeric",
+              "prompt": "11/12 − 2/4 = ?  (simplest form)",
+              "answer": "5/12",
+              "explanation": "Common denominator 12: 11/12 = 11/12, 2/4 = 6/12. Difference = 5/12 = 5/12.",
+              "acceptable": [
+                "5/12"
+              ],
+              "id": "gen-u4l2-008"
+            },
+            {
+              "type": "numeric",
+              "prompt": "1/2 − 1/4 = ?  (simplest form)",
+              "answer": "1/4",
+              "explanation": "Common denominator 4: 1/2 = 2/4, 1/4 = 1/4. Difference = 1/4 = 1/4.",
+              "acceptable": [
+                "1/4"
+              ],
+              "id": "gen-u4l2-009"
+            },
+            {
+              "type": "numeric",
+              "prompt": "3/5 − 2/4 = ?  (simplest form)",
+              "answer": "1/10",
+              "explanation": "Common denominator 20: 3/5 = 12/20, 2/4 = 10/20. Difference = 2/20 = 1/10.",
+              "acceptable": [
+                "1/10"
+              ],
+              "id": "gen-u4l2-010"
+            },
+            {
+              "type": "numeric",
+              "prompt": "3/6 − 3/8 = ?  (simplest form)",
+              "answer": "1/8",
+              "explanation": "Common denominator 24: 3/6 = 12/24, 3/8 = 9/24. Difference = 3/24 = 1/8.",
+              "acceptable": [
+                "1/8"
+              ],
+              "id": "gen-u4l2-011"
+            },
+            {
+              "type": "numeric",
+              "prompt": "1/3 − 3/10 = ?  (simplest form)",
+              "answer": "1/30",
+              "explanation": "Common denominator 30: 1/3 = 10/30, 3/10 = 9/30. Difference = 1/30 = 1/30.",
+              "acceptable": [
+                "1/30"
+              ],
+              "id": "gen-u4l2-012"
+            },
+            {
+              "type": "numeric",
+              "prompt": "4/5 − 2/6 = ?  (simplest form)",
+              "answer": "7/15",
+              "explanation": "Common denominator 30: 4/5 = 24/30, 2/6 = 10/30. Difference = 14/30 = 7/15.",
+              "acceptable": [
+                "7/15"
+              ],
+              "id": "gen-u4l2-013"
+            },
+            {
+              "type": "numeric",
+              "prompt": "5/8 − 1/2 = ?  (simplest form)",
+              "answer": "1/8",
+              "explanation": "Common denominator 8: 5/8 = 5/8, 1/2 = 4/8. Difference = 1/8 = 1/8.",
+              "acceptable": [
+                "1/8"
+              ],
+              "id": "gen-u4l2-014"
+            },
+            {
+              "type": "numeric",
+              "prompt": "7/8 − 2/3 = ?  (simplest form)",
+              "answer": "5/24",
+              "explanation": "Common denominator 24: 7/8 = 21/24, 2/3 = 16/24. Difference = 5/24 = 5/24.",
+              "acceptable": [
+                "5/24"
+              ],
+              "id": "gen-u4l2-015"
+            },
+            {
+              "type": "numeric",
+              "prompt": "5/12 − 2/8 = ?  (simplest form)",
+              "answer": "1/6",
+              "explanation": "Common denominator 24: 5/12 = 10/24, 2/8 = 6/24. Difference = 4/24 = 1/6.",
+              "acceptable": [
+                "1/6"
+              ],
+              "id": "gen-u4l2-016"
+            },
+            {
+              "type": "numeric",
+              "prompt": "1/3 − 1/8 = ?  (simplest form)",
+              "answer": "5/24",
+              "explanation": "Common denominator 24: 1/3 = 8/24, 1/8 = 3/24. Difference = 5/24 = 5/24.",
+              "acceptable": [
+                "5/24"
+              ],
+              "id": "gen-u4l2-017"
+            },
+            {
+              "type": "numeric",
+              "prompt": "3/5 − 1/2 = ?  (simplest form)",
+              "answer": "1/10",
+              "explanation": "Common denominator 10: 3/5 = 6/10, 1/2 = 5/10. Difference = 1/10 = 1/10.",
+              "acceptable": [
+                "1/10"
+              ],
+              "id": "gen-u4l2-018"
+            },
+            {
+              "type": "numeric",
+              "prompt": "2/4 − 2/8 = ?  (simplest form)",
+              "answer": "1/4",
+              "explanation": "Common denominator 8: 2/4 = 4/8, 2/8 = 2/8. Difference = 2/8 = 1/4.",
+              "acceptable": [
+                "1/4"
+              ],
+              "id": "gen-u4l2-019"
+            },
+            {
+              "type": "numeric",
+              "prompt": "3/4 − 1/5 = ?  (simplest form)",
+              "answer": "11/20",
+              "explanation": "Common denominator 20: 3/4 = 15/20, 1/5 = 4/20. Difference = 11/20 = 11/20.",
+              "acceptable": [
+                "11/20"
+              ],
+              "id": "gen-u4l2-020"
+            },
+            {
+              "type": "numeric",
+              "prompt": "1/2 − 1/5 = ?  (simplest form)",
+              "answer": "3/10",
+              "explanation": "Common denominator 10: 1/2 = 5/10, 1/5 = 2/10. Difference = 3/10 = 3/10.",
+              "acceptable": [
+                "3/10"
+              ],
+              "id": "gen-u4l2-021"
+            },
+            {
+              "type": "numeric",
+              "prompt": "5/8 − 1/5 = ?  (simplest form)",
+              "answer": "17/40",
+              "explanation": "Common denominator 40: 5/8 = 25/40, 1/5 = 8/40. Difference = 17/40 = 17/40.",
+              "acceptable": [
+                "17/40"
+              ],
+              "id": "gen-u4l2-022"
+            },
+            {
+              "type": "numeric",
+              "prompt": "6/10 − 1/3 = ?  (simplest form)",
+              "answer": "4/15",
+              "explanation": "Common denominator 30: 6/10 = 18/30, 1/3 = 10/30. Difference = 8/30 = 4/15.",
+              "acceptable": [
+                "4/15"
+              ],
+              "id": "gen-u4l2-023"
+            },
+            {
+              "type": "numeric",
+              "prompt": "10/12 − 2/5 = ?  (simplest form)",
+              "answer": "13/30",
+              "explanation": "Common denominator 60: 10/12 = 50/60, 2/5 = 24/60. Difference = 26/60 = 13/30.",
+              "acceptable": [
+                "13/30"
+              ],
+              "id": "gen-u4l2-024"
             }
           ]
         }
@@ -208,7 +2592,11 @@
       "order": 5,
       "title": "Multiplying & Dividing Fractions",
       "reportingCategory": "Computations and Algebraic Relationships",
-      "teks": ["5.3I", "5.3J", "5.3L"],
+      "teks": [
+        "5.3I",
+        "5.3J",
+        "5.3L"
+      ],
       "summary": "Multiply a whole number by a fraction and divide unit fractions by whole numbers (and the reverse).",
       "lessons": [
         {
@@ -221,7 +2609,12 @@
               "id": "u5l1q1",
               "type": "multiple_choice",
               "prompt": "What is 6 × 2/3?",
-              "choices": ["12/3", "4", "9", "1/4"],
+              "choices": [
+                "12/3",
+                "4",
+                "9",
+                "1/4"
+              ],
               "answer": "4",
               "explanation": "6 × 2/3 = 12/3 = 4."
             }
@@ -237,7 +2630,12 @@
               "id": "u5l2q1",
               "type": "multiple_choice",
               "prompt": "What is 1/4 ÷ 2?",
-              "choices": ["1/2", "1/6", "1/8", "2/4"],
+              "choices": [
+                "1/2",
+                "1/6",
+                "1/8",
+                "2/4"
+              ],
               "answer": "1/8",
               "explanation": "Splitting 1/4 into 2 equal parts gives 1/8 each."
             }
@@ -253,7 +2651,12 @@
               "id": "u5l3q1",
               "type": "multiple_choice",
               "prompt": "How many 1/3-cup servings are in 4 cups?",
-              "choices": ["4/3", "7", "12", "16"],
+              "choices": [
+                "4/3",
+                "7",
+                "12",
+                "16"
+              ],
               "answer": "12",
               "explanation": "4 ÷ 1/3 = 4 × 3 = 12 servings."
             }
@@ -266,7 +2669,11 @@
       "order": 6,
       "title": "Order of Operations & Patterns",
       "reportingCategory": "Computations and Algebraic Relationships",
-      "teks": ["5.4A", "5.4E", "5.4F"],
+      "teks": [
+        "5.4A",
+        "5.4E",
+        "5.4F"
+      ],
       "summary": "Use order of operations and identify rules in numerical patterns.",
       "lessons": [
         {
@@ -281,6 +2688,246 @@
               "prompt": "Simplify: 12 + 4 × (6 − 2)",
               "answer": "28",
               "explanation": "Parentheses: 6−2 = 4. Multiply: 4×4 = 16. Add: 12+16 = 28."
+            },
+            {
+              "type": "numeric",
+              "prompt": "5 + 2 × 3 − 2 = ?",
+              "answer": "9",
+              "explanation": "Multiply first: 2 × 3 = 6. Then 5 + 6 − 2 = 9.",
+              "acceptable": [
+                "9"
+              ],
+              "id": "gen-u6l1-001"
+            },
+            {
+              "type": "numeric",
+              "prompt": "2 + 7 × 3 − 3 = ?",
+              "answer": "20",
+              "explanation": "Multiply first: 7 × 3 = 21. Then 2 + 21 − 3 = 20.",
+              "acceptable": [
+                "20"
+              ],
+              "id": "gen-u6l1-002"
+            },
+            {
+              "type": "numeric",
+              "prompt": "3 + 7 × 8 − 4 = ?",
+              "answer": "55",
+              "explanation": "Multiply first: 7 × 8 = 56. Then 3 + 56 − 4 = 55.",
+              "acceptable": [
+                "55"
+              ],
+              "id": "gen-u6l1-003"
+            },
+            {
+              "type": "numeric",
+              "prompt": "6 + 8 × 6 − 3 = ?",
+              "answer": "51",
+              "explanation": "Multiply first: 8 × 6 = 48. Then 6 + 48 − 3 = 51.",
+              "acceptable": [
+                "51"
+              ],
+              "id": "gen-u6l1-004"
+            },
+            {
+              "type": "numeric",
+              "prompt": "8 + 6 × 4 − 5 = ?",
+              "answer": "27",
+              "explanation": "Multiply first: 6 × 4 = 24. Then 8 + 24 − 5 = 27.",
+              "acceptable": [
+                "27"
+              ],
+              "id": "gen-u6l1-005"
+            },
+            {
+              "type": "numeric",
+              "prompt": "5 + 9 × 7 − 3 = ?",
+              "answer": "65",
+              "explanation": "Multiply first: 9 × 7 = 63. Then 5 + 63 − 3 = 65.",
+              "acceptable": [
+                "65"
+              ],
+              "id": "gen-u6l1-006"
+            },
+            {
+              "type": "numeric",
+              "prompt": "6 + 7 × 8 − 4 = ?",
+              "answer": "58",
+              "explanation": "Multiply first: 7 × 8 = 56. Then 6 + 56 − 4 = 58.",
+              "acceptable": [
+                "58"
+              ],
+              "id": "gen-u6l1-007"
+            },
+            {
+              "type": "numeric",
+              "prompt": "4 + 9 × 3 − 4 = ?",
+              "answer": "27",
+              "explanation": "Multiply first: 9 × 3 = 27. Then 4 + 27 − 4 = 27.",
+              "acceptable": [
+                "27"
+              ],
+              "id": "gen-u6l1-008"
+            },
+            {
+              "type": "numeric",
+              "prompt": "5 + 8 × 7 − 5 = ?",
+              "answer": "56",
+              "explanation": "Multiply first: 8 × 7 = 56. Then 5 + 56 − 5 = 56.",
+              "acceptable": [
+                "56"
+              ],
+              "id": "gen-u6l1-009"
+            },
+            {
+              "type": "numeric",
+              "prompt": "2 + 6 × 6 − 5 = ?",
+              "answer": "33",
+              "explanation": "Multiply first: 6 × 6 = 36. Then 2 + 36 − 5 = 33.",
+              "acceptable": [
+                "33"
+              ],
+              "id": "gen-u6l1-010"
+            },
+            {
+              "type": "numeric",
+              "prompt": "8 + 6 × 2 − 5 = ?",
+              "answer": "15",
+              "explanation": "Multiply first: 6 × 2 = 12. Then 8 + 12 − 5 = 15.",
+              "acceptable": [
+                "15"
+              ],
+              "id": "gen-u6l1-011"
+            },
+            {
+              "type": "numeric",
+              "prompt": "9 + 7 × 3 − 5 = ?",
+              "answer": "25",
+              "explanation": "Multiply first: 7 × 3 = 21. Then 9 + 21 − 5 = 25.",
+              "acceptable": [
+                "25"
+              ],
+              "id": "gen-u6l1-012"
+            },
+            {
+              "type": "numeric",
+              "prompt": "5 + 5 × 3 − 3 = ?",
+              "answer": "17",
+              "explanation": "Multiply first: 5 × 3 = 15. Then 5 + 15 − 3 = 17.",
+              "acceptable": [
+                "17"
+              ],
+              "id": "gen-u6l1-013"
+            },
+            {
+              "type": "numeric",
+              "prompt": "7 + 8 × 7 − 5 = ?",
+              "answer": "58",
+              "explanation": "Multiply first: 8 × 7 = 56. Then 7 + 56 − 5 = 58.",
+              "acceptable": [
+                "58"
+              ],
+              "id": "gen-u6l1-014"
+            },
+            {
+              "type": "numeric",
+              "prompt": "4 + 6 × 3 − 3 = ?",
+              "answer": "19",
+              "explanation": "Multiply first: 6 × 3 = 18. Then 4 + 18 − 3 = 19.",
+              "acceptable": [
+                "19"
+              ],
+              "id": "gen-u6l1-015"
+            },
+            {
+              "type": "numeric",
+              "prompt": "7 + 4 × 6 − 5 = ?",
+              "answer": "26",
+              "explanation": "Multiply first: 4 × 6 = 24. Then 7 + 24 − 5 = 26.",
+              "acceptable": [
+                "26"
+              ],
+              "id": "gen-u6l1-016"
+            },
+            {
+              "type": "numeric",
+              "prompt": "6 + 7 × 4 − 5 = ?",
+              "answer": "29",
+              "explanation": "Multiply first: 7 × 4 = 28. Then 6 + 28 − 5 = 29.",
+              "acceptable": [
+                "29"
+              ],
+              "id": "gen-u6l1-017"
+            },
+            {
+              "type": "numeric",
+              "prompt": "4 + 6 × 4 − 3 = ?",
+              "answer": "25",
+              "explanation": "Multiply first: 6 × 4 = 24. Then 4 + 24 − 3 = 25.",
+              "acceptable": [
+                "25"
+              ],
+              "id": "gen-u6l1-018"
+            },
+            {
+              "type": "numeric",
+              "prompt": "3 + 2 × 7 − 5 = ?",
+              "answer": "12",
+              "explanation": "Multiply first: 2 × 7 = 14. Then 3 + 14 − 5 = 12.",
+              "acceptable": [
+                "12"
+              ],
+              "id": "gen-u6l1-019"
+            },
+            {
+              "type": "numeric",
+              "prompt": "5 + 3 × 9 − 4 = ?",
+              "answer": "28",
+              "explanation": "Multiply first: 3 × 9 = 27. Then 5 + 27 − 4 = 28.",
+              "acceptable": [
+                "28"
+              ],
+              "id": "gen-u6l1-020"
+            },
+            {
+              "type": "numeric",
+              "prompt": "9 + 5 × 7 − 3 = ?",
+              "answer": "41",
+              "explanation": "Multiply first: 5 × 7 = 35. Then 9 + 35 − 3 = 41.",
+              "acceptable": [
+                "41"
+              ],
+              "id": "gen-u6l1-021"
+            },
+            {
+              "type": "numeric",
+              "prompt": "2 + 6 × 6 − 3 = ?",
+              "answer": "35",
+              "explanation": "Multiply first: 6 × 6 = 36. Then 2 + 36 − 3 = 35.",
+              "acceptable": [
+                "35"
+              ],
+              "id": "gen-u6l1-022"
+            },
+            {
+              "type": "numeric",
+              "prompt": "7 + 9 × 4 − 3 = ?",
+              "answer": "40",
+              "explanation": "Multiply first: 9 × 4 = 36. Then 7 + 36 − 3 = 40.",
+              "acceptable": [
+                "40"
+              ],
+              "id": "gen-u6l1-023"
+            },
+            {
+              "type": "numeric",
+              "prompt": "2 + 9 × 6 − 5 = ?",
+              "answer": "51",
+              "explanation": "Multiply first: 9 × 6 = 54. Then 2 + 54 − 5 = 51.",
+              "acceptable": [
+                "51"
+              ],
+              "id": "gen-u6l1-024"
             }
           ]
         },
@@ -294,7 +2941,12 @@
               "id": "u6l2q1",
               "type": "multiple_choice",
               "prompt": "If the rule is 'multiply by 2 and add 3', what comes after 5?",
-              "choices": ["8", "10", "13", "15"],
+              "choices": [
+                "8",
+                "10",
+                "13",
+                "15"
+              ],
               "answer": "13",
               "explanation": "5 × 2 = 10, then 10 + 3 = 13."
             }
@@ -307,7 +2959,11 @@
       "order": 7,
       "title": "Coordinate Plane",
       "reportingCategory": "Geometry and Measurement",
-      "teks": ["5.8A", "5.8B", "5.8C"],
+      "teks": [
+        "5.8A",
+        "5.8B",
+        "5.8C"
+      ],
       "summary": "Plot ordered pairs in the first quadrant of the coordinate plane.",
       "lessons": [
         {
@@ -320,7 +2976,12 @@
               "id": "u7l1q1",
               "type": "multiple_choice",
               "prompt": "Which ordered pair is 4 units right and 2 units up from the origin?",
-              "choices": ["(2, 4)", "(4, 2)", "(0, 4)", "(2, 0)"],
+              "choices": [
+                "(2, 4)",
+                "(4, 2)",
+                "(0, 4)",
+                "(2, 0)"
+              ],
               "answer": "(4, 2)",
               "explanation": "Ordered pairs are (x, y), so 4 right then 2 up is (4, 2)."
             }
@@ -333,7 +2994,9 @@
       "order": 8,
       "title": "Classifying 2D Figures",
       "reportingCategory": "Geometry and Measurement",
-      "teks": ["5.5A"],
+      "teks": [
+        "5.5A"
+      ],
       "summary": "Classify two-dimensional figures into categories based on hierarchical attributes.",
       "lessons": [
         {
@@ -364,7 +3027,12 @@
       "order": 9,
       "title": "Volume of Rectangular Prisms",
       "reportingCategory": "Geometry and Measurement",
-      "teks": ["5.4G", "5.4H", "5.6A", "5.6B"],
+      "teks": [
+        "5.4G",
+        "5.4H",
+        "5.6A",
+        "5.6B"
+      ],
       "summary": "Find volume of rectangular prisms using V = l × w × h.",
       "lessons": [
         {
@@ -379,6 +3047,281 @@
               "prompt": "A box has length 5 cm, width 3 cm, and height 4 cm. What is its volume in cubic cm?",
               "answer": "60",
               "explanation": "V = 5 × 3 × 4 = 60 cubic cm."
+            },
+            {
+              "type": "numeric",
+              "prompt": "Find the volume of a rectangular prism that is 12 × 2 × 4 units.",
+              "answer": "96",
+              "explanation": "V = l × w × h = 12 × 2 × 4 = 96 cubic units.",
+              "acceptable": [
+                "96",
+                "96 cubic units"
+              ],
+              "id": "gen-u9l1-001"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Find the volume of a rectangular prism that is 8 × 11 × 10 units.",
+              "answer": "880",
+              "explanation": "V = l × w × h = 8 × 11 × 10 = 880 cubic units.",
+              "acceptable": [
+                "880",
+                "880 cubic units"
+              ],
+              "id": "gen-u9l1-002"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Find the volume of a rectangular prism that is 4 × 5 × 10 units.",
+              "answer": "200",
+              "explanation": "V = l × w × h = 4 × 5 × 10 = 200 cubic units.",
+              "acceptable": [
+                "200",
+                "200 cubic units"
+              ],
+              "id": "gen-u9l1-003"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Find the volume of a rectangular prism that is 12 × 2 × 12 units.",
+              "answer": "288",
+              "explanation": "V = l × w × h = 12 × 2 × 12 = 288 cubic units.",
+              "acceptable": [
+                "288",
+                "288 cubic units"
+              ],
+              "id": "gen-u9l1-004"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Find the volume of a rectangular prism that is 4 × 4 × 4 units.",
+              "answer": "64",
+              "explanation": "V = l × w × h = 4 × 4 × 4 = 64 cubic units.",
+              "acceptable": [
+                "64",
+                "64 cubic units"
+              ],
+              "id": "gen-u9l1-005"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Find the volume of a rectangular prism that is 9 × 2 × 10 units.",
+              "answer": "180",
+              "explanation": "V = l × w × h = 9 × 2 × 10 = 180 cubic units.",
+              "acceptable": [
+                "180",
+                "180 cubic units"
+              ],
+              "id": "gen-u9l1-006"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Find the volume of a rectangular prism that is 5 × 11 × 10 units.",
+              "answer": "550",
+              "explanation": "V = l × w × h = 5 × 11 × 10 = 550 cubic units.",
+              "acceptable": [
+                "550",
+                "550 cubic units"
+              ],
+              "id": "gen-u9l1-007"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Find the volume of a rectangular prism that is 4 × 12 × 9 units.",
+              "answer": "432",
+              "explanation": "V = l × w × h = 4 × 12 × 9 = 432 cubic units.",
+              "acceptable": [
+                "432",
+                "432 cubic units"
+              ],
+              "id": "gen-u9l1-008"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Find the volume of a rectangular prism that is 9 × 6 × 8 units.",
+              "answer": "432",
+              "explanation": "V = l × w × h = 9 × 6 × 8 = 432 cubic units.",
+              "acceptable": [
+                "432",
+                "432 cubic units"
+              ],
+              "id": "gen-u9l1-009"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Find the volume of a rectangular prism that is 7 × 8 × 7 units.",
+              "answer": "392",
+              "explanation": "V = l × w × h = 7 × 8 × 7 = 392 cubic units.",
+              "acceptable": [
+                "392",
+                "392 cubic units"
+              ],
+              "id": "gen-u9l1-010"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Find the volume of a rectangular prism that is 10 × 2 × 8 units.",
+              "answer": "160",
+              "explanation": "V = l × w × h = 10 × 2 × 8 = 160 cubic units.",
+              "acceptable": [
+                "160",
+                "160 cubic units"
+              ],
+              "id": "gen-u9l1-011"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Find the volume of a rectangular prism that is 7 × 4 × 6 units.",
+              "answer": "168",
+              "explanation": "V = l × w × h = 7 × 4 × 6 = 168 cubic units.",
+              "acceptable": [
+                "168",
+                "168 cubic units"
+              ],
+              "id": "gen-u9l1-012"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Find the volume of a rectangular prism that is 6 × 10 × 3 units.",
+              "answer": "180",
+              "explanation": "V = l × w × h = 6 × 10 × 3 = 180 cubic units.",
+              "acceptable": [
+                "180",
+                "180 cubic units"
+              ],
+              "id": "gen-u9l1-013"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Find the volume of a rectangular prism that is 11 × 12 × 5 units.",
+              "answer": "660",
+              "explanation": "V = l × w × h = 11 × 12 × 5 = 660 cubic units.",
+              "acceptable": [
+                "660",
+                "660 cubic units"
+              ],
+              "id": "gen-u9l1-014"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Find the volume of a rectangular prism that is 10 × 6 × 9 units.",
+              "answer": "540",
+              "explanation": "V = l × w × h = 10 × 6 × 9 = 540 cubic units.",
+              "acceptable": [
+                "540",
+                "540 cubic units"
+              ],
+              "id": "gen-u9l1-015"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Find the volume of a rectangular prism that is 12 × 10 × 2 units.",
+              "answer": "240",
+              "explanation": "V = l × w × h = 12 × 10 × 2 = 240 cubic units.",
+              "acceptable": [
+                "240",
+                "240 cubic units"
+              ],
+              "id": "gen-u9l1-016"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Find the volume of a rectangular prism that is 11 × 8 × 4 units.",
+              "answer": "352",
+              "explanation": "V = l × w × h = 11 × 8 × 4 = 352 cubic units.",
+              "acceptable": [
+                "352",
+                "352 cubic units"
+              ],
+              "id": "gen-u9l1-017"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Find the volume of a rectangular prism that is 6 × 4 × 4 units.",
+              "answer": "96",
+              "explanation": "V = l × w × h = 6 × 4 × 4 = 96 cubic units.",
+              "acceptable": [
+                "96",
+                "96 cubic units"
+              ],
+              "id": "gen-u9l1-018"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Find the volume of a rectangular prism that is 11 × 5 × 7 units.",
+              "answer": "385",
+              "explanation": "V = l × w × h = 11 × 5 × 7 = 385 cubic units.",
+              "acceptable": [
+                "385",
+                "385 cubic units"
+              ],
+              "id": "gen-u9l1-019"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Find the volume of a rectangular prism that is 8 × 4 × 7 units.",
+              "answer": "224",
+              "explanation": "V = l × w × h = 8 × 4 × 7 = 224 cubic units.",
+              "acceptable": [
+                "224",
+                "224 cubic units"
+              ],
+              "id": "gen-u9l1-020"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Find the volume of a rectangular prism that is 6 × 11 × 7 units.",
+              "answer": "462",
+              "explanation": "V = l × w × h = 6 × 11 × 7 = 462 cubic units.",
+              "acceptable": [
+                "462",
+                "462 cubic units"
+              ],
+              "id": "gen-u9l1-021"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Find the volume of a rectangular prism that is 11 × 9 × 5 units.",
+              "answer": "495",
+              "explanation": "V = l × w × h = 11 × 9 × 5 = 495 cubic units.",
+              "acceptable": [
+                "495",
+                "495 cubic units"
+              ],
+              "id": "gen-u9l1-022"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Find the volume of a rectangular prism that is 5 × 5 × 8 units.",
+              "answer": "200",
+              "explanation": "V = l × w × h = 5 × 5 × 8 = 200 cubic units.",
+              "acceptable": [
+                "200",
+                "200 cubic units"
+              ],
+              "id": "gen-u9l1-023"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Find the volume of a rectangular prism that is 7 × 8 × 2 units.",
+              "answer": "112",
+              "explanation": "V = l × w × h = 7 × 8 × 2 = 112 cubic units.",
+              "acceptable": [
+                "112",
+                "112 cubic units"
+              ],
+              "id": "gen-u9l1-024"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Find the volume of a rectangular prism that is 12 × 12 × 12 units.",
+              "answer": "1728",
+              "explanation": "V = l × w × h = 12 × 12 × 12 = 1728 cubic units.",
+              "acceptable": [
+                "1728",
+                "1728 cubic units"
+              ],
+              "id": "gen-u9l1-025"
             }
           ]
         },
@@ -404,7 +3347,9 @@
       "order": 10,
       "title": "Measurement Conversions",
       "reportingCategory": "Geometry and Measurement",
-      "teks": ["5.7A"],
+      "teks": [
+        "5.7A"
+      ],
       "summary": "Solve problems by converting within customary or metric measurement systems.",
       "lessons": [
         {
@@ -419,6 +3364,215 @@
               "prompt": "How many ounces are in 3 pounds?",
               "answer": "48",
               "explanation": "1 pound = 16 ounces, so 3 × 16 = 48 oz."
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 8 feet = ? inches",
+              "answer": "96",
+              "explanation": "1 feet = 12 inches, so 8 feet = 96 inches.",
+              "acceptable": [
+                "96",
+                "96 inches"
+              ],
+              "id": "gen-u10l1-001"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 3 quarts = ? pints",
+              "answer": "6",
+              "explanation": "1 quart = 2 pints, so 3 quarts = 6 pints.",
+              "acceptable": [
+                "6",
+                "6 pints"
+              ],
+              "id": "gen-u10l1-002"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 6 quarts = ? pints",
+              "answer": "12",
+              "explanation": "1 quart = 2 pints, so 6 quarts = 12 pints.",
+              "acceptable": [
+                "12",
+                "12 pints"
+              ],
+              "id": "gen-u10l1-003"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 3 gallons = ? quarts",
+              "answer": "12",
+              "explanation": "1 gallon = 4 quarts, so 3 gallons = 12 quarts.",
+              "acceptable": [
+                "12",
+                "12 quarts"
+              ],
+              "id": "gen-u10l1-004"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 10 quarts = ? pints",
+              "answer": "20",
+              "explanation": "1 quart = 2 pints, so 10 quarts = 20 pints.",
+              "acceptable": [
+                "20",
+                "20 pints"
+              ],
+              "id": "gen-u10l1-005"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 5 feet = ? inches",
+              "answer": "60",
+              "explanation": "1 feet = 12 inches, so 5 feet = 60 inches.",
+              "acceptable": [
+                "60",
+                "60 inches"
+              ],
+              "id": "gen-u10l1-006"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 12 gallons = ? quarts",
+              "answer": "48",
+              "explanation": "1 gallon = 4 quarts, so 12 gallons = 48 quarts.",
+              "acceptable": [
+                "48",
+                "48 quarts"
+              ],
+              "id": "gen-u10l1-007"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 5 gallons = ? quarts",
+              "answer": "20",
+              "explanation": "1 gallon = 4 quarts, so 5 gallons = 20 quarts.",
+              "acceptable": [
+                "20",
+                "20 quarts"
+              ],
+              "id": "gen-u10l1-008"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 4 feet = ? inches",
+              "answer": "48",
+              "explanation": "1 feet = 12 inches, so 4 feet = 48 inches.",
+              "acceptable": [
+                "48",
+                "48 inches"
+              ],
+              "id": "gen-u10l1-009"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 10 yards = ? feet",
+              "answer": "30",
+              "explanation": "1 yard = 3 feet, so 10 yards = 30 feet.",
+              "acceptable": [
+                "30",
+                "30 feet"
+              ],
+              "id": "gen-u10l1-010"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 12 pounds = ? ounces",
+              "answer": "192",
+              "explanation": "1 pound = 16 ounces, so 12 pounds = 192 ounces.",
+              "acceptable": [
+                "192",
+                "192 ounces"
+              ],
+              "id": "gen-u10l1-011"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 11 yards = ? feet",
+              "answer": "33",
+              "explanation": "1 yard = 3 feet, so 11 yards = 33 feet.",
+              "acceptable": [
+                "33",
+                "33 feet"
+              ],
+              "id": "gen-u10l1-012"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 9 yards = ? feet",
+              "answer": "27",
+              "explanation": "1 yard = 3 feet, so 9 yards = 27 feet.",
+              "acceptable": [
+                "27",
+                "27 feet"
+              ],
+              "id": "gen-u10l1-013"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 11 pounds = ? ounces",
+              "answer": "176",
+              "explanation": "1 pound = 16 ounces, so 11 pounds = 176 ounces.",
+              "acceptable": [
+                "176",
+                "176 ounces"
+              ],
+              "id": "gen-u10l1-014"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 4 quarts = ? pints",
+              "answer": "8",
+              "explanation": "1 quart = 2 pints, so 4 quarts = 8 pints.",
+              "acceptable": [
+                "8",
+                "8 pints"
+              ],
+              "id": "gen-u10l1-015"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 11 gallons = ? quarts",
+              "answer": "44",
+              "explanation": "1 gallon = 4 quarts, so 11 gallons = 44 quarts.",
+              "acceptable": [
+                "44",
+                "44 quarts"
+              ],
+              "id": "gen-u10l1-016"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 9 gallons = ? quarts",
+              "answer": "36",
+              "explanation": "1 gallon = 4 quarts, so 9 gallons = 36 quarts.",
+              "acceptable": [
+                "36",
+                "36 quarts"
+              ],
+              "id": "gen-u10l1-017"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 11 feet = ? inches",
+              "answer": "132",
+              "explanation": "1 feet = 12 inches, so 11 feet = 132 inches.",
+              "acceptable": [
+                "132",
+                "132 inches"
+              ],
+              "id": "gen-u10l1-018"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 4 yards = ? feet",
+              "answer": "12",
+              "explanation": "1 yard = 3 feet, so 4 yards = 12 feet.",
+              "acceptable": [
+                "12",
+                "12 feet"
+              ],
+              "id": "gen-u10l1-019"
             }
           ]
         },
@@ -433,8 +3587,251 @@
               "type": "numeric",
               "prompt": "How many milliliters are in 2.5 liters?",
               "answer": "2500",
-              "acceptable": ["2,500", "2500"],
+              "acceptable": [
+                "2,500",
+                "2500"
+              ],
               "explanation": "1 L = 1,000 mL, so 2.5 × 1,000 = 2,500 mL."
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 2 L = ? mL",
+              "answer": "2000",
+              "explanation": "1 L = 1,000 mL, so 2 L = 2,000 mL.",
+              "acceptable": [
+                "2000",
+                "2,000",
+                "2,000 mL"
+              ],
+              "id": "gen-u10l2-001"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 9 m = ? cm",
+              "answer": "900",
+              "explanation": "1 m = 100 cm, so 9 m = 900 cm.",
+              "acceptable": [
+                "900",
+                "900",
+                "900 cm"
+              ],
+              "id": "gen-u10l2-002"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 24 kg = ? g",
+              "answer": "24000",
+              "explanation": "1 kg = 1,000 g, so 24 kg = 24,000 g.",
+              "acceptable": [
+                "24000",
+                "24,000",
+                "24,000 g"
+              ],
+              "id": "gen-u10l2-003"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 25 L = ? mL",
+              "answer": "25000",
+              "explanation": "1 L = 1,000 mL, so 25 L = 25,000 mL.",
+              "acceptable": [
+                "25000",
+                "25,000",
+                "25,000 mL"
+              ],
+              "id": "gen-u10l2-004"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 9 L = ? mL",
+              "answer": "9000",
+              "explanation": "1 L = 1,000 mL, so 9 L = 9,000 mL.",
+              "acceptable": [
+                "9000",
+                "9,000",
+                "9,000 mL"
+              ],
+              "id": "gen-u10l2-005"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 13 kg = ? g",
+              "answer": "13000",
+              "explanation": "1 kg = 1,000 g, so 13 kg = 13,000 g.",
+              "acceptable": [
+                "13000",
+                "13,000",
+                "13,000 g"
+              ],
+              "id": "gen-u10l2-006"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 23 kg = ? g",
+              "answer": "23000",
+              "explanation": "1 kg = 1,000 g, so 23 kg = 23,000 g.",
+              "acceptable": [
+                "23000",
+                "23,000",
+                "23,000 g"
+              ],
+              "id": "gen-u10l2-007"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 10 m = ? cm",
+              "answer": "1000",
+              "explanation": "1 m = 100 cm, so 10 m = 1,000 cm.",
+              "acceptable": [
+                "1000",
+                "1,000",
+                "1,000 cm"
+              ],
+              "id": "gen-u10l2-008"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 14 km = ? m",
+              "answer": "14000",
+              "explanation": "1 km = 1,000 m, so 14 km = 14,000 m.",
+              "acceptable": [
+                "14000",
+                "14,000",
+                "14,000 m"
+              ],
+              "id": "gen-u10l2-009"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 19 L = ? mL",
+              "answer": "19000",
+              "explanation": "1 L = 1,000 mL, so 19 L = 19,000 mL.",
+              "acceptable": [
+                "19000",
+                "19,000",
+                "19,000 mL"
+              ],
+              "id": "gen-u10l2-010"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 10 km = ? m",
+              "answer": "10000",
+              "explanation": "1 km = 1,000 m, so 10 km = 10,000 m.",
+              "acceptable": [
+                "10000",
+                "10,000",
+                "10,000 m"
+              ],
+              "id": "gen-u10l2-011"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 4 km = ? m",
+              "answer": "4000",
+              "explanation": "1 km = 1,000 m, so 4 km = 4,000 m.",
+              "acceptable": [
+                "4000",
+                "4,000",
+                "4,000 m"
+              ],
+              "id": "gen-u10l2-012"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 12 kg = ? g",
+              "answer": "12000",
+              "explanation": "1 kg = 1,000 g, so 12 kg = 12,000 g.",
+              "acceptable": [
+                "12000",
+                "12,000",
+                "12,000 g"
+              ],
+              "id": "gen-u10l2-013"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 4 kg = ? g",
+              "answer": "4000",
+              "explanation": "1 kg = 1,000 g, so 4 kg = 4,000 g.",
+              "acceptable": [
+                "4000",
+                "4,000",
+                "4,000 g"
+              ],
+              "id": "gen-u10l2-014"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 20 km = ? m",
+              "answer": "20000",
+              "explanation": "1 km = 1,000 m, so 20 km = 20,000 m.",
+              "acceptable": [
+                "20000",
+                "20,000",
+                "20,000 m"
+              ],
+              "id": "gen-u10l2-015"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 19 m = ? cm",
+              "answer": "1900",
+              "explanation": "1 m = 100 cm, so 19 m = 1,900 cm.",
+              "acceptable": [
+                "1900",
+                "1,900",
+                "1,900 cm"
+              ],
+              "id": "gen-u10l2-016"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 4 L = ? mL",
+              "answer": "4000",
+              "explanation": "1 L = 1,000 mL, so 4 L = 4,000 mL.",
+              "acceptable": [
+                "4000",
+                "4,000",
+                "4,000 mL"
+              ],
+              "id": "gen-u10l2-017"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 17 L = ? mL",
+              "answer": "17000",
+              "explanation": "1 L = 1,000 mL, so 17 L = 17,000 mL.",
+              "acceptable": [
+                "17000",
+                "17,000",
+                "17,000 mL"
+              ],
+              "id": "gen-u10l2-018"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 13 m = ? cm",
+              "answer": "1300",
+              "explanation": "1 m = 100 cm, so 13 m = 1,300 cm.",
+              "acceptable": [
+                "1300",
+                "1,300",
+                "1,300 cm"
+              ],
+              "id": "gen-u10l2-019"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Convert: 15 kg = ? g",
+              "answer": "15000",
+              "explanation": "1 kg = 1,000 g, so 15 kg = 15,000 g.",
+              "acceptable": [
+                "15000",
+                "15,000",
+                "15,000 g"
+              ],
+              "id": "gen-u10l2-020"
             }
           ]
         }
@@ -445,7 +3842,11 @@
       "order": 11,
       "title": "Data Analysis",
       "reportingCategory": "Data Analysis and Personal Financial Literacy",
-      "teks": ["5.9A", "5.9B", "5.9C"],
+      "teks": [
+        "5.9A",
+        "5.9B",
+        "5.9C"
+      ],
       "summary": "Represent and interpret data with bar graphs, dot plots, scatterplots, and stem-and-leaf plots.",
       "lessons": [
         {
@@ -476,7 +3877,13 @@
       "order": 12,
       "title": "Personal Financial Literacy",
       "reportingCategory": "Data Analysis and Personal Financial Literacy",
-      "teks": ["5.10A", "5.10B", "5.10C", "5.10E", "5.10F"],
+      "teks": [
+        "5.10A",
+        "5.10B",
+        "5.10C",
+        "5.10E",
+        "5.10F"
+      ],
       "summary": "Identify income types, taxes, balance a simple budget, and weigh the cost of borrowing.",
       "lessons": [
         {
@@ -489,7 +3896,12 @@
               "id": "u12l1q1",
               "type": "multiple_choice",
               "prompt": "Lily earns $400 a week. After taxes, she takes home $340. The $340 is her…",
-              "choices": ["gross income", "net income", "expense", "profit"],
+              "choices": [
+                "gross income",
+                "net income",
+                "expense",
+                "profit"
+              ],
               "answer": "net income",
               "explanation": "Net income is what remains after taxes are subtracted from gross income."
             }
