@@ -20,7 +20,7 @@
 
   <section>
     <div class="container">
-      <h2>All STAAR math levels</h2>
+      <h2 id="grade-heading">All STAAR math levels</h2>
       <div class="grade-grid" id="grade-grid"></div>
     </div>
   </section>
@@ -35,7 +35,12 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
     const grid = document.getElementById('grade-grid');
-    window.STAAR_GRADES.forEach(g => {
+    const Auth = window.STAARAuth || {};
+    const minLevel = Auth.userGradeLevel ? Auth.userGradeLevel() : -Infinity;
+    const heading = document.getElementById('grade-heading');
+    if (minLevel > -Infinity && heading) heading.textContent = 'Your grade and beyond';
+    const visible = window.STAAR_GRADES.filter(g => Auth.gradeLevel ? Auth.gradeLevel(g.slug) >= minLevel : true);
+    visible.forEach(g => {
       const a = document.createElement('a');
       a.href = `grade.html?g=${g.slug}`;
       a.className = 'grade-card';
