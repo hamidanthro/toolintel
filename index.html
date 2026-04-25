@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>STAAR Math Prep — Texas Math Test Preparation</title>
   <meta name="description" content="Practice and master the Texas STAAR math test. Grade-by-grade lessons, practice problems, and full-length tests for grades 3–8 and Algebra I." />
-  <link rel="stylesheet" href="css/styles.css?v=20260425x" />
+  <link rel="stylesheet" href="css/styles.css?v=20260425y" />
 </head>
 <body>
   <header class="site-header">
@@ -68,6 +68,14 @@
 
   <section id="grade-section" hidden>
     <div class="container">
+      <div class="earn-banner" id="earn-banner" hidden>
+        <div class="earn-banner-icon" aria-hidden="true">🪙</div>
+        <div class="earn-banner-body">
+          <div class="earn-banner-title">Get rewarded for your effort</div>
+          <div class="earn-banner-sub">Sign in to earn points for every correct answer, climb the leaderboard, and redeem real toys in the marketplace.</div>
+        </div>
+        <button type="button" class="btn btn-primary earn-banner-cta" id="earn-banner-btn">Sign in &amp; earn</button>
+      </div>
       <h2>Choose your grade</h2>
       <div class="grade-grid" id="grade-grid"></div>
     </div>
@@ -95,6 +103,19 @@
         sectionTitle.textContent = (minLevel > -Infinity)
           ? 'Your grade and beyond'
           : 'Choose your grade';
+      }
+      // Earn-points banner only for guests.
+      const banner = document.getElementById('earn-banner');
+      if (banner) {
+        const isGuest = !(Auth.currentUser && Auth.currentUser());
+        banner.hidden = !isGuest;
+        if (isGuest) {
+          const btn = document.getElementById('earn-banner-btn');
+          if (btn && !btn._wired) {
+            btn._wired = true;
+            btn.addEventListener('click', () => Auth.showLogin && Auth.showLogin());
+          }
+        }
       }
       visible.forEach(g => {
         const a = document.createElement('a');
