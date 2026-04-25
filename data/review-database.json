@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-03-04",
+  "lastUpdated": "2026-03-07",
   "tools": [
     {
       "id": "claude",
@@ -7,13 +7,13 @@
       "score": 89,
       "priority": "high",
       "reviewPublished": "2026-02-20",
-      "lastMonitored": "2026-02-21",
+      "lastMonitored": "2026-03-07",
       "healthStatus": "green",
       "activeRedFlags": 0,
       "pricingUrl": "https://claude.com/pricing",
       "statusUrl": "https://status.anthropic.com",
       "tosUrl": "https://www.anthropic.com/legal/consumer-terms",
-      "notes": "Pricing redirects to claude.com/pricing. New models Opus 4.6, Sonnet 4.6, Haiku 4.5 confirmed."
+      "notes": "Mar 7 check: All verified unchanged. Pricing: Free $0, Pro $17/mo annual ($20 monthly), Max from $100/mo, Team $20/seat/mo. Models: Opus 4.6, Sonnet 4.6, Haiku 4.5. Status page shows resolved incidents (no security breaches). Next check: Mar 21."
     },
     {
       "id": "chatgpt",
@@ -21,13 +21,13 @@
       "score": 87,
       "priority": "high",
       "reviewPublished": "2026-02-20",
-      "lastMonitored": "2026-02-21",
-      "healthStatus": "green",
+      "lastMonitored": "2026-03-07",
+      "healthStatus": "orange",
       "activeRedFlags": 0,
       "pricingUrl": "https://chatgpt.com/pricing",
       "statusUrl": "https://status.openai.com",
       "tosUrl": "https://openai.com/policies/terms-of-use",
-      "notes": "Pricing redirects to chatgpt.com/pricing. GPT-5.2 models now featured."
+      "notes": "Mar 7 check: Model versions updated to GPT-5.3 Instant, GPT-5.4 Thinking, GPT-5.4 Pro (review references GPT-5.2). Pricing structure confirmed: Free/Go/Plus/Pro/Business/Enterprise. ORANGE: Re-review within 30 days to update model references. Next check: Mar 21."
     },
     {
       "id": "github-copilot",
@@ -35,13 +35,13 @@
       "score": 86,
       "priority": "high",
       "reviewPublished": "2026-02-20",
-      "lastMonitored": "2026-02-21",
+      "lastMonitored": "2026-03-07",
       "healthStatus": "green",
       "activeRedFlags": 0,
       "pricingUrl": "https://github.com/features/copilot/plans",
       "statusUrl": "https://www.githubstatus.com",
       "tosUrl": "https://docs.github.com/en/site-policy/github-terms/github-copilot-product-specific-terms",
-      "notes": "Free/Pro/Pro+ tiers confirmed. Claude and OpenAI Codex now available as assignable agents."
+      "notes": "Mar 7 check: All verified unchanged. Pricing: Free $0, Pro $10/mo, Pro+ $39/mo. Claude and OpenAI Codex agents confirmed. Jules coding agent confirmed. Next check: Mar 21."
     },
     {
       "id": "cursor",
@@ -49,13 +49,13 @@
       "score": 85,
       "priority": "high",
       "reviewPublished": "2026-02-20",
-      "lastMonitored": "2026-02-21",
-      "healthStatus": "green",
+      "lastMonitored": "2026-03-07",
+      "healthStatus": "orange",
       "activeRedFlags": 0,
       "pricingUrl": "https://cursor.com/pricing",
       "statusUrl": null,
       "tosUrl": "https://cursor.com/terms",
-      "notes": "Hobby/Individual/Teams/Enterprise tiers confirmed. Cloud Agents, Subagents now featured."
+      "notes": "Mar 7 check: MAJOR PRICING CHANGE - Added two new individual tiers: Pro+ ($60/mo, 3x usage) and Ultra ($200/mo, 20x usage). Now offers FOUR individual tiers: Hobby (Free), Pro ($20/mo), Pro+ (NEW), Ultra (NEW). ORANGE: Re-review within 30 days to document new tiers. Next check: Mar 21."
     },
     {
       "id": "gemini",
@@ -63,13 +63,13 @@
       "score": 84,
       "priority": "high",
       "reviewPublished": "2026-02-20",
-      "lastMonitored": "2026-02-21",
+      "lastMonitored": "2026-03-07",
       "healthStatus": "yellow",
       "activeRedFlags": 0,
       "pricingUrl": "https://one.google.com/about/google-ai-plans/",
       "statusUrl": "https://status.cloud.google.com",
       "tosUrl": "https://ai.google.dev/terms",
-      "notes": "Major rebranding to Google AI Plans (Plus/Pro/Ultra). Gemini 3.1 Pro, Veo 3.1, Lyria 3 now featured. Review may need update within 90 days."
+      "notes": "Mar 7 check: Rebranding to Google AI Plans ongoing. Tiers: Plus/Pro/Ultra. Models: Gemini 3.1 Pro, Veo 3.1, Lyria 3 confirmed. Features: Jules, Project Mariner, Project Genie. YELLOW: Complete re-review within 90 days for rebranding. Next check: Mar 21."
     },
     {
       "id": "perplexity",
@@ -105,13 +105,13 @@
       "score": 80,
       "priority": "high",
       "reviewPublished": "2026-02-20",
-      "lastMonitored": "2026-02-21",
-      "healthStatus": "yellow",
-      "activeRedFlags": 0,
+      "lastMonitored": "2026-03-07",
+      "healthStatus": "red",
+      "activeRedFlags": 2,
       "pricingUrl": "https://openai.com/api/pricing",
       "statusUrl": "https://status.openai.com",
       "tosUrl": "https://openai.com/policies/terms-of-use",
-      "notes": "OpenAI now featuring GPT-image-1.5/1/1-mini models. Verify if DALL-E 3 superseded or still active."
+      "notes": "RED FLAG (CRITICAL): DALL-E 3 NOT FOUND on OpenAI API pricing page (https://openai.com/api/pricing). Replaced by GPT-image-1.5/1/1-mini models. URGENT: Manual verification required within 48 hours to determine if (a) DALL-E 3 renamed, (b) deprecated, or (c) moved to different product line. Review may be outdated. Next check: Mar 14 (7-day monitoring until resolved)."
     },
     {
       "id": "stable-diffusion",

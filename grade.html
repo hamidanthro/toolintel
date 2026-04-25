@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grade — STAAR Math Prep</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="brand">STAAR<span>Prep</span></a>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="grades.html" class="active">Grades</a>
+        <a href="practice.html">Practice</a>
+        <a href="about.html">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <section>
+    <div class="container" id="content">
+      <p>Loading…</p>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">&copy; <span id="year"></span> STAAR Prep.</div>
+  </footer>
+
+  <script src="js/staar-data.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    const params = new URLSearchParams(location.search);
+    const slug = params.get('g');
+    const grade = window.STAAR_GRADES.find(g => g.slug === slug);
+    const content = document.getElementById('content');
+
+    if (!grade) {
+      content.innerHTML = '<h2>Grade not found</h2><p><a href="grades.html">Back to all grades</a></p>';
+    } else {
+      document.title = `${grade.title} — STAAR Math Prep`;
+      const cats = grade.categories.map(c => `
+        <a class="grade-card" href="practice.html?g=${grade.slug}&c=${encodeURIComponent(c)}">
+          <div class="label">Reporting category</div>
+          <div class="title">${c}</div>
+          <div class="desc">Practice problems</div>
+        </a>
+      `).join('');
+      content.innerHTML = `
+        <h2>${grade.title}</h2>
+        <p style="color:var(--muted);max-width:640px;">Choose a reporting category to start practicing.</p>
+        <div class="grade-grid">${cats}</div>
+      `;
+    }
+  </script>
+</body>
+</html>

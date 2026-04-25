@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Practice — STAAR Math Prep</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="brand">STAAR<span>Prep</span></a>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="grades.html">Grades</a>
+        <a href="practice.html" class="active">Practice</a>
+        <a href="about.html">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <section>
+    <div class="container">
+      <h2 id="heading">Practice</h2>
+      <div class="card">
+        <p style="color:var(--muted);margin-top:0;">Practice problems will be loaded here. (Question bank coming next.)</p>
+        <p id="context" style="font-size:0.9rem;color:var(--muted);"></p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">&copy; <span id="year"></span> STAAR Prep.</div>
+  </footer>
+
+  <script src="js/staar-data.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    const params = new URLSearchParams(location.search);
+    const slug = params.get('g');
+    const cat = params.get('c');
+    const grade = window.STAAR_GRADES.find(g => g.slug === slug);
+    if (grade) {
+      document.getElementById('heading').textContent = `${grade.title} — Practice`;
+      document.getElementById('context').textContent = cat ? `Reporting category: ${cat}` : '';
+    }
+  </script>
+</body>
+</html>
