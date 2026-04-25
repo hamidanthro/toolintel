@@ -907,6 +907,11 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
   font-weight: 800;
   font-size: 0.95rem;
 }
+.cents-toast-loss { border-color: #fecaca; background: #fff5f5; color: #7f1d1d; }
+.cents-toast-loss .cents-toast-coin {
+  background: linear-gradient(135deg, #fecaca, #ef4444);
+  color: #7f1d1d;
+}
 
 .user-menu-link {
   display: block;

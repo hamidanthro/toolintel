@@ -280,6 +280,19 @@
     requestAnimationFrame(() => t.classList.add('show'));
     setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 250); }, 1600);
   }
+  function showCentsLossToast(lost, flooredAtZero) {
+    if (!lost || lost <= 0) {
+      if (flooredAtZero) showToast('Wallet stays at 0\u00a2 \u2014 keep trying!');
+      return;
+    }
+    const t = document.createElement('div');
+    t.className = 'cents-toast cents-toast-loss';
+    const tail = flooredAtZero ? ' (wallet at 0)' : '';
+    t.innerHTML = `<span class="cents-toast-coin">\u2212${lost}\u00a2</span><span>oops, try again${tail}</span>`;
+    document.body.appendChild(t);
+    requestAnimationFrame(() => t.classList.add('show'));
+    setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 250); }, 1800);
+  }
   function showToast(text) {
     const t = document.createElement('div');
     t.className = 'cents-toast';
@@ -318,6 +331,23 @@
       }
       refreshHeader();
       showCentsToast(w.awardedCents, w.capped);
+      return w;
+    } catch (_) { return null; }
+  }
+
+  async function lose(cents) {
+    const t = token();
+    if (!t) return null;
+    try {
+      const w = await api('lose', { token: t, cents });
+      const s = loadSession();
+      if (s && s.user) {
+        s.user.balanceCents = w.balanceCents;
+        s.user.lifetimeCents = w.lifetimeCents;
+        saveSession(s);
+      }
+      refreshHeader();
+      showCentsLossToast(w.lostCents, w.flooredAtZero);
       return w;
     } catch (_) { return null; }
   }
@@ -376,6 +406,7 @@
     pullStats,
     api,
     earn,
+    lose,
     refreshWallet,
     formatCents,
     showCentsToast,

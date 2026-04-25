@@ -272,6 +272,8 @@
         showFeedback(q, userAnswer, isCorrect);
         if (isCorrect && window.STAARAuth && typeof window.STAARAuth.earn === 'function') {
           window.STAARAuth.earn(difficultyCents(q));
+        } else if (!isCorrect && window.STAARAuth && typeof window.STAARAuth.lose === 'function') {
+          window.STAARAuth.lose(difficultyCents(q));
         }
       });
     }
@@ -417,7 +419,7 @@
       body = `<input class="num-input" type="text" name="ans" autocomplete="off" placeholder="Your answer" required />`;
     }
     const cents = difficultyCents(q);
-    const reward = `<span class="q-reward" title="Earn ${cents}\u00a2 for a correct answer">+${cents}\u00a2</span>`;
+    const reward = `<span class="q-reward" title="Correct: +${cents}\u00a2  •  Wrong: \u2212${cents}\u00a2">\u00b1${cents}\u00a2</span>`;
     return `
       <form class="question-card">
         <div class="q-meta">

@@ -169,6 +169,7 @@ exports.handler = async (event) => {
   if (action === 'getStats') return await handleGetStats(payload);
   if (action === 'putStats') return await handlePutStats(payload);
   if (action === 'earn')           return await handleEarn(payload);
+  if (action === 'lose')           return await handleLose(payload);
   if (action === 'getWallet')      return await handleGetWallet(payload);
   if (action === 'listToys')       return await handleListToys(payload);
   if (action === 'checkout')       return await handleCheckout(payload);
@@ -866,4 +867,49 @@ async function handleAdminUpdateOrder(payload) {
     ExpressionAttributeValues: { ':s': status, ':t': tracking, ':u': Date.now() }
   }));
   return ok({ ok: true });
+}
+
+async function handleLose(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  if (!auth.username) return bad(401, 'Please sign in again');
+
+  let cents = parseInt(payload.cents, 10);
+  if (!Number.isFinite(cents) || cents < 1) cents = 1;
+  if (cents > 5) cents = 5;
+
+  const r = await ddb.send(new GetCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username }
+  }));
+  if (!r.Item) return bad(404, 'User not found');
+  const balance = r.Item.balanceCents || 0;
+  const lifetime = r.Item.lifetimeCents || 0;
+  const deduct = Math.min(cents, balance); // floor at 0
+
+  if (deduct <= 0) {
+    return ok({
+      lostCents: 0,
+      balanceCents: balance,
+      lifetimeCents: lifetime,
+      capCents: LIFETIME_CAP_CENTS,
+      flooredAtZero: true
+    });
+  }
+
+  const upd = await ddb.send(new UpdateCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username },
+    UpdateExpression: 'SET balanceCents = balanceCents - :d',
+    ConditionExpression: 'balanceCents >= :d',
+    ExpressionAttributeValues: { ':d': deduct },
+    ReturnValues: 'ALL_NEW'
+  }));
+  return ok({
+    lostCents: deduct,
+    balanceCents: upd.Attributes.balanceCents || 0,
+    lifetimeCents: upd.Attributes.lifetimeCents || 0,
+    capCents: LIFETIME_CAP_CENTS,
+    flooredAtZero: (upd.Attributes.balanceCents || 0) === 0
+  });
 }
