@@ -255,6 +255,7 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
   display: flex;
   gap: 8px;
   margin-top: 10px;
+  align-items: stretch;
 }
 .tutor-followup input {
   flex: 1;
@@ -264,6 +265,23 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
   font-size: 0.95rem;
 }
 .tutor-followup input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-light); }
+.tutor-send {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: var(--navy);
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.05s ease;
+}
+.tutor-send:hover:not(:disabled) { background: #fbbf24; }
+.tutor-send:active { transform: translateY(1px); }
+.tutor-send:disabled { opacity: 0.5; cursor: not-allowed; }
 
 @media (max-width: 600px) {
   .hero { padding: 48px 0; }
