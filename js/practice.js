@@ -87,19 +87,28 @@
     if (meta?.unit) titleBits.push(`Unit ${meta.unit.order}: ${meta.unit.title}`);
     if (meta?.lesson) titleBits.push(meta.lesson.title);
 
+    const stats = Stats.load(slug);
+
     root.innerHTML = `
-      <div class="practice-header">
-        <a class="back-link" href="grade.html?g=${slug}">← Back to ${curr.title}</a>
-        <h2>${titleBits.join(' › ')}</h2>
-        <div class="progress-bar"><div class="progress-fill" id="bar"></div></div>
-        <div class="progress-text"><span id="progress-num">1</span> / ${questions.length}</div>
-      </div>
-      <div id="qbox"></div>`;
+      <div class="practice-layout">
+        <div class="practice-main">
+          <div class="practice-header">
+            <a class="back-link" href="grade.html?g=${slug}">← Back to ${curr.title}</a>
+            <h2>${titleBits.join(' › ')}</h2>
+            <div class="progress-bar"><div class="progress-fill" id="bar"></div></div>
+            <div class="progress-text"><span id="progress-num">1</span> / ${questions.length}</div>
+          </div>
+          <div id="qbox"></div>
+        </div>
+        <aside class="performance-panel" id="perf-panel"></aside>
+      </div>`;
 
     const qbox = document.getElementById('qbox');
     const bar = document.getElementById('bar');
     const progressNum = document.getElementById('progress-num');
+    const perfPanel = document.getElementById('perf-panel');
 
+    renderPerf(perfPanel, curr, stats);
     show();
 
     function show() {
@@ -121,6 +130,8 @@
         if (userAnswer == null || userAnswer === '') return;
         const isCorrect = checkAnswer(q, userAnswer);
         if (isCorrect) correct++;
+        Stats.record(slug, stats, { unitId: q._unit?.id, unitTitle: q._unit?.title, isCorrect });
+        renderPerf(perfPanel, curr, stats);
         showFeedback(q, userAnswer, isCorrect);
       });
     }
@@ -303,4 +314,110 @@
     }[c]));
   }
   function escapeAttr(s) { return escapeHtml(s); }
+
+  // ---- Performance tracking ----
+  const Stats = {
+    key(slug) { return `staar-stats:${slug}`; },
+    load(slug) {
+      try {
+        const raw = localStorage.getItem(this.key(slug));
+        if (raw) return JSON.parse(raw);
+      } catch {}
+      return { total: 0, correct: 0, streak: 0, bestStreak: 0, recent: [], units: {} };
+    },
+    save(slug, s) {
+      try { localStorage.setItem(this.key(slug), JSON.stringify(s)); } catch {}
+    },
+    record(slug, s, { unitId, unitTitle, isCorrect }) {
+      s.total += 1;
+      if (isCorrect) {
+        s.correct += 1;
+        s.streak += 1;
+        if (s.streak > s.bestStreak) s.bestStreak = s.streak;
+      } else {
+        s.streak = 0;
+      }
+      s.recent.push(isCorrect ? 1 : 0);
+      if (s.recent.length > 20) s.recent.shift();
+      if (unitId) {
+        if (!s.units[unitId]) s.units[unitId] = { title: unitTitle || unitId, total: 0, correct: 0 };
+        s.units[unitId].total += 1;
+        if (isCorrect) s.units[unitId].correct += 1;
+      }
+      this.save(slug, s);
+    }
+  };
+
+  function renderPerf(panel, curr, s) {
+    const acc = s.total === 0 ? 0 : Math.round((s.correct / s.total) * 100);
+    const ringRadius = 52;
+    const ringCirc = 2 * Math.PI * ringRadius;
+    const ringOffset = ringCirc - (acc / 100) * ringCirc;
+    const ringColor = acc >= 80 ? '#16a34a' : acc >= 60 ? '#f59e0b' : acc >= 1 ? '#dc2626' : '#cbd5e1';
+
+    const dots = (() => {
+      const cells = [];
+      for (let n = 0; n < 20; n++) {
+        const v = s.recent[n];
+        const cls = v === 1 ? 'dot correct' : v === 0 ? 'dot incorrect' : 'dot empty';
+        cells.push(`<span class="${cls}"></span>`);
+      }
+      return cells.join('');
+    })();
+
+    const unitRows = curr.units
+      .slice()
+      .sort((a, b) => a.order - b.order)
+      .map(u => {
+        const us = s.units[u.id];
+        if (!us || us.total === 0) {
+          return `
+            <div class="unit-row dim">
+              <div class="unit-row-title">${escapeHtml(u.title)}</div>
+              <div class="unit-row-bar"><div class="unit-row-fill" style="width:0%"></div></div>
+              <div class="unit-row-pct">—</div>
+            </div>`;
+        }
+        const pct = Math.round((us.correct / us.total) * 100);
+        const color = pct >= 80 ? 'var(--success)' : pct >= 60 ? 'var(--accent)' : 'var(--error)';
+        return `
+          <div class="unit-row">
+            <div class="unit-row-title">${escapeHtml(u.title)}</div>
+            <div class="unit-row-bar"><div class="unit-row-fill" style="width:${pct}%;background:${color};"></div></div>
+            <div class="unit-row-pct">${us.correct}/${us.total}</div>
+          </div>`;
+      }).join('');
+
+    panel.innerHTML = `
+      <div class="perf-card">
+        <div class="perf-title">Your performance</div>
+        <div class="perf-ring-wrap">
+          <svg class="perf-ring" viewBox="0 0 120 120" width="120" height="120">
+            <circle cx="60" cy="60" r="${ringRadius}" stroke="#e2e8f0" stroke-width="10" fill="none"/>
+            <circle cx="60" cy="60" r="${ringRadius}" stroke="${ringColor}" stroke-width="10" fill="none"
+                    stroke-dasharray="${ringCirc}" stroke-dashoffset="${ringOffset}"
+                    stroke-linecap="round" transform="rotate(-90 60 60)"
+                    style="transition: stroke-dashoffset 0.5s ease, stroke 0.3s ease;"/>
+            <text x="60" y="58" text-anchor="middle" font-size="22" font-weight="700" fill="var(--navy)">${acc}%</text>
+            <text x="60" y="78" text-anchor="middle" font-size="10" fill="var(--muted)">accuracy</text>
+          </svg>
+        </div>
+        <div class="perf-stats">
+          <div class="stat"><div class="stat-num">${s.correct}</div><div class="stat-label">correct</div></div>
+          <div class="stat"><div class="stat-num">${s.total}</div><div class="stat-label">answered</div></div>
+          <div class="stat"><div class="stat-num">${s.streak}🔥</div><div class="stat-label">streak</div></div>
+        </div>
+      </div>
+
+      <div class="perf-card">
+        <div class="perf-section-title">Last 20 answers</div>
+        <div class="recent-dots">${dots}</div>
+      </div>
+
+      <div class="perf-card">
+        <div class="perf-section-title">Mastery by unit</div>
+        <div class="unit-rows">${unitRows}</div>
+      </div>
+    `;
+  }
 })();
