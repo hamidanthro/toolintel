@@ -9,9 +9,18 @@
 
   function gate() {
     const u = Auth.currentUser();
-    if (!u || !u.isAdmin) {
+    if (!u) {
+      // Not signed in yet — auth modal is already showing because of requireLoginOnLoad.
+      $('admin-body').hidden = true;
+      return false;
+    }
+    if (!u.isAdmin) {
+      // Signed in, but not an admin. Bounce to home — admin URL is not for them.
       $('admin-body').hidden = true;
       $('admin-gate').hidden = false;
+      $('admin-gate').innerHTML = `
+        <p style="color:var(--error);">This area is for admins only. Redirecting you home\u2026</p>`;
+      setTimeout(() => { window.location.href = 'index.html'; }, 1500);
       return false;
     }
     $('admin-body').hidden = false;
