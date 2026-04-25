@@ -207,10 +207,56 @@
       } catch (_) { /* offline */ }
     }
 
-    window.onSTAARLogin = showDashboard;
+    // Refresh just the leaderboard (lighter than reloading the whole dashboard).
+    async function refreshLeaderboard() {
+      const u = window.STAARAuth?.currentUser?.();
+      if (!u) return;
+      try {
+        const lb = await window.STAARAuth.api('leaderboard', { token: window.STAARAuth.token() });
+        const lbList = document.getElementById('dash-leaderboard');
+        const sub = document.getElementById('dash-board-sub');
+        if (!lbList) return;
+        sub.textContent = lb.totalUsers > 0 ? `${lb.totalUsers} student${lb.totalUsers === 1 ? '' : 's'} ranked` : '';
+        if (!lb.top || lb.top.length === 0) {
+          lbList.innerHTML = '<li class="lb-empty">No one on the board yet — be the first!</li>';
+        } else {
+          lbList.innerHTML = lb.top.map(r => {
+            const isMe = r.username === u.username;
+            const medal = r.rank === 1 ? '🥇' : r.rank === 2 ? '🥈' : r.rank === 3 ? '🥉' : `#${r.rank}`;
+            return `<li class="${isMe ? 'lb-me' : ''}">
+              <span class="lb-rank">${medal}</span>
+              <span class="lb-name">${escapeHtmlSafe(r.displayName)}${isMe ? ' <span class="lb-you">(you)</span>' : ''}</span>
+              <span class="lb-correct">${(r.correct || 0).toLocaleString()} correct</span>
+              <span class="lb-acc">${r.accuracy || 0}%</span>
+            </li>`;
+          }).join('');
+        }
+        const meRow = document.getElementById('dash-me-row');
+        if (lb.me && lb.me.rank > 10) {
+          meRow.innerHTML = `<div class="lb-meta">Your rank: <strong>#${lb.me.rank}</strong> · ${(lb.me.correct).toLocaleString()} correct · ${lb.me.accuracy}%</div>`;
+        } else if (meRow) {
+          meRow.innerHTML = '';
+        }
+      } catch (_) { /* offline */ }
+    }
+
+    // Periodic leaderboard refresh: every 30s while tab is visible, and on focus.
+    let _lbInterval = null;
+    function startLeaderboardPolling() {
+      if (_lbInterval) return;
+      _lbInterval = setInterval(() => {
+        if (document.visibilityState === 'visible') refreshLeaderboard();
+      }, 30000);
+    }
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') refreshLeaderboard();
+    });
+    window.addEventListener('focus', refreshLeaderboard);
+
+    window.onSTAARLogin = () => { showDashboard(); startLeaderboardPolling(); };
     document.addEventListener('DOMContentLoaded', () => {
       // Wait a tick for auth.js to restore session, then render.
-      setTimeout(showDashboard, 0);
+      setTimeout(() => { showDashboard(); startLeaderboardPolling(); }, 0);
     });
   </script>
 </body>
