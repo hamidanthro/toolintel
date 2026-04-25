@@ -171,6 +171,8 @@ exports.handler = async (event) => {
   if (action === 'earn')           return await handleEarn(payload);
   if (action === 'lose')           return await handleLose(payload);
   if (action === 'markMastered')   return await handleMarkMastered(payload);
+  if (action === 'leaderboard')    return await handleLeaderboard(payload);
+  if (action === 'dashboard')      return await handleDashboard(payload);
   if (action === 'getWallet')      return await handleGetWallet(payload);
   if (action === 'listToys')       return await handleListToys(payload);
   if (action === 'checkout')       return await handleCheckout(payload);
@@ -544,6 +546,23 @@ async function handlePutStats(payload) {
       updatedAt: Date.now()
     }
   }));
+
+  // Denormalize per-slug totals on the user record so leaderboard scans
+  // don't have to fan out across the stats table.
+  const correct = Math.max(0, parseInt(data.correct, 10) || 0);
+  const total = Math.max(0, parseInt(data.total, 10) || 0);
+  if (auth.username) {
+    try {
+      await ddb.send(new UpdateCommand({
+        TableName: USERS_TABLE,
+        Key: { username: auth.username },
+        UpdateExpression: 'SET slugCorrect = if_not_exists(slugCorrect, :empty), slugCorrect.#s = :c, slugTotal = if_not_exists(slugTotal, :empty), slugTotal.#s = :t',
+        ExpressionAttributeNames: { '#s': slug },
+        ExpressionAttributeValues: { ':empty': {}, ':c': correct, ':t': total }
+      }));
+    } catch (_) { /* non-fatal */ }
+  }
+
   return ok({ ok: true });
 }
 
@@ -978,5 +997,81 @@ async function handleMarkMastered(payload) {
   return ok({
     masteredSections: upd.Attributes.masteredSections || {},
     section: sectionKey
+  });
+}
+
+function sumValues(obj) {
+  if (!obj || typeof obj !== 'object') return 0;
+  let total = 0;
+  for (const k of Object.keys(obj)) {
+    const v = parseInt(obj[k], 10);
+    if (Number.isFinite(v)) total += v;
+  }
+  return total;
+}
+
+function userTotals(item) {
+  return {
+    correct: sumValues(item?.slugCorrect),
+    answered: sumValues(item?.slugTotal),
+    lifetimeCents: parseInt(item?.lifetimeCents, 10) || 0,
+    balanceCents: parseInt(item?.balanceCents, 10) || 0
+  };
+}
+
+async function handleLeaderboard(payload) {
+  // Public-ish: anyone signed in can see the top board with display names only.
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+
+  const r = await ddb.send(new ScanCommand({
+    TableName: USERS_TABLE,
+    ProjectionExpression: 'username, displayName, slugCorrect, slugTotal, lifetimeCents'
+  }));
+  const items = r.Items || [];
+  const rows = items.map(it => {
+    const t = userTotals(it);
+    const acc = t.answered > 0 ? Math.round((t.correct / t.answered) * 100) : 0;
+    return {
+      username: it.username,
+      displayName: it.displayName || it.username,
+      correct: t.correct,
+      answered: t.answered,
+      accuracy: acc,
+      lifetimeCents: t.lifetimeCents
+    };
+  })
+  .filter(r => r.answered > 0)
+  .sort((a, b) => (b.correct - a.correct) || (b.accuracy - a.accuracy));
+
+  const top = rows.slice(0, 10).map((r, idx) => ({ rank: idx + 1, ...r }));
+  const meRow = rows.findIndex(r => r.username === auth.username);
+  const me = meRow >= 0 ? { rank: meRow + 1, ...rows[meRow] } : null;
+
+  return ok({ top, me, totalUsers: rows.length });
+}
+
+async function handleDashboard(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  if (!auth.username) return bad(401, 'Please sign in again');
+
+  const r = await ddb.send(new GetCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username }
+  }));
+  if (!r.Item) return bad(404, 'User not found');
+  const t = userTotals(r.Item);
+  const acc = t.answered > 0 ? Math.round((t.correct / t.answered) * 100) : 0;
+  return ok({
+    displayName: r.Item.displayName || r.Item.username,
+    username: r.Item.username,
+    correct: t.correct,
+    answered: t.answered,
+    accuracy: acc,
+    balanceCents: t.balanceCents,
+    lifetimeCents: t.lifetimeCents,
+    capCents: LIFETIME_CAP_CENTS,
+    masteredSections: r.Item.masteredSections || {}
   });
 }

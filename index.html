@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>STAAR Math Prep — Texas Math Test Preparation</title>
   <meta name="description" content="Practice and master the Texas STAAR math test. Grade-by-grade lessons, practice problems, and full-length tests for grades 3–8 and Algebra I." />
-  <link rel="stylesheet" href="css/styles.css?v=20260425o" />
+  <link rel="stylesheet" href="css/styles.css?v=20260425s" />
 </head>
 <body>
   <header class="site-header">
@@ -21,7 +21,7 @@
     </div>
   </header>
 
-  <section class="hero">
+  <section class="hero" id="hero-anon" hidden>
     <div class="container">
       <h1>Master the Texas STAAR math test.</h1>
       <p>Targeted practice aligned to the TEKS for grades 3–8 and Algebra I. Build skills, take full-length tests, and track your progress.</p>
@@ -30,7 +30,45 @@
     </div>
   </section>
 
-  <section>
+  <section id="dashboard" hidden>
+    <div class="container">
+      <div class="dash-welcome">
+        <h1 id="dash-greeting">Welcome!</h1>
+        <p class="dash-sub" id="dash-sub">Here's how you're doing.</p>
+      </div>
+      <div class="dash-grid">
+        <div class="dash-card dash-card-stat">
+          <div class="dash-stat-label">Lifetime correct answers</div>
+          <div class="dash-stat-value" id="dash-correct">—</div>
+          <div class="dash-stat-foot" id="dash-correct-foot"></div>
+        </div>
+        <div class="dash-card dash-card-stat">
+          <div class="dash-stat-label">Accuracy</div>
+          <div class="dash-stat-value" id="dash-acc">—</div>
+          <div class="dash-stat-foot" id="dash-acc-foot"></div>
+        </div>
+        <div class="dash-card dash-card-stat">
+          <div class="dash-stat-label">Wallet</div>
+          <div class="dash-stat-value" id="dash-wallet">—</div>
+          <div class="dash-stat-foot"><a href="marketplace.html" style="color:var(--blue);">Spend in marketplace →</a></div>
+        </div>
+      </div>
+      <div class="dash-card dash-card-board">
+        <div class="dash-board-head">
+          <h3>🏆 Leaderboard</h3>
+          <span class="dash-board-sub" id="dash-board-sub"></span>
+        </div>
+        <ol class="leaderboard" id="dash-leaderboard"><li class="lb-empty">Loading…</li></ol>
+        <div id="dash-me-row"></div>
+      </div>
+      <div class="dash-actions">
+        <a href="grades.html" class="btn btn-primary">Practice now</a>
+        <a href="marketplace.html" class="btn btn-secondary">Toy marketplace</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="grade-section" hidden>
     <div class="container">
       <h2>Choose your grade</h2>
       <div class="grade-grid" id="grade-grid"></div>
@@ -58,6 +96,78 @@
         <div class="desc">${g.categories.length} reporting categories</div>
       `;
       grid.appendChild(a);
+    });
+
+    function escapeHtmlSafe(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+    function fmtPts(n) {
+      const v = Math.max(0, parseInt(n, 10) || 0);
+      return `${v.toLocaleString()} pts`;
+    }
+
+    async function showDashboard() {
+      const u = window.STAARAuth?.currentUser?.();
+      const heroAnon = document.getElementById('hero-anon');
+      const dash = document.getElementById('dashboard');
+      const gradeSection = document.getElementById('grade-section');
+      if (!u) {
+        heroAnon.hidden = false;
+        dash.hidden = true;
+        gradeSection.hidden = false;
+        return;
+      }
+      heroAnon.hidden = true;
+      dash.hidden = false;
+      gradeSection.hidden = false;
+
+      document.getElementById('dash-greeting').textContent = `Welcome, ${u.displayName || u.username}!`;
+
+      try {
+        const [d, lb] = await Promise.all([
+          window.STAARAuth.api('dashboard', { token: window.STAARAuth.token() }),
+          window.STAARAuth.api('leaderboard', { token: window.STAARAuth.token() })
+        ]);
+        document.getElementById('dash-correct').textContent = (d.correct || 0).toLocaleString();
+        document.getElementById('dash-correct-foot').textContent = `out of ${(d.answered || 0).toLocaleString()} questions`;
+        document.getElementById('dash-acc').textContent = `${d.accuracy || 0}%`;
+        document.getElementById('dash-acc-foot').textContent = d.answered > 0 ? 'lifetime average' : 'no answers yet';
+        document.getElementById('dash-wallet').textContent = fmtPts(d.balanceCents);
+        document.getElementById('dash-sub').textContent = d.answered > 0
+          ? `You've answered ${(d.answered).toLocaleString()} questions and earned ${fmtPts(d.lifetimeCents)} all-time.`
+          : 'Answer your first question to land on the leaderboard.';
+
+        const lbList = document.getElementById('dash-leaderboard');
+        const sub = document.getElementById('dash-board-sub');
+        sub.textContent = lb.totalUsers > 0 ? `${lb.totalUsers} student${lb.totalUsers === 1 ? '' : 's'} ranked` : '';
+        if (!lb.top || lb.top.length === 0) {
+          lbList.innerHTML = '<li class="lb-empty">No one on the board yet — be the first!</li>';
+        } else {
+          lbList.innerHTML = lb.top.map(r => {
+            const isMe = r.username === u.username;
+            const medal = r.rank === 1 ? '🥇' : r.rank === 2 ? '🥈' : r.rank === 3 ? '🥉' : `#${r.rank}`;
+            return `<li class="${isMe ? 'lb-me' : ''}">
+              <span class="lb-rank">${medal}</span>
+              <span class="lb-name">${escapeHtmlSafe(r.displayName)}${isMe ? ' <span class="lb-you">(you)</span>' : ''}</span>
+              <span class="lb-correct">${(r.correct || 0).toLocaleString()} correct</span>
+              <span class="lb-acc">${r.accuracy || 0}%</span>
+            </li>`;
+          }).join('');
+        }
+
+        const meRow = document.getElementById('dash-me-row');
+        if (lb.me && lb.me.rank > 10) {
+          meRow.innerHTML = `<div class="lb-meta">Your rank: <strong>#${lb.me.rank}</strong> · ${(lb.me.correct).toLocaleString()} correct · ${lb.me.accuracy}%</div>`;
+        } else {
+          meRow.innerHTML = '';
+        }
+      } catch (_) { /* offline */ }
+    }
+
+    window.onSTAARLogin = showDashboard;
+    document.addEventListener('DOMContentLoaded', () => {
+      // Wait a tick for auth.js to restore session, then render.
+      setTimeout(showDashboard, 0);
     });
   </script>
 </body>
