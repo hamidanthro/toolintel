@@ -76,34 +76,38 @@
       return;
     }
 
-    // Build the session asynchronously: ask the AI to generate fresh
-    // scenarios while we hold a curriculum-only fallback ready.
-    buildSessionAsync(curr, questions, lessonMeta).then(finalQs => {
-      runQuiz(curr, finalQs, lessonMeta);
+    // Start instantly with a curriculum-only set so the kid never waits,
+    // then swap in fresh AI-generated questions in the background.
+    const initial = buildInitialSet(questions);
+    runQuiz(curr, initial, lessonMeta, {
+      enhance: cb => fetchGeneratedAsync(curr, questions, lessonMeta, cb)
     });
   }
 
-  // Build a 25-question session that mixes curriculum anchors with
-  // freshly AI-generated questions so each restart feels new.
-  async function buildSessionAsync(curr, pool, meta) {
+  // Build a 25-question curriculum-only set immediately.
+  function buildInitialSet(pool) {
     const TARGET = 25;
-    const ANCHOR = 5;        // keep 5 hand-written items for quality floor
-    const GENERATE = 20;     // ask AI for 20 fresh ones
+    const merged = [];
+    const padPool = shuffle(pool.slice());
+    let prevId = null;
+    while (merged.length < TARGET) {
+      let added = 0;
+      for (const q of padPool) {
+        if (merged.length >= TARGET) break;
+        if (q.id && q.id === prevId) continue;
+        merged.push(q);
+        prevId = q.id || null;
+        added++;
+      }
+      if (added === 0) break;
+    }
+    return shuffle(merged).slice(0, TARGET);
+  }
 
-    // Show a preparing-your-set loader.
-    root.innerHTML = `
-      <div class="prep-loader">
-        <span class="rainbow-spinner" aria-hidden="true"></span>
-        <div>
-          <div class="prep-title">Preparing fresh questions just for you\u2026</div>
-          <div class="prep-sub">Mixing in new STAAR-style scenarios</div>
-        </div>
-      </div>`;
-
-    const anchors = pickRandom(pool, ANCHOR);
+  // Background fetch of AI-generated questions. Calls back with the list.
+  async function fetchGeneratedAsync(curr, pool, meta, onReady) {
+    const GENERATE = 20;
     const topics = buildTopicSpec(pool, meta);
-
-    let generated = [];
     try {
       const seed = `${slug}-${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
       const res = await fetch(TUTOR_ENDPOINT, {
@@ -117,28 +121,11 @@
           topics
         })
       });
-      if (res.ok) {
-        const data = await res.json();
-        generated = (data.questions || []).map(g => normalizeGenerated(g, curr));
-      }
-    } catch (_) { /* fall through to curriculum-only */ }
-
-    let merged = [...anchors, ...generated];
-    if (merged.length < TARGET) {
-      // Pad from the curriculum pool (no consecutive dups).
-      const padPool = shuffle(pool.slice());
-      let prevId = merged.length ? (merged[merged.length - 1].id || null) : null;
-      while (merged.length < TARGET) {
-        for (const q of padPool) {
-          if (merged.length >= TARGET) break;
-          if (q.id && q.id === prevId) continue;
-          merged.push(q);
-          prevId = q.id || null;
-        }
-      }
-    }
-    merged = shuffle(merged).slice(0, TARGET);
-    return merged;
+      if (!res.ok) return;
+      const data = await res.json();
+      const generated = (data.questions || []).map(g => normalizeGenerated(g, curr));
+      if (generated.length) onReady(generated);
+    } catch (_) { /* silently keep curriculum-only */ }
   }
 
   function pickRandom(arr, n) {
@@ -209,7 +196,7 @@
     return bits.join(' › ');
   }
 
-  function runQuiz(curr, questions, meta) {
+  function runQuiz(curr, questions, meta, opts) {
     let i = 0;
     let correct = 0;
     const sKey = sectionKey(meta);
@@ -275,6 +262,25 @@
 
     renderPerf(perfPanel, curr, stats);
     show();
+
+    // Background enhance: when AI questions arrive, splice them into upcoming slots
+    // so the kid doesn't see the same curriculum-only items repeated.
+    if (opts && typeof opts.enhance === 'function') {
+      opts.enhance(generated => {
+        // Replace upcoming positions (strictly after current index) with generated items.
+        // Shuffle generated and slot them in random upcoming positions to keep the mix fresh.
+        const upcomingStart = i + 1; // never replace the question the kid is on
+        const upcomingSlots = [];
+        for (let k = upcomingStart; k < questions.length; k++) upcomingSlots.push(k);
+        if (upcomingSlots.length === 0) return;
+        const shuffledSlots = shuffle(upcomingSlots.slice());
+        const fresh = shuffle(generated.slice());
+        const replaceCount = Math.min(fresh.length, shuffledSlots.length);
+        for (let k = 0; k < replaceCount; k++) {
+          questions[shuffledSlots[k]] = fresh[k];
+        }
+      });
+    }
 
     function show() {
       if (i >= questions.length) {
