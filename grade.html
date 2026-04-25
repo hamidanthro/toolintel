@@ -21,7 +21,7 @@
 
   <section>
     <div class="container" id="content">
-      <p>Loading…</p>
+      <p>Loading curriculum…</p>
     </div>
   </section>
 
@@ -41,18 +41,57 @@
       content.innerHTML = '<h2>Grade not found</h2><p><a href="grades.html">Back to all grades</a></p>';
     } else {
       document.title = `${grade.title} — STAAR Math Prep`;
+      fetch(`data/${grade.slug}-curriculum.json`)
+        .then(r => r.ok ? r.json() : null)
+        .then(curr => curr && curr.units ? renderCurriculum(grade, curr) : renderCategoryFallback(grade))
+        .catch(() => renderCategoryFallback(grade));
+    }
+
+    function renderCurriculum(grade, curr) {
+      const units = curr.units
+        .slice()
+        .sort((a, b) => a.order - b.order)
+        .map(u => {
+          const lessons = u.lessons.map(l => `
+            <li>
+              <a href="practice.html?g=${grade.slug}&u=${u.id}&l=${l.id}">
+                <span class="lesson-title">${l.title}</span>
+                <span class="lesson-teks">TEKS ${l.teks}</span>
+              </a>
+            </li>`).join('');
+          return `
+            <div class="unit-card">
+              <div class="unit-head">
+                <div class="unit-order">Unit ${u.order}</div>
+                <h3>${u.title}</h3>
+                <div class="unit-cat">${u.reportingCategory}</div>
+                <p class="unit-summary">${u.summary}</p>
+              </div>
+              <ul class="lesson-list">${lessons}</ul>
+              <a class="btn btn-primary unit-practice" href="practice.html?g=${grade.slug}&u=${u.id}">Practice this unit</a>
+            </div>`;
+        }).join('');
+
+      content.innerHTML = `
+        <div class="grade-header">
+          <h2>${curr.title}</h2>
+          <p style="color:var(--muted);max-width:720px;">${curr.description}</p>
+          <a class="btn btn-primary" href="practice.html?g=${grade.slug}">Start full practice</a>
+        </div>
+        <div class="unit-list">${units}</div>`;
+    }
+
+    function renderCategoryFallback(grade) {
       const cats = grade.categories.map(c => `
         <a class="grade-card" href="practice.html?g=${grade.slug}&c=${encodeURIComponent(c)}">
           <div class="label">Reporting category</div>
           <div class="title">${c}</div>
           <div class="desc">Practice problems</div>
-        </a>
-      `).join('');
+        </a>`).join('');
       content.innerHTML = `
         <h2>${grade.title}</h2>
-        <p style="color:var(--muted);max-width:640px;">Choose a reporting category to start practicing.</p>
-        <div class="grade-grid">${cats}</div>
-      `;
+        <p style="color:var(--muted);max-width:640px;">Detailed curriculum coming soon. Choose a reporting category to start practicing.</p>
+        <div class="grade-grid">${cats}</div>`;
     }
   </script>
 </body>

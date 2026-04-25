@@ -20,12 +20,8 @@
   </header>
 
   <section>
-    <div class="container">
-      <h2 id="heading">Practice</h2>
-      <div class="card">
-        <p style="color:var(--muted);margin-top:0;">Practice problems will be loaded here. (Question bank coming next.)</p>
-        <p id="context" style="font-size:0.9rem;color:var(--muted);"></p>
-      </div>
+    <div class="container" id="practice-root">
+      <p>Loading practice…</p>
     </div>
   </section>
 
@@ -34,16 +30,7 @@
   </footer>
 
   <script src="js/staar-data.js"></script>
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-    const params = new URLSearchParams(location.search);
-    const slug = params.get('g');
-    const cat = params.get('c');
-    const grade = window.STAAR_GRADES.find(g => g.slug === slug);
-    if (grade) {
-      document.getElementById('heading').textContent = `${grade.title} — Practice`;
-      document.getElementById('context').textContent = cat ? `Reporting category: ${cat}` : '';
-    }
-  </script>
+  <script src="js/practice.js"></script>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>

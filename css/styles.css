@@ -133,8 +133,141 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
   box-shadow: var(--shadow);
 }
 
+/* Grade detail */
+.grade-header { margin-bottom: 32px; }
+.unit-list { display: grid; gap: 18px; }
+.unit-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  box-shadow: var(--shadow);
+}
+.unit-card h3 { margin: 4px 0 6px; color: var(--navy); }
+.unit-order {
+  display: inline-block;
+  background: var(--blue-light);
+  color: var(--blue);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 3px 10px;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+.unit-cat { color: var(--muted); font-size: 0.85rem; margin-bottom: 8px; }
+.unit-summary { margin: 8px 0 14px; color: var(--text); }
+.lesson-list { list-style: none; padding: 0; margin: 0 0 14px; border-top: 1px solid var(--border); }
+.lesson-list li { border-bottom: 1px solid var(--border); }
+.lesson-list a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  color: var(--text);
+}
+.lesson-list a:hover { color: var(--blue); text-decoration: none; }
+.lesson-teks { font-size: 0.8rem; color: var(--muted); }
+
+/* Practice */
+.practice-header { margin-bottom: 24px; }
+.back-link { font-size: 0.9rem; color: var(--muted); }
+.progress-bar {
+  height: 6px;
+  background: var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 16px 0 6px;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--blue);
+  width: 0;
+  transition: width 0.3s ease;
+}
+.progress-text { color: var(--muted); font-size: 0.85rem; }
+
+.question-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+}
+.q-meta { color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+.q-prompt { font-size: 1.2rem; color: var(--navy); margin-bottom: 18px; line-height: 1.5; }
+.q-body { display: grid; gap: 10px; margin-bottom: 18px; }
+
+.choice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.1s ease, border-color 0.1s ease;
+}
+.choice:hover { background: var(--blue-light); border-color: var(--blue); }
+.choice input { margin: 0; }
+
+.num-input {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.num-input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-light); }
+
+/* Feedback */
+.feedback {
+  margin-top: 16px;
+  border-radius: var(--radius);
+  padding: 18px;
+  border: 1px solid var(--border);
+}
+.feedback.correct { background: #f0fdf4; border-color: #bbf7d0; }
+.feedback.incorrect { background: #fef2f2; border-color: #fecaca; }
+.feedback-head { font-weight: 700; font-size: 1.05rem; margin-bottom: 8px; }
+.feedback.correct .feedback-head { color: var(--success); }
+.feedback.incorrect .feedback-head { color: var(--error); }
+.feedback-body p { margin: 6px 0; }
+.feedback-actions { margin-top: 14px; }
+
+/* AI tutor */
+.tutor-box { margin-top: 12px; padding-top: 12px; border-top: 1px dashed #fecaca; }
+.tutor-output {
+  margin-top: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  line-height: 1.55;
+}
+.tutor-output p { margin: 6px 0; }
+.tutor-msg { padding: 8px 0; border-top: 1px solid var(--border); }
+.tutor-msg:first-child { border-top: 0; }
+.tutor-msg.user { color: var(--text); }
+.tutor-msg.assistant { color: var(--text); }
+.tutor-msg.loading { color: var(--muted); font-style: italic; }
+.tutor-followup {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.tutor-followup input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 0.95rem;
+}
+.tutor-followup input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-light); }
+
 @media (max-width: 600px) {
   .hero { padding: 48px 0; }
   .hero h1 { font-size: 1.75rem; }
   .nav { gap: 12px; }
+  .q-prompt { font-size: 1.05rem; }
 }

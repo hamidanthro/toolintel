@@ -1,0 +1,497 @@
+{
+  "grade": 3,
+  "title": "Grade 3 Math",
+  "description": "STAAR Grade 3 Math curriculum aligned to the Texas Essential Knowledge and Skills (TEKS). Topics are organized in teaching order from foundational number sense through data analysis and personal financial literacy.",
+  "units": [
+    {
+      "id": "u1",
+      "order": 1,
+      "title": "Place Value & Whole Numbers",
+      "reportingCategory": "Numerical Representations and Relationships",
+      "teks": ["3.2A", "3.2B", "3.2C", "3.2D"],
+      "summary": "Read, write, compare, and round whole numbers up to 100,000 using place value.",
+      "lessons": [
+        {
+          "id": "u1l1",
+          "title": "Place value to 100,000",
+          "teks": "3.2A",
+          "objective": "Compose and decompose numbers up to 100,000 using place value.",
+          "questions": [
+            {
+              "id": "u1l1q1",
+              "type": "multiple_choice",
+              "prompt": "Which number has a 7 in the thousands place?",
+              "choices": ["27,041", "70,402", "12,704", "47,000"],
+              "answer": "47,000",
+              "explanation": "In 47,000, the digit 7 is in the thousands place. The 4 is in the ten-thousands place."
+            },
+            {
+              "id": "u1l1q2",
+              "type": "numeric",
+              "prompt": "What is the value of the digit 5 in 35,621?",
+              "answer": "5000",
+              "acceptable": ["5,000", "5000"],
+              "explanation": "The digit 5 sits in the thousands place, so its value is 5 × 1,000 = 5,000."
+            }
+          ]
+        },
+        {
+          "id": "u1l2",
+          "title": "Comparing & ordering whole numbers",
+          "teks": "3.2D",
+          "objective": "Compare and order whole numbers up to 100,000 using >, <, and =.",
+          "questions": [
+            {
+              "id": "u1l2q1",
+              "type": "multiple_choice",
+              "prompt": "Which symbol makes this statement true?  42,318 ___ 42,381",
+              "choices": [">", "<", "=", "none of these"],
+              "answer": "<",
+              "explanation": "The thousands and hundreds digits match. In the tens place, 1 < 8, so 42,318 < 42,381."
+            }
+          ]
+        },
+        {
+          "id": "u1l3",
+          "title": "Rounding to nearest 10 and 100",
+          "teks": "3.4B",
+          "objective": "Round to the nearest 10 or 100 to estimate.",
+          "questions": [
+            {
+              "id": "u1l3q1",
+              "type": "numeric",
+              "prompt": "Round 467 to the nearest hundred.",
+              "answer": "500",
+              "explanation": "Look at the tens digit: 6. Since 6 ≥ 5, round up. 467 rounds to 500."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "u2",
+      "order": 2,
+      "title": "Fractions",
+      "reportingCategory": "Numerical Representations and Relationships",
+      "teks": ["3.3A", "3.3B", "3.3C", "3.3D", "3.3E", "3.3F", "3.3G", "3.3H"],
+      "summary": "Represent, compare, and find equivalent fractions using models and number lines.",
+      "lessons": [
+        {
+          "id": "u2l1",
+          "title": "Fractions as parts of a whole",
+          "teks": "3.3A",
+          "objective": "Represent fractions of halves, fourths, and eighths as distances on a number line.",
+          "questions": [
+            {
+              "id": "u2l1q1",
+              "type": "multiple_choice",
+              "prompt": "A pizza is cut into 8 equal slices. Maya eats 3 slices. What fraction did she eat?",
+              "choices": ["3/5", "3/8", "5/8", "8/3"],
+              "answer": "3/8",
+              "explanation": "The whole has 8 equal parts (denominator). Maya ate 3 of them (numerator). So she ate 3/8."
+            }
+          ]
+        },
+        {
+          "id": "u2l2",
+          "title": "Equivalent fractions",
+          "teks": "3.3F",
+          "objective": "Represent equivalent fractions with denominators of 2, 3, 4, 6, and 8.",
+          "questions": [
+            {
+              "id": "u2l2q1",
+              "type": "multiple_choice",
+              "prompt": "Which fraction is equivalent to 1/2?",
+              "choices": ["2/3", "3/8", "4/8", "5/6"],
+              "answer": "4/8",
+              "explanation": "1/2 means one of two equal parts. 4/8 means four of eight equal parts — the same amount of the whole."
+            }
+          ]
+        },
+        {
+          "id": "u2l3",
+          "title": "Comparing fractions",
+          "teks": "3.3H",
+          "objective": "Compare two fractions with the same numerator or same denominator.",
+          "questions": [
+            {
+              "id": "u2l3q1",
+              "type": "multiple_choice",
+              "prompt": "Which fraction is greater?  3/4 or 3/8",
+              "choices": ["3/4", "3/8", "They are equal"],
+              "answer": "3/4",
+              "explanation": "When numerators are the same, the fraction with the smaller denominator is larger because each piece is bigger. So 3/4 > 3/8."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "u3",
+      "order": 3,
+      "title": "Addition & Subtraction within 1,000",
+      "reportingCategory": "Computations and Algebraic Relationships",
+      "teks": ["3.4A", "3.5A"],
+      "summary": "Add and subtract whole numbers fluently using strategies based on place value.",
+      "lessons": [
+        {
+          "id": "u3l1",
+          "title": "Adding 3-digit numbers",
+          "teks": "3.4A",
+          "objective": "Solve one- and two-step problems involving addition within 1,000.",
+          "questions": [
+            {
+              "id": "u3l1q1",
+              "type": "numeric",
+              "prompt": "A library has 348 fiction books and 276 non-fiction books. How many books in all?",
+              "answer": "624",
+              "explanation": "Add 348 + 276. Ones: 8+6=14, write 4 carry 1. Tens: 4+7+1=12, write 2 carry 1. Hundreds: 3+2+1=6. Total: 624."
+            }
+          ]
+        },
+        {
+          "id": "u3l2",
+          "title": "Subtracting with regrouping",
+          "teks": "3.4A",
+          "objective": "Subtract within 1,000 with regrouping.",
+          "questions": [
+            {
+              "id": "u3l2q1",
+              "type": "numeric",
+              "prompt": "A store had 502 toys. They sold 168. How many are left?",
+              "answer": "334",
+              "explanation": "502 − 168. Regroup: 502 becomes 4 hundreds, 9 tens, 12 ones. 12−8=4, 9−6=3, 4−1=3. Answer: 334."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "u4",
+      "order": 4,
+      "title": "Multiplication",
+      "reportingCategory": "Computations and Algebraic Relationships",
+      "teks": ["3.4D", "3.4E", "3.4F", "3.4G", "3.4K", "3.5B", "3.5C"],
+      "summary": "Build multiplication facts through 10×10 using arrays, equal groups, and properties.",
+      "lessons": [
+        {
+          "id": "u4l1",
+          "title": "Equal groups & arrays",
+          "teks": "3.4D",
+          "objective": "Determine the total number of objects when arranged in arrays or equal groups.",
+          "questions": [
+            {
+              "id": "u4l1q1",
+              "type": "multiple_choice",
+              "prompt": "Liam has 4 bags with 6 marbles in each. Which expression shows the total?",
+              "choices": ["4 + 6", "4 × 6", "6 ÷ 4", "6 − 4"],
+              "answer": "4 × 6",
+              "explanation": "Equal groups means multiplication. 4 groups of 6 = 4 × 6 = 24 marbles."
+            }
+          ]
+        },
+        {
+          "id": "u4l2",
+          "title": "Multiplication facts to 10×10",
+          "teks": "3.4F",
+          "objective": "Recall multiplication facts up to 10 × 10.",
+          "questions": [
+            {
+              "id": "u4l2q1",
+              "type": "numeric",
+              "prompt": "What is 7 × 8?",
+              "answer": "56",
+              "explanation": "7 × 8 = 56. A trick: 7 × 8 is between 7 × 7 (49) and 7 × 9 (63). 49 + 7 = 56."
+            }
+          ]
+        },
+        {
+          "id": "u4l3",
+          "title": "Word problems with multiplication",
+          "teks": "3.4K",
+          "objective": "Solve one- and two-step problems involving multiplication.",
+          "questions": [
+            {
+              "id": "u4l3q1",
+              "type": "numeric",
+              "prompt": "A classroom has 6 rows of desks with 5 desks in each row. How many desks total?",
+              "answer": "30",
+              "explanation": "Rows × desks per row = total. 6 × 5 = 30 desks."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "u5",
+      "order": 5,
+      "title": "Division",
+      "reportingCategory": "Computations and Algebraic Relationships",
+      "teks": ["3.4H", "3.4J", "3.4K", "3.5B"],
+      "summary": "Divide using equal sharing and equal groups, and connect division to multiplication.",
+      "lessons": [
+        {
+          "id": "u5l1",
+          "title": "Division as equal sharing",
+          "teks": "3.4H",
+          "objective": "Determine the number of objects in each group when sharing equally.",
+          "questions": [
+            {
+              "id": "u5l1q1",
+              "type": "numeric",
+              "prompt": "24 cookies are shared equally among 4 friends. How many cookies does each friend get?",
+              "answer": "6",
+              "explanation": "Equal sharing → division. 24 ÷ 4 = 6. Each friend gets 6 cookies."
+            }
+          ]
+        },
+        {
+          "id": "u5l2",
+          "title": "Multiplication & division fact families",
+          "teks": "3.4J",
+          "objective": "Use the relationship between multiplication and division to solve problems.",
+          "questions": [
+            {
+              "id": "u5l2q1",
+              "type": "multiple_choice",
+              "prompt": "If 7 × 8 = 56, what is 56 ÷ 8?",
+              "choices": ["6", "7", "8", "9"],
+              "answer": "7",
+              "explanation": "Multiplication and division are inverses. 7 × 8 = 56 means 56 ÷ 8 = 7."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "u6",
+      "order": 6,
+      "title": "Algebraic Reasoning & Patterns",
+      "reportingCategory": "Computations and Algebraic Relationships",
+      "teks": ["3.5A", "3.5B", "3.5D", "3.5E"],
+      "summary": "Represent and solve problems with equations, and identify number patterns.",
+      "lessons": [
+        {
+          "id": "u6l1",
+          "title": "Finding an unknown number",
+          "teks": "3.5D",
+          "objective": "Determine the unknown whole number in an equation.",
+          "questions": [
+            {
+              "id": "u6l1q1",
+              "type": "numeric",
+              "prompt": "What number makes this equation true?  □ + 17 = 45",
+              "answer": "28",
+              "explanation": "Use the inverse: 45 − 17 = 28. Check: 28 + 17 = 45. ✓"
+            }
+          ]
+        },
+        {
+          "id": "u6l2",
+          "title": "Number patterns",
+          "teks": "3.5E",
+          "objective": "Identify and continue patterns in tables.",
+          "questions": [
+            {
+              "id": "u6l2q1",
+              "type": "numeric",
+              "prompt": "Continue the pattern: 4, 8, 12, 16, ___",
+              "answer": "20",
+              "explanation": "Each number increases by 4. 16 + 4 = 20."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "u7",
+      "order": 7,
+      "title": "Geometry: 2D Shapes",
+      "reportingCategory": "Geometry and Measurement",
+      "teks": ["3.6A", "3.6B", "3.6E"],
+      "summary": "Classify polygons and quadrilaterals by attributes such as sides and angles.",
+      "lessons": [
+        {
+          "id": "u7l1",
+          "title": "Classifying polygons",
+          "teks": "3.6A",
+          "objective": "Classify and sort 2D shapes based on attributes.",
+          "questions": [
+            {
+              "id": "u7l1q1",
+              "type": "multiple_choice",
+              "prompt": "Which shape has exactly 4 sides and 4 right angles, with all sides the same length?",
+              "choices": ["Rectangle", "Square", "Triangle", "Pentagon"],
+              "answer": "Square",
+              "explanation": "A rectangle has 4 right angles but sides may differ. A square has 4 equal sides AND 4 right angles."
+            }
+          ]
+        },
+        {
+          "id": "u7l2",
+          "title": "Quadrilaterals",
+          "teks": "3.6A",
+          "objective": "Identify trapezoids, rhombuses, parallelograms, rectangles, and squares.",
+          "questions": [
+            {
+              "id": "u7l2q1",
+              "type": "multiple_choice",
+              "prompt": "Which is NOT a quadrilateral?",
+              "choices": ["Square", "Rhombus", "Pentagon", "Trapezoid"],
+              "answer": "Pentagon",
+              "explanation": "A quadrilateral has 4 sides. A pentagon has 5 sides, so it's not a quadrilateral."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "u8",
+      "order": 8,
+      "title": "Measurement: Perimeter & Area",
+      "reportingCategory": "Geometry and Measurement",
+      "teks": ["3.6C", "3.6D", "3.7B"],
+      "summary": "Find perimeter of polygons and area of rectangles.",
+      "lessons": [
+        {
+          "id": "u8l1",
+          "title": "Perimeter of polygons",
+          "teks": "3.7B",
+          "objective": "Find the perimeter of a polygon by adding side lengths.",
+          "questions": [
+            {
+              "id": "u8l1q1",
+              "type": "numeric",
+              "prompt": "A rectangle has length 8 cm and width 5 cm. What is its perimeter in cm?",
+              "answer": "26",
+              "explanation": "Perimeter = sum of all sides = 8 + 5 + 8 + 5 = 26 cm. Or 2 × (8 + 5) = 26 cm."
+            }
+          ]
+        },
+        {
+          "id": "u8l2",
+          "title": "Area of rectangles",
+          "teks": "3.6C",
+          "objective": "Find the area of rectangles by tiling and using length × width.",
+          "questions": [
+            {
+              "id": "u8l2q1",
+              "type": "numeric",
+              "prompt": "What is the area of a rectangle with length 7 ft and width 4 ft? (square feet)",
+              "answer": "28",
+              "explanation": "Area of rectangle = length × width = 7 × 4 = 28 square feet."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "u9",
+      "order": 9,
+      "title": "Time, Liquid Volume & Weight",
+      "reportingCategory": "Geometry and Measurement",
+      "teks": ["3.7C", "3.7D", "3.7E"],
+      "summary": "Tell time to the minute, and measure liquid volume and weight in customary and metric units.",
+      "lessons": [
+        {
+          "id": "u9l1",
+          "title": "Elapsed time",
+          "teks": "3.7C",
+          "objective": "Determine elapsed time in minutes within a 24-hour period.",
+          "questions": [
+            {
+              "id": "u9l1q1",
+              "type": "numeric",
+              "prompt": "A movie starts at 3:15 PM and ends at 4:50 PM. How many minutes long is the movie?",
+              "answer": "95",
+              "explanation": "From 3:15 to 4:15 is 60 min. From 4:15 to 4:50 is 35 min. Total: 60 + 35 = 95 minutes."
+            }
+          ]
+        },
+        {
+          "id": "u9l2",
+          "title": "Liquid volume & weight",
+          "teks": "3.7D",
+          "objective": "Determine liquid volume (capacity) and weight using customary and metric units.",
+          "questions": [
+            {
+              "id": "u9l2q1",
+              "type": "multiple_choice",
+              "prompt": "Which unit best measures the weight of an apple?",
+              "choices": ["Kilogram", "Gram", "Liter", "Meter"],
+              "answer": "Gram",
+              "explanation": "An apple is light, around 150–200 grams. Kilograms measure heavier objects; liters measure liquids; meters measure length."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "u10",
+      "order": 10,
+      "title": "Data Analysis",
+      "reportingCategory": "Data Analysis and Personal Financial Literacy",
+      "teks": ["3.8A", "3.8B"],
+      "summary": "Read and interpret frequency tables, dot plots, pictographs, and bar graphs with scaled intervals.",
+      "lessons": [
+        {
+          "id": "u10l1",
+          "title": "Reading bar graphs",
+          "teks": "3.8A",
+          "objective": "Summarize a data set using a frequency table, dot plot, pictograph, or bar graph.",
+          "questions": [
+            {
+              "id": "u10l1q1",
+              "type": "multiple_choice",
+              "prompt": "A bar graph shows: Apples=12, Bananas=8, Oranges=15, Grapes=6. Which fruit was chosen most?",
+              "choices": ["Apples", "Bananas", "Oranges", "Grapes"],
+              "answer": "Oranges",
+              "explanation": "The largest value is 15 (Oranges). The bar for Oranges would be the tallest."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "u11",
+      "order": 11,
+      "title": "Personal Financial Literacy",
+      "reportingCategory": "Data Analysis and Personal Financial Literacy",
+      "teks": ["3.9A", "3.9B", "3.9C", "3.9D", "3.9E", "3.9F"],
+      "summary": "Identify income sources, distinguish needs vs wants, and understand saving and credit.",
+      "lessons": [
+        {
+          "id": "u11l1",
+          "title": "Needs vs wants",
+          "teks": "3.9D",
+          "objective": "Distinguish between fixed and variable expenses, and needs versus wants.",
+          "questions": [
+            {
+              "id": "u11l1q1",
+              "type": "multiple_choice",
+              "prompt": "Which of the following is a NEED, not a want?",
+              "choices": ["Video game", "Toy", "Healthy food", "Candy"],
+              "answer": "Healthy food",
+              "explanation": "A need is something required to live (food, water, shelter). Toys, games, and candy are wants — nice to have but not necessary."
+            }
+          ]
+        },
+        {
+          "id": "u11l2",
+          "title": "Saving & credit",
+          "teks": "3.9E",
+          "objective": "Calculate how much money is saved after a period of time.",
+          "questions": [
+            {
+              "id": "u11l2q1",
+              "type": "numeric",
+              "prompt": "Sara saves $5 each week. How much will she save in 8 weeks? (in dollars)",
+              "answer": "40",
+              "explanation": "Weekly amount × number of weeks = total saved. $5 × 8 = $40."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
