@@ -348,7 +348,11 @@
       refreshHeader();
       if (!w.locked) showCentsToast(w.awardedCents, w.capped);
       return w;
-    } catch (_) { return null; }
+    } catch (e) {
+      console.warn('earn failed', e);
+      showToast('Could not save your reward (offline?)');
+      return null;
+    }
   }
 
   async function lose(cents, section) {
@@ -369,7 +373,11 @@
       refreshHeader();
       if (!w.locked) showCentsLossToast(w.lostCents, w.flooredAtZero);
       return w;
-    } catch (_) { return null; }
+    } catch (e) {
+      console.warn('lose failed', e);
+      showToast('Could not update your wallet (offline?)');
+      return null;
+    }
   }
 
   function isMastered(section) {
