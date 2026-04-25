@@ -667,31 +667,56 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
 .profile-avatar.small { width: 26px; height: 26px; font-size: 0.8rem; }
 
 /* Auth modal extras */
-.auth-modal .modal-card { max-width: 440px; }
+.auth-modal .modal-card {
+  max-width: 420px;
+  padding: 28px 28px 22px;
+  border-radius: 16px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
+}
+.auth-modal .modal-title {
+  font-size: 1.25rem;
+  letter-spacing: -0.01em;
+  margin-bottom: 6px;
+}
+.auth-modal .modal-message {
+  margin-bottom: 22px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+.auth-modal .modal-actions {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
 .auth-label {
   display: block;
-  font-size: 0.8rem;
-  font-weight: 600;
+  font-size: 0.72rem;
+  font-weight: 700;
   color: var(--muted);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin: 14px 0 6px;
+  letter-spacing: 0.08em;
+  margin: 16px 0 8px;
 }
+.auth-label:first-of-type { margin-top: 4px; }
 .auth-input {
   width: 100%;
-  padding: 11px 14px;
+  padding: 12px 14px;
   border: 1.5px solid var(--border);
   border-radius: 10px;
-  font-size: 1rem;
+  font-size: 0.98rem;
   font-family: inherit;
   background: var(--bg);
   color: var(--navy);
   box-sizing: border-box;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
+.auth-input::placeholder { color: var(--muted); opacity: 0.65; }
+.auth-input:hover { border-color: var(--navy); }
 .auth-input:focus {
   outline: none;
   border-color: var(--amber);
   background: var(--surface);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
 }
 .pin-input {
   letter-spacing: 0.6em;
