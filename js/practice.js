@@ -17,6 +17,69 @@
     return renderHome();
   }
 
+  // ---- Guest free-trial: 100 questions across all grades, no login required.
+  const GUEST_LIMIT = 100;
+  const GUEST_KEY = 'staar.guest.answered';
+  function isGuest() {
+    return !(window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser());
+  }
+  function guestCount() {
+    try { return parseInt(localStorage.getItem(GUEST_KEY), 10) || 0; } catch (_) { return 0; }
+  }
+  function guestIncrement() {
+    try { localStorage.setItem(GUEST_KEY, String(guestCount() + 1)); } catch (_) {}
+  }
+  function guestRemaining() { return Math.max(0, GUEST_LIMIT - guestCount()); }
+  function renderGuestBanner() {
+    if (!isGuest()) {
+      const old = document.getElementById('guest-banner');
+      if (old) old.remove();
+      return;
+    }
+    let bar = document.getElementById('guest-banner');
+    if (!bar) {
+      bar = document.createElement('div');
+      bar.id = 'guest-banner';
+      bar.style.cssText = 'background:#fef3c7;border:1px solid #fcd34d;color:#78350f;padding:10px 14px;border-radius:8px;margin-bottom:12px;font-size:0.92rem;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;';
+      const root = document.getElementById('practice-root');
+      if (root && root.firstChild) root.insertBefore(bar, root.firstChild);
+      else if (root) root.appendChild(bar);
+    }
+    const remaining = guestRemaining();
+    bar.innerHTML = `<span><strong>Guest mode:</strong> ${remaining} of ${GUEST_LIMIT} free practice questions remaining. Sign up to save progress, earn points, and unlock unlimited practice.</span>
+      <button type="button" class="btn btn-primary" style="padding:6px 14px;font-size:0.88rem;" id="guest-signup-btn">Sign up free</button>`;
+    const btn = document.getElementById('guest-signup-btn');
+    if (btn) btn.onclick = () => { if (window.STAARAuth && window.STAARAuth.showLogin) window.STAARAuth.showLogin(); };
+  }
+  function maybeBlockGuest() {
+    if (!isGuest()) return false;
+    if (guestCount() < GUEST_LIMIT) return false;
+    // Hit the cap: lock the practice area behind a sign-up wall.
+    const root = document.getElementById('practice-root');
+    if (root) {
+      root.innerHTML = `
+        <div class="card" style="text-align:center;padding:36px;">
+          <h2 style="margin-top:0;">You answered ${GUEST_LIMIT} questions! 🎉</h2>
+          <p style="color:var(--muted);max-width:520px;margin:8px auto 20px;">
+            Sign up free to keep practicing, save your progress to any device, earn points
+            you can spend on toys in the marketplace, and climb the leaderboard.
+          </p>
+          <p><button type="button" class="btn btn-primary" id="guest-cap-signup">Create your free account</button></p>
+          <p style="font-size:0.88rem;margin-top:14px;"><a href="#" id="guest-cap-signin">Already have an account? Sign in</a></p>
+        </div>`;
+      const sup = document.getElementById('guest-cap-signup');
+      const sin = document.getElementById('guest-cap-signin');
+      if (sup) sup.onclick = () => { if (window.STAARAuth && window.STAARAuth.showLogin) window.STAARAuth.showLogin(); };
+      if (sin) sin.onclick = (e) => { e.preventDefault(); if (window.STAARAuth && window.STAARAuth.showLogin) window.STAARAuth.showLogin(); };
+    }
+    return true;
+  }
+  if (maybeBlockGuest()) return;
+  renderGuestBanner();
+
+  // When a guest signs in mid-practice, reload so they continue with full progress tracking.
+  window.onSTAARLogin = function () { try { location.reload(); } catch (_) {} };
+
   // Gate: kids can only practice their own grade or higher (set at signup).
   const Auth = window.STAARAuth || {};
   if (Auth.userGradeLevel && Auth.gradeLevel) {
@@ -357,12 +420,20 @@
         const isCorrect = checkAnswer(q, userAnswer);
         if (isCorrect) correct++;
         Stats.record(slug, stats, { unitId: q._unit?.id, unitTitle: q._unit?.title, isCorrect });
+        if (isGuest()) {
+          guestIncrement();
+          renderGuestBanner();
+        }
         renderPerf(perfPanel, curr, stats);
         showFeedback(q, userAnswer, isCorrect);
         if (isCorrect && window.STAARAuth && typeof window.STAARAuth.earn === 'function') {
           window.STAARAuth.earn(difficultyCents(q), sKey);
         } else if (!isCorrect && window.STAARAuth && typeof window.STAARAuth.lose === 'function') {
           window.STAARAuth.lose(difficultyCents(q), sKey);
+        }
+        // After feedback, if guest hit the cap, lock the page on the next question advance.
+        if (isGuest() && guestCount() >= GUEST_LIMIT) {
+          setTimeout(() => { maybeBlockGuest(); }, 1500);
         }
       });
     }
