@@ -362,10 +362,17 @@ function sanitizeQuestions(arr, max) {
       const match = choices.find(c => c.toLowerCase() === answer.toLowerCase());
       if (!match) continue;
       item.answer = match; // normalize to exact choice text
-      // Trim to 4 choices max, ensure answer present.
-      const uniq = Array.from(new Set(choices)).slice(0, 4);
-      if (!uniq.includes(item.answer)) uniq.push(item.answer);
-      item.choices = uniq.slice(0, 4);
+      // De-dupe, then make sure the answer is kept when capping at 4.
+      const uniq = Array.from(new Set(choices));
+      const withAnswer = uniq.includes(item.answer) ? uniq : [item.answer, ...uniq];
+      // Always include the answer; keep up to 3 distractors.
+      const distractors = withAnswer.filter(c => c !== item.answer).slice(0, 3);
+      item.choices = [item.answer, ...distractors];
+      // Light shuffle so the answer isn't always first.
+      for (let i = item.choices.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [item.choices[i], item.choices[j]] = [item.choices[j], item.choices[i]];
+      }
     }
 
     out.push(item);

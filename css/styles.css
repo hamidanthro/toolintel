@@ -251,7 +251,12 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
   transition: background 0.1s ease, border-color 0.1s ease;
 }
 .choice:hover { background: var(--blue-light); border-color: var(--blue); }
-.choice input { margin: 0; }
+.choice:has(input:checked) {
+  background: var(--blue-light);
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+.choice input { margin: 0; transform: scale(1.15); accent-color: var(--blue); }
 
 .num-input {
   width: 100%;

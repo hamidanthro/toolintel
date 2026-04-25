@@ -314,7 +314,10 @@
       form.addEventListener('submit', e => {
         e.preventDefault();
         const userAnswer = getAnswerFromForm(q, form);
-        if (userAnswer == null || userAnswer === '') return;
+        if (userAnswer == null || userAnswer === '') {
+          showToast(q.type === 'multiple_choice' ? 'Pick an answer first.' : 'Type your answer first.');
+          return;
+        }
         const isCorrect = checkAnswer(q, userAnswer);
         if (isCorrect) correct++;
         Stats.record(slug, stats, { unitId: q._unit?.id, unitTitle: q._unit?.title, isCorrect });
@@ -509,8 +512,13 @@
 
   function checkAnswer(q, userAnswer) {
     const norm = s => String(s).trim().toLowerCase().replace(/\s+/g, '').replace(/,/g, '');
-    if (norm(userAnswer) === norm(q.answer)) return true;
-    if (Array.isArray(q.acceptable) && q.acceptable.some(a => norm(a) === norm(userAnswer))) return true;
+    const a = norm(userAnswer);
+    if (a === norm(q.answer)) return true;
+    if (Array.isArray(q.acceptable) && q.acceptable.some(x => norm(x) === a)) return true;
+    // Numeric equivalence (handles "$27" vs "27", "5.0" vs "5", etc.)
+    const numUser = parseFloat(String(userAnswer).replace(/[^0-9.\-]/g, ''));
+    const numAns  = parseFloat(String(q.answer).replace(/[^0-9.\-]/g, ''));
+    if (Number.isFinite(numUser) && Number.isFinite(numAns) && numUser === numAns) return true;
     return false;
   }
 
