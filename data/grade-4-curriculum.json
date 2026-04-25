@@ -1,0 +1,581 @@
+{
+  "grade": 4,
+  "title": "Grade 4 Math",
+  "description": "STAAR Grade 4 Math curriculum aligned to the Texas Essential Knowledge and Skills (TEKS). Topics are organized in teaching order from place value through personal financial literacy.",
+  "units": [
+    {
+      "id": "u1",
+      "order": 1,
+      "title": "Place Value to 1,000,000,000",
+      "reportingCategory": "Numerical Representations and Relationships",
+      "teks": ["4.2A", "4.2B", "4.2C", "4.2D"],
+      "summary": "Read, write, compare, and round whole numbers up to one billion.",
+      "lessons": [
+        {
+          "id": "u1l1",
+          "title": "Place value to one billion",
+          "teks": "4.2B",
+          "objective": "Represent the value of digits in whole numbers through 1,000,000,000.",
+          "questions": [
+            {
+              "id": "u1l1q1",
+              "type": "multiple_choice",
+              "prompt": "What is the value of the 6 in 4,628,135?",
+              "choices": ["6,000", "60,000", "600,000", "6,000,000"],
+              "answer": "600,000",
+              "explanation": "The 6 sits in the hundred-thousands place: 6 × 100,000 = 600,000."
+            },
+            {
+              "id": "u1l1q2",
+              "type": "numeric",
+              "prompt": "Write 305,072 in expanded form's hundred-thousands value.",
+              "answer": "300000",
+              "acceptable": ["300,000", "300000"],
+              "explanation": "The 3 is in the hundred-thousands place, so its value is 300,000."
+            }
+          ]
+        },
+        {
+          "id": "u1l2",
+          "title": "Comparing & ordering",
+          "teks": "4.2C",
+          "objective": "Compare and order whole numbers to 1,000,000,000 using place value.",
+          "questions": [
+            {
+              "id": "u1l2q1",
+              "type": "multiple_choice",
+              "prompt": "Which list is in order from least to greatest?",
+              "choices": [
+                "412,008; 412,080; 412,800",
+                "412,800; 412,080; 412,008",
+                "412,080; 412,008; 412,800",
+                "412,008; 412,800; 412,080"
+              ],
+              "answer": "412,008; 412,080; 412,800",
+              "explanation": "All three share 412, so compare the last three digits: 008 < 080 < 800."
+            }
+          ]
+        },
+        {
+          "id": "u1l3",
+          "title": "Rounding to any place",
+          "teks": "4.2D",
+          "objective": "Round whole numbers to a given place.",
+          "questions": [
+            {
+              "id": "u1l3q1",
+              "type": "multiple_choice",
+              "prompt": "Round 36,847 to the nearest thousand.",
+              "choices": ["36,000", "36,800", "37,000", "40,000"],
+              "answer": "37,000",
+              "explanation": "The hundreds digit is 8, which rounds the thousands digit up from 6 to 7."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "u2",
+      "order": 2,
+      "title": "Decimals to Hundredths",
+      "reportingCategory": "Numerical Representations and Relationships",
+      "teks": ["4.2E", "4.2F", "4.2G", "4.2H", "4.3E"],
+      "summary": "Represent, compare, and relate decimals to hundredths and to fractions.",
+      "lessons": [
+        {
+          "id": "u2l1",
+          "title": "Decimal place value",
+          "teks": "4.2E",
+          "objective": "Represent decimals to the hundredths using money and concrete models.",
+          "questions": [
+            {
+              "id": "u2l1q1",
+              "type": "multiple_choice",
+              "prompt": "Which decimal is the same as 7 tenths and 3 hundredths?",
+              "choices": ["0.073", "0.37", "0.73", "7.30"],
+              "answer": "0.73",
+              "explanation": "7 tenths = 0.7, 3 hundredths = 0.03, total = 0.73."
+            }
+          ]
+        },
+        {
+          "id": "u2l2",
+          "title": "Comparing decimals",
+          "teks": "4.2F",
+          "objective": "Compare and order decimals to hundredths using >, <, =.",
+          "questions": [
+            {
+              "id": "u2l2q1",
+              "type": "multiple_choice",
+              "prompt": "Which symbol makes this true?  0.4 ___ 0.39",
+              "choices": [">", "<", "=", "cannot tell"],
+              "answer": ">",
+              "explanation": "0.4 = 0.40, and 0.40 > 0.39 because 40 hundredths is more than 39 hundredths."
+            }
+          ]
+        },
+        {
+          "id": "u2l3",
+          "title": "Fractions and decimals",
+          "teks": "4.2G",
+          "objective": "Relate decimals to tenths and hundredths to fractions.",
+          "questions": [
+            {
+              "id": "u2l3q1",
+              "type": "multiple_choice",
+              "prompt": "Which fraction equals 0.45?",
+              "choices": ["45/10", "45/100", "4/5", "1/45"],
+              "answer": "45/100",
+              "explanation": "0.45 means 45 hundredths, written 45/100."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "u3",
+      "order": 3,
+      "title": "Fractions: Equivalence & Comparison",
+      "reportingCategory": "Numerical Representations and Relationships",
+      "teks": ["4.3A", "4.3C", "4.3D", "4.3G"],
+      "summary": "Build, compare, and decompose fractions and mixed numbers.",
+      "lessons": [
+        {
+          "id": "u3l1",
+          "title": "Equivalent fractions",
+          "teks": "4.3C",
+          "objective": "Find equivalent fractions using multiplication or division.",
+          "questions": [
+            {
+              "id": "u3l1q1",
+              "type": "multiple_choice",
+              "prompt": "Which fraction is equivalent to 3/4?",
+              "choices": ["6/12", "9/12", "12/20", "15/24"],
+              "answer": "9/12",
+              "explanation": "Multiply numerator and denominator by 3: 3×3/4×3 = 9/12."
+            }
+          ]
+        },
+        {
+          "id": "u3l2",
+          "title": "Comparing fractions",
+          "teks": "4.3D",
+          "objective": "Compare two fractions with different numerators and denominators.",
+          "questions": [
+            {
+              "id": "u3l2q1",
+              "type": "multiple_choice",
+              "prompt": "Which fraction is greater than 2/3?",
+              "choices": ["1/2", "3/5", "5/8", "3/4"],
+              "answer": "3/4",
+              "explanation": "2/3 ≈ 0.667 and 3/4 = 0.75, so 3/4 > 2/3."
+            }
+          ]
+        },
+        {
+          "id": "u3l3",
+          "title": "Decomposing fractions",
+          "teks": "4.3A",
+          "objective": "Decompose a fraction into a sum of unit fractions or simpler fractions.",
+          "questions": [
+            {
+              "id": "u3l3q1",
+              "type": "multiple_choice",
+              "prompt": "Which sum equals 5/8?",
+              "choices": ["1/8 + 1/8 + 1/8", "2/8 + 2/8", "3/8 + 2/8", "1/4 + 1/4"],
+              "answer": "3/8 + 2/8",
+              "explanation": "3/8 + 2/8 = 5/8. The other options sum to 3/8, 4/8, and 2/4."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "u4",
+      "order": 4,
+      "title": "Adding & Subtracting Fractions",
+      "reportingCategory": "Computations and Algebraic Relationships",
+      "teks": ["4.3E", "4.3F"],
+      "summary": "Add and subtract fractions with like denominators using objects, pictures, and properties.",
+      "lessons": [
+        {
+          "id": "u4l1",
+          "title": "Adding fractions (like denominators)",
+          "teks": "4.3E",
+          "objective": "Represent and solve addition of fractions with equal denominators.",
+          "questions": [
+            {
+              "id": "u4l1q1",
+              "type": "multiple_choice",
+              "prompt": "What is 3/8 + 2/8?",
+              "choices": ["5/16", "5/8", "6/8", "1"],
+              "answer": "5/8",
+              "explanation": "Add the numerators and keep the denominator: 3+2 = 5, so 5/8."
+            }
+          ]
+        },
+        {
+          "id": "u4l2",
+          "title": "Subtracting fractions (like denominators)",
+          "teks": "4.3E",
+          "objective": "Subtract fractions with the same denominator.",
+          "questions": [
+            {
+              "id": "u4l2q1",
+              "type": "multiple_choice",
+              "prompt": "What is 7/10 − 3/10?",
+              "choices": ["4/0", "4/10", "10/10", "4/20"],
+              "answer": "4/10",
+              "explanation": "Subtract the numerators: 7−3 = 4. Keep the denominator: 4/10."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "u5",
+      "order": 5,
+      "title": "Multi-Digit Multiplication",
+      "reportingCategory": "Computations and Algebraic Relationships",
+      "teks": ["4.4D", "4.4G"],
+      "summary": "Multiply up to a 4-digit by 1-digit and 2-digit by 2-digit numbers.",
+      "lessons": [
+        {
+          "id": "u5l1",
+          "title": "Multiplying by 1-digit",
+          "teks": "4.4D",
+          "objective": "Use the standard algorithm to multiply by a 1-digit number.",
+          "questions": [
+            {
+              "id": "u5l1q1",
+              "type": "numeric",
+              "prompt": "What is 1,247 × 6?",
+              "answer": "7482",
+              "acceptable": ["7,482", "7482"],
+              "explanation": "6×7=42 (write 2 carry 4), 6×4+4=28 (write 8 carry 2), 6×2+2=14 (write 4 carry 1), 6×1+1=7."
+            }
+          ]
+        },
+        {
+          "id": "u5l2",
+          "title": "Multiplying by 2-digit",
+          "teks": "4.4D",
+          "objective": "Multiply two 2-digit numbers using the standard algorithm.",
+          "questions": [
+            {
+              "id": "u5l2q1",
+              "type": "numeric",
+              "prompt": "What is 38 × 24?",
+              "answer": "912",
+              "explanation": "38×4=152 and 38×20=760. 152 + 760 = 912."
+            }
+          ]
+        },
+        {
+          "id": "u5l3",
+          "title": "Multiplication word problems",
+          "teks": "4.4H",
+          "objective": "Solve real-world multiplication problems.",
+          "questions": [
+            {
+              "id": "u5l3q1",
+              "type": "multiple_choice",
+              "prompt": "A theater has 28 rows with 16 seats in each row. How many seats are there?",
+              "choices": ["44", "344", "428", "448"],
+              "answer": "448",
+              "explanation": "28 × 16 = 448."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "u6",
+      "order": 6,
+      "title": "Division",
+      "reportingCategory": "Computations and Algebraic Relationships",
+      "teks": ["4.4E", "4.4F", "4.4H"],
+      "summary": "Divide up to 4-digit dividends by 1-digit divisors with and without remainders.",
+      "lessons": [
+        {
+          "id": "u6l1",
+          "title": "Long division basics",
+          "teks": "4.4F",
+          "objective": "Use the standard algorithm to divide.",
+          "questions": [
+            {
+              "id": "u6l1q1",
+              "type": "numeric",
+              "prompt": "What is 392 ÷ 7?",
+              "answer": "56",
+              "explanation": "7 × 56 = 392."
+            }
+          ]
+        },
+        {
+          "id": "u6l2",
+          "title": "Division with remainders",
+          "teks": "4.4F",
+          "objective": "Interpret remainders in division situations.",
+          "questions": [
+            {
+              "id": "u6l2q1",
+              "type": "multiple_choice",
+              "prompt": "There are 47 stickers shared equally among 5 students. How many stickers are left over?",
+              "choices": ["1", "2", "3", "5"],
+              "answer": "2",
+              "explanation": "47 ÷ 5 = 9 remainder 2. Each student gets 9 stickers and 2 are left."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "u7",
+      "order": 7,
+      "title": "Algebraic Patterns & Input-Output",
+      "reportingCategory": "Computations and Algebraic Relationships",
+      "teks": ["4.5A", "4.5B"],
+      "summary": "Represent multi-step problems with equations and identify number patterns.",
+      "lessons": [
+        {
+          "id": "u7l1",
+          "title": "Input-output tables",
+          "teks": "4.5B",
+          "objective": "Find a rule for input-output tables.",
+          "questions": [
+            {
+              "id": "u7l1q1",
+              "type": "multiple_choice",
+              "prompt": "If the rule is multiply by 4 then add 1, what is the output for input 6?",
+              "choices": ["10", "24", "25", "28"],
+              "answer": "25",
+              "explanation": "6 × 4 = 24, then 24 + 1 = 25."
+            }
+          ]
+        },
+        {
+          "id": "u7l2",
+          "title": "Multi-step equations",
+          "teks": "4.5A",
+          "objective": "Write an equation with a letter for the unknown.",
+          "questions": [
+            {
+              "id": "u7l2q1",
+              "type": "multiple_choice",
+              "prompt": "Maria bought 3 books for $8 each and a magazine for $4. Which equation finds her total t?",
+              "choices": ["t = 3 + 8 + 4", "t = 3 × 8 − 4", "t = (3 × 8) + 4", "t = 3 × (8 + 4)"],
+              "answer": "t = (3 × 8) + 4",
+              "explanation": "3 books at $8 = 3 × 8, then add the $4 magazine."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "u8",
+      "order": 8,
+      "title": "Geometry: Lines, Angles & Shapes",
+      "reportingCategory": "Geometry and Measurement",
+      "teks": ["4.6A", "4.6C", "4.6D", "4.7C", "4.7E"],
+      "summary": "Identify lines, classify angles, and measure with a protractor.",
+      "lessons": [
+        {
+          "id": "u8l1",
+          "title": "Lines & line segments",
+          "teks": "4.6A",
+          "objective": "Identify points, lines, line segments, rays, and parallel/perpendicular lines.",
+          "questions": [
+            {
+              "id": "u8l1q1",
+              "type": "multiple_choice",
+              "prompt": "Two lines that never cross and stay the same distance apart are called…",
+              "choices": ["perpendicular", "parallel", "intersecting", "rays"],
+              "answer": "parallel",
+              "explanation": "Parallel lines never meet."
+            }
+          ]
+        },
+        {
+          "id": "u8l2",
+          "title": "Classifying angles",
+          "teks": "4.6C",
+          "objective": "Identify acute, right, and obtuse angles.",
+          "questions": [
+            {
+              "id": "u8l2q1",
+              "type": "multiple_choice",
+              "prompt": "An angle that measures 130° is…",
+              "choices": ["acute", "right", "obtuse", "straight"],
+              "answer": "obtuse",
+              "explanation": "Obtuse angles are between 90° and 180°."
+            }
+          ]
+        },
+        {
+          "id": "u8l3",
+          "title": "Measuring with a protractor",
+          "teks": "4.7C",
+          "objective": "Measure angles with a protractor.",
+          "questions": [
+            {
+              "id": "u8l3q1",
+              "type": "numeric",
+              "prompt": "An angle is half of a straight angle. How many degrees is it?",
+              "answer": "90",
+              "explanation": "A straight angle is 180°, so half is 90°."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "u9",
+      "order": 9,
+      "title": "Perimeter & Area",
+      "reportingCategory": "Geometry and Measurement",
+      "teks": ["4.5C", "4.5D"],
+      "summary": "Use formulas to find perimeter and area of rectangles and composite figures.",
+      "lessons": [
+        {
+          "id": "u9l1",
+          "title": "Perimeter of rectangles",
+          "teks": "4.5D",
+          "objective": "Calculate perimeter using P = 2L + 2W.",
+          "questions": [
+            {
+              "id": "u9l1q1",
+              "type": "numeric",
+              "prompt": "A rectangle has length 9 cm and width 4 cm. What is its perimeter in cm?",
+              "answer": "26",
+              "explanation": "P = 2(9) + 2(4) = 18 + 8 = 26 cm."
+            }
+          ]
+        },
+        {
+          "id": "u9l2",
+          "title": "Area of rectangles",
+          "teks": "4.5D",
+          "objective": "Calculate area using A = L × W.",
+          "questions": [
+            {
+              "id": "u9l2q1",
+              "type": "numeric",
+              "prompt": "A rectangle has length 12 ft and width 5 ft. What is its area in square feet?",
+              "answer": "60",
+              "explanation": "A = 12 × 5 = 60 square feet."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "u10",
+      "order": 10,
+      "title": "Measurement Conversions",
+      "reportingCategory": "Geometry and Measurement",
+      "teks": ["4.8A", "4.8B", "4.8C"],
+      "summary": "Convert between units of length, weight, capacity, and time.",
+      "lessons": [
+        {
+          "id": "u10l1",
+          "title": "Customary length",
+          "teks": "4.8B",
+          "objective": "Convert between inches, feet, and yards.",
+          "questions": [
+            {
+              "id": "u10l1q1",
+              "type": "numeric",
+              "prompt": "How many inches are in 4 feet?",
+              "answer": "48",
+              "explanation": "1 foot = 12 inches, so 4 × 12 = 48 inches."
+            }
+          ]
+        },
+        {
+          "id": "u10l2",
+          "title": "Time intervals",
+          "teks": "4.8C",
+          "objective": "Solve problems involving elapsed time.",
+          "questions": [
+            {
+              "id": "u10l2q1",
+              "type": "multiple_choice",
+              "prompt": "A movie starts at 1:45 p.m. and ends at 3:30 p.m. How long is the movie?",
+              "choices": ["1 h 15 min", "1 h 45 min", "2 h", "2 h 15 min"],
+              "answer": "1 h 45 min",
+              "explanation": "From 1:45 to 3:00 is 1 h 15 min, plus 30 more min = 1 h 45 min."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "u11",
+      "order": 11,
+      "title": "Data Analysis",
+      "reportingCategory": "Data Analysis and Personal Financial Literacy",
+      "teks": ["4.9A", "4.9B"],
+      "summary": "Represent and interpret data with frequency tables, dot plots, and stem-and-leaf plots.",
+      "lessons": [
+        {
+          "id": "u11l1",
+          "title": "Reading dot plots",
+          "teks": "4.9A",
+          "objective": "Interpret data displayed on a dot plot.",
+          "questions": [
+            {
+              "id": "u11l1q1",
+              "type": "multiple_choice",
+              "prompt": "On a dot plot of test scores, 4 dots stack at 90 and 2 dots stack at 100. How many students scored 90 or higher?",
+              "choices": ["2", "4", "6", "8"],
+              "answer": "6",
+              "explanation": "Add the dots at 90 and at 100: 4 + 2 = 6 students."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "u12",
+      "order": 12,
+      "title": "Personal Financial Literacy",
+      "reportingCategory": "Data Analysis and Personal Financial Literacy",
+      "teks": ["4.10A", "4.10B", "4.10E"],
+      "summary": "Distinguish income from expenses, fixed from variable expenses, and learn about saving and basic banking.",
+      "lessons": [
+        {
+          "id": "u12l1",
+          "title": "Fixed vs variable expenses",
+          "teks": "4.10B",
+          "objective": "Differentiate between fixed and variable expenses.",
+          "questions": [
+            {
+              "id": "u12l1q1",
+              "type": "multiple_choice",
+              "prompt": "Which is the BEST example of a fixed expense?",
+              "choices": ["Going to the movies", "Monthly rent", "Buying a snack", "Vacation costs"],
+              "answer": "Monthly rent",
+              "explanation": "Rent is the same amount each month, so it is a fixed expense."
+            }
+          ]
+        },
+        {
+          "id": "u12l2",
+          "title": "Profit & income",
+          "teks": "4.10E",
+          "objective": "Describe profit as the result of subtracting expenses from income.",
+          "questions": [
+            {
+              "id": "u12l2q1",
+              "type": "numeric",
+              "prompt": "A lemonade stand earns $42 and spends $15 on supplies. What is the profit in dollars?",
+              "answer": "27",
+              "explanation": "Profit = Income − Expenses = 42 − 15 = $27."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
