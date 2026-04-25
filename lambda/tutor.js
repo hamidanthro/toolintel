@@ -1,36 +1,34 @@
-// STAAR Prep — AI Tutor Lambda
+// STAAR Prep — AI Tutor Lambda (OpenAI)
 // Provides interactive, age-appropriate math help when a student answers incorrectly.
-// Uses AWS Bedrock (Claude) via the InvokeModel API.
 //
 // Endpoint:
 //   POST /tutor
 //   Body: {
-//     grade: 3,                       // numeric or string (e.g. 3 or "algebra-1")
-//     question: "...",                // the prompt the student saw
-//     correctAnswer: "24",            // the correct answer
-//     studentAnswer: "20",            // what the student typed/picked
-//     explanation: "...",             // canned explanation from the curriculum
-//     teks: "3.4D",                   // (optional) TEKS code
-//     topic: "Multiplication",        // (optional) unit title
-//     history: [                      // (optional) follow-up turns
-//       { role: "user" | "assistant", content: "..." }
-//     ]
+//     grade, question, correctAnswer, studentAnswer, explanation,
+//     teks, topic, history: [{role, content}]
 //   }
-//
-// Response: { reply: "..." }
+// Response: { reply: string, model: string }
 //
 // Environment variables:
-//   BEDROCK_MODEL_ID  (default: anthropic.claude-3-5-haiku-20241022-v1:0)
-//   BEDROCK_REGION    (default: us-east-1)
-//   ALLOWED_ORIGIN    (default: *)
+//   OPENAI_MODEL        (default: gpt-4o-mini)
+//   OPENAI_SECRET_NAME  (default: staar-tutor/openai-api-key)
+//   ALLOWED_ORIGIN      (default: *)
 
-const { BedrockRuntimeClient, ConverseCommand } = require('@aws-sdk/client-bedrock-runtime');
+const { SecretsManagerClient, GetSecretValueCommand } = require('@aws-sdk/client-secrets-manager');
 
-const MODEL_ID = process.env.BEDROCK_MODEL_ID || 'us.amazon.nova-lite-v1:0';
-const REGION = process.env.BEDROCK_REGION || 'us-east-1';
+const MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
+const SECRET_NAME = process.env.OPENAI_SECRET_NAME || 'staar-tutor/openai-api-key';
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || '*';
 
-const bedrock = new BedrockRuntimeClient({ region: REGION });
+const sm = new SecretsManagerClient({});
+let cachedKey = null;
+
+async function getApiKey() {
+  if (cachedKey) return cachedKey;
+  const res = await sm.send(new GetSecretValueCommand({ SecretId: SECRET_NAME }));
+  cachedKey = (res.SecretString || '').trim();
+  return cachedKey;
+}
 
 const cors = {
   'Content-Type': 'application/json',
@@ -46,7 +44,6 @@ function bad(status, message) {
   return { statusCode: status, headers: cors, body: JSON.stringify({ error: message }) };
 }
 
-// Truncate any field to a safe length to keep the prompt small and prevent abuse.
 function clip(s, n = 1500) {
   if (typeof s !== 'string') return '';
   return s.length > n ? s.slice(0, n) : s;
@@ -78,6 +75,24 @@ ${payload.topic ? `Topic: ${clip(payload.topic, 200)}\n` : ''}${payload.teks ? `
 Help me understand where I went wrong and how to think about this problem. Walk me through it step by step.`;
 }
 
+async function callOpenAI(apiKey, body) {
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`
+    },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) {
+    const errText = await res.text();
+    const err = new Error(`OpenAI ${res.status}: ${errText.slice(0, 500)}`);
+    err.status = res.status;
+    throw err;
+  }
+  return res.json();
+}
+
 exports.handler = async (event) => {
   const method = event.httpMethod || event.requestContext?.http?.method;
   if (method === 'OPTIONS') {
@@ -98,49 +113,40 @@ exports.handler = async (event) => {
     return bad(400, 'Missing required fields: question, studentAnswer, correctAnswer');
   }
 
-  // Build the conversation. The first turn is synthesized from the structured payload.
-  // Any history items appended represent follow-up turns from the student.
   const messages = [
+    { role: 'system', content: buildSystemPrompt(payload.grade) },
     { role: 'user', content: buildFirstUserMessage(payload) }
   ];
 
   if (Array.isArray(payload.history)) {
-    // Skip the first user message we already added; append the remaining alternating turns.
-    // Expected shape: [{role:'user', content}, {role:'assistant', content}, ...]
-    // We trust the client to send a coherent history but cap length to last 10 turns and clip each.
     const hist = payload.history.slice(-10);
     let lastRole = 'user';
     for (const turn of hist) {
       if (!turn || !turn.role || !turn.content) continue;
-      if (turn.role === lastRole) continue; // avoid two same-role messages in a row
-      messages.push({ role: turn.role === 'assistant' ? 'assistant' : 'user', content: clip(turn.content, 800) });
+      if (turn.role === lastRole) continue;
+      messages.push({
+        role: turn.role === 'assistant' ? 'assistant' : 'user',
+        content: clip(turn.content, 800)
+      });
       lastRole = turn.role;
     }
-    // Ensure the conversation ends on a user turn so the model replies.
     if (messages[messages.length - 1].role !== 'user') {
       messages.push({ role: 'user', content: 'Please continue helping me.' });
     }
   }
 
-  const body = {
-    modelId: MODEL_ID,
-    system: [{ text: buildSystemPrompt(payload.grade) }],
-    messages: messages.map(m => ({
-      role: m.role,
-      content: [{ text: m.content }]
-    })),
-    inferenceConfig: {
-      maxTokens: 600,
-      temperature: 0.4
-    }
-  };
-
   try {
-    const res = await bedrock.send(new ConverseCommand(body));
-    const reply = res.output?.message?.content?.[0]?.text || '';
-    return ok({ reply, model: MODEL_ID });
+    const apiKey = await getApiKey();
+    const result = await callOpenAI(apiKey, {
+      model: MODEL,
+      messages,
+      max_tokens: 600,
+      temperature: 0.4
+    });
+    const reply = result?.choices?.[0]?.message?.content || '';
+    return ok({ reply, model: MODEL });
   } catch (err) {
-    console.error('Bedrock error:', err);
+    console.error('OpenAI error:', err.message || err);
     return bad(502, 'AI tutor unavailable');
   }
 };
