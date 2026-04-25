@@ -150,8 +150,11 @@
         </div>`;
       qbox.appendChild(fb);
 
-      // Disable inputs after submission
-      qbox.querySelectorAll('input,button[type="submit"]').forEach(el => el.disabled = true);
+      // Disable inputs in the original question card only (not the feedback/tutor controls)
+      const qCard = qbox.querySelector('.question-card');
+      if (qCard) {
+        qCard.querySelectorAll('input,button').forEach(el => el.disabled = true);
+      }
 
       document.getElementById('next-btn').addEventListener('click', () => {
         i++;
