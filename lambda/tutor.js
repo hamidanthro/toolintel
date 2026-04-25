@@ -170,6 +170,7 @@ exports.handler = async (event) => {
   if (action === 'putStats') return await handlePutStats(payload);
   if (action === 'earn')           return await handleEarn(payload);
   if (action === 'lose')           return await handleLose(payload);
+  if (action === 'markMastered')   return await handleMarkMastered(payload);
   if (action === 'getWallet')      return await handleGetWallet(payload);
   if (action === 'listToys')       return await handleListToys(payload);
   if (action === 'checkout')       return await handleCheckout(payload);
@@ -585,8 +586,16 @@ async function handleGetWallet(payload) {
   return ok({
     balanceCents: r.Item.balanceCents || 0,
     lifetimeCents: r.Item.lifetimeCents || 0,
-    capCents: LIFETIME_CAP_CENTS
+    capCents: LIFETIME_CAP_CENTS,
+    masteredSections: r.Item.masteredSections || {}
   });
+}
+
+function normalizeSectionKey(s) {
+  if (typeof s !== 'string') return null;
+  const t = s.trim();
+  if (!t || t.length > 200) return null;
+  return /^[A-Za-z0-9_\-|:.]+$/.test(t) ? t : null;
 }
 
 async function handleEarn(payload) {
@@ -598,6 +607,8 @@ async function handleEarn(payload) {
   if (!Number.isFinite(cents) || cents < 1) cents = 1;
   if (cents > 5) cents = 5;
 
+  const sectionKey = normalizeSectionKey(payload.section);
+
   // Read current lifetime to compute the actual award (cap-aware).
   const r = await ddb.send(new GetCommand({
     TableName: USERS_TABLE,
@@ -606,6 +617,19 @@ async function handleEarn(payload) {
   if (!r.Item) return bad(404, 'User not found');
   const lifetime = r.Item.lifetimeCents || 0;
   const balance = r.Item.balanceCents || 0;
+  const mastered = r.Item.masteredSections || {};
+
+  if (sectionKey && mastered[sectionKey]) {
+    return ok({
+      awardedCents: 0,
+      balanceCents: balance,
+      lifetimeCents: lifetime,
+      capCents: LIFETIME_CAP_CENTS,
+      locked: true,
+      masteredSections: mastered
+    });
+  }
+
   const room = Math.max(0, LIFETIME_CAP_CENTS - lifetime);
   const award = Math.min(cents, room);
 
@@ -878,6 +902,8 @@ async function handleLose(payload) {
   if (!Number.isFinite(cents) || cents < 1) cents = 1;
   if (cents > 5) cents = 5;
 
+  const sectionKey = normalizeSectionKey(payload.section);
+
   const r = await ddb.send(new GetCommand({
     TableName: USERS_TABLE,
     Key: { username: auth.username }
@@ -885,6 +911,19 @@ async function handleLose(payload) {
   if (!r.Item) return bad(404, 'User not found');
   const balance = r.Item.balanceCents || 0;
   const lifetime = r.Item.lifetimeCents || 0;
+  const mastered = r.Item.masteredSections || {};
+
+  if (sectionKey && mastered[sectionKey]) {
+    return ok({
+      lostCents: 0,
+      balanceCents: balance,
+      lifetimeCents: lifetime,
+      capCents: LIFETIME_CAP_CENTS,
+      locked: true,
+      masteredSections: mastered
+    });
+  }
+
   const deduct = Math.min(cents, balance); // floor at 0
 
   if (deduct <= 0) {
@@ -911,5 +950,33 @@ async function handleLose(payload) {
     lifetimeCents: upd.Attributes.lifetimeCents || 0,
     capCents: LIFETIME_CAP_CENTS,
     flooredAtZero: (upd.Attributes.balanceCents || 0) === 0
+  });
+}
+
+async function handleMarkMastered(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  if (!auth.username) return bad(401, 'Please sign in again');
+
+  const sectionKey = normalizeSectionKey(payload.section);
+  if (!sectionKey) return bad(400, 'Invalid section');
+
+  const label = (typeof payload.label === 'string') ? payload.label.slice(0, 200) : '';
+  const now = new Date().toISOString();
+
+  const upd = await ddb.send(new UpdateCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username },
+    UpdateExpression: 'SET masteredSections = if_not_exists(masteredSections, :empty), masteredSections.#k = :v',
+    ExpressionAttributeNames: { '#k': sectionKey },
+    ExpressionAttributeValues: {
+      ':empty': {},
+      ':v': { at: now, label }
+    },
+    ReturnValues: 'ALL_NEW'
+  }));
+  return ok({
+    masteredSections: upd.Attributes.masteredSections || {},
+    section: sectionKey
   });
 }

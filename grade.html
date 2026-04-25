@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Grade — STAAR Math Prep</title>
-  <link rel="stylesheet" href="css/styles.css?v=20260425m" />
+  <link rel="stylesheet" href="css/styles.css?v=20260425n" />
 </head>
 <body>
   <header class="site-header">
@@ -30,7 +30,7 @@
     <div class="container">&copy; <span id="year"></span> STAAR Prep.</div>
   </footer>
 
-  <script src="js/auth.js?v=20260425m"></script>
+  <script src="js/auth.js?v=20260425n"></script>
   <script>window.STAARAuth = window.STAARAuth || {}; window.STAARAuth.requireLoginOnLoad = true;</script>
   <script src="js/staar-data.js"></script>
   <script>
@@ -51,27 +51,38 @@
     }
 
     function renderCurriculum(grade, curr) {
+      const mastered = (window.STAARAuth?.currentUser?.()?.masteredSections) || {};
+      const masteredKey = (uId, lId) => {
+        const parts = [grade.slug, uId];
+        if (lId) parts.push(lId);
+        return parts.join('|').replace(/[^A-Za-z0-9_\-|:.]/g, '_');
+      };
+      const badge = '<span class="mastered-badge" title="Section mastered">⭐ Mastered</span>';
       const units = curr.units
         .slice()
         .sort((a, b) => a.order - b.order)
         .map(u => {
-          const lessons = u.lessons.map(l => `
-            <li>
+          const uMastered = !!mastered[masteredKey(u.id)];
+          const lessons = u.lessons.map(l => {
+            const lMastered = !!mastered[masteredKey(u.id, l.id)];
+            return `
+            <li class="${lMastered ? 'lesson-mastered' : ''}">
               <a href="practice.html?g=${grade.slug}&u=${u.id}&l=${l.id}">
-                <span class="lesson-title">${l.title}</span>
+                <span class="lesson-title">${l.title}${lMastered ? ' ' + badge : ''}</span>
                 <span class="lesson-teks">TEKS ${l.teks}</span>
               </a>
-            </li>`).join('');
+            </li>`;
+          }).join('');
           return `
-            <div class="unit-card">
+            <div class="unit-card ${uMastered ? 'unit-mastered' : ''}">
               <div class="unit-head">
-                <div class="unit-order">Unit ${u.order}</div>
+                <div class="unit-order">Unit ${u.order}${uMastered ? ' ' + badge : ''}</div>
                 <h3>${u.title}</h3>
                 <div class="unit-cat">${u.reportingCategory}</div>
                 <p class="unit-summary">${u.summary}</p>
               </div>
               <ul class="lesson-list">${lessons}</ul>
-              <a class="btn btn-primary unit-practice" href="practice.html?g=${grade.slug}&u=${u.id}">Practice this unit</a>
+              <a class="btn btn-primary unit-practice" href="practice.html?g=${grade.slug}&u=${u.id}">${uMastered ? 'Review (no cents)' : 'Practice this unit'}</a>
             </div>`;
         }).join('');
 

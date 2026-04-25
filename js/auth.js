@@ -311,6 +311,7 @@
       if (s && s.user) {
         s.user.balanceCents = w.balanceCents;
         s.user.lifetimeCents = w.lifetimeCents;
+        s.user.masteredSections = w.masteredSections || {};
         saveSession(s);
       }
       refreshHeader();
@@ -318,36 +319,64 @@
     } catch (_) { return null; }
   }
 
-  async function earn(cents) {
+  async function earn(cents, section) {
     const t = token();
     if (!t) return null;
+    if (section && isMastered(section)) {
+      return { awardedCents: 0, locked: true };
+    }
     try {
-      const w = await api('earn', { token: t, cents });
+      const w = await api('earn', { token: t, cents, section: section || undefined });
       const s = loadSession();
       if (s && s.user) {
         s.user.balanceCents = w.balanceCents;
         s.user.lifetimeCents = w.lifetimeCents;
+        if (w.masteredSections) s.user.masteredSections = w.masteredSections;
         saveSession(s);
       }
       refreshHeader();
-      showCentsToast(w.awardedCents, w.capped);
+      if (!w.locked) showCentsToast(w.awardedCents, w.capped);
       return w;
     } catch (_) { return null; }
   }
 
-  async function lose(cents) {
+  async function lose(cents, section) {
     const t = token();
     if (!t) return null;
+    if (section && isMastered(section)) {
+      return { lostCents: 0, locked: true };
+    }
     try {
-      const w = await api('lose', { token: t, cents });
+      const w = await api('lose', { token: t, cents, section: section || undefined });
       const s = loadSession();
       if (s && s.user) {
         s.user.balanceCents = w.balanceCents;
         s.user.lifetimeCents = w.lifetimeCents;
+        if (w.masteredSections) s.user.masteredSections = w.masteredSections;
         saveSession(s);
       }
       refreshHeader();
-      showCentsLossToast(w.lostCents, w.flooredAtZero);
+      if (!w.locked) showCentsLossToast(w.lostCents, w.flooredAtZero);
+      return w;
+    } catch (_) { return null; }
+  }
+
+  function isMastered(section) {
+    if (!section) return false;
+    const u = currentUser();
+    return !!(u && u.masteredSections && u.masteredSections[section]);
+  }
+
+  async function markMastered(section, label) {
+    const t = token();
+    if (!t || !section) return null;
+    try {
+      const w = await api('markMastered', { token: t, section, label: label || '' });
+      const s = loadSession();
+      if (s && s.user) {
+        s.user.masteredSections = w.masteredSections || {};
+        saveSession(s);
+      }
       return w;
     } catch (_) { return null; }
   }
@@ -407,6 +436,8 @@
     api,
     earn,
     lose,
+    markMastered,
+    isMastered,
     refreshWallet,
     formatCents,
     showCentsToast,

@@ -1086,3 +1086,44 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
   transition: transform 0.12s ease, box-shadow 0.15s ease;
 }
 .earn-cta:hover { transform: translateY(-1px); text-decoration: none; color: #fff; box-shadow: 0 6px 18px rgba(245, 158, 11, 0.4); }
+
+/* Section mastery */
+.mastered-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border: 1px solid #fcd34d;
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin-bottom: 16px;
+  color: #78350f;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+}
+.mastered-banner.mastered-celebrate {
+  background: linear-gradient(135deg, #fef9c3, #fde047);
+  border-color: #facc15;
+}
+.mastered-star { font-size: 2rem; line-height: 1; }
+.mastered-title { font-weight: 800; font-size: 1.05rem; }
+.mastered-sub { font-size: 0.88rem; opacity: 0.85; margin-top: 2px; }
+
+.q-reward-locked {
+  background: linear-gradient(135deg, #fde68a, #facc15) !important;
+  color: #78350f !important;
+  font-weight: 800;
+}
+
+.mastered-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #fde68a, #f59e0b);
+  color: #78350f;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  vertical-align: middle;
+  margin-left: 6px;
+}
+.unit-card.unit-mastered { border-color: #fcd34d; box-shadow: 0 0 0 2px rgba(252, 211, 77, 0.25); }
+.lesson-mastered > a { background: rgba(254, 243, 199, 0.5); }

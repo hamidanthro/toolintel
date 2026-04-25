@@ -193,9 +193,27 @@
     return arr;
   }
 
+  function sectionKey(meta) {
+    // Build a stable key for the practice scope: grade | unit | lesson.
+    const parts = [slug];
+    if (meta?.unit?.id) parts.push(meta.unit.id);
+    if (meta?.lesson?.id) parts.push(meta.lesson.id);
+    if (parts.length < 2) return null; // don't lock full-grade mixes
+    return parts.join('|').replace(/[^A-Za-z0-9_\-|:.]/g, '_');
+  }
+
+  function sectionLabel(curr, meta) {
+    const bits = [curr.title];
+    if (meta?.unit) bits.push(`Unit ${meta.unit.order}: ${meta.unit.title}`);
+    if (meta?.lesson) bits.push(meta.lesson.title);
+    return bits.join(' › ');
+  }
+
   function runQuiz(curr, questions, meta) {
     let i = 0;
     let correct = 0;
+    const sKey = sectionKey(meta);
+    const isLocked = !!(sKey && window.STAARAuth?.isMastered?.(sKey));
 
     const titleBits = [curr.title];
     if (meta?.unit) titleBits.push(`Unit ${meta.unit.order}: ${meta.unit.title}`);
@@ -203,9 +221,19 @@
 
     const stats = Stats.load(slug);
 
+    const lockedBanner = isLocked ? `
+      <div class="mastered-banner">
+        <span class="mastered-star">⭐</span>
+        <div>
+          <div class="mastered-title">You've mastered this section!</div>
+          <div class="mastered-sub">Practice freely for review — no cents earned or lost here. Try a different section to keep earning.</div>
+        </div>
+      </div>` : '';
+
     root.innerHTML = `
       <div class="practice-layout">
         <div class="practice-main">
+          ${lockedBanner}
           <div class="practice-header">
             <a class="back-link" href="grade.html?g=${slug}">← Back to ${curr.title}</a>
             <div class="practice-title-row">
@@ -255,7 +283,7 @@
       progressNum.textContent = i + 1;
       bar.style.width = `${(i / questions.length) * 100}%`;
       const q = questions[i];
-      qbox.innerHTML = renderQuestion(q);
+      qbox.innerHTML = renderQuestion(q, isLocked);
       attachQuestionHandlers(q);
     }
 
@@ -271,9 +299,9 @@
         renderPerf(perfPanel, curr, stats);
         showFeedback(q, userAnswer, isCorrect);
         if (isCorrect && window.STAARAuth && typeof window.STAARAuth.earn === 'function') {
-          window.STAARAuth.earn(difficultyCents(q));
+          window.STAARAuth.earn(difficultyCents(q), sKey);
         } else if (!isCorrect && window.STAARAuth && typeof window.STAARAuth.lose === 'function') {
-          window.STAARAuth.lose(difficultyCents(q));
+          window.STAARAuth.lose(difficultyCents(q), sKey);
         }
       });
     }
@@ -384,7 +412,22 @@
     function finish() {
       bar.style.width = '100%';
       const pct = Math.round((correct / questions.length) * 100);
+      const perfect = correct === questions.length && questions.length > 0;
+      const justMastered = perfect && sKey && !isLocked;
+      if (justMastered && window.STAARAuth?.markMastered) {
+        window.STAARAuth.markMastered(sKey, sectionLabel(curr, meta));
+      }
+      const banner = perfect
+        ? `<div class="mastered-banner mastered-celebrate">
+             <span class="mastered-star">⭐</span>
+             <div>
+               <div class="mastered-title">Excellent! Section ${justMastered ? 'mastered' : 'already mastered'}.</div>
+               <div class="mastered-sub">You've nailed every question. This section is locked from earning so you can explore new ones.</div>
+             </div>
+           </div>`
+        : '';
       qbox.innerHTML = `
+        ${banner}
         <div class="card">
           <h3>Great work!</h3>
           <p style="font-size:1.4rem;"><strong>${correct} / ${questions.length}</strong> correct (${pct}%)</p>
@@ -406,7 +449,7 @@
     return v;
   }
 
-  function renderQuestion(q) {
+  function renderQuestion(q, locked) {
     let body = '';
     if (q.type === 'multiple_choice') {
       body = q.choices.map((c, idx) => `
@@ -419,7 +462,9 @@
       body = `<input class="num-input" type="text" name="ans" autocomplete="off" placeholder="Your answer" required />`;
     }
     const cents = difficultyCents(q);
-    const reward = `<span class="q-reward" title="Correct: +${cents}\u00a2  •  Wrong: \u2212${cents}\u00a2">\u00b1${cents}\u00a2</span>`;
+    const reward = locked
+      ? `<span class="q-reward q-reward-locked" title="Section mastered — review only">⭐ Mastered</span>`
+      : `<span class="q-reward" title="Correct: +${cents}\u00a2  •  Wrong: −${cents}\u00a2">\u00b1${cents}\u00a2</span>`;
     return `
       <form class="question-card">
         <div class="q-meta">
