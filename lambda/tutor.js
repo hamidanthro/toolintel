@@ -389,7 +389,7 @@ function sanitizeUsername(u) {
   return String(u || '').trim().toLowerCase().replace(/[^a-z0-9_.-]/g, '');
 }
 
-const VALID_GRADES = new Set(['grade-3', 'grade-4', 'grade-5', 'grade-6', 'grade-7', 'grade-8', 'algebra-1']);
+const VALID_GRADES = new Set(['grade-k', 'grade-1', 'grade-2', 'grade-3', 'grade-4', 'grade-5', 'grade-6', 'grade-7', 'grade-8', 'algebra-1']);
 function sanitizeGrade(g) {
   const s = String(g || '').trim().toLowerCase();
   return VALID_GRADES.has(s) ? s : null;

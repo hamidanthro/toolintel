@@ -974,9 +974,699 @@ function genMetricG5(rng) {
   );
 }
 
+// ---------- Generators: Kindergarten ----------
+const NUMBER_WORDS = ['zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen','twenty'];
+
+function genCountTo10K(rng) {
+  const n = randInt(rng, 1, 10);
+  const item = pick(rng, ['🍎','⭐','🐶','🐱','🐰','🌸','🍌','🐟','🚗','⚽','🦋','🐢']);
+  const row = item.repeat(n);
+  const phrasings = [
+    `Count the pictures: ${row}  How many are there?`,
+    `How many ${item} do you see?  ${row}`,
+    `Count: ${row}  How many?`
+  ];
+  return num(
+    pick(rng, phrasings),
+    n,
+    `Count one by one. There are ${n}.`,
+    [String(n), NUMBER_WORDS[n]]
+  );
+}
+
+function genCountTo20K(rng) {
+  const n = randInt(rng, 11, 20);
+  const item = pick(rng, ['⭐','🍎','🐶','🌸','🍓','🐢','🐝']);
+  const row = item.repeat(n);
+  return num(
+    `Count the pictures: ${row}  How many are there?`,
+    n,
+    `Count one by one. There are ${n}.`,
+    [String(n), NUMBER_WORDS[n]]
+  );
+}
+
+function genNumberNamesK(rng) {
+  const n = randInt(rng, 0, 20);
+  const correctWord = NUMBER_WORDS[n];
+  // Choose direction: digit -> word, or word -> digit.
+  if (rng() < 0.5) {
+    // Show digit, ask which word.
+    const wrongs = shuffleA(rng, NUMBER_WORDS.filter(w => w !== correctWord)).slice(0, 3);
+    return mc(
+      `Which word matches the number ${n}?`,
+      correctWord,
+      wrongs,
+      `${n} is written as "${correctWord}".`,
+      rng
+    );
+  }
+  // Show word, ask which digit.
+  const wrongDigits = shuffleA(rng, [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20].filter(x => x !== n)).slice(0, 3);
+  return mc(
+    `Which number matches the word "${correctWord}"?`,
+    String(n),
+    wrongDigits.map(String),
+    `"${correctWord}" is the number ${n}.`,
+    rng
+  );
+}
+
+function genMoreLessEqualK(rng) {
+  const a = randInt(rng, 0, 12);
+  let b;
+  do { b = randInt(rng, 0, 12); } while (b === a);
+  const ans = a > b ? 'more' : 'less';
+  const itemA = pick(rng, ['🍎','⭐','🐱','🌸']);
+  const itemB = pick(rng, ['🍌','🐟','🚗','🐶']);
+  const phrasings = [
+    `Set A: ${itemA.repeat(a)}\nSet B: ${itemB.repeat(b)}\nDoes Set A have more or less than Set B?`,
+    `Which has more: ${a} ${itemA} or ${b} ${itemB}?`,
+    `Compare: ${a} and ${b}. Is ${a} more or less than ${b}?`
+  ];
+  return mc(
+    pick(rng, phrasings),
+    ans,
+    ['more', 'less', 'equal'].filter(x => x !== ans),
+    `${a} is ${ans} than ${b}.`,
+    rng
+  );
+}
+
+function genOneMoreLessK(rng) {
+  const n = randInt(rng, 1, 19);
+  const direction = pick(rng, ['more', 'less']);
+  const ans = direction === 'more' ? n + 1 : n - 1;
+  const phrasings = [
+    `What number is one ${direction} than ${n}?`,
+    `One ${direction} than ${n} is what number?`,
+    `Find the number that is 1 ${direction} than ${n}.`
+  ];
+  return num(
+    pick(rng, phrasings),
+    ans,
+    direction === 'more' ? `${n} + 1 = ${ans}.` : `${n} − 1 = ${ans}.`,
+    [String(ans), NUMBER_WORDS[ans]]
+  );
+}
+
+function genAddWithin10K(rng) {
+  const a = randInt(rng, 0, 10);
+  const b = randInt(rng, 0, 10 - a);
+  const ans = a + b;
+  const phrasings = [
+    `${a} + ${b} = ?`,
+    `What is ${a} plus ${b}?`,
+    `Add ${a} and ${b}.`,
+    `${pick(rng, NAMES)} has ${a} ${pick(rng, ITEMS.small)}. ${pick(rng, NAMES)} gives ${pick(rng, ['her','him','them'])} ${b} more. How many in all?`
+  ];
+  return num(
+    pick(rng, phrasings),
+    ans,
+    `${a} + ${b} = ${ans}.`,
+    [String(ans), NUMBER_WORDS[ans] || String(ans)]
+  );
+}
+
+function genSubWithin10K(rng) {
+  const a = randInt(rng, 1, 10);
+  const b = randInt(rng, 0, a);
+  const ans = a - b;
+  const item = pick(rng, ITEMS.small);
+  const name = pick(rng, NAMES);
+  const phrasings = [
+    `${a} − ${b} = ?`,
+    `What is ${a} minus ${b}?`,
+    `Subtract ${b} from ${a}.`,
+    `${name} has ${a} ${item} and gives away ${b}. How many ${item} are left?`
+  ];
+  return num(
+    pick(rng, phrasings),
+    ans,
+    `${a} − ${b} = ${ans}.`,
+    [String(ans), NUMBER_WORDS[ans] || String(ans)]
+  );
+}
+
+const SHAPES_2D_K = [
+  { name: 'circle', sides: 0, hint: 'A circle has no straight sides.' },
+  { name: 'triangle', sides: 3, hint: 'A triangle has 3 sides.' },
+  { name: 'square', sides: 4, hint: 'A square has 4 equal sides.' },
+  { name: 'rectangle', sides: 4, hint: 'A rectangle has 4 sides (2 long, 2 short).' },
+  { name: 'pentagon', sides: 5, hint: 'A pentagon has 5 sides.' },
+  { name: 'hexagon', sides: 6, hint: 'A hexagon has 6 sides.' }
+];
+
+function genIdShapeK(rng) {
+  const s = pick(rng, SHAPES_2D_K);
+  const phrasings = [
+    `Which shape has ${s.sides} sides?`,
+    `A shape with ${s.sides} ${s.sides === 1 ? 'side' : 'sides'} is a ___?`,
+    `Pick the shape that has ${s.sides} sides.`
+  ];
+  if (s.sides === 0) {
+    return mc(
+      `Which shape has no straight sides?`,
+      s.name,
+      shuffleA(rng, SHAPES_2D_K.filter(x => x.name !== s.name)).slice(0, 3).map(x => x.name),
+      s.hint,
+      rng
+    );
+  }
+  return mc(
+    pick(rng, phrasings),
+    s.name,
+    shuffleA(rng, SHAPES_2D_K.filter(x => x.name !== s.name && x.sides !== s.sides)).slice(0, 3).map(x => x.name),
+    s.hint,
+    rng
+  );
+}
+
+function genShapeSidesK(rng) {
+  const s = pick(rng, SHAPES_2D_K.filter(x => x.sides > 0));
+  const phrasings = [
+    `How many sides does a ${s.name} have?`,
+    `A ${s.name} has how many sides?`,
+    `Count the sides of a ${s.name}.`
+  ];
+  return num(
+    pick(rng, phrasings),
+    s.sides,
+    s.hint,
+    [String(s.sides), NUMBER_WORDS[s.sides]]
+  );
+}
+
+// ---------- Generators: Grade 1 ----------
+function genCountTo120G1(rng) {
+  // "What number comes next: 47, 48, 49, ?"  or  "What number comes before 100?"
+  const style = pick(rng, ['next', 'before', 'between']);
+  if (style === 'next') {
+    const start = randInt(rng, 1, 117);
+    const phrasings = [
+      `What number comes next: ${start}, ${start + 1}, ${start + 2}, ___?`,
+      `Count forward from ${start + 2}. The next number is ___?`,
+      `${start + 2} + 1 = ?`
+    ];
+    return num(
+      pick(rng, phrasings),
+      start + 3,
+      `Count forward by 1: ${start + 2} → ${start + 3}.`,
+      [String(start + 3), fmt(start + 3)]
+    );
+  }
+  if (style === 'before') {
+    const n = randInt(rng, 2, 120);
+    return num(
+      `What number comes just before ${n}?`,
+      n - 1,
+      `${n} − 1 = ${n - 1}.`,
+      [String(n - 1), fmt(n - 1)]
+    );
+  }
+  const a = randInt(rng, 1, 118);
+  const b = a + 2;
+  return num(
+    `What number is between ${a} and ${b}?`,
+    a + 1,
+    `${a}, ${a + 1}, ${b}. The number between is ${a + 1}.`,
+    [String(a + 1), fmt(a + 1)]
+  );
+}
+
+function genTensOnesG1(rng) {
+  const tens = randInt(rng, 1, 9);
+  const ones = randInt(rng, 0, 9);
+  const n = tens * 10 + ones;
+  const ask = pick(rng, ['tens', 'ones']);
+  const ans = ask === 'tens' ? tens : ones;
+  const phrasings = [
+    `In ${n}, how many ${ask} are there?`,
+    `${n} = ___ tens and ___ ones. How many ${ask}?`,
+    `What is the digit in the ${ask} place of ${n}?`
+  ];
+  return num(
+    pick(rng, phrasings),
+    ans,
+    `${n} = ${tens} tens + ${ones} ones, so the ${ask} digit is ${ans}.`,
+    [String(ans)]
+  );
+}
+
+function genCompareG1(rng) {
+  const a = randInt(rng, 1, 120);
+  let b;
+  do { b = randInt(rng, 1, 120); } while (b === a);
+  const sym = a < b ? '<' : '>';
+  const phrasings = [
+    `Which symbol makes this true?  ${a} ___ ${b}`,
+    `Compare: ${a} ___ ${b}. Pick the right symbol.`,
+    `${a} ___ ${b}. Is it < or >?`
+  ];
+  return mc(
+    pick(rng, phrasings),
+    sym,
+    ['<', '>', '='].filter(s => s !== sym),
+    `${a} ${sym} ${b}.`,
+    rng
+  );
+}
+
+function genAddWithin10G1(rng) {
+  const a = randInt(rng, 0, 10);
+  const b = randInt(rng, 0, 10 - a);
+  const ans = a + b;
+  return num(
+    pick(rng, ADD_PHRASINGS)(a, b),
+    ans,
+    `${a} + ${b} = ${ans}.`,
+    [String(ans)]
+  );
+}
+
+function genAddWithin20G1(rng) {
+  const a = randInt(rng, 1, 19);
+  const b = randInt(rng, 1, 20 - a);
+  const ans = a + b;
+  return num(
+    pick(rng, ADD_PHRASINGS)(a, b),
+    ans,
+    `${a} + ${b} = ${ans}.`,
+    [String(ans)]
+  );
+}
+
+function genSubWithin10G1(rng) {
+  const a = randInt(rng, 1, 10);
+  const b = randInt(rng, 0, a);
+  const ans = a - b;
+  return num(
+    pick(rng, SUB_PHRASINGS)(a, b),
+    ans,
+    `${a} − ${b} = ${ans}.`,
+    [String(ans)]
+  );
+}
+
+function genSubWithin20G1(rng) {
+  const a = randInt(rng, 5, 20);
+  const b = randInt(rng, 1, a);
+  const ans = a - b;
+  return num(
+    pick(rng, SUB_PHRASINGS)(a, b),
+    ans,
+    `${a} − ${b} = ${ans}.`,
+    [String(ans)]
+  );
+}
+
+function genWordProblemG1(rng) {
+  const op = pick(rng, ['add', 'sub']);
+  const name = pick(rng, NAMES);
+  const item = pick(rng, ALL_ITEMS);
+  if (op === 'add') {
+    const a = randInt(rng, 1, 12);
+    const b = randInt(rng, 1, 20 - a);
+    const ans = a + b;
+    const phrasings = [
+      `${name} has ${a} ${item}. A friend gives ${name} ${b} more. How many ${item} now?`,
+      `${name} found ${a} ${item} on Monday and ${b} more on Tuesday. How many altogether?`,
+      `There are ${a} ${item} on a tray. ${name} adds ${b} more. How many ${item} are on the tray?`,
+      `${a} ${item} plus ${b} ${item} equals how many?`
+    ];
+    return num(
+      pick(rng, phrasings),
+      ans,
+      `${a} + ${b} = ${ans}.`,
+      [String(ans)]
+    );
+  }
+  const a = randInt(rng, 5, 20);
+  const b = randInt(rng, 1, a);
+  const ans = a - b;
+  const phrasings = [
+    `${name} has ${a} ${item}. ${name} gives away ${b}. How many ${item} are left?`,
+    `There were ${a} ${item} in the basket. ${name} took ${b}. How many remain?`,
+    `${a} ${item} minus ${b} ${item} equals how many?`,
+    `${name} had ${a} ${item} and ate ${b}. How many ${item} are left?`
+  ];
+  return num(
+    pick(rng, phrasings),
+    ans,
+    `${a} − ${b} = ${ans}.`,
+    [String(ans)]
+  );
+}
+
+function genShapesG1(rng) {
+  const s = pick(rng, SHAPES_2D_K.filter(x => x.sides > 0));
+  // Mix: identify by side count, or count sides.
+  if (rng() < 0.5) {
+    return mc(
+      `Which shape has ${s.sides} sides?`,
+      s.name,
+      shuffleA(rng, SHAPES_2D_K.filter(x => x.name !== s.name && x.sides !== s.sides && x.sides > 0)).slice(0, 3).map(x => x.name),
+      s.hint,
+      rng
+    );
+  }
+  return num(
+    `How many sides does a ${s.name} have?`,
+    s.sides,
+    s.hint,
+    [String(s.sides)]
+  );
+}
+
+function genMeasureLengthG1(rng) {
+  const unit = pick(rng, ['paper clips', 'cubes', 'pencils', 'crayons']);
+  const a = randInt(rng, 2, 12);
+  const b = randInt(rng, 2, 12);
+  const phrasings = [
+    `A book is ${a} ${unit} long. A pencil is ${b} ${unit} long. How much longer is the longer one?`,
+    `${pick(rng, NAMES)}'s desk is ${a} ${unit} long and a notebook is ${b} ${unit} long. How many more ${unit} is the longer object?`
+  ];
+  const ans = Math.abs(a - b);
+  return num(
+    pick(rng, phrasings),
+    ans,
+    `Subtract: |${a} − ${b}| = ${ans} ${unit}.`,
+    [String(ans), `${ans} ${unit}`]
+  );
+}
+
+function genTellTimeG1(rng) {
+  const h = randInt(rng, 1, 12);
+  const m = pick(rng, [0, 30]);
+  const time = `${h}:${String(m).padStart(2, '0')}`;
+  const phrasings = [
+    `What time does the clock show: hour hand on ${h}, minute hand on ${m === 0 ? '12' : '6'}?`,
+    `If it is exactly ${m === 0 ? `${h} o'clock` : `half past ${h}`}, what is the time written?`
+  ];
+  return num(
+    pick(rng, phrasings),
+    time,
+    m === 0 ? `${h} o'clock is written ${time}.` : `Half past ${h} is written ${time}.`,
+    [time]
+  );
+}
+
+const COINS = [
+  { name: 'penny', value: 1 },
+  { name: 'nickel', value: 5 },
+  { name: 'dime', value: 10 },
+  { name: 'quarter', value: 25 }
+];
+
+function genIdCoinG1(rng) {
+  const c = pick(rng, COINS);
+  const phrasings = [
+    `Which coin is worth ${c.value} ${c.value === 1 ? 'cent' : 'cents'}?`,
+    `A ${c.value === 1 ? '1-cent' : `${c.value}-cent`} coin is called a ___?`,
+    `What is the name of the coin worth ${c.value}¢?`
+  ];
+  return mc(
+    pick(rng, phrasings),
+    c.name,
+    shuffleA(rng, COINS.filter(x => x.name !== c.name)).slice(0, 3).map(x => x.name),
+    `A ${c.name} is worth ${c.value}¢.`,
+    rng
+  );
+}
+
+// ---------- Generators: Grade 2 ----------
+function genPlaceValueG2(rng) {
+  const places = [
+    { name: 'ones', mul: 1 },
+    { name: 'tens', mul: 10 },
+    { name: 'hundreds', mul: 100 }
+  ];
+  const p = pick(rng, places);
+  const digit = randInt(rng, 1, 9);
+  const above = p.mul === 100 ? randInt(rng, 0, 1) * 1000 : randInt(rng, 0, 11) * p.mul * 10;
+  const below = p.mul > 1 ? randInt(rng, 0, p.mul - 1) : 0;
+  let n = above + digit * p.mul + below;
+  if (n > 1200) n = digit * p.mul + below;
+  const value = digit * p.mul;
+  const phrasings = [
+    `What is the value of the digit ${digit} in ${fmt(n)}?`,
+    `In ${fmt(n)}, what does the ${digit} represent?`,
+    `The digit ${digit} in ${fmt(n)} is in the ${p.name} place. What is its value?`
+  ];
+  return num(
+    pick(rng, phrasings),
+    value,
+    `The ${digit} sits in the ${p.name} place: ${digit} × ${p.mul} = ${value}.`,
+    [String(value), fmt(value)]
+  );
+}
+
+function genCompareG2(rng) {
+  const a = randInt(rng, 10, 1200);
+  let b;
+  do { b = randInt(rng, 10, 1200); } while (b === a);
+  const sym = a < b ? '<' : '>';
+  return mc(
+    pick(rng, [
+      `Which symbol makes this true?  ${fmt(a)} ___ ${fmt(b)}`,
+      `Compare: ${fmt(a)} ___ ${fmt(b)}.`,
+      `${fmt(a)} ___ ${fmt(b)}. Pick <, >, or =.`
+    ]),
+    sym,
+    ['<', '>', '='].filter(s => s !== sym),
+    `${fmt(a)} ${sym} ${fmt(b)}.`,
+    rng
+  );
+}
+
+function genSkipCountG2(rng) {
+  const step = pick(rng, [2, 5, 10, 100]);
+  const start = step === 100 ? randInt(rng, 100, 800) : randInt(rng, step, 80);
+  const seq = [start, start + step, start + 2 * step];
+  return num(
+    `Skip count by ${step}s: ${seq.join(', ')}, ___?`,
+    seq[2] + step,
+    `Add ${step} to ${seq[2]}: ${seq[2]} + ${step} = ${seq[2] + step}.`,
+    [String(seq[2] + step), fmt(seq[2] + step)]
+  );
+}
+
+function genAdd2DigitG2(rng) {
+  const a = randInt(rng, 10, 89);
+  const b = randInt(rng, 10, 89);
+  const ans = a + b;
+  return num(
+    pick(rng, ADD_PHRASINGS)(a, b),
+    ans,
+    `Add ones, then tens, regrouping if needed. ${a} + ${b} = ${ans}.`,
+    [String(ans), fmt(ans)]
+  );
+}
+
+function genAdd3DigitG2(rng) {
+  const a = randInt(rng, 100, 499);
+  const b = randInt(rng, 100, 499);
+  const ans = a + b;
+  return num(
+    pick(rng, ADD_PHRASINGS)(a, b),
+    ans,
+    `Add ones, tens, then hundreds. ${a} + ${b} = ${ans}.`,
+    [String(ans), fmt(ans)]
+  );
+}
+
+function genSub2DigitG2(rng) {
+  const a = randInt(rng, 20, 99);
+  const b = randInt(rng, 10, a - 1);
+  const ans = a - b;
+  return num(
+    pick(rng, SUB_PHRASINGS)(a, b),
+    ans,
+    `Subtract ones, then tens, regrouping if needed. ${a} − ${b} = ${ans}.`,
+    [String(ans), fmt(ans)]
+  );
+}
+
+function genSub3DigitG2(rng) {
+  const a = randInt(rng, 200, 999);
+  const b = randInt(rng, 100, a - 1);
+  const ans = a - b;
+  return num(
+    pick(rng, SUB_PHRASINGS)(a, b),
+    ans,
+    `${a} − ${b} = ${ans}.`,
+    [String(ans), fmt(ans)]
+  );
+}
+
+function genEqualGroupsG2(rng) {
+  const groups = randInt(rng, 2, 6);
+  const each = randInt(rng, 2, 6);
+  const ans = groups * each;
+  const name = pick(rng, NAMES);
+  const item = pick(rng, ALL_ITEMS);
+  const phrasings = [
+    `${name} has ${groups} bags. Each bag has ${each} ${item}. How many ${item} in all?`,
+    `There are ${groups} groups of ${each}. How many in total?`,
+    `${groups} plates each have ${each} ${item}. Total ${item}?`,
+    `${each} + ${each} ${groups > 2 ? `+ ${each}`.repeat(groups - 2) : ''} = ?`
+  ];
+  return num(
+    pick(rng, phrasings),
+    ans,
+    `${groups} groups of ${each} = ${groups} × ${each} = ${ans}.`,
+    [String(ans), fmt(ans)]
+  );
+}
+
+function genArrayG2(rng) {
+  const r = randInt(rng, 2, 8);
+  const c = randInt(rng, 2, 8);
+  const ans = r * c;
+  return num(
+    pick(rng, [
+      `An array has ${r} rows and ${c} columns. How many squares are in the array?`,
+      `Find the total in a ${r}-by-${c} array.`,
+      `${r} rows of ${c} dots — how many dots?`
+    ]),
+    ans,
+    `${r} × ${c} = ${ans}.`,
+    [String(ans), fmt(ans)]
+  );
+}
+
+function genFractionsG2(rng) {
+  const f = pick(rng, [
+    { word: 'half', parts: 2 },
+    { word: 'third', parts: 3 },
+    { word: 'fourth', parts: 4 }
+  ]);
+  if (rng() < 0.5) {
+    return num(
+      `If a shape is divided into equal parts and one part is one ${f.word}, into how many equal parts is the shape divided?`,
+      f.parts,
+      `One ${f.word} means 1 of ${f.parts} equal parts.`,
+      [String(f.parts), NUMBER_WORDS[f.parts]]
+    );
+  }
+  const wrongs = [2, 3, 4, 5, 6, 8].filter(x => x !== f.parts).slice(0, 3);
+  return mc(
+    `A pizza is cut into ${f.parts} equal pieces. One piece is one ___?`,
+    f.word,
+    ['half', 'third', 'fourth', 'fifth', 'sixth', 'eighth'].filter(x => x !== f.word).slice(0, 3),
+    `${f.parts} equal parts → each is one ${f.word}.`,
+    rng
+  );
+}
+
+function genCoinTotalG2(rng) {
+  // Combine 2-4 coin types into a total in cents.
+  const choices = shuffleA(rng, COINS).slice(0, randInt(rng, 2, 4));
+  let total = 0;
+  const counts = choices.map(c => {
+    const n = randInt(rng, 1, 4);
+    total += n * c.value;
+    return { coin: c, n };
+  });
+  const desc = counts.map(({ coin, n }) => `${n} ${coin.name}${n === 1 ? '' : 's'}`).join(' and ');
+  const phrasings = [
+    `What is the total value of ${desc}?`,
+    `${pick(rng, NAMES)} has ${desc}. How many cents in all?`,
+    `Find the total: ${desc}.`
+  ];
+  return num(
+    pick(rng, phrasings),
+    total,
+    `${counts.map(({ coin, n }) => `${n} × ${coin.value}¢ = ${n * coin.value}¢`).join('; ')}. Total = ${total}¢.`,
+    [String(total), `${total}¢`, `${total} cents`]
+  );
+}
+
+function genTime5G2(rng) {
+  const h = randInt(rng, 1, 12);
+  const m = pick(rng, [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]);
+  const time = `${h}:${String(m).padStart(2, '0')}`;
+  const phrasings = [
+    `If the hour hand is just past ${h} and the minute hand points to ${m / 5 || 12}, what time is it?`,
+    `Write the time: ${m} minutes after ${h}.`,
+    `What time is ${m} minutes after ${h} o'clock?`
+  ];
+  return num(
+    pick(rng, phrasings),
+    time,
+    `${m} minutes after ${h}:00 is ${time}.`,
+    [time]
+  );
+}
+
+function genShapeSidesG2(rng) {
+  const shapes = [
+    { name: 'triangle', sides: 3, vertices: 3 },
+    { name: 'square', sides: 4, vertices: 4 },
+    { name: 'rectangle', sides: 4, vertices: 4 },
+    { name: 'pentagon', sides: 5, vertices: 5 },
+    { name: 'hexagon', sides: 6, vertices: 6 },
+    { name: 'octagon', sides: 8, vertices: 8 }
+  ];
+  const s = pick(rng, shapes);
+  const ask = pick(rng, ['sides', 'vertices']);
+  const ans = ask === 'sides' ? s.sides : s.vertices;
+  const phrasings = [
+    `How many ${ask} does a ${s.name} have?`,
+    `A ${s.name} has how many ${ask}?`,
+    `Count the ${ask} of a ${s.name}.`
+  ];
+  return num(
+    pick(rng, phrasings),
+    ans,
+    `A ${s.name} has ${s.sides} sides and ${s.vertices} vertices.`,
+    [String(ans), NUMBER_WORDS[ans]]
+  );
+}
+
 // ---------- Bank specs ----------
 const TARGET = 1000;
 const SPECS = {
+  'grade-k-curriculum.json': [
+    { unit: 'u1', lesson: 'u1l1', gen: genCountTo10K },
+    { unit: 'u1', lesson: 'u1l2', gen: genCountTo20K },
+    { unit: 'u1', lesson: 'u1l3', gen: genNumberNamesK },
+    { unit: 'u2', lesson: 'u2l1', gen: genMoreLessEqualK },
+    { unit: 'u2', lesson: 'u2l2', gen: genOneMoreLessK },
+    { unit: 'u3', lesson: 'u3l1', gen: genAddWithin10K },
+    { unit: 'u3', lesson: 'u3l2', gen: genSubWithin10K },
+    { unit: 'u4', lesson: 'u4l1', gen: genIdShapeK },
+    { unit: 'u4', lesson: 'u4l2', gen: genShapeSidesK }
+  ],
+  'grade-1-curriculum.json': [
+    { unit: 'u1', lesson: 'u1l1', gen: genCountTo120G1 },
+    { unit: 'u1', lesson: 'u1l2', gen: genTensOnesG1 },
+    { unit: 'u1', lesson: 'u1l3', gen: genCompareG1 },
+    { unit: 'u2', lesson: 'u2l1', gen: genAddWithin10G1 },
+    { unit: 'u2', lesson: 'u2l2', gen: genAddWithin20G1 },
+    { unit: 'u3', lesson: 'u3l1', gen: genSubWithin10G1 },
+    { unit: 'u3', lesson: 'u3l2', gen: genSubWithin20G1 },
+    { unit: 'u4', lesson: 'u4l1', gen: genWordProblemG1 },
+    { unit: 'u5', lesson: 'u5l1', gen: genShapesG1 },
+    { unit: 'u5', lesson: 'u5l2', gen: genMeasureLengthG1 },
+    { unit: 'u6', lesson: 'u6l1', gen: genTellTimeG1 },
+    { unit: 'u6', lesson: 'u6l2', gen: genIdCoinG1 }
+  ],
+  'grade-2-curriculum.json': [
+    { unit: 'u1', lesson: 'u1l1', gen: genPlaceValueG2 },
+    { unit: 'u1', lesson: 'u1l2', gen: genCompareG2 },
+    { unit: 'u1', lesson: 'u1l3', gen: genSkipCountG2 },
+    { unit: 'u2', lesson: 'u2l1', gen: genAdd2DigitG2 },
+    { unit: 'u2', lesson: 'u2l2', gen: genAdd3DigitG2 },
+    { unit: 'u3', lesson: 'u3l1', gen: genSub2DigitG2 },
+    { unit: 'u3', lesson: 'u3l2', gen: genSub3DigitG2 },
+    { unit: 'u4', lesson: 'u4l1', gen: genEqualGroupsG2 },
+    { unit: 'u4', lesson: 'u4l2', gen: genArrayG2 },
+    { unit: 'u5', lesson: 'u5l1', gen: genFractionsG2 },
+    { unit: 'u6', lesson: 'u6l1', gen: genCoinTotalG2 },
+    { unit: 'u7', lesson: 'u7l1', gen: genTime5G2 },
+    { unit: 'u8', lesson: 'u8l1', gen: genShapeSidesG2 }
+  ],
   'grade-3-curriculum.json': [
     { unit: 'u1', lesson: 'u1l1', gen: genPlaceValueG3 },
     { unit: 'u1', lesson: 'u1l2', gen: genCompareG3 },

@@ -172,6 +172,9 @@
       <label class="auth-label">Your grade right now</label>
       <select class="auth-input" id="su-grade">
         <option value="">Pick your grade…</option>
+        <option value="grade-k">Kindergarten</option>
+        <option value="grade-1">1st grade</option>
+        <option value="grade-2">2nd grade</option>
         <option value="grade-3">3rd grade</option>
         <option value="grade-4">4th grade</option>
         <option value="grade-5">5th grade</option>
@@ -460,10 +463,11 @@
     });
   }
 
-  // Compare grade levels. Returns numeric rank: 3..8 for grade-N, 9 for algebra-1, -Infinity if unknown.
+  // Compare grade levels. Returns numeric rank: 0 for K, 1..8 for grade-N, 9 for algebra-1, -Infinity if unknown.
   function gradeLevel(slug) {
     if (!slug) return -Infinity;
     if (slug === 'algebra-1') return 9;
+    if (slug === 'grade-k') return 0;
     const m = String(slug).match(/^grade-(\d+)$/);
     return m ? parseInt(m[1], 10) : -Infinity;
   }

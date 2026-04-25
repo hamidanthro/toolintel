@@ -79,7 +79,7 @@
     </div>
   </footer>
 
-  <script src="js/auth.js?v=20260425u"></script>
+  <script src="js/auth.js?v=20260425v"></script>
   <script src="js/staar-data.js"></script>
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
@@ -122,10 +122,10 @@
       // If existing user has no grade saved, ask once and persist.
       if (d.grade) return d.grade;
       const choice = window.prompt(
-        'Pick your current grade (this can\'t be changed later):\n\n  3 = 3rd grade\n  4 = 4th grade\n  5 = 5th grade\n  6 = 6th grade\n  7 = 7th grade\n  8 = 8th grade\n  9 = Algebra I',
+        'Pick your current grade (this can\'t be changed later):\n\n  K = Kindergarten\n  1 = 1st grade\n  2 = 2nd grade\n  3 = 3rd grade\n  4 = 4th grade\n  5 = 5th grade\n  6 = 6th grade\n  7 = 7th grade\n  8 = 8th grade\n  9 = Algebra I',
         ''
       );
-      const map = { '3':'grade-3','4':'grade-4','5':'grade-5','6':'grade-6','7':'grade-7','8':'grade-8','9':'algebra-1' };
+      const map = { 'K':'grade-k','k':'grade-k','1':'grade-1','2':'grade-2','3':'grade-3','4':'grade-4','5':'grade-5','6':'grade-6','7':'grade-7','8':'grade-8','9':'algebra-1' };
       const g = map[String(choice || '').trim()];
       if (!g) {
         window.STAARAuth.showToast('Pick a grade to start practicing.');
