@@ -30,7 +30,7 @@
         </div>
         <div class="wallet-progress"><div class="wallet-progress-fill" style="width:${pct}%"></div></div>
       </div>
-      ${broke ? `<a href="practice.html" class="earn-cta">\u2728 Practice to earn cents</a>` : ''}`;
+      ${broke ? `<a href="practice.html" class="earn-cta">\u2728 Practice to earn points</a>` : ''}`;
   }
 
   async function load() {
@@ -67,7 +67,7 @@
         : `<div class="toy-img-placeholder">\u{1F381}</div>`;
       const desc = (t.description || '').trim();
       const buyLabel = canAfford
-        ? 'Buy with cents'
+        ? 'Buy with points'
         : `Need ${Auth.formatCents(need)} more`;
       return `
         <article class="toy-card${canAfford ? ' affordable' : ''}" data-toy-id="${escapeHtml(t.toyId)}">

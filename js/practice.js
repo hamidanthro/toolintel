@@ -226,7 +226,7 @@
         <span class="mastered-star">⭐</span>
         <div>
           <div class="mastered-title">You've mastered this section!</div>
-          <div class="mastered-sub">Practice freely for review — no cents earned or lost here. Try a different section to keep earning.</div>
+          <div class="mastered-sub">Practice freely for review — no points earned or lost here. Try a different section to keep earning.</div>
         </div>
       </div>` : '';
 
@@ -464,7 +464,7 @@
     const cents = difficultyCents(q);
     const reward = locked
       ? `<span class="q-reward q-reward-locked" title="Section mastered — review only">⭐ Mastered</span>`
-      : `<span class="q-reward" title="Correct: +${cents}\u00a2  •  Wrong: −${cents}\u00a2">\u00b1${cents}\u00a2</span>`;
+      : `<span class="q-reward" title="Correct: +${cents} pts  •  Wrong: −${cents} pts">±${cents} pts</span>`;
     return `
       <form class="question-card">
         <div class="q-meta">

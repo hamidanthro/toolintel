@@ -273,33 +273,34 @@
   }
 
   // ----- Header pill -----
+  // Display values: 1 cent = 1 point internally; we surface them as points everywhere kid-facing.
   function formatCents(c) {
     const n = Math.max(0, parseInt(c, 10) || 0);
-    if (n < 100) return `${n}\u00a2`;
-    return `$${(n / 100).toFixed(2)}`;
+    return `${n.toLocaleString()} pts`;
   }
+  const formatPoints = formatCents;
 
   function showCentsToast(awarded, capped) {
     if (!awarded || awarded <= 0) {
-      if (capped) showToast('You hit the $100 lifetime cap! \ud83c\udfaf');
+      if (capped) showToast('You hit the 10,000 point lifetime cap! \ud83c\udfaf');
       return;
     }
     const t = document.createElement('div');
     t.className = 'cents-toast';
-    t.innerHTML = `<span class="cents-toast-coin">+${awarded}\u00a2</span><span>added to your wallet</span>`;
+    t.innerHTML = `<span class="cents-toast-coin">+${awarded} pts</span><span>added to your wallet</span>`;
     document.body.appendChild(t);
     requestAnimationFrame(() => t.classList.add('show'));
     setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 250); }, 1600);
   }
   function showCentsLossToast(lost, flooredAtZero) {
     if (!lost || lost <= 0) {
-      if (flooredAtZero) showToast('Wallet stays at 0\u00a2 \u2014 keep trying!');
+      if (flooredAtZero) showToast('Wallet stays at 0 pts \u2014 keep trying!');
       return;
     }
     const t = document.createElement('div');
     t.className = 'cents-toast cents-toast-loss';
     const tail = flooredAtZero ? ' (wallet at 0)' : '';
-    t.innerHTML = `<span class="cents-toast-coin">\u2212${lost}\u00a2</span><span>oops, try again${tail}</span>`;
+    t.innerHTML = `<span class="cents-toast-coin">\u2212${lost} pts</span><span>oops, try again${tail}</span>`;
     document.body.appendChild(t);
     requestAnimationFrame(() => t.classList.add('show'));
     setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 250); }, 1800);

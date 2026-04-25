@@ -30,7 +30,7 @@
     <div class="container">&copy; <span id="year"></span> STAAR Prep.</div>
   </footer>
 
-  <script src="js/auth.js?v=20260425p"></script>
+  <script src="js/auth.js?v=20260425q"></script>
   <script>window.STAARAuth = window.STAARAuth || {}; window.STAARAuth.requireLoginOnLoad = true;</script>
   <script src="js/staar-data.js"></script>
   <script>
@@ -82,7 +82,7 @@
                 <p class="unit-summary">${u.summary}</p>
               </div>
               <ul class="lesson-list">${lessons}</ul>
-              <a class="btn btn-primary unit-practice" href="practice.html?g=${grade.slug}&u=${u.id}">${uMastered ? 'Review (no cents)' : 'Practice this unit'}</a>
+              <a class="btn btn-primary unit-practice" href="practice.html?g=${grade.slug}&u=${u.id}">${uMastered ? 'Review (no points)' : 'Practice this unit'}</a>
             </div>`;
         }).join('');
 
