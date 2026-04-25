@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>STAAR Math Prep — Texas Math Test Preparation</title>
   <meta name="description" content="Practice and master the Texas STAAR math test. Grade-by-grade lessons, practice problems, and full-length tests for grades 3–8 and Algebra I." />
-  <link rel="stylesheet" href="css/styles.css?v=20260425t" />
+  <link rel="stylesheet" href="css/styles.css?v=20260425u" />
 </head>
 <body>
   <header class="site-header">
@@ -79,22 +79,36 @@
     </div>
   </footer>
 
-  <script src="js/auth.js?v=20260425s"></script>
+  <script src="js/auth.js?v=20260425u"></script>
   <script src="js/staar-data.js"></script>
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
-    const grid = document.getElementById('grade-grid');
-    window.STAAR_GRADES.forEach(g => {
-      const a = document.createElement('a');
-      a.href = `grade.html?g=${g.slug}`;
-      a.className = 'grade-card';
-      a.innerHTML = `
-        <div class="label">STAAR Math</div>
-        <div class="title">${g.title}</div>
-        <div class="desc">${g.categories.length} reporting categories</div>
-      `;
-      grid.appendChild(a);
-    });
+
+    function renderGradeGrid() {
+      const grid = document.getElementById('grade-grid');
+      grid.innerHTML = '';
+      const Auth = window.STAARAuth || {};
+      const minLevel = Auth.userGradeLevel ? Auth.userGradeLevel() : -Infinity;
+      const visible = window.STAAR_GRADES.filter(g => Auth.gradeLevel(g.slug) >= minLevel);
+      const sectionTitle = document.querySelector('#grade-section h2');
+      if (sectionTitle) {
+        sectionTitle.textContent = (minLevel > -Infinity)
+          ? 'Your grade and beyond'
+          : 'Choose your grade';
+      }
+      visible.forEach(g => {
+        const a = document.createElement('a');
+        a.href = `grade.html?g=${g.slug}`;
+        a.className = 'grade-card';
+        a.innerHTML = `
+          <div class="label">STAAR Math</div>
+          <div class="title">${g.title}</div>
+          <div class="desc">${g.categories.length} reporting categories</div>
+        `;
+        grid.appendChild(a);
+      });
+    }
+    renderGradeGrid();
 
     function escapeHtmlSafe(s) {
       return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -102,6 +116,28 @@
     function fmtPts(n) {
       const v = Math.max(0, parseInt(n, 10) || 0);
       return `${v.toLocaleString()} pts`;
+    }
+
+    async function promptGradeIfMissing(d) {
+      // If existing user has no grade saved, ask once and persist.
+      if (d.grade) return d.grade;
+      const choice = window.prompt(
+        'Pick your current grade (this can\'t be changed later):\n\n  3 = 3rd grade\n  4 = 4th grade\n  5 = 5th grade\n  6 = 6th grade\n  7 = 7th grade\n  8 = 8th grade\n  9 = Algebra I',
+        ''
+      );
+      const map = { '3':'grade-3','4':'grade-4','5':'grade-5','6':'grade-6','7':'grade-7','8':'grade-8','9':'algebra-1' };
+      const g = map[String(choice || '').trim()];
+      if (!g) {
+        window.STAARAuth.showToast('Pick a grade to start practicing.');
+        return null;
+      }
+      try {
+        await window.STAARAuth.setGrade(g);
+        return g;
+      } catch (e) {
+        window.STAARAuth.showToast('Could not save your grade. Try again.');
+        return null;
+      }
     }
 
     async function showDashboard() {
@@ -118,6 +154,7 @@
       heroAnon.hidden = true;
       dash.hidden = false;
       gradeSection.hidden = false;
+      renderGradeGrid();
 
       document.getElementById('dash-greeting').textContent = `Welcome, ${u.displayName || u.username}!`;
 
@@ -126,6 +163,14 @@
           window.STAARAuth.api('dashboard', { token: window.STAARAuth.token() }),
           window.STAARAuth.api('leaderboard', { token: window.STAARAuth.token() })
         ]);
+        // First-time grade picker for accounts created before grades were required.
+        if (!d.grade) {
+          const g = await promptGradeIfMissing(d);
+          if (g) {
+            d.grade = g;
+            renderGradeGrid();
+          }
+        }
         document.getElementById('dash-correct').textContent = (d.correct || 0).toLocaleString();
         document.getElementById('dash-correct-foot').textContent = `out of ${(d.answered || 0).toLocaleString()} questions`;
         document.getElementById('dash-acc').textContent = `${d.accuracy || 0}%`;

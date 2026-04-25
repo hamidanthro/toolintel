@@ -173,6 +173,7 @@ exports.handler = async (event) => {
   if (action === 'markMastered')   return await handleMarkMastered(payload);
   if (action === 'leaderboard')    return await handleLeaderboard(payload);
   if (action === 'dashboard')      return await handleDashboard(payload);
+  if (action === 'setGrade')       return await handleSetGrade(payload);
   if (action === 'getWallet')      return await handleGetWallet(payload);
   if (action === 'listToys')       return await handleListToys(payload);
   if (action === 'checkout')       return await handleCheckout(payload);
@@ -381,6 +382,12 @@ function sanitizeUsername(u) {
   return String(u || '').trim().toLowerCase().replace(/[^a-z0-9_.-]/g, '');
 }
 
+const VALID_GRADES = new Set(['grade-3', 'grade-4', 'grade-5', 'grade-6', 'grade-7', 'grade-8', 'algebra-1']);
+function sanitizeGrade(g) {
+  const s = String(g || '').trim().toLowerCase();
+  return VALID_GRADES.has(s) ? s : null;
+}
+
 function hashPassword(password, salt) {
   // scrypt with conservative params (suitable for Lambda 512MB)
   const buf = crypto.scryptSync(String(password), salt, 64, { N: 16384, r: 8, p: 1 });
@@ -440,12 +447,16 @@ async function handleSignup(payload) {
   const username = sanitizeUsername(payload.username);
   const password = String(payload.password || '');
   const displayName = String(payload.displayName || '').trim().slice(0, 32) || username;
+  const grade = sanitizeGrade(payload.grade);
 
   if (username.length < 3 || username.length > 24) {
     return bad(400, 'Username must be 3-24 characters (letters, numbers, _ . -)');
   }
   if (password.length < 6 || password.length > 128) {
     return bad(400, 'Password must be at least 6 characters');
+  }
+  if (!grade) {
+    return bad(400, 'Please pick your current grade');
   }
 
   const existing = await ddb.send(new GetCommand({
@@ -468,6 +479,7 @@ async function handleSignup(payload) {
         username,
         userId,
         displayName,
+        grade,
         salt,
         passwordHash,
         color,
@@ -485,7 +497,7 @@ async function handleSignup(payload) {
   }
 
   const token = await makeToken(userId, username);
-  return ok({ token, user: { userId, username, displayName, color, balanceCents: 0, lifetimeCents: 0, isAdmin: isAdmin(username) } });
+  return ok({ token, user: { userId, username, displayName, grade, color, balanceCents: 0, lifetimeCents: 0, isAdmin: isAdmin(username) } });
 }
 
 async function handleLogin(payload) {
@@ -512,6 +524,7 @@ async function handleLogin(payload) {
       userId: user.userId,
       username: user.username,
       displayName: user.displayName || user.username,
+      grade: user.grade || null,
       color: user.color || '#1e40af',
       balanceCents: user.balanceCents || 0,
       lifetimeCents: user.lifetimeCents || 0,
@@ -1066,6 +1079,7 @@ async function handleDashboard(payload) {
   return ok({
     displayName: r.Item.displayName || r.Item.username,
     username: r.Item.username,
+    grade: r.Item.grade || null,
     correct: t.correct,
     answered: t.answered,
     accuracy: acc,
@@ -1074,4 +1088,28 @@ async function handleDashboard(payload) {
     capCents: LIFETIME_CAP_CENTS,
     masteredSections: r.Item.masteredSections || {}
   });
+}
+
+async function handleSetGrade(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  if (!auth.username) return bad(401, 'Please sign in again');
+  const grade = sanitizeGrade(payload.grade);
+  if (!grade) return bad(400, 'Pick a valid grade');
+
+  // Only allow setting once. If grade is already set, reject (so kids can't switch down).
+  const cur = await ddb.send(new GetCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username }
+  }));
+  if (!cur.Item) return bad(404, 'User not found');
+  if (cur.Item.grade) return bad(409, 'Grade is already set. Ask an adult to change it.');
+
+  await ddb.send(new UpdateCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username },
+    UpdateExpression: 'SET grade = :g',
+    ExpressionAttributeValues: { ':g': grade }
+  }));
+  return ok({ grade });
 }

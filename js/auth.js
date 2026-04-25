@@ -169,6 +169,19 @@
       <label class="auth-label">Retype password</label>
       <input type="password" class="auth-input" id="su-pass2" autocomplete="new-password" />
 
+      <label class="auth-label">Your grade right now</label>
+      <select class="auth-input" id="su-grade">
+        <option value="">Pick your grade…</option>
+        <option value="grade-3">3rd grade</option>
+        <option value="grade-4">4th grade</option>
+        <option value="grade-5">5th grade</option>
+        <option value="grade-6">6th grade</option>
+        <option value="grade-7">7th grade</option>
+        <option value="grade-8">8th grade</option>
+        <option value="algebra-1">Algebra I</option>
+      </select>
+      <p class="auth-hint">You'll only see questions for your grade and higher. This can't be changed later.</p>
+
       <p class="auth-error" id="su-err" hidden></p>
       <div class="modal-actions">
         <button type="button" class="btn btn-ghost" data-act="back">Back to sign in</button>
@@ -179,6 +192,7 @@
     const userIn = overlay.querySelector('#su-user');
     const passIn = overlay.querySelector('#su-pass');
     const pass2In = overlay.querySelector('#su-pass2');
+    const gradeIn = overlay.querySelector('#su-grade');
     const err = overlay.querySelector('#su-err');
     const btn = overlay.querySelector('[data-act="create"]');
     setTimeout(() => nameIn.focus(), 50);
@@ -191,6 +205,7 @@
       const username = (userIn.value || '').trim().toLowerCase();
       const password = passIn.value || '';
       const password2 = pass2In.value || '';
+      const grade = gradeIn.value || '';
 
       if (!displayName) { fail('Please enter a display name.'); return; }
       if (!/^[a-z0-9_.-]{3,24}$/.test(username)) {
@@ -198,10 +213,11 @@
       }
       if (password.length < 6) { fail('Password must be at least 6 characters.'); return; }
       if (password !== password2) { fail('Passwords don\u2019t match.'); return; }
+      if (!grade) { fail('Please pick your current grade.'); return; }
 
       setBusy(btn, true, 'Creating\u2026');
       try {
-        const res = await api('signup', { username, password, displayName });
+        const res = await api('signup', { username, password, displayName, grade });
         saveSession({ token: res.token, user: res.user });
         await migrateLegacyStats();
         closeModal();
@@ -444,6 +460,26 @@
     });
   }
 
+  // Compare grade levels. Returns numeric rank: 3..8 for grade-N, 9 for algebra-1, -Infinity if unknown.
+  function gradeLevel(slug) {
+    if (!slug) return -Infinity;
+    if (slug === 'algebra-1') return 9;
+    const m = String(slug).match(/^grade-(\d+)$/);
+    return m ? parseInt(m[1], 10) : -Infinity;
+  }
+  function userGradeLevel() {
+    const u = currentUser();
+    return u && u.grade ? gradeLevel(u.grade) : -Infinity;
+  }
+  async function setGrade(grade) {
+    const t = token();
+    if (!t) throw new Error('Not signed in');
+    const res = await api('setGrade', { token: t, grade });
+    const u = currentUser();
+    if (u) saveSession({ token: t, user: { ...u, grade: res.grade } });
+    return res.grade;
+  }
+
   // ----- Public API -----
   window.STAARAuth = Object.assign(window.STAARAuth || {}, {
     currentUser,
@@ -461,6 +497,9 @@
     formatCents,
     showCentsToast,
     showToast,
+    gradeLevel,
+    userGradeLevel,
+    setGrade,
     requireLoginOnLoad: window.STAARAuth ? !!window.STAARAuth.requireLoginOnLoad : false,
     statsKey(slug) {
       const u = currentUser();

@@ -17,6 +17,22 @@
     return renderHome();
   }
 
+  // Gate: kids can only practice their own grade or higher (set at signup).
+  const Auth = window.STAARAuth || {};
+  if (Auth.userGradeLevel && Auth.gradeLevel) {
+    const userLvl = Auth.userGradeLevel();
+    const reqLvl = Auth.gradeLevel(slug);
+    if (userLvl > -Infinity && reqLvl < userLvl) {
+      root.innerHTML = `
+        <h2>That grade is below your level</h2>
+        <div class="card">
+          <p style="color:var(--muted);">You're set to a higher grade, so practice for lower grades is locked. Pick your grade or higher from the home page.</p>
+          <p><a class="btn btn-primary" href="index.html">Back to your dashboard</a></p>
+        </div>`;
+      return;
+    }
+  }
+
   fetch(`data/${slug}-curriculum.json`)
     .then(r => r.ok ? r.json() : Promise.reject('not-found'))
     .then(curr => start(curr))

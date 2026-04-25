@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Grade — STAAR Math Prep</title>
-  <link rel="stylesheet" href="css/styles.css?v=20260425t" />
+  <link rel="stylesheet" href="css/styles.css?v=20260425u" />
 </head>
 <body>
   <header class="site-header">
@@ -12,8 +12,6 @@
       <a href="index.html" class="brand">STAAR<span>Prep</span></a>
       <nav class="nav">
         <a href="index.html">Home</a>
-        <a href="grades.html" class="active">Grades</a>
-        <a href="practice.html">Practice</a>
         <a href="marketplace.html">Toys</a> <a href="about.html">About</a>
       </nav>
       <div id="user-slot" class="user-slot"></div>
@@ -30,7 +28,7 @@
     <div class="container">&copy; <span id="year"></span> STAAR Prep.</div>
   </footer>
 
-  <script src="js/auth.js?v=20260425s"></script>
+  <script src="js/auth.js?v=20260425u"></script>
   <script>window.STAARAuth = window.STAARAuth || {}; window.STAARAuth.requireLoginOnLoad = true;</script>
   <script src="js/staar-data.js"></script>
   <script>
@@ -41,7 +39,13 @@
     const content = document.getElementById('content');
 
     if (!grade) {
-      content.innerHTML = '<h2>Grade not found</h2><p><a href="grades.html">Back to all grades</a></p>';
+      content.innerHTML = '<h2>Grade not found</h2><p><a href="index.html">Back home</a></p>';
+    } else if (
+      window.STAARAuth?.userGradeLevel &&
+      window.STAARAuth.userGradeLevel() > -Infinity &&
+      window.STAARAuth.gradeLevel(grade.slug) < window.STAARAuth.userGradeLevel()
+    ) {
+      content.innerHTML = `<h2>${grade.title} is below your level</h2><div class="card"><p style="color:var(--muted);">You're set to a higher grade, so this grade is locked. Pick your grade or higher from your dashboard.</p><p><a class="btn btn-primary" href="index.html">Back to dashboard</a></p></div>`;
     } else {
       document.title = `${grade.title} — STAAR Math Prep`;
       fetch(`data/${grade.slug}-curriculum.json`)
