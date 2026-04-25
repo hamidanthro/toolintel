@@ -24,9 +24,9 @@
 //   BEDROCK_REGION    (default: us-east-1)
 //   ALLOWED_ORIGIN    (default: *)
 
-const { BedrockRuntimeClient, InvokeModelCommand } = require('@aws-sdk/client-bedrock-runtime');
+const { BedrockRuntimeClient, ConverseCommand } = require('@aws-sdk/client-bedrock-runtime');
 
-const MODEL_ID = process.env.BEDROCK_MODEL_ID || 'anthropic.claude-3-5-haiku-20241022-v1:0';
+const MODEL_ID = process.env.BEDROCK_MODEL_ID || 'us.amazon.nova-lite-v1:0';
 const REGION = process.env.BEDROCK_REGION || 'us-east-1';
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || '*';
 
@@ -123,22 +123,21 @@ exports.handler = async (event) => {
   }
 
   const body = {
-    anthropic_version: 'bedrock-2023-05-31',
-    max_tokens: 600,
-    temperature: 0.4,
-    system: buildSystemPrompt(payload.grade),
-    messages
+    modelId: MODEL_ID,
+    system: [{ text: buildSystemPrompt(payload.grade) }],
+    messages: messages.map(m => ({
+      role: m.role,
+      content: [{ text: m.content }]
+    })),
+    inferenceConfig: {
+      maxTokens: 600,
+      temperature: 0.4
+    }
   };
 
   try {
-    const res = await bedrock.send(new InvokeModelCommand({
-      modelId: MODEL_ID,
-      contentType: 'application/json',
-      accept: 'application/json',
-      body: JSON.stringify(body)
-    }));
-    const json = JSON.parse(new TextDecoder().decode(res.body));
-    const reply = (json.content && json.content[0] && json.content[0].text) || '';
+    const res = await bedrock.send(new ConverseCommand(body));
+    const reply = res.output?.message?.content?.[0]?.text || '';
     return ok({ reply, model: MODEL_ID });
   } catch (err) {
     console.error('Bedrock error:', err);
