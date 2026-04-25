@@ -177,7 +177,7 @@ def check_q(q):
         return ('place-value', a2 in cands)
 
     # 5. Compare symbol "X ___ Y" answer in {<,>,=}
-    m = re.search(r'([\d.,/]+)\s*___\s*([\d.,/]+)', p)
+    m = re.search(r'(-?[\d.,/]+)\s*___\s*(-?[\d.,/]+)', p)
     if m and ans in ('<','>','='):
         a = m.group(1).rstrip('.,;:!?'); b = m.group(2).rstrip('.,;:!?')
         try:

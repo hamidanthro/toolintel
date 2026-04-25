@@ -1679,6 +1679,587 @@ function genShapeSidesG2(rng) {
   );
 }
 
+// ---------- Generators: Grade 6 ----------
+// Helper: format a fraction in simplest form, return as string. If denom 1, return numerator.
+function simpFrac(n, d) {
+  if (d === 0) return null;
+  const sign = (n < 0) !== (d < 0) ? -1 : 1;
+  n = Math.abs(n); d = Math.abs(d);
+  const g = gcd(n, d);
+  n /= g; d /= g;
+  if (d === 1) return String(sign * n);
+  return `${sign < 0 ? '-' : ''}${n}/${d}`;
+}
+
+function genIntegerCompareG6(rng) {
+  const a = randInt(rng, -50, 50);
+  let b; do { b = randInt(rng, -50, 50); } while (b === a);
+  const sym = a < b ? '<' : '>';
+  return mc(
+    pick(rng, [
+      `Which symbol makes this true?  ${a} ___ ${b}`,
+      `Compare the integers: ${a} ___ ${b}`,
+      `${a} ___ ${b}. Pick <, >, or =.`
+    ]),
+    sym,
+    ['<', '>', '='].filter(s => s !== sym),
+    `On a number line, ${a} ${sym} ${b} (numbers further left are smaller).`,
+    rng
+  );
+}
+
+function genAbsValueG6(rng) {
+  const n = randInt(rng, -100, 100);
+  return num(
+    pick(rng, [
+      `What is |${n}|?`,
+      `Find the absolute value: |${n}|.`,
+      `|${n}| = ?`
+    ]),
+    Math.abs(n),
+    `Absolute value is the distance from 0, so |${n}| = ${Math.abs(n)}.`,
+    [String(Math.abs(n))]
+  );
+}
+
+function genCompareRationalG6(rng) {
+  // Compare two values: pick from negatives, fractions, decimals.
+  const styles = ['decdec', 'fracfrac', 'decfrac', 'negneg'];
+  const s = pick(rng, styles);
+  let a, b, aStr, bStr;
+  if (s === 'decdec') {
+    aStr = (randInt(rng, -500, 500) / 100).toFixed(2);
+    bStr = (randInt(rng, -500, 500) / 100).toFixed(2);
+    a = parseFloat(aStr); b = parseFloat(bStr);
+  } else if (s === 'fracfrac') {
+    const d1 = pick(rng, [2,3,4,5,6,8,10,12]);
+    const d2 = pick(rng, [2,3,4,5,6,8,10,12]);
+    const n1 = randInt(rng, 1, d1 - 1);
+    const n2 = randInt(rng, 1, d2 - 1);
+    aStr = `${n1}/${d1}`; bStr = `${n2}/${d2}`;
+    a = n1 / d1; b = n2 / d2;
+  } else if (s === 'decfrac') {
+    aStr = (randInt(rng, 5, 95) / 100).toFixed(2);
+    const d = pick(rng, [2,3,4,5,8,10]);
+    const n = randInt(rng, 1, d - 1);
+    bStr = `${n}/${d}`;
+    a = parseFloat(aStr); b = n / d;
+  } else {
+    aStr = String(randInt(rng, -50, -1));
+    bStr = String(randInt(rng, -50, -1));
+    a = parseFloat(aStr); b = parseFloat(bStr);
+  }
+  if (Math.abs(a - b) < 1e-9) return genCompareRationalG6(rng);
+  const sym = a < b ? '<' : '>';
+  return mc(
+    `Which symbol makes this true?  ${aStr} ___ ${bStr}`,
+    sym,
+    ['<', '>', '='].filter(x => x !== sym),
+    `Compare ${aStr} and ${bStr}: ${aStr} ${sym} ${bStr}.`,
+    rng
+  );
+}
+
+function genConvertFracDecPctG6(rng) {
+  // Pick a fraction with denominator that gives a clean percent.
+  const easy = [
+    { f: '1/2', d: '0.5', p: '50%' },
+    { f: '1/4', d: '0.25', p: '25%' },
+    { f: '3/4', d: '0.75', p: '75%' },
+    { f: '1/5', d: '0.2', p: '20%' },
+    { f: '2/5', d: '0.4', p: '40%' },
+    { f: '3/5', d: '0.6', p: '60%' },
+    { f: '4/5', d: '0.8', p: '80%' },
+    { f: '1/10', d: '0.1', p: '10%' },
+    { f: '3/10', d: '0.3', p: '30%' },
+    { f: '7/10', d: '0.7', p: '70%' },
+    { f: '9/10', d: '0.9', p: '90%' },
+    { f: '1/20', d: '0.05', p: '5%' },
+    { f: '1/25', d: '0.04', p: '4%' },
+    { f: '3/20', d: '0.15', p: '15%' },
+    { f: '7/20', d: '0.35', p: '35%' },
+    { f: '1/8', d: '0.125', p: '12.5%' },
+    { f: '3/8', d: '0.375', p: '37.5%' },
+    { f: '5/8', d: '0.625', p: '62.5%' },
+    { f: '7/8', d: '0.875', p: '87.5%' }
+  ];
+  const item = pick(rng, easy);
+  const direction = pick(rng, ['frac->dec', 'frac->pct', 'dec->pct', 'pct->dec', 'dec->frac', 'pct->frac']);
+  switch (direction) {
+    case 'frac->dec': return num(`Write ${item.f} as a decimal.`, item.d, `${item.f} = ${item.d}.`, [item.d]);
+    case 'frac->pct': return num(`Write ${item.f} as a percent.`, item.p, `${item.f} = ${item.p}.`, [item.p, item.p.replace('%','')]);
+    case 'dec->pct':  return num(`Write ${item.d} as a percent.`, item.p, `Multiply by 100: ${item.d} = ${item.p}.`, [item.p, item.p.replace('%','')]);
+    case 'pct->dec':  return num(`Write ${item.p} as a decimal.`, item.d, `Divide by 100: ${item.p} = ${item.d}.`, [item.d]);
+    case 'dec->frac': return num(`Write ${item.d} as a fraction in simplest form.`, item.f, `${item.d} = ${item.f}.`, [item.f]);
+    case 'pct->frac': return num(`Write ${item.p} as a fraction in simplest form.`, item.f, `${item.p} = ${item.f}.`, [item.f]);
+  }
+}
+
+function genMulDecimalsG6(rng) {
+  // Multi-digit decimal multiplication. Use integer math then place decimal.
+  const aDigits = randInt(rng, 100, 9999);     // 0.aDigits or aDigits/100
+  const bDigits = randInt(rng, 10, 999);
+  const aDp = pick(rng, [1, 2]); const bDp = pick(rng, [1, 2]);
+  const aScaled = aDigits, bScaled = bDigits;
+  const a = aDigits / Math.pow(10, aDp);
+  const b = bDigits / Math.pow(10, bDp);
+  const totalDp = aDp + bDp;
+  const prodInt = aScaled * bScaled;
+  const ans = (prodInt / Math.pow(10, totalDp)).toFixed(totalDp);
+  const aStr = a.toFixed(aDp); const bStr = b.toFixed(bDp);
+  return num(
+    pick(rng, MUL_PHRASINGS)(aStr, bStr),
+    ans,
+    `Multiply as whole numbers (${aScaled} × ${bScaled} = ${fmt(prodInt)}), then place ${totalDp} decimal places: ${ans}.`,
+    [String(ans)]
+  );
+}
+
+function genDivDecimalsG6(rng) {
+  // Choose divisor and quotient with clean termination.
+  const bDp = pick(rng, [1, 2]);
+  const qDp = pick(rng, [1, 2]);
+  const bScaled = randInt(rng, 11, 99);  // divisor digits
+  const qScaled = randInt(rng, 11, 999); // quotient digits
+  const b = bScaled / Math.pow(10, bDp);
+  const q = qScaled / Math.pow(10, qDp);
+  const aInt = bScaled * qScaled;
+  const aDp = bDp + qDp;
+  const a = aInt / Math.pow(10, aDp);
+  const aStr = a.toFixed(aDp);
+  const bStr = b.toFixed(bDp);
+  const qStr = q.toFixed(qDp);
+  return num(
+    pick(rng, DIV_PHRASINGS)(aStr, bStr),
+    qStr,
+    `${aStr} ÷ ${bStr} = ${qStr} because ${bStr} × ${qStr} = ${aStr}.`,
+    [qStr]
+  );
+}
+
+function genMulFracG6(rng) {
+  const denoms = [2,3,4,5,6,7,8,9,10,12];
+  const d1 = pick(rng, denoms);
+  const d2 = pick(rng, denoms);
+  const n1 = randInt(rng, 1, d1 - 1);
+  const n2 = randInt(rng, 1, d2 - 1);
+  const ans = simpFrac(n1 * n2, d1 * d2);
+  return num(
+    pick(rng, [
+      `${n1}/${d1} × ${n2}/${d2} = ?  (simplest form)`,
+      `Multiply and simplify: ${n1}/${d1} × ${n2}/${d2}.`,
+      `What is ${n1}/${d1} × ${n2}/${d2} in simplest form?`
+    ]),
+    ans,
+    `Multiply numerators and denominators: ${n1}×${n2}/${d1}×${d2} = ${n1*n2}/${d1*d2} = ${ans}.`,
+    [ans]
+  );
+}
+
+function genDivFracG6(rng) {
+  const denoms = [2,3,4,5,6,8,10,12];
+  const d1 = pick(rng, denoms);
+  const d2 = pick(rng, denoms);
+  const n1 = randInt(rng, 1, d1 - 1);
+  const n2 = randInt(rng, 1, d2 - 1);
+  // a/b ÷ c/d = a*d / b*c
+  const ans = simpFrac(n1 * d2, d1 * n2);
+  return num(
+    pick(rng, [
+      `${n1}/${d1} ÷ ${n2}/${d2} = ?  (simplest form)`,
+      `Divide and simplify: ${n1}/${d1} ÷ ${n2}/${d2}.`,
+      `What is ${n1}/${d1} ÷ ${n2}/${d2} in simplest form?`
+    ]),
+    ans,
+    `Multiply by the reciprocal: ${n1}/${d1} × ${d2}/${n2} = ${n1*d2}/${d1*n2} = ${ans}.`,
+    [ans]
+  );
+}
+
+function genEquivRatioG6(rng) {
+  const a = randInt(rng, 2, 12);
+  const b = randInt(rng, 2, 12);
+  const k = randInt(rng, 2, 8);
+  // "a:b = ?:bk"
+  const style = pick(rng, ['blank-num', 'blank-den']);
+  const name = pick(rng, NAMES);
+  const item1 = pick(rng, ALL_ITEMS);
+  const item2 = pick(rng, ALL_ITEMS.filter(x => x !== item1));
+  if (style === 'blank-num') {
+    return num(
+      pick(rng, [
+        `${a}:${b} = ?:${b * k}. Find the missing number.`,
+        `Complete the equivalent ratio: ${a}/${b} = ?/${b * k}.`,
+        `${name} mixes ${item1} and ${item2} in the ratio ${a}:${b}. If there are ${b * k} ${item2}, how many ${item1}?`
+      ]),
+      a * k,
+      `Multiply both sides by ${k}: ${a}:${b} = ${a * k}:${b * k}.`,
+      [String(a * k), fmt(a * k)]
+    );
+  }
+  return num(
+    pick(rng, [
+      `${a}:${b} = ${a * k}:?. Find the missing number.`,
+      `Complete the equivalent ratio: ${a}/${b} = ${a * k}/?.`
+    ]),
+    b * k,
+    `Multiply both sides by ${k}: ${a}:${b} = ${a * k}:${b * k}.`,
+    [String(b * k), fmt(b * k)]
+  );
+}
+
+function genUnitRateG6(rng) {
+  const rate = randInt(rng, 2, 25);  // unit rate
+  const k = randInt(rng, 2, 12);
+  const total = rate * k;
+  const item = pick(rng, ALL_ITEMS);
+  const styles = [
+    { prompt: `${total} ${item} cost $${total * (randInt(rng, 1, 5))} ... ` , skip: true } // placeholder, will use simple variants below
+  ];
+  // Simpler templates:
+  const variant = pick(rng, ['per-unit', 'best-buy', 'speed', 'cost']);
+  const name = pick(rng, NAMES);
+  if (variant === 'per-unit') {
+    // total items in k groups → items per group
+    return num(
+      pick(rng, [
+        `${total} ${item} are split equally into ${k} bags. How many ${item} per bag?`,
+        `${name} packs ${total} ${item} evenly into ${k} boxes. ${item} per box?`,
+        `If ${k} groups share ${total} ${item} equally, each group gets how many?`
+      ]),
+      rate,
+      `Unit rate: ${total} ÷ ${k} = ${rate} ${item} per group.`,
+      [String(rate), fmt(rate)]
+    );
+  }
+  if (variant === 'speed') {
+    return num(
+      pick(rng, [
+        `A car travels ${total} miles in ${k} hours. What is its speed in miles per hour?`,
+        `${name} runs ${total} meters in ${k} seconds. What is the rate (m/s)?`
+      ]),
+      rate,
+      `Rate = distance ÷ time = ${total} ÷ ${k} = ${rate}.`,
+      [String(rate), fmt(rate)]
+    );
+  }
+  if (variant === 'cost') {
+    return num(
+      pick(rng, [
+        `${k} ${item} cost $${total}. What is the price per item?`,
+        `${name} pays $${total} for ${k} ${item}. Price per item?`
+      ]),
+      rate,
+      `$${total} ÷ ${k} = $${rate} per item.`,
+      [String(rate), `$${rate}`, `${rate}`]
+    );
+  }
+  // best-buy fallback to per-unit
+  return num(
+    `${total} ${item} are split equally among ${k} students. Each student gets how many ${item}?`,
+    rate,
+    `${total} ÷ ${k} = ${rate}.`,
+    [String(rate)]
+  );
+}
+
+function genPercentOfNumberG6(rng) {
+  // Choose pct so the answer is a clean integer.
+  const niceP = [5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90, 100];
+  const p = pick(rng, niceP);
+  // Pick base such that base * p / 100 is integer
+  const base = randInt(rng, 1, 50) * (100 / gcd(p, 100));
+  const ans = base * p / 100;
+  return num(
+    pick(rng, [
+      `What is ${p}% of ${fmt(base)}?`,
+      `Find ${p}% of ${fmt(base)}.`,
+      `${p}% of ${fmt(base)} = ?`
+    ]),
+    ans,
+    `${p}% means ${p}/100. ${p}/100 × ${base} = ${ans}.`,
+    [String(ans), fmt(ans)]
+  );
+}
+
+function genPercentWordG6(rng) {
+  const niceP = [5, 10, 15, 20, 25, 30, 50, 75];
+  const p = pick(rng, niceP);
+  const baseDollars = randInt(rng, 1, 50) * 4; // a multiple of 4 keeps things clean
+  // Use integer cents
+  const baseCents = baseDollars * 100;
+  const changeCents = Math.round(baseCents * p / 100);
+  const variant = pick(rng, ['discount', 'tax', 'tip']);
+  const name = pick(rng, NAMES);
+  let promptText, ansCents, hint;
+  if (variant === 'discount') {
+    ansCents = baseCents - changeCents;
+    promptText = `${name} buys an item that costs $${baseDollars}. There is a ${p}% discount. What is the sale price?`;
+    hint = `Discount: ${p}% of $${baseDollars} = $${(changeCents/100).toFixed(2)}. Sale price: $${baseDollars} − $${(changeCents/100).toFixed(2)} = $${(ansCents/100).toFixed(2)}.`;
+  } else if (variant === 'tax') {
+    ansCents = baseCents + changeCents;
+    promptText = `An item costs $${baseDollars}. Sales tax is ${p}%. What is the total cost?`;
+    hint = `Tax: ${p}% of $${baseDollars} = $${(changeCents/100).toFixed(2)}. Total: $${baseDollars} + $${(changeCents/100).toFixed(2)} = $${(ansCents/100).toFixed(2)}.`;
+  } else {
+    ansCents = changeCents;
+    promptText = `${name}'s meal costs $${baseDollars}. ${name} leaves a ${p}% tip. How much is the tip?`;
+    hint = `${p}% of $${baseDollars} = $${(changeCents/100).toFixed(2)}.`;
+  }
+  // Format dollar answer; keep as $X.XX or $X if whole.
+  const ans = ansCents % 100 === 0 ? `$${ansCents / 100}` : `$${(ansCents / 100).toFixed(2)}`;
+  const acceptable = ansCents % 100 === 0
+    ? [ans, String(ansCents / 100), (ansCents / 100).toFixed(2)]
+    : [ans, (ansCents / 100).toFixed(2)];
+  return num(promptText, ans, hint, acceptable);
+}
+
+function genEvalExprG6(rng) {
+  // Evaluate algebraic expressions for given variable values.
+  const x = randInt(rng, 2, 12);
+  const a = randInt(rng, 2, 12);
+  const b = randInt(rng, 1, 12);
+  const templates = [
+    { expr: `${a}x + ${b}`, val: a*x + b, hint: `${a}(${x}) + ${b} = ${a*x} + ${b} = ${a*x+b}.` },
+    { expr: `${a}x - ${b}`, val: a*x - b, hint: `${a}(${x}) − ${b} = ${a*x} − ${b} = ${a*x-b}.` },
+    { expr: `${a}(x + ${b})`, val: a*(x + b), hint: `${a}(${x} + ${b}) = ${a}(${x+b}) = ${a*(x+b)}.` },
+    { expr: `x² + ${b}`, val: x*x + b, hint: `${x}² + ${b} = ${x*x} + ${b} = ${x*x+b}.` },
+    { expr: `${a}x² - ${b}`, val: a*x*x - b, hint: `${a}(${x})² − ${b} = ${a}·${x*x} − ${b} = ${a*x*x-b}.` }
+  ];
+  const t = pick(rng, templates);
+  return num(
+    `Evaluate ${t.expr} when x = ${x}.`,
+    t.val,
+    t.hint,
+    [String(t.val), fmt(t.val)]
+  );
+}
+
+function genCombineLikeG6(rng) {
+  // Show: "Simplify: 3x + 5 + 2x - 1" → "5x + 4"
+  const a1 = randInt(rng, 1, 9);
+  const a2 = randInt(rng, 1, 9);
+  const c1 = randInt(rng, 1, 12);
+  const c2 = randInt(rng, 1, 12);
+  const sign = pick(rng, ['+', '-']);
+  const xCoef = sign === '+' ? a1 + a2 : a1 - a2;
+  const constSign = pick(rng, ['+', '-']);
+  const constVal = constSign === '+' ? c1 + c2 : c1 - c2;
+  // Build expression text
+  const expr = `${a1}x + ${c1} ${sign} ${a2}x ${constSign} ${c2}`;
+  // Format simplified: "Nx ± M" or just "Nx" if M=0
+  function fmtTerm(coef, varSym) {
+    if (coef === 0) return '';
+    if (varSym && coef === 1) return varSym;
+    if (varSym && coef === -1) return `-${varSym}`;
+    return varSym ? `${coef}${varSym}` : String(coef);
+  }
+  function fmtSimp(xc, cv) {
+    if (xc === 0 && cv === 0) return '0';
+    if (xc === 0) return String(cv);
+    if (cv === 0) return fmtTerm(xc, 'x');
+    const sgn = cv >= 0 ? '+' : '-';
+    return `${fmtTerm(xc, 'x')} ${sgn} ${Math.abs(cv)}`;
+  }
+  const ans = fmtSimp(xCoef, constVal);
+  return num(
+    `Simplify: ${expr}`,
+    ans,
+    `Combine like terms: x-terms ${a1}x ${sign} ${a2}x = ${fmtTerm(xCoef,'x') || '0'}; constants ${c1} ${constSign} ${c2} = ${constVal}.`,
+    [ans, ans.replace(/\s+/g, '')]
+  );
+}
+
+function genOneStepEqG6(rng) {
+  // x + a = b, x - a = b, ax = b, x/a = b
+  const op = pick(rng, ['add', 'sub', 'mul', 'div']);
+  let a, b, ans, hint, prompt;
+  if (op === 'add') {
+    ans = randInt(rng, 1, 30);
+    a = randInt(rng, 1, 30);
+    b = ans + a;
+    prompt = `Solve for x:  x + ${a} = ${b}`;
+    hint = `Subtract ${a} from both sides: x = ${b} − ${a} = ${ans}.`;
+  } else if (op === 'sub') {
+    ans = randInt(rng, 1, 30);
+    a = randInt(rng, 1, 30);
+    b = ans - a;
+    prompt = `Solve for x:  x − ${a} = ${b}`;
+    hint = `Add ${a} to both sides: x = ${b} + ${a} = ${ans}.`;
+  } else if (op === 'mul') {
+    a = randInt(rng, 2, 12);
+    ans = randInt(rng, 2, 20);
+    b = a * ans;
+    prompt = `Solve for x:  ${a}x = ${b}`;
+    hint = `Divide both sides by ${a}: x = ${b} ÷ ${a} = ${ans}.`;
+  } else {
+    a = randInt(rng, 2, 12);
+    ans = randInt(rng, 2, 20);
+    b = ans / a; // not integer; switch to representable: choose ans such that ans/a is integer.
+    // Restructure: set b first as integer, ans = a*b makes x/a = b → x = a*b. So:
+    const bb = randInt(rng, 2, 20);
+    const xx = a * bb;
+    prompt = `Solve for x:  x ÷ ${a} = ${bb}`;
+    hint = `Multiply both sides by ${a}: x = ${a} × ${bb} = ${xx}.`;
+    return num(prompt, xx, hint, [String(xx), fmt(xx)]);
+  }
+  return num(prompt, ans, hint, [String(ans), fmt(ans)]);
+}
+
+function genInequalityG6(rng) {
+  // Solve x + a < b, etc. Output the boundary x and operator separately is hard;
+  // simpler: ask "Which value of x makes the inequality true?" with MC.
+  const op = pick(rng, ['<', '>', '≤', '≥']);
+  const a = randInt(rng, 1, 20);
+  const boundary = randInt(rng, 5, 30);
+  // Inequality: x + a OP boundary  → x OP (boundary - a)
+  const target = boundary - a;
+  // Build candidate x values
+  let trueVal, falseVal1, falseVal2, falseVal3;
+  if (op === '<') {
+    trueVal = target - 1; falseVal1 = target; falseVal2 = target + 1; falseVal3 = target + 2;
+  } else if (op === '>') {
+    trueVal = target + 1; falseVal1 = target; falseVal2 = target - 1; falseVal3 = target - 2;
+  } else if (op === '≤') {
+    trueVal = target; falseVal1 = target + 1; falseVal2 = target + 2; falseVal3 = target + 3;
+  } else {
+    trueVal = target; falseVal1 = target - 1; falseVal2 = target - 2; falseVal3 = target - 3;
+  }
+  if (trueVal < 0 || falseVal1 < 0 || falseVal2 < 0 || falseVal3 < 0) return genInequalityG6(rng);
+  return mc(
+    `Which value of x makes the inequality true?  x + ${a} ${op} ${boundary}`,
+    String(trueVal),
+    Array.from(new Set([falseVal1, falseVal2, falseVal3].map(String))).slice(0, 3),
+    `Subtract ${a}: x ${op} ${target}. The true choice is ${trueVal}.`,
+    rng
+  );
+}
+
+function genAreaTriParaG6(rng) {
+  const which = pick(rng, ['triangle', 'parallelogram']);
+  const b = randInt(rng, 4, 30);
+  const h = randInt(rng, 3, 24);
+  let ans, hint;
+  if (which === 'triangle') {
+    // Use even product so area is integer
+    if ((b * h) % 2 !== 0) return genAreaTriParaG6(rng);
+    ans = (b * h) / 2;
+    hint = `A = ½ × b × h = ½ × ${b} × ${h} = ${ans}.`;
+  } else {
+    ans = b * h;
+    hint = `A = b × h = ${b} × ${h} = ${ans}.`;
+  }
+  return num(
+    pick(rng, [
+      `A ${which} has base ${b} and height ${h}. Find its area.`,
+      `Find the area of a ${which} with base ${b} units and height ${h} units.`,
+      `What is the area of a ${which} (base ${b}, height ${h})?`
+    ]),
+    ans,
+    hint,
+    [String(ans), fmt(ans)]
+  );
+}
+
+function genAreaTrapG6(rng) {
+  const b1 = randInt(rng, 3, 20);
+  const b2 = randInt(rng, 3, 20);
+  const h = randInt(rng, 2, 18);
+  if (((b1 + b2) * h) % 2 !== 0) return genAreaTrapG6(rng);
+  const ans = ((b1 + b2) * h) / 2;
+  return num(
+    pick(rng, [
+      `A trapezoid has bases ${b1} and ${b2} and height ${h}. Find its area.`,
+      `Find the area of a trapezoid with bases ${b1} and ${b2}, height ${h}.`,
+      `What is the area of a trapezoid (bases ${b1} and ${b2}, height ${h})?`
+    ]),
+    ans,
+    `A = ½(b₁ + b₂)h = ½(${b1} + ${b2})(${h}) = ${ans}.`,
+    [String(ans), fmt(ans)]
+  );
+}
+
+function genVolumeG6(rng) {
+  const l = randInt(rng, 2, 25);
+  const w = randInt(rng, 2, 25);
+  const h = randInt(rng, 2, 25);
+  const ans = l * w * h;
+  return num(
+    pick(rng, [
+      `Find the volume of a rectangular prism with length ${l}, width ${w}, height ${h}.`,
+      `A rectangular prism is ${l} × ${w} × ${h}. What is its volume?`,
+      `What is the volume of a ${l} by ${w} by ${h} box?`
+    ]),
+    ans,
+    `V = l × w × h = ${l} × ${w} × ${h} = ${fmt(ans)} cubic units.`,
+    [String(ans), fmt(ans), `${ans} cubic units`]
+  );
+}
+
+function genCoordPlaneG6(rng) {
+  const x = randInt(rng, -10, 10);
+  const y = randInt(rng, -10, 10);
+  if (x === 0 || y === 0) return genCoordPlaneG6(rng);
+  let q;
+  if (x > 0 && y > 0) q = 'I';
+  else if (x < 0 && y > 0) q = 'II';
+  else if (x < 0 && y < 0) q = 'III';
+  else q = 'IV';
+  return mc(
+    `In which quadrant is the point (${x}, ${y})?`,
+    q,
+    ['I', 'II', 'III', 'IV'].filter(s => s !== q),
+    `x is ${x > 0 ? 'positive' : 'negative'} and y is ${y > 0 ? 'positive' : 'negative'}, so the point is in quadrant ${q}.`,
+    rng
+  );
+}
+
+function genStatsG6(rng) {
+  // Generate 5–7 small integers and ask mean, median, or range.
+  const n = randInt(rng, 5, 7);
+  const set = [];
+  for (let i = 0; i < n; i++) set.push(randInt(rng, 1, 30));
+  const sorted = set.slice().sort((a, b) => a - b);
+  const which = pick(rng, ['mean', 'median', 'range']);
+  let ans, hint;
+  if (which === 'mean') {
+    const sum = set.reduce((s, x) => s + x, 0);
+    if (sum % n !== 0) return genStatsG6(rng); // keep mean integer
+    ans = sum / n;
+    hint = `Mean = sum ÷ count = ${sum} ÷ ${n} = ${ans}.`;
+  } else if (which === 'median') {
+    ans = sorted[Math.floor(n / 2)];
+    hint = `Sorted: ${sorted.join(', ')}. The middle value is ${ans}.`;
+  } else {
+    ans = sorted[n - 1] - sorted[0];
+    hint = `Range = max − min = ${sorted[n - 1]} − ${sorted[0]} = ${ans}.`;
+  }
+  return num(
+    `Find the ${which} of this data set: ${set.join(', ')}.`,
+    ans,
+    hint,
+    [String(ans), fmt(ans)]
+  );
+}
+
+function genSimpleInterestG6(rng) {
+  // I = P × r × t. Keep numbers clean.
+  const niceR = [2, 3, 4, 5, 6, 8, 10];
+  const r = pick(rng, niceR); // percent
+  const t = randInt(rng, 1, 8);
+  const P = randInt(rng, 1, 50) * 100; // dollar amount, multiple of 100
+  const ans = (P * r * t) / 100;
+  return num(
+    pick(rng, [
+      `Find the simple interest on $${P} at ${r}% per year for ${t} year${t===1?'':'s'}.`,
+      `${pick(rng, NAMES)} deposits $${P} at ${r}% simple interest per year. How much interest after ${t} year${t===1?'':'s'}?`,
+      `What is the simple interest on $${P} at ${r}% for ${t} year${t===1?'':'s'}?`
+    ]),
+    ans,
+    `I = P × r × t = ${P} × ${r}/100 × ${t} = ${ans}.`,
+    [String(ans), `$${ans}`, fmt(ans)]
+  );
+}
+
 // ---------- Bank specs ----------
 const TARGET = 1000;
 const SPECS = {
@@ -1768,6 +2349,30 @@ const SPECS = {
     { unit: 'u9', lesson: 'u9l1', gen: genVolumeG5 },
     { unit: 'u10', lesson: 'u10l1', gen: genCustomaryG5 },
     { unit: 'u10', lesson: 'u10l2', gen: genMetricG5 }
+  ],
+  'grade-6-curriculum.json': [
+    { unit: 'u1', lesson: 'u1l1', gen: genIntegerCompareG6 },
+    { unit: 'u1', lesson: 'u1l2', gen: genAbsValueG6 },
+    { unit: 'u1', lesson: 'u1l3', gen: genCompareRationalG6 },
+    { unit: 'u1', lesson: 'u1l4', gen: genConvertFracDecPctG6 },
+    { unit: 'u2', lesson: 'u2l1', gen: genMulDecimalsG6 },
+    { unit: 'u2', lesson: 'u2l2', gen: genDivDecimalsG6 },
+    { unit: 'u2', lesson: 'u2l3', gen: genMulFracG6 },
+    { unit: 'u2', lesson: 'u2l4', gen: genDivFracG6 },
+    { unit: 'u3', lesson: 'u3l1', gen: genEquivRatioG6 },
+    { unit: 'u3', lesson: 'u3l2', gen: genUnitRateG6 },
+    { unit: 'u3', lesson: 'u3l3', gen: genPercentOfNumberG6 },
+    { unit: 'u3', lesson: 'u3l4', gen: genPercentWordG6 },
+    { unit: 'u4', lesson: 'u4l1', gen: genEvalExprG6 },
+    { unit: 'u4', lesson: 'u4l2', gen: genCombineLikeG6 },
+    { unit: 'u4', lesson: 'u4l3', gen: genOneStepEqG6 },
+    { unit: 'u4', lesson: 'u4l4', gen: genInequalityG6 },
+    { unit: 'u5', lesson: 'u5l1', gen: genAreaTriParaG6 },
+    { unit: 'u5', lesson: 'u5l2', gen: genAreaTrapG6 },
+    { unit: 'u5', lesson: 'u5l3', gen: genVolumeG6 },
+    { unit: 'u5', lesson: 'u5l4', gen: genCoordPlaneG6 },
+    { unit: 'u6', lesson: 'u6l1', gen: genStatsG6 },
+    { unit: 'u6', lesson: 'u6l2', gen: genSimpleInterestG6 }
   ]
 };
 
