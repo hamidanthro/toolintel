@@ -404,12 +404,17 @@ function genEquivFracG3(rng) {
   const d = randInt(rng, n + 1, 10);
   const k = randInt(rng, 2, 6);
   const ans = `${n * k}/${d * k}`;
-  const wrongs = [
+  // Build distractor pool, then drop any that collide with the answer.
+  const pool = [
     `${n + 1}/${d * k}`,
     `${n}/${d * k}`,
     `${n * k}/${d}`,
-    `${n * k + 1}/${d * k}`
-  ];
+    `${n * k + 1}/${d * k}`,
+    `${n * k - 1}/${d * k}`,
+    `${n}/${d + k}`,
+    `${n + k}/${d + k}`
+  ].filter(x => x !== ans);
+  const wrongs = shuffleA(rng, Array.from(new Set(pool))).slice(0, 3);
   const phrasings = [
     `Which fraction is equivalent to ${n}/${d}?`,
     `${n}/${d} is the same as which fraction?`,
@@ -611,10 +616,20 @@ function genAddFracLikeG4(rng) {
     `Find the sum: ${a}/${d} + ${b}/${d}.`,
     `Add the fractions: ${a}/${d} + ${b}/${d}.`
   ];
+  const pool = [
+    `${a + b}/${d * 2}`,
+    `${a * b}/${d}`,
+    `${a + b + 1}/${d}`,
+    `${a + b - 1}/${d}`,
+    `${a + b}/${d + 1}`,
+    `${a}/${d}`,
+    `${b}/${d}`
+  ].filter(x => x !== ans);
+  const wrongs = Array.from(new Set(pool)).slice(0, 3);
   return mc(
     pick(rng, phrasings),
     ans,
-    [`${a + b}/${d * 2}`, `${a * b}/${d}`, `${a + b + 1}/${d}`],
+    wrongs,
     `Same denominator: add the numerators only. ${a} + ${b} = ${a + b}, so the answer is ${ans}.`,
     rng
   );
@@ -631,10 +646,20 @@ function genSubFracLikeG4(rng) {
     `Find the difference: ${a}/${d} − ${b}/${d}.`,
     `Subtract: ${a}/${d} − ${b}/${d}.`
   ];
+  const pool = [
+    `${a - b}/${d * 2}`,
+    `${a + b}/${d}`,
+    `${a - b + 1}/${d}`,
+    `${a - b - 1}/${d}`,
+    `${a - b}/${d + 1}`,
+    `${a}/${d}`,
+    `${b}/${d}`
+  ].filter(x => x !== ans && !x.startsWith('0/') && !x.startsWith('-'));
+  const wrongs = Array.from(new Set(pool)).slice(0, 3);
   return mc(
     pick(rng, phrasings),
     ans,
-    [`${a - b}/${d * 2}`, `${a + b}/${d}`, `${a - b + 1}/${d}`],
+    wrongs,
     `Same denominator: subtract numerators. ${a} − ${b} = ${a - b}, so the answer is ${ans}.`,
     rng
   );
@@ -725,23 +750,40 @@ function genDecimalPlaceG5(rng) {
 function genRoundDecimalG5(rng) {
   const whole = randInt(rng, 0, 99);
   const frac = randInt(rng, 1, 999);
-  const n = parseFloat(`${whole}.${String(frac).padStart(3, '0')}`);
+  const fracStr = String(frac).padStart(3, '0');
+  const d1 = parseInt(fracStr[0], 10);
+  const d2 = parseInt(fracStr[1], 10);
+  const d3 = parseInt(fracStr[2], 10);
   const places = [
     { name: 'tenth', dp: 1 },
     { name: 'hundredth', dp: 2 }
   ];
   const p = pick(rng, places);
-  const factor = Math.pow(10, p.dp);
-  const ans = (Math.round(n * factor) / factor).toFixed(p.dp);
+  // Use integer arithmetic to round half-up; avoids JS FP errors (e.g. 70.865 stored as 70.8649999…).
+  let intVal, divider;
+  if (p.dp === 1) {
+    // Combine whole + first decimal digit, round-half-up by second.
+    intVal = whole * 10 + d1;
+    if (d2 >= 5) intVal += 1;
+    divider = 10;
+  } else {
+    intVal = whole * 100 + d1 * 10 + d2;
+    if (d3 >= 5) intVal += 1;
+    divider = 100;
+  }
+  const ansWhole = Math.floor(intVal / divider);
+  const ansFrac = intVal % divider;
+  const ans = `${ansWhole}.${String(ansFrac).padStart(p.dp, '0')}`;
+  const display = `${whole}.${fracStr}`;
   const phrasings = [
-    `Round ${n.toFixed(3)} to the nearest ${p.name}.`,
-    `What is ${n.toFixed(3)} rounded to the nearest ${p.name}?`,
-    `${n.toFixed(3)} rounded to the ${p.name}s place is what?`
+    `Round ${display} to the nearest ${p.name}.`,
+    `What is ${display} rounded to the nearest ${p.name}?`,
+    `${display} rounded to the ${p.name}s place is what?`
   ];
   return num(
     pick(rng, phrasings),
     ans,
-    `Look at the digit right of the ${p.name}s place. ${n.toFixed(3)} rounds to ${ans}.`,
+    `Look at the digit right of the ${p.name}s place. ${display} rounds to ${ans}.`,
     [String(ans)]
   );
 }
@@ -1036,19 +1078,32 @@ function genMoreLessEqualK(rng) {
   const a = randInt(rng, 0, 12);
   let b;
   do { b = randInt(rng, 0, 12); } while (b === a);
-  const ans = a > b ? 'more' : 'less';
   const itemA = pick(rng, ['🍎','⭐','🐱','🌸']);
   const itemB = pick(rng, ['🍌','🐟','🚗','🐶']);
-  const phrasings = [
-    `Set A: ${itemA.repeat(a)}\nSet B: ${itemB.repeat(b)}\nDoes Set A have more or less than Set B?`,
-    `Which has more: ${a} ${itemA} or ${b} ${itemB}?`,
-    `Compare: ${a} and ${b}. Is ${a} more or less than ${b}?`
-  ];
+  // Two prompt families to keep the answer space simple and unambiguous.
+  if (rng() < 0.5) {
+    // "Set A has more or less than Set B?" — answer is more/less.
+    const ans = a > b ? 'more' : 'less';
+    const phrasings = [
+      `Set A: ${itemA.repeat(a)}\nSet B: ${itemB.repeat(b)}\nDoes Set A have more or less than Set B?`,
+      `Compare: ${a} and ${b}. Is ${a} more or less than ${b}?`,
+      `Is ${a} more or less than ${b}?`
+    ];
+    return mc(
+      pick(rng, phrasings),
+      ans,
+      ['more', 'less'].filter(x => x !== ans),
+      `${a} is ${ans} than ${b}.`,
+      rng
+    );
+  }
+  // "Which number is greater?" — answer is the larger digit.
+  const greater = Math.max(a, b);
   return mc(
-    pick(rng, phrasings),
-    ans,
-    ['more', 'less', 'equal'].filter(x => x !== ans),
-    `${a} is ${ans} than ${b}.`,
+    `Which number is greater: ${a} or ${b}?`,
+    String(greater),
+    [String(a === greater ? b : a)],
+    `${greater} is greater than ${a === greater ? b : a}.`,
     rng
   );
 }
