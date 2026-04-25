@@ -18,8 +18,10 @@ const { SecretsManagerClient, GetSecretValueCommand } = require('@aws-sdk/client
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const {
   DynamoDBDocumentClient,
-  GetCommand, PutCommand, UpdateCommand, QueryCommand
+  GetCommand, PutCommand, UpdateCommand, QueryCommand, DeleteCommand, ScanCommand
 } = require('@aws-sdk/lib-dynamodb');
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const crypto = require('crypto');
 
 const MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
@@ -27,11 +29,18 @@ const SECRET_NAME = process.env.OPENAI_SECRET_NAME || 'staar-tutor/openai-api-ke
 const AUTH_SECRET_NAME = process.env.AUTH_SECRET_NAME || 'staar-tutor/auth-secret';
 const USERS_TABLE = process.env.USERS_TABLE || 'staar-users';
 const STATS_TABLE = process.env.STATS_TABLE || 'staar-stats';
+const TOYS_TABLE = process.env.TOYS_TABLE || 'staar-toys';
+const ORDERS_TABLE = process.env.ORDERS_TABLE || 'staar-orders';
+const S3_TOY_BUCKET = process.env.S3_TOY_BUCKET || '';
+const S3_REGION = process.env.AWS_REGION || 'us-east-1';
+const ADMIN_USERNAMES = (process.env.ADMIN_USERNAMES || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+const LIFETIME_CAP_CENTS = 10000; // $100
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || '*';
 const TOKEN_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days
 
 const sm = new SecretsManagerClient({});
 const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({}));
+const s3 = new S3Client({ region: S3_REGION });
 let cachedKey = null;
 let cachedAuthSecret = null;
 
@@ -159,6 +168,17 @@ exports.handler = async (event) => {
   if (action === 'login')    return await handleLogin(payload);
   if (action === 'getStats') return await handleGetStats(payload);
   if (action === 'putStats') return await handlePutStats(payload);
+  if (action === 'earn')           return await handleEarn(payload);
+  if (action === 'getWallet')      return await handleGetWallet(payload);
+  if (action === 'listToys')       return await handleListToys(payload);
+  if (action === 'checkout')       return await handleCheckout(payload);
+  if (action === 'listMyOrders')   return await handleListMyOrders(payload);
+  if (action === 'adminListToys')      return await handleAdminListToys(payload);
+  if (action === 'adminUpsertToy')     return await handleAdminUpsertToy(payload);
+  if (action === 'adminDeleteToy')     return await handleAdminDeleteToy(payload);
+  if (action === 'adminPresignUpload') return await handleAdminPresignUpload(payload);
+  if (action === 'adminListOrders')    return await handleAdminListOrders(payload);
+  if (action === 'adminUpdateOrder')   return await handleAdminUpdateOrder(payload);
 
   if (!payload.question || payload.studentAnswer == null || payload.correctAnswer == null) {
     return bad(400, 'Missing required fields: question, studentAnswer, correctAnswer');
@@ -370,10 +390,11 @@ function timingSafeEqual(a, b) {
   return crypto.timingSafeEqual(ba, bb);
 }
 
-async function makeToken(userId) {
+async function makeToken(userId, username) {
   const secret = await getAuthSecret();
   const exp = Math.floor(Date.now() / 1000) + TOKEN_TTL_SECONDS;
-  const payload = `${userId}.${exp}`;
+  const subject = username ? `${userId}:${username}` : userId;
+  const payload = `${subject}.${exp}`;
   const sig = crypto.createHmac('sha256', secret).update(payload).digest('hex');
   return `${payload}.${sig}`;
 }
@@ -382,20 +403,33 @@ async function verifyToken(token) {
   if (!token || typeof token !== 'string') return null;
   const parts = token.split('.');
   if (parts.length !== 3) return null;
-  const [userId, expStr, sig] = parts;
-  if (!userId || !expStr || !sig) return null;
+  const [subject, expStr, sig] = parts;
+  if (!subject || !expStr || !sig) return null;
   const exp = parseInt(expStr, 10);
   if (!Number.isFinite(exp) || exp < Math.floor(Date.now() / 1000)) return null;
   const secret = await getAuthSecret();
-  const expected = crypto.createHmac('sha256', secret).update(`${userId}.${expStr}`).digest('hex');
+  const expected = crypto.createHmac('sha256', secret).update(`${subject}.${expStr}`).digest('hex');
   if (!timingSafeEqual(sig, expected)) return null;
-  return { userId, exp };
+  const [userId, username] = subject.includes(':') ? subject.split(':') : [subject, null];
+  return { userId, username: username || null, exp };
 }
 
 async function authedUser(payload) {
   const auth = await verifyToken(payload.token);
   if (!auth) return null;
-  return auth.userId;
+  return auth; // { userId, username }
+}
+
+function isAdmin(username) {
+  if (!username) return false;
+  return ADMIN_USERNAMES.includes(String(username).toLowerCase());
+}
+
+async function requireAdmin(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return { error: bad(401, 'Not signed in') };
+  if (!isAdmin(auth.username)) return { error: bad(403, 'Admin only') };
+  return { auth };
 }
 
 async function handleSignup(payload) {
@@ -433,6 +467,8 @@ async function handleSignup(payload) {
         salt,
         passwordHash,
         color,
+        balanceCents: 0,
+        lifetimeCents: 0,
         createdAt: Date.now()
       },
       ConditionExpression: 'attribute_not_exists(username)'
@@ -444,8 +480,8 @@ async function handleSignup(payload) {
     throw err;
   }
 
-  const token = await makeToken(userId);
-  return ok({ token, user: { userId, username, displayName, color } });
+  const token = await makeToken(userId, username);
+  return ok({ token, user: { userId, username, displayName, color, balanceCents: 0, lifetimeCents: 0, isAdmin: isAdmin(username) } });
 }
 
 async function handleLogin(payload) {
@@ -465,14 +501,17 @@ async function handleLogin(payload) {
   const candidate = hashPassword(password, user.salt);
   if (!timingSafeEqual(candidate, user.passwordHash)) return fail();
 
-  const token = await makeToken(user.userId);
+  const token = await makeToken(user.userId, user.username);
   return ok({
     token,
     user: {
       userId: user.userId,
       username: user.username,
       displayName: user.displayName || user.username,
-      color: user.color || '#1e40af'
+      color: user.color || '#1e40af',
+      balanceCents: user.balanceCents || 0,
+      lifetimeCents: user.lifetimeCents || 0,
+      isAdmin: isAdmin(user.username)
     }
   });
 }
@@ -482,8 +521,9 @@ async function handleLogin(payload) {
 // getStats: { token, slug? }   // if slug omitted, returns all grades for the user
 
 async function handlePutStats(payload) {
-  const userId = await authedUser(payload);
-  if (!userId) return bad(401, 'Not signed in');
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  const userId = auth.userId;
   const slug = String(payload.slug || '').trim().toLowerCase();
   if (!slug) return bad(400, 'Missing slug');
   const data = payload.data;
@@ -506,8 +546,9 @@ async function handlePutStats(payload) {
 }
 
 async function handleGetStats(payload) {
-  const userId = await authedUser(payload);
-  if (!userId) return bad(401, 'Not signed in');
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  const userId = auth.userId;
   const slug = payload.slug ? String(payload.slug).trim().toLowerCase() : null;
 
   if (slug) {
@@ -528,4 +569,301 @@ async function handleGetStats(payload) {
     if (it.slug) out[it.slug] = it.data;
   }
   return ok({ stats: out });
+}
+
+// ===== Wallet (earn / get) =====
+
+async function handleGetWallet(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  const r = await ddb.send(new GetCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username }
+  }));
+  if (!r.Item) return bad(404, 'User not found');
+  return ok({
+    balanceCents: r.Item.balanceCents || 0,
+    lifetimeCents: r.Item.lifetimeCents || 0,
+    capCents: LIFETIME_CAP_CENTS
+  });
+}
+
+async function handleEarn(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  if (!auth.username) return bad(401, 'Please sign in again');
+
+  let cents = parseInt(payload.cents, 10);
+  if (!Number.isFinite(cents) || cents < 1) cents = 1;
+  if (cents > 5) cents = 5;
+
+  // Read current lifetime to compute the actual award (cap-aware).
+  const r = await ddb.send(new GetCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username }
+  }));
+  if (!r.Item) return bad(404, 'User not found');
+  const lifetime = r.Item.lifetimeCents || 0;
+  const balance = r.Item.balanceCents || 0;
+  const room = Math.max(0, LIFETIME_CAP_CENTS - lifetime);
+  const award = Math.min(cents, room);
+
+  if (award <= 0) {
+    return ok({
+      awardedCents: 0,
+      balanceCents: balance,
+      lifetimeCents: lifetime,
+      capCents: LIFETIME_CAP_CENTS,
+      capped: true
+    });
+  }
+
+  const upd = await ddb.send(new UpdateCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username },
+    UpdateExpression: 'SET balanceCents = if_not_exists(balanceCents, :z) + :a, lifetimeCents = if_not_exists(lifetimeCents, :z) + :a',
+    ExpressionAttributeValues: { ':a': award, ':z': 0 },
+    ReturnValues: 'ALL_NEW'
+  }));
+  return ok({
+    awardedCents: award,
+    balanceCents: upd.Attributes.balanceCents || 0,
+    lifetimeCents: upd.Attributes.lifetimeCents || 0,
+    capCents: LIFETIME_CAP_CENTS,
+    capped: (upd.Attributes.lifetimeCents || 0) >= LIFETIME_CAP_CENTS
+  });
+}
+
+// ===== Toys (public list) =====
+
+function publicToy(t) {
+  return {
+    toyId: t.toyId,
+    name: t.name,
+    description: t.description || '',
+    priceCents: t.priceCents,
+    imageUrl: t.imageUrl || '',
+    stock: typeof t.stock === 'number' ? t.stock : null
+  };
+}
+
+async function handleListToys() {
+  const r = await ddb.send(new ScanCommand({
+    TableName: TOYS_TABLE,
+    FilterExpression: 'attribute_not_exists(active) OR active = :t',
+    ExpressionAttributeValues: { ':t': true }
+  }));
+  const toys = (r.Items || [])
+    .filter(t => (t.stock == null || t.stock > 0))
+    .map(publicToy)
+    .sort((a, b) => a.priceCents - b.priceCents);
+  return ok({ toys });
+}
+
+// ===== Checkout =====
+
+function validString(v, max) {
+  if (typeof v !== 'string') return null;
+  const s = v.trim();
+  if (!s) return null;
+  return s.slice(0, max);
+}
+function validEmail(v) {
+  const s = validString(v, 120);
+  if (!s) return null;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s) ? s : null;
+}
+
+async function handleCheckout(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+
+  const toyId = validString(payload.toyId, 80);
+  if (!toyId) return bad(400, 'Missing toy');
+
+  const parent = payload.parent || {};
+  if (parent.consent !== true) return bad(400, 'Parent consent is required');
+  const parentName  = validString(parent.name, 80);
+  const parentEmail = validEmail(parent.email);
+  const parentPhone = validString(parent.phone, 30);
+  if (!parentName || !parentEmail || !parentPhone) {
+    return bad(400, 'Parent name, email, and phone are required');
+  }
+
+  const a = payload.address || {};
+  const addr = {
+    line1:   validString(a.line1, 120),
+    line2:   validString(a.line2, 120) || '',
+    city:    validString(a.city, 80),
+    state:   validString(a.state, 40),
+    zip:     validString(a.zip, 20),
+    country: validString(a.country, 60) || 'USA'
+  };
+  if (!addr.line1 || !addr.city || !addr.state || !addr.zip) {
+    return bad(400, 'Shipping address is incomplete');
+  }
+
+  // Look up toy + user.
+  const [toyRes, userRes] = await Promise.all([
+    ddb.send(new GetCommand({ TableName: TOYS_TABLE, Key: { toyId } })),
+    ddb.send(new GetCommand({ TableName: USERS_TABLE, Key: { username: auth.username } }))
+  ]);
+  const toy = toyRes.Item;
+  const user = userRes.Item;
+  if (!toy || toy.active === false) return bad(404, 'Toy not available');
+  if (typeof toy.stock === 'number' && toy.stock <= 0) return bad(409, 'That toy is out of stock');
+  if (!user) return bad(404, 'User not found');
+
+  const balance = user.balanceCents || 0;
+  if (balance < toy.priceCents) return bad(402, 'Not enough cents yet — keep practicing!');
+
+  // Decrement balance with condition.
+  try {
+    await ddb.send(new UpdateCommand({
+      TableName: USERS_TABLE,
+      Key: { username: auth.username },
+      UpdateExpression: 'SET balanceCents = balanceCents - :p',
+      ConditionExpression: 'balanceCents >= :p',
+      ExpressionAttributeValues: { ':p': toy.priceCents }
+    }));
+  } catch (err) {
+    if (err.name === 'ConditionalCheckFailedException') {
+      return bad(402, 'Not enough cents to buy this toy');
+    }
+    throw err;
+  }
+
+  // Decrement stock if tracked.
+  if (typeof toy.stock === 'number') {
+    try {
+      await ddb.send(new UpdateCommand({
+        TableName: TOYS_TABLE,
+        Key: { toyId },
+        UpdateExpression: 'SET stock = stock - :one',
+        ConditionExpression: 'stock >= :one',
+        ExpressionAttributeValues: { ':one': 1 }
+      }));
+    } catch { /* ignore */ }
+  }
+
+  const orderId = 'o_' + crypto.randomBytes(8).toString('hex');
+  const order = {
+    orderId,
+    userId: auth.userId,
+    username: auth.username,
+    displayName: user.displayName || auth.username,
+    toyId,
+    toyName: toy.name,
+    toyImageUrl: toy.imageUrl || '',
+    priceCents: toy.priceCents,
+    status: 'pending',
+    address: addr,
+    parent: { name: parentName, email: parentEmail, phone: parentPhone, consent: true, consentAt: Date.now() },
+    createdAt: Date.now()
+  };
+  await ddb.send(new PutCommand({ TableName: ORDERS_TABLE, Item: order }));
+
+  return ok({ order, balanceCents: balance - toy.priceCents });
+}
+
+async function handleListMyOrders(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  const r = await ddb.send(new QueryCommand({
+    TableName: ORDERS_TABLE,
+    IndexName: 'userId-index',
+    KeyConditionExpression: 'userId = :u',
+    ExpressionAttributeValues: { ':u': auth.userId }
+  }));
+  const orders = (r.Items || []).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  return ok({ orders });
+}
+
+// ===== Admin =====
+
+async function handleAdminListToys(payload) {
+  const g = await requireAdmin(payload); if (g.error) return g.error;
+  const r = await ddb.send(new ScanCommand({ TableName: TOYS_TABLE }));
+  const toys = (r.Items || []).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  return ok({ toys });
+}
+
+async function handleAdminUpsertToy(payload) {
+  const g = await requireAdmin(payload); if (g.error) return g.error;
+  const t = payload.toy || {};
+  const name = validString(t.name, 100);
+  if (!name) return bad(400, 'Toy name is required');
+  const description = validString(t.description, 600) || '';
+  const priceCents = parseInt(t.priceCents, 10);
+  if (!Number.isFinite(priceCents) || priceCents < 1 || priceCents > 50000) {
+    return bad(400, 'Price must be 1 to 50000 cents');
+  }
+  const imageUrl = validString(t.imageUrl, 500) || '';
+  const stock = (t.stock === '' || t.stock == null) ? null : parseInt(t.stock, 10);
+  const active = t.active !== false;
+
+  const toyId = validString(t.toyId, 80) || ('toy_' + crypto.randomBytes(6).toString('hex'));
+  const item = {
+    toyId,
+    name,
+    description,
+    priceCents,
+    imageUrl,
+    stock: Number.isFinite(stock) ? stock : null,
+    active,
+    createdAt: t.createdAt || Date.now(),
+    updatedAt: Date.now()
+  };
+  await ddb.send(new PutCommand({ TableName: TOYS_TABLE, Item: item }));
+  return ok({ toy: item });
+}
+
+async function handleAdminDeleteToy(payload) {
+  const g = await requireAdmin(payload); if (g.error) return g.error;
+  const toyId = validString(payload.toyId, 80);
+  if (!toyId) return bad(400, 'Missing toyId');
+  await ddb.send(new DeleteCommand({ TableName: TOYS_TABLE, Key: { toyId } }));
+  return ok({ ok: true });
+}
+
+async function handleAdminPresignUpload(payload) {
+  const g = await requireAdmin(payload); if (g.error) return g.error;
+  if (!S3_TOY_BUCKET) return bad(500, 'S3 bucket not configured');
+  const ct = String(payload.contentType || '').toLowerCase();
+  const allowed = { 'image/jpeg': 'jpg', 'image/jpg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif' };
+  if (!allowed[ct]) return bad(400, 'Image must be JPEG, PNG, WEBP, or GIF');
+  const key = `images/${Date.now()}-${crypto.randomBytes(6).toString('hex')}.${allowed[ct]}`;
+  const cmd = new PutObjectCommand({
+    Bucket: S3_TOY_BUCKET,
+    Key: key,
+    ContentType: ct
+  });
+  const uploadUrl = await getSignedUrl(s3, cmd, { expiresIn: 300 });
+  const publicUrl = `https://${S3_TOY_BUCKET}.s3.${S3_REGION}.amazonaws.com/${key}`;
+  return ok({ uploadUrl, publicUrl, key });
+}
+
+async function handleAdminListOrders(payload) {
+  const g = await requireAdmin(payload); if (g.error) return g.error;
+  const r = await ddb.send(new ScanCommand({ TableName: ORDERS_TABLE }));
+  const orders = (r.Items || []).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  return ok({ orders });
+}
+
+async function handleAdminUpdateOrder(payload) {
+  const g = await requireAdmin(payload); if (g.error) return g.error;
+  const orderId = validString(payload.orderId, 80);
+  if (!orderId) return bad(400, 'Missing orderId');
+  const status = validString(payload.status, 30);
+  const allowed = ['pending', 'shipped', 'delivered', 'cancelled'];
+  if (!allowed.includes(status)) return bad(400, 'Invalid status');
+  const tracking = validString(payload.trackingNumber, 80) || '';
+  await ddb.send(new UpdateCommand({
+    TableName: ORDERS_TABLE,
+    Key: { orderId },
+    UpdateExpression: 'SET #s = :s, trackingNumber = :t, updatedAt = :u',
+    ExpressionAttributeNames: { '#s': 'status' },
+    ExpressionAttributeValues: { ':s': status, ':t': tracking, ':u': Date.now() }
+  }));
+  return ok({ ok: true });
 }

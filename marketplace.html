@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Toy Marketplace · STAAR Prep</title>
+  <link rel="stylesheet" href="css/styles.css?v=20260425j" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="brand">STAAR<span>Prep</span></a>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="grades.html">Grades</a>
+        <a href="practice.html">Practice</a>
+        <a href="marketplace.html" class="active">Toys</a>
+        <a href="about.html">About</a>
+      </nav>
+      <div id="user-slot" class="user-slot"></div>
+    </div>
+  </header>
+
+  <section>
+    <div class="container">
+      <h1 style="margin-top:24px;">Toy Marketplace</h1>
+      <p style="color:var(--muted);max-width:640px;">Earn cents for every correct answer and trade them for real toys. Maximum lifetime earnings: $100. Shipping requires a parent's consent at checkout.</p>
+
+      <div id="wallet-summary" class="wallet-summary"></div>
+
+      <div id="market-root" class="market-grid">
+        <p style="color:var(--muted);">Loading toys&hellip;</p>
+      </div>
+
+      <h2 style="margin-top:36px;">My orders</h2>
+      <div id="orders-root">
+        <p style="color:var(--muted);">No orders yet.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">&copy; <span id="year"></span> STAAR Prep.</div>
+  </footer>
+
+  <script src="js/auth.js?v=20260425j"></script>
+  <script>window.STAARAuth = window.STAARAuth || {}; window.STAARAuth.requireLoginOnLoad = true;</script>
+  <script>window.STAAR_TUTOR_ENDPOINT = 'https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com/';</script>
+  <script src="js/marketplace.js?v=20260425j"></script>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

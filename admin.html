@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin · STAAR Prep</title>
+  <link rel="stylesheet" href="css/styles.css?v=20260425j" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="brand">STAAR<span>Prep</span></a>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="grades.html">Grades</a>
+        <a href="practice.html">Practice</a>
+        <a href="marketplace.html">Toys</a>
+        <a href="admin.html" class="active">Admin</a>
+      </nav>
+      <div id="user-slot" class="user-slot"></div>
+    </div>
+  </header>
+
+  <section>
+    <div class="container">
+      <h1 style="margin-top:24px;">Admin panel</h1>
+      <div id="admin-gate" hidden>
+        <p style="color:var(--error);">You are not signed in as an admin.</p>
+      </div>
+      <div id="admin-body">
+        <div class="admin-tabs">
+          <button class="admin-tab active" data-tab="toys">Toys</button>
+          <button class="admin-tab" data-tab="orders">Orders</button>
+        </div>
+
+        <div id="tab-toys">
+          <h2>Add or edit a toy</h2>
+          <form id="toy-form" class="admin-form">
+            <input type="hidden" id="toy-id" />
+            <div class="row col1">
+              <label>
+                <span class="auth-label">Name</span>
+                <input type="text" class="auth-input" id="toy-name" maxlength="100" required />
+              </label>
+            </div>
+            <div class="row col1">
+              <label>
+                <span class="auth-label">Description</span>
+                <input type="text" class="auth-input" id="toy-desc" maxlength="600" />
+              </label>
+            </div>
+            <div class="row">
+              <label>
+                <span class="auth-label">Price (cents)</span>
+                <input type="number" class="auth-input" id="toy-price" min="1" max="50000" required />
+              </label>
+              <label>
+                <span class="auth-label">Stock (blank = unlimited)</span>
+                <input type="number" class="auth-input" id="toy-stock" min="0" />
+              </label>
+            </div>
+            <div class="row col1">
+              <label>
+                <span class="auth-label">Image</span>
+                <input type="file" id="toy-file" accept="image/png,image/jpeg,image/webp,image/gif" />
+                <input type="hidden" id="toy-image-url" />
+                <img id="toy-img-preview" class="admin-img-preview" hidden alt="" />
+                <div id="toy-upload-status" style="font-size:0.85rem;color:var(--muted);margin-top:6px;"></div>
+              </label>
+            </div>
+            <div class="row col1" style="margin-top:14px;">
+              <div style="display:flex;gap:10px;">
+                <button type="submit" class="btn btn-primary">Save toy</button>
+                <button type="button" class="btn btn-ghost" id="toy-reset">Clear</button>
+              </div>
+            </div>
+          </form>
+
+          <h2>Existing toys</h2>
+          <div id="toys-table"></div>
+        </div>
+
+        <div id="tab-orders" hidden>
+          <h2>Orders</h2>
+          <div id="orders-table"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">&copy; <span id="year"></span> STAAR Prep.</div>
+  </footer>
+
+  <script src="js/auth.js?v=20260425j"></script>
+  <script>window.STAARAuth = window.STAARAuth || {}; window.STAARAuth.requireLoginOnLoad = true;</script>
+  <script>window.STAAR_TUTOR_ENDPOINT = 'https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com/';</script>
+  <script src="js/admin.js?v=20260425j"></script>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

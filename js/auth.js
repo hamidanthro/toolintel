@@ -262,6 +262,66 @@
   }
 
   // ----- Header pill -----
+  function formatCents(c) {
+    const n = Math.max(0, parseInt(c, 10) || 0);
+    if (n < 100) return `${n}\u00a2`;
+    return `$${(n / 100).toFixed(2)}`;
+  }
+
+  function showCentsToast(awarded, capped) {
+    if (!awarded || awarded <= 0) {
+      if (capped) showToast('You hit the $100 lifetime cap! \ud83c\udfaf');
+      return;
+    }
+    const t = document.createElement('div');
+    t.className = 'cents-toast';
+    t.innerHTML = `<span class="cents-toast-coin">+${awarded}\u00a2</span><span>added to your wallet</span>`;
+    document.body.appendChild(t);
+    requestAnimationFrame(() => t.classList.add('show'));
+    setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 250); }, 1600);
+  }
+  function showToast(text) {
+    const t = document.createElement('div');
+    t.className = 'cents-toast';
+    t.textContent = text;
+    document.body.appendChild(t);
+    requestAnimationFrame(() => t.classList.add('show'));
+    setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 250); }, 1800);
+  }
+
+  async function refreshWallet() {
+    const t = token();
+    if (!t) return null;
+    try {
+      const w = await api('getWallet', { token: t });
+      const s = loadSession();
+      if (s && s.user) {
+        s.user.balanceCents = w.balanceCents;
+        s.user.lifetimeCents = w.lifetimeCents;
+        saveSession(s);
+      }
+      refreshHeader();
+      return w;
+    } catch (_) { return null; }
+  }
+
+  async function earn(cents) {
+    const t = token();
+    if (!t) return null;
+    try {
+      const w = await api('earn', { token: t, cents });
+      const s = loadSession();
+      if (s && s.user) {
+        s.user.balanceCents = w.balanceCents;
+        s.user.lifetimeCents = w.lifetimeCents;
+        saveSession(s);
+      }
+      refreshHeader();
+      showCentsToast(w.awardedCents, w.capped);
+      return w;
+    } catch (_) { return null; }
+  }
+
   function refreshHeader() {
     const slot = document.getElementById('user-slot');
     if (!slot) return;
@@ -271,7 +331,13 @@
       slot.querySelector('.user-signin').addEventListener('click', () => showLogin());
       return;
     }
+    const wallet = formatCents(u.balanceCents || 0);
+    const adminLink = u.isAdmin ? `<a href="admin.html" class="user-menu-link">Admin panel</a>` : '';
     slot.innerHTML = `
+      <a href="marketplace.html" class="wallet-pill" title="Toy marketplace">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 6v12M9 9h4.5a2 2 0 010 4H10a2 2 0 000 4h5"/></svg>
+        <span>${wallet}</span>
+      </a>
       <button type="button" class="user-pill" id="user-pill">
         <span class="profile-avatar small" style="background:${u.color || '#1e40af'}">${escapeHtml(avatar(u.displayName || u.username))}</span>
         <span class="user-pill-name">${escapeHtml(u.displayName || u.username)}</span>
@@ -279,6 +345,8 @@
       </button>
       <div class="user-menu" id="user-menu" hidden>
         <div class="user-menu-meta">@${escapeHtml(u.username)}</div>
+        <a href="marketplace.html" class="user-menu-link">Toy marketplace</a>
+        ${adminLink}
         <button type="button" data-act="logout">Sign out</button>
       </div>`;
     const pill = slot.querySelector('#user-pill');
@@ -304,6 +372,12 @@
     refreshHeader,
     pushStats,
     pullStats,
+    api,
+    earn,
+    refreshWallet,
+    formatCents,
+    showCentsToast,
+    showToast,
     requireLoginOnLoad: window.STAARAuth ? !!window.STAARAuth.requireLoginOnLoad : false,
     statsKey(slug) {
       const u = currentUser();
@@ -318,6 +392,7 @@
       showLogin();
     } else if (currentUser()) {
       pullStats();
+      refreshWallet();
     }
   });
 })();

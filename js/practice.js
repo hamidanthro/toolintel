@@ -270,6 +270,9 @@
         Stats.record(slug, stats, { unitId: q._unit?.id, unitTitle: q._unit?.title, isCorrect });
         renderPerf(perfPanel, curr, stats);
         showFeedback(q, userAnswer, isCorrect);
+        if (isCorrect && window.STAARAuth && typeof window.STAARAuth.earn === 'function') {
+          window.STAARAuth.earn(difficultyCents(q));
+        }
       });
     }
 
@@ -389,6 +392,18 @@
     }
   }
 
+  function difficultyCents(q) {
+    if (q && Number.isFinite(q.cents) && q.cents >= 1 && q.cents <= 5) return q.cents;
+    if (q && q._cents) return q._cents;
+    // Deterministic 1–5 from question prompt so the same question always pays the same.
+    const s = String((q && q.prompt) || '');
+    let h = 0;
+    for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+    const v = ((h % 5) + 5) % 5 + 1; // 1..5
+    if (q) q._cents = v;
+    return v;
+  }
+
   function renderQuestion(q) {
     let body = '';
     if (q.type === 'multiple_choice') {
@@ -401,9 +416,14 @@
     } else {
       body = `<input class="num-input" type="text" name="ans" autocomplete="off" placeholder="Your answer" required />`;
     }
+    const cents = difficultyCents(q);
+    const reward = `<span class="q-reward" title="Earn ${cents}\u00a2 for a correct answer">+${cents}\u00a2</span>`;
     return `
       <form class="question-card">
-        <div class="q-meta">${escapeHtml(q._unit?.title || '')} · TEKS ${escapeHtml(q._lesson?.teks || '')}</div>
+        <div class="q-meta">
+          <span>${escapeHtml(q._unit?.title || '')} · TEKS ${escapeHtml(q._lesson?.teks || '')}</span>
+          ${reward}
+        </div>
         <div class="q-prompt">${escapeHtml(q.prompt)}</div>
         <div class="q-body">${body}</div>
         <button class="btn btn-primary" type="submit">Check answer</button>
