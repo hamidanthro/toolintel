@@ -94,7 +94,13 @@
         <div class="practice-main">
           <div class="practice-header">
             <a class="back-link" href="grade.html?g=${slug}">← Back to ${curr.title}</a>
-            <h2>${titleBits.join(' › ')}</h2>
+            <div class="practice-title-row">
+              <h2>${titleBits.join(' › ')}</h2>
+              <button type="button" class="btn-restart" id="restart-btn" title="Start this practice over">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                <span>Restart</span>
+              </button>
+            </div>
             <div class="progress-bar"><div class="progress-fill" id="bar"></div></div>
             <div class="progress-text"><span id="progress-num">1</span> / ${questions.length}</div>
           </div>
@@ -107,6 +113,15 @@
     const bar = document.getElementById('bar');
     const progressNum = document.getElementById('progress-num');
     const perfPanel = document.getElementById('perf-panel');
+    const restartBtn = document.getElementById('restart-btn');
+
+    restartBtn.addEventListener('click', () => {
+      const answered = i + (qbox.querySelector('.feedback') ? 1 : 0);
+      if (answered > 0 && !confirm('Start this practice over? Your progress in this session will be reset.')) return;
+      i = 0;
+      correct = 0;
+      show();
+    });
 
     renderPerf(perfPanel, curr, stats);
     show();
