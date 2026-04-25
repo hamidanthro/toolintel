@@ -15,13 +15,32 @@
 //   ALLOWED_ORIGIN      (default: *)
 
 const { SecretsManagerClient, GetSecretValueCommand } = require('@aws-sdk/client-secrets-manager');
+const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
+const {
+  DynamoDBDocumentClient,
+  GetCommand, PutCommand, UpdateCommand, QueryCommand
+} = require('@aws-sdk/lib-dynamodb');
+const crypto = require('crypto');
 
 const MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
 const SECRET_NAME = process.env.OPENAI_SECRET_NAME || 'staar-tutor/openai-api-key';
+const AUTH_SECRET_NAME = process.env.AUTH_SECRET_NAME || 'staar-tutor/auth-secret';
+const USERS_TABLE = process.env.USERS_TABLE || 'staar-users';
+const STATS_TABLE = process.env.STATS_TABLE || 'staar-stats';
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || '*';
+const TOKEN_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days
 
 const sm = new SecretsManagerClient({});
+const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 let cachedKey = null;
+let cachedAuthSecret = null;
+
+async function getAuthSecret() {
+  if (cachedAuthSecret) return cachedAuthSecret;
+  const res = await sm.send(new GetSecretValueCommand({ SecretId: AUTH_SECRET_NAME }));
+  cachedAuthSecret = (res.SecretString || '').trim();
+  return cachedAuthSecret;
+}
 
 async function getApiKey() {
   if (cachedKey) return cachedKey;
@@ -136,6 +155,10 @@ exports.handler = async (event) => {
   if (action === 'generate') {
     return await handleGenerate(payload);
   }
+  if (action === 'signup')   return await handleSignup(payload);
+  if (action === 'login')    return await handleLogin(payload);
+  if (action === 'getStats') return await handleGetStats(payload);
+  if (action === 'putStats') return await handlePutStats(payload);
 
   if (!payload.question || payload.studentAnswer == null || payload.correctAnswer == null) {
     return bad(400, 'Missing required fields: question, studentAnswer, correctAnswer');
@@ -324,4 +347,185 @@ function sanitizeQuestions(arr, max) {
     if (out.length >= max) break;
   }
   return out;
+}
+
+// ===== Auth (signup/login) =====
+
+const COLORS = ['#1e40af', '#f59e0b', '#16a34a', '#db2777', '#7c3aed', '#0ea5e9', '#dc2626', '#0d9488'];
+
+function sanitizeUsername(u) {
+  return String(u || '').trim().toLowerCase().replace(/[^a-z0-9_.-]/g, '');
+}
+
+function hashPassword(password, salt) {
+  // scrypt with conservative params (suitable for Lambda 512MB)
+  const buf = crypto.scryptSync(String(password), salt, 64, { N: 16384, r: 8, p: 1 });
+  return buf.toString('hex');
+}
+
+function timingSafeEqual(a, b) {
+  const ba = Buffer.from(a, 'utf8');
+  const bb = Buffer.from(b, 'utf8');
+  if (ba.length !== bb.length) return false;
+  return crypto.timingSafeEqual(ba, bb);
+}
+
+async function makeToken(userId) {
+  const secret = await getAuthSecret();
+  const exp = Math.floor(Date.now() / 1000) + TOKEN_TTL_SECONDS;
+  const payload = `${userId}.${exp}`;
+  const sig = crypto.createHmac('sha256', secret).update(payload).digest('hex');
+  return `${payload}.${sig}`;
+}
+
+async function verifyToken(token) {
+  if (!token || typeof token !== 'string') return null;
+  const parts = token.split('.');
+  if (parts.length !== 3) return null;
+  const [userId, expStr, sig] = parts;
+  if (!userId || !expStr || !sig) return null;
+  const exp = parseInt(expStr, 10);
+  if (!Number.isFinite(exp) || exp < Math.floor(Date.now() / 1000)) return null;
+  const secret = await getAuthSecret();
+  const expected = crypto.createHmac('sha256', secret).update(`${userId}.${expStr}`).digest('hex');
+  if (!timingSafeEqual(sig, expected)) return null;
+  return { userId, exp };
+}
+
+async function authedUser(payload) {
+  const auth = await verifyToken(payload.token);
+  if (!auth) return null;
+  return auth.userId;
+}
+
+async function handleSignup(payload) {
+  const username = sanitizeUsername(payload.username);
+  const password = String(payload.password || '');
+  const displayName = String(payload.displayName || '').trim().slice(0, 32) || username;
+
+  if (username.length < 3 || username.length > 24) {
+    return bad(400, 'Username must be 3-24 characters (letters, numbers, _ . -)');
+  }
+  if (password.length < 6 || password.length > 128) {
+    return bad(400, 'Password must be at least 6 characters');
+  }
+
+  const existing = await ddb.send(new GetCommand({
+    TableName: USERS_TABLE,
+    Key: { username }
+  }));
+  if (existing.Item) {
+    return bad(409, 'That username is already taken');
+  }
+
+  const salt = crypto.randomBytes(16).toString('hex');
+  const passwordHash = hashPassword(password, salt);
+  const userId = 'u_' + crypto.randomBytes(6).toString('hex');
+  const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+
+  try {
+    await ddb.send(new PutCommand({
+      TableName: USERS_TABLE,
+      Item: {
+        username,
+        userId,
+        displayName,
+        salt,
+        passwordHash,
+        color,
+        createdAt: Date.now()
+      },
+      ConditionExpression: 'attribute_not_exists(username)'
+    }));
+  } catch (err) {
+    if (err.name === 'ConditionalCheckFailedException') {
+      return bad(409, 'That username is already taken');
+    }
+    throw err;
+  }
+
+  const token = await makeToken(userId);
+  return ok({ token, user: { userId, username, displayName, color } });
+}
+
+async function handleLogin(payload) {
+  const username = sanitizeUsername(payload.username);
+  const password = String(payload.password || '');
+  if (!username || !password) return bad(400, 'Username and password required');
+
+  const res = await ddb.send(new GetCommand({
+    TableName: USERS_TABLE,
+    Key: { username }
+  }));
+  const user = res.Item;
+  // Generic error to avoid revealing which field is wrong.
+  const fail = () => bad(401, 'Wrong username or password');
+  if (!user) return fail();
+
+  const candidate = hashPassword(password, user.salt);
+  if (!timingSafeEqual(candidate, user.passwordHash)) return fail();
+
+  const token = await makeToken(user.userId);
+  return ok({
+    token,
+    user: {
+      userId: user.userId,
+      username: user.username,
+      displayName: user.displayName || user.username,
+      color: user.color || '#1e40af'
+    }
+  });
+}
+
+// ===== Stats sync =====
+// putStats: { token, slug, data }
+// getStats: { token, slug? }   // if slug omitted, returns all grades for the user
+
+async function handlePutStats(payload) {
+  const userId = await authedUser(payload);
+  if (!userId) return bad(401, 'Not signed in');
+  const slug = String(payload.slug || '').trim().toLowerCase();
+  if (!slug) return bad(400, 'Missing slug');
+  const data = payload.data;
+  if (!data || typeof data !== 'object') return bad(400, 'Missing data');
+
+  // Cap blob size so we don't accidentally write huge items.
+  const json = JSON.stringify(data);
+  if (json.length > 12000) return bad(413, 'Stats too large');
+
+  await ddb.send(new PutCommand({
+    TableName: STATS_TABLE,
+    Item: {
+      userId,
+      slug,
+      data,
+      updatedAt: Date.now()
+    }
+  }));
+  return ok({ ok: true });
+}
+
+async function handleGetStats(payload) {
+  const userId = await authedUser(payload);
+  if (!userId) return bad(401, 'Not signed in');
+  const slug = payload.slug ? String(payload.slug).trim().toLowerCase() : null;
+
+  if (slug) {
+    const r = await ddb.send(new GetCommand({
+      TableName: STATS_TABLE,
+      Key: { userId, slug }
+    }));
+    return ok({ stats: r.Item ? { [slug]: r.Item.data } : {} });
+  }
+
+  const r = await ddb.send(new QueryCommand({
+    TableName: STATS_TABLE,
+    KeyConditionExpression: 'userId = :u',
+    ExpressionAttributeValues: { ':u': userId }
+  }));
+  const out = {};
+  for (const it of (r.Items || [])) {
+    if (it.slug) out[it.slug] = it.data;
+  }
+  return ok({ stats: out });
 }

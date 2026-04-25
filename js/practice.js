@@ -598,6 +598,11 @@
     },
     save(slug, s) {
       try { localStorage.setItem(this.key(slug), JSON.stringify(s)); } catch {}
+      // Sync to the cloud so progress follows the student to any device.
+      if (window.STAARAuth && typeof window.STAARAuth.pushStats === 'function'
+          && window.STAARAuth.currentUser && window.STAARAuth.currentUser()) {
+        window.STAARAuth.pushStats(slug, s);
+      }
     },
     record(slug, s, { unitId, unitTitle, isCorrect }) {
       s.total += 1;

@@ -31,7 +31,8 @@
     <div class="container">&copy; <span id="year"></span> STAAR Prep.</div>
   </footer>
 
-  <script src="js/auth.js?v=20260425"></script>
+  <script src="js/auth.js?v=20260425g"></script>
+  <script>window.STAARAuth = window.STAARAuth || {}; window.STAARAuth.requireLoginOnLoad = true;</script>
   <script src="js/staar-data.js"></script>
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();

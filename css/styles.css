@@ -794,3 +794,12 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
   .user-pill-name { max-width: 70px; }
   .nav { gap: 14px; }
 }
+
+.rainbow-spinner.small { width: 14px; height: 14px; vertical-align: -2px; }
+.user-menu-meta {
+  padding: 8px 12px 6px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+}
