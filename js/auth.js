@@ -332,8 +332,10 @@
       return;
     }
     const wallet = formatCents(u.balanceCents || 0);
+    const adminBadge = u.isAdmin ? `<a href="admin.html" class="admin-badge" title="Admin panel">Admin</a>` : '';
     const adminLink = u.isAdmin ? `<a href="admin.html" class="user-menu-link">Admin panel</a>` : '';
     slot.innerHTML = `
+      ${adminBadge}
       <a href="marketplace.html" class="wallet-pill" title="Toy marketplace">
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 6v12M9 9h4.5a2 2 0 010 4H10a2 2 0 000 4h5"/></svg>
         <span>${wallet}</span>
