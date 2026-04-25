@@ -76,7 +76,35 @@
       return;
     }
 
+    questions = buildSession(questions, 25);
+
     runQuiz(curr, questions, lessonMeta);
+  }
+
+  // Build a randomized 25-question session from the available pool.
+  // If the pool has fewer than 25 unique questions, shuffles repeat
+  // (no two consecutive duplicates) so the student always gets a full set.
+  function buildSession(pool, target) {
+    const session = [];
+    let prevId = null;
+    while (session.length < target) {
+      const shuffled = shuffle(pool.slice());
+      for (const q of shuffled) {
+        if (session.length >= target) break;
+        if (q.id && q.id === prevId) continue;
+        session.push(q);
+        prevId = q.id || null;
+      }
+    }
+    return session;
+  }
+
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
   }
 
   function runQuiz(curr, questions, meta) {
@@ -120,19 +148,15 @@
       if (answered > 0) {
         const ok = await confirmModal({
           title: 'Restart practice?',
-          message: 'You\u2019ll go back to question 1. Your overall performance stats will stay.',
+          message: 'You\u2019ll get a fresh set of 25 questions. Your overall performance stats will stay.',
           confirmText: 'Yes, restart',
           cancelText: 'Keep going'
         });
         if (!ok) return;
       }
-      i = 0;
-      correct = 0;
-      show();
-      // Visual confirmation so the user can tell something happened
-      // even if they were already on question 1.
-      flashRestart();
-      showToast('Practice restarted \u2014 good luck!');
+      // Show a brief toast then reload to get a freshly shuffled 25.
+      showToast('Loading a fresh set\u2026');
+      setTimeout(() => location.reload(), 350);
     });
 
     renderPerf(perfPanel, curr, stats);
