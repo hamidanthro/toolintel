@@ -34,7 +34,29 @@
   }
 
   async function load() {
-    if (!Auth.currentUser()) return;
+    if (!Auth.currentUser()) {
+      // Guest mode: show toys + sign-up prompt; hide wallet/orders.
+      if (summaryEl) {
+        summaryEl.innerHTML = `
+          <div class="wallet-summary-stat" style="flex:1;">
+            <div class="label">Sign in to start earning</div>
+            <div class="value" style="font-size:1rem;font-weight:500;color:var(--muted);">
+              Practice questions to earn points, then redeem them for real toys.
+            </div>
+          </div>
+          <button type="button" class="btn btn-primary" id="market-signup" style="align-self:center;">Sign up free</button>`;
+        const su = document.getElementById('market-signup');
+        if (su) su.onclick = () => Auth.showLogin && Auth.showLogin();
+      }
+      if (ordersRoot) ordersRoot.innerHTML = '<p style="color:var(--muted);">Sign in to see your orders.</p>';
+      try {
+        const toysData = await Auth.api('listToys', {});
+        renderToys(toysData.toys || [], 0);
+      } catch (e) {
+        root.innerHTML = `<p style="color:var(--error);">${escapeHtml(e.message)}</p>`;
+      }
+      return;
+    }
     try {
       const [walletData, toysData, ordersData] = await Promise.all([
         Auth.api('getWallet', { token: Auth.token() }),
@@ -66,9 +88,12 @@
         ? `<img class="toy-img" src="${escapeHtml(t.imageUrl)}" alt="${escapeHtml(t.name)}" loading="lazy" onerror="this.outerHTML='<div class=\\'toy-img-placeholder\\'>\u{1F381}</div>'" />`
         : `<div class="toy-img-placeholder">\u{1F381}</div>`;
       const desc = (t.description || '').trim();
-      const buyLabel = canAfford
-        ? 'Buy with points'
-        : `Need ${Auth.formatCents(need)} more`;
+      const isGuest = !Auth.currentUser();
+      const buyLabel = isGuest
+        ? 'Sign up to buy'
+        : (canAfford ? 'Buy with points' : `Need ${Auth.formatCents(need)} more`);
+      const buyEnabled = isGuest || canAfford;
+      const buyClass = buyEnabled ? 'btn-primary' : 'btn-ghost';
       const isAdmin = !!(Auth.currentUser && Auth.currentUser() && Auth.currentUser().isAdmin);
       const adminBadge = isAdmin
         ? `<a class="toy-edit" href="admin.html#edit=${encodeURIComponent(t.toyId)}" title="Edit this toy">Edit</a>`
@@ -87,7 +112,7 @@
               ${stockNote}
               ${canAfford ? '<span class="toy-stock can">\u2713 You can afford this!</span>' : ''}
             </div>
-            <button class="btn ${canAfford ? 'btn-primary' : 'btn-ghost'} toy-buy" ${canAfford ? '' : 'disabled'}>
+            <button class="btn ${buyClass} toy-buy" ${buyEnabled ? '' : 'disabled'}>
               ${buyLabel}
             </button>
           </div>
@@ -98,6 +123,10 @@
       const toy = toys.find(x => x.toyId === toyId);
       const btn = card.querySelector('.toy-buy');
       btn.addEventListener('click', () => {
+        if (!Auth.currentUser()) {
+          if (Auth.showLogin) Auth.showLogin();
+          return;
+        }
         if (!btn.disabled) showCheckout(toy);
       });
     });
