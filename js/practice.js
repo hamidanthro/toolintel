@@ -33,7 +33,7 @@
     }
   }
 
-  fetch(`data/${slug}-curriculum.json?v=20260425e`)
+  fetch(`data/${slug}-curriculum.json?v=20260425f`)
     .then(r => r.ok ? r.json() : Promise.reject('not-found'))
     .then(curr => start(curr))
     .catch(() => {

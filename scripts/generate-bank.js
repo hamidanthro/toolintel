@@ -2260,6 +2260,487 @@ function genSimpleInterestG6(rng) {
   );
 }
 
+// ---------- Generators: Grade 7 ----------
+function _signedInt(rng, lo, hi) {
+  let n = randInt(rng, lo, hi);
+  if (n === 0) n = 1;
+  if (rng() < 0.5) n = -n;
+  return n;
+}
+
+function genAddRationalsG7(rng) {
+  const a = _signedInt(rng, 1, 50);
+  const b = _signedInt(rng, 1, 50);
+  const ans = a + b;
+  const aStr = a < 0 ? `(${a})` : String(a);
+  const bStr = b < 0 ? `(${b})` : String(b);
+  return num(
+    pick(rng, [
+      `${aStr} + ${bStr} = ?`,
+      `Add: ${aStr} + ${bStr}`,
+      `What is the sum of ${a} and ${b}?`
+    ]),
+    ans,
+    `${a} + ${b} = ${ans}.`,
+    [String(ans), fmt(ans)]
+  );
+}
+
+function genSubRationalsG7(rng) {
+  const a = _signedInt(rng, 1, 50);
+  const b = _signedInt(rng, 1, 50);
+  const ans = a - b;
+  const aStr = a < 0 ? `(${a})` : String(a);
+  const bStr = b < 0 ? `(${b})` : String(b);
+  return num(
+    pick(rng, [
+      `${aStr} − ${bStr} = ?`,
+      `Subtract: ${aStr} − ${bStr}`,
+      `What is ${a} minus ${b}?`
+    ]),
+    ans,
+    `${a} − ${b} = ${a} + (${-b}) = ${ans}.`,
+    [String(ans), fmt(ans)]
+  );
+}
+
+function genMulRationalsG7(rng) {
+  const a = _signedInt(rng, 2, 15);
+  const b = _signedInt(rng, 2, 15);
+  const ans = a * b;
+  const aStr = a < 0 ? `(${a})` : String(a);
+  const bStr = b < 0 ? `(${b})` : String(b);
+  return num(
+    pick(rng, [
+      `${aStr} × ${bStr} = ?`,
+      `Multiply: ${aStr} × ${bStr}`,
+      `What is the product of ${a} and ${b}?`
+    ]),
+    ans,
+    `Same signs → positive, different signs → negative. ${a} × ${b} = ${ans}.`,
+    [String(ans), fmt(ans)]
+  );
+}
+
+function genDivRationalsG7(rng) {
+  const b = _signedInt(rng, 2, 12);
+  const q = _signedInt(rng, 2, 15);
+  const a = b * q;
+  const ans = q;
+  const aStr = a < 0 ? `(${a})` : String(a);
+  const bStr = b < 0 ? `(${b})` : String(b);
+  return num(
+    pick(rng, [
+      `${aStr} ÷ ${bStr} = ?`,
+      `Divide: ${aStr} ÷ ${bStr}`,
+      `What is ${a} divided by ${b}?`
+    ]),
+    ans,
+    `${a} ÷ ${b} = ${ans} (same signs → positive, different signs → negative).`,
+    [String(ans), fmt(ans)]
+  );
+}
+
+function genConstProportionalityG7(rng) {
+  const k = randInt(rng, 2, 12);
+  const x = randInt(rng, 2, 15);
+  const variant = pick(rng, ['find-k', 'find-y']);
+  if (variant === 'find-k') {
+    const y = k * x;
+    return num(
+      pick(rng, [
+        `In y = kx, if x = ${x} and y = ${y}, what is k?`,
+        `Find the constant of proportionality: y = ${y} when x = ${x}.`,
+        `If y is proportional to x and y = ${y} when x = ${x}, find k.`
+      ]),
+      k,
+      `k = y ÷ x = ${y} ÷ ${x} = ${k}.`,
+      [String(k), fmt(k)]
+    );
+  }
+  return num(
+    pick(rng, [
+      `If y = ${k}x, find y when x = ${x}.`,
+      `y is proportional to x with k = ${k}. Find y when x = ${x}.`
+    ]),
+    k * x,
+    `y = kx = ${k} × ${x} = ${k * x}.`,
+    [String(k * x), fmt(k * x)]
+  );
+}
+
+function genPercentChangeG7(rng) {
+  // Pick original and a clean percent change.
+  const niceP = [5, 10, 15, 20, 25, 30, 40, 50, 60, 75];
+  const p = pick(rng, niceP);
+  const orig = randInt(rng, 1, 50) * (100 / gcd(p, 100));
+  const direction = pick(rng, ['increase', 'decrease']);
+  const change = orig * p / 100;
+  const newVal = direction === 'increase' ? orig + change : orig - change;
+  const ask = pick(rng, ['percent', 'newval']);
+  if (ask === 'percent') {
+    return num(
+      pick(rng, [
+        `A value changed from ${orig} to ${newVal}. What is the percent ${direction}?`,
+        `${orig} ${direction === 'increase' ? 'grew to' : 'dropped to'} ${newVal}. Find the percent ${direction}.`
+      ]),
+      `${p}%`,
+      `Change = |${newVal} − ${orig}| = ${change}. Percent ${direction} = ${change}/${orig} × 100 = ${p}%.`,
+      [`${p}%`, String(p), fmt(p)]
+    );
+  }
+  return num(
+    pick(rng, [
+      `${orig} is ${direction === 'increase' ? 'increased' : 'decreased'} by ${p}%. What is the new value?`,
+      `What is ${orig} after a ${p}% ${direction}?`
+    ]),
+    newVal,
+    `${p}% of ${orig} = ${change}. New value = ${orig} ${direction === 'increase' ? '+' : '−'} ${change} = ${newVal}.`,
+    [String(newVal), fmt(newVal)]
+  );
+}
+
+function genMarkupDiscountTaxTipG7(rng) {
+  const niceP = [5, 8, 10, 12, 15, 18, 20, 25, 30, 40];
+  const p = pick(rng, niceP);
+  const baseDollars = randInt(rng, 1, 60) * 5; // multiple of 5
+  const baseCents = baseDollars * 100;
+  const changeCents = Math.round(baseCents * p / 100);
+  const variant = pick(rng, ['markup', 'discount', 'tax', 'tip']);
+  let promptText, ansCents, hint;
+  const name = pick(rng, NAMES);
+  if (variant === 'markup') {
+    ansCents = baseCents + changeCents;
+    promptText = `A store buys an item for $${baseDollars} and marks it up ${p}%. What is the new price?`;
+    hint = `Markup: ${p}% of $${baseDollars} = $${(changeCents/100).toFixed(2)}. New price: $${(ansCents/100).toFixed(2)}.`;
+  } else if (variant === 'discount') {
+    ansCents = baseCents - changeCents;
+    promptText = `${name} buys an item that costs $${baseDollars} with a ${p}% discount. What is the sale price?`;
+    hint = `Discount: $${(changeCents/100).toFixed(2)}. Sale price: $${(ansCents/100).toFixed(2)}.`;
+  } else if (variant === 'tax') {
+    ansCents = baseCents + changeCents;
+    promptText = `An item costs $${baseDollars}. Sales tax is ${p}%. What is the total?`;
+    hint = `Tax: $${(changeCents/100).toFixed(2)}. Total: $${(ansCents/100).toFixed(2)}.`;
+  } else {
+    ansCents = changeCents;
+    promptText = `${name}'s meal costs $${baseDollars}. ${name} leaves a ${p}% tip. How much is the tip?`;
+    hint = `${p}% of $${baseDollars} = $${(changeCents/100).toFixed(2)}.`;
+  }
+  const ans = ansCents % 100 === 0 ? `$${ansCents / 100}` : `$${(ansCents / 100).toFixed(2)}`;
+  const acceptable = ansCents % 100 === 0
+    ? [ans, String(ansCents / 100), (ansCents / 100).toFixed(2)]
+    : [ans, (ansCents / 100).toFixed(2)];
+  return num(promptText, ans, hint, acceptable);
+}
+
+function genSimpleInterestG7(rng) {
+  const niceR = [2, 3, 4, 5, 6, 8, 10, 12];
+  const r = pick(rng, niceR);
+  const t = randInt(rng, 1, 10);
+  const P = randInt(rng, 1, 60) * 100;
+  const ans = (P * r * t) / 100;
+  return num(
+    pick(rng, [
+      `Find the simple interest on $${P} at ${r}% per year for ${t} year${t===1?'':'s'}.`,
+      `${pick(rng, NAMES)} invests $${P} at ${r}% simple interest for ${t} year${t===1?'':'s'}. How much interest is earned?`,
+      `What is I if P = $${P}, r = ${r}%, t = ${t} year${t===1?'':'s'}?`
+    ]),
+    ans,
+    `I = Prt = ${P} × ${r}/100 × ${t} = ${ans}.`,
+    [String(ans), `$${ans}`, fmt(ans)]
+  );
+}
+
+function genSimilarFiguresG7(rng) {
+  // Two similar figures: small side a, corresponding small side on big k*a; ask missing big side b' given small b.
+  const k = randInt(rng, 2, 8);
+  const a = randInt(rng, 2, 15);
+  const b = randInt(rng, 2, 15);
+  const aBig = a * k;
+  const bBig = b * k;
+  return num(
+    pick(rng, [
+      `Two triangles are similar. The smaller has sides ${a} and ${b}. The larger has a side of ${aBig} corresponding to ${a}. What is the side corresponding to ${b}?`,
+      `Two similar rectangles: the small one is ${a} by ${b}; the big one's corresponding side to ${a} is ${aBig}. Find the missing side.`,
+      `Similar polygons have a scale factor such that ${a} maps to ${aBig}. What does ${b} map to?`
+    ]),
+    bBig,
+    `Scale factor = ${aBig}/${a} = ${k}. So ${b} × ${k} = ${bBig}.`,
+    [String(bBig), fmt(bBig)]
+  );
+}
+
+function genScaleDrawingG7(rng) {
+  // Scale: 1 cm = N units (or 1 inch = N feet)
+  const scale = pick(rng, [2, 5, 10, 20, 25, 50, 100]);
+  const drawn = randInt(rng, 2, 25);
+  const actual = drawn * scale;
+  const variant = pick(rng, ['drawn->actual', 'actual->drawn']);
+  if (variant === 'drawn->actual') {
+    return num(
+      pick(rng, [
+        `A map uses the scale 1 cm = ${scale} km. A road measures ${drawn} cm on the map. How long is the actual road in km?`,
+        `On a scale drawing, 1 inch represents ${scale} feet. If a wall is ${drawn} inches in the drawing, how long is the real wall in feet?`
+      ]),
+      actual,
+      `Actual length = ${drawn} × ${scale} = ${actual}.`,
+      [String(actual), fmt(actual)]
+    );
+  }
+  return num(
+    pick(rng, [
+      `A map uses the scale 1 cm = ${scale} km. The actual road is ${actual} km. How long is it on the map (cm)?`,
+      `On a scale drawing 1 inch = ${scale} feet. A real wall is ${actual} feet. How long is it in the drawing (inches)?`
+    ]),
+    drawn,
+    `Drawn length = ${actual} ÷ ${scale} = ${drawn}.`,
+    [String(drawn), fmt(drawn)]
+  );
+}
+
+function genCircumferenceG7(rng) {
+  // Use π = 3.14, choose d so 3.14·d is clean (1 decimal place).
+  const d = pick(rng, [1, 2, 4, 5, 8, 10, 12, 15, 20, 25, 30, 40, 50, 60, 80, 100]);
+  const cInt = Math.round(3.14 * d * 100);
+  const ans = (cInt / 100).toFixed(2).replace(/\.?0+$/, '');
+  const variant = pick(rng, ['from-d', 'from-r']);
+  let prompt, hint;
+  if (variant === 'from-d') {
+    prompt = pick(rng, [
+      `Find the circumference of a circle with diameter ${d}. Use π = 3.14.`,
+      `A circle has diameter ${d}. What is its circumference? (π = 3.14)`,
+      `Compute C for a circle whose diameter is ${d}. Use π = 3.14.`
+    ]);
+    hint = `C = πd = 3.14 × ${d} = ${ans}.`;
+  } else {
+    if (d % 2 !== 0) return genCircumferenceG7(rng);
+    const r = d / 2;
+    prompt = pick(rng, [
+      `Find the circumference of a circle with radius ${r}. Use π = 3.14.`,
+      `A circle has radius ${r}. What is its circumference? (π = 3.14)`
+    ]);
+    hint = `C = 2πr = 2 × 3.14 × ${r} = ${ans}.`;
+  }
+  return num(prompt, ans, hint, [String(ans), ans + '0', String(parseFloat(ans))]);
+}
+
+function genAreaCircleG7(rng) {
+  // Use π = 3.14; pick r so r²·3.14 is clean (≤ 2 decimals).
+  const r = pick(rng, [1, 2, 5, 10, 20, 25, 50, 100]);
+  const aInt = Math.round(3.14 * r * r * 100);
+  const ans = (aInt / 100).toFixed(2).replace(/\.?0+$/, '');
+  return num(
+    pick(rng, [
+      `Find the area of a circle with radius ${r}. Use π = 3.14.`,
+      `A circle has radius ${r}. What is its area? (π = 3.14)`,
+      `Compute A for a circle whose radius is ${r}. Use π = 3.14.`
+    ]),
+    ans,
+    `A = πr² = 3.14 × ${r}² = 3.14 × ${r * r} = ${ans}.`,
+    [String(ans), ans + '0', String(parseFloat(ans))]
+  );
+}
+
+function genVolumeTriPrismG7(rng) {
+  const b = randInt(rng, 2, 20);
+  const h = randInt(rng, 2, 18);
+  const len = randInt(rng, 2, 25);
+  if ((b * h) % 2 !== 0) return genVolumeTriPrismG7(rng);
+  const baseArea = (b * h) / 2;
+  const ans = baseArea * len;
+  return num(
+    pick(rng, [
+      `Find the volume of a triangular prism whose triangular base has base ${b} and height ${h}, and whose length (depth) is ${len}.`,
+      `A triangular prism has a triangle base (b=${b}, h=${h}) and length ${len}. What is its volume?`
+    ]),
+    ans,
+    `Base area B = ½ × ${b} × ${h} = ${baseArea}. V = B × length = ${baseArea} × ${len} = ${ans}.`,
+    [String(ans), fmt(ans)]
+  );
+}
+
+function genSurfaceAreaPrismG7(rng) {
+  const l = randInt(rng, 2, 20);
+  const w = randInt(rng, 2, 20);
+  const h = randInt(rng, 2, 20);
+  const ans = 2 * (l * w + l * h + w * h);
+  return num(
+    pick(rng, [
+      `Find the total surface area of a rectangular prism with length ${l}, width ${w}, height ${h}.`,
+      `A box is ${l} × ${w} × ${h}. What is its total surface area?`,
+      `Compute the surface area of a rectangular prism (${l}, ${w}, ${h}).`
+    ]),
+    ans,
+    `S = 2(lw + lh + wh) = 2(${l*w} + ${l*h} + ${w*h}) = ${ans} square units.`,
+    [String(ans), fmt(ans), `${ans} square units`]
+  );
+}
+
+function genTwoStepEqG7(rng) {
+  // ax + b = c  or  ax - b = c
+  const a = randInt(rng, 2, 12);
+  const xVal = _signedInt(rng, 1, 15);
+  const b = randInt(rng, 1, 30);
+  const sign = pick(rng, ['+', '-']);
+  const c = sign === '+' ? a * xVal + b : a * xVal - b;
+  const prompt = `Solve for x:  ${a}x ${sign} ${b} = ${c}`;
+  const hint = sign === '+'
+    ? `Subtract ${b}: ${a}x = ${c - b}. Divide by ${a}: x = ${xVal}.`
+    : `Add ${b}: ${a}x = ${c + b}. Divide by ${a}: x = ${xVal}.`;
+  return num(prompt, xVal, hint, [String(xVal), fmt(xVal)]);
+}
+
+function genTwoStepIneqG7(rng) {
+  const a = randInt(rng, 2, 8);
+  const b = randInt(rng, 1, 20);
+  const sign = pick(rng, ['+', '-']);
+  const target = randInt(rng, 2, 15);
+  const c = sign === '+' ? a * target + b : a * target - b;
+  const op = pick(rng, ['<', '>', '≤', '≥']);
+  // ax ± b OP c → x OP target
+  let trueVal, falseVals;
+  if (op === '<')      { trueVal = target - 1; falseVals = [target, target + 1, target + 2]; }
+  else if (op === '>') { trueVal = target + 1; falseVals = [target, target - 1, target - 2]; }
+  else if (op === '≤') { trueVal = target;     falseVals = [target + 1, target + 2, target + 3]; }
+  else                  { trueVal = target;     falseVals = [target - 1, target - 2, target - 3]; }
+  if (trueVal < 1 || falseVals.some(v => v < 1)) return genTwoStepIneqG7(rng);
+  return mc(
+    `Which value of x makes the inequality true?  ${a}x ${sign} ${b} ${op} ${c}`,
+    String(trueVal),
+    Array.from(new Set(falseVals.map(String))).slice(0, 3),
+    `${sign === '+' ? 'Subtract' : 'Add'} ${b}: ${a}x ${op} ${sign === '+' ? c - b : c + b}. Divide by ${a}: x ${op} ${target}.`,
+    rng
+  );
+}
+
+function genWordToEqG7(rng) {
+  const a = randInt(rng, 2, 9);
+  const b = randInt(rng, 1, 20);
+  const x = randInt(rng, 2, 12);
+  const c = a * x + b;
+  const name = pick(rng, NAMES);
+  const item = pick(rng, ALL_ITEMS);
+  const correct = `${a}x + ${b} = ${c}`;
+  const distractors = [
+    `${a}x - ${b} = ${c}`,
+    `${a}(x + ${b}) = ${c}`,
+    `x + ${a*b} = ${c}`
+  ];
+  return mc(
+    `${name} buys ${a} ${item} and pays an extra $${b} for shipping. The total is $${c}. Which equation can be used to find the price x of one ${item.replace(/s$/, '')}?`,
+    correct,
+    distractors,
+    `${a} items at $x plus $${b} shipping equals $${c}: ${a}x + ${b} = ${c}.`,
+    rng
+  );
+}
+
+function genProbSimpleG7(rng) {
+  // bag with marbles of 2-3 colors
+  const colors = shuffleA(rng, ['red', 'blue', 'green', 'yellow', 'white']).slice(0, randInt(rng, 2, 3));
+  const counts = colors.map(() => randInt(rng, 1, 8));
+  const total = counts.reduce((s, x) => s + x, 0);
+  const idx = randInt(rng, 0, colors.length - 1);
+  const fav = counts[idx];
+  const ans = simpFrac(fav, total);
+  const desc = colors.map((c, i) => `${counts[i]} ${c}`).join(', ');
+  return num(
+    pick(rng, [
+      `A bag contains ${desc} marbles. One marble is drawn at random. What is P(${colors[idx]})? (Give answer in simplest form.)`,
+      `A jar has ${desc} marbles. Find the probability of drawing a ${colors[idx]} marble. (Simplest form.)`
+    ]),
+    ans,
+    `P(${colors[idx]}) = ${fav}/${total} = ${ans}.`,
+    [ans]
+  );
+}
+
+function genProbCompoundG7(rng) {
+  // P(A) and P(B) both as simple fractions with small denominators
+  const variants = [
+    { desc: 'flipping a coin and getting heads', p: '1/2', n: 1, d: 2 },
+    { desc: 'rolling a 6-sided die and getting a 3', p: '1/6', n: 1, d: 6 },
+    { desc: 'rolling a 6-sided die and getting an even number', p: '1/2', n: 1, d: 2 },
+    { desc: 'drawing a heart from a standard deck', p: '1/4', n: 1, d: 4 },
+    { desc: 'spinning a 4-section spinner and landing on red', p: '1/4', n: 1, d: 4 },
+    { desc: 'rolling a 6-sided die and getting a number greater than 4', p: '1/3', n: 1, d: 3 }
+  ];
+  const a = pick(rng, variants);
+  let b = pick(rng, variants);
+  if (a.desc === b.desc) b = variants[(variants.indexOf(a) + 1) % variants.length];
+  const ans = simpFrac(a.n * b.n, a.d * b.d);
+  return num(
+    pick(rng, [
+      `What is the probability of ${a.desc} AND ${b.desc}? (Independent events; simplest form.)`,
+      `Find P(A and B) where A = ${a.desc} and B = ${b.desc}. (Independent; simplest form.)`
+    ]),
+    ans,
+    `P(A and B) = ${a.p} × ${b.p} = ${a.n*b.n}/${a.d*b.d} = ${ans}.`,
+    [ans]
+  );
+}
+
+function genMADG7(rng) {
+  // Pick 4 numbers around a clean mean.
+  const n = 4;
+  const mean = randInt(rng, 5, 30);
+  // Pick deviations that sum to 0
+  const d1 = randInt(rng, 1, 5);
+  const d2 = randInt(rng, 1, 5);
+  // Last two deviations must sum to -(d1+d2). Choose split.
+  const remaining = -(d1 + d2);
+  const d3 = randInt(rng, Math.max(remaining + 5, -10), Math.min(remaining + 10, 10));
+  const d4 = remaining - d3;
+  if (Math.abs(d4) > 10) return genMADG7(rng);
+  const set = [mean + d1, mean + d2, mean + d3, mean + d4];
+  if (set.some(v => v < 1)) return genMADG7(rng);
+  const sumAbs = Math.abs(d1) + Math.abs(d2) + Math.abs(d3) + Math.abs(d4);
+  if (sumAbs % n !== 0) return genMADG7(rng);
+  const mad = sumAbs / n;
+  return num(
+    `Find the mean absolute deviation (MAD) of this data set: ${set.join(', ')}.`,
+    mad,
+    `Mean = ${mean}. Absolute deviations from the mean: ${[d1,d2,d3,d4].map(Math.abs).join(', ')}. MAD = ${sumAbs}/${n} = ${mad}.`,
+    [String(mad), fmt(mad)]
+  );
+}
+
+function genCompoundInterestG7(rng) {
+  // A = P(1+r)^t with small t (1, 2, 3) and clean r.
+  const niceR = [5, 10, 20, 25, 50];
+  const r = pick(rng, niceR); // percent
+  const t = randInt(rng, 1, 3);
+  // To get clean dollars, choose P that's a multiple of 100^t (approximately) — use P that is a power of 10 times a small int, and rate-base reduces.
+  // Simpler: choose P such that P*(100+r)^t / 100^t is integer.
+  // (100+r) and 100 share gcd. For r=5: (105)=3·5·7, 100=4·25 → no easy. Use P = 100^t * k and the answer becomes (100+r)^t * k.
+  const P = Math.pow(100, t) * randInt(rng, 1, 5);
+  if (P > 1000000) return genCompoundInterestG7(rng);
+  const factor = Math.pow(100 + r, t);
+  const ansAmount = factor * (P / Math.pow(100, t));
+  const interest = ansAmount - P;
+  const ask = pick(rng, ['amount', 'interest']);
+  if (ask === 'amount') {
+    return num(
+      pick(rng, [
+        `Find the amount A after compound interest on $${P} at ${r}% annually for ${t} year${t===1?'':'s'}.`,
+        `${pick(rng, NAMES)} invests $${P} at ${r}% compounded annually. How much is in the account after ${t} year${t===1?'':'s'}?`
+      ]),
+      ansAmount,
+      `A = P(1 + r)^t = ${P} × (1 + ${r/100})^${t} = $${ansAmount}.`,
+      [String(ansAmount), `$${ansAmount}`, fmt(ansAmount)]
+    );
+  }
+  return num(
+    pick(rng, [
+      `Find the compound interest earned on $${P} at ${r}% compounded annually for ${t} year${t===1?'':'s'}.`,
+      `${pick(rng, NAMES)} deposits $${P} at ${r}% compounded annually. How much interest is earned in ${t} year${t===1?'':'s'}?`
+    ]),
+    interest,
+    `A = ${P}(1 + ${r/100})^${t} = ${ansAmount}. Interest = A − P = ${ansAmount} − ${P} = ${interest}.`,
+    [String(interest), `$${interest}`, fmt(interest)]
+  );
+}
+
 // ---------- Bank specs ----------
 const TARGET = 1000;
 const SPECS = {
@@ -2373,6 +2854,29 @@ const SPECS = {
     { unit: 'u5', lesson: 'u5l4', gen: genCoordPlaneG6 },
     { unit: 'u6', lesson: 'u6l1', gen: genStatsG6 },
     { unit: 'u6', lesson: 'u6l2', gen: genSimpleInterestG6 }
+  ],
+  'grade-7-curriculum.json': [
+    { unit: 'u1', lesson: 'u1l1', gen: genAddRationalsG7 },
+    { unit: 'u1', lesson: 'u1l2', gen: genSubRationalsG7 },
+    { unit: 'u1', lesson: 'u1l3', gen: genMulRationalsG7 },
+    { unit: 'u1', lesson: 'u1l4', gen: genDivRationalsG7 },
+    { unit: 'u2', lesson: 'u2l1', gen: genConstProportionalityG7 },
+    { unit: 'u2', lesson: 'u2l2', gen: genPercentChangeG7 },
+    { unit: 'u2', lesson: 'u2l3', gen: genMarkupDiscountTaxTipG7 },
+    { unit: 'u2', lesson: 'u2l4', gen: genSimpleInterestG7 },
+    { unit: 'u3', lesson: 'u3l1', gen: genSimilarFiguresG7 },
+    { unit: 'u3', lesson: 'u3l2', gen: genScaleDrawingG7 },
+    { unit: 'u4', lesson: 'u4l1', gen: genCircumferenceG7 },
+    { unit: 'u4', lesson: 'u4l2', gen: genAreaCircleG7 },
+    { unit: 'u4', lesson: 'u4l3', gen: genVolumeTriPrismG7 },
+    { unit: 'u4', lesson: 'u4l4', gen: genSurfaceAreaPrismG7 },
+    { unit: 'u5', lesson: 'u5l1', gen: genTwoStepEqG7 },
+    { unit: 'u5', lesson: 'u5l2', gen: genTwoStepIneqG7 },
+    { unit: 'u5', lesson: 'u5l3', gen: genWordToEqG7 },
+    { unit: 'u6', lesson: 'u6l1', gen: genProbSimpleG7 },
+    { unit: 'u6', lesson: 'u6l2', gen: genProbCompoundG7 },
+    { unit: 'u7', lesson: 'u7l1', gen: genMADG7 },
+    { unit: 'u7', lesson: 'u7l2', gen: genCompoundInterestG7 }
   ]
 };
 

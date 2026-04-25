@@ -289,7 +289,7 @@ def check_q(q):
     m = re.search(r'(\d+)\s*(cm|m|in|ft|yd|units)?\s*(?:long\s+and|by|×)\s*(\d+)\s*(cm|m|in|ft|yd|units)?', p)
     if m and ('perimeter' in p.lower() or 'area' in p.lower() or 'volume' in p.lower()):
         l = int(m.group(1)); w = int(m.group(3))
-        # Try to find a third number for volume
+        # Try to find a third number for volume / surface area
         m3 = re.findall(r'\b(\d+)\b', p)
         try:
             a2 = int(str(ans).split()[0].replace(',',''))
@@ -300,6 +300,11 @@ def check_q(q):
             try:
                 h = int(m3[2])
                 cands.add(l*w*h)
+            except: pass
+        if 'surface area' in p.lower() and len(m3) >= 3:
+            try:
+                h = int(m3[2])
+                cands.add(2*(l*w + l*h + w*h))
             except: pass
         return ('geom', a2 in cands)
 
