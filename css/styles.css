@@ -1241,3 +1241,22 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
 .dash-card-stat:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(15,23,42,0.08); }
 .dash-card-board { background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); }
 .dash-board-head h3 { font-size: 1.15rem; }
+
+/* Admin-only edit pill on marketplace cards */
+.toy-img-wrap { position: relative; }
+.toy-edit {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(15, 23, 42, 0.85);
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  backdrop-filter: blur(4px);
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+.toy-edit:hover { background: var(--blue); transform: translateY(-1px); }

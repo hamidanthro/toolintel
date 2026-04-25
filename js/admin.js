@@ -46,6 +46,13 @@
     try {
       const r = await Auth.api('adminListToys', { token: Auth.token() });
       renderToys(r.toys || []);
+      // Honor #edit=<toyId> deep-link from the marketplace.
+      const m = (location.hash || '').match(/#edit=([^&]+)/);
+      if (m) {
+        const id = decodeURIComponent(m[1]);
+        const t = (r.toys || []).find(x => x.toyId === id);
+        if (t) editToy(t);
+      }
     } catch (e) {
       $('toys-table').innerHTML = `<p style="color:var(--error);">${escapeHtml(e.message)}</p>`;
     }

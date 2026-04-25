@@ -69,11 +69,16 @@
       const buyLabel = canAfford
         ? 'Buy with points'
         : `Need ${Auth.formatCents(need)} more`;
+      const isAdmin = !!(Auth.currentUser && Auth.currentUser() && Auth.currentUser().isAdmin);
+      const adminBadge = isAdmin
+        ? `<a class="toy-edit" href="admin.html#edit=${encodeURIComponent(t.toyId)}" title="Edit this toy">Edit</a>`
+        : '';
       return `
         <article class="toy-card${canAfford ? ' affordable' : ''}" data-toy-id="${escapeHtml(t.toyId)}">
           <div class="toy-img-wrap">
             ${img}
             <span class="toy-price-badge">${Auth.formatCents(t.priceCents)}</span>
+            ${adminBadge}
           </div>
           <div class="toy-body">
             <h3 class="toy-name">${escapeHtml(t.name)}</h3>
