@@ -426,7 +426,6 @@
       </button>
       <div class="user-menu" id="user-menu" hidden>
         <div class="user-menu-meta">@${escapeHtml(u.username)}</div>
-        <a href="marketplace.html" class="user-menu-link">Toy marketplace</a>
         ${adminLink}
         <button type="button" data-act="logout">Sign out</button>
       </div>`;
