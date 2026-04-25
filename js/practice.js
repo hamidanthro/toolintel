@@ -325,6 +325,7 @@
     const html = [];
     let listType = null; // 'ol' | 'ul' | null
     let para = [];
+    let olCounter = 0;
 
     const flushPara = () => {
       if (para.length) {
@@ -333,20 +334,30 @@
       }
     };
     const closeList = () => {
-      if (listType) { html.push(`</${listType}>`); listType = null; }
+      if (listType) { html.push(`</${listType}>`); listType = null; olCounter = 0; }
     };
 
     for (const raw of lines) {
       const line = raw.trim();
-      if (!line) { flushPara(); closeList(); continue; }
 
       const ol = line.match(/^(\d+)[.)]\s+(.*)$/);
       const ul = line.match(/^[-*•]\s+(.*)$/);
 
+      if (!line) {
+        // Blank line: end the current paragraph but keep an open list open,
+        // so consecutive numbered/bulleted items separated by blank lines
+        // stay in the same <ol>/<ul> instead of restarting numbering.
+        flushPara();
+        continue;
+      }
+
       if (ol) {
         flushPara();
-        if (listType !== 'ol') { closeList(); html.push('<ol>'); listType = 'ol'; }
-        html.push(`<li>${inline(ol[2])}</li>`);
+        if (listType !== 'ol') { closeList(); html.push('<ol>'); listType = 'ol'; olCounter = 0; }
+        olCounter += 1;
+        // Use <li value="N"> with sequential N so we never repeat "1." even if
+        // the model sent "1." for every step.
+        html.push(`<li value="${olCounter}">${inline(ol[2])}</li>`);
       } else if (ul) {
         flushPara();
         if (listType !== 'ul') { closeList(); html.push('<ul>'); listType = 'ul'; }
