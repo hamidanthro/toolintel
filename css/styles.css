@@ -570,6 +570,31 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
   border-radius: var(--radius);
 }
 
+/* Pre-quiz preparing-your-set loader */
+.prep-loader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 28px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  max-width: 520px;
+  margin: 60px auto;
+}
+.prep-loader .rainbow-spinner { width: 36px; height: 36px; }
+.prep-title {
+  font-weight: 700;
+  color: var(--navy);
+  font-size: 1rem;
+}
+.prep-sub {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-top: 2px;
+}
+
 @media (max-width: 600px) {
   .hero { padding: 48px 0; }
   .hero h1 { font-size: 1.75rem; }

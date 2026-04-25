@@ -76,27 +76,113 @@
       return;
     }
 
-    questions = buildSession(questions, 25);
-
-    runQuiz(curr, questions, lessonMeta);
+    // Build the session asynchronously: ask the AI to generate fresh
+    // scenarios while we hold a curriculum-only fallback ready.
+    buildSessionAsync(curr, questions, lessonMeta).then(finalQs => {
+      runQuiz(curr, finalQs, lessonMeta);
+    });
   }
 
-  // Build a randomized 25-question session from the available pool.
-  // If the pool has fewer than 25 unique questions, shuffles repeat
-  // (no two consecutive duplicates) so the student always gets a full set.
-  function buildSession(pool, target) {
-    const session = [];
-    let prevId = null;
-    while (session.length < target) {
-      const shuffled = shuffle(pool.slice());
-      for (const q of shuffled) {
-        if (session.length >= target) break;
-        if (q.id && q.id === prevId) continue;
-        session.push(q);
-        prevId = q.id || null;
+  // Build a 25-question session that mixes curriculum anchors with
+  // freshly AI-generated questions so each restart feels new.
+  async function buildSessionAsync(curr, pool, meta) {
+    const TARGET = 25;
+    const ANCHOR = 5;        // keep 5 hand-written items for quality floor
+    const GENERATE = 20;     // ask AI for 20 fresh ones
+
+    // Show a preparing-your-set loader.
+    root.innerHTML = `
+      <div class="prep-loader">
+        <span class="rainbow-spinner" aria-hidden="true"></span>
+        <div>
+          <div class="prep-title">Preparing fresh questions just for you\u2026</div>
+          <div class="prep-sub">Mixing in new STAAR-style scenarios</div>
+        </div>
+      </div>`;
+
+    const anchors = pickRandom(pool, ANCHOR);
+    const topics = buildTopicSpec(pool, meta);
+
+    let generated = [];
+    try {
+      const seed = `${slug}-${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
+      const res = await fetch(TUTOR_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'generate',
+          grade: curr.grade,
+          count: GENERATE,
+          seed,
+          topics
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        generated = (data.questions || []).map(g => normalizeGenerated(g, curr));
+      }
+    } catch (_) { /* fall through to curriculum-only */ }
+
+    let merged = [...anchors, ...generated];
+    if (merged.length < TARGET) {
+      // Pad from the curriculum pool (no consecutive dups).
+      const padPool = shuffle(pool.slice());
+      let prevId = merged.length ? (merged[merged.length - 1].id || null) : null;
+      while (merged.length < TARGET) {
+        for (const q of padPool) {
+          if (merged.length >= TARGET) break;
+          if (q.id && q.id === prevId) continue;
+          merged.push(q);
+          prevId = q.id || null;
+        }
       }
     }
-    return session;
+    merged = shuffle(merged).slice(0, TARGET);
+    return merged;
+  }
+
+  function pickRandom(arr, n) {
+    return shuffle(arr.slice()).slice(0, n);
+  }
+
+  // Build the topic spec the LLM uses to target TEKS.
+  function buildTopicSpec(pool, meta) {
+    const byTeks = new Map();
+    for (const q of pool) {
+      const teks = q._lesson?.teks || '';
+      if (!teks) continue;
+      if (byTeks.has(teks)) continue;
+      byTeks.set(teks, {
+        teks,
+        title: q._unit?.title || '',
+        objective: q._lesson?.objective || q._lesson?.title || '',
+        sample: q.prompt || ''
+      });
+    }
+    const list = Array.from(byTeks.values());
+    // If we're scoped to a unit/lesson, the pool is already narrow;
+    // otherwise cap at 12 topics so the prompt stays focused.
+    return list.slice(0, 12);
+  }
+
+  // Convert a generator result into the shape the renderer expects.
+  function normalizeGenerated(g, curr) {
+    const unit = curr.units.find(u => u.title === g.unitTitle)
+      || curr.units.find(u => u.lessons.some(l => l.teks === g.teks))
+      || { title: g.unitTitle || 'Practice' };
+    const lesson = (unit.lessons || []).find(l => l.teks === g.teks)
+      || { teks: g.teks || '', title: g.lessonTitle || '' };
+    return {
+      id: g.id,
+      type: g.type,
+      prompt: g.prompt,
+      choices: g.choices,
+      answer: g.answer,
+      explanation: g.explanation,
+      _unit: unit,
+      _lesson: lesson,
+      _generated: true
+    };
   }
 
   function shuffle(arr) {

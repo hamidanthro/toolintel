@@ -131,6 +131,12 @@ exports.handler = async (event) => {
     return bad(400, 'Invalid JSON');
   }
 
+  // Route by action. Default action is "tutor" for backward compatibility.
+  const action = payload.action || 'tutor';
+  if (action === 'generate') {
+    return await handleGenerate(payload);
+  }
+
   if (!payload.question || payload.studentAnswer == null || payload.correctAnswer == null) {
     return bad(400, 'Missing required fields: question, studentAnswer, correctAnswer');
   }
@@ -172,3 +178,150 @@ exports.handler = async (event) => {
     return bad(502, 'AI tutor unavailable');
   }
 };
+
+// ===== Question generator =====
+// Input:  { action: "generate", grade, count, seed, topics: [{title, teks, objective, sample?}] }
+// Output: { questions: [{ id, type, prompt, choices?, answer, explanation, unitTitle, teks, lessonTitle }] }
+async function handleGenerate(payload) {
+  const grade = payload.grade;
+  const count = Math.max(1, Math.min(30, parseInt(payload.count, 10) || 25));
+  const seed = String(payload.seed || Date.now());
+  const topics = Array.isArray(payload.topics) ? payload.topics.slice(0, 20) : [];
+
+  if (topics.length === 0) {
+    return bad(400, 'Missing topics for generation');
+  }
+
+  const system = buildGeneratorSystem(grade);
+  const user = buildGeneratorUser({ count, seed, topics });
+
+  try {
+    const apiKey = await getApiKey();
+    const result = await callOpenAI(apiKey, {
+      model: MODEL,
+      messages: [
+        { role: 'system', content: system },
+        { role: 'user', content: user }
+      ],
+      // OpenAI JSON mode: forces a JSON object response.
+      response_format: { type: 'json_object' },
+      max_tokens: 3500,
+      temperature: 0.9,
+      // A small seed nudge, but JSON mode + temperature does the heavy lifting.
+      top_p: 0.95
+    });
+    const raw = result?.choices?.[0]?.message?.content || '{}';
+    let parsed;
+    try { parsed = JSON.parse(raw); } catch { parsed = {}; }
+    const questions = sanitizeQuestions(parsed.questions, count);
+    if (!questions.length) {
+      return bad(502, 'No questions generated');
+    }
+    return ok({ questions, model: MODEL, seed });
+  } catch (err) {
+    console.error('Generate error:', err.message || err);
+    return bad(502, 'Question generator unavailable');
+  }
+}
+
+function buildGeneratorSystem(grade) {
+  const gradeNum = typeof grade === 'number' ? grade : parseInt(grade, 10);
+  const gradeLabel = Number.isFinite(gradeNum) ? `Grade ${gradeNum}` : String(grade || 'elementary');
+  let reading;
+  if (!Number.isFinite(gradeNum) || gradeNum <= 3) {
+    reading = 'Vocabulary at a Grade 3 level. Sentences under 18 words. Use kid-friendly contexts: snacks, pets, recess, sports, classroom, family, money, lunch.';
+  } else if (gradeNum <= 5) {
+    reading = 'Vocabulary at a Grade 4-5 level. Sentences under 22 words. Real-world contexts: school events, sports, shopping, travel, science.';
+  } else {
+    reading = 'Middle-school vocabulary. Use proper math terms.';
+  }
+
+  return `You are an expert ${gradeLabel} math item writer for the Texas STAAR exam.
+Your job is to generate fresh, ORIGINAL practice questions that match Texas TEKS standards.
+
+READING LEVEL
+${reading}
+
+QUALITY RULES
+- Each question must clearly target the requested TEKS standard.
+- Vary the scenario, names, and numbers across questions \u2014 do NOT reuse the same setup.
+- Use diverse student names from many cultures (Maya, Diego, Aanya, Liam, Zoe, Kenji, Amara, Noah, Priya, Mateo, etc.). Never repeat the same name twice in a set.
+- Use a wide variety of contexts (sports, animals, baking, art, music, building, nature) \u2014 do not let any single context dominate.
+- Numbers must be realistic for the grade. Show no negative numbers below Grade 6.
+- Multiple-choice: exactly 4 plausible options, one correct. The correct answer must match an option byte-for-byte.
+- Numeric answers: a single number string (no units in the answer field, units in the prompt only).
+- Explanation: 1\u20132 short sentences, no markdown stars, plain text.
+
+OUTPUT FORMAT (STRICT JSON, no prose around it)
+{
+  "questions": [
+    {
+      "id": "gen-<unique>",
+      "type": "multiple_choice" | "numeric",
+      "prompt": "string",
+      "choices": ["A","B","C","D"],   // omit for numeric
+      "answer": "string",
+      "explanation": "string",
+      "teks": "3.2A",
+      "unitTitle": "Place Value & Whole Numbers",
+      "lessonTitle": "Reading and writing numbers"
+    }
+  ]
+}`;
+}
+
+function buildGeneratorUser({ count, seed, topics }) {
+  const topicLines = topics.map((t, i) =>
+    `${i + 1}. TEKS ${t.teks || '?'} \u2014 ${t.title || ''}${t.objective ? ` | objective: ${clip(t.objective, 160)}` : ''}${t.sample ? ` | sample: "${clip(t.sample, 140)}"` : ''}`
+  ).join('\n');
+
+  return `Generate exactly ${count} fresh STAAR-style practice questions.
+
+Distribute the questions across these TEKS topics (roughly even, but you may shift one or two):
+${topicLines}
+
+Mix question types: about 70% multiple_choice, about 30% numeric.
+Use seed "${seed}" to make this set DIFFERENT from any previous run \u2014 vary scenarios, names, numbers, and contexts.
+Return ONLY valid JSON matching the schema. No markdown, no commentary.`;
+}
+
+function sanitizeQuestions(arr, max) {
+  if (!Array.isArray(arr)) return [];
+  const out = [];
+  for (const q of arr) {
+    if (!q || typeof q !== 'object') continue;
+    const type = q.type === 'numeric' ? 'numeric' : 'multiple_choice';
+    const prompt = clip(String(q.prompt || '').trim(), 600);
+    const answer = clip(String(q.answer ?? '').trim(), 200);
+    const explanation = clip(String(q.explanation || '').trim(), 500);
+    if (!prompt || !answer) continue;
+
+    const item = {
+      id: clip(String(q.id || `gen-${Math.random().toString(36).slice(2, 10)}`), 60),
+      type,
+      prompt,
+      answer,
+      explanation,
+      teks: clip(String(q.teks || ''), 20),
+      unitTitle: clip(String(q.unitTitle || ''), 100),
+      lessonTitle: clip(String(q.lessonTitle || ''), 120)
+    };
+
+    if (type === 'multiple_choice') {
+      const choices = Array.isArray(q.choices) ? q.choices.map(c => clip(String(c).trim(), 100)).filter(Boolean) : [];
+      if (choices.length < 2) continue;
+      // Ensure the answer appears as one of the choices (case-insensitive match).
+      const match = choices.find(c => c.toLowerCase() === answer.toLowerCase());
+      if (!match) continue;
+      item.answer = match; // normalize to exact choice text
+      // Trim to 4 choices max, ensure answer present.
+      const uniq = Array.from(new Set(choices)).slice(0, 4);
+      if (!uniq.includes(item.answer)) uniq.push(item.answer);
+      item.choices = uniq.slice(0, 4);
+    }
+
+    out.push(item);
+    if (out.length >= max) break;
+  }
+  return out;
+}
