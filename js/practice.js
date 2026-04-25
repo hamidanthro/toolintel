@@ -115,12 +115,24 @@
     const perfPanel = document.getElementById('perf-panel');
     const restartBtn = document.getElementById('restart-btn');
 
-    restartBtn.addEventListener('click', () => {
+    restartBtn.addEventListener('click', async () => {
       const answered = i + (qbox.querySelector('.feedback') ? 1 : 0);
-      if (answered > 0 && !confirm('Start this practice over? Your progress in this session will be reset.')) return;
+      if (answered > 0) {
+        const ok = await confirmModal({
+          title: 'Restart practice?',
+          message: 'You\u2019ll go back to question 1. Your overall performance stats will stay.',
+          confirmText: 'Yes, restart',
+          cancelText: 'Keep going'
+        });
+        if (!ok) return;
+      }
       i = 0;
       correct = 0;
       show();
+      // Visual confirmation so the user can tell something happened
+      // even if they were already on question 1.
+      flashRestart();
+      showToast('Practice restarted \u2014 good luck!');
     });
 
     renderPerf(perfPanel, curr, stats);
@@ -393,6 +405,67 @@
 
   function spinnerHTML() {
     return `<span class="rainbow-spinner" aria-hidden="true"></span>`;
+  }
+
+  // Branded confirmation modal. Returns a Promise<boolean>.
+  function confirmModal({ title, message, confirmText = 'Confirm', cancelText = 'Cancel' }) {
+    return new Promise(resolve => {
+      const overlay = document.createElement('div');
+      overlay.className = 'modal-overlay';
+      overlay.innerHTML = `
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+          <h3 id="modal-title" class="modal-title">${escapeHtml(title)}</h3>
+          <p class="modal-message">${escapeHtml(message)}</p>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-ghost" data-act="cancel">${escapeHtml(cancelText)}</button>
+            <button type="button" class="btn btn-primary" data-act="confirm">${escapeHtml(confirmText)}</button>
+          </div>
+        </div>`;
+      document.body.appendChild(overlay);
+      // Allow CSS transition
+      requestAnimationFrame(() => overlay.classList.add('open'));
+
+      const close = (result) => {
+        overlay.classList.remove('open');
+        setTimeout(() => overlay.remove(), 180);
+        document.removeEventListener('keydown', onKey);
+        resolve(result);
+      };
+      const onKey = e => {
+        if (e.key === 'Escape') close(false);
+        if (e.key === 'Enter') close(true);
+      };
+      document.addEventListener('keydown', onKey);
+
+      overlay.addEventListener('click', e => {
+        if (e.target === overlay) close(false);
+      });
+      overlay.querySelector('[data-act="cancel"]').addEventListener('click', () => close(false));
+      overlay.querySelector('[data-act="confirm"]').addEventListener('click', () => close(true));
+      overlay.querySelector('[data-act="confirm"]').focus();
+    });
+  }
+
+  function showToast(text) {
+    const t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = text;
+    document.body.appendChild(t);
+    requestAnimationFrame(() => t.classList.add('show'));
+    setTimeout(() => {
+      t.classList.remove('show');
+      setTimeout(() => t.remove(), 250);
+    }, 2000);
+  }
+
+  function flashRestart() {
+    const main = document.querySelector('.practice-main');
+    if (!main) return;
+    main.classList.remove('flash');
+    // Reflow to retrigger animation
+    void main.offsetWidth;
+    main.classList.add('flash');
+    setTimeout(() => main.classList.remove('flash'), 700);
   }
 
   // ---- Performance tracking ----

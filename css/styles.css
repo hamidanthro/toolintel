@@ -481,6 +481,95 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
   .performance-panel { position: static; }
 }
 
+/* Branded modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  padding: 20px;
+}
+.modal-overlay.open { opacity: 1; }
+.modal-card {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 26px 26px 20px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.25);
+  transform: translateY(8px) scale(0.98);
+  transition: transform 0.2s ease;
+  border-top: 4px solid var(--amber);
+}
+.modal-overlay.open .modal-card { transform: translateY(0) scale(1); }
+.modal-title {
+  margin: 0 0 8px;
+  color: var(--navy);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+.modal-message {
+  margin: 0 0 20px;
+  color: var(--text);
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover {
+  background: var(--bg);
+  color: var(--navy);
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--navy);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.35);
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  z-index: 1100;
+  pointer-events: none;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Restart flash */
+@keyframes restart-flash {
+  0%   { background: rgba(245, 158, 11, 0); }
+  30%  { background: rgba(245, 158, 11, 0.18); }
+  100% { background: rgba(245, 158, 11, 0); }
+}
+.practice-main.flash {
+  animation: restart-flash 0.7s ease;
+  border-radius: var(--radius);
+}
+
 @media (max-width: 600px) {
   .hero { padding: 48px 0; }
   .hero h1 { font-size: 1.75rem; }
