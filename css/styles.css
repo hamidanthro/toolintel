@@ -601,3 +601,196 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
   .nav { gap: 12px; }
   .q-prompt { font-size: 1.05rem; }
 }
+
+/* ========== Auth (local profiles) ========== */
+.user-slot { display: flex; align-items: center; gap: 8px; position: relative; }
+
+.user-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px 5px 5px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  color: var(--navy);
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.user-pill:hover { background: var(--bg); border-color: var(--amber); }
+.user-pill svg { color: var(--muted); }
+.user-pill-name { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.user-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.15);
+  padding: 6px;
+  min-width: 170px;
+  z-index: 50;
+}
+.user-menu button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 0;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: var(--text);
+  cursor: pointer;
+}
+.user-menu button:hover { background: var(--bg); color: var(--navy); }
+
+.user-signin { padding: 8px 16px; font-size: 0.85rem; }
+
+/* Profile avatar */
+.profile-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+.profile-avatar.small { width: 26px; height: 26px; font-size: 0.8rem; }
+
+/* Auth modal extras */
+.auth-modal .modal-card { max-width: 440px; }
+.auth-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 14px 0 6px;
+}
+.auth-input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 1rem;
+  font-family: inherit;
+  background: var(--bg);
+  color: var(--navy);
+  box-sizing: border-box;
+}
+.auth-input:focus {
+  outline: none;
+  border-color: var(--amber);
+  background: var(--surface);
+}
+.pin-input {
+  letter-spacing: 0.6em;
+  text-align: center;
+  font-size: 1.4rem;
+  padding: 14px;
+}
+.auth-help { color: var(--muted); font-size: 0.78rem; margin: 4px 0 0; }
+.auth-error { color: var(--error); font-size: 0.85rem; margin: 8px 0 0; }
+
+.modal-full { width: 100%; }
+.modal-tight { margin-top: 8px; }
+.modal-divider {
+  display: flex;
+  align-items: center;
+  margin: 18px 0 12px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.modal-divider::before,
+.modal-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.modal-divider span { padding: 0 12px; }
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+  margin-top: 6px;
+}
+.profile-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 10px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+  position: relative;
+}
+.profile-tile:hover {
+  border-color: var(--amber);
+  transform: translateY(-2px);
+}
+.profile-tile .profile-avatar { width: 42px; height: 42px; font-size: 1.1rem; }
+.profile-tile .profile-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--navy);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.profile-tile .profile-lock {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.manage-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+  max-height: 280px;
+  overflow: auto;
+}
+.manage-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: var(--bg);
+  border-radius: 10px;
+}
+.manage-row .profile-name { flex: 1; color: var(--navy); font-weight: 600; font-size: 0.9rem; }
+.btn-link {
+  background: none;
+  border: 0;
+  padding: 4px 8px;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-decoration: underline;
+}
+.btn-link.danger { color: var(--error); }
+
+@media (max-width: 600px) {
+  .user-pill-name { max-width: 70px; }
+  .nav { gap: 14px; }
+}

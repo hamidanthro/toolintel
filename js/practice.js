@@ -580,7 +580,15 @@
 
   // ---- Performance tracking ----
   const Stats = {
-    key(slug) { return `staar-stats:${slug}`; },
+    key(slug) {
+      // If the auth module is loaded, namespace stats per user so multiple
+      // students on one device don't share progress. Otherwise fall back
+      // to the legacy single-user key for backward compatibility.
+      if (window.STAARAuth && typeof window.STAARAuth.statsKey === 'function') {
+        return window.STAARAuth.statsKey(slug);
+      }
+      return `staar-stats:${slug}`;
+    },
     load(slug) {
       try {
         const raw = localStorage.getItem(this.key(slug));
