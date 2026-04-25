@@ -1215,3 +1215,23 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
   .leaderboard li { grid-template-columns: 44px 1fr auto; }
   .leaderboard .lb-correct { display: none; }
 }
+
+/* Dashboard polish */
+.dash-welcome { padding: 36px 0 18px; position: relative; }
+.dash-welcome-emoji {
+  font-size: 2.4rem;
+  display: inline-block;
+  margin-bottom: 4px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+.dash-welcome h1 {
+  background: linear-gradient(135deg, var(--navy) 0%, #2563eb 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 2.2rem;
+}
+.dash-card { transition: transform 0.15s ease, box-shadow 0.15s ease; }
+.dash-card-stat:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(15,23,42,0.08); }
+.dash-card-board { background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); }
+.dash-board-head h3 { font-size: 1.15rem; }
