@@ -13,6 +13,7 @@
     const cap = wallet.capCents || 10000;
     const pct = Math.min(100, Math.round((wallet.lifetimeCents / cap) * 100));
     const remaining = Math.max(0, cap - wallet.lifetimeCents);
+    const broke = (wallet.balanceCents || 0) === 0;
     summaryEl.innerHTML = `
       <div class="wallet-summary-stat">
         <div class="label">Wallet</div>
@@ -28,7 +29,8 @@
           <span>${Auth.formatCents(remaining)} left</span>
         </div>
         <div class="wallet-progress"><div class="wallet-progress-fill" style="width:${pct}%"></div></div>
-      </div>`;
+      </div>
+      ${broke ? `<a href="practice.html" class="earn-cta">\u2728 Practice to earn cents</a>` : ''}`;
   }
 
   async function load() {
@@ -54,22 +56,34 @@
     }
     root.innerHTML = toys.map(t => {
       const canAfford = balance >= t.priceCents;
-      const stockNote = t.stock != null ? `<span class="toy-stock">${t.stock} left</span>` : '<span class="toy-stock">In stock</span>';
-      const img = t.imageUrl
-        ? `<img class="toy-img" src="${escapeHtml(t.imageUrl)}" alt="${escapeHtml(t.name)}" onerror="this.outerHTML='<div class=\\'toy-img-placeholder\\'>\\ud83c\\udf81</div>'" />`
+      const need = t.priceCents - balance;
+      const stockLow = t.stock != null && t.stock <= 3;
+      const stockNote = t.stock != null
+        ? `<span class="toy-stock${stockLow ? ' low' : ''}">${t.stock} left</span>`
+        : '<span class="toy-stock">In stock</span>';
+      const looksBroken = t.imageUrl && /placehold\.co|placeholder/i.test(t.imageUrl);
+      const img = (t.imageUrl && !looksBroken)
+        ? `<img class="toy-img" src="${escapeHtml(t.imageUrl)}" alt="${escapeHtml(t.name)}" loading="lazy" onerror="this.outerHTML='<div class=\\'toy-img-placeholder\\'>\u{1F381}</div>'" />`
         : `<div class="toy-img-placeholder">\u{1F381}</div>`;
+      const desc = (t.description || '').trim();
+      const buyLabel = canAfford
+        ? 'Buy with cents'
+        : `Need ${Auth.formatCents(need)} more`;
       return `
-        <article class="toy-card" data-toy-id="${escapeHtml(t.toyId)}">
-          ${img}
+        <article class="toy-card${canAfford ? ' affordable' : ''}" data-toy-id="${escapeHtml(t.toyId)}">
+          <div class="toy-img-wrap">
+            ${img}
+            <span class="toy-price-badge">${Auth.formatCents(t.priceCents)}</span>
+          </div>
           <div class="toy-body">
             <h3 class="toy-name">${escapeHtml(t.name)}</h3>
-            <p class="toy-desc">${escapeHtml(t.description || '')}</p>
+            ${desc ? `<p class="toy-desc">${escapeHtml(desc)}</p>` : ''}
             <div class="toy-row">
-              <span class="toy-price">${Auth.formatCents(t.priceCents)}</span>
               ${stockNote}
+              ${canAfford ? '<span class="toy-stock can">\u2713 You can afford this!</span>' : ''}
             </div>
-            <button class="btn btn-primary toy-buy" ${canAfford ? '' : 'disabled'}>
-              ${canAfford ? 'Buy with cents' : 'Not enough cents'}
+            <button class="btn ${canAfford ? 'btn-primary' : 'btn-ghost'} toy-buy" ${canAfford ? '' : 'disabled'}>
+              ${buyLabel}
             </button>
           </div>
         </article>`;
