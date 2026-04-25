@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>STAAR Math Prep — Texas Math Test Preparation</title>
   <meta name="description" content="Practice and master the Texas STAAR math test. Grade-by-grade lessons, practice problems, and full-length tests for grades 3–8 and Algebra I." />
-  <link rel="stylesheet" href="css/styles.css?v=20260425y" />
+  <link rel="stylesheet" href="css/styles.css?v=20260425z" />
 </head>
 <body>
   <header class="site-header">
@@ -21,6 +21,10 @@
 
   <section class="hero" id="hero-anon" hidden>
     <div class="container">
+      <div class="hero-live-pill" id="hero-live" hidden>
+        <span class="hero-live-dot" aria-hidden="true"></span>
+        <span id="hero-live-text">Loading…</span>
+      </div>
       <h1>Master the Texas STAAR math test.</h1>
       <p>Targeted practice aligned to the TEKS for grades 3–8 and Algebra I. Build skills, take full-length tests, and track your progress.</p>
       <a href="grades.html" class="btn btn-primary">Start practicing</a>
@@ -270,14 +274,41 @@
       }, 30000);
     }
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') refreshLeaderboard();
+      if (document.visibilityState === 'visible') { refreshLeaderboard(); refreshLiveCount(); }
     });
-    window.addEventListener('focus', refreshLeaderboard);
+    window.addEventListener('focus', () => { refreshLeaderboard(); refreshLiveCount(); });
 
-    window.onSTAARLogin = () => { showDashboard(); startLeaderboardPolling(); };
+    // Live student count on the hero (guests only).
+    async function refreshLiveCount() {
+      const pill = document.getElementById('hero-live');
+      const text = document.getElementById('hero-live-text');
+      if (!pill || !text) return;
+      try {
+        const r = await window.STAARAuth.api('liveCount', {});
+        const online = r.online || 0;
+        const total = r.total || 0;
+        if (online > 0) {
+          text.textContent = `${online.toLocaleString()} student${online === 1 ? '' : 's'} practicing right now`;
+        } else if (total > 0) {
+          text.textContent = `${total.toLocaleString()} student${total === 1 ? '' : 's'} have joined — be next`;
+        } else {
+          text.textContent = 'Be the first to start practicing';
+        }
+        pill.hidden = false;
+      } catch (_) { /* offline */ }
+    }
+    let _liveInterval = null;
+    function startLivePolling() {
+      if (_liveInterval) return;
+      _liveInterval = setInterval(() => {
+        if (document.visibilityState === 'visible') refreshLiveCount();
+      }, 60000);
+    }
+
+    window.onSTAARLogin = () => { showDashboard(); startLeaderboardPolling(); refreshLiveCount(); };
     document.addEventListener('DOMContentLoaded', () => {
       // Wait a tick for auth.js to restore session, then render.
-      setTimeout(() => { showDashboard(); startLeaderboardPolling(); }, 0);
+      setTimeout(() => { showDashboard(); startLeaderboardPolling(); refreshLiveCount(); startLivePolling(); }, 0);
     });
   </script>
 </body>

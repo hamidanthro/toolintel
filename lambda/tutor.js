@@ -172,6 +172,7 @@ exports.handler = async (event) => {
   if (action === 'lose')           return await handleLose(payload);
   if (action === 'markMastered')   return await handleMarkMastered(payload);
   if (action === 'leaderboard')    return await handleLeaderboard(payload);
+  if (action === 'liveCount')      return await handleLiveCount(payload);
   if (action === 'dashboard')      return await handleDashboard(payload);
   if (action === 'setGrade')       return await handleSetGrade(payload);
   if (action === 'getWallet')      return await handleGetWallet(payload);
@@ -435,6 +436,15 @@ async function verifyToken(token) {
 async function authedUser(payload) {
   const auth = await verifyToken(payload.token);
   if (!auth) return null;
+  // Fire-and-forget: stamp lastSeenAt so the live-count endpoint can see who's active.
+  if (auth.username) {
+    ddb.send(new UpdateCommand({
+      TableName: USERS_TABLE,
+      Key: { username: auth.username },
+      UpdateExpression: 'SET lastSeenAt = :ts',
+      ExpressionAttributeValues: { ':ts': Date.now() }
+    })).catch(() => {});
+  }
   return auth; // { userId, username }
 }
 
@@ -1069,6 +1079,27 @@ async function handleLeaderboard(payload) {
   const me = meRow >= 0 ? { rank: meRow + 1, ...rows[meRow] } : null;
 
   return ok({ top, me, totalUsers: rows.length });
+}
+
+// Public endpoint: how many students are active right now.
+// Active = lastSeenAt within the last 10 minutes.
+async function handleLiveCount(_payload) {
+  const cutoff = Date.now() - 10 * 60 * 1000;
+  try {
+    const r = await ddb.send(new ScanCommand({
+      TableName: USERS_TABLE,
+      ProjectionExpression: 'lastSeenAt'
+    }));
+    const items = r.Items || [];
+    const total = items.length;
+    const online = items.filter(it => {
+      const ts = parseInt(it.lastSeenAt, 10);
+      return Number.isFinite(ts) && ts >= cutoff;
+    }).length;
+    return ok({ online, total });
+  } catch (_) {
+    return ok({ online: 0, total: 0 });
+  }
 }
 
 async function handleDashboard(payload) {

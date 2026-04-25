@@ -68,6 +68,34 @@ a:hover { text-decoration: underline; }
 .hero h1 { font-size: 2.4rem; margin: 0 0 12px; }
 .hero p { font-size: 1.1rem; opacity: 0.92; margin: 0 0 24px; max-width: 640px; }
 
+/* Live student count pill */
+.hero-live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  margin: 0 0 18px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
+}
+.hero-live-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55);
+  animation: hero-live-pulse 1.8s ease-out infinite;
+}
+@keyframes hero-live-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55); }
+  70%  { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+
 /* Buttons */
 .btn {
   display: inline-block;
@@ -1316,3 +1344,52 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
   transition: background 0.15s ease, transform 0.15s ease;
 }
 .toy-edit:hover { background: var(--blue); transform: translateY(-1px); }
+
+/* "How it works" grid */
+.howit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 18px;
+}
+.howit-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px 22px 18px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+.howit-card:hover {
+  box-shadow: 0 6px 22px rgba(15, 23, 42, 0.08);
+  transform: translateY(-2px);
+}
+.howit-icon {
+  width: 44px; height: 44px;
+  display: grid; place-items: center;
+  font-size: 1.4rem;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  margin-bottom: 12px;
+}
+.howit-card h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 0 0 8px;
+  letter-spacing: -0.01em;
+}
+.howit-card p {
+  font-size: 0.95rem;
+  color: var(--navy);
+  margin: 0 0 10px;
+  line-height: 1.5;
+}
+.howit-card ul {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+.howit-card ul li { margin-bottom: 4px; }
+.howit-card ul li strong, .howit-card ul li em { color: var(--navy); }
