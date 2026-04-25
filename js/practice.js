@@ -183,9 +183,9 @@
 
         tutorBtn.addEventListener('click', async () => {
           tutorBtn.disabled = true;
-          tutorBtn.textContent = 'Thinking…';
+          tutorBtn.innerHTML = `${spinnerHTML()} <span>Thinking…</span>`;
           tutorOut.hidden = false;
-          tutorOut.textContent = '';
+          tutorOut.innerHTML = `<div class="tutor-msg loading">${spinnerHTML()}<span>Thinking…</span></div>`;
           try {
             const reply = await callTutor({
               grade: curr.grade,
@@ -215,7 +215,7 @@
           if (!text) return;
           tutorQ.value = '';
           tutorOut.innerHTML += `<div class="tutor-msg user"><strong>You:</strong> ${escapeHtml(text)}</div>`;
-          tutorOut.innerHTML += `<div class="tutor-msg loading">Thinking…</div>`;
+          tutorOut.innerHTML += `<div class="tutor-msg loading">${spinnerHTML()}<span>Thinking…</span></div>`;
           history.push({ role: 'user', content: text });
           try {
             const reply = await callTutor({
@@ -300,12 +300,62 @@
   }
 
   function formatTutor(text) {
-    // basic markdown-ish: paragraphs & line breaks
-    const safe = escapeHtml(text);
-    return safe
-      .split(/\n\n+/)
-      .map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`)
-      .join('');
+    if (!text) return '';
+    // Strip markdown headings (## Heading)
+    let t = String(text).replace(/^\s{0,3}#{1,6}\s+/gm, '');
+    // Normalize line endings
+    t = t.replace(/\r\n/g, '\n');
+
+    const lines = t.split('\n');
+    const html = [];
+    let listType = null; // 'ol' | 'ul' | null
+    let para = [];
+
+    const flushPara = () => {
+      if (para.length) {
+        html.push(`<p>${para.join(' ')}</p>`);
+        para = [];
+      }
+    };
+    const closeList = () => {
+      if (listType) { html.push(`</${listType}>`); listType = null; }
+    };
+
+    for (const raw of lines) {
+      const line = raw.trim();
+      if (!line) { flushPara(); closeList(); continue; }
+
+      const ol = line.match(/^(\d+)[.)]\s+(.*)$/);
+      const ul = line.match(/^[-*•]\s+(.*)$/);
+
+      if (ol) {
+        flushPara();
+        if (listType !== 'ol') { closeList(); html.push('<ol>'); listType = 'ol'; }
+        html.push(`<li>${inline(ol[2])}</li>`);
+      } else if (ul) {
+        flushPara();
+        if (listType !== 'ul') { closeList(); html.push('<ul>'); listType = 'ul'; }
+        html.push(`<li>${inline(ul[1])}</li>`);
+      } else {
+        closeList();
+        para.push(inline(line));
+      }
+    }
+    flushPara();
+    closeList();
+    return html.join('');
+  }
+
+  // Inline markdown: **bold**, *italic*, `code`. Escapes HTML first.
+  function inline(s) {
+    let out = escapeHtml(s);
+    // bold **text**
+    out = out.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
+    // italic *text* (single star, not part of **)
+    out = out.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, '$1<em>$2</em>');
+    // inline code `text`
+    out = out.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+    return out;
   }
 
   function escapeHtml(s) {
@@ -314,6 +364,10 @@
     }[c]));
   }
   function escapeAttr(s) { return escapeHtml(s); }
+
+  function spinnerHTML() {
+    return `<span class="rainbow-spinner" aria-hidden="true"></span>`;
+  }
 
   // ---- Performance tracking ----
   const Stats = {
