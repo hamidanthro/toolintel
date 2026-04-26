@@ -93,7 +93,7 @@ function buildSystemPrompt(grade) {
     reading = `The student is a middle-schooler. Use clear language and proper math vocabulary, but define new terms in plain words. No emojis.`;
   }
 
-  return `You are a friendly, patient math tutor for a ${gradeLabel} student preparing for the Texas STAAR math test.
+  return `You are a friendly, patient tutor for a ${gradeLabel} student preparing for their state's standardized test (such as STAAR in Texas, TCAP in Tennessee, FSA in Florida, or another state assessment).
 
 READING LEVEL
 ${reading}
