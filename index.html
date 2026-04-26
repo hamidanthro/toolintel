@@ -8,9 +8,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260427f" />
+  <link rel="stylesheet" href="css/styles.css?v=20260427g" />
 </head>
-<body>
+<body class="home-page">
   <header class="site-header">
     <div class="container">
       <a href="index.html" class="brand"><svg class="brand-logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><defs><linearGradient id="starGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fde047"/><stop offset="55%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient></defs><path d="M16 2.6 19.6 11.5 29.2 12.2 21.8 18.4 24.2 27.6 16 22.4 7.8 27.6 10.2 18.4 2.8 12.2 12.4 11.5 Z" fill="url(#starGrad)" stroke="rgba(255,255,255,0.18)" stroke-width="0.6" stroke-linejoin="round"/><circle cx="25" cy="6" r="1.6" fill="#fde047" opacity="0.95"/><circle cx="25" cy="6" r="3" fill="#fde047" opacity="0.25"/></svg><span class="brand-text">Star<span class="brand-text-accent">Test</span></span></a>
@@ -107,70 +107,156 @@
     <div class="hero-bottom-fade" aria-hidden="true"></div>
   </section>
 
-  <section id="dashboard" hidden>
-    <div class="container">
-      <div class="dash-welcome">
-        <div class="dash-welcome-emoji" aria-hidden="true">🌟</div>
-        <h1 id="dash-greeting">Welcome!</h1>
-        <p class="dash-sub" id="dash-sub">Here's how you're doing.</p>
-      </div>
-      <div class="dash-grid">
-        <div class="dash-card dash-card-stat">
-          <div class="dash-stat-label">Lifetime correct answers</div>
-          <div class="dash-stat-value" id="dash-correct">—</div>
-          <div class="dash-stat-foot" id="dash-correct-foot"></div>
+  <section id="dashboard" class="dashboard-section" hidden>
+    <div class="dashboard-inner">
+
+      <div class="dashboard-welcome">
+        <div class="welcome-content">
+          <span class="welcome-eyebrow">
+            <span class="eyebrow-emoji">⭐</span>
+            Lifetime stats
+          </span>
+          <h1 id="dash-greeting" class="welcome-title">Welcome back</h1>
+          <p id="dash-sub" class="welcome-subtitle">Here's how you're doing.</p>
         </div>
-        <div class="dash-card dash-card-stat">
-          <div class="dash-stat-label">Accuracy</div>
-          <div class="dash-stat-value" id="dash-acc">—</div>
-          <div class="dash-stat-foot" id="dash-acc-foot"></div>
-        </div>
-        <div class="dash-card dash-card-stat">
-          <div class="dash-stat-label">Wallet</div>
-          <div class="dash-stat-value" id="dash-wallet">—</div>
-          <div class="dash-stat-foot"><a href="marketplace.html" style="color:var(--blue);">Spend in marketplace →</a></div>
-        </div>
-        <div class="dash-card dash-card-stat">
-          <div class="dash-stat-label">Time practicing</div>
-          <div class="dash-stat-value" id="dash-time">—</div>
-          <div class="dash-stat-foot" id="dash-time-foot">lifetime</div>
+        <div class="welcome-actions">
+          <a href="grades.html" class="btn btn-primary btn-primary--large dash-practice-cta">
+            Practice now
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <path d="M3 7H11M11 7L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
         </div>
       </div>
-      <div class="dash-main">
-        <div class="dash-side">
-          <a href="grades.html" class="btn btn-primary dash-practice-cta">Practice now →</a>
-          <div class="dash-card dash-side-card">
-            <h3 class="dash-side-title">Your grade and beyond</h3>
-            <p class="dash-side-sub">Pick a grade to start practicing.</p>
-            <div class="grade-grid grade-grid-compact" id="grade-grid"></div>
-          </div>
-        </div>
-        <div class="dash-card dash-card-board">
-          <div class="dash-board-head">
-            <h3>🌱 Your journey</h3>
-            <span class="dash-board-sub" id="dash-board-sub"></span>
-          </div>
-          <div class="journey-grid">
-            <div class="journey-tile journey-streak">
-              <div class="journey-tile-label">Practice streak</div>
-              <div class="journey-tile-value"><span id="dash-streak">0</span> <span class="journey-tile-unit">days</span></div>
-              <div class="journey-tile-foot" id="dash-streak-foot">Practice today to start a streak</div>
-            </div>
-            <div class="journey-tile journey-today">
-              <div class="journey-tile-label">Today</div>
-              <div class="journey-tile-value"><span id="dash-today-correct">0</span> <span class="journey-tile-unit">correct</span></div>
-              <div class="journey-tile-foot" id="dash-today-foot">Aim for 5 today 🌟</div>
-            </div>
-            <div class="journey-tile journey-best">
-              <div class="journey-tile-label">Personal best</div>
-              <div class="journey-tile-value"><span id="dash-best">0</span> <span class="journey-tile-unit">in a row</span></div>
-              <div class="journey-tile-foot">Beat your own record</div>
+
+      <div class="stats-grid">
+        <article class="stat-card">
+          <div class="stat-card-header">
+            <span class="stat-card-label">Lifetime correct</span>
+            <div class="stat-card-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
             </div>
           </div>
-          <div class="journey-cta">
-            <a href="grades.html" class="btn btn-primary">Keep going →</a>
+          <div class="stat-card-value" id="dash-correct">—</div>
+          <div class="stat-card-meta" id="dash-correct-foot"></div>
+        </article>
+
+        <article class="stat-card stat-card--accuracy">
+          <div class="stat-card-header">
+            <span class="stat-card-label">Accuracy</span>
+            <div class="stat-card-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>
+            </div>
           </div>
-        </div>
+          <div class="stat-card-value" id="dash-acc">—</div>
+          <div class="stat-card-meta" id="dash-acc-foot"></div>
+        </article>
+
+        <article class="stat-card stat-card--wallet">
+          <div class="stat-card-header">
+            <span class="stat-card-label">Wallet balance</span>
+            <div class="stat-card-icon stat-card-icon--gold">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9.5h4.5a2 2 0 010 4H9.5a2 2 0 000 4H14"/></svg>
+            </div>
+          </div>
+          <div class="stat-card-value" id="dash-wallet">—</div>
+          <a href="marketplace.html" class="stat-card-link">
+            Spend in marketplace
+            <svg width="10" height="10" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7H11M11 7L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-card-header">
+            <span class="stat-card-label">Time practicing</span>
+            <div class="stat-card-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            </div>
+          </div>
+          <div class="stat-card-value" id="dash-time">—</div>
+          <div class="stat-card-meta" id="dash-time-foot">lifetime</div>
+        </article>
+      </div>
+
+      <div class="dashboard-grid">
+
+        <section class="dashboard-panel grades-panel">
+          <div class="dashboard-panel-header">
+            <h3 class="dashboard-panel-title">Your grade and beyond</h3>
+            <p class="dashboard-panel-subtitle">Pick a grade to start practicing.</p>
+          </div>
+          <div class="grade-grid grade-grid-compact" id="grade-grid"></div>
+        </section>
+
+        <section class="dashboard-panel journey-panel">
+          <div class="dashboard-panel-header journey-header">
+            <div>
+              <h3 class="dashboard-panel-title">
+                <span class="journey-icon" aria-hidden="true">🌱</span>
+                Your journey
+              </h3>
+              <p class="dashboard-panel-subtitle" id="dash-board-sub">Start fresh today — your first streak is one question away.</p>
+            </div>
+          </div>
+
+          <div class="journey-stats">
+            <div class="journey-stat journey-stat--streak">
+              <div class="journey-stat-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2c0 5-4 6-4 11a4 4 0 008 0c0-2-1-3-1-5 0 0 3 2 3 5a6 6 0 11-12 0c0-6 6-7 6-11z"/></svg>
+              </div>
+              <div class="journey-stat-content">
+                <span class="journey-stat-label">Practice streak</span>
+                <div class="journey-stat-value"><span id="dash-streak">0</span><span class="journey-stat-unit">days</span></div>
+                <span class="journey-stat-hint" id="dash-streak-foot">Practice today to start a streak</span>
+              </div>
+            </div>
+
+            <div class="journey-stat">
+              <div class="journey-stat-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>
+              </div>
+              <div class="journey-stat-content">
+                <span class="journey-stat-label">Today's correct</span>
+                <div class="journey-stat-value"><span id="dash-today-correct">0</span><span class="journey-stat-unit">correct</span></div>
+                <span class="journey-stat-hint" id="dash-today-foot">Aim for 5 today ⭐</span>
+              </div>
+            </div>
+
+            <div class="journey-stat">
+              <div class="journey-stat-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/><path d="M4 22h16"/><path d="M18 2H6v7a6 6 0 0012 0V2z"/></svg>
+              </div>
+              <div class="journey-stat-content">
+                <span class="journey-stat-label">Personal best</span>
+                <div class="journey-stat-value"><span id="dash-best">0</span><span class="journey-stat-unit">in a row</span></div>
+                <span class="journey-stat-hint">Beat your own record</span>
+              </div>
+            </div>
+          </div>
+
+          <a href="grades.html" class="btn btn-primary journey-cta">
+            Keep going
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7H11M11 7L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </section>
+
+        <section class="dashboard-panel activity-panel">
+          <div class="dashboard-panel-header activity-header">
+            <div>
+              <h3 class="dashboard-panel-title">Recent activity</h3>
+              <p class="dashboard-panel-subtitle">A live feed of your last few questions.</p>
+            </div>
+            <a href="grades.html" class="panel-link">Practice more →</a>
+          </div>
+          <div class="activity-empty">
+            <div class="activity-empty-icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            </div>
+            <p class="activity-empty-title">Your activity feed will show up here</p>
+            <p class="activity-empty-text">Answer a few questions and your most recent ones will appear right here with points earned.</p>
+          </div>
+        </section>
+
       </div>
     </div>
   </section>
@@ -450,7 +536,7 @@
       gradeSection.hidden = true;
       renderGradeGrid();
 
-      document.getElementById('dash-greeting').textContent = `Welcome, ${u.displayName || u.username}!`;
+      document.getElementById('dash-greeting').innerHTML = `Welcome back, <span class="welcome-name">${escapeHtmlSafe(u.displayName || u.username)}</span>`;
 
       try {
         const d = await window.STAARAuth.api('dashboard', { token: window.STAARAuth.token() });
