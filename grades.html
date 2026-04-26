@@ -3,57 +3,249 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Grades — StarTest</title>
-  <link rel="stylesheet" href="css/styles.css?v=20260427f" />
+  <title>Pick a grade — StarTest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css?v=20260427i" />
 </head>
-<body>
+<body class="practice-select-page">
   <header class="site-header">
     <div class="container">
       <a href="index.html" class="brand"><svg class="brand-logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><defs><linearGradient id="starGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fde047"/><stop offset="55%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient></defs><path d="M16 2.6 19.6 11.5 29.2 12.2 21.8 18.4 24.2 27.6 16 22.4 7.8 27.6 10.2 18.4 2.8 12.2 12.4 11.5 Z" fill="url(#starGrad)" stroke="rgba(255,255,255,0.18)" stroke-width="0.6" stroke-linejoin="round"/><circle cx="25" cy="6" r="1.6" fill="#fde047" opacity="0.95"/><circle cx="25" cy="6" r="3" fill="#fde047" opacity="0.25"/></svg><span class="brand-text">Star<span class="brand-text-accent">Test</span></span></a>
       <nav class="nav">
         <a href="index.html">Home</a>
-        <a href="marketplace.html">Toys</a> <a href="about.html">How it works</a>
+        <a href="marketplace.html">Toys</a>
+        <a href="about.html">How it works</a>
       </nav>
       <div id="user-slot" class="user-slot"></div>
     </div>
   </header>
 
-  <section>
-    <div class="container">
-      <h2 id="grade-heading">All grades and levels</h2>
-      <div class="grade-grid" id="grade-grid"></div>
-    </div>
-  </section>
+  <main class="practice-select-main">
+    <div class="practice-select-inner">
 
-  <footer class="site-footer">
-    <div class="container">&copy; <span id="year"></span> StarTest.</div>
+      <header class="practice-select-header">
+        <a href="index.html" class="back-link">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M11 7H3M3 7L6.5 3.5M3 7L6.5 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Back to dashboard
+        </a>
+
+        <span class="practice-eyebrow">
+          <span class="eyebrow-emoji">🎯</span>
+          Pick a grade to practice
+        </span>
+
+        <h1 class="practice-select-title">
+          What are we<br>
+          <span class="title-accent">practicing today?</span>
+        </h1>
+
+        <p class="practice-select-subtitle">
+          Most kids practice their current grade — but you can level up or warm up with any grade you've unlocked.
+        </p>
+
+        <div class="grade-recommendation" id="grade-recommendation" hidden>
+          <div class="recommendation-icon">⭐</div>
+          <div class="recommendation-content">
+            <span class="recommendation-label">Recommended for you</span>
+            <p class="recommendation-text" id="recommendation-text">Based on your progress, <strong>Grade 3 Math</strong> is your sweet spot today.</p>
+          </div>
+          <a href="practice.html" class="btn btn-primary recommendation-cta" id="recommendation-cta">
+            Start practicing
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <path d="M3 7H11M11 7L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
+      </header>
+
+      <div class="practice-grid-header">
+        <h2 class="practice-grid-title">All grades</h2>
+        <p class="practice-grid-subtitle">Pick any grade — you can switch anytime during practice.</p>
+      </div>
+
+      <div class="grade-grid practice-grid" id="grade-grid"></div>
+
+      <aside class="practice-tips">
+        <h3 class="practice-tips-title">Tips to get the most out of practice</h3>
+        <div class="tips-grid">
+          <div class="tip-card">
+            <div class="tip-icon">⏱</div>
+            <h4 class="tip-card-title">Aim for 10 questions</h4>
+            <p class="tip-card-text">A daily 10-question session is the sweet spot for retention without burnout.</p>
+          </div>
+          <div class="tip-card">
+            <div class="tip-icon">🤔</div>
+            <h4 class="tip-card-title">Wrong answers are OK</h4>
+            <p class="tip-card-text">The AI tutor steps in to walk you through anything you miss — that's how you actually learn.</p>
+          </div>
+          <div class="tip-card">
+            <div class="tip-icon">🪙</div>
+            <h4 class="tip-card-title">Streaks earn bonus points</h4>
+            <p class="tip-card-text">Practicing every day multiplies your point earnings — your wallet grows faster.</p>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand-col">
+          <a href="/" class="footer-logo">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+              <path d="M14 2L17.5 10L26 11L19.5 17L21.5 25.5L14 21L6.5 25.5L8.5 17L2 11L10.5 10L14 2Z"
+                    fill="url(#footerStarGradient)"
+                    stroke="rgba(251, 191, 36, 0.4)"
+                    stroke-width="0.5"/>
+              <defs>
+                <linearGradient id="footerStarGradient" x1="2" y1="2" x2="26" y2="26" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#fde68a"/>
+                  <stop offset="0.5" stop-color="#fbbf24"/>
+                  <stop offset="1" stop-color="#f59e0b"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <span>Star<span class="logo-accent">Test</span></span>
+          </a>
+          <p class="footer-tagline">AI-powered test prep for every state, every grade. Built for kids who want to win.</p>
+          <div class="footer-trust-row">
+            <span class="footer-trust-pill"><span class="trust-dot"></span> All 50 states supported</span>
+          </div>
+        </div>
+        <div class="footer-nav-col">
+          <h4 class="footer-col-title">Product</h4>
+          <a href="practice.html" class="footer-link">Practice</a>
+          <a href="marketplace.html" class="footer-link">Toy Marketplace</a>
+          <a href="grades.html" class="footer-link">All grades</a>
+          <a href="about.html" class="footer-link">How it works</a>
+        </div>
+        <div class="footer-nav-col">
+          <h4 class="footer-col-title">For Parents</h4>
+          <a href="settings.html" class="footer-link">Parent dashboard</a>
+          <a href="#" class="footer-link">Safety &amp; privacy</a>
+          <a href="#" class="footer-link">Track orders</a>
+          <a href="#" class="footer-link">Support</a>
+        </div>
+        <div class="footer-nav-col">
+          <h4 class="footer-col-title">Company</h4>
+          <a href="about.html" class="footer-link">About</a>
+          <a href="#" class="footer-link">Blog</a>
+          <a href="#" class="footer-link">Contact</a>
+          <a href="#" class="footer-link">Careers</a>
+        </div>
+        <div class="footer-nav-col">
+          <h4 class="footer-col-title">Legal</h4>
+          <a href="#" class="footer-link">Terms</a>
+          <a href="#" class="footer-link">Privacy</a>
+          <a href="#" class="footer-link">COPPA</a>
+          <a href="#" class="footer-link">Cookies</a>
+        </div>
+      </div>
+      <div class="footer-divider"></div>
+      <div class="footer-bottom">
+        <div class="footer-copy">&copy; <span id="year"></span> StarTest. All rights reserved.</div>
+        <div class="footer-meta">
+          <span class="footer-meta-item">Made for kids who want to win</span>
+          <span class="footer-meta-divider">&middot;</span>
+          <span class="footer-meta-item">San Antonio, TX</span>
+        </div>
+        <div class="footer-social">
+          <a href="#" class="footer-social-link" aria-label="Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+          <a href="#" class="footer-social-link" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
+          <a href="#" class="footer-social-link" aria-label="TikTok"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.84-.1z"/></svg></a>
+        </div>
+      </div>
+    </div>
   </footer>
 
   <script src="js/prefs.js?v=20260426a"></script>
   <script src="js/fx.js?v=20260426a"></script>
   <script src="js/auth.js?v=20260427f"></script>
   <script src="js/friends.js?v=20260426b"></script>
-  <!-- guests can browse grades; login is gated after 100 free practice questions -->
   <script src="js/staar-data.js"></script>
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
-    const grid = document.getElementById('grade-grid');
     const Auth = window.STAARAuth || {};
-    const minLevel = Auth.userGradeLevel ? Auth.userGradeLevel() : -Infinity;
-    const heading = document.getElementById('grade-heading');
-    if (minLevel > -Infinity && heading) heading.textContent = 'Your grade and beyond';
-    const visible = window.STAAR_GRADES.filter(g => Auth.gradeLevel ? Auth.gradeLevel(g.slug) >= minLevel : true);
-    visible.forEach(g => {
-      const a = document.createElement('a');
-      a.href = `grade.html?g=${g.slug}`;
-      a.className = 'grade-card';
-      a.innerHTML = `
-        <div class="label">Test prep</div>
-        <div class="title">${g.title}</div>
-        <div class="desc">${g.categories.length} reporting categories</div>
-      `;
-      grid.appendChild(a);
-    });
+
+    const gradeIconFor = (slug) => {
+      if (slug === 'grade-k') return 'K';
+      if (slug === 'algebra-1') return 'A1';
+      const m = /grade-(\d+)/.exec(slug);
+      return m ? m[1] : '★';
+    };
+    const ageHintFor = (slug) => ({
+      'grade-k': 'Ages 5–6','grade-1':'Ages 6–7','grade-2':'Ages 7–8','grade-3':'Ages 8–9',
+      'grade-4':'Ages 9–10','grade-5':'Ages 10–11','grade-6':'Ages 11–12','grade-7':'Ages 12–13',
+      'grade-8':'Ages 13–14','algebra-1':'High school'
+    })[slug] || '';
+
+    function render() {
+      const u = Auth.currentUser ? Auth.currentUser() : null;
+      const lastSlug = (() => {
+        try { return u && localStorage.getItem(`staar.lastPracticedGrade.${u.username}`) || null; }
+        catch (_) { return null; }
+      })();
+      const currentSlug = lastSlug || (u && u.grade) || null;
+
+      // Recommendation card.
+      if (currentSlug) {
+        const g = window.STAAR_GRADES.find(x => x.slug === currentSlug);
+        if (g) {
+          const rec = document.getElementById('grade-recommendation');
+          document.getElementById('recommendation-text').innerHTML =
+            `Based on your progress, <strong>${g.title}</strong> is your sweet spot today.`;
+          const cta = document.getElementById('recommendation-cta');
+          cta.setAttribute('href', `practice.html?g=${encodeURIComponent(g.slug)}`);
+          cta.querySelector('svg')?.previousSibling && (cta.firstChild.textContent = `Start ${g.title.replace(' — Math', '')}`);
+          // Replace text node safely:
+          cta.innerHTML = `Start ${g.title}` +
+            `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7H11M11 7L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+          rec.hidden = false;
+        }
+      }
+
+      // Grade grid.
+      const minLevel = Auth.userGradeLevel ? Auth.userGradeLevel() : -Infinity;
+      const visible = window.STAAR_GRADES.filter(g => Auth.gradeLevel ? Auth.gradeLevel(g.slug) >= minLevel : true);
+      const grid = document.getElementById('grade-grid');
+      grid.innerHTML = '';
+      visible.forEach(g => {
+        const isCurrent = g.slug === currentSlug;
+        const isPopular = g.slug === 'grade-3' && !isCurrent;
+        const a = document.createElement('a');
+        a.href = `practice.html?g=${encodeURIComponent(g.slug)}`;
+        a.className = 'grade-card' + (isCurrent ? ' grade-card--current' : '') + (isPopular ? ' grade-card--popular' : '');
+        a.addEventListener('click', () => {
+          if (u) {
+            try { localStorage.setItem(`staar.lastPracticedGrade.${u.username}`, g.slug); } catch (_) {}
+          }
+        });
+        a.innerHTML = `
+          ${isPopular ? '<span class="grade-card-badge">Most popular</span>' : ''}
+          <div class="grade-card-head">
+            <span class="grade-card-eyebrow">State test &middot; Math</span>
+            <span class="grade-card-icon">${gradeIconFor(g.slug)}</span>
+          </div>
+          <h3 class="grade-card-title">${g.title}</h3>
+          <p class="grade-card-meta">${g.categories.length} reporting categories</p>
+          <div class="grade-card-foot">
+            <span class="grade-card-age">${ageHintFor(g.slug)}</span>
+            <span class="grade-card-arrow" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7H11M11 7L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </div>
+        `;
+        grid.appendChild(a);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => setTimeout(render, 0));
+    window.onSTAARLogin = render;
   </script>
   <script src="https://api.replyquik.com/widget.js" data-id="9686745a-93c1-4761-af94-f15815680bc3"></script>
 </body>

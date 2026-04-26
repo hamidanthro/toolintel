@@ -131,7 +131,7 @@
           </div>
         </div>
         <div class="welcome-actions">
-          <a href="grades.html" class="btn btn-primary btn-primary--large dash-practice-cta">
+          <a href="grades.html" class="btn btn-primary btn-primary--large dash-practice-cta" data-practice-cta>
             Practice now
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path d="M3 7H11M11 7L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -161,7 +161,7 @@
           </div>
         </div>
         <div class="challenge-actions">
-          <a href="grades.html" class="btn btn-primary challenge-cta">
+          <a href="grades.html" class="btn btn-primary challenge-cta" data-practice-cta>
             Start challenge
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7H11M11 7L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </a>
@@ -277,7 +277,7 @@
             </div>
           </div>
 
-          <a href="grades.html" class="btn btn-primary journey-cta">
+          <a href="grades.html" class="btn btn-primary journey-cta" data-practice-cta>
             Keep going
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7H11M11 7L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </a>
@@ -745,6 +745,24 @@
     function attachLeaderboardClicks() { /* leaderboard removed */ }
     async function refreshLeaderboard() { /* leaderboard removed */ }
 
+    // Route "Practice now" CTAs straight into a question when we know the user's grade.
+    function wirePracticeCTAs() {
+      try {
+        const u = window.STAARAuth?.currentUser?.();
+        if (!u) return;
+        // Prefer last-practiced grade; fall back to user.grade (set during signup/picker).
+        const lastSlug = (() => {
+          try { return localStorage.getItem(`staar.lastPracticedGrade.${u.username}`) || null; }
+          catch (_) { return null; }
+        })();
+        const slug = lastSlug || u.grade;
+        if (!slug) return; // first-time user with no grade — keep grades.html for selection
+        document.querySelectorAll('a[data-practice-cta]').forEach(a => {
+          a.setAttribute('href', `practice.html?g=${encodeURIComponent(slug)}`);
+        });
+      } catch (_) {}
+    }
+
     // Periodic leaderboard refresh: every 30s while tab is visible, and on focus.
     let _lbInterval = null;
     function startLeaderboardPolling() {
@@ -785,10 +803,10 @@
       }, 60000);
     }
 
-    window.onSTAARLogin = () => { showDashboard(); startLeaderboardPolling(); refreshLiveCount(); };
+    window.onSTAARLogin = () => { showDashboard(); startLeaderboardPolling(); refreshLiveCount(); wirePracticeCTAs(); };
     document.addEventListener('DOMContentLoaded', () => {
       // Wait a tick for auth.js to restore session, then render.
-      setTimeout(() => { showDashboard(); startLeaderboardPolling(); refreshLiveCount(); startLivePolling(); }, 0);
+      setTimeout(() => { showDashboard(); startLeaderboardPolling(); refreshLiveCount(); startLivePolling(); wirePracticeCTAs(); }, 0);
 
       // Cursor-reactive spotlight on hero (desktop / fine pointer only)
       const fine = window.matchMedia('(pointer: fine)').matches && window.innerWidth > 768;

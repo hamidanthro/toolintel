@@ -5538,3 +5538,239 @@ body.home-page #dashboard .activity-empty-cta:hover {
   background: rgba(255,255,255,0.08);
   border-color: rgba(251,191,36,0.3);
 }
+
+/* ============================================================
+   PRACTICE SELECT PAGE — premium dark grade picker (Prompt 14)
+   ============================================================ */
+body.practice-select-page {
+  position: relative;
+  background: #060d1f;
+  min-height: 100vh;
+  color: rgba(255,255,255,0.85);
+}
+body.practice-select-page .site-header { background: transparent; border-bottom: 1px solid rgba(255,255,255,0.06); }
+body.practice-select-page::before {
+  content: '';
+  position: fixed;
+  top: -200px; right: -200px;
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(251,191,36,0.08) 0%, transparent 60%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+}
+body.practice-select-page::after {
+  content: '';
+  position: fixed;
+  bottom: -200px; left: -200px;
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(99,102,241,0.06) 0%, transparent 60%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+}
+body.practice-select-page .practice-select-main {
+  position: relative;
+  z-index: 1;
+  padding: 48px 32px 80px;
+}
+body.practice-select-page .practice-select-inner { max-width: 1280px; margin: 0 auto; }
+
+body.practice-select-page .back-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px; font-weight: 500;
+  color: rgba(255,255,255,0.5);
+  text-decoration: none;
+  margin-bottom: 32px;
+  transition: color 0.2s ease;
+}
+body.practice-select-page .back-link:hover { color: rgba(255,255,255,0.85); }
+
+body.practice-select-page .practice-eyebrow {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: rgba(251,191,36,0.9);
+  background: rgba(251,191,36,0.08);
+  border: 1px solid rgba(251,191,36,0.2);
+  padding: 6px 14px;
+  border-radius: 999px;
+  margin-bottom: 24px;
+}
+body.practice-select-page .eyebrow-emoji { font-size: 13px; }
+
+body.practice-select-page .practice-select-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(48px, 6vw, 72px);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  color: #ffffff !important;
+  margin: 0 0 16px 0;
+}
+body.practice-select-page .title-accent {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+body.practice-select-page .practice-select-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px; line-height: 1.5;
+  color: rgba(255,255,255,0.65);
+  margin: 0 0 32px 0;
+  max-width: 560px;
+}
+
+body.practice-select-page .grade-recommendation {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 20px;
+  align-items: center;
+  padding: 20px 28px;
+  background: linear-gradient(135deg, rgba(251,191,36,0.12) 0%, rgba(20,29,51,0.6) 60%);
+  border: 1px solid rgba(251,191,36,0.25);
+  border-radius: 16px;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.05) inset,
+    0 8px 24px -8px rgba(0,0,0,0.3),
+    0 0 32px -8px rgba(251,191,36,0.25);
+  margin-bottom: 48px;
+}
+body.practice-select-page .recommendation-icon {
+  font-size: 28px;
+  filter: drop-shadow(0 0 8px rgba(251,191,36,0.4));
+}
+body.practice-select-page .recommendation-content { display: flex; flex-direction: column; gap: 4px; }
+body.practice-select-page .recommendation-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: rgba(251,191,36,0.85);
+}
+body.practice-select-page .recommendation-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  color: rgba(255,255,255,0.85);
+  margin: 0;
+}
+body.practice-select-page .recommendation-text strong { color: #ffffff; font-weight: 600; }
+body.practice-select-page .recommendation-cta {
+  white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 44px; padding: 0 22px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px; font-weight: 600;
+  color: #0a1628;
+  background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
+  border: 1px solid rgba(251,191,36,0.5);
+  border-radius: 11px;
+  text-decoration: none;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.4) inset, 0 4px 12px -2px rgba(251,191,36,0.4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+body.practice-select-page .recommendation-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.5) inset, 0 8px 20px -4px rgba(251,191,36,0.5);
+}
+@media (max-width: 768px) {
+  body.practice-select-page .grade-recommendation {
+    grid-template-columns: 1fr; text-align: center; gap: 12px;
+  }
+  body.practice-select-page .recommendation-icon { margin: 0 auto; }
+}
+
+body.practice-select-page .practice-grid-header { margin-bottom: 24px; }
+body.practice-select-page .practice-grid-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 18px; font-weight: 600;
+  color: #ffffff !important;
+  letter-spacing: -0.01em;
+  margin: 0 0 4px 0;
+}
+body.practice-select-page .practice-grid-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  margin: 0;
+}
+
+body.practice-select-page .practice-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+@media (max-width: 1024px) { body.practice-select-page .practice-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 768px)  { body.practice-select-page .practice-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px)  { body.practice-select-page .practice-grid { grid-template-columns: 1fr; } }
+
+/* "Your grade" green-accent variant */
+body.practice-select-page .grade-card--current {
+  border-color: rgba(16,185,129,0.3);
+  background: linear-gradient(180deg, rgba(16,185,129,0.08) 0%, rgba(20,29,51,0.5) 100%);
+}
+body.practice-select-page .grade-card--current::after {
+  content: 'Your grade';
+  position: absolute;
+  top: 12px; right: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 10px; font-weight: 600;
+  color: #34d399;
+  background: rgba(16,185,129,0.15);
+  border: 1px solid rgba(16,185,129,0.3);
+  padding: 3px 8px;
+  border-radius: 999px;
+  z-index: 2;
+}
+body.practice-select-page .grade-card--current:hover {
+  border-color: rgba(16,185,129,0.5);
+  box-shadow:
+    0 0 0 1px rgba(16,185,129,0.25),
+    0 16px 32px -8px rgba(0,0,0,0.4),
+    0 0 24px -8px rgba(16,185,129,0.4);
+}
+
+/* Tips section */
+body.practice-select-page .practice-tips {
+  margin-top: 64px;
+  padding: 40px;
+  background: linear-gradient(180deg, rgba(26,37,64,0.4) 0%, rgba(20,29,51,0.4) 100%);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 20px;
+  backdrop-filter: blur(12px);
+}
+body.practice-select-page .practice-tips-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 28px; font-weight: 400;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  margin: 0 0 24px 0;
+}
+body.practice-select-page .tips-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+@media (max-width: 768px) { body.practice-select-page .tips-grid { grid-template-columns: 1fr; } }
+body.practice-select-page .tip-card {
+  padding: 20px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+body.practice-select-page .tip-icon { font-size: 22px; margin-bottom: 4px; }
+body.practice-select-page .tip-card-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px; font-weight: 600;
+  color: #ffffff; margin: 0;
+}
+body.practice-select-page .tip-card-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.5;
+  margin: 0;
+}
