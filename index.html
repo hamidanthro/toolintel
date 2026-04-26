@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>STAAR Math Prep — Texas Math Test Preparation</title>
   <meta name="description" content="Practice and master the Texas STAAR math test. Grade-by-grade lessons, practice problems, and full-length tests for grades 3–8 and Algebra I." />
-  <link rel="stylesheet" href="css/styles.css?v=20260426o" />
+  <link rel="stylesheet" href="css/styles.css?v=20260426p" />
 </head>
 <body>
   <header class="site-header">
@@ -64,12 +64,6 @@
       <div class="dash-main">
         <div class="dash-side">
           <a href="grades.html" class="btn btn-primary dash-practice-cta">Practice now →</a>
-          <div class="dash-card dash-rank-card" id="dash-rank-card" hidden>
-            <div class="dash-rank-label">Your global ranking right now</div>
-            <div class="dash-rank-num"><span class="dash-rank-hash">#</span><span id="dash-rank-pos">—</span></div>
-            <div class="dash-rank-of">of <span id="dash-rank-total">—</span> students</div>
-            <div class="dash-rank-pct" id="dash-rank-pct"></div>
-          </div>
           <div class="dash-card dash-side-card">
             <h3 class="dash-side-title">Your grade and beyond</h3>
             <p class="dash-side-sub">Pick a grade to start practicing.</p>
@@ -78,11 +72,29 @@
         </div>
         <div class="dash-card dash-card-board">
           <div class="dash-board-head">
-            <h3>🏆 Leaderboard</h3>
+            <h3>🌱 Your journey</h3>
             <span class="dash-board-sub" id="dash-board-sub"></span>
           </div>
-          <ol class="leaderboard" id="dash-leaderboard"><li class="lb-empty">Loading…</li></ol>
-          <div id="dash-me-row"></div>
+          <div class="journey-grid">
+            <div class="journey-tile journey-streak">
+              <div class="journey-tile-label">Practice streak</div>
+              <div class="journey-tile-value"><span id="dash-streak">0</span> <span class="journey-tile-unit">days</span></div>
+              <div class="journey-tile-foot" id="dash-streak-foot">Practice today to start a streak</div>
+            </div>
+            <div class="journey-tile journey-today">
+              <div class="journey-tile-label">Today</div>
+              <div class="journey-tile-value"><span id="dash-today-correct">0</span> <span class="journey-tile-unit">correct</span></div>
+              <div class="journey-tile-foot" id="dash-today-foot">Aim for 5 today 🌟</div>
+            </div>
+            <div class="journey-tile journey-best">
+              <div class="journey-tile-label">Personal best</div>
+              <div class="journey-tile-value"><span id="dash-best">0</span> <span class="journey-tile-unit">in a row</span></div>
+              <div class="journey-tile-foot">Beat your own record</div>
+            </div>
+          </div>
+          <div class="journey-cta">
+            <a href="grades.html" class="btn btn-primary">Keep going →</a>
+          </div>
         </div>
       </div>
     </div>
@@ -94,7 +106,7 @@
         <div class="earn-banner-icon" aria-hidden="true">🪙</div>
         <div class="earn-banner-body">
           <div class="earn-banner-title">Get rewarded for your effort</div>
-          <div class="earn-banner-sub">Sign in to earn points for every correct answer, climb the leaderboard, and redeem real toys in the marketplace.</div>
+          <div class="earn-banner-sub">Sign in to earn points for every correct answer, build your daily streak, and redeem real toys in the marketplace.</div>
         </div>
         <button type="button" class="btn btn-primary earn-banner-cta" id="earn-banner-btn">Sign in &amp; earn</button>
       </div>
@@ -189,31 +201,17 @@
       }
     }
 
-    function rankMover(rank) {
-      // Only #1 gets a moving emoji (the traveling dancer animates separately).
-      // Ranks 2+ stay clean.
-      return '';
-    }
+    function rankMover(_) { return ''; }
+    function updateRankCard(_) { /* leaderboard removed */ }
 
-    function updateRankCard(lb) {
-      const card = document.getElementById('dash-rank-card');
-      if (!card) return;
-      if (!lb || !lb.me || !lb.me.rank || !lb.totalUsers) {
-        card.hidden = true;
-        return;
-      }
-      card.hidden = false;
-      document.getElementById('dash-rank-pos').textContent = lb.me.rank.toLocaleString();
-      document.getElementById('dash-rank-total').textContent = lb.totalUsers.toLocaleString();
-      const pctEl = document.getElementById('dash-rank-pct');
-      if (lb.totalUsers > 1 && lb.me.rank > 1) {
-        const top = Math.max(1, Math.round((lb.me.rank / lb.totalUsers) * 100));
-        pctEl.textContent = `Top ${top}%`;
-      } else if (lb.me.rank === 1) {
-        pctEl.textContent = '🏆 #1 right now';
-      } else {
-        pctEl.textContent = '';
-      }
+    // Local-only helpers for the "Your journey" card.
+    function todayKey() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+    function loadJourney(username) {
+      try { return JSON.parse(localStorage.getItem(`staar.journey.${username}`) || '{}'); }
+      catch (_) { return {}; }
     }
 
     async function showDashboard() {
@@ -235,10 +233,7 @@
       document.getElementById('dash-greeting').textContent = `Welcome, ${u.displayName || u.username}!`;
 
       try {
-        const [d, lb] = await Promise.all([
-          window.STAARAuth.api('dashboard', { token: window.STAARAuth.token() }),
-          window.STAARAuth.api('leaderboard', { token: window.STAARAuth.token() })
-        ]);
+        const d = await window.STAARAuth.api('dashboard', { token: window.STAARAuth.token() });
         // First-time grade picker for accounts created before grades were required.
         // Skip for admin accounts and don't re-ask in the same session if the user cancels.
         if (!d.grade && !u.isAdmin && !sessionStorage.getItem('staar.gradePromptDismissed')) {
@@ -270,114 +265,32 @@
         }
         document.getElementById('dash-sub').textContent = d.answered > 0
           ? `You've answered ${(d.answered).toLocaleString()} questions and earned ${fmtPts(d.lifetimeCents)} all-time.`
-          : 'Answer your first question to land on the leaderboard.';
+          : 'Answer your first question to begin your journey.';
 
-        const lbList = document.getElementById('dash-leaderboard');
-        const sub = document.getElementById('dash-board-sub');
-        sub.textContent = lb.totalUsers > 0 ? `${lb.totalUsers} student${lb.totalUsers === 1 ? '' : 's'} ranked` : '';
-        updateRankCard(lb);
-        if (!lb.top || lb.top.length === 0) {
-          lbList.innerHTML = '<li class="lb-empty">No one on the board yet — be the first!</li>';
-        } else {
-          lbList.innerHTML = lb.top.map(r => {
-            const isMe = r.username === u.username;
-            const accStr = r.accuracyKnown === false ? '~' : `${r.accuracy || 0}%`;
-            const cls = ['lb-row', `lb-rank-${r.rank <= 3 ? r.rank : 'n'}`, isMe ? 'lb-me' : ''].filter(Boolean).join(' ');
-            const dancer = r.rank === 1 ? '<span class="lb-dancer" aria-hidden="true"><span class="lb-d1">💃</span><span class="lb-d2">🕺</span></span>' : '';
-            const mover = rankMover(r.rank);
-            return `<li class="${cls}" data-username="${escapeHtmlSafe(r.username)}" data-name="${escapeHtmlSafe(r.displayName)}" data-isme="${isMe ? '1' : '0'}">
-              <span class="lb-rank">${r.rank}</span>
-              <span class="lb-name">${escapeHtmlSafe(r.displayName)}${isMe ? ' <span class="lb-you">(you)</span>' : ''}</span>
-              <span class="lb-correct">${(r.correct || 0).toLocaleString()} correct</span>
-              <span class="lb-acc">${accStr}</span>
-              ${dancer}${mover}
-            </li>`;
-          }).join('');
-        }
-        attachLeaderboardClicks();
+        // Populate "Your journey" tiles from local storage (zero-cost, kid-friendly).
+        const j = loadJourney(u.username);
+        const tk = todayKey();
+        const todayCorrect = (j.daily && j.daily[tk] && j.daily[tk].correct) || 0;
+        const streak = parseInt(j.streak, 10) || 0;
+        const best = parseInt(j.bestStreak, 10) || 0;
+        const personalBest = parseInt(j.bestRunInARow, 10) || 0;
+        document.getElementById('dash-streak').textContent = streak.toLocaleString();
+        document.getElementById('dash-streak-foot').textContent = streak > 0
+          ? (streak === 1 ? 'You started — keep it up tomorrow!' : `Best ever: ${best || streak} days`)
+          : 'Practice today to start a streak';
+        document.getElementById('dash-today-correct').textContent = todayCorrect.toLocaleString();
+        document.getElementById('dash-today-foot').textContent = todayCorrect >= 5
+          ? '✓ Daily goal reached!'
+          : `Aim for ${5 - todayCorrect} more today 🌟`;
+        document.getElementById('dash-best').textContent = personalBest.toLocaleString();
 
-        const meRow = document.getElementById('dash-me-row');
-        if (lb.me && lb.me.rank > 10) {
-          meRow.innerHTML = `<div class="lb-meta">Your rank: <strong>#${lb.me.rank}</strong> · ${(lb.me.correct).toLocaleString()} correct · ${lb.me.accuracy}%</div>`;
-        } else {
-          meRow.innerHTML = '';
-        }
+        const subBoard = document.getElementById('dash-board-sub');
+        if (subBoard) subBoard.textContent = todayCorrect > 0 ? `${todayCorrect} today` : 'Start fresh today';
       } catch (_) { /* offline */ }
     }
 
-    function attachLeaderboardClicks() {
-      const list = document.getElementById('dash-leaderboard');
-      if (!list || list.dataset.lbBound === '1') return;
-      list.dataset.lbBound = '1';
-      list.addEventListener('click', async (e) => {
-        const row = e.target.closest('li[data-username]');
-        if (!row) return;
-        if (row.dataset.isme === '1') return;
-        const peer = row.dataset.username;
-        const name = row.dataset.name || peer;
-        if (!window.STAARFriends) return;
-        try {
-          const r = await window.STAARAuth.api('friendList', { token: window.STAARAuth.token() });
-          const isFriend = (r.friends || []).some(x => x.peer === peer);
-          const isOut = (r.outgoing || []).some(x => x.peer === peer);
-          const isIn = (r.incoming || []).some(x => x.peer === peer);
-          if (isFriend) {
-            window.STAARFriends.openConversation(peer, name);
-          } else if (isOut) {
-            window.STAARAuth.showToast(`Friend request to ${name} is pending`);
-          } else if (isIn) {
-            window.STAARFriends.openPanel();
-          } else {
-            if (confirm(`Send a friend request to ${name}?`)) {
-              await window.STAARFriends.requestFriend(peer, name);
-            }
-          }
-        } catch (_) {
-          if (confirm(`Send a friend request to ${name}?`)) {
-            await window.STAARFriends.requestFriend(peer, name);
-          }
-        }
-      });
-    }
-
-    // Refresh just the leaderboard (lighter than reloading the whole dashboard).
-    async function refreshLeaderboard() {
-      const u = window.STAARAuth?.currentUser?.();
-      if (!u) return;
-      try {
-        const lb = await window.STAARAuth.api('leaderboard', { token: window.STAARAuth.token() });
-        const lbList = document.getElementById('dash-leaderboard');
-        const sub = document.getElementById('dash-board-sub');
-        if (!lbList) return;
-        sub.textContent = lb.totalUsers > 0 ? `${lb.totalUsers} student${lb.totalUsers === 1 ? '' : 's'} ranked` : '';
-        updateRankCard(lb);
-        if (!lb.top || lb.top.length === 0) {
-          lbList.innerHTML = '<li class="lb-empty">No one on the board yet — be the first!</li>';
-        } else {
-          lbList.innerHTML = lb.top.map(r => {
-            const isMe = r.username === u.username;
-            const accStr = r.accuracyKnown === false ? '~' : `${r.accuracy || 0}%`;
-            const cls = ['lb-row', `lb-rank-${r.rank <= 3 ? r.rank : 'n'}`, isMe ? 'lb-me' : ''].filter(Boolean).join(' ');
-            const dancer = r.rank === 1 ? '<span class="lb-dancer" aria-hidden="true"><span class="lb-d1">💃</span><span class="lb-d2">🕺</span></span>' : '';
-            const mover = rankMover(r.rank);
-            return `<li class="${cls}" data-username="${escapeHtmlSafe(r.username)}" data-name="${escapeHtmlSafe(r.displayName)}" data-isme="${isMe ? '1' : '0'}">
-              <span class="lb-rank">${r.rank}</span>
-              <span class="lb-name">${escapeHtmlSafe(r.displayName)}${isMe ? ' <span class="lb-you">(you)</span>' : ''}</span>
-              <span class="lb-correct">${(r.correct || 0).toLocaleString()} correct</span>
-              <span class="lb-acc">${accStr}</span>
-              ${dancer}${mover}
-            </li>`;
-          }).join('');
-        }
-        attachLeaderboardClicks();
-        const meRow = document.getElementById('dash-me-row');
-        if (lb.me && lb.me.rank > 10) {
-          meRow.innerHTML = `<div class="lb-meta">Your rank: <strong>#${lb.me.rank}</strong> · ${(lb.me.correct).toLocaleString()} correct · ${lb.me.accuracy}%</div>`;
-        } else if (meRow) {
-          meRow.innerHTML = '';
-        }
-      } catch (_) { /* offline */ }
-    }
+    function attachLeaderboardClicks() { /* leaderboard removed */ }
+    async function refreshLeaderboard() { /* leaderboard removed */ }
 
     // Periodic leaderboard refresh: every 30s while tab is visible, and on focus.
     let _lbInterval = null;

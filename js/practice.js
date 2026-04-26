@@ -23,6 +23,53 @@
   function isGuest() {
     return !(window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser());
   }
+
+  // ---- Local "Your journey" tracker: streak, today's correct, best run-in-a-row.
+  // Stored locally per-user so it stays kid-friendly and zero-cost.
+  function todayKeyJ() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+  function yesterdayKeyJ() {
+    const d = new Date(); d.setDate(d.getDate() - 1);
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+  function recordJourney(isCorrect) {
+    try {
+      const u = window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser();
+      if (!u || !u.username) return;
+      const key = `staar.journey.${u.username}`;
+      const j = JSON.parse(localStorage.getItem(key) || '{}');
+      const tk = todayKeyJ();
+      j.daily = j.daily || {};
+      j.daily[tk] = j.daily[tk] || { correct: 0, answered: 0 };
+      j.daily[tk].answered += 1;
+      if (isCorrect) j.daily[tk].correct += 1;
+      // Streak: bump if first activity today; reset if last activity wasn't today/yesterday.
+      const last = j.lastActiveDay;
+      if (last !== tk) {
+        if (last === yesterdayKeyJ()) j.streak = (parseInt(j.streak, 10) || 0) + 1;
+        else j.streak = 1;
+        j.lastActiveDay = tk;
+        const best = parseInt(j.bestStreak, 10) || 0;
+        if (j.streak > best) j.bestStreak = j.streak;
+      }
+      // Best run in a row of correct answers.
+      if (isCorrect) {
+        j.currentRun = (parseInt(j.currentRun, 10) || 0) + 1;
+        const pb = parseInt(j.bestRunInARow, 10) || 0;
+        if (j.currentRun > pb) j.bestRunInARow = j.currentRun;
+      } else {
+        j.currentRun = 0;
+      }
+      // Trim daily history to last ~60 days.
+      const keys = Object.keys(j.daily).sort();
+      if (keys.length > 60) {
+        for (const k of keys.slice(0, keys.length - 60)) delete j.daily[k];
+      }
+      localStorage.setItem(key, JSON.stringify(j));
+    } catch (_) { /* localStorage unavailable */ }
+  }
   function guestCount() {
     try { return parseInt(localStorage.getItem(GUEST_KEY), 10) || 0; } catch (_) { return 0; }
   }
@@ -420,6 +467,7 @@
         const isCorrect = checkAnswer(q, userAnswer);
         if (isCorrect) correct++;
         Stats.record(slug, stats, { unitId: q._unit?.id, unitTitle: q._unit?.title, isCorrect });
+        recordJourney(isCorrect);
         if (isGuest()) {
           guestIncrement();
           renderGuestBanner();
