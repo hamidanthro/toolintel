@@ -3960,3 +3960,32 @@ body.marketplace-page #orders-root .admin-table img {
   body.marketplace-page .toy-image,
   body.marketplace-page .toy-cta { transition: none; transform: none; }
 }
+
+/* Defensive overrides — any legacy navy/dark text on the marketplace page
+   reads white on the new dark background. */
+body.marketplace-page,
+body.marketplace-page p,
+body.marketplace-page h1,
+body.marketplace-page h2,
+body.marketplace-page h3,
+body.marketplace-page h4,
+body.marketplace-page span,
+body.marketplace-page strong,
+body.marketplace-page label { color: #ffffff; }
+body.marketplace-page section h2 { color: #ffffff; }
+body.marketplace-page .wallet-summary-stat .label { color: rgba(255, 255, 255, 0.55); }
+body.marketplace-page .wallet-summary-stat .value { color: #ffffff; }
+body.marketplace-page .toy-stock,
+body.marketplace-page .toy-stock.low,
+body.marketplace-page .toy-stock.can { color: rgba(255, 255, 255, 0.7); }
+body.marketplace-page .earn-cta {
+  color: #0a1628;
+  background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
+  border: 1px solid rgba(251, 191, 36, 0.5);
+}
+/* Header brand + nav stay legible */
+body.marketplace-page .site-header .brand,
+body.marketplace-page .site-header .brand-text { color: #ffffff; }
+body.marketplace-page .site-header .nav a { color: rgba(255, 255, 255, 0.75); }
+body.marketplace-page .site-header .nav a.active,
+body.marketplace-page .site-header .nav a:hover { color: #ffffff; }
