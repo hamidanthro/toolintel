@@ -8663,3 +8663,30 @@ input[type="button"] {
   body.home-page .grade-grid { gap: 8px !important; }
   body.home-page .grade-card { padding: 12px 10px; }
 }
+
+/* ============================================================
+   PROMPT 28a — Hide chat widget on phones (mobile only)
+   Desktop unchanged. Covers replyquik + common vendors.
+   Wins over earlier mobile chat-widget rules via cascade order.
+   ============================================================ */
+@media (max-width: 768px) {
+  .chat-widget,
+  #chat-widget,
+  [class*="chat-widget"],
+  [id*="chat-widget"],
+  [id*="tawk"],
+  [class*="tawk"],
+  [id*="crisp"],
+  [class*="crisp"],
+  [id*="replyquik"],
+  [class*="replyquik"],
+  [id*="rq-"],
+  [class*="rq-"],
+  iframe[src*="replyquik"],
+  iframe[src*="tawk"],
+  iframe[src*="crisp"] {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+}
