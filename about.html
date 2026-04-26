@@ -4,9 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>How it works — StarTest</title>
-  <link rel="stylesheet" href="css/styles.css?v=20260426w" />
+  <link rel="stylesheet" href="css/styles.css?v=20260427e" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="about-page">
   <header class="site-header">
     <div class="container">
       <a href="index.html" class="brand"><svg class="brand-logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><defs><linearGradient id="starGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fde047"/><stop offset="55%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient></defs><path d="M16 2.6 19.6 11.5 29.2 12.2 21.8 18.4 24.2 27.6 16 22.4 7.8 27.6 10.2 18.4 2.8 12.2 12.4 11.5 Z" fill="url(#starGrad)" stroke="rgba(255,255,255,0.18)" stroke-width="0.6" stroke-linejoin="round"/><circle cx="25" cy="6" r="1.6" fill="#fde047" opacity="0.95"/><circle cx="25" cy="6" r="3" fill="#fde047" opacity="0.25"/></svg><span class="brand-text">Star<span class="brand-text-accent">Test</span></span></a>
@@ -19,121 +22,259 @@
     </div>
   </header>
 
-  <section>
-    <div class="container">
-      <h2 style="margin-bottom:8px;">How StarTest works</h2>
-      <p style="color:var(--muted);max-width:780px;margin:0 0 32px;">A friendly tour of every part of the app — from grade-aligned questions to earning points and shipping real toys home.</p>
+  <section class="about-section">
+    <div class="about-inner">
+      <header class="about-header">
+        <span class="about-eyebrow">
+          <span class="eyebrow-dot"></span>
+          How it works
+        </span>
+        <h1 class="about-title">
+          Built for kids.<br>
+          <span class="title-accent">Trusted by parents.</span>
+        </h1>
+        <p class="about-subtitle">
+          A friendly tour of every part of the app — from grade-aligned questions to earning points and shipping real toys home.
+        </p>
+      </header>
 
-      <div class="howit-grid">
+      <div class="features-grid">
 
-        <article class="howit-card">
-          <div class="howit-icon" aria-hidden="true">📚</div>
-          <h3>Grade-specific practice</h3>
-          <p>Questions for <strong>Kindergarten through Grade 8 plus high school courses</strong>, written to match your state's academic standards and the format of your state's actual test — whether that's STAAR in Texas, TCAP in Tennessee, FSA in Florida, or any other state assessment.</p>
-          <ul>
-            <li>Pick your state and grade — every question is aligned to the standards your child is actually tested on.</li>
-            <li>Tens of thousands of unique questions per grade and subject, generated and validated for correctness.</li>
-            <li>The app remembers which questions you've already answered so you never see the same one twice — until you've mastered the bank.</li>
-          </ul>
+        <article class="feature-card">
+          <span class="feature-card-step">01</span>
+          <div class="feature-card-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <div class="feature-card-content">
+            <h3 class="feature-card-title">Grade-specific practice</h3>
+            <p class="feature-card-description">Questions for <strong>Kindergarten through Grade 8 plus high school courses</strong>, written to match your state's academic standards and the format of your state's actual test — whether that's STAAR in Texas, TCAP in Tennessee, FSA in Florida, or any other state assessment.</p>
+            <ul class="feature-card-list">
+              <li>Pick your state and grade — every question is aligned to the standards your child is actually tested on.</li>
+              <li>Tens of thousands of unique questions per grade and subject, generated and validated for correctness.</li>
+              <li>The app remembers which questions you've already answered so you never see the same one twice — until you've mastered the bank.</li>
+            </ul>
+          </div>
         </article>
 
-        <article class="howit-card">
-          <div class="howit-icon" aria-hidden="true">🤖</div>
-          <h3>An AI tutor that adapts</h3>
-          <p>When you miss a question, an AI tutor steps in. It asks you what you tried, walks you through the right way to think about it, and never just hands over the answer.</p>
-          <ul>
-            <li>Step-by-step hints — not just a correct/incorrect mark.</li>
-            <li>Adjusts explanations to your grade level and the way you answered.</li>
-            <li>Learns the topics you find tricky and surfaces them more.</li>
-          </ul>
+        <article class="feature-card">
+          <span class="feature-card-step">02</span>
+          <div class="feature-card-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.88 5.76a1 1 0 00.95.69H21l-5 3.64a1 1 0 00-.36 1.12L17.5 20l-5-3.62a1 1 0 00-1.18 0L6.5 20l1.86-5.79a1 1 0 00-.36-1.12L3 9.45h6.17a1 1 0 00.95-.69L12 3z"/><path d="M5 3v4M3 5h4M19 17v4M17 19h4"/></svg>
+          </div>
+          <div class="feature-card-content">
+            <h3 class="feature-card-title">An AI tutor that adapts</h3>
+            <p class="feature-card-description">When you miss a question, an AI tutor steps in. It asks you what you tried, walks you through the right way to think about it, and never just hands over the answer.</p>
+            <ul class="feature-card-list">
+              <li>Step-by-step hints — not just a correct/incorrect mark.</li>
+              <li>Adjusts explanations to your grade level and the way you answered.</li>
+              <li>Learns the topics you find tricky and surfaces them more.</li>
+            </ul>
+          </div>
         </article>
 
-        <article class="howit-card">
-          <div class="howit-icon" aria-hidden="true">🪙</div>
-          <h3>Earn points for every correct answer</h3>
-          <p>Right answers earn you points (we call them "cents") that go straight into your wallet. Harder questions and longer streaks earn more.</p>
-          <ul>
-            <li>Sign in to start earning — guests can practice 100 questions for free first.</li>
-            <li>There's a lifetime cap so things stay fair for everyone.</li>
-            <li>Wallet syncs to the cloud, so your points follow you to any device.</li>
-          </ul>
+        <article class="feature-card">
+          <span class="feature-card-step">03</span>
+          <div class="feature-card-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9.5h4.5a2 2 0 010 4H9.5a2 2 0 000 4H14"/></svg>
+          </div>
+          <div class="feature-card-content">
+            <h3 class="feature-card-title">Earn points for every correct answer</h3>
+            <p class="feature-card-description">Right answers earn you points (we call them "cents") that go straight into your wallet. Harder questions and longer streaks earn more.</p>
+            <ul class="feature-card-list">
+              <li>Sign in to start earning — guests can practice 100 questions for free first.</li>
+              <li>There's a lifetime cap so things stay fair for everyone.</li>
+              <li>Wallet syncs to the cloud, so your points follow you to any device.</li>
+            </ul>
+          </div>
         </article>
 
-        <article class="howit-card">
-          <div class="howit-icon" aria-hidden="true">🏆</div>
-          <h3>Leaderboard &amp; streaks</h3>
-          <p>Climb the live leaderboard as you answer more questions correctly. Your home dashboard shows the top 10, your rank, and how your accuracy compares.</p>
-          <ul>
-            <li>Updates every 30 seconds — no need to refresh.</li>
-            <li>Ranked by total correct answers, with accuracy as the tiebreaker.</li>
-            <li>Daily streaks and best-streak badges keep practice fun.</li>
-            <li>Compete nationally or filter by your state and grade.</li>
-          </ul>
+        <article class="feature-card">
+          <span class="feature-card-step">04</span>
+          <div class="feature-card-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55.47.98.97 1.21C12.15 18.75 13 20.24 13 22"/><path d="M14 14.66V17c0 .55-.47.98-.97 1.21C11.85 18.75 11 20.24 11 22"/><path d="M18 2H6v7a6 6 0 0012 0V2z"/></svg>
+          </div>
+          <div class="feature-card-content">
+            <h3 class="feature-card-title">Leaderboard &amp; streaks</h3>
+            <p class="feature-card-description">Climb the live leaderboard as you answer more questions correctly. Your home dashboard shows the top 10, your rank, and how your accuracy compares.</p>
+            <ul class="feature-card-list">
+              <li>Updates every 30 seconds — no need to refresh.</li>
+              <li>Ranked by total correct answers, with accuracy as the tiebreaker.</li>
+              <li>Daily streaks and best-streak badges keep practice fun.</li>
+              <li>Compete nationally or filter by your state and grade.</li>
+            </ul>
+          </div>
         </article>
 
-        <article class="howit-card">
-          <div class="howit-icon" aria-hidden="true">🎁</div>
-          <h3>Spend points on real toys</h3>
-          <p>Open the Toy Marketplace to see what's available. When you have enough points, pick a toy and check out — we ship it to your door, anywhere in the U.S.</p>
-          <ul>
-            <li>Browse anytime, even before signing up.</li>
-            <li>Each toy shows its price in points, stock level, and a clear "you can afford this" badge once you do.</li>
-            <li>Orders show up in <em>My orders</em> so you can track shipping status.</li>
-          </ul>
+        <article class="feature-card">
+          <span class="feature-card-step">05</span>
+          <div class="feature-card-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 01-2 2H7a2 2 0 01-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 010-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 010 5"/></svg>
+          </div>
+          <div class="feature-card-content">
+            <h3 class="feature-card-title">Spend points on real toys</h3>
+            <p class="feature-card-description">Open the Toy Marketplace to see what's available. When you have enough points, pick a toy and check out — we ship it to your door, anywhere in the U.S.</p>
+            <ul class="feature-card-list">
+              <li>Browse anytime, even before signing up.</li>
+              <li>Each toy shows its price in points, stock level, and a clear "you can afford this" badge once you do.</li>
+              <li>Orders show up in <em>My orders</em> so you can track shipping status.</li>
+            </ul>
+          </div>
         </article>
 
-        <article class="howit-card">
-          <div class="howit-icon" aria-hidden="true">👨‍👩‍👧</div>
-          <h3>Parents are always in the loop</h3>
-          <p>Toys are real. Shipping is real. So a grown-up has to approve every order before it leaves our system.</p>
-          <ul>
-            <li>Checkout asks for the parent's name, email, phone, and shipping address.</li>
-            <li>A required consent box confirms the adult is the parent or legal guardian.</li>
-            <li>Points have no cash value outside this app — they only redeem for the toys we list.</li>
-          </ul>
+        <article class="feature-card">
+          <span class="feature-card-step">06</span>
+          <div class="feature-card-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+          </div>
+          <div class="feature-card-content">
+            <h3 class="feature-card-title">Parents are always in the loop</h3>
+            <p class="feature-card-description">Toys are real. Shipping is real. So a grown-up has to approve every order before it leaves our system.</p>
+            <ul class="feature-card-list">
+              <li>Checkout asks for the parent's name, email, phone, and shipping address.</li>
+              <li>A required consent box confirms the adult is the parent or legal guardian.</li>
+              <li>Points have no cash value outside this app — they only redeem for the toys we list.</li>
+            </ul>
+          </div>
         </article>
 
-        <article class="howit-card">
-          <div class="howit-icon" aria-hidden="true">📦</div>
-          <h3>Shipping &amp; delivery</h3>
-          <p>Once a parent approves an order, our team gets to work.</p>
-          <ul>
-            <li>Status updates flow through <em>pending → approved → shipped → delivered</em>.</li>
-            <li>Tracking numbers appear in your orders panel as soon as a label prints.</li>
-            <li>Shipping is included in the point price — no surprise fees. We ship to all 50 states.</li>
-          </ul>
+        <article class="feature-card">
+          <span class="feature-card-step">07</span>
+          <div class="feature-card-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 9.4l-9-5.19"/><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><path d="M3.27 6.96L12 12.01l8.73-5.05"/><path d="M12 22.08V12"/></svg>
+          </div>
+          <div class="feature-card-content">
+            <h3 class="feature-card-title">Shipping &amp; delivery</h3>
+            <p class="feature-card-description">Once a parent approves an order, our team gets to work.</p>
+            <ul class="feature-card-list">
+              <li>Status updates flow through <em>pending → approved → shipped → delivered</em>.</li>
+              <li>Tracking numbers appear in your orders panel as soon as a label prints.</li>
+              <li>Shipping is included in the point price — no surprise fees. We ship to all 50 states.</li>
+            </ul>
+          </div>
         </article>
 
-        <article class="howit-card">
-          <div class="howit-icon" aria-hidden="true">🔒</div>
-          <h3>Safe by design</h3>
-          <p>We collect only what's needed to make the app work and to ship the toy.</p>
-          <ul>
-            <li>No ads. No third-party trackers.</li>
-            <li>Kids' usernames are never shared outside the leaderboard, where only display names appear.</li>
-            <li>Parent contact info is used to confirm orders and ship — nothing else.</li>
-          </ul>
+        <article class="feature-card">
+          <span class="feature-card-step">08</span>
+          <div class="feature-card-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          </div>
+          <div class="feature-card-content">
+            <h3 class="feature-card-title">Safe by design</h3>
+            <p class="feature-card-description">We collect only what's needed to make the app work and to ship the toy.</p>
+            <ul class="feature-card-list">
+              <li>No ads. No third-party trackers.</li>
+              <li>Kids' usernames are never shared outside the leaderboard, where only display names appear.</li>
+              <li>Parent contact info is used to confirm orders and ship — nothing else.</li>
+            </ul>
+          </div>
         </article>
 
       </div>
 
-      <div class="card" style="margin-top:32px;">
-        <h3 style="margin-top:0;">A note from Saad</h3>
-        <p>Hi! I'm Saad, and I'm in 3rd grade. I built this site because when I wanted to practice for my state test, I noticed the practice questions were scattered all over the internet and most sites just gave you the same problems over and over. So I made something different — questions made for your grade, your state, and the way your test actually looks, plus an AI tutor that helps when you get stuck.</p>
-        <p>Whether you're prepping for STAAR in Texas, TCAP in Tennessee, or whatever your state calls it — we've got you.</p>
-        <p>A fun fact about me: I build AI-powered apps, and I'm only 9 years old.</p>
-        <p><strong>Let's get good at school together!</strong></p>
+      <div class="saad-note">
+        <div class="saad-note-glow"></div>
+        <div class="saad-note-inner">
+          <div class="saad-note-avatar">
+            <div class="avatar-circle">S</div>
+            <div class="avatar-badge">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+            </div>
+          </div>
+          <div class="saad-note-content">
+            <span class="saad-note-eyebrow">A note from the founder</span>
+            <blockquote class="saad-note-quote">
+              Hi! I'm Saad, and I'm in 3rd grade. I built this site because when I wanted to practice for my state test, I noticed the practice questions were scattered all over the internet and most sites just gave you the same problems over and over.
+              <br><br>
+              So I made something different — questions made for <em>your</em> grade, <em>your</em> state, and the way <em>your</em> test actually looks, plus an AI tutor that helps when you get stuck. Whether you're prepping for STAAR in Texas, TCAP in Tennessee, or whatever your state calls it — we've got you.
+              <br><br>
+              Let's get good at school together!
+            </blockquote>
+            <div class="saad-note-meta">
+              <span class="saad-note-name">Saad</span>
+              <span class="saad-note-divider">·</span>
+              <span class="saad-note-role">Founder, age 9</span>
+              <span class="saad-note-divider">·</span>
+              <span class="saad-note-fact">Builds AI-powered apps for fun</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div style="text-align:center;margin:32px 0 16px;">
-        <a href="grades.html" class="btn btn-primary">Start practicing</a>
-        <a href="marketplace.html" class="btn btn-secondary" style="margin-left:8px;">See the toys</a>
+      <div class="about-cta">
+        <h2 class="about-cta-title">Ready to start practicing?</h2>
+        <p class="about-cta-subtitle">Pick your state, pick your grade, and try 100 questions free — no signup required.</p>
+        <div class="about-cta-buttons">
+          <a href="grades.html" class="btn btn-primary">Start practicing</a>
+          <a href="marketplace.html" class="btn btn-secondary">Browse the toy marketplace</a>
+        </div>
       </div>
     </div>
   </section>
 
-  <footer class="site-footer">
-    <div class="container">&copy; <span id="year"></span> StarTest.</div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand-col">
+          <a href="/" class="footer-logo">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+              <path d="M14 2L17.5 10L26 11L19.5 17L21.5 25.5L14 21L6.5 25.5L8.5 17L2 11L10.5 10L14 2Z"
+                    fill="url(#footerStarGradient)"
+                    stroke="rgba(251, 191, 36, 0.4)"
+                    stroke-width="0.5"/>
+              <defs>
+                <linearGradient id="footerStarGradient" x1="2" y1="2" x2="26" y2="26" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#fde68a"/>
+                  <stop offset="0.5" stop-color="#fbbf24"/>
+                  <stop offset="1" stop-color="#f59e0b"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <span>Star<span class="logo-accent">Test</span></span>
+          </a>
+          <p class="footer-tagline">AI-powered test prep for every state, every grade. Built for kids who want to win.</p>
+          <div class="footer-trust-row">
+            <span class="footer-trust-pill"><span class="trust-dot"></span>All 50 states supported</span>
+          </div>
+        </div>
+        <div class="footer-nav-col">
+          <h4 class="footer-col-title">Product</h4>
+          <a href="practice.html" class="footer-link">Practice</a>
+          <a href="marketplace.html" class="footer-link">Toy Marketplace</a>
+          <a href="grades.html" class="footer-link">All grades</a>
+          <a href="about.html" class="footer-link">How it works</a>
+        </div>
+        <div class="footer-nav-col">
+          <h4 class="footer-col-title">For Parents</h4>
+          <a href="settings.html" class="footer-link">Parent dashboard</a>
+          <a href="#" class="footer-link">Safety &amp; privacy</a>
+          <a href="#" class="footer-link">Track orders</a>
+          <a href="#" class="footer-link">Support</a>
+        </div>
+        <div class="footer-nav-col">
+          <h4 class="footer-col-title">Company</h4>
+          <a href="about.html" class="footer-link">About</a>
+          <a href="#" class="footer-link">Blog</a>
+          <a href="#" class="footer-link">Contact</a>
+          <a href="#" class="footer-link">Careers</a>
+        </div>
+        <div class="footer-nav-col">
+          <h4 class="footer-col-title">Legal</h4>
+          <a href="#" class="footer-link">Terms</a>
+          <a href="#" class="footer-link">Privacy</a>
+          <a href="#" class="footer-link">COPPA</a>
+          <a href="#" class="footer-link">Cookies</a>
+        </div>
+      </div>
+      <div class="footer-divider"></div>
+      <div class="footer-bottom">
+        <div class="footer-copy">&copy; <span id="year"></span> StarTest. All rights reserved.</div>
+        <div class="footer-meta">
+          <span class="footer-meta-item">Made for kids who want to win</span>
+          <span class="footer-meta-divider">&middot;</span>
+          <span class="footer-meta-item">San Antonio, TX</span>
+        </div>
+      </div>
+    </div>
   </footer>
 
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
@@ -144,3 +285,4 @@
   <script src="https://api.replyquik.com/widget.js" data-id="9686745a-93c1-4761-af94-f15815680bc3"></script>
 </body>
 </html>
+
