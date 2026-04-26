@@ -190,9 +190,8 @@
     }
 
     function rankMover(rank) {
-      if (rank === 2) return '<span class="lb-mover lb-runner" aria-hidden="true">🏃</span>';
-      if (rank === 3) return '<span class="lb-mover lb-sweater" aria-hidden="true">😅</span>';
-      if (rank === 4) return '<span class="lb-mover lb-walker" aria-hidden="true">🚶</span>';
+      // Only #1 gets a moving emoji (the traveling dancer animates separately).
+      // Ranks 2+ stay clean.
       return '';
     }
 
