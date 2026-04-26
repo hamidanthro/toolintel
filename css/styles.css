@@ -6423,144 +6423,137 @@ body.practice-page .unit-row-fill {
 
 
 /* ============================================================
-   Scratchpad — premium dark-glass launcher + slide-up panel
-   Scoped to practice page (script only loaded there)
+   Scratchpad — inline expandable, mounted directly below the
+   question card on the practice page. Default collapsed.
    ============================================================ */
-.scratchpad-launcher {
-  position: fixed;
-  bottom: 24px;
-  left: 24px;
-  z-index: 40;
-  display: inline-flex;
+.scratchpad-inline {
+  margin-top: 16px;
+  background: linear-gradient(180deg, rgba(26, 37, 64, 0.5) 0%, rgba(20, 29, 51, 0.5) 100%);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Inter', system-ui, sans-serif;
+  color: #ffffff;
+}
+.scratchpad-inline[data-state="expanded"] {
+  border-color: rgba(251, 191, 36, 0.2);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 8px 24px -8px rgba(0, 0, 0, 0.3);
+}
+
+/* COLLAPSED — single-line toggle button */
+.scratchpad-toggle {
+  width: 100%;
+  display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 16px 10px 12px;
-  background: linear-gradient(180deg, rgba(26, 37, 64, 0.9) 0%, rgba(20, 29, 51, 0.9) 100%);
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 14px;
-  color: #ffffff;
+  padding: 14px 18px;
+  background: transparent;
+  border: none;
   cursor: pointer;
-  font-family: 'Inter', system-ui, sans-serif;
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.06) inset,
-    0 8px 24px -4px rgba(0, 0, 0, 0.4),
-    0 4px 8px -2px rgba(0, 0, 0, 0.2);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background 0.2s ease;
+  text-align: left;
+  font-family: inherit;
+  color: inherit;
 }
-.scratchpad-launcher:hover {
-  transform: translateY(-2px);
-  border-color: rgba(251, 191, 36, 0.3);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.08) inset,
-    0 0 0 1px rgba(251, 191, 36, 0.15),
-    0 12px 28px -4px rgba(0, 0, 0, 0.5),
-    0 0 24px -8px rgba(251, 191, 36, 0.3);
-}
-.scratchpad-launcher.is-active {
-  border-color: rgba(251, 191, 36, 0.45);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.08) inset,
-    0 0 0 1px rgba(251, 191, 36, 0.25),
-    0 12px 28px -4px rgba(0, 0, 0, 0.5),
-    0 0 24px -8px rgba(251, 191, 36, 0.4);
-}
-.scratchpad-launcher-icon {
+.scratchpad-toggle:hover { background: rgba(255, 255, 255, 0.02); }
+.scratchpad-toggle-icon {
   width: 32px;
   height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(180deg, rgba(251, 191, 36, 0.15) 0%, rgba(245, 158, 11, 0.05) 100%);
-  border: 1px solid rgba(251, 191, 36, 0.25);
+  background: linear-gradient(180deg, rgba(251, 191, 36, 0.12) 0%, rgba(245, 158, 11, 0.04) 100%);
+  border: 1px solid rgba(251, 191, 36, 0.2);
   border-radius: 8px;
   color: #fbbf24;
   flex-shrink: 0;
 }
-.scratchpad-launcher-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  text-align: left;
-}
-.scratchpad-launcher-title {
+.scratchpad-toggle-label {
   font-family: 'Inter', system-ui, sans-serif;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: #ffffff;
   letter-spacing: -0.005em;
 }
-.scratchpad-launcher-hint {
+.scratchpad-toggle-hint {
   font-family: 'Inter', system-ui, sans-serif;
-  font-size: 10px;
+  font-size: 12px;
   color: rgba(255, 255, 255, 0.45);
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  margin-left: auto;
 }
-.scratchpad-launcher-hint kbd {
+.scratchpad-toggle-hint kbd {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 600;
-  padding: 1px 5px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 1px 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 4px;
   color: rgba(255, 255, 255, 0.7);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset;
 }
-@media (max-width: 640px) {
-  .scratchpad-launcher-hint { display: none; }
-  .scratchpad-launcher { bottom: 16px; left: 16px; padding: 8px 12px 8px 10px; }
-}
-
-/* Panel */
-.scratchpad-panel {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 480px;
-  height: 70vh;
-  max-height: 600px;
-  z-index: 50;
-  background: linear-gradient(180deg, rgba(26, 37, 64, 0.98) 0%, rgba(20, 29, 51, 0.98) 100%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  backdrop-filter: blur(24px) saturate(180%);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 0 20px 0 0;
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.06) inset,
-    0 -16px 48px -12px rgba(0, 0, 0, 0.5),
-    16px 0 32px -8px rgba(0, 0, 0, 0.3);
-  display: flex;
-  flex-direction: column;
-  transform: translateY(100%);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-family: 'Inter', system-ui, sans-serif;
-  color: #ffffff;
-}
-.scratchpad-panel.is-open { transform: translateY(0); }
-
-.scratchpad-panel-header {
-  padding: 16px 20px;
+.scratchpad-toggle-chevron {
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+@media (max-width: 640px) {
+  .scratchpad-toggle-hint { display: none; }
+}
+
+/* EXPANDED — body */
+.scratchpad-body { display: none; }
+.scratchpad-inline[data-state="expanded"] .scratchpad-body {
+  display: flex;
+  flex-direction: column;
+  animation: scratchpad-expand 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.scratchpad-inline[data-state="expanded"] .scratchpad-toggle { display: none; }
+@keyframes scratchpad-expand {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.scratchpad-body-header {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
-.scratchpad-panel-title {
+.scratchpad-body-title {
   font-family: 'Inter', system-ui, sans-serif;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: #ffffff;
   display: inline-flex;
   align-items: center;
   gap: 8px;
 }
-.scratchpad-panel-title-icon { color: #fbbf24; display: inline-flex; }
-.scratchpad-panel-actions { display: flex; gap: 6px; }
+.scratchpad-body-title-icon { color: #fbbf24; display: flex; }
+.scratchpad-body-hint {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.45);
+  font-style: italic;
+}
+.scratchpad-body-actions { margin-left: auto; display: flex; gap: 6px; }
+
 .scratchpad-action-btn {
   width: 28px;
   height: 28px;
@@ -6569,27 +6562,26 @@ body.practice-page .unit-row-fill {
   justify-content: center;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 8px;
-  color: rgba(255, 255, 255, 0.6);
+  border-radius: 7px;
+  color: rgba(255, 255, 255, 0.55);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 .scratchpad-action-btn:hover {
   background: rgba(255, 255, 255, 0.08);
   color: #ffffff;
   border-color: rgba(255, 255, 255, 0.12);
 }
-.scratchpad-action-btn.scratch-clear:hover {
+.scratchpad-action-btn.scratchpad-clear-btn:hover {
   color: #fca5a5;
   background: rgba(239, 68, 68, 0.1);
   border-color: rgba(239, 68, 68, 0.25);
 }
 
 .scratchpad-canvas-area {
-  flex: 1;
-  padding: 20px;
+  height: 280px;
+  padding: 14px;
   position: relative;
-  overflow: hidden;
 }
 .scratchpad-canvas {
   display: block;
@@ -6598,30 +6590,30 @@ body.practice-page .unit-row-fill {
   background:
     linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    rgba(255, 255, 255, 0.02);
+    rgba(255, 255, 255, 0.015);
   background-size: 24px 24px;
   border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
+  border-radius: 10px;
   cursor: crosshair;
   touch-action: none;
 }
 
 .scratchpad-toolbar {
-  padding: 12px 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 10px 14px;
   display: flex;
-  gap: 8px;
   align-items: center;
+  gap: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 .scratchpad-tool {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 8px;
+  border-radius: 7px;
   color: rgba(255, 255, 255, 0.6);
   cursor: pointer;
   transition: all 0.15s ease;
@@ -6632,29 +6624,23 @@ body.practice-page .unit-row-fill {
   color: #ffffff;
 }
 .scratchpad-tool.is-active {
-  background: linear-gradient(180deg, rgba(251, 191, 36, 0.2) 0%, rgba(245, 158, 11, 0.1) 100%);
+  background: linear-gradient(180deg, rgba(251, 191, 36, 0.18) 0%, rgba(245, 158, 11, 0.08) 100%);
   border-color: rgba(251, 191, 36, 0.3);
   color: #fbbf24;
 }
-.scratchpad-toolbar-hint {
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.4);
-  font-style: italic;
-  margin-left: auto;
+.scratchpad-tool-divider {
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 0 4px;
 }
 
-@media (max-width: 768px) {
-  .scratchpad-panel {
-    width: 100%;
-    height: 60vh;
-    border-right: none;
-    border-radius: 20px 20px 0 0;
-  }
-  .scratchpad-toolbar-hint { display: none; }
+@media (max-width: 640px) {
+  .scratchpad-canvas-area { height: 220px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .scratchpad-panel { transition: none; }
-  .scratchpad-launcher { transition: none; }
+  .scratchpad-inline { transition: none; }
+  .scratchpad-inline[data-state="expanded"] .scratchpad-body { animation: none; }
 }
 
 

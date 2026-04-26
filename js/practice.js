@@ -409,6 +409,7 @@
             <div class="progress-text"><span id="progress-num">1</span> / ${questions.length}</div>
           </div>
           <div id="qbox"></div>
+          <div id="scratchpad-mount"></div>
         </div>
         <aside class="performance-panel" id="perf-panel"></aside>
       </div>`;
@@ -462,6 +463,8 @@
       if (i >= questions.length) {
         return finish();
       }
+      // Reset the scratchpad between questions so kids don't see prior scribbles.
+      try { window.STAARScratchpad?.reset(); } catch (_) {}
       progressNum.textContent = i + 1;
       const pct = (i / questions.length) * 100;
       bar.style.width = `${pct}%`;
