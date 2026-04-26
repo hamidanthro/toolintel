@@ -1,5 +1,5 @@
 /**
- * STAAR Prep — Friends + safe chat
+ * StarTest — Friends + safe chat
  *
  * Safe-mode only: users exchange canned phrases / emoji reactions, never
  * free text. The chat code is validated server-side too.

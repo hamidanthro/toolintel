@@ -1,4 +1,4 @@
-// STAAR Prep — interactive practice runner
+// StarTest — interactive practice runner
 // URL params:  ?g=<gradeSlug>&u=<unitId>&l=<lessonId>
 // Loads data/<gradeSlug>-curriculum.json, builds a question queue, checks answers,
 // and on incorrect answers calls the AI tutor endpoint for an interactive explanation.

@@ -1,4 +1,4 @@
-// STAAR Prep — kid-friendly effects: sound (Web Audio), haptics, confetti.
+// StarTest — kid-friendly effects: sound (Web Audio), haptics, confetti.
 // Zero dependencies, zero asset files. All effects respect STAARPrefs.
 (function () {
   const prefs = () => (window.STAARPrefs && window.STAARPrefs.get()) || {};

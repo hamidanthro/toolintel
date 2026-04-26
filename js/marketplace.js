@@ -216,7 +216,7 @@
         <div class="consent-card">
           <label>
             <input type="checkbox" id="co-consent" />
-            <span>I am the parent or legal guardian of this child. I consent to STAAR Prep collecting this address and shipping the toy here. I understand the cents have no cash value outside this app.</span>
+            <span>I am the parent or legal guardian of this child. I consent to StarTest collecting this address and shipping the toy here. I understand the points have no cash value outside this app.</span>
           </label>
         </div>
 

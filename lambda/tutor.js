@@ -1,4 +1,4 @@
-// STAAR Prep — AI Tutor Lambda (OpenAI)
+// StarTest — AI Tutor Lambda (OpenAI)
 // Provides interactive, age-appropriate math help when a student answers incorrectly.
 //
 // Endpoint:

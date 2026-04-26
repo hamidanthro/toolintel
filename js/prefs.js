@@ -1,4 +1,4 @@
-// STAAR Prep — user preferences (sound, read-aloud, dyslexia font, daily goal).
+// StarTest — user preferences (sound, read-aloud, dyslexia font, daily goal).
 // Stored locally per-browser. Applied on every page load via init().
 (function () {
   const KEY = 'staar.prefs';

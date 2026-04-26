@@ -1,4 +1,4 @@
-// STAAR Prep — Cloud accounts (username + password)
+// StarTest — Cloud accounts (username + password)
 //
 // Talks to the staar-tutor Lambda (same endpoint used by the AI tutor)
 // with action: signup | login | getStats | putStats.
@@ -98,28 +98,145 @@
 
   // ----- Login screen -----
   function showLogin(prefilled) {
-    const overlay = openModal(`
-      <h3 class="modal-title">Sign in to STAAR Prep</h3>
-      <p class="modal-message">Use your username and password to keep your progress on every device.</p>
+    closeModal();
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay auth-modal signin-overlay';
+    overlay.innerHTML = `
+      <div class="signin-modal" role="dialog" aria-modal="true" aria-labelledby="signin-title">
+        <div class="signin-modal-accent"></div>
+        <button type="button" class="signin-modal-close" aria-label="Close" data-act="close">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M4 4L12 12M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <div class="signin-modal-brand">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+            <path d="M20 4L25 14L36 15.5L28 23L30 34L20 28.5L10 34L12 23L4 15.5L15 14L20 4Z"
+              fill="url(#modalStarGrad)"
+              stroke="rgba(251, 191, 36, 0.4)" stroke-width="0.5"/>
+            <defs>
+              <linearGradient id="modalStarGrad" x1="4" y1="4" x2="36" y2="34" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#fde68a"/><stop offset="0.5" stop-color="#fbbf24"/><stop offset="1" stop-color="#f59e0b"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <h2 id="signin-title" class="signin-modal-title">Welcome back</h2>
+        <p class="signin-modal-subtitle">Sign in to keep your progress, streaks, and points across every device.</p>
 
-      <label class="auth-label">Username</label>
-      <input type="text" class="auth-input" id="login-user" autocomplete="username"
-             autocapitalize="off" maxlength="24" placeholder="e.g. mayam" value="${escapeHtml(prefilled || '')}" />
+        <div class="signin-sso-buttons">
+          <button type="button" class="signin-sso-btn" data-sso="google" data-comingsoon="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            Continue with Google
+          </button>
+          <button type="button" class="signin-sso-btn" data-sso="apple" data-comingsoon="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+            </svg>
+            Continue with Apple
+          </button>
+        </div>
 
-      <label class="auth-label">Password</label>
-      <input type="password" class="auth-input" id="login-pass" autocomplete="current-password" />
+        <div class="signin-divider"><span class="signin-divider-text">or sign in with username</span></div>
 
-      <p class="auth-error" id="login-err" hidden></p>
-      <div class="modal-actions">
-        <button type="button" class="btn btn-ghost" data-act="signup">Create account</button>
-        <button type="button" class="btn btn-primary" data-act="login">Sign in</button>
+        <form class="signin-form" novalidate>
+          <div class="signin-field">
+            <label for="login-user" class="signin-label">Username</label>
+            <input id="login-user" type="text" class="signin-input"
+              autocomplete="username" autocapitalize="off" maxlength="24"
+              placeholder="your-username" value="${escapeHtml(prefilled || '')}" />
+          </div>
+          <div class="signin-field">
+            <div class="signin-label-row">
+              <label for="login-pass" class="signin-label">Password</label>
+              <a href="#" class="signin-forgot" data-act="forgot">Forgot?</a>
+            </div>
+            <div class="signin-input-wrapper">
+              <input id="login-pass" type="password" class="signin-input"
+                autocomplete="current-password" placeholder="••••••••••" />
+              <button type="button" class="signin-password-toggle" aria-label="Show password" data-act="toggle-pass">
+                <svg class="eye-on" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                  <path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z"/><circle cx="8" cy="8" r="2"/>
+                </svg>
+                <svg class="eye-off" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" style="display:none">
+                  <path d="M1 1l14 14"/><path d="M3.5 3.5C2 4.7 1 8 1 8s2.5 5 7 5c1.5 0 2.8-.4 3.9-1"/><path d="M14 11c.6-.7 1-1.5 1-1.5s-2.5-5-7-5c-.7 0-1.4.1-2 .3"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <p class="auth-error signin-error" id="login-err" hidden></p>
+
+          <button type="button" class="signin-submit" data-act="login">
+            <span class="signin-submit-label">Sign in</span>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <path d="M3 7H11M11 7L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </form>
+
+        <div class="signin-modal-footer">
+          <span class="signin-footer-text">New to StarTest?</span>
+          <a href="#" class="signin-footer-link" data-act="signup">Create an account</a>
+        </div>
+
+        <div class="signin-trust">
+          <span class="trust-item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            Secure
+          </span>
+          <span class="trust-divider">·</span>
+          <span class="trust-item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            COPPA-compliant
+          </span>
+          <span class="trust-divider">·</span>
+          <span class="trust-item">No ads · ever</span>
+        </div>
       </div>
-    `);
+    `;
+    document.body.appendChild(overlay);
+    requestAnimationFrame(() => overlay.classList.add('open'));
+    overlay.addEventListener('click', e => { if (e.target === overlay) dismissModal(); });
+    overlay.querySelector('[data-act="close"]').addEventListener('click', dismissModal);
+    document.addEventListener('keydown', escClose);
+
     const userIn = overlay.querySelector('#login-user');
     const passIn = overlay.querySelector('#login-pass');
     const err = overlay.querySelector('#login-err');
     const btn = overlay.querySelector('[data-act="login"]');
     setTimeout(() => (prefilled ? passIn : userIn).focus(), 50);
+
+    // Password visibility toggle
+    const toggleBtn = overlay.querySelector('[data-act="toggle-pass"]');
+    toggleBtn.addEventListener('click', () => {
+      const hidden = passIn.type === 'password';
+      passIn.type = hidden ? 'text' : 'password';
+      toggleBtn.setAttribute('aria-label', hidden ? 'Hide password' : 'Show password');
+      toggleBtn.querySelector('.eye-on').style.display = hidden ? 'none' : '';
+      toggleBtn.querySelector('.eye-off').style.display = hidden ? '' : 'none';
+    });
+
+    // SSO coming-soon
+    overlay.querySelectorAll('[data-comingsoon="true"]').forEach(b => {
+      b.addEventListener('click', () => {
+        if (window.STAARAuth && window.STAARAuth.showToast) {
+          window.STAARAuth.showToast('Coming soon — sign in with username for now.');
+        }
+      });
+    });
+
+    overlay.querySelector('[data-act="forgot"]').addEventListener('click', e => {
+      e.preventDefault();
+      if (window.STAARAuth && window.STAARAuth.showToast) {
+        window.STAARAuth.showToast('Password reset is coming soon. Email support@toolintel.ai if you need help.');
+      }
+    });
 
     const submit = async () => {
       err.hidden = true;
@@ -147,7 +264,10 @@
     };
     [userIn, passIn].forEach(i => i.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); }));
     btn.addEventListener('click', submit);
-    overlay.querySelector('[data-act="signup"]').addEventListener('click', () => showSignup(userIn.value));
+    overlay.querySelector('[data-act="signup"]').addEventListener('click', e => {
+      e.preventDefault();
+      showSignup(userIn.value);
+    });
   }
 
   // ----- Signup screen -----
