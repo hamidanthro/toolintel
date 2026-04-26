@@ -581,13 +581,31 @@
     return v;
   }
 
+  function renderChoiceLabel(c) {
+    // For tiny comparison-symbol choices, also show a plain-language helper
+    // so 3rd graders can clearly tell ">", "<", and "=" apart.
+    const SYMBOL_HINTS = {
+      '<': 'less than',
+      '>': 'greater than',
+      '=': 'equal to',
+      '≤': 'less than or equal',
+      '≥': 'greater than or equal',
+      '≠': 'not equal to'
+    };
+    const hint = SYMBOL_HINTS[String(c).trim()];
+    if (hint) {
+      return `<span class="choice-symbol">${escapeHtml(c)}</span><span class="choice-hint"> (${hint})</span>`;
+    }
+    return `<span>${escapeHtml(c)}</span>`;
+  }
+
   function renderQuestion(q, locked) {
     let body = '';
     if (q.type === 'multiple_choice') {
       body = q.choices.map((c, idx) => `
         <label class="choice">
           <input type="radio" name="ans" value="${escapeAttr(c)}" required />
-          <span>${escapeHtml(c)}</span>
+          ${renderChoiceLabel(c)}
         </label>
       `).join('');
     } else {

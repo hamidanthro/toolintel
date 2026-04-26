@@ -341,6 +341,15 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 .choice input { margin: 0; transform: scale(1.15); accent-color: var(--blue); }
+.choice .choice-symbol {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+  min-width: 1.4em;
+  display: inline-block;
+  text-align: center;
+}
+.choice .choice-hint { color: var(--text-muted, #6b7280); font-size: 0.95rem; }
 
 .num-input {
   width: 100%;
