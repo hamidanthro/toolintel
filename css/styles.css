@@ -7854,3 +7854,404 @@ input[type="button"] {
     display: none !important;
   }
 }
+
+/* ============================================================
+   PROMPT 27 — MOBILE BOTTOM TAB BAR
+   Primary nav on mobile. Hidden on desktop and on practice runner.
+   Discipline: only @media (max-width: 768px) overrides below.
+   ============================================================ */
+
+.mobile-tabbar {
+  display: none; /* shown on mobile via media query */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 60;
+  padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(180deg, rgba(20, 29, 51, 0.95) 0%, rgba(15, 22, 41, 0.98) 100%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 -1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 -8px 24px -8px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mobile-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 6px 4px;
+  min-height: 56px;
+  background: transparent;
+  border: none;
+  text-decoration: none;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.55);
+  font-family: 'Inter', system-ui, sans-serif;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.15s ease;
+}
+.mobile-tab:active { color: rgba(255, 255, 255, 0.85); }
+.mobile-tab.is-active { color: #fbbf24; }
+.mobile-tab.is-active::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 3px;
+  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+  border-radius: 999px;
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+}
+.mobile-tab-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+}
+.mobile-tab-icon svg { display: block; }
+.mobile-tab-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.mobile-tab-badge {
+  position: absolute;
+  top: 6px;
+  right: calc(50% - 22px);
+  min-width: 18px;
+  height: 16px;
+  padding: 0 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  font-family: 'Inter', system-ui, sans-serif;
+  color: #0a1628;
+  background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
+  border-radius: 999px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.4) inset,
+    0 2px 6px rgba(251, 191, 36, 0.3);
+}
+
+.mobile-tab-avatar {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+  color: #ffffff;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+}
+.mobile-tab.is-active .mobile-tab-avatar {
+  border-color: rgba(251, 191, 36, 0.6);
+  box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.2);
+}
+
+.mobile-tab--center {
+  flex: 0 0 auto;
+  margin-top: -22px;
+  padding: 0 8px;
+  align-items: center;
+  gap: 4px;
+}
+.mobile-tab-center-button {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
+  border: 3px solid #060d1f;
+  border-radius: 50%;
+  color: #0a1628;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.4) inset,
+    0 0 0 1px rgba(251, 191, 36, 0.4),
+    0 8px 20px -4px rgba(251, 191, 36, 0.5),
+    0 4px 8px rgba(0, 0, 0, 0.3);
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.mobile-tab--center:active .mobile-tab-center-button { transform: scale(0.92); }
+.mobile-tab--center.is-active::before { display: none; }
+.mobile-tab-label--center {
+  color: #fbbf24;
+  font-weight: 700;
+}
+
+/* ----- Profile sheet (opened by Me tab) ----- */
+.profile-sheet-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 1310;
+  background: rgba(6, 13, 31, 0.7);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.profile-sheet-scrim[data-open="true"] {
+  opacity: 1;
+  pointer-events: auto;
+}
+.profile-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1320;
+  max-height: 85vh;
+  max-height: 85dvh;
+  background: linear-gradient(180deg, rgba(26, 37, 64, 0.98) 0%, rgba(15, 22, 41, 0.98) 100%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-bottom: none;
+  border-radius: 24px 24px 0 0;
+  padding: 8px 16px calc(24px + env(safe-area-inset-bottom, 0px));
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.08) inset,
+    0 -16px 48px -12px rgba(0, 0, 0, 0.5);
+  transform: translateY(100%);
+  transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.profile-sheet[data-open="true"] { transform: translateY(0); }
+.profile-sheet-handle {
+  width: 36px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  margin: 8px auto 16px;
+}
+.profile-sheet-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 16px;
+}
+.profile-sheet-avatar {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-family: 'Instrument Serif', 'Times New Roman', serif;
+  font-size: 22px;
+  color: #ffffff;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.3);
+  flex-shrink: 0;
+}
+.profile-sheet-identity {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.profile-sheet-name {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+.profile-sheet-username {
+  font-family: 'JetBrains Mono', 'Menlo', ui-monospace, monospace;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+}
+.profile-sheet-close {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.profile-sheet-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+}
+.profile-stat {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.profile-stat-value {
+  font-family: 'Instrument Serif', 'Times New Roman', serif;
+  font-size: 24px;
+  font-weight: 400;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.profile-stat-label {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+.profile-sheet-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.profile-sheet-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s ease;
+  width: 100%;
+  text-align: left;
+}
+.profile-sheet-row:active { background: rgba(255, 255, 255, 0.06); }
+.profile-sheet-row-icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.6);
+  flex-shrink: 0;
+}
+.profile-sheet-row-chevron {
+  margin-left: auto;
+  color: rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+}
+.profile-sheet-row--signout {
+  margin-top: 8px;
+  color: rgba(248, 113, 113, 0.95);
+  background: rgba(239, 68, 68, 0.06);
+  border-color: rgba(239, 68, 68, 0.15);
+}
+.profile-sheet-row--signout .profile-sheet-row-icon {
+  color: rgba(248, 113, 113, 0.7);
+}
+
+/* ----- Mobile activation + supersedes Prompt 26 hamburger + floating CTA ----- */
+@media (max-width: 768px) {
+  .mobile-tabbar {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-around;
+  }
+  /* Tab bar slides down when keyboard is up */
+  body.input-focused .mobile-tabbar {
+    transform: translateY(100%);
+  }
+  /* Push body content up so the tab bar doesn't cover the footer */
+  body {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  }
+  /* Practice page = full-screen, no tab bar */
+  body.no-mobile-tabbar {
+    padding-bottom: 0;
+  }
+  body.no-mobile-tabbar .mobile-tabbar { display: none !important; }
+
+  /* Tab bar replaces hamburger + floating CTA from Prompt 26 */
+  .mobile-menu-toggle,
+  .mobile-menu-panel,
+  .mobile-menu-scrim,
+  .floating-practice-cta {
+    display: none !important;
+  }
+
+  /* Header: brand + points pill only (chat moves to friends area; user moves to Me tab) */
+  .site-header {
+    padding-top: calc(6px + env(safe-area-inset-top, 0px));
+  }
+  .site-header .container { height: 44px; }
+  .site-header .nav,
+  .site-header .user-pill,
+  .site-header .user-menu,
+  .site-header .chat-bell,
+  .site-header #user-slot .user-menu,
+  .site-header #user-slot .user-pill,
+  .site-header #user-slot .chat-bell,
+  .site-header #user-slot .admin-badge,
+  .site-header #user-slot .user-signin {
+    display: none !important;
+  }
+  .site-header .wallet-pill,
+  .site-header #user-slot .wallet-pill {
+    display: inline-flex;
+    margin-left: auto;
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  /* Lift chat / friends widget above the tab bar */
+  .chat-widget,
+  #chat-widget,
+  [class*="chat-widget"],
+  [id*="tawk"],
+  [class*="tawk"] {
+    bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  body.no-mobile-tabbar .chat-widget,
+  body.no-mobile-tabbar [id*="tawk"],
+  body.no-mobile-tabbar [class*="tawk"] {
+    bottom: 16px !important;
+  }
+}
+
+/* Belt-and-suspenders: never show tab bar / sheet on desktop */
+@media (min-width: 769px) {
+  .mobile-tabbar,
+  .profile-sheet,
+  .profile-sheet-scrim {
+    display: none !important;
+  }
+}

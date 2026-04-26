@@ -589,6 +589,7 @@
       slot.innerHTML = `<button type="button" class="btn btn-primary user-signin">Sign in</button>`;
       slot.querySelector('.user-signin').addEventListener('click', () => showLogin());
       try { ensureMobileMenu(); } catch (_) {}
+      try { ensureMobileTabBar(); } catch (_) {}
       return;
     }
     const wallet = formatCents(u.balanceCents || 0);
@@ -637,6 +638,12 @@
       try { window.location.assign('/'); } catch (_) { window.location.href = '/'; }
     });
     try { ensureMobileMenu(); } catch (_) {}
+    try { ensureMobileTabBar(); } catch (_) {}
+    // Live-update tab bar balance badge if present.
+    try {
+      const badge = document.querySelector('[data-tab-balance]');
+      if (badge) badge.textContent = String(u.balanceCents || 0);
+    } catch (_) {}
   }
 
   // Compare grade levels. Returns numeric rank: 0 for K, 1..8 for grade-N, 9 for algebra-1, -Infinity if unknown.
@@ -798,6 +805,177 @@
   }
 
   // ============================================================
+  // MOBILE BOTTOM TAB BAR (Prompt 27)
+  // Replaces hamburger as primary nav on mobile.
+  // Hidden on practice.html (full-screen mode).
+  // ============================================================
+  function gradeShortLabel(slug) {
+    if (!slug) return '—';
+    if (slug === 'grade-k') return 'K';
+    if (slug === 'algebra-1') return 'A1';
+    const m = String(slug).match(/grade-(\d+)/);
+    return m ? m[1] : '—';
+  }
+
+  function ensureMobileTabBar() {
+    const path = (location.pathname || '').toLowerCase();
+    // Practice runner gets full-screen mode — no tabbar.
+    if (path.indexOf('practice.html') !== -1) {
+      document.body.classList.add('no-mobile-tabbar');
+      // If a stale tabbar exists from a prior render, remove it.
+      const stale = document.querySelector('.mobile-tabbar');
+      if (stale) stale.remove();
+      return;
+    }
+
+    const u = currentUser();
+    const stamp = u
+      ? `u:${u.userId || u.username}:${u.balanceCents || 0}:${u.isAdmin ? 1 : 0}:${u.grade || ''}`
+      : 'guest';
+    const existing = document.querySelector('.mobile-tabbar');
+    if (existing && existing.dataset.staarStamp === stamp) return;
+    if (existing) existing.remove();
+
+    const isOnHome        = path.endsWith('index.html') || path === '/' || path === '';
+    const isOnMarketplace = path.indexOf('marketplace') !== -1;
+    const isOnPractice    = path.indexOf('grades.html') !== -1 || path.indexOf('grade.html') !== -1;
+    const isOnAbout       = path.indexOf('about') !== -1;
+    const isOnSettings    = path.indexOf('settings') !== -1 || path.indexOf('admin') !== -1;
+
+    const practiceHref = (u && u.grade) ? `practice.html?g=${encodeURIComponent(u.grade)}` : 'grades.html';
+    const balance = u ? (u.balanceCents || 0) : 0;
+
+    const tabBar = document.createElement('nav');
+    tabBar.className = 'mobile-tabbar';
+    tabBar.setAttribute('role', 'navigation');
+    tabBar.setAttribute('aria-label', 'Primary');
+    tabBar.dataset.staarStamp = stamp;
+
+    const profileTabInner = u
+      ? `<span class="mobile-tab-avatar" style="background:${u.color || '#1e40af'}">${escapeHtml(avatar(u.displayName || u.username))}</span>`
+      : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+
+    tabBar.innerHTML = `
+      <a class="mobile-tab ${isOnHome ? 'is-active' : ''}" href="index.html" aria-label="Home">
+        <span class="mobile-tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+        <span class="mobile-tab-label">Home</span>
+      </a>
+      <a class="mobile-tab ${isOnMarketplace ? 'is-active' : ''}" href="marketplace.html" aria-label="Toys">
+        <span class="mobile-tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/></svg></span>
+        <span class="mobile-tab-label">Toys</span>
+        ${u ? `<span class="mobile-tab-badge" data-tab-balance>${balance}</span>` : ''}
+      </a>
+      <a class="mobile-tab mobile-tab--center ${isOnPractice ? 'is-active' : ''}" href="${practiceHref}" aria-label="Practice">
+        <span class="mobile-tab-center-button"><svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"/></svg></span>
+        <span class="mobile-tab-label mobile-tab-label--center">Practice</span>
+      </a>
+      <a class="mobile-tab ${isOnAbout ? 'is-active' : ''}" href="about.html" aria-label="How it works">
+        <span class="mobile-tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
+        <span class="mobile-tab-label">Learn</span>
+      </a>
+      <button type="button" class="mobile-tab ${isOnSettings ? 'is-active' : ''}" data-action="open-profile-sheet" aria-label="Profile">
+        <span class="mobile-tab-icon">${profileTabInner}</span>
+        <span class="mobile-tab-label">${u ? 'Me' : 'Sign in'}</span>
+      </button>
+    `;
+    document.body.appendChild(tabBar);
+
+    tabBar.querySelector('[data-action="open-profile-sheet"]').addEventListener('click', () => {
+      if (!currentUser()) { showLogin(); return; }
+      openProfileSheet();
+    });
+  }
+
+  function openProfileSheet() {
+    const u = currentUser();
+    if (!u) return;
+    if (document.querySelector('.profile-sheet[data-open="true"]')) return;
+
+    let scrim = document.querySelector('.profile-sheet-scrim');
+    if (!scrim) {
+      scrim = document.createElement('div');
+      scrim.className = 'profile-sheet-scrim';
+      document.body.appendChild(scrim);
+    }
+    let sheet = document.querySelector('.profile-sheet');
+    if (sheet) sheet.remove();
+    sheet = document.createElement('div');
+    sheet.className = 'profile-sheet';
+    sheet.setAttribute('role', 'dialog');
+    sheet.setAttribute('aria-modal', 'true');
+    sheet.setAttribute('aria-label', 'Profile menu');
+    document.body.appendChild(sheet);
+
+    const isAdmin = u.isAdmin === true;
+    const wallet = formatCents(u.balanceCents || 0);
+    const lifetime = formatCents(u.lifetimeCents || 0);
+
+    sheet.innerHTML = `
+      <div class="profile-sheet-handle" aria-hidden="true"></div>
+      <header class="profile-sheet-header">
+        <div class="profile-sheet-avatar" style="background:${u.color || '#1e40af'}">${escapeHtml(avatar(u.displayName || u.username))}</div>
+        <div class="profile-sheet-identity">
+          <div class="profile-sheet-name">${escapeHtml(u.displayName || u.username)}</div>
+          <div class="profile-sheet-username">@${escapeHtml(u.username)}</div>
+        </div>
+        <button class="profile-sheet-close" type="button" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </header>
+      <div class="profile-sheet-stats">
+        <div class="profile-stat"><div class="profile-stat-value">${wallet}</div><div class="profile-stat-label">Wallet</div></div>
+        <div class="profile-stat"><div class="profile-stat-value">${lifetime}</div><div class="profile-stat-label">Lifetime</div></div>
+        <div class="profile-stat"><div class="profile-stat-value">${u.grade ? gradeShortLabel(u.grade) : '—'}</div><div class="profile-stat-label">Grade</div></div>
+      </div>
+      <nav class="profile-sheet-nav">
+        <a class="profile-sheet-row" href="settings.html">
+          <span class="profile-sheet-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 005.6 15a1.65 1.65 0 00-1.51-1H4a2 2 0 010-4h.09A1.65 1.65 0 005.6 9 1.65 1.65 0 005.27 7.18l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H10a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V10a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>
+          Settings
+          <span class="profile-sheet-row-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </a>
+        ${isAdmin ? `
+        <a class="profile-sheet-row" href="admin.html">
+          <span class="profile-sheet-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+          Admin panel
+          <span class="profile-sheet-row-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </a>` : ''}
+        <button class="profile-sheet-row profile-sheet-row--signout" type="button" data-action="signout">
+          <span class="profile-sheet-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg></span>
+          Sign out
+        </button>
+      </nav>
+    `;
+
+    requestAnimationFrame(() => {
+      sheet.dataset.open = 'true';
+      scrim.dataset.open = 'true';
+      document.body.style.overflow = 'hidden';
+    });
+
+    function closeSheet() {
+      sheet.dataset.open = 'false';
+      scrim.dataset.open = 'false';
+      document.body.style.overflow = '';
+      setTimeout(() => { try { sheet.remove(); } catch (_) {} }, 280);
+    }
+    sheet.querySelector('.profile-sheet-close').addEventListener('click', closeSheet);
+    scrim.addEventListener('click', closeSheet, { once: true });
+    document.addEventListener('keydown', function escListener(e) {
+      if (e.key === 'Escape') {
+        closeSheet();
+        document.removeEventListener('keydown', escListener);
+      }
+    });
+    sheet.querySelector('[data-action="signout"]').addEventListener('click', () => {
+      closeSheet();
+      setTimeout(() => {
+        clearSession();
+        try { window.location.assign('/'); } catch (_) { window.location.href = '/'; }
+      }, 300);
+    });
+  }
+
+  // ============================================================
   // MOBILE: hide chat widget when input is focused (body class)
   // ============================================================
   function setupInputFocusedClass() {
@@ -875,6 +1053,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     refreshHeader();
     ensureMobileMenu();
+    ensureMobileTabBar();
     setupInputFocusedClass();
     setupIOSKeyboardHandler();
     if (window.STAARAuth.requireLoginOnLoad && !currentUser()) {
