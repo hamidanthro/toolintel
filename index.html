@@ -241,11 +241,14 @@
           window.STAARAuth.api('leaderboard', { token: window.STAARAuth.token() })
         ]);
         // First-time grade picker for accounts created before grades were required.
-        if (!d.grade) {
+        // Skip for admin accounts and don't re-ask in the same session if the user cancels.
+        if (!d.grade && !u.isAdmin && !sessionStorage.getItem('staar.gradePromptDismissed')) {
           const g = await promptGradeIfMissing(d);
           if (g) {
             d.grade = g;
             renderGradeGrid();
+          } else {
+            sessionStorage.setItem('staar.gradePromptDismissed', '1');
           }
         }
         document.getElementById('dash-correct').textContent = (d.correct || 0).toLocaleString();
