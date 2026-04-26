@@ -57,10 +57,31 @@ a:hover { text-decoration: underline; }
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   font-weight: 700;
   font-size: 1.05rem;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
   color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
 }
-.brand span { color: var(--accent); }
+.brand:hover { text-decoration: none; opacity: 0.92; }
+.brand-logo {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 8px rgba(251, 191, 36, 0.35)) drop-shadow(0 0 1px rgba(251, 191, 36, 0.4));
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.brand:hover .brand-logo { transform: rotate(72deg) scale(1.06); }
+.brand-text { font-weight: 700; }
+.brand-text-accent {
+  background: linear-gradient(135deg, #fde047 0%, #fbbf24 50%, #f59e0b 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
 .nav { display: flex; gap: 28px; }
 .nav a {
   font-family: 'Inter', sans-serif;
