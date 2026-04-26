@@ -1643,7 +1643,7 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
     0 16px 40px rgba(0, 0, 0, 0.5);
   padding: 6px;
   min-width: 180px;
-  z-index: 50;
+  z-index: 1200;
 }
 .user-menu button {
   display: block;
@@ -5891,6 +5891,7 @@ body.practice-page .site-header {
   backdrop-filter: saturate(140%) blur(14px);
   -webkit-backdrop-filter: saturate(140%) blur(14px);
   border-bottom: 1px solid rgba(255,255,255,0.06);
+  z-index: 60;
 }
 body.practice-page .site-header .brand-text { color: #ffffff; }
 body.practice-page .site-header .nav a {
