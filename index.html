@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260426w" />
+  <link rel="stylesheet" href="css/styles.css?v=20260426x" />
 </head>
 <body>
   <header class="site-header">
@@ -23,16 +23,61 @@
   </header>
 
   <section class="hero" id="hero-anon" hidden>
-    <div class="container">
-      <div class="hero-live-pill" id="hero-live" hidden>
-        <span class="hero-live-dot" aria-hidden="true"></span>
-        <span id="hero-live-text">Loading…</span>
+    <div class="container hero-content">
+      <div class="hero-left">
+        <div class="hero-live-pill" id="hero-live">
+          <span class="hero-live-dot" aria-hidden="true"></span>
+          <span id="hero-live-text">Now serving students in all 50 states</span>
+        </div>
+        <h1>Master your <span class="hero-accent">state's</span> test.</h1>
+        <p>Targeted practice aligned to your state's standards — for grades 3–8 and high school. Math, ELA, science, and more. Build skills, take full-length tests, and track progress parents trust.</p>
+        <div class="hero-cta">
+          <a href="grades.html" class="btn btn-primary">Start practicing</a>
+          <a href="about.html" class="btn btn-secondary">How it works</a>
+        </div>
       </div>
-      <h1>Master your <span class="hero-accent">state's</span> test.</h1>
-      <p>Targeted practice aligned to your state's standards — for grades 3–8 and high school. Math, ELA, science, and more. Build skills, take full-length tests, and track progress parents trust.</p>
-      <div class="hero-cta">
-        <a href="grades.html" class="btn btn-primary">Start practicing</a>
-        <a href="about.html" class="btn btn-secondary">How it works</a>
+      <div class="hero-right" aria-hidden="true">
+        <div class="hero-visual">
+          <div class="mockup-card mockup-card--main">
+            <div class="mockup-card-header">
+              <span class="mockup-tag">GRADE 3 · MATH</span>
+              <span class="mockup-progress">Question 7 of 20</span>
+            </div>
+            <div class="mockup-question">
+              What is <span class="math-highlight">24 × 6</span>?
+            </div>
+            <div class="mockup-options">
+              <button class="mockup-option" type="button" tabindex="-1">130</button>
+              <button class="mockup-option mockup-option--correct" type="button" tabindex="-1">144 ✓</button>
+              <button class="mockup-option" type="button" tabindex="-1">154</button>
+              <button class="mockup-option" type="button" tabindex="-1">164</button>
+            </div>
+            <div class="mockup-footer">
+              <div class="mockup-streak">
+                <span class="streak-icon">🔥</span>
+                <span>7-day streak</span>
+              </div>
+              <div class="mockup-points">
+                <span class="points-icon">🪙</span>
+                <span>+15 cents</span>
+              </div>
+            </div>
+          </div>
+          <div class="mockup-card mockup-card--accent-top">
+            <div class="accent-icon">🏆</div>
+            <div class="accent-text">
+              <div class="accent-label">RANK</div>
+              <div class="accent-value">#3</div>
+            </div>
+          </div>
+          <div class="mockup-card mockup-card--accent-bottom">
+            <div class="accent-icon">🎁</div>
+            <div class="accent-text">
+              <div class="accent-label">UNLOCKED</div>
+              <div class="accent-value">LEGO Set</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -312,7 +357,7 @@
     });
     window.addEventListener('focus', () => { refreshLeaderboard(); refreshLiveCount(); });
 
-    // Live student count on the hero (guests only).
+    // Live student count on the hero (guests only). Evergreen fallback retained.
     async function refreshLiveCount() {
       const pill = document.getElementById('hero-live');
       const text = document.getElementById('hero-live-text');
@@ -320,16 +365,16 @@
       try {
         const r = await window.STAARAuth.api('liveCount', {});
         const online = r.online || 0;
-        const total = r.total || 0;
-        if (online > 0) {
-          text.textContent = `${online.toLocaleString()} student${online === 1 ? '' : 's'} practicing right now`;
-        } else if (total > 0) {
-          text.textContent = `${total.toLocaleString()} student${total === 1 ? '' : 's'} have joined — be next`;
+        if (online >= 5) {
+          text.textContent = `${online.toLocaleString()} students practicing right now`;
         } else {
-          text.textContent = 'Be the first to start practicing';
+          text.textContent = 'Now serving students in all 50 states';
         }
         pill.hidden = false;
-      } catch (_) { /* offline */ }
+      } catch (_) {
+        text.textContent = 'Now serving students in all 50 states';
+        pill.hidden = false;
+      }
     }
     let _liveInterval = null;
     function startLivePolling() {
