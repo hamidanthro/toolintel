@@ -1346,6 +1346,26 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
   color: var(--navy);
 }
 
+/* Dancing emoji for the leader */
+.lb-dancer {
+  display: inline-block;
+  font-size: 1.4rem;
+  margin-right: 6px;
+  transform-origin: 50% 90%;
+  animation: lb-dance 0.9s ease-in-out infinite;
+  filter: drop-shadow(0 1px 2px rgba(202, 138, 4, 0.4));
+}
+@keyframes lb-dance {
+  0%   { transform: translateY(0)    rotate(-12deg); }
+  25%  { transform: translateY(-3px) rotate(8deg); }
+  50%  { transform: translateY(0)    rotate(-8deg); }
+  75%  { transform: translateY(-3px) rotate(12deg); }
+  100% { transform: translateY(0)    rotate(-12deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lb-dancer { animation: none; }
+}
+
 .leaderboard .lb-empty {
   display: block;
   text-align: center;
