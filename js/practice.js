@@ -405,7 +405,7 @@
                 <span>Restart</span>
               </button>
             </div>
-            <div class="progress-bar"><div class="progress-fill" id="bar"></div></div>
+            <div class="progress-bar"><div class="progress-track"><div class="progress-fill" id="bar"></div></div><div class="progress-pulse" id="bar-pulse"></div></div>
             <div class="progress-text"><span id="progress-num">1</span> / ${questions.length}</div>
           </div>
           <div id="qbox"></div>
@@ -415,6 +415,7 @@
 
     const qbox = document.getElementById('qbox');
     const bar = document.getElementById('bar');
+    const barPulse = document.getElementById('bar-pulse');
     const progressNum = document.getElementById('progress-num');
     const perfPanel = document.getElementById('perf-panel');
     const restartBtn = document.getElementById('restart-btn');
@@ -462,7 +463,9 @@
         return finish();
       }
       progressNum.textContent = i + 1;
-      bar.style.width = `${(i / questions.length) * 100}%`;
+      const pct = (i / questions.length) * 100;
+      bar.style.width = `${pct}%`;
+      if (barPulse) barPulse.style.left = `${pct}%`;
       const q = questions[i];
       markSeen(q.id);
       qbox.innerHTML = renderQuestion(q, isLocked);
@@ -645,6 +648,7 @@
 
     function finish() {
       bar.style.width = '100%';
+      if (barPulse) barPulse.style.left = '100%';
       const pct = Math.round((correct / questions.length) * 100);
       const perfect = correct === questions.length && questions.length > 0;
       const justMastered = perfect && sKey && !isLocked;
@@ -1033,7 +1037,7 @@
         <div class="perf-stats">
           <div class="stat"><div class="stat-num">${s.correct}</div><div class="stat-label">correct</div></div>
           <div class="stat"><div class="stat-num">${s.total}</div><div class="stat-label">answered</div></div>
-          <div class="stat"><div class="stat-num">${s.streak}🔥</div><div class="stat-label">streak</div></div>
+          <div class="stat ${s.streak > 0 ? 'has-streak' : ''}"><div class="stat-num">${s.streak}${s.streak > 0 ? '<span class="streak-emoji">🔥</span>' : ''}</div><div class="stat-label">streak</div></div>
         </div>
       </div>
 

@@ -5886,36 +5886,58 @@ body.practice-page .btn-restart:hover {
   color: #fde68a;
 }
 
-/* Progress bar */
+/* Progress bar — wrapper holds track (clipped) + pulse (free to extend) */
 body.practice-page .progress-bar {
-  height: 8px;
+  position: relative;
+  height: 14px;
+  background: transparent;
+  overflow: visible;
+  display: flex;
+  align-items: center;
+}
+body.practice-page .progress-track {
+  width: 100%;
+  height: 6px;
   background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.04);
   border-radius: 999px;
   overflow: hidden;
-  position: relative;
 }
 body.practice-page .progress-fill {
   height: 100%;
+  width: 0;
   background: linear-gradient(90deg, #fde68a, #fbbf24 55%, #f59e0b);
   border-radius: 999px;
-  position: relative;
-  transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+  transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
   box-shadow: 0 0 16px rgba(251,191,36,0.45);
 }
-body.practice-page .progress-fill::after {
-  content: "";
+body.practice-page .progress-pulse {
   position: absolute;
-  right: 0; top: 50%;
-  width: 12px; height: 12px;
+  top: 50%;
+  left: 0;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   background: #fde68a;
-  transform: translate(50%, -50%);
-  box-shadow: 0 0 0 4px rgba(251,191,36,0.20), 0 0 18px rgba(251,191,36,0.7);
-  animation: progress-pulse 1.6s ease-in-out infinite;
+  transform: translate(-50%, -50%);
+  box-shadow:
+    0 0 0 4px rgba(251,191,36,0.20),
+    0 0 16px rgba(251,191,36,0.65),
+    inset 0 0 0 1px rgba(255,255,255,0.35);
+  animation: progress-pulse 2s ease-in-out infinite;
+  transition: left 0.5s cubic-bezier(0.4,0,0.2,1);
+  z-index: 2;
+  pointer-events: none;
 }
 @keyframes progress-pulse {
-  0%, 100% { box-shadow: 0 0 0 4px rgba(251,191,36,0.18), 0 0 18px rgba(251,191,36,0.55); }
-  50%      { box-shadow: 0 0 0 8px rgba(251,191,36,0.08), 0 0 26px rgba(251,191,36,0.85); }
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow: 0 0 0 4px rgba(251,191,36,0.20), 0 0 16px rgba(251,191,36,0.60), inset 0 0 0 1px rgba(255,255,255,0.35);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.20);
+    box-shadow: 0 0 0 6px rgba(251,191,36,0.14), 0 0 24px rgba(251,191,36,0.85), inset 0 0 0 1px rgba(255,255,255,0.45);
+  }
 }
 body.practice-page .progress-text {
   text-align: right;
@@ -6278,12 +6300,35 @@ body.practice-page .perf-stats {
   border-top: 1px solid rgba(255,255,255,0.06);
   padding-top: 14px;
 }
+body.practice-page .perf-stats .stat {
+  padding: 12px 8px;
+  background: rgba(255,255,255,0.03) !important;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+body.practice-page .perf-stats .stat:hover {
+  background: rgba(255,255,255,0.05) !important;
+  border-color: rgba(255,255,255,0.10);
+}
+body.practice-page .perf-stats .stat.has-streak {
+  background: linear-gradient(180deg, rgba(239,68,68,0.10), rgba(255,255,255,0.02)) !important;
+  border-color: rgba(239,68,68,0.22);
+}
 body.practice-page .perf-stats .stat-num {
   font-family: 'Instrument Serif', Georgia, serif;
-  font-size: 24px;
+  font-size: 26px;
   color: #ffffff;
   font-weight: 400;
   line-height: 1;
+  letter-spacing: -0.01em;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+}
+body.practice-page .streak-emoji {
+  font-size: 14px;
+  filter: drop-shadow(0 0 4px rgba(239,68,68,0.45));
 }
 body.practice-page .perf-stats .stat-label {
   font-size: 10px;
@@ -6291,7 +6336,7 @@ body.practice-page .perf-stats .stat-label {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: 600;
-  margin-top: 4px;
+  margin-top: 6px;
 }
 
 /* Last 20 dots — 10 col grid */
