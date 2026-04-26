@@ -37,8 +37,8 @@ a:hover { text-decoration: underline; }
 
 /* Header */
 .site-header {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
+  background: var(--navy);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   position: sticky;
   top: 0;
   z-index: 10;
@@ -52,12 +52,13 @@ a:hover { text-decoration: underline; }
 .brand {
   font-weight: 700;
   font-size: 1.15rem;
-  color: var(--navy);
+  color: #ffffff;
 }
 .brand span { color: var(--accent); }
 .nav { display: flex; gap: 22px; }
-.nav a { color: var(--text); font-size: 0.95rem; }
-.nav a.active { color: var(--blue); font-weight: 600; }
+.nav a { color: rgba(255, 255, 255, 0.85); font-size: 0.95rem; }
+.nav a:hover { color: #ffffff; }
+.nav a.active { color: #ffffff; font-weight: 600; }
 
 /* Hero */
 .hero {
