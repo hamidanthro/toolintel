@@ -978,6 +978,17 @@ async function handleLose(payload) {
   const lifetime = r.Item.lifetimeCents || 0;
   const mastered = r.Item.masteredSections || {};
 
+  // Always bump the monotonic answered counter FIRST — wrong answers count
+  // as attempts toward accuracy even when the section is mastered (no cents
+  // deducted). Fire-and-forget; we don't await the increment in the
+  // mastered short-circuit either.
+  ddb.send(new UpdateCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username },
+    UpdateExpression: 'SET lifetimeAnswered = if_not_exists(lifetimeAnswered, :z) + :one',
+    ExpressionAttributeValues: { ':z': 0, ':one': 1 }
+  })).catch(() => {});
+
   if (sectionKey && mastered[sectionKey]) {
     return ok({
       lostCents: 0,
@@ -989,14 +1000,8 @@ async function handleLose(payload) {
     });
   }
 
-  // Always bump the monotonic answered counter — wrong answers count as
-  // attempts even if no cents are deducted (floor at 0).
-  ddb.send(new UpdateCommand({
-    TableName: USERS_TABLE,
-    Key: { username: auth.username },
-    UpdateExpression: 'SET lifetimeAnswered = if_not_exists(lifetimeAnswered, :z) + :one',
-    ExpressionAttributeValues: { ':z': 0, ':one': 1 }
-  })).catch(() => {});
+  // (legacy duplicate bump removed — answered is now incremented above so
+  // it also covers the mastered-section path.)
 
   const deduct = Math.min(cents, balance); // floor at 0
 

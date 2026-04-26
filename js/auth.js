@@ -411,9 +411,9 @@
   async function lose(cents, section) {
     const t = token();
     if (!t) return null;
-    if (section && isMastered(section)) {
-      return { lostCents: 0, locked: true };
-    }
+    // NOTE: even when the section is mastered we still hit the API so the
+    // server can bump lifetimeAnswered (wrong answers must always count
+    // toward accuracy, even if no cents are deducted).
     try {
       const w = await api('lose', { token: t, cents, section: section || undefined });
       const s = loadSession();
