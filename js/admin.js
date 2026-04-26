@@ -36,7 +36,10 @@
         const tab = btn.dataset.tab;
         $('tab-toys').hidden = tab !== 'toys';
         $('tab-orders').hidden = tab !== 'orders';
+        $('tab-users').hidden = tab !== 'users';
         if (tab === 'orders') loadOrders();
+        if (tab === 'users') { loadLiveUsers(); startLiveUsersPolling(); }
+        else { stopLiveUsersPolling(); }
       });
     });
   }
@@ -369,12 +372,115 @@
     });
   }
 
+  // ---- Live users (Users tab) ----
+  let _liveUsersTimer = null;
+
+  function startLiveUsersPolling() {
+    stopLiveUsersPolling();
+    _liveUsersTimer = setInterval(loadLiveUsers, 15000);
+  }
+  function stopLiveUsersPolling() {
+    if (_liveUsersTimer) { clearInterval(_liveUsersTimer); _liveUsersTimer = null; }
+  }
+
+  function gradeLabel(slug) {
+    if (!slug) return '—';
+    if (slug === 'grade-k') return 'K';
+    if (slug === 'algebra-1') return 'Alg I';
+    const m = String(slug).match(/^grade-(\d+)$/);
+    return m ? `G${m[1]}` : slug;
+  }
+  function relativeTime(ts, now) {
+    if (!ts) return '—';
+    const sec = Math.max(0, Math.round((now - ts) / 1000));
+    if (sec < 5) return 'just now';
+    if (sec < 60) return `${sec}s ago`;
+    const min = Math.round(sec / 60);
+    if (min < 60) return `${min} min ago`;
+    const hr = Math.round(min / 60);
+    if (hr < 24) return `${hr} hr ago`;
+    const d = Math.round(hr / 24);
+    return `${d}d ago`;
+  }
+  function avatarLetter(name) {
+    return (String(name || '?').trim().charAt(0) || '?').toUpperCase();
+  }
+
+  async function loadLiveUsers() {
+    if (!gate()) return;
+    try {
+      const r = await Auth.api('adminLiveUsers', { token: Auth.token() });
+      const totalUsers = r.totalUsers || 0;
+      const onlineCount = r.onlineCount || 0;
+      const practicingCount = r.practicingCount || 0;
+      const users = Array.isArray(r.users) ? r.users : [];
+      const now = r.serverNow || Date.now();
+
+      $('stat-total').textContent = totalUsers.toLocaleString();
+      $('stat-online').textContent = onlineCount.toLocaleString();
+      $('stat-practicing').textContent = practicingCount.toLocaleString();
+
+      // Tab badge: how many practicing right now.
+      const badge = $('users-tab-badge');
+      if (practicingCount > 0) {
+        badge.hidden = false;
+        badge.textContent = String(practicingCount);
+      } else {
+        badge.hidden = true;
+      }
+
+      const meta = $('live-users-meta');
+      if (meta) {
+        const stamp = new Date(now).toLocaleTimeString();
+        meta.textContent = `Updated ${stamp} · auto-refresh every 15s`;
+      }
+
+      const target = $('live-users-table');
+      if (!users.length) {
+        target.innerHTML = `<p class="live-users-empty">Nobody is online right now.</p>`;
+        return;
+      }
+      target.innerHTML = `
+        <table class="live-users-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Name</th>
+              <th>Username</th>
+              <th>Grade</th>
+              <th>Status</th>
+              <th>Last seen</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${users.map(u => {
+              const color = u.color || '#1e40af';
+              const status = u.isPracticing
+                ? `<span class="live-status live-status--practicing"><span class="live-dot live-dot--gold"></span>Practicing</span>`
+                : `<span class="live-status live-status--online"><span class="live-dot"></span>Online</span>`;
+              return `
+                <tr class="${u.isPracticing ? 'live-row live-row--practicing' : 'live-row'}">
+                  <td><span class="live-avatar" style="background:${escapeHtml(color)}">${escapeHtml(avatarLetter(u.displayName))}</span></td>
+                  <td class="live-name">${escapeHtml(u.displayName || u.username)}</td>
+                  <td class="live-uname">@${escapeHtml(u.username)}</td>
+                  <td><span class="live-grade-pill">${escapeHtml(gradeLabel(u.grade))}</span></td>
+                  <td>${status}</td>
+                  <td class="live-time">${escapeHtml(relativeTime(u.lastSeenAt, now))}</td>
+                </tr>`;
+            }).join('')}
+          </tbody>
+        </table>`;
+    } catch (e) {
+      $('live-users-table').innerHTML = `<p style="color:#fca5a5;">${escapeHtml(e.message || 'Could not load live users')}</p>`;
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     setupTabs();
     setupToyForm();
     setTimeout(() => {
-      if (gate()) { loadToys(); loadOrders(); }
+      if (gate()) { loadToys(); loadOrders(); loadLiveUsers(); }
     }, 80);
   });
-  window.onSTAARLogin = () => { if (gate()) { loadToys(); loadOrders(); } };
+  window.onSTAARLogin = () => { if (gate()) { loadToys(); loadOrders(); loadLiveUsers(); } };
 })();

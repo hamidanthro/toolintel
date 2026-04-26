@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Admin · StarTest</title>
-  <link rel="stylesheet" href="css/styles.css?v=20260427r" />
+  <link rel="stylesheet" href="css/styles.css?v=20260427s" />
 </head>
 <body>
   <header class="site-header">
@@ -38,6 +38,7 @@
         <div class="admin-tabs">
           <button class="admin-tab active" data-tab="toys">Toys</button>
           <button class="admin-tab" data-tab="orders">Orders <span class="tab-badge" id="orders-tab-badge" hidden>0</span></button>
+          <button class="admin-tab" data-tab="users">Users <span class="tab-badge tab-badge--live" id="users-tab-badge" hidden>0</span></button>
         </div>
 
         <div id="tab-toys">
@@ -92,6 +93,34 @@
           <h2>Orders</h2>
           <div id="orders-table"></div>
         </div>
+
+        <div id="tab-users" hidden>
+          <div class="admin-stats" id="admin-stats">
+            <div class="admin-stat-card">
+              <div class="admin-stat-label">Total users</div>
+              <div class="admin-stat-value" id="stat-total">—</div>
+              <div class="admin-stat-meta">All-time signups</div>
+            </div>
+            <div class="admin-stat-card admin-stat-card--online">
+              <div class="admin-stat-label"><span class="live-dot"></span> Online now</div>
+              <div class="admin-stat-value" id="stat-online">—</div>
+              <div class="admin-stat-meta">Active in the last 10 min</div>
+            </div>
+            <div class="admin-stat-card admin-stat-card--practicing">
+              <div class="admin-stat-label"><span class="live-dot live-dot--gold"></span> Practicing now</div>
+              <div class="admin-stat-value" id="stat-practicing">—</div>
+              <div class="admin-stat-meta">Heartbeat in the last 3 min</div>
+            </div>
+          </div>
+
+          <div class="live-users-head">
+            <h2 style="margin:0;">Currently online</h2>
+            <span class="live-users-meta" id="live-users-meta">Auto-refresh every 15s</span>
+          </div>
+          <div id="live-users-table" class="live-users-wrap">
+            <p style="color:rgba(255,255,255,0.5);">Loading…</p>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -106,7 +135,7 @@
   <script src="js/friends.js?v=20260426b"></script>
   <script>window.STAARAuth = window.STAARAuth || {}; window.STAARAuth.requireLoginOnLoad = true;</script>
   <script>window.STAAR_TUTOR_ENDPOINT = 'https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com/';</script>
-  <script src="js/admin.js?v=20260426d"></script>
+  <script src="js/admin.js?v=20260427a"></script>
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
   <script src="https://api.replyquik.com/widget.js" data-id="9686745a-93c1-4761-af94-f15815680bc3"></script>
 </body>

@@ -6830,3 +6830,169 @@ body.practice-page .thinking-dot:nth-child(3) { animation-delay: 0.36s; }
   30%           { opacity: 1;    transform: translateY(-3px); }
 }
 
+
+/* ============================================================
+   Admin: live users panel (Users tab)
+   Stat cards + currently-online table.
+   ============================================================ */
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 18px 0 22px;
+}
+@media (max-width: 760px) { .admin-stats { grid-template-columns: 1fr; } }
+.admin-stat-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 18px 20px;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+.admin-stat-card--online { border-color: rgba(99,102,241,0.30); }
+.admin-stat-card--practicing { border-color: rgba(251,191,36,0.30); }
+.admin-stat-label {
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px; font-weight: 500;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 8px;
+}
+.admin-stat-value {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 32px; font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  line-height: 1;
+}
+.admin-stat-card--online .admin-stat-value { color: #c7d2fe; }
+.admin-stat-card--practicing .admin-stat-value { color: #fde68a; }
+.admin-stat-meta {
+  margin-top: 6px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.45);
+}
+
+/* Pulsing live dot (used in label and table rows) */
+.live-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #818cf8;
+  box-shadow: 0 0 0 0 rgba(129,140,248,0.6);
+  animation: admin-live-pulse 1.8s ease-out infinite;
+}
+.live-dot--gold {
+  background: #fbbf24;
+  box-shadow: 0 0 0 0 rgba(251,191,36,0.6);
+}
+@keyframes admin-live-pulse {
+  0%   { box-shadow: 0 0 0 0   rgba(129,140,248,0.55); }
+  70%  { box-shadow: 0 0 0 8px rgba(129,140,248,0); }
+  100% { box-shadow: 0 0 0 0   rgba(129,140,248,0); }
+}
+.live-dot--gold {
+  animation-name: admin-live-pulse-gold;
+}
+@keyframes admin-live-pulse-gold {
+  0%   { box-shadow: 0 0 0 0   rgba(251,191,36,0.55); }
+  70%  { box-shadow: 0 0 0 8px rgba(251,191,36,0); }
+  100% { box-shadow: 0 0 0 0   rgba(251,191,36,0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .live-dot, .live-dot--gold { animation: none; }
+}
+
+/* Live users header row */
+.live-users-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 12px; margin: 8px 0 12px;
+  flex-wrap: wrap;
+}
+.live-users-meta {
+  font-size: 12px;
+  color: rgba(255,255,255,0.45);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.live-users-wrap {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  padding: 6px;
+  overflow-x: auto;
+}
+.live-users-empty {
+  margin: 18px 14px;
+  color: rgba(255,255,255,0.5);
+}
+
+/* Live users table */
+.live-users-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.live-users-table thead th {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.live-users-table tbody tr {
+  transition: background 0.15s ease;
+}
+.live-users-table tbody tr + tr td {
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+.live-users-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+.live-users-table td {
+  padding: 12px 14px;
+  font-size: 14px;
+  color: rgba(255,255,255,0.85);
+  vertical-align: middle;
+}
+.live-row--practicing { background: rgba(251,191,36,0.04); }
+.live-row--practicing:hover { background: rgba(251,191,36,0.07); }
+
+.live-avatar {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+.live-name { font-weight: 600; color: #ffffff; }
+.live-uname { color: rgba(255,255,255,0.5); font-size: 13px; }
+.live-time  { color: rgba(255,255,255,0.55); font-size: 13px; white-space: nowrap; }
+
+.live-grade-pill {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.85);
+  letter-spacing: 0.02em;
+}
+.live-status {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.live-status--online    { color: #c7d2fe; }
+.live-status--practicing { color: #fde68a; font-weight: 600; }
+
+.tab-badge--live {
+  background: rgba(251,191,36,0.18);
+  color: #fde68a;
+  border: 1px solid rgba(251,191,36,0.35);
+}

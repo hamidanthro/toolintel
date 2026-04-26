@@ -231,6 +231,7 @@ exports.handler = async (event) => {
   if (action === 'adminPresignUpload') return await handleAdminPresignUpload(payload);
   if (action === 'adminListOrders')    return await handleAdminListOrders(payload);
   if (action === 'adminUpdateOrder')   return await handleAdminUpdateOrder(payload);
+  if (action === 'adminLiveUsers')     return await handleAdminLiveUsers(payload);
 
   // ===== Friends + safe chat (canned phrases only) =====
   if (action === 'friendRequest')  return await handleFriendRequest(payload);
@@ -1249,6 +1250,60 @@ async function handleLiveCount(_payload) {
   }
 }
 
+// Admin-only: detailed view of who is online right now and who is actively
+// practicing. "Online" = any authed action in the last 10 minutes.
+// "Practicing" = heartbeat received in the last 3 minutes (heartbeats only
+// come from the practice page).
+async function handleAdminLiveUsers(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  if (!isAdmin(auth.username)) return bad(403, 'Admin only');
+
+  const now = Date.now();
+  const onlineCutoff = now - 10 * 60 * 1000;
+  const practicingCutoff = now - 3 * 60 * 1000;
+
+  const r = await ddb.send(new ScanCommand({
+    TableName: USERS_TABLE,
+    ProjectionExpression: 'username, displayName, grade, color, lastSeenAt, lastPracticingAt, lifetimeCents, lifetimeSeconds'
+  }));
+  const items = r.Items || [];
+  const totalUsers = items.length;
+
+  const enriched = items.map(it => {
+    const lastSeenAt = parseInt(it.lastSeenAt, 10) || 0;
+    const lastPracticingAt = parseInt(it.lastPracticingAt, 10) || 0;
+    return {
+      username: it.username,
+      displayName: it.displayName || it.username,
+      grade: it.grade || null,
+      color: it.color || null,
+      lastSeenAt,
+      lastPracticingAt,
+      lifetimeCents: parseInt(it.lifetimeCents, 10) || 0,
+      lifetimeSeconds: parseInt(it.lifetimeSeconds, 10) || 0,
+      isOnline: lastSeenAt >= onlineCutoff,
+      isPracticing: lastPracticingAt >= practicingCutoff
+    };
+  });
+
+  const onlineList = enriched
+    .filter(u => u.isOnline)
+    .sort((a, b) => {
+      // Practicing first, then by most-recent activity.
+      if (a.isPracticing !== b.isPracticing) return a.isPracticing ? -1 : 1;
+      return b.lastSeenAt - a.lastSeenAt;
+    });
+
+  return ok({
+    totalUsers,
+    onlineCount: onlineList.length,
+    practicingCount: onlineList.filter(u => u.isPracticing).length,
+    serverNow: now,
+    users: onlineList
+  });
+}
+
 // ===== Friends + safe chat =====
 //
 // Tables:
@@ -1625,8 +1680,8 @@ async function handleHeartbeat(payload) {
     const upd = await ddb.send(new UpdateCommand({
       TableName: USERS_TABLE,
       Key: { username: auth.username },
-      UpdateExpression: 'SET lifetimeSeconds = if_not_exists(lifetimeSeconds, :z) + :s',
-      ExpressionAttributeValues: { ':z': 0, ':s': secs },
+      UpdateExpression: 'SET lifetimeSeconds = if_not_exists(lifetimeSeconds, :z) + :s, lastPracticingAt = :now',
+      ExpressionAttributeValues: { ':z': 0, ':s': secs, ':now': Date.now() },
       ReturnValues: 'ALL_NEW'
     }));
     return ok({ lifetimeSeconds: parseInt(upd.Attributes.lifetimeSeconds, 10) || 0 });
