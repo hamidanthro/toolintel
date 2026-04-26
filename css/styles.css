@@ -1713,3 +1713,281 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
 }
 .howit-card ul li { margin-bottom: 4px; }
 .howit-card ul li strong, .howit-card ul li em { color: var(--navy); }
+
+/* ===== Header chat bell ===== */
+.chat-bell {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--navy);
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.chat-bell:hover { background: #f1f5f9; }
+.chat-bell-dot {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  background: #ef4444;
+  color: #fff;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 18px;
+  text-align: center;
+  border: 2px solid #fff;
+}
+
+/* ===== Friends panel ===== */
+.sf-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+}
+.sf-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(2px);
+}
+.sf-card {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(420px, 100vw);
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -10px 0 30px -10px rgba(0, 0, 0, 0.2);
+  animation: sf-slide 0.22s ease-out;
+}
+@keyframes sf-slide {
+  from { transform: translateX(20px); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+.sf-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.sf-title {
+  margin: 0;
+  flex: 1;
+  font-size: 1.05rem;
+  color: var(--navy);
+}
+.sf-back, .sf-close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--navy);
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.sf-back:hover, .sf-close:hover { background: #f1f5f9; }
+.sf-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 14px 18px;
+}
+.sf-section-title {
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin: 14px 4px 6px;
+}
+.sf-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.sf-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid transparent;
+}
+.sf-row-friend {
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+.sf-row-friend:hover { background: #f8fafc; border-color: var(--border); }
+.sf-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  color: #fff;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.sf-name {
+  flex: 1;
+  color: var(--navy);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.sf-chev { color: var(--muted); }
+.sf-pending {
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-style: italic;
+}
+.sf-actions { display: flex; gap: 6px; }
+.sf-btn {
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.sf-btn-accept { background: #16a34a; color: #fff; }
+.sf-btn-accept:hover { background: #15803d; }
+.sf-btn-decline { background: #f1f5f9; color: var(--navy); }
+.sf-btn-decline:hover { background: #e2e8f0; }
+.sf-empty {
+  padding: 20px 10px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* Conversation view */
+.sf-conv {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+.sf-conv-msgs {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 4px 12px;
+  min-height: 200px;
+}
+.sf-msg {
+  display: flex;
+  flex-direction: column;
+  max-width: 80%;
+}
+.sf-msg-me { align-self: flex-end; align-items: flex-end; }
+.sf-msg-them { align-self: flex-start; align-items: flex-start; }
+.sf-msg-bubble {
+  padding: 8px 14px;
+  border-radius: 18px;
+  font-size: 1rem;
+  line-height: 1.35;
+  word-break: break-word;
+}
+.sf-msg-me .sf-msg-bubble {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #fff;
+  border-bottom-right-radius: 6px;
+}
+.sf-msg-them .sf-msg-bubble {
+  background: #f1f5f9;
+  color: var(--navy);
+  border-bottom-left-radius: 6px;
+}
+.sf-msg-react .sf-msg-bubble {
+  background: transparent !important;
+  color: inherit;
+  font-size: 1.8rem;
+  padding: 0;
+  line-height: 1;
+}
+.sf-msg-time {
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.sf-conv-pad {
+  border-top: 1px solid var(--border);
+  padding: 12px 4px 4px;
+  margin-top: 8px;
+}
+.sf-pad-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin: 4px 4px 8px;
+}
+.sf-phrase-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.sf-phrase {
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 0.88rem;
+  color: var(--navy);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s, transform 0.06s;
+}
+.sf-phrase:hover { background: #eff6ff; }
+.sf-phrase:active { transform: scale(0.97); }
+.sf-react-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.sf-react {
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 999px;
+  width: 38px;
+  height: 38px;
+  font-size: 1.3rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s, transform 0.06s;
+}
+.sf-react:hover { background: #fef3c7; }
+.sf-react:active { transform: scale(0.92); }
+
+@media (max-width: 480px) {
+  .sf-card { width: 100vw; }
+}
+
+/* Make leaderboard rows tappable for friend requests */
+.leaderboard .lb-row { cursor: pointer; }
+.leaderboard .lb-row:hover { filter: brightness(0.98); }

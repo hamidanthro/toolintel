@@ -471,6 +471,10 @@
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 6v12M9 9h4.5a2 2 0 010 4H10a2 2 0 000 4h5"/></svg>
         <span>${wallet}</span>
       </a>
+      <button type="button" class="chat-bell" id="chat-bell" title="Friends &amp; chat" aria-label="Friends and chat">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        <span class="chat-bell-dot" id="chat-bell-dot" hidden></span>
+      </button>
       <button type="button" class="user-pill" id="user-pill">
         <span class="profile-avatar small" style="background:${u.color || '#1e40af'}">${escapeHtml(avatar(u.displayName || u.username))}</span>
         <span class="user-pill-name">${escapeHtml(u.displayName || u.username)}</span>
@@ -483,6 +487,13 @@
       </div>`;
     const pill = slot.querySelector('#user-pill');
     const menu = slot.querySelector('#user-menu');
+    const bell = slot.querySelector('#chat-bell');
+    if (bell) {
+      bell.addEventListener('click', e => {
+        e.stopPropagation();
+        window.dispatchEvent(new CustomEvent('staar:open-friends'));
+      });
+    }
     pill.addEventListener('click', e => {
       e.stopPropagation();
       menu.hidden = !menu.hidden;

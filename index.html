@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>STAAR Math Prep — Texas Math Test Preparation</title>
   <meta name="description" content="Practice and master the Texas STAAR math test. Grade-by-grade lessons, practice problems, and full-length tests for grades 3–8 and Algebra I." />
-  <link rel="stylesheet" href="css/styles.css?v=20260426j" />
+  <link rel="stylesheet" href="css/styles.css?v=20260426k" />
 </head>
 <body>
   <header class="site-header">
@@ -110,6 +110,7 @@
   </footer>
 
   <script src="js/auth.js?v=20260426a"></script>
+  <script src="js/friends.js?v=20260426a"></script>
   <script src="js/staar-data.js"></script>
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
@@ -282,7 +283,7 @@
             const cls = ['lb-row', `lb-rank-${r.rank <= 3 ? r.rank : 'n'}`, isMe ? 'lb-me' : ''].filter(Boolean).join(' ');
             const dancer = r.rank === 1 ? '<span class="lb-dancer" aria-hidden="true"><span class="lb-d1">💃</span><span class="lb-d2">🕺</span></span>' : '';
             const mover = rankMover(r.rank);
-            return `<li class="${cls}">
+            return `<li class="${cls}" data-username="${escapeHtmlSafe(r.username)}" data-name="${escapeHtmlSafe(r.displayName)}" data-isme="${isMe ? '1' : '0'}">
               <span class="lb-rank">${r.rank}</span>
               <span class="lb-name">${escapeHtmlSafe(r.displayName)}${isMe ? ' <span class="lb-you">(you)</span>' : ''}</span>
               <span class="lb-correct">${(r.correct || 0).toLocaleString()} correct</span>
@@ -291,6 +292,7 @@
             </li>`;
           }).join('');
         }
+        attachLeaderboardClicks();
 
         const meRow = document.getElementById('dash-me-row');
         if (lb.me && lb.me.rank > 10) {
@@ -299,6 +301,41 @@
           meRow.innerHTML = '';
         }
       } catch (_) { /* offline */ }
+    }
+
+    function attachLeaderboardClicks() {
+      const list = document.getElementById('dash-leaderboard');
+      if (!list || list.dataset.lbBound === '1') return;
+      list.dataset.lbBound = '1';
+      list.addEventListener('click', async (e) => {
+        const row = e.target.closest('li[data-username]');
+        if (!row) return;
+        if (row.dataset.isme === '1') return;
+        const peer = row.dataset.username;
+        const name = row.dataset.name || peer;
+        if (!window.STAARFriends) return;
+        try {
+          const r = await window.STAARAuth.api('friendList', { token: window.STAARAuth.token() });
+          const isFriend = (r.friends || []).some(x => x.peer === peer);
+          const isOut = (r.outgoing || []).some(x => x.peer === peer);
+          const isIn = (r.incoming || []).some(x => x.peer === peer);
+          if (isFriend) {
+            window.STAARFriends.openConversation(peer, name);
+          } else if (isOut) {
+            window.STAARAuth.showToast(`Friend request to ${name} is pending`);
+          } else if (isIn) {
+            window.STAARFriends.openPanel();
+          } else {
+            if (confirm(`Send a friend request to ${name}?`)) {
+              await window.STAARFriends.requestFriend(peer, name);
+            }
+          }
+        } catch (_) {
+          if (confirm(`Send a friend request to ${name}?`)) {
+            await window.STAARFriends.requestFriend(peer, name);
+          }
+        }
+      });
     }
 
     // Refresh just the leaderboard (lighter than reloading the whole dashboard).
@@ -321,7 +358,7 @@
             const cls = ['lb-row', `lb-rank-${r.rank <= 3 ? r.rank : 'n'}`, isMe ? 'lb-me' : ''].filter(Boolean).join(' ');
             const dancer = r.rank === 1 ? '<span class="lb-dancer" aria-hidden="true"><span class="lb-d1">💃</span><span class="lb-d2">🕺</span></span>' : '';
             const mover = rankMover(r.rank);
-            return `<li class="${cls}">
+            return `<li class="${cls}" data-username="${escapeHtmlSafe(r.username)}" data-name="${escapeHtmlSafe(r.displayName)}" data-isme="${isMe ? '1' : '0'}">
               <span class="lb-rank">${r.rank}</span>
               <span class="lb-name">${escapeHtmlSafe(r.displayName)}${isMe ? ' <span class="lb-you">(you)</span>' : ''}</span>
               <span class="lb-correct">${(r.correct || 0).toLocaleString()} correct</span>
@@ -330,6 +367,7 @@
             </li>`;
           }).join('');
         }
+        attachLeaderboardClicks();
         const meRow = document.getElementById('dash-me-row');
         if (lb.me && lb.me.rank > 10) {
           meRow.innerHTML = `<div class="lb-meta">Your rank: <strong>#${lb.me.rank}</strong> · ${(lb.me.correct).toLocaleString()} correct · ${lb.me.accuracy}%</div>`;

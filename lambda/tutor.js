@@ -31,6 +31,8 @@ const USERS_TABLE = process.env.USERS_TABLE || 'staar-users';
 const STATS_TABLE = process.env.STATS_TABLE || 'staar-stats';
 const TOYS_TABLE = process.env.TOYS_TABLE || 'staar-toys';
 const ORDERS_TABLE = process.env.ORDERS_TABLE || 'staar-orders';
+const FRIENDS_TABLE = process.env.FRIENDS_TABLE || 'staar-friends';
+const MESSAGES_TABLE = process.env.MESSAGES_TABLE || 'staar-messages';
 const S3_TOY_BUCKET = process.env.S3_TOY_BUCKET || '';
 const S3_REGION = process.env.AWS_REGION || 'us-east-1';
 const ADMIN_USERNAMES = (process.env.ADMIN_USERNAMES || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
@@ -186,6 +188,15 @@ exports.handler = async (event) => {
   if (action === 'adminPresignUpload') return await handleAdminPresignUpload(payload);
   if (action === 'adminListOrders')    return await handleAdminListOrders(payload);
   if (action === 'adminUpdateOrder')   return await handleAdminUpdateOrder(payload);
+
+  // ===== Friends + safe chat (canned phrases only) =====
+  if (action === 'friendRequest')  return await handleFriendRequest(payload);
+  if (action === 'friendRespond')  return await handleFriendRespond(payload);
+  if (action === 'friendList')     return await handleFriendList(payload);
+  if (action === 'friendUnfriend') return await handleFriendUnfriend(payload);
+  if (action === 'chatSend')       return await handleChatSend(payload);
+  if (action === 'chatHistory')    return await handleChatHistory(payload);
+  if (action === 'chatInbox')      return await handleChatInbox(payload);
 
   if (!payload.question || payload.studentAnswer == null || payload.correctAnswer == null) {
     return bad(400, 'Missing required fields: question, studentAnswer, correctAnswer');
@@ -1166,7 +1177,339 @@ async function handleLiveCount(_payload) {
   }
 }
 
-// Heartbeat: { token, seconds }
+// ===== Friends + safe chat =====
+//
+// Tables:
+//   staar-friends:   PK username (S), SK peer (S)
+//                    attrs: status ('pending_out'|'pending_in'|'accepted'),
+//                           updatedAt, peerDisplayName
+//   staar-messages:  PK convId (S, sorted "a|b"), SK ts (N)
+//                    attrs: from, code (int idx into SAFE_PHRASES), id
+//
+// Chat is intentionally NOT free-text. Clients submit a numeric code that
+// indexes into SAFE_PHRASES. The server validates the code and stores it,
+// so there is no path for users to send arbitrary text, links, or PII.
+
+const SAFE_PHRASES = [
+  'Hi! 👋',
+  'GG! 🎮',
+  'Nice work! ⭐',
+  'Good luck! 🍀',
+  'Let’s race! 🏁',
+  'Wow! 🤩',
+  'You’re fast! ⚡',
+  'Math high-five! ✋',
+  'I’m practicing now 📚',
+  'See you on the leaderboard! 🏆',
+  'Cheering you on! 📣',
+  'Bye! 👋'
+];
+const SAFE_REACTIONS = ['👍', '❤️', '🎉', '🔥', '😂', '🤔'];
+// Codes 0..N-1 = phrases; codes 1000..1000+M-1 = reactions.
+const REACTION_CODE_BASE = 1000;
+
+function isValidChatCode(c) {
+  const n = parseInt(c, 10);
+  if (!Number.isFinite(n)) return false;
+  if (n >= 0 && n < SAFE_PHRASES.length) return true;
+  if (n >= REACTION_CODE_BASE && n < REACTION_CODE_BASE + SAFE_REACTIONS.length) return true;
+  return false;
+}
+
+function convId(a, b) {
+  return [a, b].sort().join('|');
+}
+
+function sanitizeUsername(u) {
+  if (typeof u !== 'string') return null;
+  const s = u.trim().toLowerCase();
+  if (!/^[a-z0-9_]{3,32}$/.test(s)) return null;
+  return s;
+}
+
+async function getUserItem(username) {
+  const r = await ddb.send(new GetCommand({
+    TableName: USERS_TABLE,
+    Key: { username }
+  }));
+  return r.Item || null;
+}
+
+// POST { token, target } — send a friend request. Idempotent.
+async function handleFriendRequest(payload) {
+  const auth = await authedUser(payload);
+  if (!auth || !auth.username) return bad(401, 'Not signed in');
+  const target = sanitizeUsername(payload.target);
+  if (!target) return bad(400, 'Invalid target');
+  if (target === auth.username) return bad(400, 'You can’t friend yourself');
+
+  const me = await getUserItem(auth.username);
+  const them = await getUserItem(target);
+  if (!them) return bad(404, 'User not found');
+
+  // If a row already exists either way, surface its status (idempotent).
+  const existing = await ddb.send(new GetCommand({
+    TableName: FRIENDS_TABLE,
+    Key: { username: auth.username, peer: target }
+  }));
+  if (existing.Item && existing.Item.status === 'accepted') {
+    return ok({ status: 'accepted' });
+  }
+  // If THEY already requested ME, auto-accept.
+  if (existing.Item && existing.Item.status === 'pending_in') {
+    return await acceptPair(auth.username, me, target, them);
+  }
+
+  const now = Date.now();
+  await ddb.send(new PutCommand({
+    TableName: FRIENDS_TABLE,
+    Item: {
+      username: auth.username,
+      peer: target,
+      status: 'pending_out',
+      peerDisplayName: them.displayName || target,
+      updatedAt: now
+    }
+  }));
+  await ddb.send(new PutCommand({
+    TableName: FRIENDS_TABLE,
+    Item: {
+      username: target,
+      peer: auth.username,
+      status: 'pending_in',
+      peerDisplayName: (me && me.displayName) || auth.username,
+      updatedAt: now
+    }
+  }));
+  return ok({ status: 'pending_out' });
+}
+
+async function acceptPair(meName, meItem, peerName, peerItem) {
+  const now = Date.now();
+  await ddb.send(new UpdateCommand({
+    TableName: FRIENDS_TABLE,
+    Key: { username: meName, peer: peerName },
+    UpdateExpression: 'SET #s = :s, updatedAt = :t, peerDisplayName = :n',
+    ExpressionAttributeNames: { '#s': 'status' },
+    ExpressionAttributeValues: {
+      ':s': 'accepted',
+      ':t': now,
+      ':n': (peerItem && peerItem.displayName) || peerName
+    }
+  }));
+  await ddb.send(new UpdateCommand({
+    TableName: FRIENDS_TABLE,
+    Key: { username: peerName, peer: meName },
+    UpdateExpression: 'SET #s = :s, updatedAt = :t, peerDisplayName = :n',
+    ExpressionAttributeNames: { '#s': 'status' },
+    ExpressionAttributeValues: {
+      ':s': 'accepted',
+      ':t': now,
+      ':n': (meItem && meItem.displayName) || meName
+    }
+  }));
+  return ok({ status: 'accepted' });
+}
+
+// POST { token, target, decision: 'accept'|'decline' }
+async function handleFriendRespond(payload) {
+  const auth = await authedUser(payload);
+  if (!auth || !auth.username) return bad(401, 'Not signed in');
+  const target = sanitizeUsername(payload.target);
+  if (!target) return bad(400, 'Invalid target');
+  const decision = payload.decision === 'accept' ? 'accept' : payload.decision === 'decline' ? 'decline' : null;
+  if (!decision) return bad(400, 'Invalid decision');
+
+  // Must be a pending_in request from target.
+  const r = await ddb.send(new GetCommand({
+    TableName: FRIENDS_TABLE,
+    Key: { username: auth.username, peer: target }
+  }));
+  if (!r.Item || r.Item.status !== 'pending_in') {
+    return bad(404, 'No pending request from that user');
+  }
+
+  if (decision === 'decline') {
+    await ddb.send(new DeleteCommand({
+      TableName: FRIENDS_TABLE,
+      Key: { username: auth.username, peer: target }
+    }));
+    await ddb.send(new DeleteCommand({
+      TableName: FRIENDS_TABLE,
+      Key: { username: target, peer: auth.username }
+    }));
+    return ok({ status: 'declined' });
+  }
+
+  const me = await getUserItem(auth.username);
+  const them = await getUserItem(target);
+  if (!them) return bad(404, 'User not found');
+  return await acceptPair(auth.username, me, target, them);
+}
+
+// POST { token } — list all friends + pending in/out
+async function handleFriendList(payload) {
+  const auth = await authedUser(payload);
+  if (!auth || !auth.username) return bad(401, 'Not signed in');
+  const r = await ddb.send(new QueryCommand({
+    TableName: FRIENDS_TABLE,
+    KeyConditionExpression: 'username = :u',
+    ExpressionAttributeValues: { ':u': auth.username }
+  }));
+  const rows = (r.Items || []).map(it => ({
+    peer: it.peer,
+    displayName: it.peerDisplayName || it.peer,
+    status: it.status,
+    updatedAt: it.updatedAt || 0
+  }));
+  return ok({
+    friends:    rows.filter(r => r.status === 'accepted').sort((a, b) => b.updatedAt - a.updatedAt),
+    incoming:   rows.filter(r => r.status === 'pending_in').sort((a, b) => b.updatedAt - a.updatedAt),
+    outgoing:   rows.filter(r => r.status === 'pending_out').sort((a, b) => b.updatedAt - a.updatedAt)
+  });
+}
+
+// POST { token, target } — remove friendship from both sides
+async function handleFriendUnfriend(payload) {
+  const auth = await authedUser(payload);
+  if (!auth || !auth.username) return bad(401, 'Not signed in');
+  const target = sanitizeUsername(payload.target);
+  if (!target) return bad(400, 'Invalid target');
+  await ddb.send(new DeleteCommand({
+    TableName: FRIENDS_TABLE,
+    Key: { username: auth.username, peer: target }
+  }));
+  await ddb.send(new DeleteCommand({
+    TableName: FRIENDS_TABLE,
+    Key: { username: target, peer: auth.username }
+  }));
+  return ok({ status: 'removed' });
+}
+
+// POST { token, target, code } — send a canned message. Code MUST be valid.
+async function handleChatSend(payload) {
+  const auth = await authedUser(payload);
+  if (!auth || !auth.username) return bad(401, 'Not signed in');
+  const target = sanitizeUsername(payload.target);
+  if (!target) return bad(400, 'Invalid target');
+  if (!isValidChatCode(payload.code)) return bad(400, 'Invalid message');
+
+  // Must be friends.
+  const friend = await ddb.send(new GetCommand({
+    TableName: FRIENDS_TABLE,
+    Key: { username: auth.username, peer: target }
+  }));
+  if (!friend.Item || friend.Item.status !== 'accepted') {
+    return bad(403, 'You can only chat with friends');
+  }
+
+  // Light per-pair rate limit: max 12 messages per minute (one direction).
+  const now = Date.now();
+  const since = now - 60_000;
+  const cid = convId(auth.username, target);
+  const recent = await ddb.send(new QueryCommand({
+    TableName: MESSAGES_TABLE,
+    KeyConditionExpression: 'convId = :c AND ts >= :t',
+    FilterExpression: '#f = :u',
+    ExpressionAttributeNames: { '#f': 'from' },
+    ExpressionAttributeValues: { ':c': cid, ':t': since, ':u': auth.username }
+  }));
+  if ((recent.Items || []).length >= 12) {
+    return bad(429, 'Slow down — too many messages');
+  }
+
+  const id = crypto.randomBytes(8).toString('hex');
+  await ddb.send(new PutCommand({
+    TableName: MESSAGES_TABLE,
+    Item: {
+      convId: cid,
+      ts: now,
+      id,
+      from: auth.username,
+      code: parseInt(payload.code, 10)
+    }
+  }));
+  return ok({ id, ts: now });
+}
+
+// POST { token, target, since? } — fetch recent messages with one peer.
+async function handleChatHistory(payload) {
+  const auth = await authedUser(payload);
+  if (!auth || !auth.username) return bad(401, 'Not signed in');
+  const target = sanitizeUsername(payload.target);
+  if (!target) return bad(400, 'Invalid target');
+
+  const friend = await ddb.send(new GetCommand({
+    TableName: FRIENDS_TABLE,
+    Key: { username: auth.username, peer: target }
+  }));
+  if (!friend.Item || friend.Item.status !== 'accepted') {
+    return bad(403, 'You can only chat with friends');
+  }
+
+  const since = parseInt(payload.since, 10);
+  const cid = convId(auth.username, target);
+  const params = {
+    TableName: MESSAGES_TABLE,
+    KeyConditionExpression: Number.isFinite(since)
+      ? 'convId = :c AND ts > :s'
+      : 'convId = :c',
+    ExpressionAttributeValues: Number.isFinite(since)
+      ? { ':c': cid, ':s': since }
+      : { ':c': cid },
+    Limit: 50,
+    ScanIndexForward: true
+  };
+  const r = await ddb.send(new QueryCommand(params));
+  const items = (r.Items || []).map(m => ({
+    id: m.id,
+    ts: m.ts,
+    from: m.from,
+    code: m.code
+  }));
+  return ok({
+    messages: items,
+    phrases: SAFE_PHRASES,
+    reactions: SAFE_REACTIONS,
+    reactionBase: REACTION_CODE_BASE
+  });
+}
+
+// POST { token, since? } — totals for the inbox bell.
+// Returns counts of pending requests and unread messages per peer (since ts).
+async function handleChatInbox(payload) {
+  const auth = await authedUser(payload);
+  if (!auth || !auth.username) return ok({ pendingRequests: 0, unread: {} });
+  const since = parseInt(payload.since, 10) || 0;
+
+  const f = await ddb.send(new QueryCommand({
+    TableName: FRIENDS_TABLE,
+    KeyConditionExpression: 'username = :u',
+    ExpressionAttributeValues: { ':u': auth.username }
+  }));
+  const items = f.Items || [];
+  const pendingRequests = items.filter(i => i.status === 'pending_in').length;
+  const friends = items.filter(i => i.status === 'accepted').map(i => i.peer);
+
+  // For each friendship, query messages since `since` from the peer.
+  const unread = {};
+  await Promise.all(friends.map(async (peer) => {
+    const cid = convId(auth.username, peer);
+    const r = await ddb.send(new QueryCommand({
+      TableName: MESSAGES_TABLE,
+      KeyConditionExpression: 'convId = :c AND ts > :t',
+      FilterExpression: '#f = :p',
+      ExpressionAttributeNames: { '#f': 'from' },
+      ExpressionAttributeValues: { ':c': cid, ':t': since, ':p': peer },
+      Select: 'COUNT'
+    }));
+    if (r.Count && r.Count > 0) unread[peer] = r.Count;
+  }));
+
+  return ok({ pendingRequests, unread });
+}
+
+
 // Adds time-on-task to lifetimeSeconds. Capped per call so a hostile or
 // buggy client can't fast-forward the counter.
 async function handleHeartbeat(payload) {
