@@ -1399,29 +1399,53 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
   background: linear-gradient(135deg, #eff6ff, #dbeafe);
 }
 
-/* Dancing emoji for the leader — travels across the row */
+/* Dancing emoji for the leader — travels across the row, swaps frames */
 .leaderboard .lb-rank-1 { position: relative; overflow: hidden; }
 .lb-dancer {
   position: absolute;
   top: 50%;
   left: 0;
+  width: 1.6em;
+  height: 1.6em;
   font-size: 1.6rem;
   pointer-events: none;
   z-index: 3;
   transform-origin: 50% 90%;
-  animation: lb-dance-across 5s ease-in-out infinite alternate;
+  animation: lb-dance-across 6s ease-in-out infinite alternate;
   filter: drop-shadow(0 2px 3px rgba(120, 53, 15, 0.35));
 }
+.lb-dancer .lb-d1,
+.lb-dancer .lb-d2 {
+  position: absolute;
+  inset: 0;
+  display: block;
+  line-height: 1;
+}
+/* Frame swap (250ms each) — looks like the dancer is actually stepping */
+.lb-dancer .lb-d1 { animation: lb-frame-a 0.5s steps(1, end) infinite; }
+.lb-dancer .lb-d2 { animation: lb-frame-b 0.5s steps(1, end) infinite; }
+@keyframes lb-frame-a {
+  0%, 49%   { opacity: 1; transform: scale(1)    rotate(-6deg); }
+  50%, 100% { opacity: 0; transform: scale(0.92) rotate(6deg); }
+}
+@keyframes lb-frame-b {
+  0%, 49%   { opacity: 0; transform: scale(0.92) rotate(-6deg); }
+  50%, 100% { opacity: 1; transform: scale(1)    rotate(6deg); }
+}
 @keyframes lb-dance-across {
-  0%   { left: 2%;  transform: translateY(-50%) rotate(-14deg); }
-  20%  { left: 22%; transform: translateY(-62%) rotate(10deg); }
-  40%  { left: 44%; transform: translateY(-50%) rotate(-10deg); }
-  60%  { left: 64%; transform: translateY(-62%) rotate(12deg); }
-  80%  { left: 80%; transform: translateY(-50%) rotate(-12deg); }
-  100% { left: 92%; transform: translateY(-62%) rotate(14deg); }
+  0%   { left: 2%;  transform: translateY(-50%) rotate(-10deg); }
+  20%  { left: 22%; transform: translateY(-62%) rotate(8deg); }
+  40%  { left: 44%; transform: translateY(-50%) rotate(-8deg); }
+  60%  { left: 64%; transform: translateY(-62%) rotate(10deg); }
+  80%  { left: 80%; transform: translateY(-50%) rotate(-10deg); }
+  100% { left: 92%; transform: translateY(-62%) rotate(12deg); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .lb-dancer { animation: none; left: 8px; }
+  .lb-dancer,
+  .lb-dancer .lb-d1,
+  .lb-dancer .lb-d2 { animation: none; }
+  .lb-dancer { left: 8px; }
+  .lb-dancer .lb-d2 { opacity: 0; }
 }
 
 .leaderboard .lb-empty {
