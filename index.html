@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>STAAR Math Prep — Texas Math Test Preparation</title>
   <meta name="description" content="Practice and master the Texas STAAR math test. Grade-by-grade lessons, practice problems, and full-length tests for grades 3–8 and Algebra I." />
-  <link rel="stylesheet" href="css/styles.css?v=20260426h" />
+  <link rel="stylesheet" href="css/styles.css?v=20260426i" />
 </head>
 <body>
   <header class="site-header">
@@ -64,6 +64,12 @@
       <div class="dash-main">
         <div class="dash-side">
           <a href="grades.html" class="btn btn-primary dash-practice-cta">Practice now →</a>
+          <div class="dash-card dash-rank-card" id="dash-rank-card" hidden>
+            <div class="dash-rank-label">Your global ranking right now</div>
+            <div class="dash-rank-num"><span class="dash-rank-hash">#</span><span id="dash-rank-pos">—</span></div>
+            <div class="dash-rank-of">of <span id="dash-rank-total">—</span> students</div>
+            <div class="dash-rank-pct" id="dash-rank-pct"></div>
+          </div>
           <div class="dash-card dash-side-card">
             <h3 class="dash-side-title">Your grade and beyond</h3>
             <p class="dash-side-sub">Pick a grade to start practicing.</p>
@@ -182,6 +188,27 @@
       }
     }
 
+    function updateRankCard(lb) {
+      const card = document.getElementById('dash-rank-card');
+      if (!card) return;
+      if (!lb || !lb.me || !lb.me.rank || !lb.totalUsers) {
+        card.hidden = true;
+        return;
+      }
+      card.hidden = false;
+      document.getElementById('dash-rank-pos').textContent = lb.me.rank.toLocaleString();
+      document.getElementById('dash-rank-total').textContent = lb.totalUsers.toLocaleString();
+      const pctEl = document.getElementById('dash-rank-pct');
+      if (lb.totalUsers > 1 && lb.me.rank > 1) {
+        const top = Math.max(1, Math.round((lb.me.rank / lb.totalUsers) * 100));
+        pctEl.textContent = `Top ${top}%`;
+      } else if (lb.me.rank === 1) {
+        pctEl.textContent = '🏆 #1 right now';
+      } else {
+        pctEl.textContent = '';
+      }
+    }
+
     async function showDashboard() {
       const u = window.STAARAuth?.currentUser?.();
       const heroAnon = document.getElementById('hero-anon');
@@ -238,6 +265,7 @@
         const lbList = document.getElementById('dash-leaderboard');
         const sub = document.getElementById('dash-board-sub');
         sub.textContent = lb.totalUsers > 0 ? `${lb.totalUsers} student${lb.totalUsers === 1 ? '' : 's'} ranked` : '';
+        updateRankCard(lb);
         if (!lb.top || lb.top.length === 0) {
           lbList.innerHTML = '<li class="lb-empty">No one on the board yet — be the first!</li>';
         } else {
@@ -275,6 +303,7 @@
         const sub = document.getElementById('dash-board-sub');
         if (!lbList) return;
         sub.textContent = lb.totalUsers > 0 ? `${lb.totalUsers} student${lb.totalUsers === 1 ? '' : 's'} ranked` : '';
+        updateRankCard(lb);
         if (!lb.top || lb.top.length === 0) {
           lbList.innerHTML = '<li class="lb-empty">No one on the board yet — be the first!</li>';
         } else {

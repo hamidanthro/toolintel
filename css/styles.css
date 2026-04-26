@@ -1264,7 +1264,21 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
 .dash-board-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
 .dash-board-head h3 { margin: 0; color: var(--navy); }
 .dash-board-sub { color: var(--muted); font-size: 0.85rem; }
-.leaderboard { list-style: none; padding: 0; margin: 0; }
+.leaderboard {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 520px;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+.leaderboard::-webkit-scrollbar { width: 8px; }
+.leaderboard::-webkit-scrollbar-track { background: transparent; }
+.leaderboard::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.18);
+  border-radius: 8px;
+}
+.leaderboard::-webkit-scrollbar-thumb:hover { background: rgba(15, 23, 42, 0.32); }
 .leaderboard li {
   display: grid;
   grid-template-columns: 72px 1fr auto auto;
@@ -1488,6 +1502,51 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
   color: var(--muted);
   font-size: 0.85rem;
 }
+/* Global ranking card */
+.dash-rank-card {
+  padding: 18px 20px 16px;
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 60%, #60a5fa 100%);
+  color: #fff;
+  border: none;
+  text-align: center;
+  box-shadow: 0 10px 24px -12px rgba(30, 58, 138, 0.55);
+}
+.dash-rank-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.85);
+}
+.dash-rank-num {
+  font-size: 3rem;
+  font-weight: 900;
+  line-height: 1;
+  margin: 8px 0 4px;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+.dash-rank-hash {
+  font-size: 1.6rem;
+  font-weight: 700;
+  vertical-align: 18px;
+  margin-right: 2px;
+  opacity: 0.85;
+}
+.dash-rank-of {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+.dash-rank-pct {
+  margin-top: 10px;
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.dash-rank-pct:empty { display: none; }
 .grade-grid-compact {
   grid-template-columns: 1fr 1fr;
   gap: 10px;
