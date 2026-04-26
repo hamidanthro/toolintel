@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260427g" />
+  <link rel="stylesheet" href="css/styles.css?v=20260427h" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -118,6 +118,17 @@
           </span>
           <h1 id="dash-greeting" class="welcome-title">Welcome back</h1>
           <p id="dash-sub" class="welcome-subtitle">Here's how you're doing.</p>
+
+          <div class="level-pill" id="dash-level-pill" hidden>
+            <div class="level-badge"><span class="level-number" id="dash-level-num">1</span></div>
+            <div class="level-info">
+              <span class="level-label" id="dash-level-label">Level 1 · Math Rookie</span>
+              <div class="level-progress">
+                <div class="level-progress-bar"><div class="level-progress-fill" id="dash-level-fill" style="width:0%"></div></div>
+                <span class="level-xp" id="dash-level-xp">0 / 25 XP to Level 2</span>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="welcome-actions">
           <a href="grades.html" class="btn btn-primary btn-primary--large dash-practice-cta">
@@ -128,6 +139,38 @@
           </a>
         </div>
       </div>
+
+      <section class="daily-challenge" aria-label="Today's challenge">
+        <div class="challenge-glow" aria-hidden="true"></div>
+        <div class="challenge-content">
+          <span class="challenge-eyebrow">
+            <span class="challenge-fire">🔥</span>
+            Today's challenge
+          </span>
+          <h3 class="challenge-title">Answer 10 questions correctly</h3>
+          <p class="challenge-subtitle">Complete today's challenge to earn a <strong>50-point bonus</strong> and protect your streak.</p>
+          <div class="challenge-progress">
+            <div class="challenge-progress-track">
+              <div class="challenge-progress-bar"><div class="challenge-progress-fill" id="dash-challenge-fill" style="width:0%"></div></div>
+              <span class="challenge-progress-text" id="dash-challenge-text">0 / 10 today</span>
+            </div>
+            <div class="challenge-reward">
+              <span class="reward-coin">🪙</span>
+              <span class="reward-amount">+50 pts</span>
+            </div>
+          </div>
+        </div>
+        <div class="challenge-actions">
+          <a href="grades.html" class="btn btn-primary challenge-cta">
+            Start challenge
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7H11M11 7L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <span class="challenge-timer">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            Resets in <strong id="dash-challenge-timer">—</strong>
+          </span>
+        </div>
+      </section>
 
       <div class="stats-grid">
         <article class="stat-card">
@@ -240,20 +283,27 @@
           </a>
         </section>
 
-        <section class="dashboard-panel activity-panel">
-          <div class="dashboard-panel-header activity-header">
+        <section class="dashboard-panel achievements-panel">
+          <div class="dashboard-panel-header achievements-header">
             <div>
-              <h3 class="dashboard-panel-title">Recent activity</h3>
-              <p class="dashboard-panel-subtitle">A live feed of your last few questions.</p>
+              <h3 class="dashboard-panel-title">Achievements</h3>
+              <p class="dashboard-panel-subtitle">Earn badges as you practice. <strong id="dash-ach-summary">Keep going to unlock your first badge.</strong></p>
             </div>
+            <a href="grades.html" class="panel-link">View all →</a>
+          </div>
+          <div class="achievements-grid" id="dash-achievements-grid"></div>
+        </section>
+
+        <section class="dashboard-panel activity-panel-compact">
+          <div class="dashboard-panel-header activity-header">
+            <h3 class="dashboard-panel-title">Recent activity</h3>
             <a href="grades.html" class="panel-link">Practice more →</a>
           </div>
           <div class="activity-empty">
-            <div class="activity-empty-icon" aria-hidden="true">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-            </div>
+            <div class="activity-empty-icon" aria-hidden="true">⏱</div>
             <p class="activity-empty-title">Your activity feed will show up here</p>
-            <p class="activity-empty-text">Answer a few questions and your most recent ones will appear right here with points earned.</p>
+            <p class="activity-empty-subtitle">Answer a few questions and your most recent ones will appear here with points earned.</p>
+            <a href="grades.html" class="btn btn-secondary activity-empty-cta">Answer your first question</a>
           </div>
         </section>
 
@@ -450,27 +500,56 @@
       })[slug] || '';
       grids.forEach(grid => {
         grid.innerHTML = '';
+        const isDashboard = grid.id === 'grade-grid';
         visible.forEach(g => {
           const a = document.createElement('a');
           a.href = `grade.html?g=${g.slug}`;
-          const isPopular = g.slug === 'grade-3';
-          const isKinder = g.slug === 'grade-k';
-          a.className = 'grade-card' + (isPopular ? ' grade-card--popular' : '') + (isKinder ? ' grade-card--kinder' : '');
-          a.innerHTML = `
-            ${isPopular ? '<span class="grade-card-badge">Most popular</span>' : ''}
-            <div class="grade-card-head">
-              <span class="grade-card-eyebrow">State test &middot; Math</span>
-              <span class="grade-card-icon">${gradeIconFor(g.slug)}</span>
-            </div>
-            <h3 class="grade-card-title">${g.title}</h3>
-            <p class="grade-card-meta">${g.categories.length} reporting categories</p>
-            <div class="grade-card-foot">
-              <span class="grade-card-age">${ageHintFor(g.slug)}</span>
-              <span class="grade-card-arrow" aria-hidden="true">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7H11M11 7L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </span>
-            </div>
-          `;
+          if (isDashboard) {
+            // Compact dashboard tile with progress bar.
+            a.className = 'dashboard-grade-tile';
+            const subjectLabel = (g.subject ? g.subject : 'Math').toUpperCase();
+            // Progress: derived from localStorage if present, otherwise 0.
+            let pct = 0, answered = 0, target = 300;
+            try {
+              const u = window.STAARAuth?.currentUser?.();
+              if (u) {
+                const j = JSON.parse(localStorage.getItem(`staar.journey.${u.username}`) || '{}');
+                answered = (j.byGrade && j.byGrade[g.slug] && j.byGrade[g.slug].correct) || 0;
+                pct = Math.min(100, Math.round((answered / target) * 100));
+              }
+            } catch (_) {}
+            a.innerHTML = `
+              <div class="dashboard-grade-tile-header">
+                <span class="dashboard-grade-tile-eyebrow">STATE TEST · ${subjectLabel}</span>
+                <div class="dashboard-grade-tile-icon">${gradeIconFor(g.slug)}</div>
+              </div>
+              <h4 class="dashboard-grade-tile-title">${g.title}</h4>
+              <p class="dashboard-grade-tile-meta">${g.categories.length} reporting categories${ageHintFor(g.slug) ? ' · ' + ageHintFor(g.slug) : ''}</p>
+              <div class="dashboard-grade-tile-progress">
+                <div class="tile-progress-bar"><div class="tile-progress-fill" style="width:${pct}%"></div></div>
+                <span class="tile-progress-text">${pct}% · ${answered}/${target}</span>
+              </div>
+            `;
+          } else {
+            const isPopular = g.slug === 'grade-3';
+            const isKinder = g.slug === 'grade-k';
+            a.className = 'grade-card' + (isPopular ? ' grade-card--popular' : '') + (isKinder ? ' grade-card--kinder' : '');
+            a.innerHTML = `
+              ${isPopular ? '<span class="grade-card-badge">Most popular</span>' : ''}
+              <div class="grade-card-head">
+                <span class="grade-card-eyebrow">State test &middot; Math</span>
+                <span class="grade-card-icon">${gradeIconFor(g.slug)}</span>
+              </div>
+              <h3 class="grade-card-title">${g.title}</h3>
+              <p class="grade-card-meta">${g.categories.length} reporting categories</p>
+              <div class="grade-card-foot">
+                <span class="grade-card-age">${ageHintFor(g.slug)}</span>
+                <span class="grade-card-arrow" aria-hidden="true">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7H11M11 7L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+              </div>
+            `;
+          }
           grid.appendChild(a);
         });
       });
@@ -592,6 +671,74 @@
 
         const subBoard = document.getElementById('dash-board-sub');
         if (subBoard) subBoard.textContent = todayCorrect > 0 ? `${todayCorrect} today` : 'Start fresh today';
+
+        // Level / XP — derived from total correct: 25 correct = 1 level.
+        const totalCorrect = parseInt(d.correct, 10) || 0;
+        const level = Math.floor(totalCorrect / 25) + 1;
+        const xpInLevel = totalCorrect % 25;
+        const xpPct = Math.round((xpInLevel / 25) * 100);
+        const titles = ['Math Rookie','Math Apprentice','Math Explorer','Math Trailblazer','Math Champion','Math Master','Math Wizard','Math Legend'];
+        const title = titles[Math.min(level - 1, titles.length - 1)];
+        const lp = document.getElementById('dash-level-pill');
+        if (lp) {
+          lp.hidden = false;
+          document.getElementById('dash-level-num').textContent = level;
+          document.getElementById('dash-level-label').textContent = `Level ${level} · ${title}`;
+          document.getElementById('dash-level-fill').style.width = xpPct + '%';
+          document.getElementById('dash-level-xp').textContent = `${xpInLevel} / 25 XP to Level ${level + 1}`;
+        }
+
+        // Daily challenge — 10 correct today.
+        const challengeTarget = 10;
+        const challengePct = Math.min(100, Math.round((todayCorrect / challengeTarget) * 100));
+        const cFill = document.getElementById('dash-challenge-fill');
+        const cText = document.getElementById('dash-challenge-text');
+        if (cFill) cFill.style.width = challengePct + '%';
+        if (cText) cText.textContent = todayCorrect >= challengeTarget
+          ? '✓ Challenge complete!'
+          : `${todayCorrect} / ${challengeTarget} today`;
+        const tEl = document.getElementById('dash-challenge-timer');
+        if (tEl) {
+          const now = new Date();
+          const mid = new Date(now); mid.setHours(24,0,0,0);
+          const ms = mid - now;
+          const h = Math.floor(ms / 3600000);
+          const m = Math.floor((ms % 3600000) / 60000);
+          tEl.textContent = `${h}h ${m}m`;
+        }
+
+        // Achievements — 6 tiles, derived from local stats.
+        const achievements = [
+          { icon:'🌱', name:'First Steps',    desc:'Answer your first question', target:1,   value:totalCorrect },
+          { icon:'🎯', name:'Sharpshooter',   desc:'10 correct in a row',         target:10,  value:personalBest },
+          { icon:'📚', name:'Bookworm',       desc:'Answer 100 questions',        target:100, value:totalCorrect },
+          { icon:'🔥', name:'On Fire',        desc:'7-day streak',                target:7,   value:Math.max(streak, best) },
+          { icon:'💎', name:'Perfectionist',  desc:'25 correct in a row',         target:25,  value:personalBest },
+          { icon:'🏆', name:'Champion',       desc:'500 correct answers',         target:500, value:totalCorrect }
+        ];
+        const grid = document.getElementById('dash-achievements-grid');
+        let unlocked = 0;
+        if (grid) {
+          grid.innerHTML = achievements.map(a => {
+            const isUnlocked = a.value >= a.target;
+            if (isUnlocked) unlocked++;
+            const status = isUnlocked
+              ? 'Unlocked'
+              : (a.name === 'On Fire' ? `${Math.min(a.value, a.target)} / ${a.target} days`
+                  : a.name === 'Sharpshooter' || a.name === 'Perfectionist' ? `Best: ${a.value}`
+                  : a.value > 0 ? `${a.value} / ${a.target}` : 'Locked');
+            return `<div class="achievement-card achievement-card--${isUnlocked ? 'unlocked' : 'locked'}">
+              <div class="achievement-icon">${a.icon}</div>
+              <div class="achievement-name">${a.name}</div>
+              <div class="achievement-desc">${a.desc}</div>
+              <div class="achievement-status">${status}</div>
+            </div>`;
+          }).join('');
+        }
+        const sumEl = document.getElementById('dash-ach-summary');
+        if (sumEl) sumEl.textContent = unlocked > 0
+          ? `${unlocked} unlocked · ${achievements.length - unlocked} to go.`
+          : `Earn your first badge by answering a question.`;
       } catch (_) { /* offline */ }
     }
 

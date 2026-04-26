@@ -5157,3 +5157,384 @@ body.home-page #dashboard .activity-empty-text {
   body.home-page #dashboard .btn-primary--large,
   body.home-page #dashboard .journey-cta { transition: none; }
 }
+
+/* ============================================================
+   DASHBOARD v2 — daily challenge, level pill, dashboard-grade-tile,
+   achievements, compact activity (Prompt 13)
+   ============================================================ */
+
+/* Level pill (inside welcome) */
+body.home-page #dashboard .level-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px 8px 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  margin-top: 18px;
+}
+body.home-page #dashboard .level-badge {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  border-radius: 50%;
+  font-family: 'Instrument Serif', serif;
+  font-size: 18px;
+  color: #ffffff;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.2) inset, 0 4px 12px -2px rgba(99,102,241,0.4);
+}
+body.home-page #dashboard .level-info {
+  display: flex; flex-direction: column; gap: 4px; min-width: 220px;
+}
+body.home-page #dashboard .level-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px; font-weight: 600;
+  color: rgba(255,255,255,0.85);
+}
+body.home-page #dashboard .level-progress {
+  display: flex; align-items: center; gap: 8px;
+}
+body.home-page #dashboard .level-progress-bar {
+  flex: 1; height: 4px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 999px; overflow: hidden;
+}
+body.home-page #dashboard .level-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #818cf8, #6366f1);
+  border-radius: 999px;
+  box-shadow: 0 0 6px rgba(99,102,241,0.5);
+}
+body.home-page #dashboard .level-xp {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px; font-weight: 500;
+  color: rgba(255,255,255,0.45); white-space: nowrap;
+}
+
+/* Daily challenge */
+body.home-page #dashboard .daily-challenge {
+  position: relative;
+  margin: 0 32px 32px;
+  padding: 28px 32px;
+  background: linear-gradient(135deg, rgba(251,191,36,0.12) 0%, rgba(20,29,51,0.6) 60%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(251,191,36,0.25);
+  border-radius: 20px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 32px;
+  align-items: center;
+  overflow: hidden;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.06) inset,
+    0 16px 40px -12px rgba(0,0,0,0.4),
+    0 0 60px -16px rgba(251,191,36,0.3);
+}
+body.home-page #dashboard .challenge-glow {
+  position: absolute;
+  top: -150px; left: -100px;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(251,191,36,0.25) 0%, transparent 60%);
+  filter: blur(40px);
+  pointer-events: none;
+  animation: challenge-pulse 4s ease-in-out infinite;
+}
+@keyframes challenge-pulse { 0%,100% { opacity: 0.7; } 50% { opacity: 1; } }
+body.home-page #dashboard .challenge-content { position: relative; z-index: 1; }
+body.home-page #dashboard .challenge-eyebrow {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: #fbbf24;
+  margin-bottom: 10px;
+}
+body.home-page #dashboard .challenge-fire {
+  font-size: 14px;
+  filter: drop-shadow(0 0 6px rgba(251,191,36,0.5));
+}
+body.home-page #dashboard .challenge-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 32px; font-weight: 400;
+  color: #ffffff; letter-spacing: -0.02em; line-height: 1.1;
+  margin: 0 0 8px 0;
+}
+body.home-page #dashboard .challenge-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px; color: rgba(255,255,255,0.7);
+  margin: 0 0 20px 0; max-width: 480px;
+}
+body.home-page #dashboard .challenge-subtitle strong { color: #fbbf24; font-weight: 600; }
+body.home-page #dashboard .challenge-progress {
+  display: flex; align-items: center; gap: 16px;
+}
+body.home-page #dashboard .challenge-progress-track {
+  flex: 1; display: flex; flex-direction: column; gap: 6px; max-width: 320px;
+}
+body.home-page #dashboard .challenge-progress-bar {
+  height: 8px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 999px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.04);
+}
+body.home-page #dashboard .challenge-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+  border-radius: 999px;
+  box-shadow: 0 0 12px rgba(251,191,36,0.5);
+  transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+}
+body.home-page #dashboard .challenge-progress-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px; font-weight: 600;
+  color: rgba(255,255,255,0.85);
+}
+body.home-page #dashboard .challenge-reward {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px;
+  background: rgba(251,191,36,0.12);
+  border: 1px solid rgba(251,191,36,0.3);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+body.home-page #dashboard .reward-coin { font-size: 14px; }
+body.home-page #dashboard .reward-amount {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px; font-weight: 700; color: #fbbf24;
+}
+body.home-page #dashboard .challenge-actions {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 12px;
+}
+body.home-page #dashboard .challenge-cta {
+  height: 48px; padding: 0 24px; white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px; font-weight: 600;
+  color: #0a1628;
+  background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
+  border: 1px solid rgba(251,191,36,0.5);
+  border-radius: 12px;
+  text-decoration: none;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.4) inset, 0 4px 12px -2px rgba(251,191,36,0.4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+body.home-page #dashboard .challenge-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.5) inset, 0 8px 20px -4px rgba(251,191,36,0.5);
+}
+body.home-page #dashboard .challenge-timer {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px; color: rgba(255,255,255,0.5);
+}
+body.home-page #dashboard .challenge-timer strong {
+  color: rgba(255,255,255,0.85); font-weight: 600;
+}
+@media (max-width: 768px) {
+  body.home-page #dashboard .daily-challenge {
+    grid-template-columns: 1fr; gap: 20px;
+  }
+  body.home-page #dashboard .challenge-actions { align-items: stretch; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.home-page #dashboard .challenge-glow { animation: none; }
+  body.home-page #dashboard .challenge-cta,
+  body.home-page #dashboard .challenge-progress-fill { transition: none; }
+}
+
+/* Dashboard grade tiles (compact, with progress bar) */
+body.home-page #dashboard .grades-panel .grade-grid-compact {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+@media (max-width: 480px) {
+  body.home-page #dashboard .grades-panel .grade-grid-compact { grid-template-columns: 1fr; }
+}
+body.home-page #dashboard .dashboard-grade-tile {
+  position: relative;
+  padding: 16px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  text-decoration: none;
+  display: flex; flex-direction: column; gap: 10px;
+  transition: all 0.2s ease;
+}
+body.home-page #dashboard .dashboard-grade-tile:hover {
+  background: rgba(251,191,36,0.06);
+  border-color: rgba(251,191,36,0.25);
+  transform: translateY(-2px);
+}
+body.home-page #dashboard .dashboard-grade-tile-header {
+  display: flex; justify-content: space-between; align-items: center; gap: 8px;
+}
+body.home-page #dashboard .dashboard-grade-tile-eyebrow {
+  font-family: 'Inter', sans-serif;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: rgba(251,191,36,0.85);
+}
+body.home-page #dashboard .dashboard-grade-tile-icon {
+  width: 24px; height: 24px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px; font-weight: 600;
+  color: rgba(255,255,255,0.7);
+  flex-shrink: 0;
+}
+body.home-page #dashboard .dashboard-grade-tile-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px; font-weight: 600;
+  color: #ffffff !important;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+body.home-page #dashboard .dashboard-grade-tile-meta {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  color: rgba(255,255,255,0.45);
+  margin: 0;
+}
+body.home-page #dashboard .dashboard-grade-tile-progress {
+  display: flex; flex-direction: column; gap: 4px; margin-top: 4px;
+}
+body.home-page #dashboard .tile-progress-bar {
+  height: 3px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 999px;
+  overflow: hidden;
+}
+body.home-page #dashboard .tile-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+  border-radius: 999px;
+  box-shadow: 0 0 8px rgba(251,191,36,0.4);
+  transition: width 1s cubic-bezier(0.4,0,0.2,1);
+}
+body.home-page #dashboard .tile-progress-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px; font-weight: 500;
+  color: rgba(255,255,255,0.5);
+}
+
+/* Achievements */
+body.home-page #dashboard .achievements-panel { grid-column: 1 / -1; }
+body.home-page #dashboard .achievements-header {
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;
+}
+body.home-page #dashboard .achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+}
+@media (max-width: 1024px) {
+  body.home-page #dashboard .achievements-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 480px) {
+  body.home-page #dashboard .achievements-grid { grid-template-columns: repeat(2, 1fr); }
+}
+body.home-page #dashboard .achievement-card {
+  position: relative;
+  padding: 16px 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  transition: all 0.3s ease;
+}
+body.home-page #dashboard .achievement-card--unlocked {
+  background: linear-gradient(180deg, rgba(251,191,36,0.1) 0%, rgba(255,255,255,0.02) 100%);
+  border-color: rgba(251,191,36,0.25);
+}
+body.home-page #dashboard .achievement-card--unlocked:hover {
+  transform: translateY(-2px);
+  border-color: rgba(251,191,36,0.4);
+  box-shadow: 0 0 24px -8px rgba(251,191,36,0.4);
+}
+body.home-page #dashboard .achievement-card--locked { opacity: 0.6; }
+body.home-page #dashboard .achievement-icon { font-size: 28px; margin-bottom: 4px; }
+body.home-page #dashboard .achievement-card--locked .achievement-icon {
+  filter: grayscale(1) brightness(0.7);
+}
+body.home-page #dashboard .achievement-name {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px; font-weight: 700;
+  color: #ffffff;
+}
+body.home-page #dashboard .achievement-desc {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.3;
+}
+body.home-page #dashboard .achievement-status {
+  font-family: 'Inter', sans-serif;
+  font-size: 9px; font-weight: 600;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  margin-top: 4px;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+body.home-page #dashboard .achievement-card--unlocked .achievement-status {
+  color: #fbbf24; background: rgba(251,191,36,0.12);
+}
+body.home-page #dashboard .achievement-card--locked .achievement-status {
+  color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.04);
+}
+
+/* Compact recent activity (bottom of dashboard) */
+body.home-page #dashboard .activity-panel-compact { grid-column: 1 / -1; padding: 24px; }
+body.home-page #dashboard .activity-panel-compact .activity-header {
+  margin-bottom: 16px;
+}
+body.home-page #dashboard .activity-panel-compact .activity-empty {
+  text-align: center; padding: 32px 24px;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+body.home-page #dashboard .activity-panel-compact .activity-empty-icon {
+  display: inline-flex;
+  width: 48px; height: 48px;
+  align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  font-size: 22px;
+  margin-bottom: 10px;
+  color: rgba(251,191,36,0.85);
+}
+body.home-page #dashboard .activity-panel-compact .activity-empty-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px; font-weight: 600;
+  color: #ffffff; margin: 0;
+}
+body.home-page #dashboard .activity-panel-compact .activity-empty-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px; line-height: 1.5;
+  color: rgba(255,255,255,0.55);
+  max-width: 380px; margin: 0;
+}
+body.home-page #dashboard .activity-empty-cta {
+  margin-top: 14px;
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 38px; padding: 0 18px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px; font-weight: 600;
+  color: #ffffff;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+body.home-page #dashboard .activity-empty-cta:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(251,191,36,0.3);
+}
