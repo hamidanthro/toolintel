@@ -699,6 +699,22 @@ async function handleEarn(payload) {
     ExpressionAttributeValues: { ':a': award, ':z': 0 },
     ReturnValues: 'ALL_NEW'
   }));
+
+  // Best-effort: bump per-grade slugCorrect so the leaderboard sees this user
+  // even if they never trigger the older saveStats action. We only know about
+  // correct answers here (award only fires on correct), so we bump both
+  // slugCorrect and slugTotal by 1 to keep accuracy at 100% as a baseline —
+  // saveStats will overwrite with the true totals when it runs.
+  const bumpSlug = sectionKey || (auth.grade ? String(auth.grade).toLowerCase() : null);
+  if (bumpSlug) {
+    ddb.send(new UpdateCommand({
+      TableName: USERS_TABLE,
+      Key: { username: auth.username },
+      UpdateExpression: 'SET slugCorrect = if_not_exists(slugCorrect, :empty), slugCorrect.#s = if_not_exists(slugCorrect.#s, :z) + :one, slugTotal = if_not_exists(slugTotal, :empty), slugTotal.#s = if_not_exists(slugTotal.#s, :z) + :one',
+      ExpressionAttributeNames: { '#s': bumpSlug },
+      ExpressionAttributeValues: { ':empty': {}, ':z': 0, ':one': 1 }
+    })).catch(() => {});
+  }
   return ok({
     awardedCents: award,
     balanceCents: upd.Attributes.balanceCents || 0,
@@ -1061,18 +1077,35 @@ async function handleLeaderboard(payload) {
   const items = r.Items || [];
   const rows = items.map(it => {
     const t = userTotals(it);
-    const acc = t.answered > 0 ? Math.round((t.correct / t.answered) * 100) : 0;
+    // Some legacy users earned cents (via `award`) but never had per-slug
+    // stats written. Synthesize an approximate correct count from cents
+    // (avg ~28 cents per correct answer for Saad's data) so they still
+    // appear on the board.
+    let correct = t.correct;
+    let answered = t.answered;
+    let synthesized = false;
+    if (correct === 0 && t.lifetimeCents > 0) {
+      correct = Math.max(1, Math.round(t.lifetimeCents / 28));
+      answered = correct; // unknown wrong-count, show as 100% with a hint
+      synthesized = true;
+    }
+    const acc = answered > 0 ? Math.round((correct / answered) * 100) : 0;
     return {
       username: it.username,
       displayName: it.displayName || it.username,
-      correct: t.correct,
-      answered: t.answered,
+      correct,
+      answered,
       accuracy: acc,
+      accuracyKnown: !synthesized,
       lifetimeCents: t.lifetimeCents
     };
   })
-  .filter(r => r.answered > 0)
-  .sort((a, b) => (b.correct - a.correct) || (b.accuracy - a.accuracy));
+  .filter(r => r.correct > 0 || r.lifetimeCents > 0)
+  .sort((a, b) =>
+    (b.correct - a.correct) ||
+    (b.lifetimeCents - a.lifetimeCents) ||
+    (b.accuracy - a.accuracy)
+  );
 
   const top = rows.slice(0, 10).map((r, idx) => ({ rank: idx + 1, ...r }));
   const meRow = rows.findIndex(r => r.username === auth.username);

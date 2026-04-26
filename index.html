@@ -214,11 +214,12 @@
           lbList.innerHTML = lb.top.map(r => {
             const isMe = r.username === u.username;
             const medal = r.rank === 1 ? '🥇' : r.rank === 2 ? '🥈' : r.rank === 3 ? '🥉' : `#${r.rank}`;
+            const accStr = r.accuracyKnown === false ? '~' : `${r.accuracy || 0}%`;
             return `<li class="${isMe ? 'lb-me' : ''}">
               <span class="lb-rank">${medal}</span>
               <span class="lb-name">${escapeHtmlSafe(r.displayName)}${isMe ? ' <span class="lb-you">(you)</span>' : ''}</span>
               <span class="lb-correct">${(r.correct || 0).toLocaleString()} correct</span>
-              <span class="lb-acc">${r.accuracy || 0}%</span>
+              <span class="lb-acc">${accStr}</span>
             </li>`;
           }).join('');
         }
@@ -248,11 +249,12 @@
           lbList.innerHTML = lb.top.map(r => {
             const isMe = r.username === u.username;
             const medal = r.rank === 1 ? '🥇' : r.rank === 2 ? '🥈' : r.rank === 3 ? '🥉' : `#${r.rank}`;
+            const accStr = r.accuracyKnown === false ? '~' : `${r.accuracy || 0}%`;
             return `<li class="${isMe ? 'lb-me' : ''}">
               <span class="lb-rank">${medal}</span>
               <span class="lb-name">${escapeHtmlSafe(r.displayName)}${isMe ? ' <span class="lb-you">(you)</span>' : ''}</span>
               <span class="lb-correct">${(r.correct || 0).toLocaleString()} correct</span>
-              <span class="lb-acc">${r.accuracy || 0}%</span>
+              <span class="lb-acc">${accStr}</span>
             </li>`;
           }).join('');
         }
