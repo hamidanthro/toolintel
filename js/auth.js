@@ -588,6 +588,7 @@
     if (!u) {
       slot.innerHTML = `<button type="button" class="btn btn-primary user-signin">Sign in</button>`;
       slot.querySelector('.user-signin').addEventListener('click', () => showLogin());
+      try { ensureMobileMenu(); } catch (_) {}
       return;
     }
     const wallet = formatCents(u.balanceCents || 0);
@@ -635,6 +636,7 @@
       // (or any authed view) is fully torn down — no stale state.
       try { window.location.assign('/'); } catch (_) { window.location.href = '/'; }
     });
+    try { ensureMobileMenu(); } catch (_) {}
   }
 
   // Compare grade levels. Returns numeric rank: 0 for K, 1..8 for grade-N, 9 for algebra-1, -Infinity if unknown.
@@ -657,6 +659,188 @@
     if (u) saveSession({ token: t, user: { ...u, grade: res.grade } });
     return res.grade;
   }
+
+  // ============================================================
+  // MOBILE HAMBURGER MENU (Prompt 26)
+  // ============================================================
+  function ensureMobileMenu() {
+    const u = currentUser();
+    const stamp = u ? `u:${u.userId || u.username}:${u.balanceCents || 0}:${u.isAdmin ? 1 : 0}` : 'guest';
+    const existing = document.querySelector('.mobile-menu-toggle');
+    if (existing && existing.dataset.staarStamp === stamp) return;
+    // Rebuild: tear down stale UI first.
+    if (existing) existing.remove();
+    document.querySelectorAll('.mobile-menu-panel, .mobile-menu-scrim').forEach(n => n.remove());
+    const headerContainer = document.querySelector('.site-header .container');
+    if (!headerContainer) return;
+
+    const isAdmin = !!(u && u.isAdmin);
+    const path = (location.pathname || '').toLowerCase();
+    const currentPage = (() => {
+      if (path.endsWith('index.html') || path === '/' || path === '') return 'home';
+      if (path.indexOf('marketplace') !== -1) return 'toys';
+      if (path.indexOf('about') !== -1) return 'about';
+      if (path.indexOf('practice') !== -1) return 'practice';
+      if (path.indexOf('grades') !== -1 || path.indexOf('grade.html') !== -1) return 'grades';
+      if (path.indexOf('admin') !== -1) return 'admin';
+      if (path.indexOf('settings') !== -1) return 'settings';
+      return null;
+    })();
+    const isActive = (k) => currentPage === k ? 'aria-current="page"' : '';
+
+    const toggle = document.createElement('button');
+    toggle.className = 'mobile-menu-toggle';
+    toggle.type = 'button';
+    toggle.setAttribute('aria-label', 'Open menu');
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-controls', 'mobile-menu-panel');
+    toggle.dataset.staarStamp = stamp;
+    toggle.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
+    headerContainer.appendChild(toggle);
+
+    const scrim = document.createElement('div');
+    scrim.className = 'mobile-menu-scrim';
+    document.body.appendChild(scrim);
+
+    const panel = document.createElement('nav');
+    panel.id = 'mobile-menu-panel';
+    panel.className = 'mobile-menu-panel';
+    panel.setAttribute('aria-hidden', 'true');
+
+    const userBlock = u ? `
+      <div class="mobile-menu-user">
+        <div class="avatar" style="background:${u.color || '#1e40af'}">${escapeHtml(avatar(u.displayName || u.username))}</div>
+        <div class="info">
+          <span class="name">${escapeHtml(u.displayName || u.username)}</span>
+          <span class="username">@${escapeHtml(u.username)}</span>
+        </div>
+      </div>` : '';
+
+    const wallet = u ? formatCents(u.balanceCents || 0) : '';
+
+    panel.innerHTML = `
+      ${userBlock}
+      <a class="mobile-menu-row" href="index.html" ${isActive('home')}>
+        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+        Home
+      </a>
+      <a class="mobile-menu-row" href="marketplace.html" ${isActive('toys')}>
+        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/></svg></span>
+        Toy marketplace
+        ${u ? `<span class="meta">${wallet} pts</span>` : ''}
+      </a>
+      <a class="mobile-menu-row" href="about.html" ${isActive('about')}>
+        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
+        How it works
+      </a>
+      ${isAdmin ? `
+        <div class="mobile-menu-divider"></div>
+        <a class="mobile-menu-row" href="admin.html" ${isActive('admin')}>
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+          Admin panel
+        </a>` : ''}
+      ${u ? `
+        <div class="mobile-menu-divider"></div>
+        <a class="mobile-menu-row" href="settings.html" ${isActive('settings')}>
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 005.6 15a1.65 1.65 0 00-1.51-1H4a2 2 0 010-4h.09A1.65 1.65 0 005.6 9 1.65 1.65 0 005.27 7.18l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H10a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V10a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>
+          Settings
+        </a>
+        <button class="mobile-menu-row mobile-menu-row--signout" type="button" data-act="signout">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg></span>
+          Sign out
+        </button>
+      ` : `
+        <div class="mobile-menu-divider"></div>
+        <button class="mobile-menu-row" type="button" data-act="signin">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg></span>
+          Sign in
+        </button>
+      `}
+    `;
+    document.body.appendChild(panel);
+
+    function open() {
+      panel.dataset.open = 'true';
+      scrim.dataset.open = 'true';
+      panel.setAttribute('aria-hidden', 'false');
+      toggle.setAttribute('aria-expanded', 'true');
+      toggle.setAttribute('aria-label', 'Close menu');
+      document.body.style.overflow = 'hidden';
+    }
+    function close() {
+      panel.dataset.open = 'false';
+      scrim.dataset.open = 'false';
+      panel.setAttribute('aria-hidden', 'true');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', 'Open menu');
+      document.body.style.overflow = '';
+    }
+    toggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      panel.dataset.open === 'true' ? close() : open();
+    });
+    scrim.addEventListener('click', close);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && panel.dataset.open === 'true') close();
+    });
+    panel.addEventListener('click', (e) => {
+      const link = e.target.closest('a.mobile-menu-row');
+      if (link) close(); // close before navigation
+    });
+    const signinBtn = panel.querySelector('[data-act="signin"]');
+    if (signinBtn) signinBtn.addEventListener('click', () => { close(); showLogin(); });
+    const signoutBtn = panel.querySelector('[data-act="signout"]');
+    if (signoutBtn) signoutBtn.addEventListener('click', () => {
+      close();
+      clearSession();
+      try { window.location.assign('/'); } catch (_) { window.location.href = '/'; }
+    });
+  }
+
+  // ============================================================
+  // MOBILE: hide chat widget when input is focused (body class)
+  // ============================================================
+  function setupInputFocusedClass() {
+    if (window.__staarInputFocusedBound) return;
+    window.__staarInputFocusedBound = true;
+    document.addEventListener('focusin', (e) => {
+      if (e.target && e.target.matches && e.target.matches('input, textarea')) {
+        document.body.classList.add('input-focused');
+      }
+    });
+    document.addEventListener('focusout', (e) => {
+      if (e.target && e.target.matches && e.target.matches('input, textarea')) {
+        document.body.classList.remove('input-focused');
+      }
+    });
+  }
+
+  // ============================================================
+  // iOS keyboard handler — shifts modal up so submit stays visible
+  // ============================================================
+  function setupIOSKeyboardHandler() {
+    if (!window.visualViewport || window.__staarVVBound) return;
+    window.__staarVVBound = true;
+    function adjust() {
+      const modal = document.querySelector('.modal-card, .signin-modal');
+      if (!modal || !modal.offsetParent) return;
+      const vv = window.visualViewport;
+      const kb = window.innerHeight - vv.height;
+      modal.style.paddingBottom = kb > 50 ? `${kb}px` : '';
+    }
+    window.visualViewport.addEventListener('resize', adjust);
+    window.visualViewport.addEventListener('scroll', adjust);
+  }
+
+  // ============================================================
+  // STAARHaptic — vibration helpers (no-op on devices without support)
+  // ============================================================
+  window.STAARHaptic = window.STAARHaptic || {
+    light()   { try { navigator.vibrate && navigator.vibrate(10); } catch (_) {} },
+    medium()  { try { navigator.vibrate && navigator.vibrate(20); } catch (_) {} },
+    heavy()   { try { navigator.vibrate && navigator.vibrate([10, 30, 10]); } catch (_) {} },
+    success() { try { navigator.vibrate && navigator.vibrate([10, 50, 30, 50]); } catch (_) {} }
+  };
 
   // ----- Public API -----
   window.STAARAuth = Object.assign(window.STAARAuth || {}, {
@@ -690,6 +874,9 @@
 
   document.addEventListener('DOMContentLoaded', () => {
     refreshHeader();
+    ensureMobileMenu();
+    setupInputFocusedClass();
+    setupIOSKeyboardHandler();
     if (window.STAARAuth.requireLoginOnLoad && !currentUser()) {
       showLogin();
     } else if (currentUser()) {

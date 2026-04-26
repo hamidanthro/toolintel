@@ -1,3 +1,23 @@
+/* ============================================================
+   MOBILE BREAKPOINT CONTRACT — established 2026-04-27
+
+   This codebase uses ONLY three breakpoints. Any new media query
+   must use one of these. Do NOT introduce 600/640/720/760/900/etc.
+
+   @media (max-width: 1024px)  — tablet (e.g. iPad portrait, narrow laptop)
+   @media (max-width: 768px)   — large phone / small tablet
+   @media (max-width: 480px)   — phone (target: iPhone 13 mini @ 375pt)
+
+   DESKTOP-FIRST RULE:
+   Base/unscoped rules describe the desktop intent. Mobile is
+   ALWAYS expressed as an override inside one of the three
+   media queries above. Never edit a base rule "to also work
+   on mobile" — that breaks desktop within 3 commits.
+
+   Legacy stragglers (720, 760, 900, 640, 600, 520) are being
+   retired as we touch each page. Don't add new ones.
+   ============================================================ */
+
 /* STAAR Math Prep — base styles */
 :root {
   --navy: #0b2545;
@@ -2632,6 +2652,7 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
   font-weight: 700;
   text-decoration: none;
   letter-spacing: 0.02em;
+  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
   transition: background 0.15s ease, transform 0.15s ease;
 }
@@ -2736,6 +2757,7 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
   position: absolute;
   inset: 0;
   background: rgba(15, 23, 42, 0.4);
+  -webkit-backdrop-filter: blur(2px);
   backdrop-filter: blur(2px);
 }
 .sf-card {
@@ -5631,7 +5653,8 @@ body.home-page #dashboard .activity-empty-cta:hover {
 body.practice-select-page {
   position: relative;
   background: #060d1f;
-  min-height: 100vh;
+  min-height: 100vh;          /* fallback for older browsers */
+  min-height: 100dvh;         /* dynamic viewport — accounts for iOS URL bar */
   color: rgba(255,255,255,0.85);
 }
 body.practice-select-page .site-header { background: transparent; border-bottom: 1px solid rgba(255,255,255,0.06); }
@@ -5868,7 +5891,8 @@ body.practice-page {
   background: #060d1f;
   color: #ffffff;
   font-family: 'Inter', system-ui, sans-serif;
-  min-height: 100vh;
+  min-height: 100vh;          /* fallback for older browsers */
+  min-height: 100dvh;         /* dynamic viewport — accounts for iOS URL bar */
   position: relative;
   overflow-x: hidden;
 }
@@ -7006,7 +7030,8 @@ body.practice-page .thinking-dot:nth-child(3) { animation-delay: 0.36s; }
 body.admin-page {
   background: #060d1f;
   color: rgba(255, 255, 255, 0.92);
-  min-height: 100vh;
+  min-height: 100vh;          /* fallback for older browsers */
+  min-height: 100dvh;         /* dynamic viewport — accounts for iOS URL bar */
 }
 
 body.admin-page::before {
@@ -7468,3 +7493,364 @@ body.admin-page .admin-footer-meta strong {
   font-weight: 600;
 }
 body.admin-page .dot-divider { color: rgba(255, 255, 255, 0.2); }
+
+/* ============================================================
+   PROMPT 26 — GLOBAL MOBILE PRIMITIVES
+   Foundation for all per-page mobile work. Discipline rule:
+   only @media (max-width: 1024 | 768 | 480) blocks below.
+   ============================================================ */
+
+/* ---- iOS zoom killer: inputs at 16px globally ---- */
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+input[type="url"],
+input[type="search"],
+input[type="tel"],
+textarea,
+select {
+  font-size: 16px;
+}
+
+/* ---- Eliminate 300ms tap delay on iOS ---- */
+button,
+a,
+[role="button"],
+.pill-button,
+.btn,
+.tab,
+input[type="submit"],
+input[type="button"] {
+  touch-action: manipulation;
+}
+
+/* ---- Hover-only hover for the most exposed components ---- */
+@media (hover: hover) {
+  .grade-card:hover,
+  .feature-card:hover { transform: translateY(-4px); }
+  .toy-card:hover { transform: translateY(-6px); }
+  .dashboard-grade-tile:hover,
+  .stat-card:hover,
+  .achievement-card--unlocked:hover { transform: translateY(-2px); }
+  .btn-primary:hover,
+  .question-submit:hover,
+  .signin-submit:hover { transform: translateY(-1px); }
+}
+@media (hover: none) {
+  .grade-card:hover,
+  .toy-card:hover,
+  .dashboard-grade-tile:hover,
+  .stat-card:hover,
+  .achievement-card--unlocked:hover,
+  .feature-card:hover,
+  .btn-primary:hover,
+  .question-submit:hover,
+  .signin-submit:hover {
+    transform: none;
+  }
+}
+
+/* ============================================================
+   MOBILE HEADER — restructured for narrow viewports (<= 768px)
+   ============================================================ */
+@media (max-width: 768px) {
+  .site-header { padding: 8px 16px; }
+  .site-header .container { height: 48px; gap: 8px; }
+
+  /* Hide center nav + user pill + chat — they go in hamburger */
+  .site-header .nav,
+  .site-header .user-pill,
+  .site-header .user-menu,
+  .site-header .chat-bell,
+  .site-header #user-slot .user-menu,
+  .site-header #user-slot .user-pill,
+  .site-header #user-slot .chat-bell,
+  .site-header #user-slot .admin-badge {
+    display: none !important;
+  }
+
+  /* Brand smaller */
+  .site-header .brand { font-size: 16px; }
+  .site-header .brand svg { width: 28px; height: 28px; }
+
+  /* Hamburger appears */
+  .mobile-menu-toggle { display: inline-flex; }
+
+  /* Wallet/points pill stays — kid dopamine */
+  .site-header .wallet-pill,
+  .site-header .points-pill,
+  .site-header #user-slot .wallet-pill {
+    display: inline-flex;
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+}
+
+/* ============================================================
+   HAMBURGER MENU — toggle button + slide panel + scrim
+   ============================================================ */
+.mobile-menu-toggle {
+  display: none;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  margin-left: auto;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.mobile-menu-toggle:active {
+  transform: scale(0.95);
+  background: rgba(255, 255, 255, 0.08);
+}
+.mobile-menu-toggle svg {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.2s ease;
+}
+.mobile-menu-toggle[aria-expanded="true"] svg { transform: rotate(90deg); }
+
+.mobile-menu-panel {
+  position: fixed;
+  top: 64px;
+  left: 16px;
+  right: 16px;
+  z-index: 1300;
+  background: linear-gradient(180deg, rgba(20, 29, 51, 0.98) 0%, rgba(15, 22, 41, 0.98) 100%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 16px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 16px 48px -12px rgba(0, 0, 0, 0.5);
+  padding: 12px;
+  opacity: 0;
+  transform: translateY(-8px) scale(0.98);
+  pointer-events: none;
+  transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.mobile-menu-panel[data-open="true"] {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.mobile-menu-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 1290;
+  background: rgba(6, 13, 31, 0.6);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.mobile-menu-scrim[data-open="true"] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mobile-menu-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  transition: background 0.15s ease;
+  min-height: 44px;
+  background: transparent;
+  border: 0;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+.mobile-menu-row:active { background: rgba(255, 255, 255, 0.06); }
+.mobile-menu-row[aria-current="page"] {
+  background: rgba(251, 191, 36, 0.08);
+  color: #fbbf24;
+}
+.mobile-menu-row .icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
+}
+.mobile-menu-row[aria-current="page"] .icon { color: #fbbf24; }
+.mobile-menu-row .meta {
+  margin-left: auto;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 400;
+}
+
+.mobile-menu-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 14px 12px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.mobile-menu-user .avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 15px;
+  color: #ffffff;
+}
+.mobile-menu-user .info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.mobile-menu-user .name {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+}
+.mobile-menu-user .username {
+  font-family: 'JetBrains Mono', 'Menlo', ui-monospace, monospace;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+.mobile-menu-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 8px 0;
+}
+.mobile-menu-row--signout { color: rgba(248, 113, 113, 0.85); }
+.mobile-menu-row--signout .icon { color: rgba(248, 113, 113, 0.6); }
+
+/* Hide hamburger UI on desktop */
+@media (min-width: 769px) {
+  .mobile-menu-toggle,
+  .mobile-menu-panel,
+  .mobile-menu-scrim {
+    display: none !important;
+  }
+}
+
+/* ============================================================
+   MOBILE SIGN-IN MODAL — bottom sheet + sticky submit
+   ============================================================ */
+@media (max-width: 768px) {
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .modal-card,
+  .signin-modal {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 24px 24px 0 0;
+    margin: 0;
+    max-height: 90vh;
+    max-height: 90dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .signin-modal-body {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 16px;
+  }
+  .signin-submit {
+    position: sticky;
+    bottom: 0;
+    margin-top: 8px;
+    background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
+    z-index: 2;
+    box-shadow:
+      0 -8px 16px -8px rgba(20, 29, 51, 0.95),
+      0 1px 0 rgba(255, 255, 255, 0.4) inset,
+      0 0 0 1px rgba(251, 191, 36, 0.3),
+      0 4px 12px -2px rgba(251, 191, 36, 0.4);
+  }
+}
+
+/* ============================================================
+   FLOATING PRACTICE CTA — mobile dashboard only
+   ============================================================ */
+.floating-practice-cta {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 70;
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #0a1628;
+  text-decoration: none;
+  background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
+  border: 1px solid rgba(251, 191, 36, 0.5);
+  border-radius: 999px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.4) inset,
+    0 0 0 1px rgba(251, 191, 36, 0.3),
+    0 12px 32px -4px rgba(251, 191, 36, 0.5),
+    0 4px 8px rgba(0, 0, 0, 0.2);
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.floating-practice-cta:active { transform: translateX(-50%) scale(0.96); }
+.floating-practice-cta .pulse-dot {
+  width: 8px;
+  height: 8px;
+  background: rgba(10, 22, 40, 0.4);
+  border-radius: 50%;
+  animation: cta-pulse 2s ease-in-out infinite;
+}
+@keyframes cta-pulse {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50%      { opacity: 1;   transform: scale(1.3); }
+}
+@media (max-width: 768px) {
+  body.home-page .floating-practice-cta { display: inline-flex; }
+  body.input-focused .floating-practice-cta { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .floating-practice-cta .pulse-dot { animation: none; }
+}
+
+/* ============================================================
+   MOBILE: hide chat widget when input focused
+   ============================================================ */
+@media (max-width: 768px) {
+  body.input-focused .chat-bell,
+  body.input-focused .chat-widget,
+  body.input-focused #chat-widget,
+  body.input-focused [class*="chat-widget"],
+  body.input-focused .sf-panel {
+    display: none !important;
+  }
+}
