@@ -471,6 +471,15 @@
 
     function attachQuestionHandlers(q) {
       const form = qbox.querySelector('form');
+      // Esc clears the typed answer (free-response only).
+      const numInput = form.querySelector('.num-input');
+      if (numInput) {
+        numInput.addEventListener('keydown', e => {
+          if (e.key === 'Escape') { e.preventDefault(); numInput.value = ''; }
+        });
+        // Auto-focus the input so kids can just type.
+        setTimeout(() => { try { numInput.focus(); } catch (_) {} }, 50);
+      }
       // Read-aloud button (shown only when pref is on).
       const readBtn = qbox.querySelector('[data-act="read"]');
       if (readBtn && window.STAARFx) {
@@ -492,6 +501,7 @@
         }
         const isCorrect = checkAnswer(q, userAnswer);
         if (isCorrect) correct++;
+        if (isCorrect) spawnPointsPop(qbox, difficultyCents(q));
         Stats.record(slug, stats, { unitId: q._unit?.id, unitTitle: q._unit?.title, isCorrect });
         const milestones = recordJourney(isCorrect);
         if (window.STAARFx) {
@@ -689,6 +699,18 @@
       return `<span class="choice-symbol">${escapeHtml(c)}</span><span class="choice-hint"> (${hint})</span>`;
     }
     return `<span>${escapeHtml(c)}</span>`;
+  }
+
+  function spawnPointsPop(qbox, points) {
+    if (!qbox) return;
+    const main = qbox.closest('.practice-main') || qbox.parentElement;
+    if (!main) return;
+    if (getComputedStyle(main).position === 'static') main.style.position = 'relative';
+    const pop = document.createElement('div');
+    pop.className = 'points-pop';
+    pop.textContent = `+${points}`;
+    main.appendChild(pop);
+    setTimeout(() => { try { pop.remove(); } catch (_) {} }, 1300);
   }
 
   function renderQuestion(q, locked) {
@@ -943,10 +965,11 @@
 
   function renderPerf(panel, curr, s) {
     const acc = s.total === 0 ? 0 : Math.round((s.correct / s.total) * 100);
-    const ringRadius = 52;
+    const ringRadius = 70;
     const ringCirc = 2 * Math.PI * ringRadius;
     const ringOffset = ringCirc - (acc / 100) * ringCirc;
     const ringColor = acc >= 80 ? '#16a34a' : acc >= 60 ? '#f59e0b' : acc >= 1 ? '#dc2626' : '#cbd5e1';
+    const useGoldGrad = acc >= 1;
 
     const dots = (() => {
       const cells = [];
@@ -985,14 +1008,26 @@
       <div class="perf-card">
         <div class="perf-title">Your performance</div>
         <div class="perf-ring-wrap">
-          <svg class="perf-ring" viewBox="0 0 120 120" width="120" height="120">
-            <circle cx="60" cy="60" r="${ringRadius}" stroke="#e2e8f0" stroke-width="10" fill="none"/>
-            <circle cx="60" cy="60" r="${ringRadius}" stroke="${ringColor}" stroke-width="10" fill="none"
+          <svg class="perf-ring" viewBox="0 0 160 160" width="160" height="160">
+            <defs>
+              <linearGradient id="accuracyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#fde68a"/>
+                <stop offset="55%" stop-color="#fbbf24"/>
+                <stop offset="100%" stop-color="#f59e0b"/>
+              </linearGradient>
+              <filter id="accuracyGlow" x="-30%" y="-30%" width="160%" height="160%">
+                <feGaussianBlur stdDeviation="3" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+            <circle cx="80" cy="80" r="${ringRadius}" stroke="rgba(255,255,255,0.08)" stroke-width="12" fill="none"/>
+            <circle cx="80" cy="80" r="${ringRadius}" stroke="${useGoldGrad ? 'url(#accuracyGrad)' : ringColor}" stroke-width="12" fill="none"
                     stroke-dasharray="${ringCirc}" stroke-dashoffset="${ringOffset}"
-                    stroke-linecap="round" transform="rotate(-90 60 60)"
+                    stroke-linecap="round" transform="rotate(-90 80 80)"
+                    filter="${useGoldGrad ? 'url(#accuracyGlow)' : ''}"
                     style="transition: stroke-dashoffset 0.5s ease, stroke 0.3s ease;"/>
-            <text x="60" y="58" text-anchor="middle" font-size="22" font-weight="700" fill="var(--navy)">${acc}%</text>
-            <text x="60" y="78" text-anchor="middle" font-size="10" fill="var(--muted)">accuracy</text>
+            <text class="accuracy-value" x="80" y="82" text-anchor="middle" font-size="38" font-weight="700">${acc}<tspan class="accuracy-suffix" font-size="22">%</tspan></text>
+            <text class="accuracy-label" x="80" y="106" text-anchor="middle" font-size="11">accuracy</text>
           </svg>
         </div>
         <div class="perf-stats">
