@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>STAAR Math Prep — Texas Math Test Preparation</title>
   <meta name="description" content="Practice and master the Texas STAAR math test. Grade-by-grade lessons, practice problems, and full-length tests for grades 3–8 and Algebra I." />
-  <link rel="stylesheet" href="css/styles.css?v=20260426d" />
+  <link rel="stylesheet" href="css/styles.css?v=20260426e" />
 </head>
 <body>
   <header class="site-header">
@@ -61,16 +61,23 @@
           <div class="dash-stat-foot" id="dash-time-foot">lifetime</div>
         </div>
       </div>
-      <div class="dash-card dash-card-board">
-        <div class="dash-board-head">
-          <h3>🏆 Leaderboard</h3>
-          <span class="dash-board-sub" id="dash-board-sub"></span>
+      <div class="dash-main">
+        <div class="dash-side">
+          <a href="grades.html" class="btn btn-primary dash-practice-cta">Practice now →</a>
+          <div class="dash-card dash-side-card">
+            <h3 class="dash-side-title">Your grade and beyond</h3>
+            <p class="dash-side-sub">Pick a grade to start practicing.</p>
+            <div class="grade-grid grade-grid-compact" id="grade-grid"></div>
+          </div>
         </div>
-        <ol class="leaderboard" id="dash-leaderboard"><li class="lb-empty">Loading…</li></ol>
-        <div id="dash-me-row"></div>
-      </div>
-      <div class="dash-actions">
-        <a href="grades.html" class="btn btn-primary">Practice now</a>
+        <div class="dash-card dash-card-board">
+          <div class="dash-board-head">
+            <h3>🏆 Leaderboard</h3>
+            <span class="dash-board-sub" id="dash-board-sub"></span>
+          </div>
+          <ol class="leaderboard" id="dash-leaderboard"><li class="lb-empty">Loading…</li></ol>
+          <div id="dash-me-row"></div>
+        </div>
       </div>
     </div>
   </section>
@@ -86,7 +93,7 @@
         <button type="button" class="btn btn-primary earn-banner-cta" id="earn-banner-btn">Sign in &amp; earn</button>
       </div>
       <h2>Choose your grade</h2>
-      <div class="grade-grid" id="grade-grid"></div>
+      <div class="grade-grid" id="grade-grid-anon"></div>
     </div>
   </section>
 
@@ -102,8 +109,10 @@
     document.getElementById('year').textContent = new Date().getFullYear();
 
     function renderGradeGrid() {
-      const grid = document.getElementById('grade-grid');
-      grid.innerHTML = '';
+      const grids = [
+        document.getElementById('grade-grid'),
+        document.getElementById('grade-grid-anon')
+      ].filter(Boolean);
       const Auth = window.STAARAuth || {};
       const minLevel = Auth.userGradeLevel ? Auth.userGradeLevel() : -Infinity;
       const visible = window.STAAR_GRADES.filter(g => Auth.gradeLevel(g.slug) >= minLevel);
@@ -126,16 +135,19 @@
           }
         }
       }
-      visible.forEach(g => {
-        const a = document.createElement('a');
-        a.href = `grade.html?g=${g.slug}`;
-        a.className = 'grade-card';
-        a.innerHTML = `
-          <div class="label">STAAR Math</div>
-          <div class="title">${g.title}</div>
-          <div class="desc">${g.categories.length} reporting categories</div>
-        `;
-        grid.appendChild(a);
+      grids.forEach(grid => {
+        grid.innerHTML = '';
+        visible.forEach(g => {
+          const a = document.createElement('a');
+          a.href = `grade.html?g=${g.slug}`;
+          a.className = 'grade-card';
+          a.innerHTML = `
+            <div class="label">STAAR Math</div>
+            <div class="title">${g.title}</div>
+            <div class="desc">${g.categories.length} reporting categories</div>
+          `;
+          grid.appendChild(a);
+        });
       });
     }
     renderGradeGrid();
@@ -183,7 +195,7 @@
       }
       heroAnon.hidden = true;
       dash.hidden = false;
-      gradeSection.hidden = false;
+      gradeSection.hidden = true;
       renderGradeGrid();
 
       document.getElementById('dash-greeting').textContent = `Welcome, ${u.displayName || u.username}!`;

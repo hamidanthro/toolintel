@@ -1375,6 +1375,55 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
 }
 .lb-meta { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border); color: var(--muted); font-size: 0.9rem; }
 .dash-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 28px; }
+
+/* Two-column dashboard main: side panel (CTA + grade picker) | leaderboard */
+.dash-main {
+  display: grid;
+  grid-template-columns: minmax(260px, 360px) 1fr;
+  gap: 18px;
+  margin-bottom: 28px;
+}
+.dash-side {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.dash-practice-cta {
+  width: 100%;
+  text-align: center;
+  font-size: 1.05rem;
+  padding: 14px 22px;
+  box-shadow: 0 8px 22px -8px rgba(245, 158, 11, 0.6);
+}
+.dash-side-card { padding: 18px 20px; }
+.dash-side-title {
+  margin: 0 0 4px;
+  font-size: 1rem;
+  color: var(--navy);
+}
+.dash-side-sub {
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.grade-grid-compact {
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.grade-grid-compact .grade-card {
+  padding: 12px 14px;
+  border-radius: 12px;
+}
+.grade-grid-compact .grade-card .label { font-size: 0.7rem; }
+.grade-grid-compact .grade-card .title { font-size: 0.95rem; margin: 2px 0 0; }
+.grade-grid-compact .grade-card .desc { display: none; }
+@media (max-width: 880px) {
+  .dash-main { grid-template-columns: 1fr; }
+  .grade-grid-compact { grid-template-columns: 1fr 1fr 1fr; }
+}
+@media (max-width: 520px) {
+  .grade-grid-compact { grid-template-columns: 1fr 1fr; }
+}
 @media (max-width: 600px) {
   .leaderboard li { grid-template-columns: 60px 1fr auto; }
   .leaderboard .lb-rank { width: 48px; height: 48px; font-size: 1.5rem; }
