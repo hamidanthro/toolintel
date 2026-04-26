@@ -1267,15 +1267,27 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
 .leaderboard { list-style: none; padding: 0; margin: 0; }
 .leaderboard li {
   display: grid;
-  grid-template-columns: 56px 1fr auto auto;
+  grid-template-columns: 72px 1fr auto auto;
   align-items: center;
-  gap: 12px;
-  padding: 10px 8px;
+  gap: 14px;
+  padding: 12px 14px;
   border-bottom: 1px solid var(--border);
+  border-radius: 12px;
   font-size: 0.95rem;
 }
 .leaderboard li:last-child { border-bottom: none; }
-.leaderboard .lb-rank { font-weight: 800; color: var(--navy); font-size: 1.1rem; }
+.leaderboard .lb-rank {
+  width: 56px; height: 56px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  font-size: 1.8rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  color: #475569;
+  background: #f1f5f9;
+  box-shadow: inset 0 0 0 2px rgba(15, 23, 42, 0.05);
+}
 .leaderboard .lb-name { color: var(--navy); font-weight: 600; }
 .leaderboard .lb-you { color: var(--blue); font-weight: 700; font-size: 0.8rem; }
 .leaderboard .lb-correct { color: var(--muted); font-size: 0.88rem; }
@@ -1289,9 +1301,51 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
 }
 .leaderboard .lb-me {
   background: linear-gradient(135deg, #fef3c7, #fde68a);
-  border-radius: 8px;
   border-bottom-color: transparent;
 }
+
+/* Gold #1 */
+.leaderboard .lb-rank-1 .lb-rank {
+  width: 64px; height: 64px;
+  font-size: 2.2rem;
+  color: #78350f;
+  background: radial-gradient(circle at 30% 28%, #fff7c2 0%, #fcd34d 55%, #b45309 115%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.7),
+    inset 0 0 0 2px rgba(255,255,255,0.45),
+    0 6px 14px -4px rgba(180, 83, 9, 0.55);
+  text-shadow: 0 1px 0 rgba(255,255,255,0.55);
+}
+/* Silver #2 */
+.leaderboard .lb-rank-2 .lb-rank {
+  width: 60px; height: 60px;
+  font-size: 2rem;
+  color: #1e293b;
+  background: radial-gradient(circle at 30% 28%, #ffffff 0%, #e2e8f0 55%, #94a3b8 115%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.85),
+    inset 0 0 0 2px rgba(255,255,255,0.5),
+    0 5px 12px -4px rgba(100, 116, 139, 0.5);
+  text-shadow: 0 1px 0 rgba(255,255,255,0.6);
+}
+/* Bronze #3 */
+.leaderboard .lb-rank-3 .lb-rank {
+  width: 60px; height: 60px;
+  font-size: 2rem;
+  color: #7c2d12;
+  background: radial-gradient(circle at 30% 28%, #fff0e0 0%, #fdba74 55%, #c2410c 115%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.7),
+    inset 0 0 0 2px rgba(255,255,255,0.4),
+    0 5px 12px -4px rgba(194, 95, 22, 0.55);
+  text-shadow: 0 1px 0 rgba(255,255,255,0.55);
+}
+/* Ranks 4+ — clean dark numeral */
+.leaderboard .lb-rank-n .lb-rank {
+  font-size: 1.5rem;
+  color: var(--navy);
+}
+
 .leaderboard .lb-empty {
   display: block;
   text-align: center;
@@ -1302,7 +1356,11 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
 .lb-meta { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border); color: var(--muted); font-size: 0.9rem; }
 .dash-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 28px; }
 @media (max-width: 600px) {
-  .leaderboard li { grid-template-columns: 44px 1fr auto; }
+  .leaderboard li { grid-template-columns: 60px 1fr auto; }
+  .leaderboard .lb-rank { width: 48px; height: 48px; font-size: 1.5rem; }
+  .leaderboard .lb-rank-1 .lb-rank,
+  .leaderboard .lb-rank-2 .lb-rank,
+  .leaderboard .lb-rank-3 .lb-rank { width: 52px; height: 52px; font-size: 1.7rem; }
   .leaderboard .lb-correct { display: none; }
 }
 
