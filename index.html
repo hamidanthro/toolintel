@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>STAAR Math Prep — Texas Math Test Preparation</title>
   <meta name="description" content="Practice and master the Texas STAAR math test. Grade-by-grade lessons, practice problems, and full-length tests for grades 3–8 and Algebra I." />
-  <link rel="stylesheet" href="css/styles.css?v=20260426i" />
+  <link rel="stylesheet" href="css/styles.css?v=20260426j" />
 </head>
 <body>
   <header class="site-header">
@@ -188,6 +188,13 @@
       }
     }
 
+    function rankMover(rank) {
+      if (rank === 2) return '<span class="lb-mover lb-runner" aria-hidden="true">🏃</span>';
+      if (rank === 3) return '<span class="lb-mover lb-sweater" aria-hidden="true">😅</span>';
+      if (rank === 4) return '<span class="lb-mover lb-walker" aria-hidden="true">🚶</span>';
+      return '';
+    }
+
     function updateRankCard(lb) {
       const card = document.getElementById('dash-rank-card');
       if (!card) return;
@@ -274,12 +281,13 @@
             const accStr = r.accuracyKnown === false ? '~' : `${r.accuracy || 0}%`;
             const cls = ['lb-row', `lb-rank-${r.rank <= 3 ? r.rank : 'n'}`, isMe ? 'lb-me' : ''].filter(Boolean).join(' ');
             const dancer = r.rank === 1 ? '<span class="lb-dancer" aria-hidden="true"><span class="lb-d1">💃</span><span class="lb-d2">🕺</span></span>' : '';
+            const mover = rankMover(r.rank);
             return `<li class="${cls}">
               <span class="lb-rank">${r.rank}</span>
               <span class="lb-name">${escapeHtmlSafe(r.displayName)}${isMe ? ' <span class="lb-you">(you)</span>' : ''}</span>
               <span class="lb-correct">${(r.correct || 0).toLocaleString()} correct</span>
               <span class="lb-acc">${accStr}</span>
-              ${dancer}
+              ${dancer}${mover}
             </li>`;
           }).join('');
         }
@@ -312,12 +320,13 @@
             const accStr = r.accuracyKnown === false ? '~' : `${r.accuracy || 0}%`;
             const cls = ['lb-row', `lb-rank-${r.rank <= 3 ? r.rank : 'n'}`, isMe ? 'lb-me' : ''].filter(Boolean).join(' ');
             const dancer = r.rank === 1 ? '<span class="lb-dancer" aria-hidden="true"><span class="lb-d1">💃</span><span class="lb-d2">🕺</span></span>' : '';
+            const mover = rankMover(r.rank);
             return `<li class="${cls}">
               <span class="lb-rank">${r.rank}</span>
               <span class="lb-name">${escapeHtmlSafe(r.displayName)}${isMe ? ' <span class="lb-you">(you)</span>' : ''}</span>
               <span class="lb-correct">${(r.correct || 0).toLocaleString()} correct</span>
               <span class="lb-acc">${accStr}</span>
-              ${dancer}
+              ${dancer}${mover}
             </li>`;
           }).join('');
         }
