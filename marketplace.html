@@ -4,9 +4,12 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Toy Marketplace · StarTest</title>
-  <link rel="stylesheet" href="css/styles.css?v=20260426w" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css?v=20260427c" />
 </head>
-<body>
+<body class="marketplace-page">
   <header class="site-header">
     <div class="container">
       <a href="index.html" class="brand"><svg class="brand-logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><defs><linearGradient id="starGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fde047"/><stop offset="55%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient></defs><path d="M16 2.6 19.6 11.5 29.2 12.2 21.8 18.4 24.2 27.6 16 22.4 7.8 27.6 10.2 18.4 2.8 12.2 12.4 11.5 Z" fill="url(#starGrad)" stroke="rgba(255,255,255,0.18)" stroke-width="0.6" stroke-linejoin="round"/><circle cx="25" cy="6" r="1.6" fill="#fde047" opacity="0.95"/><circle cx="25" cy="6" r="3" fill="#fde047" opacity="0.25"/></svg><span class="brand-text">Star<span class="brand-text-accent">Test</span></span></a>
@@ -19,26 +22,135 @@
     </div>
   </header>
 
-  <section>
-    <div class="container">
-      <h1 style="margin-top:24px;">Toy Marketplace</h1>
-      <p style="color:var(--muted);max-width:640px;">Earn points for every correct answer and trade them for real toys. Maximum lifetime earnings: 10,000 points. Shipping requires a parent's consent at checkout.</p>
-
-      <div id="wallet-summary" class="wallet-summary"></div>
-
-      <div id="market-root" class="market-grid">
-        <p style="color:var(--muted);">Loading toys&hellip;</p>
-      </div>
-
-      <h2 style="margin-top:36px;">My orders</h2>
-      <div id="orders-root">
-        <p style="color:var(--muted);">No orders yet.</p>
+  <section class="marketplace-hero">
+    <div class="marketplace-hero-inner">
+      <span class="marketplace-eyebrow">
+        <span class="eyebrow-dot"></span>
+        Toy Marketplace
+      </span>
+      <h1 class="marketplace-title">
+        Practice. Earn. <span class="title-accent">Unlock real toys.</span>
+      </h1>
+      <p class="marketplace-subtitle">
+        Every correct answer earns points. Trade them for real toys we ship to your door &mdash; anywhere in the U.S. A parent approves every order before it leaves our system.
+      </p>
+      <div class="marketplace-stats">
+        <div class="stat-item">
+          <div class="stat-value">10,000</div>
+          <div class="stat-label">Lifetime point cap</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-value">50</div>
+          <div class="stat-label">States we ship to</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-value">100%</div>
+          <div class="stat-label">Parent approval</div>
+        </div>
       </div>
     </div>
   </section>
 
-  <footer class="site-footer">
-    <div class="container">&copy; <span id="year"></span> StarTest.</div>
+  <section class="marketplace-section">
+    <div id="wallet-summary" class="wallet-summary"></div>
+
+    <div class="marketplace-controls">
+      <div class="marketplace-filters" role="tablist">
+        <button class="filter-pill filter-pill--active" type="button">All toys</button>
+        <button class="filter-pill" type="button">Under 200 pts</button>
+        <button class="filter-pill" type="button">200&ndash;600 pts</button>
+        <button class="filter-pill" type="button">600&ndash;1,200 pts</button>
+        <button class="filter-pill" type="button">Premium</button>
+      </div>
+      <div class="marketplace-sort">
+        <label class="sort-label" for="market-sort">Sort by</label>
+        <select class="sort-select" id="market-sort">
+          <option>Lowest points first</option>
+          <option>Highest points first</option>
+          <option>Newest</option>
+          <option>Most popular</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="market-root" class="toys-grid">
+      <p class="market-loading">Loading toys&hellip;</p>
+    </div>
+
+    <div class="orders-block">
+      <h2 class="orders-title">My orders</h2>
+      <div id="orders-root">
+        <p class="orders-empty">No orders yet.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand-col">
+          <a href="index.html" class="footer-logo">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+              <path d="M14 2L17.5 10L26 11L19.5 17L21.5 25.5L14 21L6.5 25.5L8.5 17L2 11L10.5 10L14 2Z" fill="url(#footerStarGradient)" stroke="rgba(251, 191, 36, 0.4)" stroke-width="0.5"/>
+              <defs>
+                <linearGradient id="footerStarGradient" x1="2" y1="2" x2="26" y2="26" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#fde68a"/><stop offset="0.5" stop-color="#fbbf24"/><stop offset="1" stop-color="#f59e0b"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <span>Star<span class="logo-accent">Test</span></span>
+          </a>
+          <p class="footer-tagline">AI-powered test prep for every state, every grade. Built for kids who want to win.</p>
+          <div class="footer-trust-row">
+            <span class="footer-trust-pill"><span class="trust-dot"></span>All 50 states supported</span>
+          </div>
+        </div>
+        <div class="footer-nav-col">
+          <h4 class="footer-col-title">Product</h4>
+          <a href="practice.html" class="footer-link">Practice</a>
+          <a href="marketplace.html" class="footer-link">Toy Marketplace</a>
+          <a href="grades.html" class="footer-link">All grades</a>
+          <a href="about.html" class="footer-link">How it works</a>
+        </div>
+        <div class="footer-nav-col">
+          <h4 class="footer-col-title">For Parents</h4>
+          <a href="settings.html" class="footer-link">Parent dashboard</a>
+          <a href="#" class="footer-link">Safety &amp; privacy</a>
+          <a href="#" class="footer-link">Track orders</a>
+          <a href="#" class="footer-link">Support</a>
+        </div>
+        <div class="footer-nav-col">
+          <h4 class="footer-col-title">Company</h4>
+          <a href="about.html" class="footer-link">About</a>
+          <a href="#" class="footer-link">Blog</a>
+          <a href="#" class="footer-link">Contact</a>
+          <a href="#" class="footer-link">Careers</a>
+        </div>
+        <div class="footer-nav-col">
+          <h4 class="footer-col-title">Legal</h4>
+          <a href="#" class="footer-link">Terms</a>
+          <a href="#" class="footer-link">Privacy</a>
+          <a href="#" class="footer-link">COPPA</a>
+          <a href="#" class="footer-link">Cookies</a>
+        </div>
+      </div>
+      <div class="footer-divider"></div>
+      <div class="footer-bottom">
+        <div class="footer-copy">&copy; <span id="year"></span> StarTest. All rights reserved.</div>
+        <div class="footer-meta">
+          <span class="footer-meta-item">Made for kids who want to win</span>
+          <span class="footer-meta-divider">&middot;</span>
+          <span class="footer-meta-item">San Antonio, TX</span>
+        </div>
+        <div class="footer-social">
+          <a href="#" class="footer-social-link" aria-label="Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+          <a href="#" class="footer-social-link" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
+          <a href="#" class="footer-social-link" aria-label="TikTok"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.84-.1z"/></svg></a>
+        </div>
+      </div>
+    </div>
   </footer>
 
   <script src="js/prefs.js?v=20260426a"></script>
@@ -47,7 +159,7 @@
   <script src="js/friends.js?v=20260426b"></script>
   <!-- guests can browse toys; checkout requires sign-in -->
   <script>window.STAAR_TUTOR_ENDPOINT = 'https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com/';</script>
-  <script src="js/marketplace.js?v=20260426b"></script>
+  <script src="js/marketplace.js?v=20260427c"></script>
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
   <script src="https://api.replyquik.com/widget.js" data-id="9686745a-93c1-4761-af94-f15815680bc3"></script>
 </body>

@@ -35,29 +35,43 @@
 
   async function load() {
     if (!Auth.currentUser()) {
-      // Guest mode: show toys + sign-up prompt; hide wallet/orders.
+      // Guest mode: show toys + premium dark-glass sign-up callout; hide wallet/orders.
       if (summaryEl) {
+        summaryEl.className = 'signin-callout';
         summaryEl.innerHTML = `
-          <div class="wallet-summary-stat" style="flex:1;">
-            <div class="label">Sign in to start earning</div>
-            <div class="value" style="font-size:1rem;font-weight:500;color:var(--muted);">
-              Practice questions to earn points, then redeem them for real toys.
-            </div>
+          <div class="signin-callout-icon">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+              <path d="M16 4L19.5 12.5L28 13.5L21.5 19.5L23.5 28L16 23.5L8.5 28L10.5 19.5L4 13.5L12.5 12.5L16 4Z"
+                    fill="url(#signinStarGradient)" stroke="rgba(251, 191, 36, 0.4)" stroke-width="0.5"/>
+              <defs>
+                <linearGradient id="signinStarGradient" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#fde68a"/><stop offset="0.5" stop-color="#fbbf24"/><stop offset="1" stop-color="#f59e0b"/>
+                </linearGradient>
+              </defs>
+            </svg>
           </div>
-          <button type="button" class="btn btn-primary" id="market-signup" style="align-self:center;">Sign up free</button>`;
+          <div class="signin-callout-content">
+            <span class="signin-callout-eyebrow">SIGN IN TO START EARNING</span>
+            <p class="signin-callout-text">Practice questions to earn points, then redeem them for real toys.</p>
+          </div>
+          <button type="button" class="signin-callout-cta" id="market-signup">
+            Sign up free
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7H11M11 7L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>`;
         const su = document.getElementById('market-signup');
         if (su) su.onclick = () => Auth.showLogin && Auth.showLogin();
       }
-      if (ordersRoot) ordersRoot.innerHTML = '<p style="color:var(--muted);">Sign in to see your orders.</p>';
+      if (ordersRoot) ordersRoot.innerHTML = '<p class="orders-empty">Sign in to see your orders.</p>';
       try {
         const toysData = await Auth.api('listToys', {});
         renderToys(toysData.toys || [], 0);
       } catch (e) {
-        root.innerHTML = `<p style="color:var(--error);">${escapeHtml(e.message)}</p>`;
+        root.innerHTML = `<p class="market-error">${escapeHtml(e.message)}</p>`;
       }
       return;
     }
     try {
+      summaryEl.className = 'wallet-summary';
       const [walletData, toysData, ordersData] = await Promise.all([
         Auth.api('getWallet', { token: Auth.token() }),
         Auth.api('listToys', {}),
@@ -67,53 +81,68 @@
       renderToys(toysData.toys || [], walletData.balanceCents);
       renderOrders(ordersData.orders || []);
     } catch (e) {
-      root.innerHTML = `<p style="color:var(--error);">${escapeHtml(e.message)}</p>`;
+      root.innerHTML = `<p class="market-error">${escapeHtml(e.message)}</p>`;
     }
   }
 
   function renderToys(toys, balance) {
     if (!toys.length) {
-      root.innerHTML = `<p style="color:var(--muted);">No toys available yet. Check back soon!</p>`;
+      root.innerHTML = `<p class="market-empty">No toys available yet. Check back soon!</p>`;
       return;
     }
+    const isGuest = !Auth.currentUser();
     root.innerHTML = toys.map(t => {
-      const canAfford = balance >= t.priceCents;
+      const canAfford = !isGuest && balance >= t.priceCents;
       const need = t.priceCents - balance;
-      const stockLow = t.stock != null && t.stock <= 3;
-      const stockNote = t.stock != null
-        ? `<span class="toy-stock${stockLow ? ' low' : ''}">${t.stock} left</span>`
-        : '<span class="toy-stock">In stock</span>';
+      const stock = (t.stock != null) ? Number(t.stock) : null;
+      let stockBadge = '';
+      if (stock != null) {
+        if (stock <= 0) {
+          stockBadge = `<span class="toy-stock-badge toy-stock-badge--out">Sold out</span>`;
+        } else if (stock <= 2) {
+          stockBadge = `<span class="toy-stock-badge toy-stock-badge--scarce">Only ${stock} left!</span>`;
+        } else {
+          stockBadge = `<span class="toy-stock-badge toy-stock-badge--limited">${stock} left</span>`;
+        }
+      }
       const looksBroken = t.imageUrl && /placehold\.co|placeholder/i.test(t.imageUrl);
       const img = (t.imageUrl && !looksBroken)
-        ? `<img class="toy-img" src="${escapeHtml(t.imageUrl)}" alt="${escapeHtml(t.name)}" loading="lazy" onerror="this.outerHTML='<div class=\\'toy-img-placeholder\\'>\u{1F381}</div>'" />`
-        : `<div class="toy-img-placeholder">\u{1F381}</div>`;
+        ? `<img class="toy-image" src="${escapeHtml(t.imageUrl)}" alt="${escapeHtml(t.name)}" loading="lazy" onerror="this.outerHTML='<div class=\\'toy-image-placeholder\\'>\u{1F381}</div>'" />`
+        : `<div class="toy-image-placeholder">\u{1F381}</div>`;
       const desc = (t.description || '').trim();
-      const isGuest = !Auth.currentUser();
-      const buyLabel = isGuest
-        ? 'Sign up to earn'
-        : (canAfford ? 'Buy with points' : `Need ${Auth.formatCents(need)} more`);
-      const buyEnabled = isGuest || canAfford;
-      const buyClass = buyEnabled ? 'btn-primary' : 'btn-ghost';
+      const priceLabel = formatPoints(t.priceCents);
+      let buyLabel, buyDisabled;
+      if (isGuest) { buyLabel = 'Sign up to earn'; buyDisabled = false; }
+      else if (stock != null && stock <= 0) { buyLabel = 'Sold out'; buyDisabled = true; }
+      else if (canAfford) { buyLabel = 'Redeem with points'; buyDisabled = false; }
+      else { buyLabel = `Need ${formatPoints(need)} more`; buyDisabled = true; }
       const isAdmin = !!(Auth.currentUser && Auth.currentUser() && Auth.currentUser().isAdmin);
       const adminBadge = isAdmin
         ? `<a class="toy-edit" href="admin.html#edit=${encodeURIComponent(t.toyId)}" title="Edit this toy">Edit</a>`
         : '';
       return `
-        <article class="toy-card${canAfford ? ' affordable' : ''}" data-toy-id="${escapeHtml(t.toyId)}">
-          <div class="toy-img-wrap">
+        <article class="toy-card${canAfford ? ' toy-card--affordable' : ''}" data-toy-id="${escapeHtml(t.toyId)}">
+          ${stockBadge}
+          ${adminBadge}
+          <div class="toy-image-wrapper">
+            <div class="toy-image-glow"></div>
             ${img}
-            <span class="toy-price-badge">${Auth.formatCents(t.priceCents)}</span>
-            ${adminBadge}
+            <span class="toy-points-badge">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                <circle cx="6" cy="6" r="5" fill="#0a1628" stroke="rgba(10,22,40,0.4)" stroke-width="0.5"/>
+                <path d="M6 2L7 4.5L9.5 4.8L7.6 6.5L8.2 9L6 7.7L3.8 9L4.4 6.5L2.5 4.8L5 4.5L6 2Z" fill="currentColor"/>
+              </svg>
+              ${priceLabel}
+            </span>
           </div>
-          <div class="toy-body">
-            <h3 class="toy-name">${escapeHtml(t.name)}</h3>
-            ${desc ? `<p class="toy-desc">${escapeHtml(desc)}</p>` : ''}
-            <div class="toy-row">
-              ${stockNote}
-              ${canAfford ? '<span class="toy-stock can">\u2713 You can afford this!</span>' : ''}
-            </div>
-            <button class="btn ${buyClass} toy-buy" ${buyEnabled ? '' : 'disabled'}>
+          <div class="toy-content">
+            <h3 class="toy-title">${escapeHtml(t.name)}</h3>
+            ${desc ? `<p class="toy-description">${escapeHtml(desc)}</p>` : '<p class="toy-description">&nbsp;</p>'}
+          </div>
+          <div class="toy-footer">
+            <button class="toy-cta${buyDisabled ? ' toy-cta--disabled' : ''}" ${buyDisabled ? 'disabled' : ''}>
               ${buyLabel}
+              ${buyDisabled ? '' : '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 6H9.5M9.5 6L6.5 3M9.5 6L6.5 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'}
             </button>
           </div>
         </article>`;
@@ -121,7 +150,8 @@
     root.querySelectorAll('.toy-card').forEach(card => {
       const toyId = card.dataset.toyId;
       const toy = toys.find(x => x.toyId === toyId);
-      const btn = card.querySelector('.toy-buy');
+      const btn = card.querySelector('.toy-cta');
+      if (!btn) return;
       btn.addEventListener('click', () => {
         if (!Auth.currentUser()) {
           if (Auth.showLogin) Auth.showLogin();
@@ -130,6 +160,11 @@
         if (!btn.disabled) showCheckout(toy);
       });
     });
+  }
+
+  function formatPoints(cents) {
+    const n = Math.max(0, parseInt(cents, 10) || 0);
+    return `${n.toLocaleString()} pts`;
   }
 
   function renderOrders(orders) {
