@@ -159,6 +159,9 @@
       <label class="auth-label">Display name</label>
       <input type="text" class="auth-input" id="su-name" maxlength="32" placeholder="e.g. Maya" autocomplete="off" />
 
+      <label class="auth-label">Email</label>
+      <input type="email" class="auth-input" id="su-email" maxlength="120" placeholder="you@example.com" autocomplete="email" inputmode="email" />
+
       <label class="auth-label">Username</label>
       <input type="text" class="auth-input" id="su-user" maxlength="24" autocomplete="username"
              autocapitalize="off" placeholder="letters, numbers, _ . -" value="${escapeHtml(prefilledUsername || '')}" />
@@ -192,6 +195,7 @@
       </div>
     `);
     const nameIn = overlay.querySelector('#su-name');
+    const emailIn = overlay.querySelector('#su-email');
     const userIn = overlay.querySelector('#su-user');
     const passIn = overlay.querySelector('#su-pass');
     const pass2In = overlay.querySelector('#su-pass2');
@@ -205,22 +209,26 @@
     const submit = async () => {
       err.hidden = true;
       const displayName = (nameIn.value || '').trim();
+      const email = (emailIn.value || '').trim().toLowerCase();
       const username = (userIn.value || '').trim().toLowerCase();
       const password = passIn.value || '';
       const password2 = pass2In.value || '';
       const grade = gradeIn.value || '';
 
       if (!displayName) { fail('Please enter a display name.'); return; }
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 120) {
+        fail('Please enter a valid email address.'); return;
+      }
       if (!/^[a-z0-9_.-]{3,24}$/.test(username)) {
-        fail('Username must be 3\u201324 characters: letters, numbers, _ . -'); return;
+        fail('Username must be 3–24 characters: letters, numbers, _ . -'); return;
       }
       if (password.length < 6) { fail('Password must be at least 6 characters.'); return; }
-      if (password !== password2) { fail('Passwords don\u2019t match.'); return; }
+      if (password !== password2) { fail('Passwords don’t match.'); return; }
       if (!grade) { fail('Please pick your current grade.'); return; }
 
-      setBusy(btn, true, 'Creating\u2026');
+      setBusy(btn, true, 'Creating…');
       try {
-        const res = await api('signup', { username, password, displayName, grade });
+        const res = await api('signup', { username, password, displayName, email, grade });
         saveSession({ token: res.token, user: res.user });
         await migrateLegacyStats();
         closeModal();
@@ -234,7 +242,7 @@
     };
     function fail(msg) { err.textContent = msg; err.hidden = false; }
 
-    [nameIn, userIn, passIn, pass2In].forEach(i => i.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); }));
+    [nameIn, emailIn, userIn, passIn, pass2In].forEach(i => i.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); }));
     btn.addEventListener('click', submit);
   }
 

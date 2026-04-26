@@ -478,10 +478,14 @@ async function handleSignup(payload) {
   const username = sanitizeUsername(payload.username);
   const password = String(payload.password || '');
   const displayName = String(payload.displayName || '').trim().slice(0, 32) || username;
+  const email = String(payload.email || '').trim().toLowerCase().slice(0, 120);
   const grade = sanitizeGrade(payload.grade);
 
   if (username.length < 3 || username.length > 24) {
     return bad(400, 'Username must be 3-24 characters (letters, numbers, _ . -)');
+  }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return bad(400, 'Please enter a valid email address');
   }
   if (password.length < 6 || password.length > 128) {
     return bad(400, 'Password must be at least 6 characters');
@@ -510,6 +514,7 @@ async function handleSignup(payload) {
         username,
         userId,
         displayName,
+        email,
         grade,
         salt,
         passwordHash,
