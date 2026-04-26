@@ -2741,7 +2741,715 @@ function genCompoundInterestG7(rng) {
   );
 }
 
-// ---------- Bank specs ----------
+// ---------- Generators: Grade 8 ----------
+
+// Helpers
+function _isPerfectSquare(n) {
+  if (n < 0) return false;
+  const r = Math.round(Math.sqrt(n));
+  return r * r === n;
+}
+function _approxSqrt(n) {
+  // Returns nearest integer approx (used as the answer for "between which integers" lessons)
+  return Math.round(Math.sqrt(n) * 100) / 100;
+}
+
+function genApproxIrrationalG8(rng) {
+  // "Between which two consecutive integers does √n lie?"
+  let n;
+  do { n = randInt(rng, 5, 200); } while (_isPerfectSquare(n));
+  const lo = Math.floor(Math.sqrt(n));
+  const hi = lo + 1;
+  return mc(
+    pick(rng, [
+      `Between which two consecutive integers does √${n} lie?`,
+      `√${n} is between which pair of integers?`,
+      `Estimate √${n}. It lies between which two integers?`
+    ]),
+    `${lo} and ${hi}`,
+    [
+      `${Math.max(0, lo - 1)} and ${lo}`,
+      `${hi} and ${hi + 1}`,
+      `${lo*lo} and ${hi*hi}`
+    ],
+    `${lo}² = ${lo*lo} and ${hi}² = ${hi*hi}. Since ${lo*lo} < ${n} < ${hi*hi}, √${n} is between ${lo} and ${hi}.`,
+    rng
+  );
+}
+
+function genConvertCompareG8(rng) {
+  // Compare a fraction to a decimal: which is greater?
+  const num1 = randInt(rng, 1, 9);
+  const den1 = randInt(rng, 2, 12);
+  const f = num1 / den1;
+  // Pick a decimal close to but different from f
+  const offsets = [-0.15, -0.1, -0.05, 0.05, 0.1, 0.15];
+  const off = pick(rng, offsets);
+  let d = Math.round((f + off) * 100) / 100;
+  if (d <= 0) d = Math.round((f + 0.1) * 100) / 100;
+  if (Math.abs(f - d) < 0.005) d = Math.round((d + 0.05) * 100) / 100;
+  const fStr = `${num1}/${den1}`;
+  const greater = f > d ? fStr : String(d);
+  return mc(
+    pick(rng, [
+      `Which is greater: ${fStr} or ${d}?`,
+      `Compare ${fStr} and ${d}. Which is larger?`
+    ]),
+    greater,
+    [greater === fStr ? String(d) : fStr, 'They are equal', 'Cannot tell'],
+    `${fStr} = ${(f).toFixed(3)}. Comparing ${(f).toFixed(3)} and ${d}, the greater value is ${greater}.`,
+    rng
+  );
+}
+
+function genOrderRealsG8(rng) {
+  // Pick 3 reals, ask which is smallest
+  const choices = [];
+  // a fraction
+  const a = randInt(rng, 2, 9), b = randInt(rng, 3, 11);
+  choices.push({ label: `${a}/${b}`, val: a / b });
+  // a decimal
+  const d = Math.round(rng() * 200) / 100;
+  choices.push({ label: String(d), val: d });
+  // a sqrt
+  let n;
+  do { n = randInt(rng, 2, 10); } while (_isPerfectSquare(n));
+  choices.push({ label: `√${n}`, val: Math.sqrt(n) });
+  // dedupe-ish on numeric
+  const distinct = new Set(choices.map(c => Math.round(c.val * 1000)));
+  if (distinct.size < 3) return genOrderRealsG8(rng);
+  const sorted = choices.slice().sort((x, y) => x.val - y.val);
+  const ask = pick(rng, ['least', 'greatest']);
+  const correct = ask === 'least' ? sorted[0] : sorted[sorted.length - 1];
+  const others = choices.filter(c => c.label !== correct.label).map(c => c.label);
+  return mc(
+    `Which value is the ${ask}?`,
+    correct.label,
+    others,
+    `Approximate values: ${choices.map(c => `${c.label} ≈ ${c.val.toFixed(2)}`).join(', ')}. The ${ask} is ${correct.label}.`,
+    rng
+  );
+}
+
+function genSlopeFromPointsG8(rng) {
+  // Slope between two integer points
+  let x1, x2, y1, y2, slope;
+  do {
+    x1 = _signedInt(rng, 1, 10);
+    x2 = _signedInt(rng, 1, 10);
+    y1 = _signedInt(rng, 1, 12);
+    y2 = _signedInt(rng, 1, 12);
+  } while (x1 === x2 || (y2 - y1) % (x2 - x1) !== 0);
+  slope = (y2 - y1) / (x2 - x1);
+  return num(
+    pick(rng, [
+      `What is the slope of the line through (${x1}, ${y1}) and (${x2}, ${y2})?`,
+      `Find the slope between the points (${x1}, ${y1}) and (${x2}, ${y2}).`
+    ]),
+    slope,
+    `slope = (y₂ − y₁) / (x₂ − x₁) = (${y2} − ${y1}) / (${x2} − ${x1}) = ${y2-y1}/${x2-x1} = ${slope}.`,
+    [String(slope), fmt(slope)]
+  );
+}
+
+function genSlopeInterceptG8(rng) {
+  // Given m and a point, find b in y = mx + b
+  const m = _signedInt(rng, 1, 6);
+  const x = _signedInt(rng, 1, 8);
+  const b = _signedInt(rng, 1, 15);
+  const y = m * x + b;
+  return num(
+    pick(rng, [
+      `A line has slope ${m} and passes through (${x}, ${y}). What is the y-intercept (b)?`,
+      `If y = ${m}x + b passes through (${x}, ${y}), find b.`
+    ]),
+    b,
+    `Substitute: ${y} = ${m}(${x}) + b → ${y} = ${m*x} + b → b = ${y - m*x} = ${b}.`,
+    [String(b), fmt(b)]
+  );
+}
+
+function genPropOrNotG8(rng) {
+  // y = mx (proportional) vs y = mx + b (non-proportional)
+  const m = randInt(rng, 2, 6);
+  const isProp = rng() < 0.5;
+  const b = isProp ? 0 : _signedInt(rng, 1, 8);
+  const eqStr = b === 0 ? `y = ${m}x` : (b > 0 ? `y = ${m}x + ${b}` : `y = ${m}x − ${-b}`);
+  return mc(
+    pick(rng, [
+      `Is the relationship ${eqStr} proportional or non-proportional?`,
+      `Classify the linear relationship: ${eqStr}`
+    ]),
+    isProp ? 'Proportional' : 'Non-proportional',
+    isProp ? ['Non-proportional', 'Neither'] : ['Proportional', 'Neither'],
+    isProp
+      ? `A relationship is proportional when y = mx (b = 0). Here b = 0, so it is proportional.`
+      : `A relationship is non-proportional when y = mx + b with b ≠ 0. Here b = ${b}, so it is non-proportional.`,
+    rng
+  );
+}
+
+function genMultiStepEqG8(rng) {
+  // ax + b = cx + d, vars on both sides
+  const x = _signedInt(rng, 1, 12);
+  let a, c;
+  do {
+    a = randInt(rng, 2, 9);
+    c = randInt(rng, 1, 8);
+  } while (a === c);
+  const b = _signedInt(rng, 1, 20);
+  const d = (a - c) * x + b;
+  const bs = b >= 0 ? `+ ${b}` : `− ${-b}`;
+  const ds = d >= 0 ? `+ ${d}` : `− ${-d}`;
+  return num(
+    `Solve for x:  ${a}x ${bs} = ${c}x ${ds}`,
+    x,
+    `Subtract ${c}x from both sides: ${a-c}x ${bs} = ${d}. Then ${a-c}x = ${d - b}. Divide by ${a-c}: x = ${x}.`,
+    [String(x), fmt(x)]
+  );
+}
+
+function genIdentifyFunctionG8(rng) {
+  // Given 4 ordered pairs, decide if it's a function (no repeated x with different y)
+  const isFunc = rng() < 0.5;
+  const xs = [];
+  while (xs.length < 4) {
+    const v = _signedInt(rng, 0, 6);
+    if (!xs.includes(v)) xs.push(v);
+  }
+  const pairs = xs.map(x => [x, _signedInt(rng, 1, 10)]);
+  if (!isFunc) {
+    // Force a duplicate x with different y
+    pairs[3][0] = pairs[0][0];
+    if (pairs[3][1] === pairs[0][1]) pairs[3][1] = pairs[0][1] + 1;
+  }
+  const setStr = `{ ${pairs.map(p => `(${p[0]}, ${p[1]})`).join(', ')} }`;
+  const hasRepeatedX = pairs.some((p, i) =>
+    pairs.some((q, j) => i !== j && p[0] === q[0] && p[1] !== q[1])
+  );
+  const truth = !hasRepeatedX;
+  return mc(
+    `Does the set ${setStr} represent a function?`,
+    truth ? 'Yes' : 'No',
+    [truth ? 'No' : 'Yes', 'Cannot tell'],
+    truth
+      ? `Each x-value is paired with exactly one y-value, so this IS a function.`
+      : `Two ordered pairs share the same x-value but different y-values, so this is NOT a function.`,
+    rng
+  );
+}
+
+// Pythagorean triples for clean integer answers
+const _PYTH_TRIPLES = [
+  [3,4,5],[5,12,13],[8,15,17],[7,24,25],[20,21,29],[9,40,41],[6,8,10],
+  [9,12,15],[12,16,20],[15,20,25],[10,24,26],[15,36,39],[16,30,34]
+];
+
+function genPythagMissingG8(rng) {
+  const t = pick(rng, _PYTH_TRIPLES);
+  const findHyp = rng() < 0.5;
+  if (findHyp) {
+    return num(
+      `Find the length of the hypotenuse of a right triangle with legs ${t[0]} and ${t[1]}.`,
+      t[2],
+      `c² = a² + b² = ${t[0]}² + ${t[1]}² = ${t[0]*t[0]} + ${t[1]*t[1]} = ${t[0]*t[0]+t[1]*t[1]}. So c = ${t[2]}.`,
+      [String(t[2]), fmt(t[2])]
+    );
+  }
+  // Find a leg
+  const knownLeg = rng() < 0.5 ? t[0] : t[1];
+  const missing = knownLeg === t[0] ? t[1] : t[0];
+  return num(
+    `A right triangle has hypotenuse ${t[2]} and one leg ${knownLeg}. Find the other leg.`,
+    missing,
+    `a² + b² = c² → ${knownLeg}² + b² = ${t[2]}² → b² = ${t[2]*t[2]} − ${knownLeg*knownLeg} = ${missing*missing}. So b = ${missing}.`,
+    [String(missing), fmt(missing)]
+  );
+}
+
+function genCoordDistanceG8(rng) {
+  // Use a triple to ensure integer distance
+  const t = pick(rng, _PYTH_TRIPLES);
+  const x1 = _signedInt(rng, 0, 5);
+  const y1 = _signedInt(rng, 0, 5);
+  const sx = rng() < 0.5 ? 1 : -1;
+  const sy = rng() < 0.5 ? 1 : -1;
+  const x2 = x1 + sx * t[0];
+  const y2 = y1 + sy * t[1];
+  return num(
+    `Find the distance between the points (${x1}, ${y1}) and (${x2}, ${y2}).`,
+    t[2],
+    `d = √((x₂−x₁)² + (y₂−y₁)²) = √(${(x2-x1)*(x2-x1)} + ${(y2-y1)*(y2-y1)}) = √${(x2-x1)*(x2-x1)+(y2-y1)*(y2-y1)} = ${t[2]}.`,
+    [String(t[2]), fmt(t[2])]
+  );
+}
+
+function genVolumeCylinderG8(rng) {
+  const r = randInt(rng, 2, 9);
+  const h = randInt(rng, 3, 12);
+  // Use π = 3.14
+  const v = Math.round(3.14 * r * r * h * 100) / 100;
+  return num(
+    pick(rng, [
+      `Find the volume of a cylinder with radius ${r} and height ${h}. Use π = 3.14.`,
+      `A cylinder has radius ${r} cm and height ${h} cm. What is its volume? (π = 3.14)`
+    ]),
+    v,
+    `V = πr²h = 3.14 × ${r}² × ${h} = 3.14 × ${r*r} × ${h} = ${v}.`,
+    [String(v), fmt(v)]
+  );
+}
+
+function genVolumeConeSphereG8(rng) {
+  const shape = pick(rng, ['cone', 'sphere']);
+  const r = randInt(rng, 2, 9);
+  if (shape === 'cone') {
+    const h = randInt(rng, 3, 12);
+    const v = Math.round((1/3) * 3.14 * r * r * h * 100) / 100;
+    return num(
+      `Find the volume of a cone with radius ${r} and height ${h}. Use π = 3.14.`,
+      v,
+      `V = (1/3)πr²h = (1/3)(3.14)(${r*r})(${h}) = ${v}.`,
+      [String(v), fmt(v)]
+    );
+  }
+  const v = Math.round((4/3) * 3.14 * r * r * r * 100) / 100;
+  return num(
+    `Find the volume of a sphere with radius ${r}. Use π = 3.14.`,
+    v,
+    `V = (4/3)πr³ = (4/3)(3.14)(${r*r*r}) = ${v}.`,
+    [String(v), fmt(v)]
+  );
+}
+
+function genTransformG8(rng) {
+  // Apply a translation, reflection, or rotation to a point
+  const op = pick(rng, ['translate', 'reflectX', 'reflectY', 'rotate180']);
+  const x = _signedInt(rng, 1, 8);
+  const y = _signedInt(rng, 1, 8);
+  let nx, ny, prompt, hint;
+  if (op === 'translate') {
+    const dx = _signedInt(rng, 1, 6);
+    const dy = _signedInt(rng, 1, 6);
+    nx = x + dx; ny = y + dy;
+    prompt = `Point P(${x}, ${y}) is translated ${dx >= 0 ? `right ${dx}` : `left ${-dx}`} and ${dy >= 0 ? `up ${dy}` : `down ${-dy}`}. What are the new coordinates?`;
+    hint = `Add (${dx}, ${dy}) to (${x}, ${y}) to get (${nx}, ${ny}).`;
+  } else if (op === 'reflectX') {
+    nx = x; ny = -y;
+    prompt = `Reflect the point (${x}, ${y}) across the x-axis. What are the new coordinates?`;
+    hint = `Reflecting across the x-axis negates y: (${x}, ${y}) → (${nx}, ${ny}).`;
+  } else if (op === 'reflectY') {
+    nx = -x; ny = y;
+    prompt = `Reflect the point (${x}, ${y}) across the y-axis. What are the new coordinates?`;
+    hint = `Reflecting across the y-axis negates x: (${x}, ${y}) → (${nx}, ${ny}).`;
+  } else {
+    nx = -x; ny = -y;
+    prompt = `Rotate the point (${x}, ${y}) 180° about the origin. What are the new coordinates?`;
+    hint = `A 180° rotation negates both: (${x}, ${y}) → (${nx}, ${ny}).`;
+  }
+  const correct = `(${nx}, ${ny})`;
+  const distractors = [`(${ny}, ${nx})`, `(${-nx}, ${ny})`, `(${nx}, ${-ny})`].filter(d => d !== correct);
+  return mc(prompt, correct, distractors.slice(0, 3), hint, rng);
+}
+
+function genDilationG8(rng) {
+  // Scale factor k applied to a point
+  const k = pick(rng, [2, 3, 4, 5, 0.5]);
+  const x = _signedInt(rng, 1, 6);
+  const y = _signedInt(rng, 1, 6);
+  const nx = x * k;
+  const ny = y * k;
+  return num(
+    `Apply a dilation with scale factor ${k} centered at the origin to the point (${x}, ${y}). What is the new x-coordinate?`,
+    nx,
+    `Multiply each coordinate by ${k}: (${x}, ${y}) → (${nx}, ${ny}). The new x-coordinate is ${nx}.`,
+    [String(nx), fmt(nx)]
+  );
+}
+
+function genScatterTrendG8(rng) {
+  // Describe association: positive, negative, or none.
+  // We give a short data description and ask for the association type.
+  const kind = pick(rng, ['positive', 'negative', 'none']);
+  const correct = kind === 'positive' ? 'Positive' : kind === 'negative' ? 'Negative' : 'No association';
+  const desc = kind === 'positive'
+    ? 'As the number of hours studied increases, test scores tend to increase.'
+    : kind === 'negative'
+    ? 'As the outdoor temperature increases, hot-chocolate sales tend to decrease.'
+    : 'Shoe size and quiz scores show no clear pattern.';
+  return mc(
+    `Describe the association shown by this scatter plot: ${desc}`,
+    correct,
+    ['Positive', 'Negative', 'No association'].filter(o => o !== correct),
+    correct === 'No association'
+      ? `The variables don't move together in any consistent way, so there is no clear association.`
+      : `When one variable ${correct === 'Positive' ? 'increases as the other increases' : 'decreases as the other increases'}, the association is ${correct.toLowerCase()}.`,
+    rng
+  );
+}
+
+function genSimpleVsCompoundG8(rng) {
+  // Simple interest after t years OR compound interest after 2 yr (small numbers)
+  const P = randInt(rng, 1, 20) * 100;
+  const r = randInt(rng, 2, 8);
+  const t = randInt(rng, 2, 5);
+  const useSimple = rng() < 0.5;
+  if (useSimple) {
+    const I = (P * r * t) / 100;
+    return num(
+      `Find the simple interest earned on $${P} at ${r}% per year for ${t} years.`,
+      I,
+      `I = P·r·t = ${P} × ${r/100} × ${t} = ${I}.`,
+      [String(I), `$${I}`, fmt(I)]
+    );
+  }
+  // Compound, 2 years for tractable arithmetic
+  const yrs = 2;
+  const A = Math.round(P * Math.pow(1 + r/100, yrs) * 100) / 100;
+  const I = Math.round((A - P) * 100) / 100;
+  return num(
+    `Find the compound interest earned on $${P} at ${r}% compounded annually for ${yrs} years.`,
+    I,
+    `A = P(1+r)^t = ${P}(${1+r/100})^${yrs} = ${A}. I = A − P = ${I}.`,
+    [String(I), `$${I}`, fmt(I)]
+  );
+}
+
+// ---------- Generators: Algebra I ----------
+
+function genSlopePtsAlg(rng) {
+  let x1, x2, y1, y2, slope;
+  do {
+    x1 = _signedInt(rng, 1, 12);
+    x2 = _signedInt(rng, 1, 12);
+    y1 = _signedInt(rng, 1, 15);
+    y2 = _signedInt(rng, 1, 15);
+  } while (x1 === x2 || (y2 - y1) % (x2 - x1) !== 0);
+  slope = (y2 - y1) / (x2 - x1);
+  return num(
+    pick(rng, [
+      `Find the slope of the line through (${x1}, ${y1}) and (${x2}, ${y2}).`,
+      `What is the slope between the points (${x1}, ${y1}) and (${x2}, ${y2})?`
+    ]),
+    slope,
+    `m = (y₂ − y₁)/(x₂ − x₁) = (${y2-y1})/(${x2-x1}) = ${slope}.`,
+    [String(slope), fmt(slope)]
+  );
+}
+
+function genSlopeInterceptAlg(rng) {
+  // Given two points, write y = mx + b — ask for b
+  let x1, x2, y1, y2, m;
+  do {
+    x1 = _signedInt(rng, 1, 8);
+    x2 = _signedInt(rng, 1, 8);
+    y1 = _signedInt(rng, 1, 12);
+    y2 = _signedInt(rng, 1, 12);
+  } while (x1 === x2 || (y2 - y1) % (x2 - x1) !== 0);
+  m = (y2 - y1) / (x2 - x1);
+  const b = y1 - m * x1;
+  return num(
+    `Write the equation of the line through (${x1}, ${y1}) and (${x2}, ${y2}) in slope-intercept form. What is the y-intercept b?`,
+    b,
+    `Slope m = ${m}. Use y = mx + b: ${y1} = ${m}(${x1}) + b → b = ${y1 - m * x1} = ${b}.`,
+    [String(b), fmt(b)]
+  );
+}
+
+function genStdFormInterceptsAlg(rng) {
+  // Ax + By = C — ask for x-intercept (set y=0) or y-intercept (set x=0)
+  let A, B, C;
+  do {
+    A = randInt(rng, 1, 6);
+    B = randInt(rng, 1, 6);
+    C = randInt(rng, 4, 30);
+  } while (C % A !== 0 || C % B !== 0);
+  const ask = pick(rng, ['x', 'y']);
+  const ans = ask === 'x' ? C / A : C / B;
+  return num(
+    `For the line ${A}x + ${B}y = ${C}, find the ${ask}-intercept.`,
+    ans,
+    ask === 'x'
+      ? `Set y = 0: ${A}x = ${C}, so x = ${ans}.`
+      : `Set x = 0: ${B}y = ${C}, so y = ${ans}.`,
+    [String(ans), fmt(ans)]
+  );
+}
+
+function genLinearEqAlg(rng) {
+  // ax + b = cx + d
+  const x = _signedInt(rng, 1, 15);
+  let a, c;
+  do { a = randInt(rng, 2, 9); c = randInt(rng, 1, 8); } while (a === c);
+  const b = _signedInt(rng, 1, 25);
+  const d = (a - c) * x + b;
+  const bs = b >= 0 ? `+ ${b}` : `− ${-b}`;
+  const ds = d >= 0 ? `+ ${d}` : `− ${-d}`;
+  return num(
+    `Solve for x:  ${a}x ${bs} = ${c}x ${ds}`,
+    x,
+    `${a}x − ${c}x = ${d} − ${b} → ${a-c}x = ${d-b} → x = ${x}.`,
+    [String(x), fmt(x)]
+  );
+}
+
+function genLinearIneqAlg(rng) {
+  // ax + b OP c → x OP target. MC asks for the smallest integer in the solution set or true/false test value.
+  const a = randInt(rng, 2, 7);
+  const b = _signedInt(rng, 1, 15);
+  const target = _signedInt(rng, 1, 12);
+  const c = a * target + b;
+  const op = pick(rng, ['<', '>', '≤', '≥']);
+  const bs = b >= 0 ? `+ ${b}` : `− ${-b}`;
+  let trueVal, falseVals;
+  if (op === '<')      { trueVal = target - 1; falseVals = [target, target + 1, target + 2]; }
+  else if (op === '>') { trueVal = target + 1; falseVals = [target, target - 1, target - 2]; }
+  else if (op === '≤') { trueVal = target;     falseVals = [target + 1, target + 2, target + 3]; }
+  else                  { trueVal = target;     falseVals = [target - 1, target - 2, target - 3]; }
+  return mc(
+    `Which value of x satisfies the inequality?  ${a}x ${bs} ${op} ${c}`,
+    String(trueVal),
+    Array.from(new Set(falseVals.map(String))).slice(0, 3),
+    `Solve: ${a}x ${op} ${c - b} → x ${op} ${target}. ${trueVal} works.`,
+    rng
+  );
+}
+
+function genSubstitutionAlg(rng) {
+  // y = mx + b; second eq solved for x or in standard form, with integer solution
+  const x = _signedInt(rng, 1, 8);
+  const y = _signedInt(rng, 1, 10);
+  const m = _signedInt(rng, 1, 4);
+  const b = y - m * x; // y = mx + b
+  const A = randInt(rng, 1, 4);
+  const B = randInt(rng, 1, 4);
+  const C = A * x + B * y;
+  const askX = rng() < 0.5;
+  return num(
+    `Solve the system by substitution:\n  y = ${m}x ${b >= 0 ? `+ ${b}` : `− ${-b}`}\n  ${A}x + ${B}y = ${C}\nFind ${askX ? 'x' : 'y'}.`,
+    askX ? x : y,
+    `Substitute y = ${m}x ${b >= 0 ? `+ ${b}` : `− ${-b}`} into ${A}x + ${B}y = ${C}, solve to get x = ${x}, y = ${y}.`,
+    [String(askX ? x : y)]
+  );
+}
+
+function genEliminationAlg(rng) {
+  // a₁x + b₁y = c₁, a₂x + b₂y = c₂  with integer solution
+  const x = _signedInt(rng, 1, 8);
+  const y = _signedInt(rng, 1, 8);
+  const a1 = randInt(rng, 1, 5);
+  const b1 = randInt(rng, 1, 5);
+  let a2, b2;
+  do {
+    a2 = randInt(rng, 1, 5);
+    b2 = randInt(rng, 1, 5);
+  } while (a1 * b2 === a2 * b1);
+  const c1 = a1 * x + b1 * y;
+  const c2 = a2 * x + b2 * y;
+  const askX = rng() < 0.5;
+  return num(
+    `Solve the system by elimination:\n  ${a1}x + ${b1}y = ${c1}\n  ${a2}x + ${b2}y = ${c2}\nFind ${askX ? 'x' : 'y'}.`,
+    askX ? x : y,
+    `Multiply rows to eliminate one variable, then solve. Solution: x = ${x}, y = ${y}.`,
+    [String(askX ? x : y)]
+  );
+}
+
+function genExponentLawsAlg(rng) {
+  // Simplify x^a · x^b   OR   x^a / x^b   OR   (x^a)^b
+  const law = pick(rng, ['mul', 'div', 'pow']);
+  const a = randInt(rng, 2, 7);
+  const b = randInt(rng, 2, 6);
+  let prompt, ansExp, expl;
+  if (law === 'mul') {
+    prompt = `Simplify: x^${a} · x^${b}. What is the exponent of x?`;
+    ansExp = a + b;
+    expl = `When multiplying like bases, add the exponents: ${a} + ${b} = ${ansExp}. Answer: x^${ansExp}.`;
+  } else if (law === 'div') {
+    const top = a + b;
+    prompt = `Simplify: x^${top} / x^${b}. What is the exponent of x?`;
+    ansExp = top - b;
+    expl = `When dividing like bases, subtract exponents: ${top} − ${b} = ${ansExp}.`;
+  } else {
+    prompt = `Simplify: (x^${a})^${b}. What is the exponent of x?`;
+    ansExp = a * b;
+    expl = `When raising a power to a power, multiply exponents: ${a} × ${b} = ${ansExp}.`;
+  }
+  return num(prompt, ansExp, expl, [String(ansExp), fmt(ansExp)]);
+}
+
+function genMultiplyPolyAlg(rng) {
+  // (x + a)(x + b) = x² + (a+b)x + ab — ask for middle coefficient
+  const a = _signedInt(rng, 1, 9);
+  const b = _signedInt(rng, 1, 9);
+  const aS = a >= 0 ? `+ ${a}` : `− ${-a}`;
+  const bS = b >= 0 ? `+ ${b}` : `− ${-b}`;
+  const middle = a + b;
+  return num(
+    `Expand (x ${aS})(x ${bS}). What is the coefficient of x in the expanded form?`,
+    middle,
+    `Use FOIL: x·x + x·${b} + ${a}·x + ${a}·${b} = x² + ${middle}x + ${a*b}. The coefficient of x is ${middle}.`,
+    [String(middle), fmt(middle)]
+  );
+}
+
+function genFactorGCFAlg(rng) {
+  // Factor: kx² + jkx (out comes kx(x + j))
+  const k = randInt(rng, 2, 9);
+  const j = randInt(rng, 2, 9);
+  const A = k;
+  const B = k * j;
+  return mc(
+    `Factor: ${A}x² + ${B}x`,
+    `${k}x(x + ${j})`,
+    [`${k}(x² + ${j}x)`, `x(${A}x + ${B})`, `${k}x(${A}x + ${j})`],
+    `The GCF of ${A}x² and ${B}x is ${k}x. Factoring out: ${k}x(x + ${j}).`,
+    rng
+  );
+}
+
+function genFactorTrinomialAlg(rng) {
+  // x² + (p+q)x + p·q — ask for the pair (p, q) given as the factored form.
+  let p, q;
+  do {
+    p = _signedInt(rng, 1, 9);
+    q = _signedInt(rng, 1, 9);
+  } while (p === q);
+  const sum = p + q;
+  const prod = p * q;
+  const sumS = sum >= 0 ? `+ ${sum}` : `− ${-sum}`;
+  const prodS = prod >= 0 ? `+ ${prod}` : `− ${-prod}`;
+  const correct = `(x ${p >= 0 ? `+ ${p}` : `− ${-p}`})(x ${q >= 0 ? `+ ${q}` : `− ${-q}`})`;
+  // distractors: swap sign on one
+  const d1 = `(x ${(-p) >= 0 ? `+ ${-p}` : `− ${p}`})(x ${q >= 0 ? `+ ${q}` : `− ${-q}`})`;
+  const d2 = `(x ${p >= 0 ? `+ ${p}` : `− ${-p}`})(x ${(-q) >= 0 ? `+ ${-q}` : `− ${q}`})`;
+  const d3 = `(x ${(-p) >= 0 ? `+ ${-p}` : `− ${p}`})(x ${(-q) >= 0 ? `+ ${-q}` : `− ${q}`})`;
+  const distinct = Array.from(new Set([d1, d2, d3].filter(d => d !== correct)));
+  if (distinct.length < 2) return genFactorTrinomialAlg(rng);
+  return mc(
+    `Factor: x² ${sumS}x ${prodS}`,
+    correct,
+    distinct.slice(0, 3),
+    `Find two numbers whose product is ${prod} and sum is ${sum}: ${p} and ${q}. So x² ${sumS}x ${prodS} = ${correct}.`,
+    rng
+  );
+}
+
+function genQuadFactoringAlg(rng) {
+  // x² + bx + c = 0 — solutions are the negated factor values
+  let p, q;
+  do {
+    p = _signedInt(rng, 1, 9);
+    q = _signedInt(rng, 1, 9);
+  } while (p === q);
+  const sum = p + q;
+  const prod = p * q;
+  const sumS = sum >= 0 ? `+ ${sum}` : `− ${-sum}`;
+  const prodS = prod >= 0 ? `+ ${prod}` : `− ${-prod}`;
+  // Solutions: x = -p, x = -q
+  const r1 = -p, r2 = -q;
+  const lo = Math.min(r1, r2);
+  const hi = Math.max(r1, r2);
+  const correct = `x = ${lo}, x = ${hi}`;
+  // Build candidate distractors and dedupe
+  const candidates = [
+    `x = ${-lo}, x = ${-hi}`,
+    `x = ${lo + 1}, x = ${hi + 1}`,
+    `x = ${lo - 1}, x = ${hi - 1}`,
+    `x = ${p}, x = ${q}`,
+    `x = ${lo}, x = ${-hi}`,
+    `x = ${-lo}, x = ${hi}`
+  ];
+  const distractors = [];
+  for (const c of candidates) {
+    if (c !== correct && !distractors.includes(c)) distractors.push(c);
+    if (distractors.length === 3) break;
+  }
+  if (distractors.length < 3) return genQuadFactoringAlg(rng);
+  return mc(
+    `Solve by factoring:  x² ${sumS}x ${prodS} = 0`,
+    correct,
+    distractors,
+    `Factors as (x + ${p})(x + ${q}) = 0, so x = ${r1} or x = ${r2}.`,
+    rng
+  );
+}
+
+function genQuadFormulaAlg(rng) {
+  // ax² + bx + c with integer roots; pick discriminant a perfect square
+  let a, b, c, disc, root1, root2;
+  let safety = 0;
+  do {
+    a = randInt(rng, 1, 3);
+    const r1 = _signedInt(rng, 1, 6);
+    const r2 = _signedInt(rng, 1, 6);
+    b = -a * (r1 + r2);
+    c = a * r1 * r2;
+    disc = b * b - 4 * a * c;
+    root1 = r1; root2 = r2;
+    safety++;
+  } while ((root1 === root2 || disc < 0) && safety < 50);
+  const lo = Math.min(root1, root2);
+  const hi = Math.max(root1, root2);
+  const bs = b >= 0 ? `+ ${b}` : `− ${-b}`;
+  const cs = c >= 0 ? `+ ${c}` : `− ${-c}`;
+  const correct = `x = ${lo}, x = ${hi}`;
+  const candidates = [
+    `x = ${-lo}, x = ${-hi}`,
+    `x = ${lo + 1}, x = ${hi + 1}`,
+    `x = ${lo - 1}, x = ${hi - 1}`,
+    `x = ${lo + 2}, x = ${hi + 2}`,
+    `x = ${lo}, x = ${-hi}`,
+    `x = ${-lo}, x = ${hi}`
+  ];
+  const distractors = [];
+  for (const cand of candidates) {
+    if (cand !== correct && !distractors.includes(cand)) distractors.push(cand);
+    if (distractors.length === 3) break;
+  }
+  if (distractors.length < 3) return genQuadFormulaAlg(rng);
+  return mc(
+    `Use the quadratic formula to solve:  ${a}x² ${bs}x ${cs} = 0`,
+    correct,
+    distractors,
+    `x = (−b ± √(b² − 4ac)) / (2a). Discriminant = ${disc}, √${disc} = ${Math.sqrt(disc)}. Roots: ${lo}, ${hi}.`,
+    rng
+  );
+}
+
+function genEvalExponentialAlg(rng) {
+  // f(x) = a · b^x — evaluate at small x
+  const a = randInt(rng, 1, 6);
+  const b = randInt(rng, 2, 5);
+  const x = randInt(rng, 0, 4);
+  const v = a * Math.pow(b, x);
+  return num(
+    `Evaluate f(${x}) for f(x) = ${a} · ${b}^x.`,
+    v,
+    `f(${x}) = ${a} · ${b}^${x} = ${a} · ${Math.pow(b, x)} = ${v}.`,
+    [String(v), fmt(v)]
+  );
+}
+
+function genGrowthDecayAlg(rng) {
+  // Identify if a function is growth or decay; or pick correct model from context
+  const isGrowth = rng() < 0.5;
+  const a = randInt(rng, 100, 1000);
+  const r = randInt(rng, 5, 30);
+  const factor = isGrowth ? 1 + r / 100 : 1 - r / 100;
+  const factorStr = factor.toFixed(2);
+  return mc(
+    `Is f(x) = ${a} · (${factorStr})^x exponential growth or decay?`,
+    isGrowth ? 'Growth' : 'Decay',
+    [isGrowth ? 'Decay' : 'Growth', 'Linear', 'Neither'],
+    factor > 1
+      ? `Since the base ${factorStr} > 1, the function shows exponential growth.`
+      : `Since the base ${factorStr} < 1, the function shows exponential decay.`,
+    rng
+  );
+}
+
+
 const TARGET = 1000;
 const SPECS = {
   'grade-k-curriculum.json': [
@@ -2877,6 +3585,41 @@ const SPECS = {
     { unit: 'u6', lesson: 'u6l2', gen: genProbCompoundG7 },
     { unit: 'u7', lesson: 'u7l1', gen: genMADG7 },
     { unit: 'u7', lesson: 'u7l2', gen: genCompoundInterestG7 }
+  ],
+  'grade-8-curriculum.json': [
+    { unit: 'u1', lesson: 'u1l1', gen: genApproxIrrationalG8 },
+    { unit: 'u1', lesson: 'u1l2', gen: genConvertCompareG8 },
+    { unit: 'u1', lesson: 'u1l3', gen: genOrderRealsG8 },
+    { unit: 'u2', lesson: 'u2l1', gen: genSlopeFromPointsG8 },
+    { unit: 'u2', lesson: 'u2l2', gen: genSlopeInterceptG8 },
+    { unit: 'u2', lesson: 'u2l3', gen: genPropOrNotG8 },
+    { unit: 'u3', lesson: 'u3l1', gen: genMultiStepEqG8 },
+    { unit: 'u3', lesson: 'u3l2', gen: genIdentifyFunctionG8 },
+    { unit: 'u4', lesson: 'u4l1', gen: genPythagMissingG8 },
+    { unit: 'u4', lesson: 'u4l2', gen: genCoordDistanceG8 },
+    { unit: 'u4', lesson: 'u4l3', gen: genVolumeCylinderG8 },
+    { unit: 'u4', lesson: 'u4l4', gen: genVolumeConeSphereG8 },
+    { unit: 'u5', lesson: 'u5l1', gen: genTransformG8 },
+    { unit: 'u5', lesson: 'u5l2', gen: genDilationG8 },
+    { unit: 'u6', lesson: 'u6l1', gen: genScatterTrendG8 },
+    { unit: 'u6', lesson: 'u6l2', gen: genSimpleVsCompoundG8 }
+  ],
+  'algebra-1-curriculum.json': [
+    { unit: 'u1', lesson: 'u1l1', gen: genSlopePtsAlg },
+    { unit: 'u1', lesson: 'u1l2', gen: genSlopeInterceptAlg },
+    { unit: 'u1', lesson: 'u1l3', gen: genStdFormInterceptsAlg },
+    { unit: 'u2', lesson: 'u2l1', gen: genLinearEqAlg },
+    { unit: 'u2', lesson: 'u2l2', gen: genLinearIneqAlg },
+    { unit: 'u2', lesson: 'u2l3', gen: genSubstitutionAlg },
+    { unit: 'u2', lesson: 'u2l4', gen: genEliminationAlg },
+    { unit: 'u3', lesson: 'u3l1', gen: genExponentLawsAlg },
+    { unit: 'u3', lesson: 'u3l2', gen: genMultiplyPolyAlg },
+    { unit: 'u3', lesson: 'u3l3', gen: genFactorGCFAlg },
+    { unit: 'u3', lesson: 'u3l4', gen: genFactorTrinomialAlg },
+    { unit: 'u4', lesson: 'u4l1', gen: genQuadFactoringAlg },
+    { unit: 'u4', lesson: 'u4l2', gen: genQuadFormulaAlg },
+    { unit: 'u5', lesson: 'u5l1', gen: genEvalExponentialAlg },
+    { unit: 'u5', lesson: 'u5l2', gen: genGrowthDecayAlg }
   ]
 };
 

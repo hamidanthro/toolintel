@@ -478,7 +478,10 @@ def check_q(q):
     return None
 
 def main():
-    files = sorted(glob.glob(os.path.join(DATA, 'grade-*-curriculum.json')))
+    files = sorted(
+        glob.glob(os.path.join(DATA, 'grade-*-curriculum.json')) +
+        glob.glob(os.path.join(DATA, 'algebra-*-curriculum.json'))
+    )
     grand_pass = 0; grand_fail = 0; grand_skip = 0
     for f in files:
         d = json.load(open(f))
