@@ -458,8 +458,9 @@
     menu.querySelector('[data-act="logout"]').addEventListener('click', () => {
       menu.hidden = true;
       clearSession();
-      refreshHeader();
-      if (window.STAARAuth.requireLoginOnLoad) showLogin();
+      // Always return to the landing page on sign-out so the dashboard
+      // (or any authed view) is fully torn down — no stale state.
+      try { window.location.assign('/'); } catch (_) { window.location.href = '/'; }
     });
   }
 
