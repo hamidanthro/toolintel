@@ -636,7 +636,7 @@
             followup.hidden = false;
             tutorBtn.style.display = 'none';
           } catch (err) {
-            tutorOut.innerHTML = `<div class="tutor-msg assistant error">AI tutor unavailable right now. Try again later.</div>`;
+            tutorOut.innerHTML = `<p style="color:var(--error);">AI tutor unavailable right now. Try again later.</p>`;
             tutorBtn.disabled = false;
             tutorBtn.textContent = 'Ask AI tutor for help';
           }
@@ -668,7 +668,7 @@
             renderChips();
           } catch (err) {
             tutorOut.querySelector('.tutor-msg.loading')?.remove();
-            tutorOut.insertAdjacentHTML('beforeend', `<div class="tutor-msg assistant error">AI tutor unavailable.</div>`);
+            tutorOut.insertAdjacentHTML('beforeend', `<div class="tutor-msg assistant" style="color:var(--error);">AI tutor unavailable.</div>`);
           }
         });
       }
