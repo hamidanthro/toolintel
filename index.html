@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260427aa" />
+  <link rel="stylesheet" href="css/styles.css?v=20260427ab" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -58,7 +58,7 @@
           <span id="hero-live-text">Now serving students in all 50 states</span>
         </div>
         <h1 class="hero-headline">Master your<br><span class="headline-accent">state's</span> test.</h1>
-        <p class="hero-tagline-mobile">Practice. Earn cents. Get real toys.</p>
+        <p class="hero-tagline-mobile">Practice. Earn. Get toys.</p>
         <p><strong>AI-powered, intelligent practice</strong> aligned to your state's standards — for grades 3–8 and high school. Math, ELA, science, and more. An adaptive AI tutor builds skills question by question, gives full-length tests, earns real toys we ship to your door, and tracks progress parents trust.</p>
         <div class="hero-cta">
           <a href="grades.html" class="btn btn-primary">Start practicing</a>
@@ -76,10 +76,10 @@
               What is <span class="math-highlight">24 × 6</span>?
             </div>
             <div class="mockup-options">
-              <button class="mockup-option" type="button" tabindex="-1">130</button>
-              <button class="mockup-option mockup-option--correct" type="button" tabindex="-1">144 ✓</button>
-              <button class="mockup-option" type="button" tabindex="-1">154</button>
-              <button class="mockup-option" type="button" tabindex="-1">164</button>
+              <button class="mockup-option" type="button" tabindex="-1" data-value="130">130</button>
+              <button class="mockup-option mockup-option--correct" type="button" tabindex="-1" data-value="144">144 ✓</button>
+              <button class="mockup-option" type="button" tabindex="-1" data-value="154">154</button>
+              <button class="mockup-option" type="button" tabindex="-1" data-value="164">164</button>
             </div>
             <div class="mockup-footer">
               <div class="mockup-streak">
@@ -830,10 +830,12 @@
 
       // Reset pre-revealed correct state for interactive demo.
       choices.forEach(function (c) {
-        c.classList.remove('is-correct', 'is-incorrect');
+        c.classList.remove('is-correct', 'is-incorrect', 'mockup-option--correct');
         c.removeAttribute('tabindex');
         c.style.cursor = 'pointer';
         c.style.pointerEvents = 'auto';
+        // Strip pre-revealed glyphs from text
+        c.textContent = (c.textContent || '').replace(/[✓✗❌]/g, '').trim();
       });
 // Replace "7-day streak" with kid-friendly tap hint (Prompt 29)
       var streakEl = card.querySelector('.mockup-streak');
@@ -857,32 +859,42 @@
       function handleChoice(e) {
         var target = e.currentTarget;
         if (target.classList.contains('is-correct')) return;
-        va// Fade out the tap hint (Prompt 29)
-          var hint = card.querySelector('.mockup-meta--hint');
-          if (hint) hint.style.opacity = '0';
-          setTimeout(function () {
-            // Hero CTA hidden on mobile (Prompt 29) — pulse the bottom-tab Practice button instead
-            var cta = document.querySelector('.bottom-tab-bar .tab-practice, .bottom-tab-bar [data-tab="practice"], .floating-practice-cta')
-                   || = value === CORRECT;
+        var value = (target.getAttribute('data-value') || target.textContent || '').replace(/[^\d]/g, '').trim();
+        var isCorrect = value === CORRECT;
 
         if (isCorrect) {
           target.classList.add('is-correct', 'demo-pulse');
           try { (window.STAARHaptic && window.STAARHaptic.success) ? window.STAARHaptic.success() : navigator.vibrate && navigator.vibrate([10, 40, 20]); } catch (_) {}
           showRewardBubble(card, '+15 cents');
+          // Fade out the tap hint (Prompt 29)
+          var hint = card.querySelector('.mockup-meta--hint');
+          if (hint) hint.style.opacity = '0';
+          // Pulse the bottom-tab Practice button (hero CTA hidden on mobile)
           setTimeout(function () {
-            var cta = document.querySelector('.hero .hero-cta .btn-primary');
+            var cta = document.querySelector('.mobile-tabbar .mobile-tab--center .mobile-tab-center-button')
+                   || document.querySelector('.mobile-tabbar .mobile-tab--center')
+                   || document.querySelector('.floating-practice-cta')
+                   || document.querySelector('.hero .hero-cta .btn-primary');
             if (cta) {
-              cta.classList.add('cta-pulse');
-              setTimeout(function () { cta.classList.remove('cta-pulse'); }, 2000);
+              cta.classList.add('demo-cta-pulse');
+              setTimeout(function () { cta.classList.remove('demo-cta-pulse'); }, 2400);
             }
           }, 800);
+          // Disable taps, then re-enable after 3.5s for replay (Prompt 30)
           choices.forEach(function (c) { c.style.pointerEvents = 'none'; });
+          setTimeout(function () {
+            choices.forEach(function (c) {
+              c.classList.remove('is-correct', 'demo-pulse', 'is-incorrect', 'demo-shake');
+              c.style.pointerEvents = 'auto';
+            });
+            if (hint) hint.style.opacity = '1';
+          }, 3500);
         } else {
           target.classList.add('is-incorrect', 'demo-shake');
           try { (window.STAARHaptic && window.STAARHaptic.light) ? window.STAARHaptic.light() : navigator.vibrate && navigator.vibrate(20); } catch (_) {}
           setTimeout(function () {
             target.classList.remove('is-incorrect', 'demo-shake');
-          }, 500);
+          }, 700);
         }
       }
 

@@ -8904,3 +8904,188 @@ input[type="button"] {
   }
   body.home-page .hero-headline { font-size: 28px; }
 }
+
+/* ============================================================
+   PROMPT 30 — Mobile reduction (one-card-only philosophy)
+   Mobile-only. Desktop pixel-identical to before.
+   Appended last so cascade order wins over earlier prompts.
+   ============================================================ */
+@media (max-width: 768px) {
+  /* Hide the "Practice → Earn → Unlock real toys" rewards card on mobile.
+     Mockup demonstrates value; bottom-tab Practice provides the action. */
+  body.home-page .rewards-section,
+  body.home-page #earn-banner,
+  body.home-page .rewards-callout {
+    display: none !important;
+  }
+
+  /* ---------- Mockup card: airy, alive, premium ---------- */
+  body.home-page .hero-visual .mockup-card--main {
+    padding: 14px 14px 12px;
+    border-radius: 18px;
+    background: linear-gradient(180deg,
+      rgba(40, 53, 91, 0.7) 0%,
+      rgba(20, 29, 51, 0.6) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.08) inset,    /* top highlight */
+      0 -1px 0 rgba(0, 0, 0, 0.2) inset,          /* bottom shade */
+      0 8px 24px -8px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Card header tightening */
+  body.home-page .mockup-card .mockup-card-header {
+    margin-bottom: 8px;
+  }
+  body.home-page .mockup-card .mockup-progress {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  /* Question — slightly tighter */
+  body.home-page .mockup-card .mockup-question {
+    font-size: 24px;
+    line-height: 1.15;
+    margin: 6px 0 14px;
+  }
+
+  /* Answer choices — tighter padding, modern radius */
+  body.home-page .mockup-card .mockup-option {
+    padding: 14px 10px;
+    font-size: 18px;
+    border-radius: 12px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Footer divider */
+  body.home-page .mockup-card .mockup-footer {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Correct / incorrect states — refined */
+  body.home-page .mockup-card .mockup-option.is-correct {
+    background: linear-gradient(180deg, rgba(34, 197, 94, 0.18) 0%, rgba(22, 163, 74, 0.08) 100%) !important;
+    border-color: rgba(34, 197, 94, 0.5) !important;
+    color: #4ade80 !important;
+    box-shadow:
+      0 0 0 1px rgba(34, 197, 94, 0.3),
+      0 0 20px -2px rgba(34, 197, 94, 0.5) !important;
+  }
+  body.home-page .mockup-card .mockup-option.is-incorrect {
+    background: rgba(239, 68, 68, 0.10) !important;
+    border-color: rgba(239, 68, 68, 0.4) !important;
+    color: #fca5a5 !important;
+  }
+
+  /* Demo animations — refined */
+  .demo-pulse  { animation: demo-pulse-anim 0.7s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  @keyframes demo-pulse-anim {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.08); }
+    100% { transform: scale(1); }
+  }
+  .demo-shake  { animation: demo-shake-anim 0.45s ease-in-out; }
+  @keyframes demo-shake-anim {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    50% { transform: translateX(8px); }
+    80% { transform: translateX(-4px); }
+  }
+
+  /* Reward bubble — bigger, brighter */
+  .demo-reward-bubble {
+    top: 38%;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.6) inset,
+      0 12px 32px -4px rgba(251, 191, 36, 0.7),
+      0 4px 12px rgba(0, 0, 0, 0.4) !important;
+  }
+
+  /* Bottom-tab Practice button pulse on correct demo answer */
+  .demo-cta-pulse {
+    animation: tab-cta-pulse 0.8s ease-in-out 2;
+    transform-origin: center;
+  }
+  @keyframes tab-cta-pulse {
+    0%, 100% {
+      transform: scale(1);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.4) inset,
+        0 0 0 1px rgba(251, 191, 36, 0.4),
+        0 8px 20px -4px rgba(251, 191, 36, 0.5);
+    }
+    50% {
+      transform: scale(1.12);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.5) inset,
+        0 0 0 6px rgba(251, 191, 36, 0.4),
+        0 16px 40px -4px rgba(251, 191, 36, 0.8);
+    }
+  }
+
+  /* ---------- Headline: drop down, smaller, supporting ---------- */
+  body.home-page .hero-headline,
+  body.home-page .hero h1 {
+    font-size: 24px;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin: 16px 0 4px 0;
+    color: rgba(255, 255, 255, 0.92);
+    text-align: center;
+    font-weight: 400;
+  }
+  body.home-page .hero-tagline-mobile {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.55);
+    margin: 0 0 8px 0;
+    font-weight: 400;
+  }
+
+  /* ---------- Modern airy: lighter atmosphere ---------- */
+  body.home-page::before {
+    width: 320px;
+    height: 320px;
+    opacity: 0.6;
+  }
+  body.home-page::after {
+    width: 320px;
+    height: 320px;
+    opacity: 0.4;
+  }
+
+  /* Brand top-left — calmer */
+  .site-header .brand { gap: 8px; }
+  .site-header .brand-icon,
+  .site-header .brand svg {
+    width: 22px;
+    height: 22px;
+  }
+  .site-header .brand-text,
+  .site-header .brand span {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+  }
+
+  /* ---------- Spacing rhythm ---------- */
+  body.home-page .hero {
+    padding: 14px 16px 32px;
+  }
+  body.home-page .hero .hero-content {
+    gap: 14px;
+  }
+  body.home-page .grades-section {
+    padding-top: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  body.home-page .hero-headline,
+  body.home-page .hero h1 {
+    font-size: 22px;
+  }
+}
