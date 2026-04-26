@@ -483,6 +483,7 @@
       <div class="user-menu" id="user-menu" hidden>
         <div class="user-menu-meta">@${escapeHtml(u.username)}</div>
         ${adminLink}
+        <a href="settings.html" class="user-menu-link">Settings</a>
         <button type="button" data-act="logout">Sign out</button>
       </div>`;
     const pill = slot.querySelector('#user-pill');

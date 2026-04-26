@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings — STAAR Math Prep</title>
+  <link rel="stylesheet" href="css/styles.css?v=20260426q" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="brand">STAAR<span>Prep</span></a>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="marketplace.html">Toys</a>
+        <a href="about.html">About</a>
+      </nav>
+      <div id="user-slot" class="user-slot"></div>
+    </div>
+  </header>
+
+  <section>
+    <div class="container settings-container">
+      <h2 style="margin-bottom:8px;">Settings</h2>
+      <p style="color:var(--muted);max-width:680px;margin:0 0 28px;">Make STAAR Prep feel just right for you. These settings are saved on this device.</p>
+
+      <div class="settings-grid">
+
+        <article class="settings-card">
+          <h3>Sound &amp; feel</h3>
+          <label class="settings-row">
+            <span class="settings-row-label">
+              <span class="settings-row-title">🔔 Sound effects</span>
+              <span class="settings-row-sub">Plays a soft chime when you get one right.</span>
+            </span>
+            <input type="checkbox" data-pref="sound" class="settings-toggle" />
+          </label>
+          <label class="settings-row">
+            <span class="settings-row-label">
+              <span class="settings-row-title">📳 Haptic feedback</span>
+              <span class="settings-row-sub">Gentle vibration on phones and tablets.</span>
+            </span>
+            <input type="checkbox" data-pref="haptics" class="settings-toggle" />
+          </label>
+          <label class="settings-row">
+            <span class="settings-row-label">
+              <span class="settings-row-title">🎉 Confetti celebrations</span>
+              <span class="settings-row-sub">Celebrate streaks and daily goals with a burst.</span>
+            </span>
+            <input type="checkbox" data-pref="confetti" class="settings-toggle" />
+          </label>
+          <div class="settings-test">
+            <button type="button" class="btn btn-secondary" id="test-correct">Test correct sound</button>
+            <button type="button" class="btn btn-secondary" id="test-confetti">Test confetti</button>
+          </div>
+        </article>
+
+        <article class="settings-card">
+          <h3>Reading help</h3>
+          <label class="settings-row">
+            <span class="settings-row-label">
+              <span class="settings-row-title">🔊 Read questions aloud</span>
+              <span class="settings-row-sub">Adds a speaker button on every question. Auto-reads new prompts.</span>
+            </span>
+            <input type="checkbox" data-pref="readAloud" class="settings-toggle" />
+          </label>
+          <label class="settings-row">
+            <span class="settings-row-label">
+              <span class="settings-row-title">🔠 Dyslexia-friendly font</span>
+              <span class="settings-row-sub">Switches the whole app to a font that's easier to read.</span>
+            </span>
+            <input type="checkbox" data-pref="dyslexiaFont" class="settings-toggle" />
+          </label>
+          <label class="settings-row">
+            <span class="settings-row-label">
+              <span class="settings-row-title">🔍 Larger text</span>
+              <span class="settings-row-sub">Bumps body text size for easier reading.</span>
+            </span>
+            <input type="checkbox" data-pref="largeText" class="settings-toggle" />
+          </label>
+        </article>
+
+        <article class="settings-card">
+          <h3>Daily mission</h3>
+          <label class="settings-row">
+            <span class="settings-row-label">
+              <span class="settings-row-title">🎯 Daily goal</span>
+              <span class="settings-row-sub">Correct answers per day to celebrate.</span>
+            </span>
+            <select data-pref="dailyGoal" class="settings-select">
+              <option value="3">3 a day (warm-up)</option>
+              <option value="5">5 a day (recommended)</option>
+              <option value="10">10 a day (going strong)</option>
+              <option value="20">20 a day (champion)</option>
+            </select>
+          </label>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <script src="js/prefs.js?v=20260426a"></script>
+  <script src="js/fx.js?v=20260426a"></script>
+  <script src="js/auth.js?v=20260426a"></script>
+  <script src="js/friends.js?v=20260426b"></script>
+  <script>
+    (function () {
+      const P = window.STAARPrefs;
+      const cur = P.get();
+      document.querySelectorAll('[data-pref]').forEach(el => {
+        const key = el.getAttribute('data-pref');
+        if (el.type === 'checkbox') {
+          el.checked = !!cur[key];
+          el.addEventListener('change', () => P.set({ [key]: el.checked }));
+        } else if (el.tagName === 'SELECT') {
+          el.value = String(cur[key]);
+          el.addEventListener('change', () => P.set({ [key]: parseInt(el.value, 10) || el.value }));
+        }
+      });
+      document.getElementById('test-correct').addEventListener('click', () => {
+        window.STAARFx && window.STAARFx.playCorrect();
+        window.STAARFx && window.STAARFx.vibrate(20);
+      });
+      document.getElementById('test-confetti').addEventListener('click', () => {
+        window.STAARFx && window.STAARFx.confetti();
+        window.STAARFx && window.STAARFx.playMilestone();
+      });
+    })();
+  </script>
+</body>
+</html>

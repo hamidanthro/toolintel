@@ -68,7 +68,21 @@
         for (const k of keys.slice(0, keys.length - 60)) delete j.daily[k];
       }
       localStorage.setItem(key, JSON.stringify(j));
+      // Detect milestones to celebrate.
+      const dailyGoal = (window.STAARPrefs && window.STAARPrefs.get().dailyGoal) || 5;
+      const todayCorrect = j.daily[tk].correct;
+      const out = {};
+      if (isCorrect && todayCorrect === dailyGoal) out.dailyGoalHit = true;
+      if (isCorrect && [5, 10, 15, 25, 50, 100].includes(j.currentRun)) out.streakMilestone = j.currentRun;
+      // Streak day milestone: only fire once per day, on the first activity of the day that bumped the streak.
+      const streakKey = `${key}.streakDayCelebrated.${tk}`;
+      if ([3, 5, 7, 14, 30, 60, 100].includes(j.streak) && !localStorage.getItem(streakKey)) {
+        out.streakDayMilestone = j.streak;
+        try { localStorage.setItem(streakKey, '1'); } catch (_) {}
+      }
+      return out;
     } catch (_) { /* localStorage unavailable */ }
+    return null;
   }
   function guestCount() {
     try { return parseInt(localStorage.getItem(GUEST_KEY), 10) || 0; } catch (_) { return 0; }
@@ -457,6 +471,18 @@
 
     function attachQuestionHandlers(q) {
       const form = qbox.querySelector('form');
+      // Read-aloud button (shown only when pref is on).
+      const readBtn = qbox.querySelector('[data-act="read"]');
+      if (readBtn && window.STAARFx) {
+        readBtn.addEventListener('click', () => {
+          const choices = (q.type === 'multiple_choice' && Array.isArray(q.choices))
+            ? '. Choices: ' + q.choices.join(', ')
+            : '';
+          window.STAARFx.speak(q.prompt + choices);
+        });
+        // Auto-speak the prompt when a new question loads, so kids who can't read keep flowing.
+        setTimeout(() => window.STAARFx.speak(q.prompt), 250);
+      }
       form.addEventListener('submit', e => {
         e.preventDefault();
         const userAnswer = getAnswerFromForm(q, form);
@@ -467,7 +493,24 @@
         const isCorrect = checkAnswer(q, userAnswer);
         if (isCorrect) correct++;
         Stats.record(slug, stats, { unitId: q._unit?.id, unitTitle: q._unit?.title, isCorrect });
-        recordJourney(isCorrect);
+        const milestones = recordJourney(isCorrect);
+        if (window.STAARFx) {
+          if (isCorrect) { window.STAARFx.playCorrect(); window.STAARFx.vibrate(20); }
+          else { window.STAARFx.playWrong(); window.STAARFx.vibrate([40, 50, 40]); }
+          if (milestones && milestones.dailyGoalHit) {
+            window.STAARFx.confetti({ count: 90, duration: 1800 });
+            window.STAARFx.playMilestone();
+            window.STAARFx.toast('Daily mission complete! 🌟', { kind: 'win' });
+          } else if (milestones && milestones.streakMilestone) {
+            window.STAARFx.confetti({ count: 60, duration: 1400 });
+            window.STAARFx.playMilestone();
+            window.STAARFx.toast(`${milestones.streakMilestone}-in-a-row! 🔥`, { kind: 'win' });
+          } else if (milestones && milestones.streakDayMilestone) {
+            window.STAARFx.confetti({ count: 70, duration: 1600 });
+            window.STAARFx.playMilestone();
+            window.STAARFx.toast(`${milestones.streakDayMilestone}-day streak! 🔥`, { kind: 'win' });
+          }
+        }
         if (isGuest()) {
           guestIncrement();
           renderGuestBanner();
@@ -520,6 +563,7 @@
       }
 
       document.getElementById('next-btn').addEventListener('click', () => {
+        if (window.STAARFx) window.STAARFx.stopSpeak();
         i++;
         show();
       });
@@ -663,13 +707,16 @@
     const reward = locked
       ? `<span class="q-reward q-reward-locked" title="Section mastered — review only">⭐ Mastered</span>`
       : `<span class="q-reward" title="Correct: +${cents} pts  •  Wrong: −${cents} pts">±${cents} pts</span>`;
+    const readBtn = (window.STAARFx && window.STAARFx.readAloudEnabled())
+      ? `<button type="button" class="q-read-btn" data-act="read" aria-label="Read question aloud" title="Read aloud">🔊</button>`
+      : '';
     return `
       <form class="question-card">
         <div class="q-meta">
           <span>${escapeHtml(q._unit?.title || '')} · TEKS ${escapeHtml(q._lesson?.teks || '')}</span>
           ${reward}
         </div>
-        <div class="q-prompt">${escapeHtml(q.prompt)}</div>
+        <div class="q-prompt">${readBtn}<span class="q-prompt-text">${escapeHtml(q.prompt)}</span></div>
         <div class="q-body">${body}</div>
         <button class="btn btn-primary" type="submit">Check answer</button>
       </form>`;
