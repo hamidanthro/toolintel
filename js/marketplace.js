@@ -90,7 +90,7 @@
       const desc = (t.description || '').trim();
       const isGuest = !Auth.currentUser();
       const buyLabel = isGuest
-        ? 'Sign up to buy'
+        ? 'Sign up to earn'
         : (canAfford ? 'Buy with points' : `Need ${Auth.formatCents(need)} more`);
       const buyEnabled = isGuest || canAfford;
       const buyClass = buyEnabled ? 'btn-primary' : 'btn-ghost';
