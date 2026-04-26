@@ -888,7 +888,7 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
               border-color 0.3s ease,
               background 0.3s ease,
               box-shadow 0.3s ease;
-  overflow: hidden;
+  overflow: visible;
 }
 .grades-section .grade-card::before {
   content: '';
@@ -922,15 +922,16 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
 .grade-card-eyebrow {
   display: inline-block;
   font-family: 'Inter', system-ui, sans-serif;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgba(251, 191, 36, 0.9);
   background: rgba(251, 191, 36, 0.08);
   border: 1px solid rgba(251, 191, 36, 0.18);
   padding: 4px 8px;
   border-radius: 6px;
+  white-space: nowrap;
 }
 .grade-card-icon {
   width: 36px;
@@ -997,23 +998,23 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
   transform: translateX(2px);
 }
 
-/* Most popular badge (Grade 3) */
+/* Most popular ribbon (Grade 3) — sits half-outside the top edge */
 .grade-card-badge {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: -10px;
+  right: 16px;
   font-family: 'Inter', system-ui, sans-serif;
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.04em;
   color: #0a1628;
   background: linear-gradient(180deg, #fde68a 0%, #fbbf24 60%, #f59e0b 100%);
-  padding: 4px 9px;
+  padding: 4px 10px;
   border-radius: 6px;
-  box-shadow: 0 2px 6px rgba(251, 191, 36, 0.35);
-  z-index: 2;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+  z-index: 3;
 }
-.grades-section .grade-card--popular .grade-card-head { padding-right: 88px; }
 .grades-section .grade-card--popular {
   border-color: rgba(251, 191, 36, 0.22);
 }
@@ -3137,4 +3138,172 @@ body.pref-large-text .choice { font-size: 1.1rem; }
   min-width: 20px;
   text-align: center;
   vertical-align: middle;
+}
+
+/* ---------- Premium footer (landing) ---------- */
+.footer {
+  position: relative;
+  background: #060d1f;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 80px 32px 32px;
+  overflow: hidden;
+  color: #ffffff;
+  margin-top: 0;
+}
+.footer::before {
+  content: '';
+  position: absolute;
+  top: -200px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 400px;
+  background: radial-gradient(ellipse at center, rgba(251, 191, 36, 0.08) 0%, transparent 60%);
+  filter: blur(40px);
+  pointer-events: none;
+}
+.footer-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  position: relative;
+}
+.footer-top {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 56px;
+}
+.footer-brand-col { max-width: 320px; }
+.footer-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  text-decoration: none;
+  margin-bottom: 16px;
+}
+.footer-logo .logo-accent {
+  background: linear-gradient(180deg, #fde68a 0%, #fbbf24 60%, #f59e0b 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+.footer-tagline {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0 0 20px 0;
+}
+.footer-trust-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.footer-trust-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 6px 12px;
+  border-radius: 999px;
+}
+.trust-dot {
+  width: 6px;
+  height: 6px;
+  background: #10b981;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  flex-shrink: 0;
+}
+.footer-nav-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.footer-col-title {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  margin: 0 0 4px 0;
+}
+.footer .footer-link {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.65);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.footer .footer-link:hover { color: #ffffff; }
+.footer-divider {
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 20%,
+    rgba(255, 255, 255, 0.08) 80%,
+    transparent 100%);
+  margin-bottom: 24px;
+}
+.footer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.footer-copy {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+}
+.footer-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+}
+.footer-meta-divider { color: rgba(255, 255, 255, 0.25); }
+.footer-social { display: flex; gap: 8px; }
+.footer-social-link {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.6);
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+.footer-social-link:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+@media (max-width: 1024px) {
+  .footer-top { grid-template-columns: 1fr 1fr; gap: 40px; }
+  .footer-brand-col { grid-column: 1 / -1; max-width: 480px; }
+}
+@media (max-width: 640px) {
+  .footer { padding: 56px 20px 28px; }
+  .footer-top { grid-template-columns: 1fr; gap: 32px; margin-bottom: 40px; }
+  .footer-bottom { flex-direction: column; align-items: flex-start; gap: 14px; }
 }
