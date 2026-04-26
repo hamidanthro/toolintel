@@ -722,6 +722,16 @@ function normalizeSectionKey(s) {
   return /^[A-Za-z0-9_\-|:.]+$/.test(t) ? t : null;
 }
 
+// Numeric rank for a grade slug. K=0, 1..8=grade-N, algebra-1=9. -1 for unknown.
+// Used by handleEarn to enforce the no-farming-below-your-grade rule.
+function _gradeRank(slug) {
+  if (!slug) return -1;
+  if (slug === 'grade-k') return 0;
+  if (slug === 'algebra-1') return 9;
+  const m = String(slug).match(/^grade-(\d+)$/);
+  return m ? parseInt(m[1], 10) : -1;
+}
+
 async function handleEarn(payload) {
   const auth = await authedUser(payload);
   if (!auth) return bad(401, 'Not signed in');
@@ -742,6 +752,20 @@ async function handleEarn(payload) {
   const lifetime = r.Item.lifetimeCents || 0;
   const balance = r.Item.balanceCents || 0;
   const mastered = r.Item.masteredSections || {};
+
+  // ----- Grade-gating server-side enforcement (Prompt 21) -----
+  // The section key encodes "<grade-slug>|<unit>|<lesson>". If a user with a set
+  // grade attempts to earn points on a grade below their level, reject the award.
+  // This blocks URL-tampering kids from grinding easy questions to farm toys.
+  // (Logged-out / no-grade users aren't gated server-side here — they hit the
+  // 100-question guest cap anyway.)
+  try {
+    const userGradeSlug = String(r.Item.grade || '').trim();
+    const sectionGradeSlug = sectionKey ? String(sectionKey).split('|')[0] : '';
+    if (userGradeSlug && sectionGradeSlug && _gradeRank(sectionGradeSlug) < _gradeRank(userGradeSlug)) {
+      return bad(403, 'Cannot earn points for grades below your current level');
+    }
+  } catch (_) { /* never break earn on a parsing edge case */ }
 
   if (sectionKey && mastered[sectionKey]) {
     return ok({

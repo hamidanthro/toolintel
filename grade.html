@@ -33,21 +33,28 @@
   <script src="js/auth.js?v=20260427f"></script>
   <script src="js/friends.js?v=20260426b"></script>
   <script src="js/staar-data.js"></script>
+  <script src="js/grade-card.js?v=20260427q"></script>
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
     const params = new URLSearchParams(location.search);
     const slug = params.get('g');
     const grade = window.STAAR_GRADES.find(g => g.slug === slug);
     const content = document.getElementById('content');
+    const _u = (window.STAARAuth?.currentUser && window.STAARAuth.currentUser()) || null;
 
     if (!grade) {
       content.innerHTML = '<h2>Grade not found</h2><p><a href="index.html">Back home</a></p>';
-    } else if (
-      window.STAARAuth?.userGradeLevel &&
-      window.STAARAuth.userGradeLevel() > -Infinity &&
-      window.STAARAuth.gradeLevel(grade.slug) < window.STAARAuth.userGradeLevel()
-    ) {
-      content.innerHTML = `<h2>${grade.title} is below your level</h2><div class="card"><p style="color:var(--muted);">You're set to a higher grade, so this grade is locked. Pick your grade or higher from your dashboard.</p><p><a class="btn btn-primary" href="index.html">Back to dashboard</a></p></div>`;
+    } else if (window.STAARGradeAccess && !window.STAARGradeAccess.canPracticeGrade(_u, grade.slug)) {
+      // Redirect to user's actual grade rather than a dead end.
+      const target = (_u && _u.grade) || null;
+      if (target && target !== grade.slug) {
+        try { location.replace(`grade.html?g=${encodeURIComponent(target)}`); }
+        catch (_) {
+          content.innerHTML = `<h2>${grade.title} is below your level</h2><div class="card"><p style="color:var(--muted);">You're set to a higher grade, so this grade is locked. Pick your grade or higher from your dashboard.</p><p><a class="btn btn-primary" href="index.html">Back to dashboard</a></p></div>`;
+        }
+      } else {
+        content.innerHTML = `<h2>${grade.title} is below your level</h2><div class="card"><p style="color:var(--muted);">You're set to a higher grade, so this grade is locked. Pick your grade or higher from your dashboard.</p><p><a class="btn btn-primary" href="index.html">Back to dashboard</a></p></div>`;
+      }
     } else {
       document.title = `${grade.title} — StarTest`;
       fetch(`data/${grade.slug}-curriculum.json`)

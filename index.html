@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260427h" />
+  <link rel="stylesheet" href="css/styles.css?v=20260427q" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -450,6 +450,7 @@
   <script src="js/auth.js?v=20260427f"></script>
   <script src="js/friends.js?v=20260426b"></script>
   <script src="js/staar-data.js"></script>
+  <script src="js/grade-card.js?v=20260427q"></script>
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -459,8 +460,9 @@
         document.getElementById('grade-grid-anon')
       ].filter(Boolean);
       const Auth = window.STAARAuth || {};
+      const u = Auth.currentUser ? Auth.currentUser() : null;
+      const visible = window.STAARGradeAccess.getVisibleGrades(u);
       const minLevel = Auth.userGradeLevel ? Auth.userGradeLevel() : -Infinity;
-      const visible = window.STAAR_GRADES.filter(g => Auth.gradeLevel(g.slug) >= minLevel);
       const sectionTitle = document.querySelector('#grade-section .grades-title') || document.querySelector('#grade-section h2');
       if (sectionTitle) {
         sectionTitle.textContent = (minLevel > -Infinity)
@@ -480,77 +482,34 @@
           }
         }
       }
-      const gradeIconFor = (slug) => {
-        if (slug === 'grade-k') return 'K';
-        if (slug === 'algebra-1') return 'A1';
-        const m = /grade-(\d+)/.exec(slug);
-        return m ? m[1] : '★';
-      };
-      const ageHintFor = (slug) => ({
-        'grade-k': 'Ages 5–6',
-        'grade-1': 'Ages 6–7',
-        'grade-2': 'Ages 7–8',
-        'grade-3': 'Ages 8–9',
-        'grade-4': 'Ages 9–10',
-        'grade-5': 'Ages 10–11',
-        'grade-6': 'Ages 11–12',
-        'grade-7': 'Ages 12–13',
-        'grade-8': 'Ages 13–14',
-        'algebra-1': 'High school'
-      })[slug] || '';
       grids.forEach(grid => {
         grid.innerHTML = '';
         const isDashboard = grid.id === 'grade-grid';
         visible.forEach(g => {
-          const a = document.createElement('a');
-          a.href = `grade.html?g=${g.slug}`;
+          const isCurrent = !!(u && u.grade === g.slug);
           if (isDashboard) {
             // Compact dashboard tile with progress bar.
-            a.className = 'dashboard-grade-tile';
-            const subjectLabel = (g.subject ? g.subject : 'Math').toUpperCase();
-            // Progress: derived from localStorage if present, otherwise 0.
             let pct = 0, answered = 0, target = 300;
             try {
-              const u = window.STAARAuth?.currentUser?.();
               if (u) {
                 const j = JSON.parse(localStorage.getItem(`staar.journey.${u.username}`) || '{}');
                 answered = (j.byGrade && j.byGrade[g.slug] && j.byGrade[g.slug].correct) || 0;
                 pct = Math.min(100, Math.round((answered / target) * 100));
               }
             } catch (_) {}
-            a.innerHTML = `
-              <div class="dashboard-grade-tile-header">
-                <span class="dashboard-grade-tile-eyebrow">STATE TEST · ${subjectLabel}</span>
-                <div class="dashboard-grade-tile-icon">${gradeIconFor(g.slug)}</div>
-              </div>
-              <h4 class="dashboard-grade-tile-title">${g.title}</h4>
-              <p class="dashboard-grade-tile-meta">${g.categories.length} reporting categories${ageHintFor(g.slug) ? ' · ' + ageHintFor(g.slug) : ''}</p>
-              <div class="dashboard-grade-tile-progress">
-                <div class="tile-progress-bar"><div class="tile-progress-fill" style="width:${pct}%"></div></div>
-                <span class="tile-progress-text">${pct}% · ${answered}/${target}</span>
-              </div>
-            `;
+            const tile = window.STAARGradeCard.render(g, {
+              variant: 'compact',
+              isCurrent,
+              progress: { pct, answered, target }
+            });
+            grid.appendChild(tile);
           } else {
-            const isPopular = g.slug === 'grade-3';
-            const isKinder = g.slug === 'grade-k';
-            a.className = 'grade-card' + (isPopular ? ' grade-card--popular' : '') + (isKinder ? ' grade-card--kinder' : '');
-            a.innerHTML = `
-              ${isPopular ? '<span class="grade-card-badge">Most popular</span>' : ''}
-              <div class="grade-card-head">
-                <span class="grade-card-eyebrow">State test &middot; Math</span>
-                <span class="grade-card-icon">${gradeIconFor(g.slug)}</span>
-              </div>
-              <h3 class="grade-card-title">${g.title}</h3>
-              <p class="grade-card-meta">${g.categories.length} reporting categories</p>
-              <div class="grade-card-foot">
-                <span class="grade-card-age">${ageHintFor(g.slug)}</span>
-                <span class="grade-card-arrow" aria-hidden="true">
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7H11M11 7L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </span>
-              </div>
-            `;
+            const card = window.STAARGradeCard.render(g, {
+              variant: 'default',
+              isCurrent
+            });
+            grid.appendChild(card);
           }
-          grid.appendChild(a);
         });
       });
     }

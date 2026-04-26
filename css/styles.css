@@ -792,24 +792,68 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 16px;
 }
+/* Premium dark grade card — applies anywhere the shared GradeCard component is used.
+   See also: .grades-section .grade-card overrides below for landing-page hover glow. */
 .grade-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: linear-gradient(180deg, rgba(26, 37, 64, 0.5) 0%, rgba(20, 29, 51, 0.5) 100%);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
   padding: 22px;
-  box-shadow: var(--shadow);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  display: block;
-  color: var(--text);
-}
-.grade-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.1);
+  color: #ffffff;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.03) inset,
+    0 4px 12px -2px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.3s ease,
+              background 0.3s ease,
+              box-shadow 0.3s ease;
+  overflow: visible;
   text-decoration: none;
 }
-.grade-card .label { color: var(--muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
-.grade-card .title { font-size: 1.25rem; font-weight: 700; color: var(--navy); margin: 6px 0 4px; }
-.grade-card .desc { color: var(--muted); font-size: 0.9rem; }
+.grade-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(251, 191, 36, 0.3);
+  background: linear-gradient(180deg, rgba(30, 42, 72, 0.6) 0%, rgba(24, 33, 58, 0.6) 100%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 0 0 1px rgba(251, 191, 36, 0.15),
+    0 16px 32px -8px rgba(0, 0, 0, 0.4);
+  text-decoration: none;
+}
+/* Locked card — kid is below the user's grade level */
+.grade-card--locked {
+  cursor: not-allowed;
+  opacity: 0.55;
+  filter: grayscale(0.4);
+}
+.grade-card--locked:hover {
+  transform: none;
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.03) inset,
+    0 4px 12px -2px rgba(0, 0, 0, 0.2);
+}
+/* Current-grade badge variant (gold + check vibe via copy) */
+.grade-card-badge--current {
+  background: linear-gradient(180deg, #c7d2fe 0%, #818cf8 100%);
+  color: #0a1628;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+}
+.grade-card-badge--locked {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.7);
+  box-shadow: none;
+}
 
 /* ---------- Premium grades section (landing) ---------- */
 .grades-section {

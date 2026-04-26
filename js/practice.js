@@ -142,19 +142,35 @@
   window.onSTAARLogin = function () { try { location.reload(); } catch (_) {} };
 
   // Gate: kids can only practice their own grade or higher (set at signup).
+  // Uses shared STAARGradeAccess.canPracticeGrade when available; falls back
+  // to legacy STAARAuth.gradeLevel comparison.
   const Auth = window.STAARAuth || {};
-  if (Auth.userGradeLevel && Auth.gradeLevel) {
-    const userLvl = Auth.userGradeLevel();
-    const reqLvl = Auth.gradeLevel(slug);
-    if (userLvl > -Infinity && reqLvl < userLvl) {
-      root.innerHTML = `
-        <h2>That grade is below your level</h2>
-        <div class="card">
-          <p style="color:var(--muted);">You're set to a higher grade, so practice for lower grades is locked. Pick your grade or higher from the home page.</p>
-          <p><a class="btn btn-primary" href="index.html">Back to your dashboard</a></p>
-        </div>`;
-      return;
+  const Access = window.STAARGradeAccess;
+  const _user = (Auth.currentUser && Auth.currentUser()) || null;
+  const _allowed = Access
+    ? Access.canPracticeGrade(_user, slug)
+    : (() => {
+        if (!Auth.userGradeLevel || !Auth.gradeLevel) return true;
+        const userLvl = Auth.userGradeLevel();
+        const reqLvl = Auth.gradeLevel(slug);
+        return !(userLvl > -Infinity && reqLvl < userLvl);
+      })();
+  if (!_allowed) {
+    // Redirect them to their actual grade rather than a dead end.
+    const target = (_user && _user.grade) ? _user.grade : null;
+    if (target && target !== slug) {
+      try {
+        location.replace(`practice.html?g=${encodeURIComponent(target)}`);
+        return;
+      } catch (_) { /* fall through to message */ }
     }
+    root.innerHTML = `
+      <h2>That grade is below your level</h2>
+      <div class="card">
+        <p style="color:var(--muted);">You're set to a higher grade, so practice for lower grades is locked. Pick your grade or higher from the home page.</p>
+        <p><a class="btn btn-primary" href="index.html">Back to your dashboard</a></p>
+      </div>`;
+    return;
   }
 
   fetch(`data/${slug}-curriculum.json?v=20260426m`)
@@ -172,17 +188,24 @@
   function renderHome() {
     root.innerHTML = `
       <h2>Choose a grade to practice</h2>
-      <div class="grade-grid" id="grid"></div>`;
+      <div class="grade-grid practice-grid" id="grid"></div>`;
     const grid = document.getElementById('grid');
-    window.STAAR_GRADES.forEach(g => {
-      const a = document.createElement('a');
-      a.href = `practice.html?g=${g.slug}`;
-      a.className = 'grade-card';
-      a.innerHTML = `
-        <div class="label">STAAR Math</div>
-        <div class="title">${g.title}</div>
-        <div class="desc">Start practicing</div>`;
-      grid.appendChild(a);
+    const u = (window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser()) || null;
+    const visible = window.STAARGradeAccess
+      ? window.STAARGradeAccess.getVisibleGrades(u)
+      : (window.STAAR_GRADES || []);
+    visible.forEach(g => {
+      const isCurrent = !!(u && u.grade === g.slug);
+      if (window.STAARGradeCard) {
+        grid.appendChild(window.STAARGradeCard.render(g, { variant: 'practice', isCurrent }));
+      } else {
+        // Defensive fallback (shared component should always be loaded).
+        const a = document.createElement('a');
+        a.href = `practice.html?g=${encodeURIComponent(g.slug)}`;
+        a.className = 'grade-card';
+        a.innerHTML = `<h3 class="grade-card-title">${g.title}</h3><p class="grade-card-meta">${g.categories.length} reporting categories</p>`;
+        grid.appendChild(a);
+      }
     });
   }
 
