@@ -215,9 +215,11 @@
             const isMe = r.username === u.username;
             const medal = r.rank === 1 ? '🥇' : r.rank === 2 ? '🥈' : r.rank === 3 ? '🥉' : `#${r.rank}`;
             const accStr = r.accuracyKnown === false ? '~' : `${r.accuracy || 0}%`;
-            return `<li class="${isMe ? 'lb-me' : ''}">
+            const cls = ['lb-row', `lb-rank-${r.rank <= 3 ? r.rank : 'n'}`, isMe ? 'lb-me' : ''].filter(Boolean).join(' ');
+            const crown = r.rank === 1 ? '<span class="lb-crown" aria-hidden="true">👑</span>' : '';
+            return `<li class="${cls}">
               <span class="lb-rank">${medal}</span>
-              <span class="lb-name">${escapeHtmlSafe(r.displayName)}${isMe ? ' <span class="lb-you">(you)</span>' : ''}</span>
+              <span class="lb-name">${crown}${escapeHtmlSafe(r.displayName)}${isMe ? ' <span class="lb-you">(you)</span>' : ''}</span>
               <span class="lb-correct">${(r.correct || 0).toLocaleString()} correct</span>
               <span class="lb-acc">${accStr}</span>
             </li>`;
@@ -250,9 +252,11 @@
             const isMe = r.username === u.username;
             const medal = r.rank === 1 ? '🥇' : r.rank === 2 ? '🥈' : r.rank === 3 ? '🥉' : `#${r.rank}`;
             const accStr = r.accuracyKnown === false ? '~' : `${r.accuracy || 0}%`;
-            return `<li class="${isMe ? 'lb-me' : ''}">
+            const cls = ['lb-row', `lb-rank-${r.rank <= 3 ? r.rank : 'n'}`, isMe ? 'lb-me' : ''].filter(Boolean).join(' ');
+            const crown = r.rank === 1 ? '<span class="lb-crown" aria-hidden="true">👑</span>' : '';
+            return `<li class="${cls}">
               <span class="lb-rank">${medal}</span>
-              <span class="lb-name">${escapeHtmlSafe(r.displayName)}${isMe ? ' <span class="lb-you">(you)</span>' : ''}</span>
+              <span class="lb-name">${crown}${escapeHtmlSafe(r.displayName)}${isMe ? ' <span class="lb-you">(you)</span>' : ''}</span>
               <span class="lb-correct">${(r.correct || 0).toLocaleString()} correct</span>
               <span class="lb-acc">${accStr}</span>
             </li>`;

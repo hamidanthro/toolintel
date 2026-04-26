@@ -577,19 +577,34 @@ async function handlePutStats(payload) {
     }
   }));
 
-  // Denormalize per-slug totals on the user record so leaderboard scans
-  // don't have to fan out across the stats table.
+  // Denormalize per-slug totals on the user record so the dashboard can
+  // show "out of N answered" without scanning the stats table. We store
+  // these as MAX(existing, incoming) so a kid practicing on a fresh
+  // device with empty localStorage can't roll the cloud totals backwards.
   const correct = Math.max(0, parseInt(data.correct, 10) || 0);
   const total = Math.max(0, parseInt(data.total, 10) || 0);
   if (auth.username) {
     try {
-      await ddb.send(new UpdateCommand({
+      // First read existing values; only write if the incoming numbers
+      // are greater than what we already have.
+      const cur = await ddb.send(new GetCommand({
         TableName: USERS_TABLE,
         Key: { username: auth.username },
-        UpdateExpression: 'SET slugCorrect = if_not_exists(slugCorrect, :empty), slugCorrect.#s = :c, slugTotal = if_not_exists(slugTotal, :empty), slugTotal.#s = :t',
-        ExpressionAttributeNames: { '#s': slug },
-        ExpressionAttributeValues: { ':empty': {}, ':c': correct, ':t': total }
+        ProjectionExpression: 'slugCorrect, slugTotal'
       }));
+      const curC = parseInt(cur.Item?.slugCorrect?.[slug], 10) || 0;
+      const curT = parseInt(cur.Item?.slugTotal?.[slug], 10) || 0;
+      const newC = Math.max(curC, correct);
+      const newT = Math.max(curT, total);
+      if (newC !== curC || newT !== curT) {
+        await ddb.send(new UpdateCommand({
+          TableName: USERS_TABLE,
+          Key: { username: auth.username },
+          UpdateExpression: 'SET slugCorrect = if_not_exists(slugCorrect, :empty), slugCorrect.#s = :c, slugTotal = if_not_exists(slugTotal, :empty), slugTotal.#s = :t',
+          ExpressionAttributeNames: { '#s': slug },
+          ExpressionAttributeValues: { ':empty': {}, ':c': newC, ':t': newT }
+        }));
+      }
     } catch (_) { /* non-fatal */ }
   }
 
@@ -695,26 +710,10 @@ async function handleEarn(payload) {
   const upd = await ddb.send(new UpdateCommand({
     TableName: USERS_TABLE,
     Key: { username: auth.username },
-    UpdateExpression: 'SET balanceCents = if_not_exists(balanceCents, :z) + :a, lifetimeCents = if_not_exists(lifetimeCents, :z) + :a',
-    ExpressionAttributeValues: { ':a': award, ':z': 0 },
+    UpdateExpression: 'SET balanceCents = if_not_exists(balanceCents, :z) + :a, lifetimeCents = if_not_exists(lifetimeCents, :z) + :a, lifetimeCorrect = if_not_exists(lifetimeCorrect, :z) + :one, lifetimeAnswered = if_not_exists(lifetimeAnswered, :z) + :one',
+    ExpressionAttributeValues: { ':a': award, ':z': 0, ':one': 1 },
     ReturnValues: 'ALL_NEW'
   }));
-
-  // Best-effort: bump per-grade slugCorrect so the leaderboard sees this user
-  // even if they never trigger the older saveStats action. We only know about
-  // correct answers here (award only fires on correct), so we bump both
-  // slugCorrect and slugTotal by 1 to keep accuracy at 100% as a baseline —
-  // saveStats will overwrite with the true totals when it runs.
-  const bumpSlug = sectionKey || (auth.grade ? String(auth.grade).toLowerCase() : null);
-  if (bumpSlug) {
-    ddb.send(new UpdateCommand({
-      TableName: USERS_TABLE,
-      Key: { username: auth.username },
-      UpdateExpression: 'SET slugCorrect = if_not_exists(slugCorrect, :empty), slugCorrect.#s = if_not_exists(slugCorrect.#s, :z) + :one, slugTotal = if_not_exists(slugTotal, :empty), slugTotal.#s = if_not_exists(slugTotal.#s, :z) + :one',
-      ExpressionAttributeNames: { '#s': bumpSlug },
-      ExpressionAttributeValues: { ':empty': {}, ':z': 0, ':one': 1 }
-    })).catch(() => {});
-  }
   return ok({
     awardedCents: award,
     balanceCents: upd.Attributes.balanceCents || 0,
@@ -989,6 +988,15 @@ async function handleLose(payload) {
     });
   }
 
+  // Always bump the monotonic answered counter — wrong answers count as
+  // attempts even if no cents are deducted (floor at 0).
+  ddb.send(new UpdateCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username },
+    UpdateExpression: 'SET lifetimeAnswered = if_not_exists(lifetimeAnswered, :z) + :one',
+    ExpressionAttributeValues: { ':z': 0, ':one': 1 }
+  })).catch(() => {});
+
   const deduct = Math.min(cents, balance); // floor at 0
 
   if (deduct <= 0) {
@@ -1057,11 +1065,38 @@ function sumValues(obj) {
 }
 
 function userTotals(item) {
+  // Prefer the monotonic counters that handleEarn/handleLose maintain
+  // (these never get clobbered by client-side stat resets). Fall back to
+  // the per-slug sums for legacy users; if even that's missing but they
+  // have lifetime cents, estimate from cents (~3c per correct, average
+  // payout for 1..5 difficulty is 3) so they don't appear with 0/0.
+  const monoCorrect = parseInt(item?.lifetimeCorrect, 10);
+  const monoAnswered = parseInt(item?.lifetimeAnswered, 10);
+  const slugC = sumValues(item?.slugCorrect);
+  const slugT = sumValues(item?.slugTotal);
+  const cents = parseInt(item?.lifetimeCents, 10) || 0;
+
+  let correct = Number.isFinite(monoCorrect) && monoCorrect > 0
+    ? monoCorrect
+    : slugC;
+  let answered = Number.isFinite(monoAnswered) && monoAnswered > 0
+    ? monoAnswered
+    : slugT;
+
+  // Legacy reconciliation: if slug stats look way smaller than what cents
+  // implies, trust cents (it's append-only and never overwritten).
+  if (!Number.isFinite(monoCorrect) && cents > 0) {
+    const estFromCents = Math.round(cents / 3);
+    if (estFromCents > correct) correct = estFromCents;
+    if (correct > answered) answered = correct;
+  }
+
   return {
-    correct: sumValues(item?.slugCorrect),
-    answered: sumValues(item?.slugTotal),
-    lifetimeCents: parseInt(item?.lifetimeCents, 10) || 0,
-    balanceCents: parseInt(item?.balanceCents, 10) || 0
+    correct,
+    answered,
+    lifetimeCents: cents,
+    balanceCents: parseInt(item?.balanceCents, 10) || 0,
+    monotonic: Number.isFinite(monoCorrect)
   };
 }
 
@@ -1077,26 +1112,16 @@ async function handleLeaderboard(payload) {
   const items = r.Items || [];
   const rows = items.map(it => {
     const t = userTotals(it);
-    // Some legacy users earned cents (via `award`) but never had per-slug
-    // stats written. Synthesize an approximate correct count from cents
-    // (avg ~28 cents per correct answer for Saad's data) so they still
-    // appear on the board.
-    let correct = t.correct;
-    let answered = t.answered;
-    let synthesized = false;
-    if (correct === 0 && t.lifetimeCents > 0) {
-      correct = Math.max(1, Math.round(t.lifetimeCents / 28));
-      answered = correct; // unknown wrong-count, show as 100% with a hint
-      synthesized = true;
-    }
-    const acc = answered > 0 ? Math.round((correct / answered) * 100) : 0;
+    const acc = t.answered > 0 ? Math.round((t.correct / t.answered) * 100) : 0;
     return {
       username: it.username,
       displayName: it.displayName || it.username,
-      correct,
-      answered,
+      correct: t.correct,
+      answered: t.answered,
       accuracy: acc,
-      accuracyKnown: !synthesized,
+      // Legacy users without monotonic counters get a "~" badge instead of
+      // a hard percentage since the answered count is estimated.
+      accuracyKnown: t.monotonic,
       lifetimeCents: t.lifetimeCents
     };
   })
