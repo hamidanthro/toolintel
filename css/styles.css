@@ -811,6 +811,240 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
 .grade-card .title { font-size: 1.25rem; font-weight: 700; color: var(--navy); margin: 6px 0 4px; }
 .grade-card .desc { color: var(--muted); font-size: 0.9rem; }
 
+/* ---------- Premium grades section (landing) ---------- */
+.grades-section {
+  background: #060d1f;
+  padding: 80px 32px 120px;
+  position: relative;
+}
+.grades-section-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0;
+}
+.grades-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+  margin-bottom: 48px;
+}
+.grades-header-text { max-width: 560px; }
+.grades-title {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: clamp(36px, 4.2vw, 52px);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  margin: 0 0 14px 0;
+}
+.grades-subtitle {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+.grades-pill {
+  display: inline-flex;
+  align-items: center;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.55);
+  padding: 9px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+@media (max-width: 720px) {
+  .grades-section { padding: 56px 20px 80px; }
+  .grades-header { flex-direction: column; align-items: flex-start; gap: 18px; margin-bottom: 32px; }
+}
+
+.grades-section .grade-grid {
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 18px;
+}
+
+.grades-section .grade-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: linear-gradient(180deg, rgba(26, 37, 64, 0.5) 0%, rgba(20, 29, 51, 0.5) 100%);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 22px;
+  color: #ffffff;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.03) inset,
+    0 4px 12px -2px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.3s ease,
+              background 0.3s ease,
+              box-shadow 0.3s ease;
+  overflow: hidden;
+}
+.grades-section .grade-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(420px circle at 100% 0%, rgba(251, 191, 36, 0.06), transparent 50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.grades-section .grade-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(251, 191, 36, 0.3);
+  background: linear-gradient(180deg, rgba(30, 42, 72, 0.6) 0%, rgba(24, 33, 58, 0.6) 100%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 0 0 1px rgba(251, 191, 36, 0.15),
+    0 16px 32px -8px rgba(0, 0, 0, 0.4),
+    0 0 24px -8px rgba(251, 191, 36, 0.3);
+  text-decoration: none;
+}
+.grades-section .grade-card:hover::before { opacity: 1; }
+
+.grade-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.grade-card-eyebrow {
+  display: inline-block;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(251, 191, 36, 0.9);
+  background: rgba(251, 191, 36, 0.08);
+  border: 1px solid rgba(251, 191, 36, 0.18);
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.grade-card-icon {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.75);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.grade-card-title {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  color: #ffffff;
+  margin: 0;
+}
+.grade-card-meta {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+}
+.grade-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+.grade-card-age {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.45);
+}
+.grade-card-arrow {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.55);
+  transition: transform 0.3s ease, background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+.grades-section .grade-card:hover .grade-card-arrow {
+  background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
+  border-color: rgba(251, 191, 36, 0.5);
+  color: #0a1628;
+  transform: translateX(2px);
+}
+
+/* Most popular badge (Grade 3) */
+.grade-card-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #0a1628;
+  background: linear-gradient(180deg, #fde68a 0%, #fbbf24 60%, #f59e0b 100%);
+  padding: 4px 9px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(251, 191, 36, 0.35);
+  z-index: 2;
+}
+.grades-section .grade-card--popular .grade-card-head { padding-right: 88px; }
+.grades-section .grade-card--popular {
+  border-color: rgba(251, 191, 36, 0.22);
+}
+
+/* Kindergarten variant — gentle indigo */
+.grades-section .grade-card--kinder {
+  background: linear-gradient(180deg, rgba(99, 102, 241, 0.12) 0%, rgba(20, 29, 51, 0.55) 100%);
+  border-color: rgba(129, 140, 248, 0.22);
+}
+.grades-section .grade-card--kinder:hover {
+  border-color: rgba(129, 140, 248, 0.45);
+  background: linear-gradient(180deg, rgba(99, 102, 241, 0.18) 0%, rgba(24, 33, 58, 0.6) 100%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 0 0 1px rgba(129, 140, 248, 0.2),
+    0 16px 32px -8px rgba(0, 0, 0, 0.4),
+    0 0 24px -8px rgba(99, 102, 241, 0.35);
+}
+.grades-section .grade-card--kinder .grade-card-icon {
+  background: rgba(129, 140, 248, 0.12);
+  border-color: rgba(129, 140, 248, 0.3);
+  color: #c7d2fe;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grades-section .grade-card,
+  .grades-section .grade-card:hover,
+  .grades-section .grade-card .grade-card-arrow,
+  .grades-section .grade-card:hover .grade-card-arrow { transition: none; transform: none; }
+}
+
 /* Footer */
 .site-footer {
   background: var(--navy);
