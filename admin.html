@@ -4,9 +4,12 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Admin · StarTest</title>
-  <link rel="stylesheet" href="css/styles.css?v=20260427t" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css?v=20260427u" />
 </head>
-<body>
+<body class="admin-page">
   <header class="site-header">
     <div class="container">
       <a href="index.html" class="brand"><svg class="brand-logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><defs><linearGradient id="starGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fde047"/><stop offset="55%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient></defs><path d="M16 2.6 19.6 11.5 29.2 12.2 21.8 18.4 24.2 27.6 16 22.4 7.8 27.6 10.2 18.4 2.8 12.2 12.4 11.5 Z" fill="url(#starGrad)" stroke="rgba(255,255,255,0.18)" stroke-width="0.6" stroke-linejoin="round"/><circle cx="25" cy="6" r="1.6" fill="#fde047" opacity="0.95"/><circle cx="25" cy="6" r="3" fill="#fde047" opacity="0.25"/></svg><span class="brand-text">Star<span class="brand-text-accent">Test</span></span></a>
@@ -20,10 +23,19 @@
   </header>
 
   <section>
-    <div class="container">
-      <h1 style="margin-top:24px;">Admin panel</h1>
+    <div class="container admin-shell">
+      <header class="admin-header">
+        <span class="admin-eyebrow">
+          <span class="admin-eyebrow-dot"></span>
+          Admin panel
+        </span>
+        <h1>Operations</h1>
+        <p class="page-subtitle">
+          Manage toys, fulfill orders, and monitor live student activity in real time.
+        </p>
+      </header>
       <div id="admin-gate" hidden>
-        <p style="color:var(--error);">You are not signed in as an admin.</p>
+        <p style="color:#fca5a5;">You are not signed in as an admin.</p>
       </div>
       <div id="admin-body">
         <!-- Prominent "ship these now" panel so admin sees pending shipments immediately. -->
@@ -125,8 +137,22 @@
     </div>
   </section>
 
-  <footer class="site-footer">
-    <div class="container">&copy; <span id="year"></span> StarTest.</div>
+  <footer class="admin-footer">
+    <div class="admin-footer-inner">
+      <div class="admin-footer-brand">
+        <span class="footer-logo-mini">
+          <svg width="16" height="16" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="footStarGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fde047"/><stop offset="55%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient></defs><path d="M16 2.6 19.6 11.5 29.2 12.2 21.8 18.4 24.2 27.6 16 22.4 7.8 27.6 10.2 18.4 2.8 12.2 12.4 11.5 Z" fill="url(#footStarGrad)"/></svg>
+          StarTest Admin
+        </span>
+      </div>
+      <div class="admin-footer-meta">
+        <span>Last sync: <strong id="admin-last-sync">just now</strong></span>
+        <span class="dot-divider">·</span>
+        <span>Lambda: <strong style="color:#86efac;">healthy</strong></span>
+        <span class="dot-divider">·</span>
+        <span>&copy; <span id="year"></span> StarTest</span>
+      </div>
+    </div>
   </footer>
 
   <script src="js/prefs.js?v=20260426a"></script>

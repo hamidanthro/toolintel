@@ -6997,3 +6997,474 @@ body.practice-page .thinking-dot:nth-child(3) { animation-delay: 0.36s; }
   color: #fde68a;
   border: 1px solid rgba(251,191,36,0.35);
 }
+
+/* ============================================================
+   ADMIN PAGE — premium dark theme (Prompt 24)
+   Scoped under body.admin-page so we never collide with the
+   legacy .admin-* classes used by the kid-facing app.
+   ============================================================ */
+body.admin-page {
+  background: #060d1f;
+  color: rgba(255, 255, 255, 0.92);
+  min-height: 100vh;
+}
+
+body.admin-page::before {
+  content: '';
+  position: fixed;
+  top: -200px; right: -200px;
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(251,191,36,0.06) 0%, transparent 60%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+}
+body.admin-page::after {
+  content: '';
+  position: fixed;
+  bottom: -200px; left: -200px;
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(99,102,241,0.06) 0%, transparent 60%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+}
+body.admin-page > * { position: relative; z-index: 1; }
+body.admin-page .site-header { z-index: 60; }
+
+body.admin-page .admin-shell {
+  position: relative;
+  padding: 60px 32px 80px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+@media (max-width: 720px) {
+  body.admin-page .admin-shell { padding: 40px 18px 60px; }
+}
+
+/* Page header */
+body.admin-page .admin-header { margin-bottom: 40px; }
+body.admin-page .admin-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(165, 180, 252, 0.95);
+  background: rgba(99, 102, 241, 0.10);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  padding: 5px 14px;
+  border-radius: 999px;
+  margin-bottom: 18px;
+}
+body.admin-page .admin-eyebrow-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #818cf8;
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.18), 0 0 8px rgba(99,102,241,0.5);
+}
+body.admin-page h1 {
+  font-family: 'Instrument Serif', 'Times New Roman', serif;
+  font-size: clamp(40px, 5vw, 56px);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  color: #ffffff;
+  margin: 0 0 10px 0;
+}
+body.admin-page h2 {
+  font-family: 'Instrument Serif', 'Times New Roman', serif;
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  color: #ffffff;
+  margin: 0 0 16px 0;
+}
+body.admin-page h3 {
+  color: rgba(255,255,255,0.9);
+}
+body.admin-page .page-subtitle {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.65);
+  margin: 0 0 0 0;
+  max-width: 600px;
+  line-height: 1.5;
+}
+
+/* Tabs — gold-tinted active state */
+body.admin-page .admin-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 32px 0 28px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex-wrap: wrap;
+}
+body.admin-page .admin-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.55);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+  text-decoration: none;
+}
+body.admin-page .admin-tab:hover {
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.04);
+}
+body.admin-page .admin-tab.active {
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.10);
+  border-color: rgba(251, 191, 36, 0.28);
+}
+body.admin-page .admin-tab .tab-badge {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.65);
+  min-width: 20px;
+  text-align: center;
+  border: 0;
+}
+body.admin-page .admin-tab.active .tab-badge {
+  background: rgba(251, 191, 36, 0.22);
+  color: #fde68a;
+}
+body.admin-page .admin-tab .tab-badge--live {
+  background: rgba(251, 191, 36, 0.18);
+  color: #fde68a;
+  border: 1px solid rgba(251, 191, 36, 0.32);
+}
+
+/* Stat cards */
+body.admin-page .admin-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin: 8px 0 40px;
+}
+@media (max-width: 768px) { body.admin-page .admin-stats { grid-template-columns: 1fr; } }
+body.admin-page .admin-stat-card {
+  padding: 24px;
+  background: linear-gradient(180deg, rgba(26,37,64,0.55) 0%, rgba(20,29,51,0.55) 100%);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.03) inset,
+    0 4px 12px -2px rgba(0,0,0,0.25);
+}
+body.admin-page .admin-stat-card--online    { border-color: rgba(99,102,241,0.30); }
+body.admin-page .admin-stat-card--practicing{ border-color: rgba(251,191,36,0.30); }
+body.admin-page .admin-stat-label {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 4px;
+}
+body.admin-page .admin-stat-value {
+  font-family: 'Instrument Serif', 'Times New Roman', serif;
+  font-size: 48px;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+  line-height: 1;
+}
+body.admin-page .admin-stat-card--online    .admin-stat-value { color: #c7d2fe; }
+body.admin-page .admin-stat-card--practicing .admin-stat-value { color: #fde68a; }
+body.admin-page .admin-stat-meta {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: 2px;
+}
+
+/* Live-users panel */
+body.admin-page .live-users-head {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 16px; margin: 0 0 18px;
+  flex-wrap: wrap;
+}
+body.admin-page .live-users-head h2 {
+  margin: 0 !important;
+}
+body.admin-page .live-users-meta {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.45);
+}
+body.admin-page .live-users-wrap {
+  background: linear-gradient(180deg, rgba(26,37,64,0.55) 0%, rgba(20,29,51,0.55) 100%);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  overflow: hidden;
+  padding: 0;
+}
+body.admin-page .live-users-empty {
+  margin: 24px 22px;
+  color: rgba(255,255,255,0.5);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* Live users table */
+body.admin-page .live-users-table thead th {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  text-align: left;
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+}
+body.admin-page .live-users-table tbody td {
+  padding: 14px 20px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.88);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-top: 0;
+  vertical-align: middle;
+}
+body.admin-page .live-users-table tbody tr:last-child td { border-bottom: none; }
+body.admin-page .live-users-table tbody tr:hover td { background: rgba(255,255,255,0.02); }
+body.admin-page .live-row--practicing { background: rgba(251,191,36,0.04); }
+body.admin-page .live-row--practicing:hover { background: rgba(251,191,36,0.07); }
+body.admin-page .live-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  color: #ffffff;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+body.admin-page .live-name {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 600;
+  color: #ffffff;
+}
+body.admin-page .live-uname {
+  font-family: 'JetBrains Mono', 'Menlo', ui-monospace, monospace;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+}
+body.admin-page .live-grade-pill {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 3px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 999px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px; font-weight: 600;
+  color: rgba(255, 255, 255, 0.78);
+  min-width: 36px;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+body.admin-page .live-status {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+}
+body.admin-page .live-status--online    { color: #c7d2fe; }
+body.admin-page .live-status--practicing { color: #fde68a; font-weight: 600; }
+body.admin-page .live-time {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+  white-space: nowrap;
+}
+
+/* Inputs / form / table for Toys + Orders tabs (kept simple, dark) */
+body.admin-page .auth-label {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+  display: block;
+  margin-bottom: 6px;
+}
+body.admin-page .auth-input {
+  width: 100%;
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 10px;
+  color: #ffffff;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+body.admin-page .auth-input:focus {
+  outline: none;
+  border-color: rgba(251,191,36,0.45);
+  background: rgba(255,255,255,0.06);
+}
+body.admin-page .admin-form .row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+body.admin-page .admin-form .row.col1 { grid-template-columns: 1fr; }
+body.admin-page .admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Inter', system-ui, sans-serif;
+  margin-top: 10px;
+}
+body.admin-page .admin-table thead th {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+}
+body.admin-page .admin-table tbody td {
+  padding: 12px 16px;
+  font-size: 14px;
+  color: rgba(255,255,255,0.85);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+body.admin-page .admin-table tbody tr:hover td { background: rgba(255,255,255,0.02); }
+body.admin-page .admin-table img {
+  width: 44px; height: 44px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+body.admin-page .admin-img-preview {
+  max-width: 200px; max-height: 200px;
+  margin-top: 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* Ship panel (orders to fulfill) — gold tint */
+body.admin-page .ship-panel {
+  background: linear-gradient(180deg, rgba(251,191,36,0.10), rgba(245,158,11,0.04));
+  border: 1px solid rgba(251,191,36,0.30);
+  border-radius: 16px;
+  padding: 20px 22px;
+  margin-bottom: 28px;
+}
+body.admin-page .ship-panel-head {
+  display: flex; align-items: baseline; gap: 12px;
+  margin-bottom: 12px;
+}
+body.admin-page .ship-panel-head h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #fde68a;
+}
+body.admin-page .ship-count {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: rgba(251,191,36,0.25);
+  color: #fde68a;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  margin-left: 6px;
+}
+body.admin-page .ship-panel-sub {
+  color: rgba(255,255,255,0.6);
+  font-size: 13px;
+}
+
+/* Buttons */
+body.admin-page .btn-primary {
+  background: linear-gradient(180deg, #fde68a 0%, #fbbf24 100%);
+  color: #060d1f;
+  border: 1px solid rgba(251,191,36,0.5);
+  padding: 10px 18px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+body.admin-page .btn-ghost {
+  background: rgba(255,255,255,0.04);
+  color: rgba(255,255,255,0.85);
+  border: 1px solid rgba(255,255,255,0.10);
+  padding: 10px 18px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* Footer */
+body.admin-page .admin-footer {
+  margin-top: 80px;
+  padding: 22px 32px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+  position: relative;
+  z-index: 1;
+}
+body.admin-page .admin-footer-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+body.admin-page .footer-logo-mini {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+}
+body.admin-page .admin-footer-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.45);
+  flex-wrap: wrap;
+}
+body.admin-page .admin-footer-meta strong {
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 600;
+}
+body.admin-page .dot-divider { color: rgba(255, 255, 255, 0.2); }
