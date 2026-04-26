@@ -588,14 +588,36 @@
         const tutorQ = document.getElementById('tutor-q');
         let history = [];
 
+        // Build full tutor context once.
+        const tutorCtx = buildTutorContext(q, stats, curr);
+
+        const submitFollowup = (text) => {
+          if (!text) return;
+          tutorQ.value = text;
+          followup.dispatchEvent(new Event('submit', { cancelable: true }));
+        };
+
+        const renderChips = () => {
+          const wrap = document.createElement('div');
+          wrap.className = 'tutor-suggestions';
+          ['I still don\u2019t get it', 'Give me a hint', 'Show me the answer'].forEach(label => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'tutor-chip';
+            btn.textContent = label;
+            btn.addEventListener('click', () => { submitFollowup(label); });
+            wrap.appendChild(btn);
+          });
+          tutorOut.appendChild(wrap);
+        };
+
         tutorBtn.addEventListener('click', async () => {
           tutorBtn.disabled = true;
           tutorBtn.innerHTML = `${spinnerHTML()} <span>Thinking…</span>`;
           tutorOut.hidden = false;
-          tutorOut.innerHTML = `<div class="tutor-msg loading">${spinnerHTML()}<span>Thinking…</span></div>`;
+          tutorOut.innerHTML = thinkingHTML();
           try {
-            const reply = await callTutor({
-              grade: curr.grade,
+            const reply = await callTutor(Object.assign({}, tutorCtx, {
               question: q.prompt,
               correctAnswer: q.answer,
               studentAnswer: userAnswer,
@@ -603,10 +625,11 @@
               teks: q._lesson?.teks,
               topic: q._unit?.title,
               history: []
-            });
+            }));
             history.push({ role: 'user', content: 'Help me understand this problem.' });
             history.push({ role: 'assistant', content: reply });
-            tutorOut.innerHTML = formatTutor(reply);
+            tutorOut.innerHTML = `<div class="tutor-msg assistant">${formatTutor(reply)}</div>`;
+            renderChips();
             followup.hidden = false;
             tutorBtn.style.display = 'none';
           } catch (err) {
@@ -621,12 +644,13 @@
           const text = tutorQ.value.trim();
           if (!text) return;
           tutorQ.value = '';
-          tutorOut.innerHTML += `<div class="tutor-msg user"><strong>You:</strong> ${escapeHtml(text)}</div>`;
-          tutorOut.innerHTML += `<div class="tutor-msg loading">${spinnerHTML()}<span>Thinking…</span></div>`;
+          // Remove any old chips before adding a new turn.
+          tutorOut.querySelector('.tutor-suggestions')?.remove();
+          tutorOut.insertAdjacentHTML('beforeend', `<div class="tutor-msg user"><strong>You:</strong> ${escapeHtml(text)}</div>`);
+          tutorOut.insertAdjacentHTML('beforeend', `<div class="tutor-msg loading">${thinkingHTML()}</div>`);
           history.push({ role: 'user', content: text });
           try {
-            const reply = await callTutor({
-              grade: curr.grade,
+            const reply = await callTutor(Object.assign({}, tutorCtx, {
               question: q.prompt,
               correctAnswer: q.answer,
               studentAnswer: userAnswer,
@@ -634,13 +658,14 @@
               teks: q._lesson?.teks,
               topic: q._unit?.title,
               history
-            });
+            }));
             history.push({ role: 'assistant', content: reply });
             tutorOut.querySelector('.tutor-msg.loading')?.remove();
-            tutorOut.innerHTML += `<div class="tutor-msg assistant">${formatTutor(reply)}</div>`;
+            tutorOut.insertAdjacentHTML('beforeend', `<div class="tutor-msg assistant">${formatTutor(reply)}</div>`);
+            renderChips();
           } catch (err) {
             tutorOut.querySelector('.tutor-msg.loading')?.remove();
-            tutorOut.innerHTML += `<div class="tutor-msg assistant" style="color:var(--error);">AI tutor unavailable.</div>`;
+            tutorOut.insertAdjacentHTML('beforeend', `<div class="tutor-msg assistant" style="color:var(--error);">AI tutor unavailable.</div>`);
           }
         });
       }
@@ -781,10 +806,18 @@
 
   function formatTutor(text) {
     if (!text) return '';
+    let t = String(text).replace(/\r\n/g, '\n');
+
+    // Extract fenced code blocks first so their content isn't touched by other rules.
+    const fences = [];
+    t = t.replace(/```([a-zA-Z0-9_-]*)\n?([\s\S]*?)```/g, (_, _lang, code) => {
+      const idx = fences.length;
+      fences.push(code.replace(/^\n+|\n+$/g, ''));
+      return `\u0000FENCE${idx}\u0000`;
+    });
+
     // Strip markdown headings (## Heading)
-    let t = String(text).replace(/^\s{0,3}#{1,6}\s+/gm, '');
-    // Normalize line endings
-    t = t.replace(/\r\n/g, '\n');
+    t = t.replace(/^\s{0,3}#{1,6}\s+/gm, '');
 
     const lines = t.split('\n');
     const html = [];
@@ -834,7 +867,13 @@
     }
     flushPara();
     closeList();
-    return html.join('');
+    let out = html.join('');
+    // Restore fenced code blocks as monospace pre.code blocks.
+    out = out.replace(/\u0000FENCE(\d+)\u0000/g, (_, n) => {
+      const code = fences[Number(n)] || '';
+      return `<pre class="tutor-code"><code>${escapeHtml(code)}</code></pre>`;
+    });
+    return out;
   }
 
   // Inline markdown: **bold**, *italic*, `code`. Escapes HTML first.
@@ -858,6 +897,59 @@
 
   function spinnerHTML() {
     return `<span class="rainbow-spinner" aria-hidden="true"></span>`;
+  }
+
+  function thinkingHTML() {
+    return `<div class="tutor-thinking" aria-label="Thinking"><span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span></div>`;
+  }
+
+  // Map grade slug -> numeric grade. e.g., 'grade-3' -> 3, 'kindergarten' -> 0
+  function gradeNumberFromSlug(slug) {
+    if (slug == null) return null;
+    const s = String(slug).toLowerCase();
+    if (s.includes('kinder') || s === 'k' || s === 'grade-k') return 0;
+    const m = s.match(/(\d+)/);
+    return m ? parseInt(m[1], 10) : null;
+  }
+
+  // Builds the personalization context the new system prompt expects.
+  function buildTutorContext(q, stats, curr) {
+    let studentName = '', studentGrade = null, studentState = '', testName = 'STAAR';
+    try {
+      const u = window.STAARAuth?.currentUser?.();
+      if (u) {
+        studentName = String(u.displayName || u.username || '').split(/\s+/)[0] || '';
+        studentState = u.state || '';
+        const gn = gradeNumberFromSlug(u.grade);
+        if (gn != null) studentGrade = gn;
+      }
+    } catch (_) {}
+    if (studentGrade == null) studentGrade = gradeNumberFromSlug(curr?.slug || curr?.grade);
+
+    // Topic accuracy & weak areas from in-session Stats.
+    let accuracyToDate = null;
+    const weakAreas = [];
+    try {
+      if (q?._unit?.id && stats?.units?.[q._unit.id]) {
+        const us = stats.units[q._unit.id];
+        if (us.total > 0) accuracyToDate = `${Math.round((us.correct / us.total) * 100)}%`;
+      }
+      Object.values(stats?.units || {}).forEach(u => {
+        if (u && u.total >= 4 && (u.correct / u.total) < 0.7 && u.title) {
+          weakAreas.push(u.title);
+        }
+      });
+    } catch (_) {}
+
+    return {
+      grade: studentGrade,
+      studentName,
+      studentGrade,
+      studentState,
+      testName,
+      accuracyToDate,
+      weakAreas
+    };
   }
 
   // Branded confirmation modal. Returns a Promise<boolean>.

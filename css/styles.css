@@ -6606,3 +6606,100 @@ body.practice-page .unit-row-fill {
   .scratchpad-toggle { transition: none; }
 }
 
+
+/* ============================================================
+   Premium AI Tutor — code blocks, chips, thinking dots
+   ============================================================ */
+body.practice-page .tutor-output { font-size: 14.5px; line-height: 1.6; }
+body.practice-page .tutor-msg { margin-top: 8px; }
+body.practice-page .tutor-msg p { margin: 0 0 8px; }
+body.practice-page .tutor-msg p:last-child { margin-bottom: 0; }
+body.practice-page .tutor-msg strong { color: #fde68a; font-weight: 600; }
+body.practice-page .tutor-msg code {
+  font-family: 'JetBrains Mono', 'Menlo', ui-monospace, monospace;
+  font-size: 0.92em;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 1px 6px;
+  border-radius: 6px;
+  color: #fde68a;
+}
+body.practice-page .tutor-code,
+body.practice-page .tutor-msg pre.tutor-code {
+  font-family: 'JetBrains Mono', 'Menlo', ui-monospace, monospace;
+  font-size: 17px;
+  line-height: 1.5;
+  color: #ffffff;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.10);
+  padding: 14px 18px;
+  border-radius: 12px;
+  margin: 10px 0;
+  display: block;
+  white-space: pre;
+  overflow-x: auto;
+  letter-spacing: 0.04em;
+}
+body.practice-page .tutor-code code {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+body.practice-page .tutor-msg.user {
+  color: rgba(255,255,255,0.72);
+  font-style: italic;
+  margin-top: 12px;
+}
+body.practice-page .tutor-msg.user strong { color: rgba(255,255,255,0.92); font-style: normal; }
+
+/* Suggestion chips */
+body.practice-page .tutor-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+body.practice-page .tutor-chip {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: #c7d2fe;
+  background: rgba(99,102,241,0.10);
+  border: 1px solid rgba(99,102,241,0.28);
+  padding: 7px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.15s;
+}
+body.practice-page .tutor-chip:hover {
+  background: rgba(99,102,241,0.18);
+  border-color: rgba(129,140,248,0.55);
+  color: #e0e7ff;
+  transform: translateY(-1px);
+}
+body.practice-page .tutor-chip:active { transform: translateY(0); }
+
+/* Thinking dots */
+body.practice-page .tutor-thinking {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 12px 0;
+}
+body.practice-page .thinking-dot {
+  width: 7px;
+  height: 7px;
+  background: rgba(165,180,252,0.7);
+  border-radius: 50%;
+  animation: tutor-thinking 1.4s ease-in-out infinite;
+}
+body.practice-page .thinking-dot:nth-child(2) { animation-delay: 0.18s; }
+body.practice-page .thinking-dot:nth-child(3) { animation-delay: 0.36s; }
+@keyframes tutor-thinking {
+  0%, 60%, 100% { opacity: 0.30; transform: translateY(0); }
+  30%           { opacity: 1;    transform: translateY(-3px); }
+}
+
