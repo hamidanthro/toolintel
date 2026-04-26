@@ -8670,6 +8670,17 @@ input[type="button"] {
    Wins over earlier mobile chat-widget rules via cascade order.
    ============================================================ */
 @media (max-width: 768px) {
+  /* ReplyQuik widget injects #sc-widget-container with #sc-toggle-btn + #sc-chat-window.
+     Belt-and-suspenders: even if the conditional loader fails, hide every variant. */
+  #sc-widget-container,
+  #sc-toggle-btn,
+  #sc-chat-window,
+  #sc-mobile-overlay,
+  [id^="sc-widget"],
+  [id^="rq-"],
+  [class^="rq-"],
+  [id*="replyquik"],
+  [class*="replyquik"],
   .chat-widget,
   #chat-widget,
   [class*="chat-widget"],
@@ -8678,15 +8689,12 @@ input[type="button"] {
   [class*="tawk"],
   [id*="crisp"],
   [class*="crisp"],
-  [id*="replyquik"],
-  [class*="replyquik"],
-  [id*="rq-"],
-  [class*="rq-"],
   iframe[src*="replyquik"],
   iframe[src*="tawk"],
   iframe[src*="crisp"] {
     display: none !important;
     visibility: hidden !important;
     pointer-events: none !important;
+    opacity: 0 !important;
   }
 }

@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260427y" />
+  <link rel="stylesheet" href="css/styles.css?v=20260427z" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -792,7 +792,18 @@
       }
     });
   </script>
-  <script src="https://api.replyquik.com/widget.js" data-id="9686745a-93c1-4761-af94-f15815680bc3"></script>
+  <!-- ReplyQuik chat widget — desktop only. Skipped on phones (≤768px) per Prompt 28b. -->
+  <script>
+    (function () {
+      try {
+        if (window.matchMedia && window.matchMedia('(max-width: 768px)').matches) return;
+        var s = document.createElement('script');
+        s.src = 'https://api.replyquik.com/widget.js';
+        s.setAttribute('data-id', '9686745a-93c1-4761-af94-f15815680bc3');
+        document.head.appendChild(s);
+      } catch (e) { /* fail silent — desktop-only enhancement */ }
+    })();
+  </script>
 
   <!-- Floating Practice CTA — mobile dashboard only (Prompt 26) -->
   <a href="practice.html" class="floating-practice-cta" aria-label="Start practicing now">
