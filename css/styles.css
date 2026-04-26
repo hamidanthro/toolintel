@@ -8698,3 +8698,209 @@ input[type="button"] {
     opacity: 0 !important;
   }
 }
+
+/* ============================================================
+   PROMPT 29 — Mobile landing fixes (mockup centering + redundant CTA cut)
+   Mobile-only. Desktop pixel-identical to before.
+   Appended last so cascade order wins over Prompt 28.
+   ============================================================ */
+
+/* Tagline element lives in DOM always; only visible on mobile */
+.hero-tagline-mobile { display: none; }
+
+@media (max-width: 768px) {
+  /* ---------- Hero clip + container reset ---------- */
+  body.home-page .hero {
+    padding: 16px 16px 28px;
+    overflow: hidden; /* safety net so nothing escapes the viewport */
+  }
+  body.home-page .hero .hero-content {
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 0;
+    margin: 0;
+  }
+
+  /* ---------- Hero left: centered, supporting role ---------- */
+  body.home-page .hero .hero-left {
+    width: 100%;
+    text-align: center;
+    align-items: center;
+    order: 2;
+  }
+  body.home-page .hero-headline {
+    font-size: 32px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin: 0;
+    text-align: center;
+    max-width: 100%;
+  }
+
+  /* Tagline — the one line the kid sees */
+  body.home-page .hero-tagline-mobile {
+    display: block;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+    margin: 6px 0 0 0;
+    letter-spacing: -0.005em;
+    -webkit-line-clamp: unset;
+    overflow: visible;
+    text-overflow: clip;
+    display: block;
+  }
+
+  /* Cut the marketing prose on mobile (kid doesn't read it) */
+  body.home-page .hero .hero-left p:not(.hero-tagline-mobile) {
+    display: none !important;
+  }
+
+  /* Cut the redundant hero CTA group — bottom tab Practice is the persistent CTA */
+  body.home-page .hero .hero-cta,
+  body.home-page .hero .hero-cta .btn,
+  body.home-page .hero .hero-cta .btn-primary,
+  body.home-page .hero .hero-cta .btn-secondary {
+    display: none !important;
+  }
+
+  /* ---------- Hero right: full-width centered, mockup is the star ---------- */
+  body.home-page .hero .hero-right {
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    transform: none !important;
+    position: relative;
+    order: 1;
+  }
+  body.home-page .hero .hero-visual {
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    padding: 0;
+    transform: none !important;
+  }
+
+  /* The card itself — strictly within viewport */
+  body.home-page .hero-visual .mockup-card--main {
+    width: 100%;
+    max-width: calc(100vw - 32px);
+    margin: 0 auto !important;
+    transform: none !important;
+    position: relative;
+    left: auto !important;
+    right: auto !important;
+    padding: 16px 14px 14px;
+    animation: mockup-float-mobile 4s ease-in-out infinite;
+  }
+
+  /* Eyebrow tag */
+  body.home-page .mockup-card .mockup-tag {
+    font-size: 10px;
+    padding: 4px 10px;
+    letter-spacing: 0.06em;
+  }
+
+  /* Question — readable, not dominant */
+  body.home-page .mockup-card .mockup-question {
+    font-size: 22px;
+    line-height: 1.2;
+    margin: 8px 0 14px;
+  }
+
+  /* Answer choices: clean 2x2 grid that fits */
+  body.home-page .mockup-card .mockup-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+  }
+  body.home-page .mockup-card .mockup-option {
+    width: 100%;
+    min-width: 0;
+    padding: 12px 10px;
+    font-size: 17px;
+    text-align: center;
+  }
+
+  /* Tap-hint pill replaces "7-day streak" — bouncing 👆 cue */
+  body.home-page .mockup-card .mockup-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  body.home-page .mockup-card .mockup-footer .mockup-points { display: none; }
+  body.home-page .mockup-meta--hint {
+    transition: opacity 0.4s ease;
+    display: inline-flex;
+    justify-content: center;
+  }
+  body.home-page .mockup-tap-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(251, 191, 36, 0.92);
+    padding: 6px 12px;
+    background: rgba(251, 191, 36, 0.08);
+    border: 1px solid rgba(251, 191, 36, 0.25);
+    border-radius: 999px;
+  }
+  body.home-page .mockup-tap-hint .tap-icon {
+    font-size: 14px;
+    animation: tap-bounce 1.5s ease-in-out infinite;
+  }
+  @keyframes tap-bounce {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-3px); }
+  }
+
+  /* ---------- Status bar: tighter header ---------- */
+  body.home-page .site-header {
+    padding-top: env(safe-area-inset-top, 0px) !important;
+    padding-bottom: 0 !important;
+  }
+  body.home-page .site-header .container {
+    height: 44px;
+    padding: 6px 14px;
+  }
+
+  /* ---------- Starfield: ~70% fewer stars on mobile, slower ---------- */
+  body.home-page .starfield .star {
+    animation-duration: 5s !important;
+  }
+  body.home-page .starfield .star:nth-child(3n+1),
+  body.home-page .starfield .star:nth-child(3n+2) {
+    display: none;
+  }
+}
+
+/* Hard cap on tiny phones */
+@media (max-width: 380px) {
+  body.home-page .hero-visual .mockup-card--main {
+    max-width: calc(100vw - 24px);
+  }
+  body.home-page .mockup-card .mockup-options {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  body.home-page .mockup-card .mockup-option {
+    padding: 14px 12px;
+  }
+  body.home-page .hero-headline { font-size: 28px; }
+}

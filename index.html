@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260427z" />
+  <link rel="stylesheet" href="css/styles.css?v=20260427aa" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -58,6 +58,7 @@
           <span id="hero-live-text">Now serving students in all 50 states</span>
         </div>
         <h1 class="hero-headline">Master your<br><span class="headline-accent">state's</span> test.</h1>
+        <p class="hero-tagline-mobile">Practice. Earn cents. Get real toys.</p>
         <p><strong>AI-powered, intelligent practice</strong> aligned to your state's standards — for grades 3–8 and high school. Math, ELA, science, and more. An adaptive AI tutor builds skills question by question, gives full-length tests, earns real toys we ship to your door, and tracks progress parents trust.</p>
         <div class="hero-cta">
           <a href="grades.html" class="btn btn-primary">Start practicing</a>
@@ -834,7 +835,14 @@
         c.style.cursor = 'pointer';
         c.style.pointerEvents = 'auto';
       });
+// Replace "7-day streak" with kid-friendly tap hint (Prompt 29)
+      var streakEl = card.querySelector('.mockup-streak');
+      if (streakEl) {
+        streakEl.classList.add('mockup-meta--hint');
+        streakEl.innerHTML = '<span class="mockup-tap-hint"><span class="tap-icon" aria-hidden="true">👆</span>Tap an answer to try</span>';
+      }
 
+      
       var CORRECT = '144';
 
       function showRewardBubble(parent, text) {
@@ -849,8 +857,13 @@
       function handleChoice(e) {
         var target = e.currentTarget;
         if (target.classList.contains('is-correct')) return;
-        var value = (target.textContent || '').replace(/[^\d]/g, '').trim();
-        var isCorrect = value === CORRECT;
+        va// Fade out the tap hint (Prompt 29)
+          var hint = card.querySelector('.mockup-meta--hint');
+          if (hint) hint.style.opacity = '0';
+          setTimeout(function () {
+            // Hero CTA hidden on mobile (Prompt 29) — pulse the bottom-tab Practice button instead
+            var cta = document.querySelector('.bottom-tab-bar .tab-practice, .bottom-tab-bar [data-tab="practice"], .floating-practice-cta')
+                   || = value === CORRECT;
 
         if (isCorrect) {
           target.classList.add('is-correct', 'demo-pulse');
