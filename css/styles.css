@@ -2199,3 +2199,100 @@ body.pref-large-text .choice { font-size: 1.1rem; }
 .settings-test {
   display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px;
 }
+
+/* ============== Admin: ship-these-now panel ============== */
+.ship-panel {
+  background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
+  border: 1px solid rgba(234, 88, 12, 0.25);
+  border-radius: 16px;
+  padding: 22px 24px;
+  margin: 18px 0 24px;
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.10);
+}
+.ship-panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.ship-panel-head h2 { margin: 0; color: #9a3412; display: inline-flex; align-items: center; gap: 10px; }
+.ship-count {
+  background: #ea580c;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 800;
+  padding: 2px 12px;
+  border-radius: 999px;
+  min-width: 28px;
+  text-align: center;
+}
+.ship-panel-sub { color: #9a3412; font-weight: 600; }
+.ship-list { display: grid; gap: 14px; }
+.ship-card {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid rgba(234, 88, 12, 0.18);
+  padding: 16px 18px;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+}
+.ship-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+  border-bottom: 1px dashed rgba(15, 23, 42, 0.08);
+  padding-bottom: 10px;
+}
+.ship-toy { font-weight: 700; font-size: 1.1rem; color: var(--navy); }
+.ship-when { font-size: 0.82rem; color: var(--muted); margin-top: 2px; }
+.ship-price { font-weight: 800; color: #ea580c; white-space: nowrap; }
+.ship-card-body {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 14px;
+}
+.ship-block { font-size: 0.9rem; }
+.ship-block-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.ship-block-value { color: var(--navy); line-height: 1.45; }
+.ship-block-value a { color: var(--navy); text-decoration: underline; }
+.ship-muted { color: var(--muted); font-size: 0.78rem; }
+.ship-block-addr .ship-copy {
+  margin-top: 8px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+}
+.ship-card-foot {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  border-top: 1px dashed rgba(15, 23, 42, 0.08);
+  padding-top: 12px;
+}
+.ship-track { flex: 1 1 200px; padding: 8px 12px; font-size: 0.9rem; }
+
+/* Tab badge for pending count on Orders tab. */
+.tab-badge {
+  display: inline-block;
+  background: #ea580c;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 1px 8px;
+  border-radius: 999px;
+  margin-left: 6px;
+  min-width: 20px;
+  text-align: center;
+  vertical-align: middle;
+}

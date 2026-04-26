@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Admin · STAAR Prep</title>
-  <link rel="stylesheet" href="css/styles.css?v=20260426q" />
+  <link rel="stylesheet" href="css/styles.css?v=20260426r" />
 </head>
 <body>
   <header class="site-header">
@@ -26,9 +26,18 @@
         <p style="color:var(--error);">You are not signed in as an admin.</p>
       </div>
       <div id="admin-body">
+        <!-- Prominent "ship these now" panel so admin sees pending shipments immediately. -->
+        <div id="ship-panel" class="ship-panel" hidden>
+          <div class="ship-panel-head">
+            <h2>🚚 Ship these now <span class="ship-count" id="ship-count">0</span></h2>
+            <span class="ship-panel-sub" id="ship-panel-sub"></span>
+          </div>
+          <div id="ship-list" class="ship-list"></div>
+        </div>
+
         <div class="admin-tabs">
           <button class="admin-tab active" data-tab="toys">Toys</button>
-          <button class="admin-tab" data-tab="orders">Orders</button>
+          <button class="admin-tab" data-tab="orders">Orders <span class="tab-badge" id="orders-tab-badge" hidden>0</span></button>
         </div>
 
         <div id="tab-toys">
@@ -97,7 +106,7 @@
   <script src="js/friends.js?v=20260426b"></script>
   <script>window.STAARAuth = window.STAARAuth || {}; window.STAARAuth.requireLoginOnLoad = true;</script>
   <script>window.STAAR_TUTOR_ENDPOINT = 'https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com/';</script>
-  <script src="js/admin.js?v=20260425c"></script>
+  <script src="js/admin.js?v=20260426d"></script>
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>

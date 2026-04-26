@@ -188,10 +188,138 @@
   async function loadOrders() {
     try {
       const r = await Auth.api('adminListOrders', { token: Auth.token() });
-      renderOrders(r.orders || []);
+      const orders = r.orders || [];
+      renderOrders(orders);
+      renderShipPanel(orders);
+      updateOrdersBadge(orders);
     } catch (e) {
       $('orders-table').innerHTML = `<p style="color:var(--error);">${escapeHtml(e.message)}</p>`;
     }
+  }
+
+  function updateOrdersBadge(orders) {
+    const pending = (orders || []).filter(o => (o.status || 'pending') === 'pending').length;
+    const badge = $('orders-tab-badge');
+    if (!badge) return;
+    if (pending > 0) {
+      badge.hidden = false;
+      badge.textContent = String(pending);
+    } else {
+      badge.hidden = true;
+    }
+  }
+
+  function copyText(text) {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text);
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+      }
+      Auth.showToast('Copied');
+    } catch (_) { /* ignore */ }
+  }
+
+  function formatAddress(a) {
+    if (!a) return '';
+    const line2 = a.line2 ? `\n${a.line2}` : '';
+    return `${a.line1 || ''}${line2}\n${a.city || ''}, ${a.state || ''} ${a.zip || ''}\n${a.country || 'USA'}`;
+  }
+
+  function renderShipPanel(orders) {
+    const panel = $('ship-panel');
+    const list = $('ship-list');
+    const countEl = $('ship-count');
+    const subEl = $('ship-panel-sub');
+    if (!panel || !list) return;
+    const pending = (orders || []).filter(o => (o.status || 'pending') === 'pending');
+    if (!pending.length) {
+      panel.hidden = true;
+      return;
+    }
+    panel.hidden = false;
+    countEl.textContent = String(pending.length);
+    subEl.textContent = pending.length === 1
+      ? '1 kid is waiting for their toy.'
+      : `${pending.length} kids are waiting for their toys.`;
+    list.innerHTML = pending.map(o => {
+      const a = o.address || {};
+      const p = o.parent || {};
+      const fullAddr = formatAddress(a);
+      const blockText = `${o.toyName}\nFor: ${o.displayName || o.username}\nParent: ${p.name || ''}  ${p.email || ''}  ${p.phone || ''}\n${fullAddr}`;
+      return `
+        <div class="ship-card" data-id="${escapeHtml(o.orderId)}">
+          <div class="ship-card-head">
+            <div>
+              <div class="ship-toy">${escapeHtml(o.toyName)}</div>
+              <div class="ship-when">Ordered ${new Date(o.createdAt).toLocaleString()}</div>
+            </div>
+            <div class="ship-price">${Auth.formatCents(o.priceCents)}</div>
+          </div>
+          <div class="ship-card-body">
+            <div class="ship-block">
+              <div class="ship-block-label">Kid</div>
+              <div class="ship-block-value">${escapeHtml(o.displayName || o.username || '')}<br><span class="ship-muted">@${escapeHtml(o.username || '')}</span></div>
+            </div>
+            <div class="ship-block">
+              <div class="ship-block-label">Parent</div>
+              <div class="ship-block-value">
+                ${escapeHtml(p.name || '—')}<br>
+                <a href="mailto:${escapeHtml(p.email || '')}">${escapeHtml(p.email || '')}</a><br>
+                <a href="tel:${escapeHtml(p.phone || '')}">${escapeHtml(p.phone || '')}</a>
+              </div>
+            </div>
+            <div class="ship-block ship-block-addr">
+              <div class="ship-block-label">Ship to</div>
+              <div class="ship-block-value">
+                ${escapeHtml(a.line1 || '')}${a.line2 ? '<br>' + escapeHtml(a.line2) : ''}<br>
+                ${escapeHtml(a.city || '')}, ${escapeHtml(a.state || '')} ${escapeHtml(a.zip || '')}<br>
+                ${escapeHtml(a.country || 'USA')}
+              </div>
+              <button type="button" class="btn btn-ghost ship-copy" data-act="copy-addr" title="Copy address">📋 Copy address</button>
+            </div>
+          </div>
+          <div class="ship-card-foot">
+            <input type="text" class="auth-input ship-track" data-act="tracking" placeholder="Tracking # (optional)" />
+            <button type="button" class="btn btn-primary" data-act="mark-shipped">Mark shipped ✓</button>
+            <button type="button" class="btn btn-ghost" data-act="copy-all">📋 Copy all info</button>
+          </div>
+        </div>`;
+    }).join('');
+
+    list.querySelectorAll('.ship-card').forEach(card => {
+      const orderId = card.dataset.id;
+      const o = pending.find(x => x.orderId === orderId);
+      card.querySelector('[data-act="copy-addr"]').addEventListener('click', () => {
+        copyText(formatAddress(o.address || {}));
+      });
+      card.querySelector('[data-act="copy-all"]').addEventListener('click', () => {
+        const a = o.address || {}, p = o.parent || {};
+        const text = [
+          `Toy: ${o.toyName}`,
+          `For kid: ${o.displayName || o.username}`,
+          `Parent: ${p.name || ''}`,
+          `Email: ${p.email || ''}`,
+          `Phone: ${p.phone || ''}`,
+          `Address:`,
+          formatAddress(a)
+        ].join('\n');
+        copyText(text);
+      });
+      card.querySelector('[data-act="mark-shipped"]').addEventListener('click', async () => {
+        const trackingNumber = card.querySelector('[data-act="tracking"]').value.trim();
+        try {
+          await Auth.api('adminUpdateOrder', { token: Auth.token(), orderId, status: 'shipped', trackingNumber });
+          Auth.showToast('Marked shipped');
+          loadOrders();
+        } catch (err) { alert(err.message); }
+      });
+    });
   }
 
   function renderOrders(orders) {
@@ -245,8 +373,8 @@
     setupTabs();
     setupToyForm();
     setTimeout(() => {
-      if (gate()) loadToys();
+      if (gate()) { loadToys(); loadOrders(); }
     }, 80);
   });
-  window.onSTAARLogin = () => { if (gate()) loadToys(); };
+  window.onSTAARLogin = () => { if (gate()) { loadToys(); loadOrders(); } };
 })();
