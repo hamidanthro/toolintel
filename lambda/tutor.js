@@ -170,6 +170,7 @@ exports.handler = async (event) => {
   if (action === 'putStats') return await handlePutStats(payload);
   if (action === 'earn')           return await handleEarn(payload);
   if (action === 'lose')           return await handleLose(payload);
+  if (action === 'heartbeat')      return await handleHeartbeat(payload);
   if (action === 'markMastered')   return await handleMarkMastered(payload);
   if (action === 'leaderboard')    return await handleLeaderboard(payload);
   if (action === 'liveCount')      return await handleLiveCount(payload);
@@ -1160,6 +1161,32 @@ async function handleLiveCount(_payload) {
   }
 }
 
+// Heartbeat: { token, seconds }
+// Adds time-on-task to lifetimeSeconds. Capped per call so a hostile or
+// buggy client can't fast-forward the counter.
+async function handleHeartbeat(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  if (!auth.username) return bad(401, 'Please sign in again');
+  let secs = parseInt(payload.seconds, 10);
+  if (!Number.isFinite(secs) || secs < 1) return ok({ lifetimeSeconds: 0 });
+  // Hard cap: at most 120 seconds added per call (clients heartbeat ~once
+  // a minute; this allows a little slack for slow networks).
+  if (secs > 120) secs = 120;
+  try {
+    const upd = await ddb.send(new UpdateCommand({
+      TableName: USERS_TABLE,
+      Key: { username: auth.username },
+      UpdateExpression: 'SET lifetimeSeconds = if_not_exists(lifetimeSeconds, :z) + :s',
+      ExpressionAttributeValues: { ':z': 0, ':s': secs },
+      ReturnValues: 'ALL_NEW'
+    }));
+    return ok({ lifetimeSeconds: parseInt(upd.Attributes.lifetimeSeconds, 10) || 0 });
+  } catch (_) {
+    return ok({ lifetimeSeconds: 0 });
+  }
+}
+
 async function handleDashboard(payload) {
   const auth = await authedUser(payload);
   if (!auth) return bad(401, 'Not signed in');
@@ -1181,6 +1208,7 @@ async function handleDashboard(payload) {
     accuracy: acc,
     balanceCents: t.balanceCents,
     lifetimeCents: t.lifetimeCents,
+    lifetimeSeconds: parseInt(r.Item.lifetimeSeconds, 10) || 0,
     capCents: LIFETIME_CAP_CENTS,
     masteredSections: r.Item.masteredSections || {}
   });

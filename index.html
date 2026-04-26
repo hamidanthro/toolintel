@@ -55,6 +55,11 @@
           <div class="dash-stat-value" id="dash-wallet">—</div>
           <div class="dash-stat-foot"><a href="marketplace.html" style="color:var(--blue);">Spend in marketplace →</a></div>
         </div>
+        <div class="dash-card dash-card-stat">
+          <div class="dash-stat-label">Time practicing</div>
+          <div class="dash-stat-value" id="dash-time">—</div>
+          <div class="dash-stat-foot" id="dash-time-foot">lifetime</div>
+        </div>
       </div>
       <div class="dash-card dash-card-board">
         <div class="dash-board-head">
@@ -91,7 +96,7 @@
     </div>
   </footer>
 
-  <script src="js/auth.js?v=20260425w"></script>
+  <script src="js/auth.js?v=20260425x"></script>
   <script src="js/staar-data.js"></script>
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
@@ -201,6 +206,19 @@
         document.getElementById('dash-acc').textContent = `${d.accuracy || 0}%`;
         document.getElementById('dash-acc-foot').textContent = d.answered > 0 ? 'lifetime average' : 'no answers yet';
         document.getElementById('dash-wallet').textContent = fmtPts(d.balanceCents);
+        const secs = parseInt(d.lifetimeSeconds, 10) || 0;
+        const timeEl = document.getElementById('dash-time');
+        const timeFootEl = document.getElementById('dash-time-foot');
+        if (secs >= 3600) {
+          timeEl.textContent = `${(secs / 3600).toFixed(1)}h`;
+          timeFootEl.textContent = 'lifetime hours';
+        } else if (secs >= 60) {
+          timeEl.textContent = `${Math.round(secs / 60)}m`;
+          timeFootEl.textContent = 'lifetime minutes';
+        } else {
+          timeEl.textContent = secs > 0 ? `${secs}s` : '0m';
+          timeFootEl.textContent = secs > 0 ? 'just getting started' : 'no time yet';
+        }
         document.getElementById('dash-sub').textContent = d.answered > 0
           ? `You've answered ${(d.answered).toLocaleString()} questions and earned ${fmtPts(d.lifetimeCents)} all-time.`
           : 'Answer your first question to land on the leaderboard.';

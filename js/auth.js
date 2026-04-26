@@ -263,6 +263,39 @@
     } catch (_) { /* offline-friendly */ }
   }
 
+  // Heartbeat: bumps lifetimeSeconds on the server. Call from any page
+  // where the kid is actively practicing — auth.js handles batching so
+  // pages don't have to know about it.
+  let _hbTimer = null;
+  let _hbLastTick = Date.now();
+  async function sendHeartbeat() {
+    try {
+      const t = token();
+      if (!t) return;
+      const now = Date.now();
+      const elapsed = Math.round((now - _hbLastTick) / 1000);
+      _hbLastTick = now;
+      // Skip heartbeats while tab is hidden or on suspiciously long gaps
+      // (laptop sleep, idle tab) so we count actual practice time.
+      if (document.hidden) return;
+      if (elapsed < 10 || elapsed > 120) return;
+      await api('heartbeat', { token: t, seconds: elapsed });
+    } catch (_) { /* offline */ }
+  }
+  function startHeartbeat() {
+    if (_hbTimer) return;
+    if (!currentUser()) return;
+    _hbLastTick = Date.now();
+    _hbTimer = setInterval(sendHeartbeat, 60 * 1000);
+    // Reset baseline when tab becomes visible so hidden time isn't billed.
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) _hbLastTick = Date.now();
+    });
+  }
+  function stopHeartbeat() {
+    if (_hbTimer) { clearInterval(_hbTimer); _hbTimer = null; }
+  }
+
   async function migrateLegacyStats() {
     const u = currentUser();
     if (!u) return;
@@ -496,6 +529,8 @@
     api,
     earn,
     lose,
+    startHeartbeat,
+    stopHeartbeat,
     markMastered,
     isMastered,
     refreshWallet,

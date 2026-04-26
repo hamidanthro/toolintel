@@ -900,4 +900,9 @@
       </div>
     `;
   }
+
+  // Track time-on-task while the practice page is open & visible.
+  if (window.STAARAuth && typeof window.STAARAuth.startHeartbeat === 'function') {
+    window.STAARAuth.startHeartbeat();
+  }
 })();
