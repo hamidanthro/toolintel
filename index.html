@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260427w" />
+  <link rel="stylesheet" href="css/styles.css?v=20260427x" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -423,6 +423,12 @@
         </div>
       </div>
 
+      <nav class="footer-mobile-links" aria-label="Footer">
+        <a href="about.html">How it works</a>
+        <a href="#">Privacy</a>
+        <a href="#">Support</a>
+      </nav>
+
       <div class="footer-divider"></div>
 
       <div class="footer-bottom">
@@ -793,5 +799,72 @@
     <span class="pulse-dot" aria-hidden="true"></span>
     Practice now
   </a>
+
+  <!-- Prompt 28 — Interactive mockup demo (mobile only) -->
+  <script>
+  (function initMobileMockupDemo() {
+    if (!window.matchMedia('(max-width: 768px)').matches) return;
+
+    function ready(fn) {
+      if (document.readyState !== 'loading') fn();
+      else document.addEventListener('DOMContentLoaded', fn);
+    }
+
+    ready(function () {
+      var card = document.querySelector('.mockup-card.mockup-card--main');
+      if (!card) return;
+      var choices = card.querySelectorAll('.mockup-option');
+      if (!choices.length) return;
+
+      // Reset pre-revealed correct state for interactive demo.
+      choices.forEach(function (c) {
+        c.classList.remove('is-correct', 'is-incorrect');
+        c.removeAttribute('tabindex');
+        c.style.cursor = 'pointer';
+        c.style.pointerEvents = 'auto';
+      });
+
+      var CORRECT = '144';
+
+      function showRewardBubble(parent, text) {
+        var bubble = document.createElement('div');
+        bubble.className = 'demo-reward-bubble';
+        bubble.textContent = text;
+        parent.appendChild(bubble);
+        requestAnimationFrame(function () { bubble.classList.add('is-shown'); });
+        setTimeout(function () { try { bubble.remove(); } catch (_) {} }, 1800);
+      }
+
+      function handleChoice(e) {
+        var target = e.currentTarget;
+        if (target.classList.contains('is-correct')) return;
+        var value = (target.textContent || '').replace(/[^\d]/g, '').trim();
+        var isCorrect = value === CORRECT;
+
+        if (isCorrect) {
+          target.classList.add('is-correct', 'demo-pulse');
+          try { (window.STAARHaptic && window.STAARHaptic.success) ? window.STAARHaptic.success() : navigator.vibrate && navigator.vibrate([10, 40, 20]); } catch (_) {}
+          showRewardBubble(card, '+15 cents');
+          setTimeout(function () {
+            var cta = document.querySelector('.hero .hero-cta .btn-primary');
+            if (cta) {
+              cta.classList.add('cta-pulse');
+              setTimeout(function () { cta.classList.remove('cta-pulse'); }, 2000);
+            }
+          }, 800);
+          choices.forEach(function (c) { c.style.pointerEvents = 'none'; });
+        } else {
+          target.classList.add('is-incorrect', 'demo-shake');
+          try { (window.STAARHaptic && window.STAARHaptic.light) ? window.STAARHaptic.light() : navigator.vibrate && navigator.vibrate(20); } catch (_) {}
+          setTimeout(function () {
+            target.classList.remove('is-incorrect', 'demo-shake');
+          }, 500);
+        }
+      }
+
+      choices.forEach(function (c) { c.addEventListener('click', handleChoice); });
+    });
+  })();
+  </script>
 </body>
 </html>
