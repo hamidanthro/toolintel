@@ -1362,8 +1362,36 @@ async function handleFriendList(payload) {
     status: it.status,
     updatedAt: it.updatedAt || 0
   }));
+
+  // Look up lastSeenAt for accepted friends so the UI can show online dots.
+  const ONLINE_WINDOW_MS = 5 * 60 * 1000; // 5 minutes
+  const now = Date.now();
+  const accepted = rows.filter(r => r.status === 'accepted');
+  const seenMap = {};
+  await Promise.all(accepted.map(async f => {
+    try {
+      const u = await ddb.send(new GetCommand({
+        TableName: USERS_TABLE,
+        Key: { username: f.peer },
+        ProjectionExpression: 'lastSeenAt'
+      }));
+      const ts = parseInt(u.Item && u.Item.lastSeenAt, 10);
+      seenMap[f.peer] = Number.isFinite(ts) ? ts : 0;
+    } catch (_) {
+      seenMap[f.peer] = 0;
+    }
+  }));
+  for (const f of accepted) {
+    const ts = seenMap[f.peer] || 0;
+    f.lastSeenAt = ts;
+    f.online = ts > 0 && (now - ts) <= ONLINE_WINDOW_MS;
+  }
+
   return ok({
-    friends:    rows.filter(r => r.status === 'accepted').sort((a, b) => b.updatedAt - a.updatedAt),
+    friends:    accepted.sort((a, b) =>
+      (b.online === a.online ? 0 : (b.online ? 1 : -1)) ||
+      (b.updatedAt - a.updatedAt)
+    ),
     incoming:   rows.filter(r => r.status === 'pending_in').sort((a, b) => b.updatedAt - a.updatedAt),
     outgoing:   rows.filter(r => r.status === 'pending_out').sort((a, b) => b.updatedAt - a.updatedAt)
   });

@@ -1856,6 +1856,45 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
   justify-content: center;
   flex-shrink: 0;
 }
+.sf-avatar-wrap {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+}
+.sf-presence {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  border: 2px solid #fff;
+  box-sizing: border-box;
+}
+.sf-presence-online {
+  background: #16a34a;
+  box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.5);
+  animation: sf-presence-pulse 2s ease-out infinite;
+}
+.sf-presence-offline { background: #cbd5e1; }
+@keyframes sf-presence-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.55); }
+  70%  { box-shadow: 0 0 0 7px rgba(22, 163, 74, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
+}
+.sf-name-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.sf-name-col .sf-name { flex: none; }
+.sf-presence-text {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 1px;
+}
+.sf-presence-text-online { color: #16a34a; font-weight: 600; }
 .sf-name {
   flex: 1;
   color: var(--navy);

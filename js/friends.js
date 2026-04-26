@@ -48,6 +48,18 @@
     const d = new Date(ts);
     return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
   }
+  function formatLastSeen(ts) {
+    if (!ts) return 'Offline';
+    const diff = Date.now() - ts;
+    if (diff < 60_000) return 'just now';
+    const mins = Math.floor(diff / 60_000);
+    if (mins < 60) return `${mins} min ago`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs} hr ago`;
+    const days = Math.floor(hrs / 24);
+    if (days < 7) return `${days} day${days === 1 ? '' : 's'} ago`;
+    return new Date(ts).toLocaleDateString();
+  }
 
   function ensurePanel() {
     if (panelEl) return panelEl;
@@ -138,12 +150,24 @@
     if (!friends.length) {
       html += `<div class="sf-empty">No friends yet. Tap a player on the leaderboard to send a request.</div>`;
     } else {
-      html += `<ul class="sf-list">${friends.map(f => `
+      html += `<ul class="sf-list">${friends.map(f => {
+        const isOnline = !!f.online;
+        const seenText = isOnline
+          ? 'Online now'
+          : (f.lastSeenAt ? `Last seen ${formatLastSeen(f.lastSeenAt)}` : 'Offline');
+        return `
         <li class="sf-row sf-row-friend" data-open-chat="${escapeHtml(f.peer)}" data-name="${escapeHtml(f.displayName)}">
-          <span class="sf-avatar" style="background:#0ea5e9">${escapeHtml(avatarLetter(f.displayName))}</span>
-          <span class="sf-name">${escapeHtml(f.displayName)}</span>
+          <span class="sf-avatar-wrap">
+            <span class="sf-avatar" style="background:#0ea5e9">${escapeHtml(avatarLetter(f.displayName))}</span>
+            <span class="sf-presence ${isOnline ? 'sf-presence-online' : 'sf-presence-offline'}" title="${escapeHtml(seenText)}" aria-label="${escapeHtml(seenText)}"></span>
+          </span>
+          <span class="sf-name-col">
+            <span class="sf-name">${escapeHtml(f.displayName)}</span>
+            <span class="sf-presence-text ${isOnline ? 'sf-presence-text-online' : ''}">${escapeHtml(seenText)}</span>
+          </span>
           <svg class="sf-chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </li>`).join('')}</ul>`;
+        </li>`;
+      }).join('')}</ul>`;
     }
 
     if (outgoing && outgoing.length) {
