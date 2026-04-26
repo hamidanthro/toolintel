@@ -142,44 +142,156 @@ a:hover { text-decoration: underline; }
     0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
-/* Hero — layered gradient with depth */
+/* Hero — atmospheric layered background */
 .hero {
-  background:
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(251, 191, 36, 0.12), transparent 50%),
-    radial-gradient(ellipse 60% 50% at 80% 50%, rgba(59, 130, 246, 0.15), transparent 50%),
-    linear-gradient(180deg, #0a1628 0%, #0f1e3d 100%);
-  color: #fff;
-  padding: 120px 0 140px;
   position: relative;
   overflow: hidden;
+  isolation: isolate;
+  background-color: #060d1f;
+  color: #fff;
+  padding: 48px 0 100px;
+  min-height: 720px;
 }
+/* Layer 0a: amber drift glow (top-right) */
 .hero::before {
   content: '';
   position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
-  opacity: 0.03;
+  top: -20%;
+  right: -10%;
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.18) 0%, rgba(251, 191, 36, 0.06) 30%, transparent 60%);
+  filter: blur(40px);
   pointer-events: none;
-  mix-blend-mode: overlay;
+  z-index: 0;
+  animation: drift-amber 20s ease-in-out infinite;
 }
-.hero > .container { position: relative; z-index: 1; }
+/* Layer 0b: blue drift glow (bottom-left) */
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  left: -15%;
+  width: 900px;
+  height: 900px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(99, 102, 241, 0.08) 30%, transparent 60%);
+  filter: blur(50px);
+  pointer-events: none;
+  z-index: 0;
+  animation: drift-blue 25s ease-in-out infinite;
+}
+@keyframes drift-amber {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%      { transform: translate(-40px, 30px) scale(1.05); }
+  66%      { transform: translate(30px, -20px) scale(0.95); }
+}
+@keyframes drift-blue {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(60px, -40px) scale(1.08); }
+}
 
-.hero h1 {
+/* Layer 1: subtle grid (Linear/Vercel) — masked separate layer */
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 64px 64px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, #000 30%, transparent 80%);
+          mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, #000 30%, transparent 80%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Layer 1: starfield — twinkling stars (brand fit) */
+.starfield {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+.star {
+  position: absolute;
+  width: var(--size, 1.5px);
+  height: var(--size, 1.5px);
+  background: #ffffff;
+  border-radius: 50%;
+  box-shadow:
+    0 0 4px rgba(255, 255, 255, 0.8),
+    0 0 8px rgba(251, 191, 36, 0.4);
+  opacity: 0;
+  animation: twinkle 4s ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0; transform: scale(0.5); }
+  50%      { opacity: 0.9; transform: scale(1); }
+}
+
+/* Layer 1: cursor spotlight */
+.hero-spotlight {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: radial-gradient(
+    600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(251, 191, 36, 0.06),
+    transparent 40%
+  );
+  transition: background 0.3s ease;
+}
+
+/* Layer 3: bottom fade-out into next section */
+.hero-bottom-fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(180deg, transparent 0%, #060d1f 100%);
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Layer 2: hero content sits above all atmosphere */
+.hero > .container,
+.hero-content { position: relative; z-index: 2; }
+
+@media (prefers-reduced-motion: reduce) {
+  .star, .hero::before, .hero::after,
+  .mockup-card--main, .mockup-card--accent-top, .mockup-card--accent-bottom,
+  .headline-accent {
+    animation: none !important;
+  }
+}
+
+.hero h1,
+.hero-headline {
   font-family: 'Instrument Serif', Georgia, serif;
   font-weight: 400;
   font-style: normal;
-  font-size: clamp(56px, 7vw, 88px);
+  font-size: clamp(48px, 5.5vw, 80px);
   line-height: 1.05;
   letter-spacing: -0.02em;
   color: #ffffff;
+  max-width: 640px;
   margin: 32px 0 24px;
 }
-.hero h1 .hero-accent {
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+.hero h1 .hero-accent,
+.hero-headline .headline-accent {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #fbbf24 100%);
+  background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
+  animation: shimmer 4s ease-in-out infinite;
+}
+@keyframes shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
 }
 .hero p {
   font-family: 'Inter', sans-serif;

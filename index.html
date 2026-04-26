@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260426x" />
+  <link rel="stylesheet" href="css/styles.css?v=20260426y" />
 </head>
 <body>
   <header class="site-header">
@@ -23,13 +23,37 @@
   </header>
 
   <section class="hero" id="hero-anon" hidden>
+    <div class="hero-grid" aria-hidden="true"></div>
+    <div class="starfield" aria-hidden="true">
+      <div class="star" style="top:15%;left:8%;--delay:0s;--size:2px"></div>
+      <div class="star" style="top:22%;left:18%;--delay:1.2s;--size:1px"></div>
+      <div class="star" style="top:8%;left:32%;--delay:2.4s;--size:1.5px"></div>
+      <div class="star" style="top:35%;left:6%;--delay:0.8s;--size:1px"></div>
+      <div class="star" style="top:48%;left:14%;--delay:1.6s;--size:2px"></div>
+      <div class="star" style="top:62%;left:9%;--delay:0.3s;--size:1.5px"></div>
+      <div class="star" style="top:75%;left:22%;--delay:2.1s;--size:1px"></div>
+      <div class="star" style="top:12%;left:48%;--delay:0.5s;--size:1.5px"></div>
+      <div class="star" style="top:28%;left:58%;--delay:1.9s;--size:1px"></div>
+      <div class="star" style="top:6%;left:72%;--delay:1.1s;--size:2px"></div>
+      <div class="star" style="top:18%;left:88%;--delay:0.7s;--size:1.5px"></div>
+      <div class="star" style="top:42%;left:92%;--delay:2.3s;--size:1px"></div>
+      <div class="star" style="top:68%;left:86%;--delay:1.4s;--size:2px"></div>
+      <div class="star" style="top:82%;left:76%;--delay:0.6s;--size:1.5px"></div>
+      <div class="star" style="top:88%;left:56%;--delay:1.8s;--size:1px"></div>
+      <div class="star" style="top:92%;left:38%;--delay:0.2s;--size:2px"></div>
+      <div class="star" style="top:78%;left:42%;--delay:2.6s;--size:1px"></div>
+      <div class="star" style="top:55%;left:78%;--delay:1.0s;--size:1.5px"></div>
+      <div class="star" style="top:38%;left:72%;--delay:2.2s;--size:1px"></div>
+      <div class="star" style="top:25%;left:96%;--delay:0.4s;--size:1.5px"></div>
+    </div>
+    <div class="hero-spotlight" aria-hidden="true"></div>
     <div class="container hero-content">
       <div class="hero-left">
         <div class="hero-live-pill" id="hero-live">
           <span class="hero-live-dot" aria-hidden="true"></span>
           <span id="hero-live-text">Now serving students in all 50 states</span>
         </div>
-        <h1>Master your <span class="hero-accent">state's</span> test.</h1>
+        <h1 class="hero-headline">Master your<br><span class="headline-accent">state's</span> test.</h1>
         <p>Targeted practice aligned to your state's standards — for grades 3–8 and high school. Math, ELA, science, and more. Build skills, take full-length tests, and track progress parents trust.</p>
         <div class="hero-cta">
           <a href="grades.html" class="btn btn-primary">Start practicing</a>
@@ -80,6 +104,7 @@
         </div>
       </div>
     </div>
+    <div class="hero-bottom-fade" aria-hidden="true"></div>
   </section>
 
   <section id="dashboard" hidden>
@@ -388,6 +413,20 @@
     document.addEventListener('DOMContentLoaded', () => {
       // Wait a tick for auth.js to restore session, then render.
       setTimeout(() => { showDashboard(); startLeaderboardPolling(); refreshLiveCount(); startLivePolling(); }, 0);
+
+      // Cursor-reactive spotlight on hero (desktop / fine pointer only)
+      const fine = window.matchMedia('(pointer: fine)').matches && window.innerWidth > 768;
+      if (fine) {
+        const hero = document.querySelector('.hero');
+        const spotlight = document.querySelector('.hero-spotlight');
+        if (hero && spotlight) {
+          hero.addEventListener('mousemove', (e) => {
+            const r = hero.getBoundingClientRect();
+            spotlight.style.setProperty('--mouse-x', `${((e.clientX - r.left) / r.width) * 100}%`);
+            spotlight.style.setProperty('--mouse-y', `${((e.clientY - r.top) / r.height) * 100}%`);
+          });
+        }
+      }
     });
   </script>
   <script src="https://api.replyquik.com/widget.js" data-id="9686745a-93c1-4761-af94-f15815680bc3"></script>
