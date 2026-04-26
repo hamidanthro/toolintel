@@ -1595,34 +1595,54 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
 /* ========== Auth (local profiles) ========== */
 .user-slot { display: flex; align-items: center; gap: 8px; position: relative; }
 
+/* User pill (header) — premium dark glass, applies on every page */
 .user-pill {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 5px 10px 5px 5px;
+  padding: 4px 12px 4px 4px;
   border-radius: 999px;
-  border: 1px solid var(--border);
-  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   cursor: pointer;
-  color: var(--navy);
-  font-weight: 600;
-  font-size: 0.9rem;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  color: rgba(255, 255, 255, 0.92);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: -0.005em;
+  transition: background 0.2s ease, border-color 0.2s ease;
 }
-.user-pill:hover { background: var(--bg); border-color: var(--amber); }
-.user-pill svg { color: var(--muted); }
-.user-pill-name { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.user-pill:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+.user-pill svg { color: rgba(255, 255, 255, 0.5); }
+.user-pill-name {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 500;
+}
 
+/* User dropdown menu — dark glass card */
 .user-menu {
   position: absolute;
   top: calc(100% + 6px);
   right: 0;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.92);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
-  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.15);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 16px 40px rgba(0, 0, 0, 0.5);
   padding: 6px;
-  min-width: 170px;
+  min-width: 180px;
   z-index: 50;
 }
 .user-menu button {
@@ -1633,11 +1653,16 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
   border: 0;
   padding: 9px 12px;
   border-radius: 8px;
-  font-size: 0.9rem;
-  color: var(--text);
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: 'Inter', system-ui, sans-serif;
   cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
 }
-.user-menu button:hover { background: var(--bg); color: var(--navy); }
+.user-menu button:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+}
 
 .user-signin { padding: 8px 16px; font-size: 0.85rem; }
 
@@ -1813,34 +1838,38 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
 .rainbow-spinner.small { width: 14px; height: 14px; vertical-align: -2px; }
 .user-menu-meta {
   padding: 8px 12px 6px;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.5);
   font-size: 0.75rem;
-  border-bottom: 1px solid var(--border);
+  font-family: 'Inter', system-ui, sans-serif;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   margin-bottom: 4px;
 }
 
-/* Wallet pill in header */
+/* Wallet / points pill in header — gold-tint glass, applies on every page */
 .user-slot { display: inline-flex; align-items: center; gap: 10px; }
 .wallet-pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
+  padding: 6px 14px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #fef3c7, #fde68a);
-  color: #78350f;
-  font-weight: 700;
-  font-size: 0.88rem;
-  border: 1px solid #fcd34d;
+  background: rgba(251, 191, 36, 0.1);
+  color: #fbbf24;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: -0.005em;
+  border: 1px solid rgba(251, 191, 36, 0.25);
   text-decoration: none;
-  transition: transform 0.12s ease, box-shadow 0.15s ease;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.12s ease;
 }
 .wallet-pill:hover {
   text-decoration: none;
+  background: rgba(251, 191, 36, 0.16);
+  border-color: rgba(251, 191, 36, 0.4);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
 }
-.wallet-pill svg { color: #b45309; }
+.wallet-pill svg { color: #fbbf24; }
 
 /* Question reward badge */
 .q-meta {
@@ -1900,13 +1929,19 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
 
 .user-menu-link {
   display: block;
-  padding: 8px 12px;
-  color: var(--navy);
+  padding: 9px 12px;
+  color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
-  font-size: 0.92rem;
-  border-radius: 6px;
+  font-size: 13px;
+  font-family: 'Inter', system-ui, sans-serif;
+  border-radius: 8px;
+  transition: background 0.15s ease, color 0.15s ease;
 }
-.user-menu-link:hover { background: var(--bg); text-decoration: none; }
+.user-menu-link:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+  text-decoration: none;
+}
 
 /* Marketplace */
 .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 18px; margin-top: 18px; }
@@ -2652,21 +2687,28 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
 .howit-card ul li strong, .howit-card ul li em { color: var(--navy); }
 
 /* ===== Header chat bell ===== */
+/* Chat / friends bell in header — dark glass icon button, applies on every page */
 .chat-bell {
   position: relative;
-  width: 38px;
-  height: 38px;
-  border: 1px solid var(--border);
-  background: #fff;
-  color: var(--navy);
-  border-radius: 999px;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: rgba(255, 255, 255, 0.7);
+  border-radius: 10px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
-.chat-bell:hover { background: #f1f5f9; }
+.chat-bell:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
 .chat-bell-dot {
   position: absolute;
   top: -4px;
@@ -2681,7 +2723,7 @@ section h2 { font-size: 1.6rem; margin: 0 0 24px; color: var(--navy); }
   font-weight: 800;
   line-height: 18px;
   text-align: center;
-  border: 2px solid #fff;
+  border: 2px solid #0a1628;
 }
 
 /* ===== Friends panel ===== */
