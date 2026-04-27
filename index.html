@@ -7,12 +7,20 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="format-detection" content="telephone=no" />
-  <title>StarTest — National Test Prep for Grades 3–8 and High School</title>
-  <meta name="description" content="Practice and master your state's test. Grade-by-grade lessons, practice problems, and full-length tests aligned to your state's standards for grades 3–8 and high school — math, ELA, science, and more." />
+  <title>StarTest — AI-powered state test prep for kids. Real toys for correct answers.</title>
+  <meta name="description" content="StarTest is AI-powered practice for your state's specific test — STAAR, CAASPP, FAST, TCAP, and 47 more. Kids earn real toys for correct answers. Free during beta." />
+  <meta property="og:title" content="StarTest — AI-powered state test prep for kids" />
+  <meta property="og:description" content="Practice tailored to your state's specific test. Real toys ship to your door for correct answers. Free during beta." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://startest.ai/" />
+  <meta property="og:image" content="https://startest.ai/og-image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="StarTest — AI-powered state test prep" />
+  <meta name="twitter:description" content="Practice for your state's test. Real toys for correct answers." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260427cc" />
+  <link rel="stylesheet" href="css/styles.css?v=20260427dd" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -354,21 +362,77 @@
       </svg>
     </div>
     <h1 class="mobile-hero-headline"><span class="mobile-hero-line1">AI-powered</span><br><span class="mobile-hero-line2">state test prep</span></h1>
-    <p class="mobile-hero-subhead">Your kid practices. They earn real toys. We ship to your door.</p>
+    <p class="mobile-hero-subhead">Built for your state's specific test. Real toys ship to your door.</p>
   </header>
 
-  <section id="grade-section" class="grades-section" hidden>
-    <div class="container grades-section-inner">
-      <div class="grades-header">
-        <div class="grades-header-text">
-          <h2 class="grades-title">Choose your grade</h2>
-          <p class="grades-subtitle">From Kindergarten to high school — every grade has its own bank of questions, lessons, and progress tracking.</p>
-        </div>
-        <span class="grades-pill">10 grades &middot; Math today, more soon</span>
-      </div>
-      <div class="grade-grid" id="grade-grid-anon"></div>
+  <section class="state-picker-section" id="state-picker" aria-label="Pick your state">
+    <header class="state-picker-head">
+      <span class="state-picker-eyebrow">Step 1 of 3</span>
+      <h2 class="state-picker-title">What state is your kid in?</h2>
+      <p class="state-picker-sub">We tailor practice to your state's specific test.</p>
+    </header>
+
+    <div class="state-picker-detecting" id="state-detect-status" hidden>
+      <span class="state-picker-spinner" aria-hidden="true"></span>
+      <span>Detecting your state…</span>
     </div>
+
+    <div class="state-picker-detected" id="state-detected" hidden>
+      <div class="state-picker-detected-pin" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+          <circle cx="12" cy="10" r="3"/>
+        </svg>
+      </div>
+      <div class="state-picker-detected-body">
+        <span class="state-picker-detected-label">Looks like you're in</span>
+        <span class="state-picker-detected-name" id="detected-state-name">—</span>
+      </div>
+      <a href="#" class="state-picker-detected-go" id="detected-state-go">
+        Continue
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+          <line x1="5" y1="12" x2="19" y2="12"/>
+          <polyline points="12 5 19 12 12 19"/>
+        </svg>
+      </a>
+    </div>
+
+    <button type="button" class="state-picker-trigger" id="state-picker-trigger">
+      <span class="state-picker-trigger-info">
+        <span class="state-picker-trigger-label">Or pick your state</span>
+        <span class="state-picker-trigger-value" id="state-picker-trigger-value">Choose…</span>
+      </span>
+      <span class="state-picker-trigger-chevron" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </span>
+    </button>
+
+    <div class="state-picker-grid" id="state-picker-grid" role="listbox" aria-label="State list"></div>
   </section>
+
+  <div class="state-sheet-scrim" id="state-sheet-scrim" hidden></div>
+  <div class="state-sheet" id="state-sheet" role="dialog" aria-modal="true" aria-label="Pick your state" hidden>
+    <div class="state-sheet-handle" aria-hidden="true"></div>
+    <header class="state-sheet-header">
+      <h3 class="state-sheet-title">Pick your state</h3>
+      <button type="button" class="state-sheet-close" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </header>
+    <div class="state-sheet-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" aria-hidden="true">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" id="state-sheet-search" placeholder="Search states…" autocomplete="off" />
+    </div>
+    <ul class="state-sheet-list" id="state-sheet-list" role="listbox"></ul>
+  </div>
 
   <!-- ================================================================
        PARENT LAYER — appears below the grade list
@@ -578,7 +642,8 @@
   <script src="js/prefs.js?v=20260426a"></script>
   <script src="js/fx.js?v=20260426a"></script>
   <script src="js/states-data.js?v=20260427a"></script>
-  <script src="js/auth.js?v=20260427l"></script>
+  <script src="js/state-picker.js?v=20260427a"></script>
+  <script src="js/auth.js?v=20260427m"></script>
   <script src="js/friends.js?v=20260426b"></script>
   <script src="js/staar-data.js"></script>
   <script src="js/grade-card.js?v=20260427r"></script>
@@ -705,16 +770,16 @@
       const u = window.STAARAuth?.currentUser?.();
       const heroAnon = document.getElementById('hero-anon');
       const dash = document.getElementById('dashboard');
-      const gradeSection = document.getElementById('grade-section');
+      const gradeSection = document.getElementById('state-picker');
       if (!u) {
         heroAnon.hidden = false;
         dash.hidden = true;
-        gradeSection.hidden = false;
+        if (gradeSection) gradeSection.hidden = false;
         return;
       }
       heroAnon.hidden = true;
       dash.hidden = false;
-      gradeSection.hidden = true;
+      if (gradeSection) gradeSection.hidden = true;
       renderGradeGrid();
 
       document.getElementById('dash-greeting').innerHTML = `Welcome back, <span class="welcome-name">${escapeHtmlSafe(u.displayName || u.username)}</span>`;

@@ -842,7 +842,25 @@
     const isOnAbout       = path.indexOf('about') !== -1;
     const isOnSettings    = path.indexOf('settings') !== -1 || path.indexOf('admin') !== -1;
 
-    const practiceHref = (u && u.grade) ? `practice.html?g=${encodeURIComponent(u.grade)}` : 'grades.html';
+    // Smart Practice routing (Prompt 36b):
+    // - logged-in user with state + grade -> direct practice
+    // - logged-in user with grade only    -> state picker on landing
+    // - guest with localStorage state     -> state detail page
+    // - first-time visitor                -> state picker on landing
+    let practiceHref;
+    if (u && u.state && u.grade) {
+      practiceHref = `practice.html?s=${encodeURIComponent(u.state)}&g=${encodeURIComponent(u.grade)}&subj=math`;
+    } else if (u && u.grade) {
+      practiceHref = 'index.html#state-picker';
+    } else {
+      let storedState = null;
+      try { storedState = localStorage.getItem('startest.state'); } catch (_) {}
+      if (storedState && window.STATES_API && window.STATES_API.getBySlug(storedState)) {
+        practiceHref = `states/?s=${encodeURIComponent(storedState)}`;
+      } else {
+        practiceHref = 'index.html#state-picker';
+      }
+    }
     const balance = u ? (u.balanceCents || 0) : 0;
 
     const tabBar = document.createElement('nav');
