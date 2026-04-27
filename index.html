@@ -1048,8 +1048,15 @@
         })();
         const slug = lastSlug || u.grade;
         if (!slug) return; // first-time user with no grade — keep grades.html for selection
-        document.querySelectorAll('a[data-practice-cta]').forEach(a => {
-          a.setAttribute('href', `practice.html?g=${encodeURIComponent(slug)}`);
+        // Carry full state context (foundation: every contextual flow keeps state).
+        const stateSlug = u.state || (() => {
+          try { return localStorage.getItem('startest.state'); } catch (_) { return null; }
+        })();
+        const qs = stateSlug
+          ? `?s=${encodeURIComponent(stateSlug)}&g=${encodeURIComponent(slug)}&subj=math`
+          : `?g=${encodeURIComponent(slug)}`;
+        document.querySelectorAll('a[data-practice-cta], a.floating-practice-cta').forEach(a => {
+          a.setAttribute('href', `practice.html${qs}`);
         });
       } catch (_) {}
     }
