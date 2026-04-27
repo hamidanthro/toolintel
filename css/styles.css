@@ -10942,7 +10942,7 @@ body.state-page > * {
 }
 
 .state-hero {
-  padding: 8px 32px 48px;
+  padding: 8px 32px 16px;
 }
 
 .state-hero-inner {
@@ -11065,7 +11065,7 @@ body.state-page > * {
 }
 
 .state-grade-section {
-  padding: 32px 32px 48px;
+  padding: 8px 32px 48px;
 }
 
 .state-grade-head {
@@ -11311,7 +11311,7 @@ body.state-page > * {
   }
   .state-hero-meta-label { font-size: 10px; }
   .state-hero-meta-value { font-size: 13px; }
-  .state-grade-section { padding: 24px 16px 32px; }
+  .state-grade-section { padding: 8px 16px 32px; }
   .state-grade-title { font-size: 28px; }
   .state-grade-sub { font-size: 14px; }
   .state-grade-grid { grid-template-columns: 1fr; gap: 8px; }
@@ -11345,7 +11345,7 @@ body.state-page > * {
   .state-hero { padding: 56px 32px 64px; }
   .state-hero-title { font-size: 51px; }
   .state-hero-sub { font-size: 18px; }
-  .state-grade-section { padding: 56px 32px 64px; }
+  .state-grade-section { padding: 16px 32px 64px; }
   .state-grade-title { font-size: 44px; }
   .state-grade-grid {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
