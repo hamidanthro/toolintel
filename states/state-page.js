@@ -12,6 +12,12 @@
   const SITE_ORIGIN = location.origin;
   const STATES = window.STATES_API;
 
+  // Hard kill: no matter what, hide the loading spinner after 10s.
+  setTimeout(function () {
+    const loading = document.getElementById('state-loading');
+    if (loading) loading.hidden = true;
+  }, 10000);
+
   function init() {
     if (!STATES) {
       showError();

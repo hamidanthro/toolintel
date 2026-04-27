@@ -10864,7 +10864,7 @@ body.state-page > * {
 .state-page-loading {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 80px 32px;
+  padding: 24px 32px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -10873,6 +10873,8 @@ body.state-page > * {
   font-size: 14px;
   color: rgba(255, 255, 255, 0.5);
 }
+/* The HTML [hidden] attribute must beat the display: flex above. */
+.state-page-loading[hidden] { display: none !important; }
 
 .state-loading-spinner {
   width: 16px;
@@ -10940,7 +10942,7 @@ body.state-page > * {
 }
 
 .state-hero {
-  padding: 32px 32px 48px;
+  padding: 8px 32px 48px;
 }
 
 .state-hero-inner {
