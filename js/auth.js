@@ -314,6 +314,12 @@
       </select>
       <p class="auth-hint">You'll only see questions for your grade and higher. This can't be changed later.</p>
 
+      <label class="auth-label">Your state</label>
+      <select class="auth-input" id="su-state">
+        <option value="">Pick your state…</option>
+      </select>
+      <p class="auth-hint">We'll tailor practice to your state's specific test.</p>
+
       <p class="auth-error" id="su-err" hidden></p>
       <div class="modal-actions">
         <button type="button" class="btn btn-ghost" data-act="back">Back to sign in</button>
@@ -326,9 +332,24 @@
     const passIn = overlay.querySelector('#su-pass');
     const pass2In = overlay.querySelector('#su-pass2');
     const gradeIn = overlay.querySelector('#su-grade');
+    const stateIn = overlay.querySelector('#su-state');
     const err = overlay.querySelector('#su-err');
     const btn = overlay.querySelector('[data-act="create"]');
     setTimeout(() => nameIn.focus(), 50);
+
+    // Populate states alphabetically; preselect detected/stored state.
+    try {
+      const list = (window.STATES_API && window.STATES_API.getAlphabetical && window.STATES_API.getAlphabetical()) || [];
+      let stored = null;
+      try { stored = localStorage.getItem('startest.state'); } catch (_) {}
+      list.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.slug;
+        opt.textContent = `${s.name} (${s.testName})`;
+        if (stored && s.slug === stored) opt.selected = true;
+        stateIn.appendChild(opt);
+      });
+    } catch (_) {}
 
     overlay.querySelector('[data-act="back"]').addEventListener('click', () => showLogin(userIn.value));
 
@@ -340,6 +361,7 @@
       const password = passIn.value || '';
       const password2 = pass2In.value || '';
       const grade = gradeIn.value || '';
+      const stateValue = (stateIn && stateIn.value) || '';
 
       if (!displayName) { fail('Please enter a display name.'); return; }
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 120) {
@@ -351,11 +373,16 @@
       if (password.length < 6) { fail('Password must be at least 6 characters.'); return; }
       if (password !== password2) { fail('Passwords don’t match.'); return; }
       if (!grade) { fail('Please pick your current grade.'); return; }
+      if (!stateValue) { fail('Please pick your state.'); return; }
 
       setBusy(btn, true, 'Creating…');
       try {
-        const res = await api('signup', { username, password, displayName, email, grade });
+        const res = await api('signup', { username, password, displayName, email, grade, state: stateValue });
         saveSession({ token: res.token, user: res.user });
+        try {
+          if (res.user && res.user.state) localStorage.setItem('startest.state', res.user.state);
+          else if (stateValue) localStorage.setItem('startest.state', stateValue);
+        } catch (_) {}
         await migrateLegacyStats();
         closeModal();
         refreshHeader();
@@ -453,6 +480,21 @@
   }
 
   function onLoginSuccess() {
+    // Soft-prompt: existing users without a state field get nudged to the
+    // landing page state picker. Practice flow will catch missing state too.
+    try {
+      const u = currentUser();
+      if (u && !u.state) {
+        const path = (location.pathname || '');
+        const onLanding = /(?:^|\/)index\.html?$/.test(path) || path === '/' || path === '';
+        if (!onLanding) {
+          setTimeout(() => {
+            const inStatesDir = path.indexOf('/states/') !== -1;
+            location.href = `${inStatesDir ? '../' : ''}index.html#state-picker`;
+          }, 800);
+        }
+      }
+    } catch (_) {}
     if (typeof window.onSTAARLogin === 'function') {
       try { window.onSTAARLogin(currentUser()); } catch (_) {}
     }

@@ -9,12 +9,102 @@
 
   const root = document.getElementById('practice-root');
   const params = new URLSearchParams(location.search);
-  const slug = params.get('g');
+
+  // ============================================================
+  // PRACTICE PAGE — URL PARAMS (state-aware)
+  //
+  // New URL: ?s=<state>&g=<grade>&subj=<subject>
+  // Legacy:  ?g=<grade>  (defaults to user/stored state, math)
+  // Also: &u=<unitId>&l=<lessonId> for unit/lesson scoping (existing).
+  // ============================================================
+  const STATES = window.STATES_API;
+  const _u0 = (window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser()) || null;
+
+  // Subject — math is the only live subject; coming-soon subjects bounce back.
+  let SUBJECT_SLUG = (params.get('subj') || 'math').toLowerCase();
+  const _VALID_SUBJECTS = ['math', 'reading', 'science', 'social-studies'];
+  if (!_VALID_SUBJECTS.includes(SUBJECT_SLUG)) SUBJECT_SLUG = 'math';
+  if (SUBJECT_SLUG !== 'math') {
+    if (params.get('s') && params.get('g')) {
+      location.href = `grade.html?s=${encodeURIComponent(params.get('s'))}&g=${encodeURIComponent(params.get('g'))}`;
+      return;
+    }
+    SUBJECT_SLUG = 'math';
+  }
+
+  // State — URL → user record → localStorage → 'texas' fallback.
+  let STATE_SLUG = params.get('s');
+  if (!STATE_SLUG && _u0 && _u0.state) STATE_SLUG = _u0.state;
+  if (!STATE_SLUG) {
+    try { STATE_SLUG = localStorage.getItem('startest.state') || null; } catch (_) {}
+  }
+  if (!STATE_SLUG) STATE_SLUG = 'texas';
+  if (STATES && !STATES.getBySlug(STATE_SLUG)) STATE_SLUG = 'texas';
+
+  // Grade — URL, then user record. Required.
+  let slug = params.get('g');
+  if (!slug && _u0 && _u0.grade) slug = _u0.grade;
   const unitId = params.get('u');
   const lessonId = params.get('l');
 
+  // Validate grade is offered in this state when both provided
+  if (slug && STATES) {
+    const _st = STATES.getBySlug(STATE_SLUG);
+    if (_st && Array.isArray(_st.gradesTested) && !_st.gradesTested.includes(slug)) {
+      console.warn(`[Practice] Grade ${slug} not offered in ${STATE_SLUG}; redirecting`);
+      location.href = `states/?s=${encodeURIComponent(STATE_SLUG)}`;
+      return;
+    }
+  }
+
+  const STATE_SLUG_RESOLVED = STATE_SLUG;
+  const SUBJECT_SLUG_RESOLVED = SUBJECT_SLUG;
+  const STATE_INFO = STATES ? STATES.getBySlug(STATE_SLUG) : null;
+
   if (!slug) {
+    // No grade context — bounce to state page (or home if guest with no state).
+    if (params.get('s') || (_u0 && _u0.state) || (function(){ try { return localStorage.getItem('startest.state'); } catch(_) { return null; } })()) {
+      location.href = `states/?s=${encodeURIComponent(STATE_SLUG)}`;
+      return;
+    }
     return renderHome();
+  }
+
+  // Populate practice context bar (back arrow + state/grade/subject pills).
+  populatePracticeContextBar();
+
+  function populatePracticeContextBar() {
+    const bar = document.getElementById('practice-context-bar');
+    if (!bar) return;
+    if (!STATE_INFO) { bar.hidden = true; return; }
+    const gradeNames = {
+      'grade-k':'Kindergarten','grade-1':'Grade 1','grade-2':'Grade 2','grade-3':'Grade 3',
+      'grade-4':'Grade 4','grade-5':'Grade 5','grade-6':'Grade 6','grade-7':'Grade 7',
+      'grade-8':'Grade 8','grade-9':'Grade 9','grade-10':'Grade 10','grade-11':'Grade 11',
+      'algebra-1':'Algebra 1'
+    };
+    const gradeName = gradeNames[slug] || slug;
+    const subjLabel = SUBJECT_SLUG.charAt(0).toUpperCase() + SUBJECT_SLUG.slice(1).replace('-', ' ');
+    const backHref = `grade.html?s=${encodeURIComponent(STATE_SLUG)}&g=${encodeURIComponent(slug)}`;
+    bar.innerHTML = `
+      <nav class="practice-breadcrumb" aria-label="Practice context">
+        <a class="practice-breadcrumb-back" href="${backHref}" aria-label="Back to grade">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        </a>
+        <div class="practice-breadcrumb-pills">
+          <span class="practice-pill practice-pill--state">
+            <span class="practice-pill-state-abbr">${escapePcb(STATE_INFO.nameAbbr || '')}</span>
+            <span class="practice-pill-state-test">${escapePcb(STATE_INFO.testName || '')}</span>
+          </span>
+          <span class="practice-pill practice-pill--grade">${escapePcb(gradeName)}</span>
+          <span class="practice-pill practice-pill--subject">${escapePcb(subjLabel)}</span>
+        </div>
+      </nav>
+    `;
+    document.title = `${STATE_INFO.testName} ${gradeName} ${subjLabel} — StarTest`;
+  }
+  function escapePcb(s) {
+    return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
   // ---- Guest free-trial: 100 questions across all grades, no login required.
@@ -313,12 +403,38 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'generate',
+          token: (window.STAARAuth && window.STAARAuth.token && window.STAARAuth.token()) || null,
+          state: STATE_SLUG_RESOLVED,
+          subject: SUBJECT_SLUG_RESOLVED,
           grade: curr.grade,
           count: GENERATE,
           seed,
           topics
         })
       });
+      if (res.status === 403) {
+        try {
+          const errBody = await res.json();
+          const msg = errBody && errBody.message;
+          if (msg === 'grade_locked') {
+            showToast('That grade is locked. Practicing your own grade.');
+            setTimeout(() => {
+              const u = window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser();
+              if (u && u.grade) location.href = `practice.html?s=${encodeURIComponent(u.state || STATE_SLUG_RESOLVED)}&g=${encodeURIComponent(u.grade)}&subj=math`;
+              else location.href = 'index.html#state-picker';
+            }, 1500);
+            return;
+          }
+          if (msg === 'state_mismatch') {
+            showToast('Please practice for your state.');
+            setTimeout(() => {
+              const u = window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser();
+              if (u && u.state) location.href = `practice.html?s=${encodeURIComponent(u.state)}&g=${encodeURIComponent(u.grade || curr.grade)}&subj=math`;
+            }, 1500);
+            return;
+          }
+        } catch (_) {}
+      }
       if (!res.ok) return;
       const data = await res.json();
       const generated = (data.questions || []).map(g => normalizeGenerated(g, curr));
@@ -531,6 +647,14 @@
         const isCorrect = checkAnswer(q, userAnswer);
         if (isCorrect) correct++;
         if (isCorrect) spawnPointsPop(qbox, difficultyCents(q));
+        if (isCorrect) {
+          const _streak = (window._stCorrectStreak = (window._stCorrectStreak || 0) + 1);
+          if (_streak % 5 === 0 && STATE_INFO && STATE_INFO.testName) {
+            showToast(`${STATE_INFO.testName} streak: ${_streak} 🔥`);
+          }
+        } else {
+          window._stCorrectStreak = 0;
+        }
         Stats.record(slug, stats, { unitId: q._unit?.id, unitTitle: q._unit?.title, isCorrect });
         const milestones = recordJourney(isCorrect);
         if (window.STAARFx) {
@@ -951,6 +1075,9 @@
       }
     } catch (_) {}
     if (studentGrade == null) studentGrade = gradeNumberFromSlug(curr?.slug || curr?.grade);
+    // Prefer URL-resolved state context (state-aware practice flow).
+    if (STATE_SLUG_RESOLVED) studentState = STATE_SLUG_RESOLVED;
+    if (STATE_INFO && STATE_INFO.testName) testName = STATE_INFO.testName;
 
     // Topic accuracy & weak areas from in-session Stats.
     let accuracyToDate = null;
@@ -972,6 +1099,8 @@
       studentName,
       studentGrade,
       studentState,
+      state: STATE_SLUG_RESOLVED,
+      subject: SUBJECT_SLUG_RESOLVED,
       testName,
       accuracyToDate,
       weakAreas
