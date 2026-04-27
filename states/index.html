@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#060d1f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="format-detection" content="telephone=no">
+
+  <!-- Dynamic SEO tags filled by JS at runtime; defaults shown for crawlers -->
+  <title id="page-title">State Test Prep — StarTest</title>
+  <meta id="page-description" name="description" content="AI-powered state test prep aligned to your state's specific test. Real toys for correct answers. Free during beta.">
+  <link id="page-canonical" rel="canonical" href="https://startest.ai/states/">
+
+  <meta property="og:type" content="website">
+  <meta id="og-title" property="og:title" content="State Test Prep — StarTest">
+  <meta id="og-description" property="og:description" content="AI-powered state test prep aligned to your state's specific test.">
+  <meta id="og-url" property="og:url" content="https://startest.ai/states/">
+  <meta property="og:image" content="https://startest.ai/og-image.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta id="twitter-title" name="twitter:title" content="State Test Prep — StarTest">
+  <meta id="twitter-description" name="twitter:description" content="AI-powered state test prep.">
+
+  <!-- JSON-LD: filled at runtime -->
+  <script type="application/ld+json" id="page-jsonld">
+  {
+    "@context": "https://schema.org",
+    "@type": "EducationalOrganization",
+    "name": "StarTest",
+    "url": "https://startest.ai/"
+  }
+  </script>
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&family=JetBrains+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="../css/styles.css?v=20260427ee">
+
+  <script src="../js/states-data.js?v=20260427a"></script>
+</head>
+<body class="state-page">
+
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="../index.html" aria-label="StarTest home">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="#fbbf24" aria-hidden="true">
+        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+      </svg>
+      <span class="brand-text">Star<span class="brand-accent">Test</span></span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../index.html">Home</a>
+      <a href="../marketplace.html">Toys</a>
+      <a href="../about.html">How it works</a>
+    </nav>
+    <div id="user-slot" class="user-slot"></div>
+  </div>
+</header>
+
+<main>
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a href="../index.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          All states
+        </a>
+      </li>
+      <li class="breadcrumb-item breadcrumb-item--current" id="breadcrumb-state">—</li>
+    </ol>
+  </nav>
+
+  <!-- Loading state — shown briefly before JS renders -->
+  <div class="state-page-loading" id="state-loading">
+    <span class="state-loading-spinner" aria-hidden="true"></span>
+    <span>Loading state…</span>
+  </div>
+
+  <!-- Not-found state — shown if ?s=<slug> is invalid -->
+  <section class="state-page-error" id="state-error" hidden>
+    <div class="state-error-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="48" height="48">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+    </div>
+    <h2 class="state-error-title">State not found</h2>
+    <p class="state-error-text">We couldn't find that state. Pick one from the list to get started.</p>
+    <a class="state-error-cta" href="../index.html#state-picker">
+      Pick your state
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </a>
+  </section>
+
+  <!-- Main content — populated by JS -->
+  <article class="state-content" id="state-content" hidden>
+
+    <!-- HERO -->
+    <header class="state-hero">
+      <div class="state-hero-inner">
+        <div class="state-hero-eyebrow">
+          <span class="state-hero-pin">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+          </span>
+          <span id="hero-eyebrow-text">—</span>
+        </div>
+
+        <h1 class="state-hero-title" id="hero-title">—</h1>
+
+        <p class="state-hero-sub" id="hero-sub">—</p>
+
+        <div class="state-hero-meta">
+          <div class="state-hero-meta-item">
+            <span class="state-hero-meta-label">Grades</span>
+            <span class="state-hero-meta-value" id="hero-grades">—</span>
+          </div>
+          <div class="state-hero-meta-item">
+            <span class="state-hero-meta-label">Test window</span>
+            <span class="state-hero-meta-value" id="hero-window">—</span>
+          </div>
+          <div class="state-hero-meta-item">
+            <span class="state-hero-meta-label">Authority</span>
+            <span class="state-hero-meta-value" id="hero-authority">—</span>
+          </div>
+        </div>
+
+        <!-- State-specific custom note (only renders if state has one) -->
+        <aside class="state-hero-note" id="hero-note" hidden>
+          <span class="state-hero-note-icon" aria-hidden="true">💡</span>
+          <span id="hero-note-text"></span>
+        </aside>
+      </div>
+    </header>
+
+    <!-- GRADE PICKER -->
+    <section class="state-grade-section" id="state-grade-section">
+      <header class="state-grade-head">
+        <span class="state-grade-eyebrow">Step 2 of 3</span>
+        <h2 class="state-grade-title">Pick your kid's grade.</h2>
+        <p class="state-grade-sub">Each grade has its own bank of practice questions, aligned to <span id="grade-sub-test">—</span>.</p>
+      </header>
+
+      <div class="state-grade-grid" id="state-grade-grid" role="list">
+        <!-- Populated by JS -->
+      </div>
+    </section>
+
+    <!-- TRUST / WHAT WE COVER -->
+    <section class="state-trust-section">
+      <header class="state-trust-head">
+        <span class="state-trust-eyebrow">What's on the test</span>
+        <h2 class="state-trust-title">Built for the <span id="trust-test-name">—</span>.</h2>
+      </header>
+
+      <div class="state-trust-grid">
+        <div class="state-trust-card">
+          <div class="state-trust-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
+              <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+            </svg>
+          </div>
+          <h3 class="state-trust-card-title">Aligned to standards</h3>
+          <p class="state-trust-card-text" id="trust-standards">—</p>
+        </div>
+
+        <div class="state-trust-card">
+          <div class="state-trust-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
+              <path d="M9 11H5a2 2 0 00-2 2v7a2 2 0 002 2h14a2 2 0 002-2v-7a2 2 0 00-2-2h-4M9 11V7a3 3 0 016 0v4M9 11h6"/>
+            </svg>
+          </div>
+          <h3 class="state-trust-card-title">Subject coverage</h3>
+          <p class="state-trust-card-text" id="trust-subjects">—</p>
+        </div>
+
+        <div class="state-trust-card">
+          <div class="state-trust-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </div>
+          <h3 class="state-trust-card-title">When kids take it</h3>
+          <p class="state-trust-card-text" id="trust-window">—</p>
+        </div>
+
+        <div class="state-trust-card">
+          <div class="state-trust-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
+              <path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9-1.74 0-3.36-.49-4.74-1.34L3 21l1.34-4.26A8.99 8.99 0 013 12c0-4.97 4.03-9 9-9s9 4.03 9 9z"/>
+            </svg>
+          </div>
+          <h3 class="state-trust-card-title">Official authority</h3>
+          <p class="state-trust-card-text">
+            Administered by <span id="trust-authority">—</span>.
+            <a id="trust-authority-link" href="#" target="_blank" rel="noopener nofollow">Learn more →</a>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA STRIP -->
+    <section class="state-cta-strip">
+      <p class="state-cta-strip-text">
+        Ready to start practicing for the <strong id="cta-strip-test">—</strong>?
+      </p>
+      <button type="button" class="state-cta-strip-btn" id="cta-strip-scroll">
+        Pick a grade
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+      </button>
+    </section>
+  </article>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="footer-copyright">© 2026 StarTest. All rights reserved.</p>
+    <nav class="footer-mobile-links">
+      <a href="../about.html">How it works</a>
+      <a href="#">Privacy</a>
+      <a href="#">Support</a>
+    </nav>
+  </div>
+</footer>
+
+<!-- JS -->
+<script src="../js/auth.js?v=20260427n"></script>
+<script src="state-page.js?v=20260427a"></script>
+
+</body>
+</html>

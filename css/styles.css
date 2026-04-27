@@ -10761,3 +10761,571 @@ input[type="button"] {
     display: none !important;
   }
 }
+
+/* ============================================================
+   STATE PAGE — /states/?s=<slug>
+   Mobile + desktop, single page handles all 51 states.
+   ============================================================ */
+
+body.state-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: #060d1f;
+  color: rgba(255, 255, 255, 0.92);
+  position: relative;
+  overflow-x: hidden;
+}
+
+body.state-page::before {
+  content: '';
+  position: fixed;
+  top: -200px;
+  right: -200px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.05) 0%, transparent 60%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.6;
+}
+
+body.state-page::after {
+  content: '';
+  position: fixed;
+  bottom: -200px;
+  left: -200px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.05) 0%, transparent 60%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+body.state-page > * {
+  position: relative;
+  z-index: 1;
+}
+
+.breadcrumb-nav {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 18px 32px 0;
+}
+
+.breadcrumb {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Inter';
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.breadcrumb-item a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255, 255, 255, 0.65);
+  text-decoration: none;
+  letter-spacing: -0.005em;
+  transition: color 0.15s ease;
+}
+
+.breadcrumb-item a:hover {
+  color: #fbbf24;
+}
+
+.breadcrumb-item--current {
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
+}
+
+.breadcrumb-item:not(:last-child)::after {
+  content: '/';
+  margin-left: 8px;
+  color: rgba(255, 255, 255, 0.2);
+}
+
+.state-page-loading {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 80px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-family: 'Inter';
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.state-loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(251, 191, 36, 0.2);
+  border-top-color: #fbbf24;
+  border-radius: 50%;
+  animation: state-picker-spin 0.7s linear infinite;
+}
+
+.state-page-error {
+  max-width: 480px;
+  margin: 80px auto;
+  padding: 48px 32px;
+  text-align: center;
+}
+
+.state-error-icon {
+  display: inline-flex;
+  margin-bottom: 16px;
+  color: rgba(251, 191, 36, 0.7);
+}
+
+.state-error-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 32px;
+  font-weight: 400;
+  color: #ffffff;
+  margin: 0 0 10px 0;
+}
+
+.state-error-text {
+  font-family: 'Inter';
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0 0 24px 0;
+}
+
+.state-error-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  font-family: 'Inter';
+  font-size: 15px;
+  font-weight: 600;
+  color: #0a1628;
+  text-decoration: none;
+  background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
+  border: 1px solid rgba(251, 191, 36, 0.5);
+  border-radius: 12px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.4) inset,
+    0 4px 12px -2px rgba(251, 191, 36, 0.4);
+  transition: transform 0.15s ease;
+}
+
+.state-error-cta:active {
+  transform: scale(0.97);
+}
+
+.state-content {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.state-hero {
+  padding: 32px 32px 48px;
+}
+
+.state-hero-inner {
+  max-width: 760px;
+}
+
+.state-hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  margin-bottom: 18px;
+  font-family: 'Inter';
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(251, 191, 36, 0.95);
+  background: rgba(251, 191, 36, 0.08);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: 999px;
+}
+
+.state-hero-pin {
+  display: inline-flex;
+  color: #fbbf24;
+}
+
+.state-hero-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 56px;
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  color: #ffffff;
+  margin: 0 0 16px 0;
+}
+
+.state-hero-title .hero-test-name {
+  color: #fbbf24;
+}
+
+.state-hero-title .hero-state-name {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.state-hero-sub {
+  font-family: 'Inter';
+  font-size: 17px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0 0 32px 0;
+  max-width: 600px;
+}
+
+.state-hero-meta {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+  padding: 20px 24px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
+  margin-bottom: 20px;
+}
+
+.state-hero-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.state-hero-meta-label {
+  font-family: 'Inter';
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.state-hero-meta-value {
+  font-family: 'Inter';
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: -0.005em;
+}
+
+.state-hero-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 18px;
+  background: rgba(99, 102, 241, 0.06);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 12px;
+  font-family: 'Inter';
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.state-hero-note-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  margin-top: -2px;
+}
+
+.state-grade-section {
+  padding: 32px 32px 48px;
+}
+
+.state-grade-head {
+  margin-bottom: 28px;
+}
+
+.state-grade-eyebrow {
+  display: inline-block;
+  font-family: 'Inter';
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(251, 191, 36, 0.85);
+  margin: 0 0 12px 0;
+}
+
+.state-grade-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 40px;
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  margin: 0 0 10px 0;
+}
+
+.state-grade-sub {
+  font-family: 'Inter';
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+.state-grade-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.state-grade-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: linear-gradient(180deg,
+    rgba(40, 53, 91, 0.5) 0%,
+    rgba(20, 29, 51, 0.5) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  text-decoration: none;
+  font-family: 'Inter';
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+}
+
+@media (hover: hover) {
+  .state-grade-card:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(180deg,
+      rgba(50, 63, 101, 0.6) 0%,
+      rgba(30, 39, 61, 0.6) 100%);
+    border-color: rgba(251, 191, 36, 0.3);
+  }
+}
+
+.state-grade-card:active {
+  transform: scale(0.98);
+}
+
+.state-grade-card-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: -0.005em;
+}
+
+.state-grade-card-num {
+  font-family: 'Instrument Serif', serif;
+  font-size: 22px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.25);
+  letter-spacing: -0.02em;
+}
+
+.state-trust-section {
+  padding: 48px 32px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.state-trust-head {
+  margin-bottom: 28px;
+}
+
+.state-trust-eyebrow {
+  display: inline-block;
+  font-family: 'Inter';
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(251, 191, 36, 0.85);
+  margin: 0 0 12px 0;
+}
+
+.state-trust-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 36px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  margin: 0;
+}
+
+.state-trust-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.state-trust-card {
+  padding: 22px;
+  background: linear-gradient(180deg,
+    rgba(40, 53, 91, 0.4) 0%,
+    rgba(20, 29, 51, 0.4) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+}
+
+.state-trust-card-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(251, 191, 36, 0.08);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: 10px;
+  color: #fbbf24;
+  margin-bottom: 14px;
+}
+
+.state-trust-card-title {
+  font-family: 'Inter';
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.005em;
+}
+
+.state-trust-card-text {
+  font-family: 'Inter';
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+.state-trust-card-text a {
+  color: rgba(251, 191, 36, 0.85);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.state-trust-card-text a:hover {
+  color: #fbbf24;
+}
+
+.state-cta-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 32px;
+  margin: 32px 32px 48px;
+  background: linear-gradient(180deg,
+    rgba(251, 191, 36, 0.08) 0%,
+    rgba(251, 191, 36, 0.02) 100%);
+  border: 1px solid rgba(251, 191, 36, 0.25);
+  border-radius: 16px;
+}
+
+.state-cta-strip-text {
+  font-family: 'Inter';
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+}
+
+.state-cta-strip-text strong {
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+.state-cta-strip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px;
+  font-family: 'Inter';
+  font-size: 14px;
+  font-weight: 600;
+  color: #0a1628;
+  background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
+  border: 1px solid rgba(251, 191, 36, 0.5);
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.4) inset,
+    0 4px 12px -2px rgba(251, 191, 36, 0.4);
+  transition: transform 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.state-cta-strip-btn:active {
+  transform: scale(0.97);
+}
+
+@media (max-width: 768px) {
+  .breadcrumb-nav { padding: 12px 16px 0; }
+  .state-hero { padding: 20px 16px 32px; }
+  .state-hero-eyebrow { font-size: 11px; padding: 5px 12px; margin-bottom: 14px; }
+  .state-hero-title { font-size: 36px; }
+  .state-hero-sub { font-size: 15px; margin-bottom: 24px; }
+  .state-hero-meta {
+    flex-direction: column;
+    gap: 14px;
+    padding: 16px 18px;
+  }
+  .state-hero-meta-item {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .state-hero-meta-label { font-size: 11px; }
+  .state-hero-meta-value { font-size: 14px; }
+  .state-grade-section { padding: 24px 16px 32px; }
+  .state-grade-title { font-size: 28px; }
+  .state-grade-sub { font-size: 14px; }
+  .state-grade-grid { grid-template-columns: 1fr; gap: 8px; }
+  .state-grade-card { padding: 14px 18px; }
+  .state-grade-card-name { font-size: 15px; }
+  .state-grade-card-num { font-size: 24px; }
+  .state-trust-section { padding: 32px 16px; }
+  .state-trust-title { font-size: 26px; }
+  .state-trust-grid { grid-template-columns: 1fr; gap: 10px; }
+  .state-trust-card { padding: 18px; }
+  .state-cta-strip {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 20px;
+    margin: 24px 16px 32px;
+    text-align: center;
+  }
+  .state-cta-strip-btn { justify-content: center; }
+  body.state-page {
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media (max-width: 380px) {
+  .state-hero-title { font-size: 32px; }
+  .state-grade-title { font-size: 26px; }
+}
+
+@media (min-width: 1024px) {
+  .state-hero { padding: 56px 32px 64px; }
+  .state-hero-title { font-size: 64px; }
+  .state-hero-sub { font-size: 18px; }
+  .state-grade-section { padding: 56px 32px 64px; }
+  .state-grade-title { font-size: 44px; }
+  .state-grade-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  .state-grade-card { padding: 18px 22px; }
+  .state-grade-card-num { font-size: 26px; }
+  .state-trust-section { padding: 64px 32px; }
+  .state-trust-title { font-size: 44px; }
+  .state-trust-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+}

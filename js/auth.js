@@ -35,6 +35,12 @@
     }[c]));
   }
 
+  // Path-prefix helper (Prompt 36c): when on a subdir page like /states/?s=texas,
+  // root-level links (index.html, marketplace.html, etc.) need a "../" prefix.
+  function R(file) {
+    return (location.pathname || '').indexOf('/states/') !== -1 ? '../' + file : file;
+  }
+
   async function api(action, body) {
     const res = await fetch(ENDPOINT, {
       method: 'POST',
@@ -593,11 +599,11 @@
       return;
     }
     const wallet = formatCents(u.balanceCents || 0);
-    const adminBadge = u.isAdmin ? `<a href="admin.html" class="admin-badge" title="Admin panel">Admin</a>` : '';
-    const adminLink = u.isAdmin ? `<a href="admin.html" class="user-menu-link">Admin panel</a>` : '';
+    const adminBadge = u.isAdmin ? `<a href="${R('admin.html')}" class="admin-badge" title="Admin panel">Admin</a>` : '';
+    const adminLink = u.isAdmin ? `<a href="${R('admin.html')}" class="user-menu-link">Admin panel</a>` : '';
     slot.innerHTML = `
       ${adminBadge}
-      <a href="marketplace.html" class="wallet-pill" title="Toy marketplace">
+      <a href="${R('marketplace.html')}" class="wallet-pill" title="Toy marketplace">
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 6v12M9 9h4.5a2 2 0 010 4H10a2 2 0 000 4h5"/></svg>
         <span>${wallet}</span>
       </a>
@@ -613,7 +619,7 @@
       <div class="user-menu" id="user-menu" hidden>
         <div class="user-menu-meta">@${escapeHtml(u.username)}</div>
         ${adminLink}
-        <a href="settings.html" class="user-menu-link">Settings</a>
+        <a href="${R('settings.html')}" class="user-menu-link">Settings</a>
         <button type="button" data-act="logout">Sign out</button>
       </div>`;
     const pill = slot.querySelector('#user-pill');
@@ -727,28 +733,28 @@
 
     panel.innerHTML = `
       ${userBlock}
-      <a class="mobile-menu-row" href="index.html" ${isActive('home')}>
+      <a class="mobile-menu-row" href="${R('index.html')}" ${isActive('home')}>
         <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
         Home
       </a>
-      <a class="mobile-menu-row" href="marketplace.html" ${isActive('toys')}>
+      <a class="mobile-menu-row" href="${R('marketplace.html')}" ${isActive('toys')}>
         <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/></svg></span>
         Toy marketplace
         ${u ? `<span class="meta">${wallet} pts</span>` : ''}
       </a>
-      <a class="mobile-menu-row" href="about.html" ${isActive('about')}>
+      <a class="mobile-menu-row" href="${R('about.html')}" ${isActive('about')}>
         <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
         How it works
       </a>
       ${isAdmin ? `
         <div class="mobile-menu-divider"></div>
-        <a class="mobile-menu-row" href="admin.html" ${isActive('admin')}>
+        <a class="mobile-menu-row" href="${R('admin.html')}" ${isActive('admin')}>
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
           Admin panel
         </a>` : ''}
       ${u ? `
         <div class="mobile-menu-divider"></div>
-        <a class="mobile-menu-row" href="settings.html" ${isActive('settings')}>
+        <a class="mobile-menu-row" href="${R('settings.html')}" ${isActive('settings')}>
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 005.6 15a1.65 1.65 0 00-1.51-1H4a2 2 0 010-4h.09A1.65 1.65 0 005.6 9 1.65 1.65 0 005.27 7.18l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H10a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V10a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>
           Settings
         </a>
@@ -836,29 +842,38 @@
     if (existing && existing.dataset.staarStamp === stamp) return;
     if (existing) existing.remove();
 
-    const isOnHome        = path.endsWith('index.html') || path === '/' || path === '';
+    const isOnHome        = (path.endsWith('index.html') || path === '/' || path === '') && path.indexOf('/states/') === -1;
     const isOnMarketplace = path.indexOf('marketplace') !== -1;
     const isOnPractice    = path.indexOf('grades.html') !== -1 || path.indexOf('grade.html') !== -1;
     const isOnAbout       = path.indexOf('about') !== -1;
     const isOnSettings    = path.indexOf('settings') !== -1 || path.indexOf('admin') !== -1;
 
-    // Smart Practice routing (Prompt 36b):
+    // Smart Practice routing (Prompt 36b/36c):
+    // - on a state page  -> scroll to that state's grade picker
     // - logged-in user with state + grade -> direct practice
     // - logged-in user with grade only    -> state picker on landing
     // - guest with localStorage state     -> state detail page
     // - first-time visitor                -> state picker on landing
+    const inStatesDir = path.indexOf('/states/') !== -1;
+    const currentParams = new URLSearchParams(location.search);
+    const currentStateSlug = currentParams.get('s');
+    const isOnStatePage = inStatesDir && currentStateSlug
+      && window.STATES_API && window.STATES_API.getBySlug(currentStateSlug);
+
     let practiceHref;
     if (u && u.state && u.grade) {
-      practiceHref = `practice.html?s=${encodeURIComponent(u.state)}&g=${encodeURIComponent(u.grade)}&subj=math`;
+      practiceHref = `${inStatesDir ? '../' : ''}practice.html?s=${encodeURIComponent(u.state)}&g=${encodeURIComponent(u.grade)}&subj=math`;
+    } else if (isOnStatePage) {
+      practiceHref = '#state-grade-section';
     } else if (u && u.grade) {
-      practiceHref = 'index.html#state-picker';
+      practiceHref = `${inStatesDir ? '../' : ''}index.html#state-picker`;
     } else {
       let storedState = null;
       try { storedState = localStorage.getItem('startest.state'); } catch (_) {}
       if (storedState && window.STATES_API && window.STATES_API.getBySlug(storedState)) {
-        practiceHref = `states/?s=${encodeURIComponent(storedState)}`;
+        practiceHref = `${inStatesDir ? '' : 'states/'}?s=${encodeURIComponent(storedState)}`;
       } else {
-        practiceHref = 'index.html#state-picker';
+        practiceHref = `${inStatesDir ? '../' : ''}index.html#state-picker`;
       }
     }
     const balance = u ? (u.balanceCents || 0) : 0;
@@ -875,7 +890,7 @@
 
     // Prompt 33 — 3-tab bar: Home / Practice (gold center) / Profile (Toys folds into Profile)
     tabBar.innerHTML = `
-      <a class="mobile-tab ${isOnHome ? 'is-active' : ''}" href="index.html" aria-label="Home">
+      <a class="mobile-tab ${isOnHome ? 'is-active' : ''}" href="${R('index.html')}" aria-label="Home">
         <span class="mobile-tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
         <span class="mobile-tab-label">Home</span>
       </a>
@@ -938,23 +953,23 @@
         <div class="profile-stat"><div class="profile-stat-value">${u.grade ? gradeShortLabel(u.grade) : '—'}</div><div class="profile-stat-label">Grade</div></div>
       </div>
       <nav class="profile-sheet-nav">
-        <a class="profile-sheet-row profile-sheet-row--featured" href="marketplace.html">
+        <a class="profile-sheet-row profile-sheet-row--featured" href="${R('marketplace.html')}">
           <span class="profile-sheet-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/></svg></span>
           <span class="profile-sheet-row-text">Toy marketplace<span class="profile-sheet-row-meta">${wallet} available</span></span>
           <span class="profile-sheet-row-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg></span>
         </a>
-        <a class="profile-sheet-row" href="settings.html">
+        <a class="profile-sheet-row" href="${R('settings.html')}">
           <span class="profile-sheet-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 005.6 15a1.65 1.65 0 00-1.51-1H4a2 2 0 010-4h.09A1.65 1.65 0 005.6 9 1.65 1.65 0 005.27 7.18l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H10a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V10a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>
           Settings
           <span class="profile-sheet-row-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg></span>
         </a>
-        <a class="profile-sheet-row" href="about.html">
+        <a class="profile-sheet-row" href="${R('about.html')}">
           <span class="profile-sheet-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
           How it works
           <span class="profile-sheet-row-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg></span>
         </a>
         ${isAdmin ? `
-        <a class="profile-sheet-row" href="admin.html">
+        <a class="profile-sheet-row" href="${R('admin.html')}">
           <span class="profile-sheet-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
           Admin panel
           <span class="profile-sheet-row-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg></span>
