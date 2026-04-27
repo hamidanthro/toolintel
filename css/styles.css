@@ -11329,3 +11329,406 @@ body.state-page > * {
   .state-trust-title { font-size: 44px; }
   .state-trust-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
 }
+
+/* ============================================================
+   GRADE DETAIL PAGE — grade.html?s=<state>&g=<grade>
+   Mobile + desktop. Subject sub-cards.
+   ============================================================ */
+
+body.grade-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: #060d1f;
+  color: rgba(255, 255, 255, 0.92);
+  position: relative;
+  overflow-x: hidden;
+}
+
+body.grade-page::before {
+  content: '';
+  position: fixed;
+  top: -200px;
+  right: -200px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.05) 0%, transparent 60%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.6;
+}
+
+body.grade-page::after {
+  content: '';
+  position: fixed;
+  bottom: -200px;
+  left: -200px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.05) 0%, transparent 60%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+body.grade-page > * {
+  position: relative;
+  z-index: 1;
+}
+
+.grade-content {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.grade-hero {
+  padding: 32px 32px 40px;
+}
+
+.grade-hero-inner {
+  max-width: 760px;
+}
+
+.grade-hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  margin-bottom: 18px;
+  font-family: 'Inter';
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(251, 191, 36, 0.95);
+  background: rgba(251, 191, 36, 0.08);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: 999px;
+}
+
+.grade-hero-pin {
+  display: inline-flex;
+  color: #fbbf24;
+}
+
+.grade-hero-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 56px;
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  color: #ffffff;
+  margin: 0 0 14px 0;
+}
+
+.grade-hero-title .grade-hero-grade { color: #ffffff; }
+.grade-hero-title .grade-hero-test { color: #fbbf24; }
+
+.grade-hero-sub {
+  font-family: 'Inter';
+  font-size: 16px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.65);
+  margin: 0;
+  max-width: 600px;
+}
+
+.subject-section {
+  padding: 24px 32px 48px;
+}
+
+.subject-section-head {
+  margin-bottom: 28px;
+}
+
+.subject-section-eyebrow {
+  display: inline-block;
+  font-family: 'Inter';
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(251, 191, 36, 0.85);
+  margin: 0 0 12px 0;
+}
+
+.subject-section-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 40px;
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  margin: 0 0 8px 0;
+}
+
+.subject-section-sub {
+  font-family: 'Inter';
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+}
+
+.subject-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.subject-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 22px 24px;
+  background: linear-gradient(180deg,
+    rgba(40, 53, 91, 0.5) 0%,
+    rgba(20, 29, 51, 0.5) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  text-decoration: none;
+  font-family: 'Inter';
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.subject-card--live {
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.subject-card--live::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg,
+    rgba(251, 191, 36, 0.06) 0%,
+    rgba(251, 191, 36, 0) 70%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+@media (hover: hover) {
+  .subject-card--live:hover {
+    transform: translateY(-3px);
+    border-color: rgba(251, 191, 36, 0.4);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.06) inset,
+      0 12px 32px -8px rgba(251, 191, 36, 0.3);
+  }
+  .subject-card--live:hover::before { opacity: 1; }
+}
+
+.subject-card--live:active { transform: scale(0.98); }
+
+.subject-card--soon {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.subject-card--soon .subject-card-icon { filter: grayscale(0.5); }
+
+.subject-card-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  color: var(--subject-color, #fbbf24);
+  flex-shrink: 0;
+}
+
+.subject-card--live .subject-card-icon {
+  background: color-mix(in srgb, var(--subject-color, #fbbf24) 12%, transparent);
+  border-color: color-mix(in srgb, var(--subject-color, #fbbf24) 30%, transparent);
+}
+
+.subject-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.subject-card-name {
+  font-family: 'Instrument Serif', serif;
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  margin: 0;
+}
+
+.subject-card-tagline {
+  font-family: 'Inter';
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+  letter-spacing: -0.005em;
+}
+
+.subject-card-action {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  color: #fbbf24;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  position: relative;
+  z-index: 1;
+}
+
+.subject-card-badge {
+  flex-shrink: 0;
+  padding: 5px 12px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+}
+
+.what-to-expect {
+  padding: 48px 32px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.what-to-expect-head {
+  margin-bottom: 28px;
+}
+
+.what-to-expect-eyebrow {
+  display: inline-block;
+  font-family: 'Inter';
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(251, 191, 36, 0.85);
+  margin: 0 0 12px 0;
+}
+
+.what-to-expect-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  margin: 0;
+}
+
+.what-to-expect-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.expect-card {
+  padding: 24px;
+  background: linear-gradient(180deg,
+    rgba(40, 53, 91, 0.4) 0%,
+    rgba(20, 29, 51, 0.4) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+}
+
+.expect-card-num {
+  font-family: 'Instrument Serif', serif;
+  font-size: 56px;
+  font-weight: 400;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  color: #fbbf24;
+  margin-bottom: 14px;
+}
+
+.expect-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.expect-card-title {
+  font-family: 'Inter';
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.005em;
+}
+
+.expect-card-text {
+  font-family: 'Inter';
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .grade-hero { padding: 20px 16px 28px; }
+  .grade-hero-eyebrow { font-size: 11px; padding: 5px 12px; margin-bottom: 14px; flex-wrap: wrap; }
+  .grade-hero-title { font-size: 36px; margin-bottom: 12px; }
+  .grade-hero-sub { font-size: 14px; }
+  .subject-section { padding: 16px 16px 32px; }
+  .subject-section-title { font-size: 28px; }
+  .subject-section-sub { font-size: 14px; }
+  .subject-grid { grid-template-columns: 1fr; gap: 10px; }
+  .subject-card { padding: 18px 18px; gap: 14px; }
+  .subject-card-icon { width: 40px; height: 40px; }
+  .subject-card-name { font-size: 22px; }
+  .subject-card-tagline { font-size: 12px; }
+  .subject-card-action { font-size: 13px; }
+  .subject-card-badge { font-size: 9px; padding: 4px 10px; }
+  .what-to-expect { padding: 32px 16px; }
+  .what-to-expect-title { font-size: 26px; }
+  .what-to-expect-grid { grid-template-columns: 1fr; gap: 10px; }
+  .expect-card {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 16px;
+    align-items: center;
+  }
+  .expect-card-num { font-size: 44px; margin-bottom: 0; }
+  body.grade-page {
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media (max-width: 380px) {
+  .grade-hero-title { font-size: 30px; }
+  .subject-section-title { font-size: 24px; }
+  .subject-card { padding: 16px; }
+}
+
+@media (min-width: 1024px) {
+  .grade-hero { padding: 56px 32px 48px; }
+  .grade-hero-title { font-size: 64px; }
+  .grade-hero-sub { font-size: 18px; }
+  .subject-section { padding: 32px 32px 64px; }
+  .subject-section-title { font-size: 44px; }
+  .subject-card { padding: 28px 30px; }
+  .subject-card-icon { width: 56px; height: 56px; }
+  .subject-card-name { font-size: 30px; }
+  .what-to-expect { padding: 64px 32px; }
+  .what-to-expect-title { font-size: 44px; }
+}

@@ -1,131 +1,182 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#060d1f" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="format-detection" content="telephone=no" />
-  <title>Grade — StarTest</title>
-  <link rel="stylesheet" href="css/styles.css?v=20260427ee" />
-</head>
-<body>
-  <header class="site-header">
-    <div class="container">
-      <a href="index.html" class="brand"><svg class="brand-logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><defs><linearGradient id="starGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fde047"/><stop offset="55%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient></defs><path d="M16 2.6 19.6 11.5 29.2 12.2 21.8 18.4 24.2 27.6 16 22.4 7.8 27.6 10.2 18.4 2.8 12.2 12.4 11.5 Z" fill="url(#starGrad)" stroke="rgba(255,255,255,0.18)" stroke-width="0.6" stroke-linejoin="round"/><circle cx="25" cy="6" r="1.6" fill="#fde047" opacity="0.95"/><circle cx="25" cy="6" r="3" fill="#fde047" opacity="0.25"/></svg><span class="brand-text">Star<span class="brand-text-accent">Test</span></span></a>
-      <nav class="nav">
-        <a href="index.html">Home</a>
-        <a href="marketplace.html">Toys</a> <a href="about.html">How it works</a>
-      </nav>
-      <div id="user-slot" class="user-slot"></div>
-    </div>
-  </header>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#060d1f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="format-detection" content="telephone=no">
 
-  <section>
-    <div class="container" id="content">
-      <p>Loading curriculum…</p>
+  <title id="page-title">Grade Practice — StarTest</title>
+  <meta id="page-description" name="description" content="AI-powered practice for your state's specific test, by grade and subject.">
+  <link id="page-canonical" rel="canonical" href="https://startest.ai/grade.html">
+
+  <meta property="og:type" content="website">
+  <meta id="og-title" property="og:title" content="Grade Practice — StarTest">
+  <meta id="og-description" property="og:description" content="AI-powered practice by state, grade, and subject.">
+  <meta id="og-url" property="og:url" content="https://startest.ai/grade.html">
+  <meta property="og:image" content="https://startest.ai/og-image.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta id="twitter-title" name="twitter:title" content="Grade Practice — StarTest">
+  <meta id="twitter-description" name="twitter:description" content="AI-powered practice by grade and subject.">
+
+  <script type="application/ld+json" id="page-jsonld">
+  {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    "name": "StarTest Grade Practice",
+    "provider": { "@type": "Organization", "name": "StarTest" }
+  }
+  </script>
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&family=JetBrains+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="css/styles.css?v=20260427ff">
+
+  <script src="js/states-data.js?v=20260427a"></script>
+</head>
+<body class="grade-page">
+
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="index.html" aria-label="StarTest home">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="#fbbf24" aria-hidden="true">
+        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+      </svg>
+      <span class="brand-text">Star<span class="brand-accent">Test</span></span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="marketplace.html">Toys</a>
+      <a href="about.html">How it works</a>
+    </nav>
+    <div id="user-slot" class="user-slot"></div>
+  </div>
+</header>
+
+<main>
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a href="index.html">All states</a>
+      </li>
+      <li class="breadcrumb-item">
+        <a id="breadcrumb-state" href="states/?s=">—</a>
+      </li>
+      <li class="breadcrumb-item breadcrumb-item--current" id="breadcrumb-grade">—</li>
+    </ol>
+  </nav>
+
+  <!-- Loading -->
+  <div class="state-page-loading" id="grade-loading">
+    <span class="state-loading-spinner" aria-hidden="true"></span>
+    <span>Loading…</span>
+  </div>
+
+  <!-- Error: invalid state or grade -->
+  <section class="state-page-error" id="grade-error" hidden>
+    <div class="state-error-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="48" height="48">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
     </div>
+    <h2 class="state-error-title" id="grade-error-title">We couldn't find that combination</h2>
+    <p class="state-error-text" id="grade-error-text">Pick a state and grade to get started.</p>
+    <a class="state-error-cta" href="index.html#state-picker">
+      <span>Pick your state </span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </a>
   </section>
 
-  <footer class="site-footer">
-    <div class="container">&copy; <span id="year"></span> StarTest.</div>
-  </footer>
+  <!-- Main content -->
+  <article class="grade-content" id="grade-content" hidden>
 
-  <script src="js/prefs.js?v=20260426a"></script>
-  <script src="js/fx.js?v=20260426a"></script>
-  <script src="js/states-data.js?v=20260427a"></script>
-  <script src="js/auth.js?v=20260427n"></script>
-  <script src="js/friends.js?v=20260426b"></script>
-  <script src="js/staar-data.js"></script>
-  <script src="js/grade-card.js?v=20260427r"></script>
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-    const params = new URLSearchParams(location.search);
-    const slug = params.get('g');
-    const grade = window.STAAR_GRADES.find(g => g.slug === slug);
-    const content = document.getElementById('content');
-    const _u = (window.STAARAuth?.currentUser && window.STAARAuth.currentUser()) || null;
-
-    if (!grade) {
-      content.innerHTML = '<h2>Grade not found</h2><p><a href="index.html">Back home</a></p>';
-    } else if (window.STAARGradeAccess && !window.STAARGradeAccess.canPracticeGrade(_u, grade.slug)) {
-      // Redirect to user's actual grade rather than a dead end.
-      const target = (_u && _u.grade) || null;
-      if (target && target !== grade.slug) {
-        try { location.replace(`grade.html?g=${encodeURIComponent(target)}`); }
-        catch (_) {
-          content.innerHTML = `<h2>${grade.title} is below your level</h2><div class="card"><p style="color:var(--muted);">You're set to a higher grade, so this grade is locked. Pick your grade or higher from your dashboard.</p><p><a class="btn btn-primary" href="index.html">Back to dashboard</a></p></div>`;
-        }
-      } else {
-        content.innerHTML = `<h2>${grade.title} is below your level</h2><div class="card"><p style="color:var(--muted);">You're set to a higher grade, so this grade is locked. Pick your grade or higher from your dashboard.</p><p><a class="btn btn-primary" href="index.html">Back to dashboard</a></p></div>`;
-      }
-    } else {
-      document.title = `${grade.title} — StarTest`;
-      fetch(`data/${grade.slug}-curriculum.json`)
-        .then(r => r.ok ? r.json() : null)
-        .then(curr => curr && curr.units ? renderCurriculum(grade, curr) : renderCategoryFallback(grade))
-        .catch(() => renderCategoryFallback(grade));
-    }
-
-    function renderCurriculum(grade, curr) {
-      const mastered = (window.STAARAuth?.currentUser?.()?.masteredSections) || {};
-      const masteredKey = (uId, lId) => {
-        const parts = [grade.slug, uId];
-        if (lId) parts.push(lId);
-        return parts.join('|').replace(/[^A-Za-z0-9_\-|:.]/g, '_');
-      };
-      const badge = '<span class="mastered-badge" title="Section mastered">⭐ Mastered</span>';
-      const units = curr.units
-        .slice()
-        .sort((a, b) => a.order - b.order)
-        .map(u => {
-          const uMastered = !!mastered[masteredKey(u.id)];
-          const lessons = u.lessons.map(l => {
-            const lMastered = !!mastered[masteredKey(u.id, l.id)];
-            return `
-            <li class="${lMastered ? 'lesson-mastered' : ''}">
-              <a href="practice.html?g=${grade.slug}&u=${u.id}&l=${l.id}">
-                <span class="lesson-title">${l.title}${lMastered ? ' ' + badge : ''}</span>
-                <span class="lesson-teks">TEKS ${l.teks}</span>
-              </a>
-            </li>`;
-          }).join('');
-          return `
-            <div class="unit-card ${uMastered ? 'unit-mastered' : ''}">
-              <div class="unit-head">
-                <div class="unit-order">Unit ${u.order}${uMastered ? ' ' + badge : ''}</div>
-                <h3>${u.title}</h3>
-                <div class="unit-cat">${u.reportingCategory}</div>
-                <p class="unit-summary">${u.summary}</p>
-              </div>
-              <ul class="lesson-list">${lessons}</ul>
-              <a class="btn btn-primary unit-practice" href="practice.html?g=${grade.slug}&u=${u.id}">${uMastered ? 'Review (no points)' : 'Practice this unit'}</a>
-            </div>`;
-        }).join('');
-
-      content.innerHTML = `
-        <div class="grade-header">
-          <h2>${curr.title}</h2>
-          <p style="color:var(--muted);max-width:720px;">${curr.description}</p>
-          <a class="btn btn-primary" href="practice.html?g=${grade.slug}">Start full practice</a>
+    <!-- HERO -->
+    <header class="grade-hero">
+      <div class="grade-hero-inner">
+        <div class="grade-hero-eyebrow">
+          <span class="grade-hero-pin" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+          </span>
+          <span id="hero-eyebrow-text">—</span>
         </div>
-        <div class="unit-list">${units}</div>`;
-    }
 
-    function renderCategoryFallback(grade) {
-      const cats = grade.categories.map(c => `
-        <a class="grade-card" href="practice.html?g=${grade.slug}&c=${encodeURIComponent(c)}">
-          <div class="label">Reporting category</div>
-          <div class="title">${c}</div>
-          <div class="desc">Practice problems</div>
-        </a>`).join('');
-      content.innerHTML = `
-        <h2>${grade.title}</h2>
-        <p style="color:var(--muted);max-width:640px;">Detailed curriculum coming soon. Choose a reporting category to start practicing.</p>
-        <div class="grade-grid">${cats}</div>`;
-    }
-  </script>
-  <script src="https://api.replyquik.com/widget.js" data-id="9686745a-93c1-4761-af94-f15815680bc3"></script>
+        <h1 class="grade-hero-title" id="hero-title">—</h1>
+
+        <p class="grade-hero-sub" id="hero-sub">—</p>
+      </div>
+    </header>
+
+    <!-- SUBJECT PICKER -->
+    <section class="subject-section" id="subject-section">
+      <header class="subject-section-head">
+        <span class="subject-section-eyebrow">Step 3 of 3</span>
+        <h2 class="subject-section-title">Pick a subject.</h2>
+        <p class="subject-section-sub">Math is live. More subjects coming soon.</p>
+      </header>
+
+      <div class="subject-grid" id="subject-grid">
+        <!-- Filled by JS -->
+      </div>
+    </section>
+
+    <!-- WHAT TO EXPECT -->
+    <section class="what-to-expect">
+      <header class="what-to-expect-head">
+        <span class="what-to-expect-eyebrow">What to expect</span>
+        <h2 class="what-to-expect-title">A few minutes a day.<br>Real progress.</h2>
+      </header>
+
+      <div class="what-to-expect-grid">
+        <div class="expect-card">
+          <div class="expect-card-num">15</div>
+          <div class="expect-card-body">
+            <h3 class="expect-card-title">Minutes a day</h3>
+            <p class="expect-card-text">Most kids practice 10–20 questions in a session. The AI adapts as they go.</p>
+          </div>
+        </div>
+
+        <div class="expect-card">
+          <div class="expect-card-num">∞</div>
+          <div class="expect-card-body">
+            <h3 class="expect-card-title">Questions available</h3>
+            <p class="expect-card-text">Our AI generates fresh, grade-aligned questions every session. No two days the same.</p>
+          </div>
+        </div>
+
+        <div class="expect-card">
+          <div class="expect-card-num">15¢</div>
+          <div class="expect-card-body">
+            <h3 class="expect-card-title">Per correct answer</h3>
+            <p class="expect-card-text">Cents add up. When the balance hits a toy's price, your kid picks one. We ship it.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </article>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="footer-copyright">© 2026 StarTest. All rights reserved.</p>
+    <nav class="footer-mobile-links">
+      <a href="about.html">How it works</a>
+      <a href="#">Privacy</a>
+      <a href="#">Support</a>
+    </nav>
+  </div>
+</footer>
+
+<!-- JS -->
+<script src="js/auth.js?v=20260427o"></script>
+<script src="js/grade-page.js?v=20260427a"></script>
+
 </body>
 </html>

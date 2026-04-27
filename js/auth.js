@@ -857,11 +857,17 @@
     const inStatesDir = path.indexOf('/states/') !== -1;
     const currentParams = new URLSearchParams(location.search);
     const currentStateSlug = currentParams.get('s');
+    const currentGradeSlug = currentParams.get('g');
     const isOnStatePage = inStatesDir && currentStateSlug
       && window.STATES_API && window.STATES_API.getBySlug(currentStateSlug);
+    const isOnGradePage = path.indexOf('grade.html') !== -1
+      && path.indexOf('grades.html') === -1
+      && currentStateSlug && currentGradeSlug;
 
     let practiceHref;
-    if (u && u.state && u.grade) {
+    if (isOnGradePage) {
+      practiceHref = `practice.html?s=${encodeURIComponent(currentStateSlug)}&g=${encodeURIComponent(currentGradeSlug)}&subj=math`;
+    } else if (u && u.state && u.grade) {
       practiceHref = `${inStatesDir ? '../' : ''}practice.html?s=${encodeURIComponent(u.state)}&g=${encodeURIComponent(u.grade)}&subj=math`;
     } else if (isOnStatePage) {
       practiceHref = '#state-grade-section';
