@@ -221,6 +221,7 @@ exports.handler = async (event) => {
   if (action === 'liveCount')      return await handleLiveCount(payload);
   if (action === 'dashboard')      return await handleDashboard(payload);
   if (action === 'setGrade')       return await handleSetGrade(payload);
+  if (action === 'setState')       return await handleSetState(payload);
   if (action === 'getWallet')      return await handleGetWallet(payload);
   if (action === 'listToys')       return await handleListToys(payload);
   if (action === 'checkout')       return await handleCheckout(payload);
@@ -285,7 +286,7 @@ exports.handler = async (event) => {
 };
 
 // ===== Question generator =====
-// Input:  { action: "generate", grade, count, seed, topics: [{title, teks, objective, sample?}] }
+// Input:  { action: "generate", grade, count, seed, topics: [{title, teks, objective, sample?}], state?, subject?, token? }
 // Output: { questions: [{ id, type, prompt, choices?, answer, explanation, unitTitle, teks, lessonTitle }] }
 async function handleGenerate(payload) {
   const grade = payload.grade;
@@ -297,7 +298,48 @@ async function handleGenerate(payload) {
     return bad(400, 'Missing topics for generation');
   }
 
-  const system = buildGeneratorSystem(grade);
+  // ---- State + subject resolution (Prompt 36a foundation) ----
+  // Frontend may pass state/subject; otherwise we resolve from authed user; otherwise default.
+  const requestedState = payload.state ? String(payload.state).trim().toLowerCase() : null;
+  if (requestedState && !isValidState(requestedState)) {
+    return bad(400, 'Invalid state');
+  }
+  const requestedSubject = payload.subject ? String(payload.subject).trim().toLowerCase() : null;
+  if (requestedSubject) {
+    if (!isValidSubject(requestedSubject)) return bad(400, 'Invalid subject');
+    if (!isLiveSubject(requestedSubject)) return bad(400, 'Subject coming soon');
+  }
+
+  let userState = null;
+  let userGrade = null;
+  if (payload.token) {
+    const auth = await verifyToken(payload.token);
+    if (auth && auth.username) {
+      try {
+        const u = await ddb.send(new GetCommand({
+          TableName: USERS_TABLE,
+          Key: { username: auth.username }
+        }));
+        if (u.Item) {
+          userState = u.Item.state || null;
+          userGrade = u.Item.grade || null;
+        }
+      } catch (e) { /* fall through to defaults */ }
+    }
+  }
+
+  // If both user-state and requested-state are set, they must match.
+  if (userState && requestedState && requestedState !== userState) {
+    return bad(403, 'state_mismatch');
+  }
+  // If user has a grade and a different grade was requested, block.
+  if (userGrade && grade && !isGradeAllowed(userGrade, grade)) {
+    return bad(403, 'grade_mismatch');
+  }
+  const effectiveState = requestedState || userState || DEFAULT_STATE;
+  const effectiveSubject = requestedSubject || DEFAULT_SUBJECT;
+
+  const system = buildGeneratorSystem(grade, effectiveState, effectiveSubject);
   const user = buildGeneratorUser({ count, seed, topics });
 
   try {
@@ -329,9 +371,13 @@ async function handleGenerate(payload) {
   }
 }
 
-function buildGeneratorSystem(grade) {
+function buildGeneratorSystem(grade, stateSlug, subject) {
   const gradeNum = typeof grade === 'number' ? grade : parseInt(grade, 10);
   const gradeLabel = Number.isFinite(gradeNum) ? `Grade ${gradeNum}` : String(grade || 'elementary');
+  const meta = (stateSlug && STATE_METADATA[stateSlug]) || STATE_METADATA[DEFAULT_STATE];
+  const testName = meta.testName;
+  const standards = meta.standards;
+  const subjectLabel = (subject && subject !== 'math') ? subject : 'math';
   let reading;
   if (!Number.isFinite(gradeNum) || gradeNum <= 3) {
     reading = 'Vocabulary at a Grade 3 level. Sentences under 18 words. Use kid-friendly contexts: snacks, pets, recess, sports, classroom, family, money, lunch.';
@@ -341,8 +387,8 @@ function buildGeneratorSystem(grade) {
     reading = 'Middle-school vocabulary. Use proper math terms.';
   }
 
-  return `You are an expert ${gradeLabel} math item writer for the Texas STAAR exam.
-Your job is to generate fresh, ORIGINAL practice questions that match Texas TEKS standards.
+  return `You are an expert ${gradeLabel} ${subjectLabel} item writer for the ${testName} exam.
+Your job is to generate fresh, ORIGINAL practice questions that match ${standards}.
 
 READING LEVEL
 ${reading}
@@ -452,6 +498,111 @@ function sanitizeGrade(g) {
   return VALID_GRADES.has(s) ? s : null;
 }
 
+// ===== State + Subject (Prompt 36a foundation) =====
+// Keep this Set in sync with js/states-data.js. 50 states + DC.
+const VALID_STATE_SLUGS = new Set([
+  'alabama','alaska','arizona','arkansas','california','colorado','connecticut',
+  'delaware','district-of-columbia','florida','georgia','hawaii','idaho','illinois',
+  'indiana','iowa','kansas','kentucky','louisiana','maine','maryland','massachusetts',
+  'michigan','minnesota','mississippi','missouri','montana','nebraska','nevada',
+  'new-hampshire','new-jersey','new-mexico','new-york','north-carolina','north-dakota',
+  'ohio','oklahoma','oregon','pennsylvania','rhode-island','south-carolina','south-dakota',
+  'tennessee','texas','utah','vermont','virginia','washington','west-virginia',
+  'wisconsin','wyoming'
+]);
+const VALID_SUBJECTS = new Set(['math','reading','science','social-studies']);
+const SUBJECTS_LIVE = new Set(['math']);
+const DEFAULT_STATE = 'texas';
+const DEFAULT_SUBJECT = 'math';
+
+function isValidState(slug) {
+  if (!slug) return false;
+  return VALID_STATE_SLUGS.has(String(slug).trim().toLowerCase());
+}
+function isValidSubject(s) {
+  if (!s) return false;
+  return VALID_SUBJECTS.has(String(s).trim().toLowerCase());
+}
+function isLiveSubject(s) {
+  if (!s) return false;
+  return SUBJECTS_LIVE.has(String(s).trim().toLowerCase());
+}
+
+// Server-side mini-catalog of state -> { testName, standards } for AI prompt
+// construction. Mirrors js/states-data.js but trimmed to what the generator needs.
+// When js/states-data.js changes test names/standards, update this table too.
+const STATE_METADATA = {
+  'alabama':              { testName: 'ACAP',                 standards: 'Alabama Course of Study' },
+  'alaska':               { testName: 'AK STAR',              standards: 'Alaska Content & Performance Standards' },
+  'arizona':              { testName: 'AASA',                 standards: "Arizona's Academic Standards" },
+  'arkansas':             { testName: 'ATLAS',                standards: 'Arkansas Academic Standards' },
+  'california':           { testName: 'CAASPP',               standards: 'California Common Core State Standards' },
+  'colorado':             { testName: 'CMAS',                 standards: 'Colorado Academic Standards' },
+  'connecticut':          { testName: 'Smarter Balanced',     standards: 'Connecticut Core Standards' },
+  'delaware':             { testName: 'DeSSA',                standards: 'Delaware Academic Standards' },
+  'district-of-columbia': { testName: 'DC CAPE',              standards: 'Common Core State Standards' },
+  'florida':              { testName: 'FAST',                 standards: 'Florida B.E.S.T. Standards' },
+  'georgia':              { testName: 'Georgia Milestones',   standards: 'Georgia Standards of Excellence' },
+  'hawaii':               { testName: 'Smarter Balanced',     standards: 'Hawaii Common Core Standards' },
+  'idaho':                { testName: 'ISAT',                 standards: 'Idaho Content Standards' },
+  'illinois':             { testName: 'IAR',                  standards: 'Illinois Learning Standards' },
+  'indiana':              { testName: 'ILEARN',               standards: 'Indiana Academic Standards' },
+  'iowa':                 { testName: 'ISASP',                standards: 'Iowa Core' },
+  'kansas':               { testName: 'KAP',                  standards: 'Kansas Standards' },
+  'kentucky':             { testName: 'KSA',                  standards: 'Kentucky Academic Standards' },
+  'louisiana':            { testName: 'LEAP',                 standards: 'Louisiana Student Standards' },
+  'maine':                { testName: 'MEA',                  standards: 'Maine Learning Results' },
+  'maryland':             { testName: 'MCAP',                 standards: 'Maryland College & Career Ready Standards' },
+  'massachusetts':        { testName: 'MCAS',                 standards: 'Massachusetts Curriculum Frameworks' },
+  'michigan':             { testName: 'M-STEP',               standards: 'Michigan Academic Standards' },
+  'minnesota':            { testName: 'MCA',                  standards: 'Minnesota Academic Standards' },
+  'mississippi':          { testName: 'MAAP',                 standards: 'Mississippi College & Career-Ready Standards' },
+  'missouri':             { testName: 'MAP',                  standards: 'Missouri Learning Standards' },
+  'montana':              { testName: 'Smarter Balanced',     standards: 'Montana Content Standards' },
+  'nebraska':             { testName: 'NSCAS',                standards: 'Nebraska College & Career Ready Standards' },
+  'nevada':               { testName: 'Smarter Balanced',     standards: 'Nevada Academic Content Standards' },
+  'new-hampshire':        { testName: 'NH SAS',               standards: 'New Hampshire Career & College Ready Standards' },
+  'new-jersey':           { testName: 'NJSLA',                standards: 'New Jersey Student Learning Standards' },
+  'new-mexico':           { testName: 'NM-MSSA',              standards: 'New Mexico Content Standards' },
+  'new-york':             { testName: 'NY State Tests',       standards: 'Next Generation Learning Standards' },
+  'north-carolina':       { testName: 'EOG',                  standards: 'NC Standard Course of Study' },
+  'north-dakota':         { testName: 'NDSA',                 standards: 'North Dakota Content Standards' },
+  'ohio':                 { testName: "Ohio's State Tests",  standards: "Ohio's Learning Standards" },
+  'oklahoma':             { testName: 'OSTP',                 standards: 'Oklahoma Academic Standards' },
+  'oregon':               { testName: 'OSAS',                 standards: 'Oregon State Standards' },
+  'pennsylvania':         { testName: 'PSSA',                 standards: 'PA Core Standards' },
+  'rhode-island':         { testName: 'RICAS',                standards: 'Rhode Island Core Standards' },
+  'south-carolina':       { testName: 'SC READY',             standards: 'SC College & Career Ready Standards' },
+  'south-dakota':         { testName: 'SD-CRT',               standards: 'South Dakota Content Standards' },
+  'tennessee':            { testName: 'TCAP',                 standards: 'Tennessee Academic Standards' },
+  'texas':                { testName: 'STAAR',                standards: 'Texas Essential Knowledge and Skills (TEKS)' },
+  'utah':                 { testName: 'RISE',                 standards: 'Utah Core Standards' },
+  'vermont':              { testName: 'Smarter Balanced',     standards: 'Vermont State Standards' },
+  'virginia':             { testName: 'SOL',                  standards: 'Virginia Standards of Learning' },
+  'washington':           { testName: 'Smarter Balanced',     standards: 'Washington Learning Standards' },
+  'west-virginia':        { testName: 'WVGSA',                standards: 'WV College & Career Readiness Standards' },
+  'wisconsin':            { testName: 'Forward Exam',         standards: 'Wisconsin Academic Standards' },
+  'wyoming':              { testName: 'WY-TOPP',              standards: 'Wyoming Content & Performance Standards' }
+};
+
+function readableGrade(slug) {
+  if (!slug) return 'elementary';
+  if (slug === 'grade-k') return 'Kindergarten';
+  if (slug === 'algebra-1') return 'Algebra 1';
+  const m = /^grade-(\d+)$/.exec(slug);
+  if (m) return `Grade ${m[1]}`;
+  return String(slug);
+}
+
+// Grade-gating helper: returns true if a user with `userGrade` may request
+// content for `requestedGrade`. Foundation behavior: identity match only.
+// (Future expansion: allow review of prior grades, or unlock next grade after mastery.)
+function isGradeAllowed(userGrade, requestedGrade) {
+  if (!userGrade) return true;
+  if (!requestedGrade) return true;
+  return String(userGrade) === String(requestedGrade);
+}
+
 function hashPassword(password, salt) {
   // scrypt with conservative params (suitable for Lambda 512MB)
   const buf = crypto.scryptSync(String(password), salt, 64, { N: 16384, r: 8, p: 1 });
@@ -522,6 +673,13 @@ async function handleSignup(payload) {
   const displayName = String(payload.displayName || '').trim().slice(0, 32) || username;
   const email = String(payload.email || '').trim().toLowerCase().slice(0, 120);
   const grade = sanitizeGrade(payload.grade);
+  // Optional state at signup. If provided, must be a valid slug; otherwise stored as null.
+  // Existing users without state continue working; they can call setState later.
+  const stateRaw = payload.state ? String(payload.state).trim().toLowerCase() : null;
+  if (stateRaw && !isValidState(stateRaw)) {
+    return bad(400, 'Invalid state');
+  }
+  const state = stateRaw || null;
 
   if (username.length < 3 || username.length > 24) {
     return bad(400, 'Username must be 3-24 characters (letters, numbers, _ . -)');
@@ -558,6 +716,7 @@ async function handleSignup(payload) {
         displayName,
         email,
         grade,
+        state,
         salt,
         passwordHash,
         color,
@@ -575,7 +734,7 @@ async function handleSignup(payload) {
   }
 
   const token = await makeToken(userId, username);
-  return ok({ token, user: { userId, username, displayName, grade, color, balanceCents: 0, lifetimeCents: 0, isAdmin: isAdmin(username) } });
+  return ok({ token, user: { userId, username, displayName, grade, state, color, balanceCents: 0, lifetimeCents: 0, isAdmin: isAdmin(username) } });
 }
 
 async function handleLogin(payload) {
@@ -1739,4 +1898,30 @@ async function handleSetGrade(payload) {
     ExpressionAttributeValues: { ':g': grade }
   }));
   return ok({ grade });
+}
+
+// Set or update the user's state. Unlike setGrade, this is updatable
+// (a family that moves states should be able to change it). The frontend
+// gates parent-only updates separately in Prompt 36b.
+async function handleSetState(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  if (!auth.username) return bad(401, 'Please sign in again');
+  const state = payload.state ? String(payload.state).trim().toLowerCase() : null;
+  if (!isValidState(state)) return bad(400, 'Invalid state');
+
+  const cur = await ddb.send(new GetCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username }
+  }));
+  if (!cur.Item) return bad(404, 'User not found');
+
+  await ddb.send(new UpdateCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username },
+    UpdateExpression: 'SET #s = :s',
+    ExpressionAttributeNames: { '#s': 'state' },
+    ExpressionAttributeValues: { ':s': state }
+  }));
+  return ok({ state });
 }
