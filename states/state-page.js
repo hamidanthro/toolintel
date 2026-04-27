@@ -119,7 +119,7 @@
   // ============================================================
 
   function populateHero(state) {
-    document.getElementById('hero-eyebrow-text').textContent = `${state.name} · ${state.testName}`;
+    document.getElementById('hero-eyebrow-text').textContent = state.name;
 
     document.getElementById('hero-title').innerHTML =
       `<span class="hero-test-name">${escapeHtml(state.testName)}</span> test prep, built for <span class="hero-state-name">${escapeHtml(state.name)}</span> families.`;
