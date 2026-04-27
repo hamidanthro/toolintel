@@ -202,7 +202,6 @@
       return `
         <a class="state-grade-card" href="${targetUrl}" role="listitem" data-grade="${escapeHtml(slug)}">
           <span class="state-grade-card-name">${escapeHtml(fullName)}</span>
-          <span class="state-grade-card-num">${escapeHtml(shortLabel)}</span>
         </a>
       `;
     }).join('');
