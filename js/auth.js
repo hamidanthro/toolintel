@@ -1167,6 +1167,7 @@ if ('serviceWorker' in navigator) {
     pushStats,
     pullStats,
     api,
+    endpoint() { return ENDPOINT; },
     earn,
     lose,
     startHeartbeat,

@@ -414,7 +414,9 @@
           grade: curr.grade,
           count: GENERATE,
           seed,
-          topics
+          topics,
+          sessionId: (window.StarTestLake && window.StarTestLake.startSession()) || null,
+          recentContentIds: (window.StarTestLake && window.StarTestLake.getRecent()) || []
         })
       });
       if (res.status === 403) {
@@ -480,6 +482,8 @@
       || { teks: g.teks || '', title: g.lessonTitle || '' };
     return {
       id: g.id,
+      contentId: g.contentId || null,
+      poolKey: g.poolKey || null,
       type: g.type,
       prompt: g.prompt,
       choices: g.choices,
@@ -617,10 +621,26 @@
       markSeen(q.id);
       qbox.innerHTML = renderQuestion(q, isLocked);
       attachQuestionHandlers(q);
+      // Lake: record question shown (Prompt I1)
+      if (window.StarTestLake && q.contentId) {
+        window.StarTestLake.onQuestionShown({
+          contentId: q.contentId,
+          poolKey: q.poolKey,
+          state: STATE_SLUG_RESOLVED,
+          grade: curr.grade,
+          subject: SUBJECT_SLUG_RESOLVED
+        });
+      }
     }
 
     function attachQuestionHandlers(q) {
       const form = qbox.querySelector('form');
+      // Lake: track radio choice changes for rapid-flip detection (Prompt I1)
+      if (window.StarTestLake) {
+        form.querySelectorAll('input[type="radio"][name="ans"]').forEach(r => {
+          r.addEventListener('change', () => window.StarTestLake.onChoiceFlip());
+        });
+      }
       // Esc clears the typed answer (free-response only).
       const numInput = form.querySelector('.num-input');
       if (numInput) {
@@ -650,6 +670,20 @@
           return;
         }
         const isCorrect = checkAnswer(q, userAnswer);
+        // Lake: record answer event (Prompt I1)
+        if (window.StarTestLake && q.contentId) {
+          let pickedIdx = null;
+          if (q.type === 'multiple_choice' && Array.isArray(q.choices)) {
+            const idx = q.choices.indexOf(userAnswer);
+            if (idx >= 0) pickedIdx = idx;
+          }
+          window.StarTestLake.onAnswered({
+            contentId: q.contentId,
+            poolKey: q.poolKey,
+            pickedChoice: pickedIdx,
+            isCorrect
+          });
+        }
         if (isCorrect) correct++;
         if (isCorrect) spawnPointsPop(qbox, difficultyCents(q));
         if (isCorrect) {

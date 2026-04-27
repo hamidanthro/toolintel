@@ -39,10 +39,13 @@
         $('tab-users').hidden = tab !== 'users';
         const tabStates = $('tab-states');
         if (tabStates) tabStates.hidden = tab !== 'states';
+        const tabContent = $('tab-content');
+        if (tabContent) tabContent.hidden = tab !== 'content';
         if (tab === 'orders') loadOrders();
         if (tab === 'users') { loadLiveUsers(); startLiveUsersPolling(); }
         else { stopLiveUsersPolling(); }
         if (tab === 'states') loadStatesTab();
+        if (tab === 'content') loadContentTab();
       });
     });
   }
@@ -681,4 +684,50 @@
     }, 80);
   });
   window.onSTAARLogin = () => { if (gate()) { loadToys(); loadOrders(); loadLiveUsers(); } };
+
+  // ---- Content lake (Prompt I1) ----
+  async function loadContentTab() {
+    try {
+      const data = await Auth.api('adminPoolStats', { token: Auth.token() });
+      const total = data.totalQuestions || 0;
+      $('pool-total').textContent = total.toLocaleString();
+      $('flagged-count').textContent = (data.flaggedCount || 0).toLocaleString();
+      $('cache-hit-rate').textContent = (data.cacheHitRate != null)
+        ? `${Math.round(data.cacheHitRate * 100)}%` : '—';
+      const badge = $('content-tab-badge');
+      if (badge) {
+        if (total > 0) { badge.textContent = total; badge.hidden = false; }
+        else { badge.hidden = true; }
+      }
+      const tbody = $('pool-tbody');
+      const empty = $('content-empty');
+      const wrap = $('content-table-wrap');
+      const buckets = data.buckets || [];
+      if (!buckets.length) {
+        if (wrap) wrap.hidden = true;
+        if (empty) empty.hidden = false;
+      } else {
+        if (wrap) wrap.hidden = false;
+        if (empty) empty.hidden = true;
+        tbody.innerHTML = buckets.slice(0, 50).map(b => {
+          const parts = (b.poolKey || '').split('#');
+          const [state, grade, subject, type] = [parts[0] || '—', parts[1] || '—', parts[2] || '—', parts.slice(3).join('#') || '—'];
+          return `<tr>
+            <td>${escapeHtml(state)}</td>
+            <td>${escapeHtml(grade)}</td>
+            <td>${escapeHtml(subject)}</td>
+            <td>${escapeHtml(type)}</td>
+            <td>${(b.count || 0).toLocaleString()}</td>
+            <td>${Math.round((b.avgQuality || 0) * 100)}%</td>
+            <td>${(b.servedSum || 0).toLocaleString()}</td>
+          </tr>`;
+        }).join('');
+      }
+      const updated = $('content-updated');
+      if (updated) updated.textContent = new Date().toLocaleTimeString();
+    } catch (e) {
+      const tbody = $('pool-tbody');
+      if (tbody) tbody.innerHTML = `<tr><td colspan="7" style="color:var(--error);">${escapeHtml(e.message)}</td></tr>`;
+    }
+  }
 })();

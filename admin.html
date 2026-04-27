@@ -66,6 +66,7 @@
           <button class="admin-tab" data-tab="orders">Orders <span class="tab-badge" id="orders-tab-badge" hidden>0</span></button>
           <button class="admin-tab" data-tab="users">Users <span class="tab-badge tab-badge--live" id="users-tab-badge" hidden>0</span></button>
           <button class="admin-tab" data-tab="states">States <span class="tab-badge" id="states-tab-badge" hidden>0</span></button>
+          <button class="admin-tab" data-tab="content">Content <span class="tab-badge" id="content-tab-badge" hidden>0</span></button>
         </div>
 
         <div id="tab-toys">
@@ -201,6 +202,54 @@
             <p class="admin-empty-text">As users sign up and pick their state, distribution will appear here.</p>
           </div>
         </div>
+
+        <div id="tab-content" hidden>
+          <div class="admin-stats">
+            <div class="admin-stat-card">
+              <div class="admin-stat-label">Total questions in pool</div>
+              <div class="admin-stat-value" id="pool-total">—</div>
+              <div class="admin-stat-meta">across all states</div>
+            </div>
+            <div class="admin-stat-card admin-stat-card--practicing">
+              <div class="admin-stat-label"><span class="live-dot live-dot--gold"></span> Cache hit rate (24h)</div>
+              <div class="admin-stat-value" id="cache-hit-rate">—</div>
+              <div class="admin-stat-meta">higher is cheaper</div>
+            </div>
+            <div class="admin-stat-card">
+              <div class="admin-stat-label">Flagged for review</div>
+              <div class="admin-stat-value" id="flagged-count">—</div>
+              <div class="admin-stat-meta">user reports</div>
+            </div>
+          </div>
+
+          <div class="live-users-head">
+            <h2 style="margin:0;">Pool by bucket</h2>
+            <span class="live-users-meta" id="content-updated">—</span>
+          </div>
+
+          <div class="admin-table-wrap" id="content-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>State</th>
+                  <th>Grade</th>
+                  <th>Subject</th>
+                  <th>Type</th>
+                  <th>Questions</th>
+                  <th>Avg quality</th>
+                  <th>Total served</th>
+                </tr>
+              </thead>
+              <tbody id="pool-tbody"></tbody>
+            </table>
+          </div>
+
+          <div class="admin-empty" id="content-empty" hidden>
+            <div class="admin-empty-icon" aria-hidden="true">🪣</div>
+            <h3 class="admin-empty-title">Pool is empty</h3>
+            <p class="admin-empty-text">As kids practice, generated questions are saved here for reuse. Cold-start in I2 will pre-fill Texas math.</p>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -226,12 +275,13 @@
   <script src="js/prefs.js?v=20260426a"></script>
   <script src="js/fx.js?v=20260426a"></script>
   <script src="js/states-data.js?v=20260427b"></script>
-  <script src="js/auth.js?v=20260427t"></script>
+  <script src="js/auth.js?v=20260427u"></script>
+  <script src="js/lake-events.js?v=20260427a"></script>
   <script src="js/pwa-install.js?v=20260427a" defer></script>
   <script src="js/friends.js?v=20260426b"></script>
   <script>window.STAARAuth = window.STAARAuth || {}; window.STAARAuth.requireLoginOnLoad = true;</script>
   <script>window.STAAR_TUTOR_ENDPOINT = 'https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com/';</script>
-  <script src="js/admin.js?v=20260427b"></script>
+  <script src="js/admin.js?v=20260427h"></script>
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
   <script src="https://api.replyquik.com/widget.js" data-id="9686745a-93c1-4761-af94-f15815680bc3"></script>
 </body>

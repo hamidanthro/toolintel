@@ -23,6 +23,7 @@ const {
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const crypto = require('crypto');
+const lake = require('./content-lake');
 
 const MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
 const SECRET_NAME = process.env.OPENAI_SECRET_NAME || 'staar-tutor/openai-api-key';
@@ -244,6 +245,12 @@ exports.handler = async (event) => {
   if (action === 'chatHistory')    return await handleChatHistory(payload);
   if (action === 'chatInbox')      return await handleChatInbox(payload);
 
+  // ===== Content lake (Prompt I1) =====
+  if (action === 'requestExplanation') return await handleRequestExplanation(payload);
+  if (action === 'recordEvent')        return await handleRecordEvent(payload);
+  if (action === 'reportContent')      return await handleReportContent(payload);
+  if (action === 'adminPoolStats')     return await handleAdminPoolStats(payload);
+
   if (!payload.question || payload.studentAnswer == null || payload.correctAnswer == null) {
     return bad(400, 'Missing required fields: question, studentAnswer, correctAnswer');
   }
@@ -365,6 +372,37 @@ async function handleGenerate(payload) {
     if (!questions.length) {
       return bad(502, 'No questions generated');
     }
+
+    // ===== Content-lake hook (Prompt I1) =====
+    // Stamp each question with a contentId + poolKey, and save to the pool
+    // best-effort (does not block the response). Embeddings + dedup happen
+    // inside the lake. After this prompt ships, every generated question
+    // contributes to the compounding asset.
+    const userIdForLake = (await verifyToken(payload.token).catch(() => null))?.username || 'guest';
+    questions.forEach(q => {
+      const teks = (q.teks || '').toLowerCase().replace(/[^a-z0-9.-]/g, '') || 'unknown';
+      const poolKey = `${effectiveState}#${grade}#${effectiveSubject}#teks-${teks}`;
+      const contentId = lake.generateId('q');
+      q.contentId = contentId;
+      q.poolKey = poolKey;
+      // Fire-and-forget save with embedding + dedup
+      lake.savePoolItem({
+        poolKey,
+        candidate: { ...q, _generatedBy: MODEL, _promptVersion: 'v1' },
+        stateSlug: effectiveState,
+        gradeSlug: String(grade),
+        subject: effectiveSubject,
+        questionType: `teks-${teks}`,
+        generatedByUserId: userIdForLake,
+        apiKey,
+        contentId
+      }).then(r => {
+        if (!r.saved) {
+          // duplicate or invalid — pool stays clean
+        }
+      }).catch(err => console.warn('[lake] save failed:', err.message));
+    });
+
     return ok({ questions, model: MODEL, seed });
   } catch (err) {
     console.error('Generate error:', err.message || err);
@@ -1996,4 +2034,165 @@ async function handleSetState(payload) {
     ExpressionAttributeValues: { ':s': state }
   }));
   return ok({ state });
+}
+
+// ============================================================
+// CONTENT LAKE HANDLERS (Prompt I1)
+// ============================================================
+
+async function handleRequestExplanation(payload) {
+  const auth = await verifyToken(payload.token);
+  if (!auth) return bad(401, 'Unauthorized');
+
+  const { contentId, poolKey, wrongChoiceIndex, detailLevel = 'detailed' } = payload;
+  if (!contentId || typeof wrongChoiceIndex !== 'number') {
+    return bad(400, 'contentId and wrongChoiceIndex required');
+  }
+
+  // Look up the question for context (poolKey may be missing on legacy clients)
+  let question = null;
+  if (poolKey) {
+    try {
+      const get = await ddb.send(new GetCommand({
+        TableName: 'staar-content-pool',
+        Key: { poolKey, contentId }
+      }));
+      question = get.Item || null;
+    } catch (e) { /* fall through */ }
+  }
+
+  const apiKey = await getApiKey().catch(() => null);
+
+  const result = await lake.getOrGenerateExplanation({
+    contentId,
+    wrongChoiceIndex,
+    detailLevel,
+    generator: async () => {
+      // Use existing tutor system prompt for explainer style
+      const promptText = question
+        ? `The student got this question wrong. They picked choice ${wrongChoiceIndex}. Explain why their answer is wrong and walk them toward the correct answer.\n\nQuestion: ${question.question || question.prompt}\nChoices: ${(question.choices || []).join(' | ')}\nCorrect answer: ${question.answer}`
+        : `Explain why choice ${wrongChoiceIndex} is wrong (detail level: ${detailLevel}).`;
+      const completion = await callOpenAI(apiKey, {
+        model: MODEL,
+        messages: [
+          { role: 'system', content: buildSystemPrompt(question?.grade) },
+          { role: 'user', content: promptText }
+        ],
+        max_tokens: 350,
+        temperature: 0.7
+      });
+      const text = completion?.choices?.[0]?.message?.content || '';
+      return { explanation: text, _generatedBy: MODEL, _promptVersion: 'v1' };
+    }
+  });
+
+  // Log the event (fire-and-forget)
+  lake.recordEvent({
+    eventType: 'requested-explanation',
+    contentId,
+    userId: auth.username || auth.userId,
+    sessionId: payload.sessionId,
+    state: question?.state, grade: question?.grade, subject: question?.subject,
+    poolKey: poolKey || null,
+    meta: { wrongChoiceIndex, detailLevel, fromCache: result.fromCache }
+  });
+
+  return ok({
+    explanation: result.content.explanation,
+    fromCache: result.fromCache
+  });
+}
+
+async function handleRecordEvent(payload) {
+  const auth = await verifyToken(payload.token);
+  // Anonymous events allowed for guest tracking
+  const userId = auth?.username || auth?.userId || 'guest';
+
+  const { eventType, contentId, sessionId, pickedChoice, timeToAnswer, meta, poolKey, state, grade, subject } = payload;
+  if (!eventType) return bad(400, 'eventType required');
+
+  await lake.recordEvent({
+    eventType, contentId, userId, sessionId,
+    state, grade, subject, poolKey,
+    pickedChoice, timeToAnswer, meta
+  });
+
+  // For answered events, increment pool counters
+  if (contentId && poolKey && (eventType === 'answered-correct' || eventType === 'answered-incorrect')) {
+    const field = eventType === 'answered-correct' ? 'timesCorrect' : 'timesIncorrect';
+    ddb.send(new UpdateCommand({
+      TableName: 'staar-content-pool',
+      Key: { poolKey, contentId },
+      UpdateExpression: `ADD ${field} :one`,
+      ExpressionAttributeValues: { ':one': 1 }
+    })).catch(() => {});
+  }
+
+  return ok({ recorded: true });
+}
+
+async function handleReportContent(payload) {
+  const auth = await verifyToken(payload.token);
+  if (!auth) return bad(401, 'Unauthorized');
+
+  const { contentId, poolKey, reason } = payload;
+  if (!contentId || !poolKey) return bad(400, 'contentId and poolKey required');
+
+  await ddb.send(new UpdateCommand({
+    TableName: 'staar-content-pool',
+    Key: { poolKey, contentId },
+    UpdateExpression: 'ADD reportedCount :one SET reviewStatus = :flagged',
+    ExpressionAttributeValues: { ':one': 1, ':flagged': 'flagged' }
+  })).catch(err => console.warn('[reportContent] update failed:', err.message));
+
+  await lake.recordEvent({
+    eventType: 'reported-bad',
+    contentId,
+    userId: auth.username || auth.userId,
+    sessionId: payload.sessionId,
+    poolKey,
+    meta: { reason: reason || 'unspecified' }
+  });
+
+  return ok({ reported: true });
+}
+
+async function handleAdminPoolStats(payload) {
+  const adminCheck = await requireAdmin(payload);
+  if (adminCheck.error) return adminCheck.error;
+
+  const scan = await ddb.send(new ScanCommand({
+    TableName: 'staar-content-pool',
+    ProjectionExpression: 'poolKey, qualityScore, timesServed, reportedCount, reviewStatus, #status',
+    ExpressionAttributeNames: { '#status': 'status' }
+  }));
+
+  const items = scan.Items || [];
+  const buckets = {};
+  let totalQuestions = 0;
+  let flaggedCount = 0;
+
+  items.forEach(item => {
+    if (item.status && item.status !== 'active') return;
+    totalQuestions++;
+    if (item.reviewStatus === 'flagged') flaggedCount++;
+    const key = item.poolKey;
+    if (!buckets[key]) {
+      buckets[key] = { poolKey: key, count: 0, qualitySum: 0, servedSum: 0 };
+    }
+    buckets[key].count++;
+    buckets[key].qualitySum += (item.qualityScore || 0.5);
+    buckets[key].servedSum += (item.timesServed || 0);
+  });
+
+  const bucketList = Object.values(buckets)
+    .map(b => ({ ...b, avgQuality: b.count ? b.qualitySum / b.count : 0 }))
+    .sort((a, b) => b.servedSum - a.servedSum);
+
+  return ok({
+    totalQuestions,
+    flaggedCount,
+    cacheHitRate: null, // wired in I2 (events aggregator)
+    buckets: bucketList
+  });
 }
