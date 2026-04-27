@@ -20,7 +20,9 @@
   const DETECTED_TS_KEY = 'startest.state-detected-ts';
   const DETECT_TTL_MS = 24 * 60 * 60 * 1000; // 24h
   const GEOLOCATE_URL = 'https://ipapi.co/json/';
-  const GEOLOCATE_TIMEOUT_MS = 2500;
+  // Hard cap: if we can't locate the user's state in 10s, give up and
+  // hide the spinner. Anything longer than this is just noise to the user.
+  const GEOLOCATE_TIMEOUT_MS = 10000;
 
   function $(id) { return document.getElementById(id); }
 
@@ -241,11 +243,23 @@
     const controller = new AbortController();
     const timer = setTimeout(function () { controller.abort(); }, GEOLOCATE_TIMEOUT_MS);
 
+    // Belt-and-suspenders: even if the fetch promise never settles
+    // (some browsers swallow aborts on offline networks), force the
+    // spinner off after the same 10s window. Idempotent.
+    const safetyHide = setTimeout(function () {
+      if (status) status.hidden = true;
+    }, GEOLOCATE_TIMEOUT_MS);
+
+    function done() {
+      clearTimeout(timer);
+      clearTimeout(safetyHide);
+      if (status) status.hidden = true;
+    }
+
     fetch(GEOLOCATE_URL, { signal: controller.signal })
       .then(function (r) { return r.json(); })
       .then(function (data) {
-        clearTimeout(timer);
-        if (status) status.hidden = true;
+        done();
 
         const abbr = data.region_code;
         const country = data.country_code;
@@ -258,10 +272,7 @@
         localStorage.setItem(DETECTED_TS_KEY, String(Date.now()));
         showDetected(state.slug, "Looks like you're in");
       })
-      .catch(function () {
-        clearTimeout(timer);
-        if (status) status.hidden = true;
-      });
+      .catch(done);
   }
 
   // Public API
