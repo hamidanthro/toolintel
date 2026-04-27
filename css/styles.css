@@ -10821,7 +10821,7 @@ body.state-page > * {
 .breadcrumb-nav {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 12px 32px 0;
+  padding: 12px 40px 0;
 }
 
 .breadcrumb {
@@ -10949,36 +10949,15 @@ body.state-page > * {
   max-width: 760px;
 }
 
-.state-hero-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 14px;
-  margin-bottom: 18px;
-  font-family: 'Inter';
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: rgba(251, 191, 36, 0.95);
-  background: rgba(251, 191, 36, 0.08);
-  border: 1px solid rgba(251, 191, 36, 0.2);
-  border-radius: 999px;
-}
-
-.state-hero-pin {
-  display: inline-flex;
-  color: #fbbf24;
-}
-
 .state-hero-title {
   font-family: 'Instrument Serif', serif;
   font-size: 45px;
   font-weight: 400;
-  line-height: 1.05;
+  line-height: 1.08;
   letter-spacing: -0.025em;
   color: #ffffff;
-  margin: 0 0 16px 0;
+  margin: 0 0 20px 0;
+  max-width: 18ch;
 }
 
 .state-hero-title .hero-test-name {
@@ -10994,7 +10973,7 @@ body.state-page > * {
   font-size: 17px;
   line-height: 1.5;
   color: rgba(255, 255, 255, 0.7);
-  margin: 0 0 32px 0;
+  margin: 0 0 40px 0;
   max-width: 600px;
 }
 
@@ -11002,9 +10981,9 @@ body.state-page > * {
   max-width: 1100px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-  gap: 56px;
-  padding: 0 32px;
+  grid-template-columns: 7fr 5fr;
+  gap: 72px;
+  padding: 0 40px;
   align-items: start;
 }
 
@@ -11016,9 +10995,9 @@ body.state-page > * {
 }
 
 .state-hero-meta {
-  margin-top: 24px;
+  margin-top: 32px;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
-  padding-top: 18px;
+  padding-top: 20px;
 }
 
 .state-hero-meta-list {
@@ -11027,20 +11006,21 @@ body.state-page > * {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: 18px 36px;
+  gap: 16px 48px;
+  align-items: baseline;
 }
 
 .state-hero-meta-item {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 }
 
 .state-hero-meta-label {
   font-family: 'Inter';
   font-size: 10px;
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.35);
   margin: 0;
@@ -11048,7 +11028,7 @@ body.state-page > * {
 
 .state-hero-meta-value {
   font-family: 'Inter';
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.8);
   letter-spacing: -0.005em;
@@ -11080,25 +11060,14 @@ body.state-page > * {
 }
 
 .state-grade-head {
-  margin-bottom: 28px;
-}
-
-.state-grade-eyebrow {
-  display: inline-block;
-  font-family: 'Inter';
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(251, 191, 36, 0.85);
-  margin: 0 0 12px 0;
+  margin-bottom: 24px;
 }
 
 .state-grade-title {
   font-family: 'Instrument Serif', serif;
-  font-size: 40px;
+  font-size: 24px;
   font-weight: 400;
-  line-height: 1.05;
+  line-height: 1.1;
   letter-spacing: -0.02em;
   color: #ffffff;
   margin: 0 0 10px 0;
@@ -11114,19 +11083,20 @@ body.state-page > * {
 .state-grade-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: 8px;
 }
 
 .state-grade-card {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px;
+  justify-content: flex-start;
+  min-height: 64px;
+  padding: 18px 22px 18px 24px;
   background: linear-gradient(180deg,
     rgba(40, 53, 91, 0.5) 0%,
     rgba(20, 29, 51, 0.5) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
   text-decoration: none;
   font-family: 'Inter';
   cursor: pointer;
@@ -11150,22 +11120,15 @@ body.state-page > * {
 }
 
 .state-grade-card-name {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   color: #ffffff;
   letter-spacing: -0.005em;
 }
 
-.state-grade-card-num {
-  font-family: 'Instrument Serif', serif;
-  font-size: 22px;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.25);
-  letter-spacing: -0.02em;
-}
-
 .state-trust-section {
-  padding: 48px 32px;
+  padding: 64px 40px 56px;
+  margin-top: 48px;
   border-top: 1px solid rgba(255, 255, 255, 0.04);
 }
 
@@ -11300,37 +11263,33 @@ body.state-page > * {
 }
 
 @media (max-width: 768px) {
-  .breadcrumb-nav { padding: 12px 16px 0; }
-  .state-hero { padding: 20px 16px 32px; }
-  .state-hero-eyebrow { font-size: 11px; padding: 5px 12px; margin-bottom: 14px; }
+  .breadcrumb-nav { padding: 12px 20px 0; }
+  .state-hero { padding: 20px 20px 32px; }
   .state-hero-title { font-size: 29px; }
-  .state-hero-sub { font-size: 15px; margin-bottom: 24px; }
+  .state-hero-sub { font-size: 15px; margin-bottom: 28px; }
   .state-fold {
     grid-template-columns: 1fr;
-    gap: 24px;
-    padding: 0 16px;
+    gap: 32px;
+    padding: 0 20px;
   }
   .state-hero-meta {
-    border-left: 0;
     border-top: 1px solid rgba(255, 255, 255, 0.06);
-    padding-left: 0;
     padding-top: 16px;
   }
   .state-hero-meta-list {
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 20px 28px;
+    gap: 16px 32px;
   }
   .state-hero-meta-label { font-size: 10px; }
-  .state-hero-meta-value { font-size: 13px; }
-  .state-grade-section { padding: 8px 16px 32px; }
-  .state-grade-title { font-size: 28px; }
+  .state-hero-meta-value { font-size: 14px; }
+  .state-grade-section { padding: 8px 20px 32px; }
+  .state-grade-title { font-size: 22px; }
   .state-grade-sub { font-size: 14px; }
   .state-grade-grid { grid-template-columns: 1fr; gap: 8px; }
-  .state-grade-card { padding: 14px 18px; }
+  .state-grade-card { padding: 16px 20px 16px 22px; min-height: 60px; }
   .state-grade-card-name { font-size: 15px; }
-  .state-grade-card-num { font-size: 24px; }
-  .state-trust-section { padding: 32px 16px; }
+  .state-trust-section { padding: 32px 20px; margin-top: 32px; }
   .state-trust-title { font-size: 26px; }
   .state-trust-grid { grid-template-columns: 1fr; gap: 10px; }
   .state-trust-card { padding: 18px; }
@@ -11339,7 +11298,7 @@ body.state-page > * {
     align-items: stretch;
     gap: 12px;
     padding: 20px;
-    margin: 24px 16px 32px;
+    margin: 24px 20px 32px;
     text-align: center;
   }
   .state-cta-strip-btn { justify-content: center; }
@@ -11350,22 +11309,15 @@ body.state-page > * {
 
 @media (max-width: 380px) {
   .state-hero-title { font-size: 26px; }
-  .state-grade-title { font-size: 26px; }
+  .state-grade-title { font-size: 20px; }
 }
 
 @media (min-width: 1024px) {
-  .state-hero { padding: 56px 32px 64px; }
-  .state-hero-title { font-size: 51px; }
+  .state-fold > .state-hero { padding-top: 8px; padding-bottom: 24px; }
+  .state-hero-title { font-size: 45px; }
   .state-hero-sub { font-size: 18px; }
-  .state-grade-section { padding: 16px 32px 64px; }
-  .state-grade-title { font-size: 44px; }
-  .state-grade-grid {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 12px;
-  }
-  .state-grade-card { padding: 18px 22px; }
-  .state-grade-card-num { font-size: 26px; }
-  .state-trust-section { padding: 64px 32px; }
+  .state-fold > .state-grade-section { padding-top: 8px; padding-bottom: 16px; }
+  .state-trust-section { padding: 80px 40px 72px; margin-top: 64px; }
   .state-trust-title { font-size: 44px; }
   .state-trust-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
 }
