@@ -694,6 +694,15 @@
       $('flagged-count').textContent = (data.flaggedCount || 0).toLocaleString();
       $('cache-hit-rate').textContent = (data.cacheHitRate != null)
         ? `${Math.round(data.cacheHitRate * 100)}%` : '—';
+      const spendEl = $('spend-today');
+      const spendMeta = $('spend-today-meta');
+      if (spendEl) spendEl.textContent = (typeof data.spendToday === 'number')
+        ? `$${data.spendToday.toFixed(3)}` : '—';
+      if (spendMeta) {
+        const tk = (data.tokensToday || 0).toLocaleString();
+        const gen = (data.generatedToday || 0).toLocaleString();
+        spendMeta.textContent = `${tk} tokens · ${gen} generated`;
+      }
       const badge = $('content-tab-badge');
       if (badge) {
         if (total > 0) { badge.textContent = total; badge.hidden = false; }

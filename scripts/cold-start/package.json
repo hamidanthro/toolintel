@@ -1,0 +1,17 @@
+{
+  "name": "staar-cold-start",
+  "version": "1.0.0",
+  "description": "One-time and ad-hoc question pool generation for the content lake",
+  "main": "run.js",
+  "scripts": {
+    "plan":    "node run.js --plan --state texas --subject math",
+    "preview": "node run.js --preview --state texas --subject math --target 50",
+    "texas-math": "node run.js --state texas --subject math --target 50 --concurrency 3"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.658.0",
+    "@aws-sdk/lib-dynamodb": "^3.658.0",
+    "minimist": "^1.2.8",
+    "openai": "^4.67.0"
+  }
+}

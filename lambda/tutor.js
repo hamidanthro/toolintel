@@ -401,6 +401,22 @@ async function handleGenerate(payload) {
           // duplicate or invalid — pool stays clean
         }
       }).catch(err => console.warn('[lake] save failed:', err.message));
+
+      // I2: log a 'generated' event so we can compute spend + cache miss rate.
+      lake.recordEvent({
+        eventType: 'generated',
+        userId: userIdForLake,
+        contentId,
+        poolKey,
+        state: effectiveState,
+        grade: String(grade),
+        subject: effectiveSubject,
+        meta: {
+          model: MODEL,
+          tokensUsed: q._tokensUsed || 0,
+          fromCache: false
+        }
+      }).catch(err => console.warn('[lake] event failed:', err.message));
     });
 
     return ok({ questions, model: MODEL, seed });
@@ -2189,10 +2205,47 @@ async function handleAdminPoolStats(payload) {
     .map(b => ({ ...b, avgQuality: b.count ? b.qualitySum / b.count : 0 }))
     .sort((a, b) => b.servedSum - a.servedSum);
 
+  // I2: scan today's events to compute generation count + cache hit rate + token spend.
+  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  let generatedCount = 0, servedCount = 0, tokensToday = 0;
+  try {
+    let lastKey;
+    do {
+      const evScan = await ddb.send(new ScanCommand({
+        TableName: 'staar-content-events',
+        FilterExpression: 'begins_with(eventDateKey, :d)',
+        ExpressionAttributeValues: { ':d': today },
+        ProjectionExpression: 'eventType, meta',
+        ExclusiveStartKey: lastKey
+      }));
+      for (const e of (evScan.Items || [])) {
+        if (e.eventType === 'generated') {
+          generatedCount++;
+          tokensToday += Number(e.meta?.tokensUsed || 0);
+        } else if (e.eventType === 'served') {
+          servedCount++;
+        }
+      }
+      lastKey = evScan.LastEvaluatedKey;
+    } while (lastKey);
+  } catch (err) {
+    console.warn('[adminPoolStats] events scan failed:', err.message);
+  }
+
+  // gpt-4o-mini blended ≈ $0.40/M tokens; embeddings are negligible.
+  const spendToday = (tokensToday / 1_000_000) * 0.40;
+  const cacheHitRate = servedCount > 0
+    ? Math.max(0, 1 - (generatedCount / servedCount))
+    : null;
+
   return ok({
     totalQuestions,
     flaggedCount,
-    cacheHitRate: null, // wired in I2 (events aggregator)
+    cacheHitRate,
+    spendToday: Number(spendToday.toFixed(4)),
+    tokensToday,
+    generatedToday: generatedCount,
+    servedToday: servedCount,
     buckets: bucketList
   });
 }
