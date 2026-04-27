@@ -10821,7 +10821,7 @@ body.state-page > * {
 .breadcrumb-nav {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 12px 40px 0;
+  padding: 48px 40px 0;
 }
 
 .breadcrumb {
@@ -10939,6 +10939,7 @@ body.state-page > * {
 .state-content {
   max-width: 1100px;
   margin: 0 auto;
+  padding-top: 32px;
 }
 
 .state-hero {
@@ -10957,7 +10958,7 @@ body.state-page > * {
   letter-spacing: -0.025em;
   color: #ffffff;
   margin: 0 0 20px 0;
-  max-width: 18ch;
+  max-width: 620px;
 }
 
 .state-hero-title .hero-test-name {
@@ -10998,6 +10999,7 @@ body.state-page > * {
   margin-top: 32px;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
   padding-top: 20px;
+  max-width: 620px;
 }
 
 .state-hero-meta-list {
@@ -11263,9 +11265,11 @@ body.state-page > * {
 }
 
 @media (max-width: 768px) {
-  .breadcrumb-nav { padding: 12px 20px 0; }
+  .breadcrumb-nav { padding: 24px 20px 0; }
+  .state-content { padding-top: 20px; }
   .state-hero { padding: 20px 20px 32px; }
-  .state-hero-title { font-size: 29px; }
+  .state-hero-title { font-size: 29px; max-width: 100%; }
+  .state-hero-meta { max-width: 100%; }
   .state-hero-sub { font-size: 15px; margin-bottom: 28px; }
   .state-fold {
     grid-template-columns: 1fr;
