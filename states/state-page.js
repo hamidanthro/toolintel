@@ -15,7 +15,7 @@
   // Hard kill: no matter what, hide the loading spinner after 10s.
   setTimeout(function () {
     const loading = document.getElementById('state-loading');
-    if (loading) loading.hidden = true;
+    if (loading) { loading.hidden = true; loading.style.display = 'none'; }
   }, 10000);
 
   function init() {
@@ -50,13 +50,14 @@
     populateCTA(state);
 
     // Show
-    document.getElementById('state-loading').hidden = true;
+    const loading = document.getElementById('state-loading');
+    if (loading) { loading.hidden = true; loading.style.display = 'none'; }
     document.getElementById('state-content').hidden = false;
   }
 
   function showError() {
     const loading = document.getElementById('state-loading');
-    if (loading) loading.hidden = true;
+    if (loading) { loading.hidden = true; loading.style.display = 'none'; }
     const err = document.getElementById('state-error');
     if (err) err.hidden = false;
     document.title = 'State not found — StarTest';
