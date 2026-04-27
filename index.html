@@ -30,7 +30,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260427kk" />
+  <link rel="stylesheet" href="css/styles.css?v=20260427ll" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -79,7 +79,18 @@
         <p class="hero-tagline-mobile">Practice. Earn. Get toys.</p>
         <p><strong>AI-powered, intelligent practice</strong> aligned to your state's standards — for grades 3–8 and high school. Math, ELA, science, and more. An adaptive AI tutor builds skills question by question, gives full-length tests, earns real toys we ship to your door, and tracks progress parents trust.</p>
         <div class="hero-cta">
-          <a href="grades.html" class="btn btn-primary">Start practicing</a>
+          <label for="hero-state-select" class="visually-hidden">Choose your state</label>
+          <div class="hero-state-select-wrap">
+            <select id="hero-state-select" class="hero-state-select" aria-label="Choose your state">
+              <option value="">Choose your state</option>
+            </select>
+            <span class="hero-state-select-chevron" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </span>
+          </div>
+          <button type="button" id="hero-go-btn" class="btn btn-primary hero-go-btn" disabled aria-disabled="true">Go</button>
           <a href="about.html" class="btn btn-secondary">How it works</a>
         </div>
       </div>
@@ -193,7 +204,7 @@
         </div>
         <div class="continue-context-item">
           <span class="continue-context-label">Subject</span>
-          <span class="continue-context-value">Math</span>
+          <span class="continue-context-value" id="sdash-ctx-subject">Math</span>
         </div>
       </div>
     </section>
@@ -763,12 +774,13 @@
 
   <script src="js/prefs.js?v=20260426a"></script>
   <script src="js/fx.js?v=20260426a"></script>
-  <script src="js/states-data.js?v=20260427b"></script>
+  <script src="js/states-data.js?v=20260427d"></script>
+  <script src="js/hero-state-go.js?v=20260427a"></script>
   <script src="js/state-picker.js?v=20260427a"></script>
   <script src="js/auth.js?v=20260427u"></script>
   <script src="js/lake-events.js?v=20260427a"></script>
   <script src="js/pwa-install.js?v=20260427a" defer></script>
-  <script src="js/dashboard.js?v=20260427a"></script>
+  <script src="js/dashboard.js?v=20260427b"></script>
   <script src="js/friends.js?v=20260426b"></script>
   <script src="js/staar-data.js"></script>
   <script src="js/grade-card.js?v=20260427r"></script>
