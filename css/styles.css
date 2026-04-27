@@ -10985,7 +10985,7 @@ body.state-page > * {
   grid-template-columns: 7fr 5fr;
   gap: 72px;
   padding: 0 40px;
-  align-items: start;
+  align-items: stretch;
 }
 
 .state-fold > .state-hero,
@@ -11084,8 +11084,12 @@ body.state-page > * {
 
 .state-grade-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
+}
+
+.state-grade-grid > .state-grade-card:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
 }
 
 .state-grade-card {
@@ -11262,6 +11266,23 @@ body.state-page > * {
 
 .state-cta-strip-btn:active {
   transform: scale(0.97);
+}
+
+@media (min-width: 769px) {
+  .state-fold > .state-hero {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .state-fold > .state-hero > .state-hero-inner {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  .state-fold > .state-hero .state-hero-meta {
+    margin-top: auto;
+    padding-top: 32px;
+  }
 }
 
 @media (max-width: 768px) {
