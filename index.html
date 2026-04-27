@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260427ac" />
+  <link rel="stylesheet" href="css/styles.css?v=20260427ad" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -349,7 +349,7 @@
 
   <header class="mobile-grade-intro" aria-hidden="false">
     <h1 class="mobile-grade-title">Pick your grade.</h1>
-    <p class="mobile-grade-subtitle">Practice begins immediately.</p>
+    <p class="mobile-grade-subtitle">No sign-up. Practice in seconds.</p>
   </header>
 
   <section id="grade-section" class="grades-section" hidden>
@@ -501,8 +501,20 @@
       grids.forEach(grid => {
         grid.innerHTML = '';
         const isDashboard = grid.id === 'grade-grid';
+        const isAnon = grid.id === 'grade-grid-anon';
+        const groupLabels = {
+          'grade-k':   'Elementary',
+          'grade-6':   'Middle School',
+          'algebra-1': 'High School'
+        };
         visible.forEach(g => {
           const isCurrent = !!(u && u.grade === g.slug);
+          if (isAnon && groupLabels[g.slug]) {
+            const lbl = document.createElement('div');
+            lbl.className = 'grade-group-label';
+            lbl.textContent = groupLabels[g.slug];
+            grid.appendChild(lbl);
+          }
           if (isDashboard) {
             // Compact dashboard tile with progress bar.
             let pct = 0, answered = 0, target = 300;

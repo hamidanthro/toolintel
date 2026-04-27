@@ -9358,3 +9358,273 @@ input[type="button"] {
     padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   }
 }
+
+/* ============================================================
+   PROMPT 32 — Mobile premium polish (17-point sweep)
+   Mobile-only. Desktop pixel-identical.
+   Restrained, deliberate, integrated. Premium = right-sized.
+   ============================================================ */
+.grade-group-label { display: none; }
+
+@media (max-width: 768px) {
+  /* ---------- Step 1: Header — no seam ---------- */
+  .site-header {
+    background: linear-gradient(180deg,
+      rgba(6, 13, 31, 0.7) 0%,
+      rgba(6, 13, 31, 0) 100%) !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  /* ---------- Step 2: Brand wordmark refinement ---------- */
+  .site-header .brand { gap: 7px !important; }
+  .site-header .brand svg,
+  .site-header .brand-icon {
+    width: 20px !important;
+    height: 20px !important;
+  }
+  .site-header .brand-text,
+  .site-header .brand span {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 16px !important;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    color: rgba(255, 255, 255, 0.95) !important;
+  }
+  .site-header .brand .logo-accent,
+  .site-header .brand-text .brand-accent {
+    color: #fbbf24 !important;
+    font-weight: 600;
+  }
+
+  /* ---------- Step 3: Headline right-size ---------- */
+  body.home-page .mobile-grade-intro {
+    padding: 28px 20px 20px !important;
+  }
+  body.home-page .mobile-grade-title {
+    font-size: 28px !important;
+    line-height: 1.08 !important;
+    letter-spacing: -0.02em !important;
+    color: rgba(255, 255, 255, 0.96) !important;
+    margin: 0 0 4px 0 !important;
+  }
+  body.home-page .mobile-grade-subtitle {
+    font-size: 13px !important;
+    color: rgba(255, 255, 255, 0.45) !important;
+  }
+
+  /* ---------- Step 4: Compact cards + ghost numerals ---------- */
+  body.home-page .grade-grid {
+    grid-template-columns: 1fr !important;
+    gap: 6px !important;
+    padding: 0 !important;
+  }
+  body.home-page .grade-card {
+    grid-template-columns: 1fr auto !important;
+    grid-template-areas: "title number" !important;
+    align-items: center;
+    padding: 14px 18px !important;
+    min-height: 0 !important;
+    border-radius: 14px !important;
+    background: linear-gradient(180deg,
+      rgba(40, 53, 91, 0.5) 0%,
+      rgba(20, 29, 51, 0.5) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset !important;
+    transition: transform 0.18s cubic-bezier(0.4,0,0.2,1),
+                background 0.18s cubic-bezier(0.4,0,0.2,1),
+                border-color 0.18s cubic-bezier(0.4,0,0.2,1) !important;
+  }
+  body.home-page .grade-card:active {
+    transform: scale(0.985);
+    background: linear-gradient(180deg,
+      rgba(50, 63, 101, 0.6) 0%,
+      rgba(30, 39, 61, 0.6) 100%) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+  }
+
+  /* Title — refined weight */
+  body.home-page .grade-card .grade-card-title {
+    grid-area: title;
+    font-size: 15px !important;
+    font-weight: 500 !important;
+    color: rgba(255, 255, 255, 0.92) !important;
+    margin: 0 !important;
+    letter-spacing: -0.01em !important;
+    line-height: 1.2 !important;
+  }
+
+  /* Ghost numeral — strip the box */
+  body.home-page .grade-card .grade-card-icon {
+    grid-area: number;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    width: auto !important;
+    height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    font-family: 'Instrument Serif', Georgia, serif !important;
+    font-size: 28px !important;
+    font-weight: 400 !important;
+    color: rgba(255, 255, 255, 0.18) !important;
+    line-height: 1 !important;
+    letter-spacing: -0.02em !important;
+    transition: color 0.18s ease;
+  }
+  body.home-page .grade-card:active .grade-card-icon {
+    color: rgba(255, 255, 255, 0.4) !important;
+  }
+
+  /* ---------- Step 5: Popular card — restrained gold ---------- */
+  body.home-page .grade-card.grade-card--popular {
+    grid-template-areas:
+      "title  number"
+      "meta   number" !important;
+    background: linear-gradient(180deg,
+      rgba(40, 53, 91, 0.5) 0%,
+      rgba(20, 29, 51, 0.5) 100%) !important;
+    border-color: rgba(251, 191, 36, 0.35) !important;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.04) inset,
+      0 0 0 1px rgba(251, 191, 36, 0.1) !important;
+    align-items: start;
+  }
+  body.home-page .grade-card.grade-card--popular .grade-card-icon {
+    color: rgba(251, 191, 36, 0.95) !important;
+    grid-row: span 2;
+    align-self: center;
+  }
+  body.home-page .grade-card.grade-card--popular::after {
+    content: 'Most picked' !important;
+    grid-area: meta;
+    font-family: 'Inter', system-ui, sans-serif !important;
+    font-size: 9.5px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.1em !important;
+    color: rgba(251, 191, 36, 0.85) !important;
+    margin-top: 3px !important;
+  }
+
+  /* ---------- Step 6: Group labels ---------- */
+  body.home-page .grade-group-label {
+    display: block;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: rgba(255, 255, 255, 0.35);
+    padding: 22px 4px 8px;
+    margin: 0;
+  }
+  body.home-page .grade-group-label:first-child,
+  body.home-page .grade-group-label:first-of-type {
+    padding-top: 4px;
+  }
+
+  /* ---------- Step 7: Tab bar backdrop blur ---------- */
+  .mobile-tabbar {
+    background: linear-gradient(180deg,
+      rgba(20, 29, 51, 0.85) 0%,
+      rgba(15, 22, 41, 0.92) 100%) !important;
+    backdrop-filter: blur(28px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+    border-top: none !important;
+    box-shadow:
+      0 -1px 0 rgba(255, 255, 255, 0.06) inset,
+      0 -12px 24px -8px rgba(0, 0, 0, 0.4) !important;
+    position: fixed;
+  }
+  .mobile-tabbar::before {
+    content: '';
+    position: absolute;
+    top: -32px;
+    left: 0;
+    right: 0;
+    height: 32px;
+    background: linear-gradient(180deg,
+      rgba(6, 13, 31, 0) 0%,
+      rgba(6, 13, 31, 0.6) 100%);
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  /* ---------- Step 8: Center Practice button — refined ---------- */
+  .mobile-tabbar .mobile-tab-center-button {
+    width: 52px !important;
+    height: 52px !important;
+    border: 2.5px solid #060d1f !important;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.35) inset,
+      0 0 0 1px rgba(251, 191, 36, 0.3),
+      0 6px 16px -4px rgba(251, 191, 36, 0.4),
+      0 2px 6px rgba(0, 0, 0, 0.25) !important;
+  }
+  .mobile-tabbar .mobile-tab--center {
+    margin-top: -18px !important;
+  }
+  .mobile-tabbar .mobile-tab--center .mobile-tab-label--center {
+    font-size: 9.5px !important;
+    margin-top: 2px !important;
+  }
+
+  /* ---------- Step 9: Atmosphere — softer ---------- */
+  body.home-page::before {
+    width: 240px !important;
+    height: 240px !important;
+    opacity: 0.35 !important;
+    top: -100px !important;
+    right: -80px !important;
+  }
+  body.home-page::after {
+    width: 240px !important;
+    height: 240px !important;
+    opacity: 0.2 !important;
+    bottom: 100px !important;
+    left: -80px !important;
+  }
+
+  /* ---------- Step 10: Status bar zone fix ---------- */
+  body.home-page {
+    padding-top: 0 !important;
+  }
+  .site-header {
+    padding-top: env(safe-area-inset-top, 0px) !important;
+    padding-bottom: 0 !important;
+    margin-top: 0 !important;
+  }
+  body.home-page > .top-spacer,
+  body.home-page > [class*="safe-area-spacer"] {
+    display: none !important;
+  }
+
+  /* ---------- Step 11: Footer minor refinement ---------- */
+  body.home-page .footer {
+    background: transparent !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.04) !important;
+    margin-top: 32px !important;
+    padding: 24px 18px calc(20px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  body.home-page .footer-mobile-links {
+    gap: 18px !important;
+  }
+  body.home-page .footer-mobile-links a {
+    font-size: 11px !important;
+    color: rgba(255, 255, 255, 0.4) !important;
+    letter-spacing: -0.005em;
+    transition: color 0.15s ease;
+  }
+  body.home-page .footer-mobile-links a:active {
+    color: rgba(251, 191, 36, 0.85) !important;
+  }
+}
+
+@media (max-width: 380px) {
+  body.home-page .mobile-grade-title {
+    font-size: 26px !important;
+  }
+}
