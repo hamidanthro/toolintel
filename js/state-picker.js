@@ -238,22 +238,19 @@
     }
 
     const status = $('state-detect-status');
-    if (status) status.hidden = false;
+    if (status) status.hidden = true; // never show the spinner — silent background detect
 
     const controller = new AbortController();
     const timer = setTimeout(function () { controller.abort(); }, GEOLOCATE_TIMEOUT_MS);
 
-    // Belt-and-suspenders: even if the fetch promise never settles
-    // (some browsers swallow aborts on offline networks), force the
-    // spinner off after the same 10s window. Idempotent.
-    const safetyHide = setTimeout(function () {
-      if (status) status.hidden = true;
+    // Hard kill: regardless of fetch state, abort & stop after 10s.
+    const safetyKill = setTimeout(function () {
+      try { controller.abort(); } catch (_) {}
     }, GEOLOCATE_TIMEOUT_MS);
 
     function done() {
       clearTimeout(timer);
-      clearTimeout(safetyHide);
-      if (status) status.hidden = true;
+      clearTimeout(safetyKill);
     }
 
     fetch(GEOLOCATE_URL, { signal: controller.signal })
