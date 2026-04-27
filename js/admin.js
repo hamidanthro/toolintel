@@ -37,11 +37,19 @@
         $('tab-toys').hidden = tab !== 'toys';
         $('tab-orders').hidden = tab !== 'orders';
         $('tab-users').hidden = tab !== 'users';
+        const tabStates = $('tab-states');
+        if (tabStates) tabStates.hidden = tab !== 'states';
         if (tab === 'orders') loadOrders();
         if (tab === 'users') { loadLiveUsers(); startLiveUsersPolling(); }
         else { stopLiveUsersPolling(); }
+        if (tab === 'states') loadStatesTab();
       });
     });
+  }
+
+  function switchTab(name) {
+    const btn = document.querySelector(`.admin-tab[data-tab="${name}"]`);
+    if (btn) btn.click();
   }
 
   // ---- Toys ----
@@ -406,6 +414,115 @@
     return (String(name || '?').trim().charAt(0) || '?').toUpperCase();
   }
 
+  // Cached on each adminLiveUsers fetch so the State filter + States tab
+  // can operate without extra round trips. allUsers is the full roster
+  // (online + offline); onlineUsers is the practicing/recent subset.
+  let allUsers = [];
+  let onlineUsers = [];
+  let serverNow = Date.now();
+  let _stateFilterWired = false;
+
+  function stateMeta(slug) {
+    if (!slug) return null;
+    const api = window.STATES_API;
+    return (api && api.getBySlug && api.getBySlug(slug)) || null;
+  }
+
+  function stateCellPill(slug) {
+    const info = stateMeta(slug);
+    if (!info) return `<span class="admin-state-mini admin-state-mini--none">—</span>`;
+    return `<span class="admin-state-mini">`
+      + `<span class="admin-state-mini-abbr">${escapeHtml(info.nameAbbr || info.slug.slice(0, 2).toUpperCase())}</span>`
+      + escapeHtml(info.testName || '')
+      + `</span>`;
+  }
+
+  function populateUsersStateFilter() {
+    const select = $('users-state-filter');
+    if (!select) return;
+    const api = window.STATES_API;
+    const slugs = new Set(allUsers.map(u => u.state).filter(Boolean));
+    const options = Array.from(slugs)
+      .map(s => api && api.getBySlug ? api.getBySlug(s) : null)
+      .filter(Boolean)
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    const prev = select.value;
+    select.innerHTML = '<option value="">All states</option>';
+    options.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s.slug;
+      opt.textContent = `${s.name} (${s.testName})`;
+      select.appendChild(opt);
+    });
+    const noStateCount = allUsers.filter(u => !u.state).length;
+    if (noStateCount > 0) {
+      const opt = document.createElement('option');
+      opt.value = '__none__';
+      opt.textContent = `No state set (${noStateCount})`;
+      select.appendChild(opt);
+    }
+    // Preserve current selection if still valid.
+    if (prev && Array.from(select.options).some(o => o.value === prev)) {
+      select.value = prev;
+    }
+
+    if (!_stateFilterWired) {
+      select.addEventListener('change', () => renderLiveUsers());
+      _stateFilterWired = true;
+    }
+  }
+
+  function applyStateFilter(users) {
+    const select = $('users-state-filter');
+    const v = select ? select.value : '';
+    if (!v) return users;
+    if (v === '__none__') return users.filter(u => !u.state);
+    return users.filter(u => u.state === v);
+  }
+
+  function renderLiveUsers() {
+    const users = applyStateFilter(onlineUsers);
+    const now = serverNow || Date.now();
+    const target = $('live-users-table');
+    if (!users.length) {
+      target.innerHTML = `<p class="live-users-empty">${onlineUsers.length === 0 ? 'Nobody is online right now.' : 'No online users match this filter.'}</p>`;
+      return;
+    }
+    target.innerHTML = `
+      <table class="live-users-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Name</th>
+            <th>Username</th>
+            <th>State</th>
+            <th>Grade</th>
+            <th>Status</th>
+            <th>Last seen</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${users.map(u => {
+            const color = u.color || '#1e40af';
+            const status = u.isPracticing
+              ? `<span class="live-status live-status--practicing"><span class="live-dot live-dot--gold"></span>Practicing</span>`
+              : `<span class="live-status live-status--online"><span class="live-dot"></span>Online</span>`;
+            return `
+              <tr class="${u.isPracticing ? 'live-row live-row--practicing' : 'live-row'}">
+                <td><span class="live-avatar" style="background:${escapeHtml(color)}">${escapeHtml(avatarLetter(u.displayName))}</span></td>
+                <td class="live-name">${escapeHtml(u.displayName || u.username)}</td>
+                <td class="live-uname">@${escapeHtml(u.username)}</td>
+                <td>${stateCellPill(u.state)}</td>
+                <td><span class="live-grade-pill">${escapeHtml(gradeLabel(u.grade))}</span></td>
+                <td>${status}</td>
+                <td class="live-time">${escapeHtml(relativeTime(u.lastSeenAt, now))}</td>
+              </tr>`;
+          }).join('')}
+        </tbody>
+      </table>`;
+  }
+
   async function loadLiveUsers() {
     if (!gate()) return;
     try {
@@ -413,8 +530,9 @@
       const totalUsers = r.totalUsers || 0;
       const onlineCount = r.onlineCount || 0;
       const practicingCount = r.practicingCount || 0;
-      const users = Array.isArray(r.users) ? r.users : [];
-      const now = r.serverNow || Date.now();
+      onlineUsers = Array.isArray(r.users) ? r.users : [];
+      allUsers = Array.isArray(r.allUsers) ? r.allUsers : onlineUsers.slice();
+      serverNow = r.serverNow || Date.now();
 
       $('stat-total').textContent = totalUsers.toLocaleString();
       $('stat-online').textContent = onlineCount.toLocaleString();
@@ -431,48 +549,128 @@
 
       const meta = $('live-users-meta');
       if (meta) {
-        const stamp = new Date(now).toLocaleTimeString();
+        const stamp = new Date(serverNow).toLocaleTimeString();
         meta.textContent = `Updated ${stamp} · auto-refresh every 15s`;
       }
 
-      const target = $('live-users-table');
-      if (!users.length) {
-        target.innerHTML = `<p class="live-users-empty">Nobody is online right now.</p>`;
-        return;
-      }
-      target.innerHTML = `
-        <table class="live-users-table">
-          <thead>
-            <tr>
-              <th></th>
-              <th>Name</th>
-              <th>Username</th>
-              <th>Grade</th>
-              <th>Status</th>
-              <th>Last seen</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${users.map(u => {
-              const color = u.color || '#1e40af';
-              const status = u.isPracticing
-                ? `<span class="live-status live-status--practicing"><span class="live-dot live-dot--gold"></span>Practicing</span>`
-                : `<span class="live-status live-status--online"><span class="live-dot"></span>Online</span>`;
-              return `
-                <tr class="${u.isPracticing ? 'live-row live-row--practicing' : 'live-row'}">
-                  <td><span class="live-avatar" style="background:${escapeHtml(color)}">${escapeHtml(avatarLetter(u.displayName))}</span></td>
-                  <td class="live-name">${escapeHtml(u.displayName || u.username)}</td>
-                  <td class="live-uname">@${escapeHtml(u.username)}</td>
-                  <td><span class="live-grade-pill">${escapeHtml(gradeLabel(u.grade))}</span></td>
-                  <td>${status}</td>
-                  <td class="live-time">${escapeHtml(relativeTime(u.lastSeenAt, now))}</td>
-                </tr>`;
-            }).join('')}
-          </tbody>
-        </table>`;
+      populateUsersStateFilter();
+      renderLiveUsers();
     } catch (e) {
       $('live-users-table').innerHTML = `<p style="color:#fca5a5;">${escapeHtml(e.message || 'Could not load live users')}</p>`;
     }
+  }
+
+  // ---- States tab ----
+  let _statesLoaded = false;
+
+  async function loadStatesTab() {
+    if (!gate()) return;
+    const updated = $('states-updated');
+    if (updated) updated.textContent = 'Loading…';
+    try {
+      const r = await Auth.api('adminListStates', { token: Auth.token() });
+      _statesLoaded = true;
+      renderStatesTab(r);
+      if (updated) {
+        const stamp = new Date().toLocaleTimeString();
+        updated.textContent = `Updated ${stamp}`;
+      }
+    } catch (e) {
+      if (updated) updated.textContent = 'Failed to load';
+      const wrap = $('states-table-wrap');
+      const empty = $('states-empty');
+      if (wrap) wrap.hidden = true;
+      if (empty) {
+        empty.hidden = false;
+        const t = empty.querySelector('.admin-empty-text');
+        if (t) t.textContent = e.message || 'Could not load states';
+      }
+    }
+  }
+
+  function renderStatesTab(data) {
+    const summary = data.summary || {};
+    const states = Array.isArray(data.states) ? data.states : [];
+
+    $('states-summary-active').textContent = (summary.statesActive || 0).toLocaleString();
+    $('states-summary-with').textContent = (summary.totalWithState || 0).toLocaleString();
+    $('states-summary-without').textContent = (summary.totalWithoutState || 0).toLocaleString();
+
+    const navBadge = $('states-tab-badge');
+    if (navBadge) {
+      if (summary.statesActive > 0) {
+        navBadge.hidden = false;
+        navBadge.textContent = String(summary.statesActive);
+      } else {
+        navBadge.hidden = true;
+      }
+    }
+
+    const wrap = $('states-table-wrap');
+    const empty = $('states-empty');
+    if (states.length === 0) {
+      if (wrap) wrap.hidden = true;
+      if (empty) empty.hidden = false;
+      return;
+    }
+    if (wrap) wrap.hidden = false;
+    if (empty) empty.hidden = true;
+
+    const maxUsers = Math.max(...states.map(s => s.userCount), 1);
+
+    const tbody = $('states-tbody');
+    tbody.innerHTML = states.map((s, idx) => {
+      const info = stateMeta(s.state);
+      const stateName = info ? info.name : s.state;
+      const abbr = info ? (info.nameAbbr || s.state.slice(0, 2).toUpperCase()) : s.state.slice(0, 2).toUpperCase();
+      const testName = info ? info.testName : '—';
+      const pct = (s.userCount / maxUsers) * 100;
+      const isTop = idx < 3;
+      return `
+        <tr data-state="${escapeHtml(s.state)}">
+          <td>
+            <div class="admin-state-cell">
+              <span class="admin-state-cell-abbr ${isTop ? 'is-top' : ''}">${escapeHtml(abbr)}</span>
+              <span class="admin-state-cell-name">${escapeHtml(stateName)}</span>
+              ${idx === 0 ? '<span class="admin-state-cell-rank">#1</span>' : ''}
+            </div>
+          </td>
+          <td><span class="admin-test-pill">${escapeHtml(testName)}</span></td>
+          <td><span class="admin-user-count">${(s.userCount || 0).toLocaleString()}</span></td>
+          <td>
+            <div class="admin-distribution-bar-wrap">
+              <div class="admin-distribution-bar" style="width:${pct.toFixed(1)}%"></div>
+            </div>
+          </td>
+          <td>
+            ${(s.signupsLast30Days || 0) > 0
+              ? `<span class="admin-signups-badge">+${s.signupsLast30Days}</span>`
+              : `<span class="admin-zero">0</span>`}
+          </td>
+          <td><span class="admin-cents-cell">${(s.totalLifetimeCents || 0).toLocaleString()}</span></td>
+        </tr>`;
+    }).join('');
+
+    // Click a state row → switch to Users tab pre-filtered to that state.
+    tbody.querySelectorAll('tr[data-state]').forEach(tr => {
+      tr.addEventListener('click', () => {
+        const slug = tr.dataset.state;
+        switchTab('users');
+        // Selection is applied after loadLiveUsers populates the dropdown.
+        const apply = () => {
+          const sel = $('users-state-filter');
+          if (!sel) return;
+          if (Array.from(sel.options).some(o => o.value === slug)) {
+            sel.value = slug;
+            renderLiveUsers();
+          } else {
+            // Filter rebuilt async; try again shortly.
+            setTimeout(apply, 200);
+          }
+        };
+        apply();
+      });
+    });
   }
 
   document.addEventListener('DOMContentLoaded', () => {

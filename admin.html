@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=20260427hh" />
+  <link rel="stylesheet" href="css/styles.css?v=20260427ii" />
 </head>
 <body class="admin-page">
   <header class="site-header">
@@ -55,6 +55,7 @@
           <button class="admin-tab active" data-tab="toys">Toys</button>
           <button class="admin-tab" data-tab="orders">Orders <span class="tab-badge" id="orders-tab-badge" hidden>0</span></button>
           <button class="admin-tab" data-tab="users">Users <span class="tab-badge tab-badge--live" id="users-tab-badge" hidden>0</span></button>
+          <button class="admin-tab" data-tab="states">States <span class="tab-badge" id="states-tab-badge" hidden>0</span></button>
         </div>
 
         <div id="tab-toys">
@@ -131,10 +132,63 @@
 
           <div class="live-users-head">
             <h2 style="margin:0;">Currently online</h2>
-            <span class="live-users-meta" id="live-users-meta">Auto-refresh every 15s</span>
+            <div class="admin-filter-row">
+              <select class="admin-filter-select" id="users-state-filter" aria-label="Filter users by state">
+                <option value="">All states</option>
+                <!-- Options filled by admin.js once user data loads. -->
+              </select>
+              <span class="live-users-meta" id="live-users-meta">Auto-refresh every 15s</span>
+            </div>
           </div>
           <div id="live-users-table" class="live-users-wrap">
             <p style="color:rgba(255,255,255,0.5);">Loading…</p>
+          </div>
+        </div>
+
+        <div id="tab-states" hidden>
+          <div class="admin-stats">
+            <div class="admin-stat-card">
+              <div class="admin-stat-label">Active states</div>
+              <div class="admin-stat-value" id="states-summary-active">—</div>
+              <div class="admin-stat-meta">out of 51 supported</div>
+            </div>
+            <div class="admin-stat-card admin-stat-card--practicing">
+              <div class="admin-stat-label"><span class="live-dot live-dot--gold"></span> Users with state</div>
+              <div class="admin-stat-value" id="states-summary-with">—</div>
+              <div class="admin-stat-meta">picked their state</div>
+            </div>
+            <div class="admin-stat-card">
+              <div class="admin-stat-label">No state set</div>
+              <div class="admin-stat-value" id="states-summary-without">—</div>
+              <div class="admin-stat-meta">need to pick</div>
+            </div>
+          </div>
+
+          <div class="live-users-head">
+            <h2 style="margin:0;">State distribution</h2>
+            <span class="live-users-meta" id="states-updated">—</span>
+          </div>
+
+          <div class="admin-table-wrap" id="states-table-wrap">
+            <table class="admin-table admin-table--states">
+              <thead>
+                <tr>
+                  <th>State</th>
+                  <th>Test</th>
+                  <th>Users</th>
+                  <th>Distribution</th>
+                  <th>Last 30d</th>
+                  <th>Lifetime pts</th>
+                </tr>
+              </thead>
+              <tbody id="states-tbody"></tbody>
+            </table>
+          </div>
+
+          <div class="admin-empty" id="states-empty" hidden>
+            <div class="admin-empty-icon" aria-hidden="true">🗺️</div>
+            <h3 class="admin-empty-title">No state data yet</h3>
+            <p class="admin-empty-text">As users sign up and pick their state, distribution will appear here.</p>
           </div>
         </div>
       </div>
@@ -166,7 +220,7 @@
   <script src="js/friends.js?v=20260426b"></script>
   <script>window.STAARAuth = window.STAARAuth || {}; window.STAARAuth.requireLoginOnLoad = true;</script>
   <script>window.STAAR_TUTOR_ENDPOINT = 'https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com/';</script>
-  <script src="js/admin.js?v=20260427a"></script>
+  <script src="js/admin.js?v=20260427b"></script>
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
   <script src="https://api.replyquik.com/widget.js" data-id="9686745a-93c1-4761-af94-f15815680bc3"></script>
 </body>

@@ -233,6 +233,7 @@ exports.handler = async (event) => {
   if (action === 'adminListOrders')    return await handleAdminListOrders(payload);
   if (action === 'adminUpdateOrder')   return await handleAdminUpdateOrder(payload);
   if (action === 'adminLiveUsers')     return await handleAdminLiveUsers(payload);
+  if (action === 'adminListStates')    return await handleAdminListStates(payload);
 
   // ===== Friends + safe chat (canned phrases only) =====
   if (action === 'friendRequest')  return await handleFriendRequest(payload);
@@ -1424,7 +1425,9 @@ async function handleAdminLiveUsers(payload) {
 
   const r = await ddb.send(new ScanCommand({
     TableName: USERS_TABLE,
-    ProjectionExpression: 'username, displayName, grade, color, lastSeenAt, lastPracticingAt, lifetimeCents, lifetimeSeconds'
+    // 'state' is a reserved word in DynamoDB so it needs the #s alias.
+    ProjectionExpression: 'username, displayName, grade, color, lastSeenAt, lastPracticingAt, lifetimeCents, lifetimeSeconds, balanceCents, createdAt, #s',
+    ExpressionAttributeNames: { '#s': 'state' }
   }));
   const items = r.Items || [];
   const totalUsers = items.length;
@@ -1436,11 +1439,14 @@ async function handleAdminLiveUsers(payload) {
       username: it.username,
       displayName: it.displayName || it.username,
       grade: it.grade || null,
+      state: it.state || null,
       color: it.color || null,
       lastSeenAt,
       lastPracticingAt,
+      balanceCents: parseInt(it.balanceCents, 10) || 0,
       lifetimeCents: parseInt(it.lifetimeCents, 10) || 0,
       lifetimeSeconds: parseInt(it.lifetimeSeconds, 10) || 0,
+      createdAt: parseInt(it.createdAt, 10) || 0,
       isOnline: lastSeenAt >= onlineCutoff,
       isPracticing: lastPracticingAt >= practicingCutoff
     };
@@ -1459,7 +1465,73 @@ async function handleAdminLiveUsers(payload) {
     onlineCount: onlineList.length,
     practicingCount: onlineList.filter(u => u.isPracticing).length,
     serverNow: now,
-    users: onlineList
+    users: onlineList,
+    // Full user roster (offline included) so the admin Users tab can
+    // filter / show the State column without an extra round trip.
+    allUsers: enriched
+  });
+}
+
+// ----- Admin: states tab — aggregate user counts by state -----
+// Scan is fine for beta-stage volumes (<1000 users). Once we exceed
+// that, switch to the state-index GSI with parallel queries.
+async function handleAdminListStates(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  if (!isAdmin(auth.username)) return bad(403, 'Admin only');
+
+  const scan = await ddb.send(new ScanCommand({
+    TableName: USERS_TABLE,
+    ProjectionExpression: '#s, grade, balanceCents, lifetimeCents, createdAt',
+    ExpressionAttributeNames: { '#s': 'state' }
+  }));
+  const users = scan.Items || [];
+
+  const byState = {};
+  let totalWithState = 0;
+  let totalWithoutState = 0;
+  let totalLifetimeCents = 0;
+  const now = Date.now();
+
+  for (const u of users) {
+    if (!u.state) { totalWithoutState++; continue; }
+    if (!byState[u.state]) {
+      byState[u.state] = {
+        state: u.state,
+        userCount: 0,
+        gradeBreakdown: {},
+        totalLifetimeCents: 0,
+        totalActiveBalance: 0,
+        signupsLast30Days: 0
+      };
+    }
+    const bucket = byState[u.state];
+    bucket.userCount++;
+    totalWithState++;
+    if (u.grade) bucket.gradeBreakdown[u.grade] = (bucket.gradeBreakdown[u.grade] || 0) + 1;
+    const life = parseInt(u.lifetimeCents, 10) || 0;
+    const bal = parseInt(u.balanceCents, 10) || 0;
+    bucket.totalLifetimeCents += life;
+    bucket.totalActiveBalance += bal;
+    totalLifetimeCents += life;
+    const created = parseInt(u.createdAt, 10) || 0;
+    if (created) {
+      const daysAgo = (now - created) / (1000 * 60 * 60 * 24);
+      if (daysAgo <= 30) bucket.signupsLast30Days++;
+    }
+  }
+
+  const stateList = Object.values(byState).sort((a, b) => b.userCount - a.userCount);
+
+  return ok({
+    states: stateList,
+    summary: {
+      totalUsers: users.length,
+      totalWithState,
+      totalWithoutState,
+      statesActive: stateList.length,
+      totalLifetimeCents
+    }
   });
 }
 
