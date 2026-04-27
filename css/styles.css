@@ -13473,3 +13473,12 @@ body.is-standalone .mobile-tab-bar { border-top-width: 1.5px; }
 @media (max-width: 768px) {
   .home-page .state-picker-section { display: block; }
 }
+
+/* ============================================================
+   Global [hidden] safety net.
+   Several component rules use display: flex / grid / block
+   which override the user-agent [hidden] { display: none } rule.
+   This single line guarantees the HTML hidden attribute always
+   wins. Use !important deliberately — this is the contract.
+   ============================================================ */
+[hidden] { display: none !important; }
