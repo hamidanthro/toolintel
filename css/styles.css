@@ -10998,15 +10998,25 @@ body.state-page > * {
   max-width: 600px;
 }
 
+.state-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 220px;
+  gap: 48px;
+  align-items: start;
+}
+
 .state-hero-meta {
+  font-family: 'Inter';
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+  padding-left: 24px;
+}
+
+.state-hero-meta-list {
+  margin: 0;
+  padding: 0;
   display: flex;
-  gap: 32px;
-  flex-wrap: wrap;
-  padding: 20px 24px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 14px;
-  margin-bottom: 20px;
+  flex-direction: column;
+  gap: 14px;
 }
 
 .state-hero-meta-item {
@@ -11017,19 +11027,21 @@ body.state-page > * {
 
 .state-hero-meta-label {
   font-family: 'Inter';
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.35);
+  margin: 0;
 }
 
 .state-hero-meta-value {
   font-family: 'Inter';
-  font-size: 15px;
-  font-weight: 600;
-  color: #ffffff;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
   letter-spacing: -0.005em;
+  margin: 0;
 }
 
 .state-hero-note {
@@ -11282,18 +11294,23 @@ body.state-page > * {
   .state-hero-eyebrow { font-size: 11px; padding: 5px 12px; margin-bottom: 14px; }
   .state-hero-title { font-size: 29px; }
   .state-hero-sub { font-size: 15px; margin-bottom: 24px; }
+  .state-hero-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
   .state-hero-meta {
-    flex-direction: column;
-    gap: 14px;
-    padding: 16px 18px;
+    border-left: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    padding-left: 0;
+    padding-top: 16px;
   }
-  .state-hero-meta-item {
+  .state-hero-meta-list {
     flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px 28px;
   }
-  .state-hero-meta-label { font-size: 11px; }
-  .state-hero-meta-value { font-size: 14px; }
+  .state-hero-meta-label { font-size: 10px; }
+  .state-hero-meta-value { font-size: 13px; }
   .state-grade-section { padding: 24px 16px 32px; }
   .state-grade-title { font-size: 28px; }
   .state-grade-sub { font-size: 14px; }

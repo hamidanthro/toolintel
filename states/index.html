@@ -44,7 +44,7 @@
   </script>
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&family=JetBrains+Mono:wght@400;500&display=swap">
-  <link rel="stylesheet" href="../css/styles.css?v=20260427oo">
+  <link rel="stylesheet" href="../css/styles.css?v=20260427pp">
 
   <script src="../js/states-data.js?v=20260427d"></script>
 </head>
@@ -109,40 +109,44 @@
 
     <!-- HERO -->
     <header class="state-hero">
-      <div class="state-hero-inner">
-        <div class="state-hero-eyebrow">
-          <span class="state-hero-pin">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
-              <circle cx="12" cy="10" r="3"/>
-            </svg>
-          </span>
-          <span id="hero-eyebrow-text">—</span>
+      <div class="state-hero-grid">
+        <div class="state-hero-inner">
+          <div class="state-hero-eyebrow">
+            <span class="state-hero-pin">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+            </span>
+            <span id="hero-eyebrow-text">—</span>
+          </div>
+
+          <h1 class="state-hero-title" id="hero-title">—</h1>
+
+          <p class="state-hero-sub" id="hero-sub">—</p>
+
+          <!-- State-specific custom note (only renders if state has one) -->
+          <aside class="state-hero-note" id="hero-note" hidden>
+            <span class="state-hero-note-icon" aria-hidden="true">💡</span>
+            <span id="hero-note-text"></span>
+          </aside>
         </div>
 
-        <h1 class="state-hero-title" id="hero-title">—</h1>
-
-        <p class="state-hero-sub" id="hero-sub">—</p>
-
-        <div class="state-hero-meta">
-          <div class="state-hero-meta-item">
-            <span class="state-hero-meta-label">Grades</span>
-            <span class="state-hero-meta-value" id="hero-grades">—</span>
-          </div>
-          <div class="state-hero-meta-item">
-            <span class="state-hero-meta-label">Test window</span>
-            <span class="state-hero-meta-value" id="hero-window">—</span>
-          </div>
-          <div class="state-hero-meta-item">
-            <span class="state-hero-meta-label">Authority</span>
-            <span class="state-hero-meta-value" id="hero-authority">—</span>
-          </div>
-        </div>
-
-        <!-- State-specific custom note (only renders if state has one) -->
-        <aside class="state-hero-note" id="hero-note" hidden>
-          <span class="state-hero-note-icon" aria-hidden="true">💡</span>
-          <span id="hero-note-text"></span>
+        <aside class="state-hero-meta" aria-label="Test details">
+          <dl class="state-hero-meta-list">
+            <div class="state-hero-meta-item">
+              <dt class="state-hero-meta-label">Grades</dt>
+              <dd class="state-hero-meta-value" id="hero-grades">—</dd>
+            </div>
+            <div class="state-hero-meta-item">
+              <dt class="state-hero-meta-label">Test window</dt>
+              <dd class="state-hero-meta-value" id="hero-window">—</dd>
+            </div>
+            <div class="state-hero-meta-item">
+              <dt class="state-hero-meta-label">Authority</dt>
+              <dd class="state-hero-meta-value" id="hero-authority">—</dd>
+            </div>
+          </dl>
         </aside>
       </div>
     </header>
