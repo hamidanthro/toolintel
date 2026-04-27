@@ -9089,3 +9089,272 @@ input[type="button"] {
     font-size: 22px;
   }
 }
+
+/* ============================================================
+   PROMPT 31 — Ruthless mobile reduction (one-purpose first screen)
+   Mobile-only. Desktop pixel-identical.
+   "Pick your grade." → vertical grade list. Nothing else.
+   ============================================================ */
+.mobile-grade-intro { display: none; }
+
+@media (max-width: 768px) {
+  /* ---------- Step 1: Kill the entire mockup card on mobile ---------- */
+  body.home-page .hero-right,
+  body.home-page .hero-visual,
+  body.home-page .mockup-card,
+  body.home-page .mockup-card--main,
+  body.home-page .mockup-card--accent-top,
+  body.home-page .mockup-card--accent-bottom {
+    display: none !important;
+  }
+
+  /* ---------- Step 2: Kill hero text block on mobile ---------- */
+  body.home-page .hero-left,
+  body.home-page .hero-headline,
+  body.home-page .hero-tagline-mobile,
+  body.home-page .hero-live-pill,
+  body.home-page .hero .hero-cta,
+  body.home-page .hero-left p {
+    display: none !important;
+  }
+  body.home-page .hero {
+    padding: 12px 16px 8px !important;
+    min-height: 0 !important;
+  }
+  body.home-page .hero .hero-spotlight,
+  body.home-page .hero-bottom-fade {
+    display: none !important;
+  }
+
+  /* ---------- Step 3: Mobile-only "Pick your grade." intro ---------- */
+  body.home-page .mobile-grade-intro {
+    display: block;
+    text-align: left;
+    padding: 32px 18px 16px;
+  }
+  body.home-page .mobile-grade-title {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    color: #ffffff;
+    margin: 0 0 6px 0;
+  }
+  body.home-page .mobile-grade-subtitle {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0;
+    letter-spacing: -0.005em;
+  }
+
+  /* Hide desktop "Choose your grade" header — replaced by mobile intro */
+  body.home-page .grades-section .grades-header,
+  body.home-page .grades-section .grades-title,
+  body.home-page .grades-section .grades-subtitle,
+  body.home-page .grades-section .grades-pill {
+    display: none !important;
+  }
+
+  body.home-page .grades-section,
+  body.home-page .grades-section-inner {
+    padding: 0 16px 24px !important;
+  }
+
+  /* ---------- Step 4: Single-column grade list ---------- */
+  body.home-page .grade-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  body.home-page .grade-card {
+    display: grid !important;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto;
+    grid-template-areas: "title number";
+    align-items: center;
+    padding: 16px 18px !important;
+    border-radius: 14px !important;
+    background: linear-gradient(180deg,
+      rgba(40, 53, 91, 0.5) 0%,
+      rgba(20, 29, 51, 0.5) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    position: relative;
+    overflow: hidden;
+    min-height: 0 !important;
+    transition: background 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body.home-page .grade-card:active {
+    background: linear-gradient(180deg,
+      rgba(50, 63, 101, 0.6) 0%,
+      rgba(30, 39, 61, 0.6) 100%) !important;
+  }
+
+  /* Hide everything except title + icon badge */
+  body.home-page .grade-card .grade-card-head .grade-card-eyebrow,
+  body.home-page .grade-card .grade-card-eyebrow,
+  body.home-page .grade-card .grade-card-meta,
+  body.home-page .grade-card .grade-card-foot,
+  body.home-page .grade-card .grade-card-age,
+  body.home-page .grade-card .grade-card-arrow,
+  body.home-page .grade-card .grade-card-badge,
+  body.home-page .grade-card .grade-card-badge--current,
+  body.home-page .grade-card .grade-card-badge--locked {
+    display: none !important;
+  }
+
+  /* The .grade-card-head wrapper unwraps visually — flatten */
+  body.home-page .grade-card .grade-card-head {
+    display: contents !important;
+  }
+
+  /* Title — left */
+  body.home-page .grade-card .grade-card-title {
+    grid-area: title;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0 !important;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+
+  /* Grade number badge — right */
+  body.home-page .grade-card .grade-card-icon {
+    grid-area: number;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 40px !important;
+    height: 40px !important;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* "Most picked" indicator on grade-card--popular */
+  body.home-page .grade-card.grade-card--popular {
+    grid-template-areas:
+      "title  number"
+      "meta   number" !important;
+    background: linear-gradient(180deg,
+      rgba(251, 191, 36, 0.08) 0%,
+      rgba(251, 191, 36, 0.02) 100%) !important;
+    border-color: rgba(251, 191, 36, 0.25) !important;
+  }
+  body.home-page .grade-card.grade-card--popular::after {
+    content: '⭐ Most picked';
+    grid-area: meta;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(251, 191, 36, 0.95);
+    margin-top: 2px;
+  }
+  body.home-page .grade-card.grade-card--popular .grade-card-icon {
+    background: rgba(251, 191, 36, 0.15);
+    border-color: rgba(251, 191, 36, 0.3);
+    color: #fbbf24;
+  }
+
+  /* ---------- Step 5: Footer reduction ---------- */
+  body.home-page .footer {
+    padding: 32px 18px calc(20px + env(safe-area-inset-bottom, 0px)) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+    margin-top: 24px !important;
+  }
+  body.home-page .footer .footer-top {
+    display: none !important;
+  }
+  body.home-page .footer .footer-divider {
+    display: none !important;
+  }
+  /* Inline mobile links — already exist as nav.footer-mobile-links */
+  body.home-page .footer-mobile-links {
+    display: flex !important;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+  body.home-page .footer-mobile-links a {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.45);
+    text-decoration: none;
+    font-weight: 400;
+  }
+  body.home-page .footer-bottom {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  body.home-page .footer-copy {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.3);
+    text-align: center;
+    margin: 0;
+    order: 2;
+  }
+  body.home-page .footer-meta {
+    display: none !important;
+  }
+  body.home-page .footer-social {
+    display: none !important;
+  }
+
+  /* ---------- Step 6: Header refinement ---------- */
+  .site-header {
+    background: transparent !important;
+    border-bottom: none !important;
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .site-header .container {
+    height: 44px;
+    padding: 4px 16px !important;
+  }
+  .site-header .brand { gap: 6px !important; }
+  .site-header .brand svg,
+  .site-header .brand-icon {
+    width: 18px !important;
+    height: 18px !important;
+  }
+  .site-header .brand-text,
+  .site-header .brand span {
+    font-size: 14px !important;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    letter-spacing: -0.005em;
+  }
+
+  /* ---------- Step 7: Background atmosphere — pulled back ---------- */
+  body.home-page::before {
+    width: 280px !important;
+    height: 280px !important;
+    opacity: 0.4 !important;
+  }
+  body.home-page::after {
+    width: 280px !important;
+    height: 280px !important;
+    opacity: 0.25 !important;
+  }
+  body.home-page .background-grid,
+  body.home-page .hero-stars {
+    display: none !important;
+  }
+
+  /* ---------- Step 8: Body bottom padding for tab bar ---------- */
+  body.home-page {
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  }
+}

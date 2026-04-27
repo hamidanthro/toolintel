@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260427ab" />
+  <link rel="stylesheet" href="css/styles.css?v=20260427ac" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -346,6 +346,11 @@
       </button>
     </div>
   </section>
+
+  <header class="mobile-grade-intro" aria-hidden="false">
+    <h1 class="mobile-grade-title">Pick your grade.</h1>
+    <p class="mobile-grade-subtitle">Practice begins immediately.</p>
+  </header>
 
   <section id="grade-section" class="grades-section" hidden>
     <div class="container grades-section-inner">
@@ -812,95 +817,5 @@
     Practice now
   </a>
 
-  <!-- Prompt 28 — Interactive mockup demo (mobile only) -->
-  <script>
-  (function initMobileMockupDemo() {
-    if (!window.matchMedia('(max-width: 768px)').matches) return;
-
-    function ready(fn) {
-      if (document.readyState !== 'loading') fn();
-      else document.addEventListener('DOMContentLoaded', fn);
-    }
-
-    ready(function () {
-      var card = document.querySelector('.mockup-card.mockup-card--main');
-      if (!card) return;
-      var choices = card.querySelectorAll('.mockup-option');
-      if (!choices.length) return;
-
-      // Reset pre-revealed correct state for interactive demo.
-      choices.forEach(function (c) {
-        c.classList.remove('is-correct', 'is-incorrect', 'mockup-option--correct');
-        c.removeAttribute('tabindex');
-        c.style.cursor = 'pointer';
-        c.style.pointerEvents = 'auto';
-        // Strip pre-revealed glyphs from text
-        c.textContent = (c.textContent || '').replace(/[✓✗❌]/g, '').trim();
-      });
-// Replace "7-day streak" with kid-friendly tap hint (Prompt 29)
-      var streakEl = card.querySelector('.mockup-streak');
-      if (streakEl) {
-        streakEl.classList.add('mockup-meta--hint');
-        streakEl.innerHTML = '<span class="mockup-tap-hint"><span class="tap-icon" aria-hidden="true">👆</span>Tap an answer to try</span>';
-      }
-
-      
-      var CORRECT = '144';
-
-      function showRewardBubble(parent, text) {
-        var bubble = document.createElement('div');
-        bubble.className = 'demo-reward-bubble';
-        bubble.textContent = text;
-        parent.appendChild(bubble);
-        requestAnimationFrame(function () { bubble.classList.add('is-shown'); });
-        setTimeout(function () { try { bubble.remove(); } catch (_) {} }, 1800);
-      }
-
-      function handleChoice(e) {
-        var target = e.currentTarget;
-        if (target.classList.contains('is-correct')) return;
-        var value = (target.getAttribute('data-value') || target.textContent || '').replace(/[^\d]/g, '').trim();
-        var isCorrect = value === CORRECT;
-
-        if (isCorrect) {
-          target.classList.add('is-correct', 'demo-pulse');
-          try { (window.STAARHaptic && window.STAARHaptic.success) ? window.STAARHaptic.success() : navigator.vibrate && navigator.vibrate([10, 40, 20]); } catch (_) {}
-          showRewardBubble(card, '+15 cents');
-          // Fade out the tap hint (Prompt 29)
-          var hint = card.querySelector('.mockup-meta--hint');
-          if (hint) hint.style.opacity = '0';
-          // Pulse the bottom-tab Practice button (hero CTA hidden on mobile)
-          setTimeout(function () {
-            var cta = document.querySelector('.mobile-tabbar .mobile-tab--center .mobile-tab-center-button')
-                   || document.querySelector('.mobile-tabbar .mobile-tab--center')
-                   || document.querySelector('.floating-practice-cta')
-                   || document.querySelector('.hero .hero-cta .btn-primary');
-            if (cta) {
-              cta.classList.add('demo-cta-pulse');
-              setTimeout(function () { cta.classList.remove('demo-cta-pulse'); }, 2400);
-            }
-          }, 800);
-          // Disable taps, then re-enable after 3.5s for replay (Prompt 30)
-          choices.forEach(function (c) { c.style.pointerEvents = 'none'; });
-          setTimeout(function () {
-            choices.forEach(function (c) {
-              c.classList.remove('is-correct', 'demo-pulse', 'is-incorrect', 'demo-shake');
-              c.style.pointerEvents = 'auto';
-            });
-            if (hint) hint.style.opacity = '1';
-          }, 3500);
-        } else {
-          target.classList.add('is-incorrect', 'demo-shake');
-          try { (window.STAARHaptic && window.STAARHaptic.light) ? window.STAARHaptic.light() : navigator.vibrate && navigator.vibrate(20); } catch (_) {}
-          setTimeout(function () {
-            target.classList.remove('is-incorrect', 'demo-shake');
-          }, 700);
-        }
-      }
-
-      choices.forEach(function (c) { c.addEventListener('click', handleChoice); });
-    });
-  })();
-  </script>
 </body>
 </html>
