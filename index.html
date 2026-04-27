@@ -30,12 +30,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260427nn" />
+  <link rel="stylesheet" href="css/styles.css?v=20260427aaa" />
 </head>
 <body class="home-page">
   <header class="site-header">
     <div class="container">
-      <a href="index.html" class="brand"><svg class="brand-logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><defs><linearGradient id="starGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fde047"/><stop offset="55%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient></defs><path d="M16 2.6 19.6 11.5 29.2 12.2 21.8 18.4 24.2 27.6 16 22.4 7.8 27.6 10.2 18.4 2.8 12.2 12.4 11.5 Z" fill="url(#starGrad)" stroke="rgba(255,255,255,0.18)" stroke-width="0.6" stroke-linejoin="round"/><circle cx="25" cy="6" r="1.6" fill="#fde047" opacity="0.95"/><circle cx="25" cy="6" r="3" fill="#fde047" opacity="0.25"/></svg><span class="brand-text">Star<span class="brand-text-accent">Test</span></span></a>
+      <a href="index.html" class="brand"><svg class="brand-logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><defs><linearGradient id="starGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fde047"/><stop offset="55%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient></defs><path d="M16 2.6 19.6 11.5 29.2 12.2 21.8 18.4 24.2 27.6 16 22.4 7.8 27.6 10.2 18.4 2.8 12.2 12.4 11.5 Z" fill="url(#starGrad)" stroke="rgba(255,255,255,0.18)" stroke-width="0.6" stroke-linejoin="round"/><circle cx="25" cy="6" r="1.6" fill="#fde047" opacity="0.95"/><circle cx="25" cy="6" r="3" fill="#fde047" opacity="0.25"/></svg><span class="brand-text">Grade<span class="brand-text-accent">Earn</span></span></a>
       <nav class="nav">
         <a href="index.html" class="active">Home</a>
         <a href="marketplace.html">Toys</a> <a href="about.html">How it works</a>
@@ -73,12 +73,12 @@
       <div class="hero-left">
         <div class="hero-live-pill" id="hero-live">
           <span class="hero-live-dot" aria-hidden="true"></span>
-          <span id="hero-live-text">Now serving students in all 50 states</span>
+          <span id="hero-live-text">All 50 states</span>
         </div>
         <h1 class="hero-headline">Master your<br><span class="headline-accent">state's</span> test.</h1>
         <p class="hero-tagline-mobile">Practice. Earn. Get toys.</p>
-        <p><strong>A kid-friendly AI tutor</strong> that adapts to how your child learns and the pace they're ready for — aligned to your state's standards for grades 3–8 and high school. Math, ELA, science, and more. It builds skills question by question, runs full-length practice tests, ships real toys for correct answers, and gives parents progress they can trust.</p>
-        <div class="hero-cta">
+        <p>AI tutor aligned to your state's standards. Real toys for correct answers.</p>
+        <div class="hero-cta hero-cta-pill">
           <label for="hero-state-select" class="visually-hidden">Choose your state</label>
           <div class="hero-state-select-wrap">
             <select id="hero-state-select" class="hero-state-select" aria-label="Choose your state">
@@ -90,7 +90,7 @@
               </svg>
             </span>
           </div>
-          <button type="button" id="hero-go-btn" class="btn btn-primary hero-go-btn" disabled aria-disabled="true">Practice</button>
+          <button type="button" id="hero-go-btn" class="btn btn-primary hero-go-btn" disabled aria-disabled="true">Practice &rarr;</button>
         </div>
       </div>
       <div class="hero-right" aria-hidden="true">
@@ -366,12 +366,6 @@
         <div class="rewards-title earn-banner-title">Practice &rarr; Earn &rarr; Unlock real toys</div>
         <div class="rewards-subtitle earn-banner-sub">Sign in to earn cents for every correct answer, build daily streaks, and redeem real toys we ship anywhere in the U.S.</div>
       </div>
-      <button type="button" class="rewards-cta earn-banner-cta" id="earn-banner-btn">
-        Sign in &amp; earn
-        <svg class="rewards-cta-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-          <path d="M3 7H11M11 7L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
     </div>
   </section>
 
@@ -578,7 +572,7 @@
                 </linearGradient>
               </defs>
             </svg>
-            <span>Star<span class="logo-accent">Test</span></span>
+            <span>Grade<span class="logo-accent">Earn</span></span>
           </a>
           <p class="footer-tagline">
             AI-powered test prep for every state, every grade. Built for kids who want to win.
@@ -1019,18 +1013,8 @@
       }
     });
   </script>
-  <!-- ReplyQuik chat widget — desktop only. Skipped on phones (≤768px) per Prompt 28b. -->
-  <script>
-    (function () {
-      try {
-        if (window.matchMedia && window.matchMedia('(max-width: 768px)').matches) return;
-        var s = document.createElement('script');
-        s.src = 'https://api.replyquik.com/widget.js';
-        s.setAttribute('data-id', '9686745a-93c1-4761-af94-f15815680bc3');
-        document.head.appendChild(s);
-      } catch (e) { /* fail silent — desktop-only enhancement */ }
-    })();
-  </script>
+  <!-- ReplyQuik chat widget removed from homepage per Elon-pass: hero CTA is the only action.
+       Other pages (about, practice, marketplace, settings, admin, 404, grades) still load it. -->
 
   <!-- Floating Practice CTA — mobile dashboard only (Prompt 26) -->
   <a href="practice.html" class="floating-practice-cta" aria-label="Start practicing now">

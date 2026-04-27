@@ -13470,6 +13470,72 @@ body.is-standalone .mobile-tab-bar { border-top-width: 1.5px; }
 }
 
 /* ============================================================
+   Unified state-picker + Practice pill (Elon-pass)
+   One container, one border, one radius, hairline divider.
+   Inherits select + button visuals; overrides only what's needed
+   to merge them visually.
+   ============================================================ */
+.hero-cta-pill {
+  display: inline-flex;
+  align-items: stretch;
+  gap: 0;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow: hidden;
+  transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hero-cta-pill:hover {
+  border-color: rgba(255, 255, 255, 0.22);
+}
+.hero-cta-pill:focus-within {
+  border-color: rgba(251, 191, 36, 0.7);
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.25);
+}
+.hero-cta-pill .hero-state-select-wrap {
+  border-right: 1px solid rgba(255, 255, 255, 0.10);
+}
+.hero-cta-pill .hero-state-select {
+  height: 52px;
+  min-width: 200px;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 0;
+  border-radius: 0;
+}
+.hero-cta-pill .hero-state-select:hover,
+.hero-cta-pill .hero-state-select:focus-visible {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.hero-cta-pill .hero-go-btn {
+  height: 52px;
+  border-radius: 0 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 24px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+.hero-cta-pill .hero-go-btn:not([disabled]):hover {
+  transform: none !important;
+  filter: brightness(1.05);
+}
+@media (max-width: 768px) {
+  .hero-cta-pill {
+    width: 100%;
+  }
+  .hero-cta-pill .hero-state-select-wrap { flex: 1; }
+  .hero-cta-pill .hero-state-select { min-width: 0; width: 100%; }
+}
+
+/* ============================================================
    HOMEPAGE — hide the legacy state-picker section on desktop.
    The hero dropdown + Go button replace it; the picker grid
    remains for mobile only (where the hero CTA stacks small).
