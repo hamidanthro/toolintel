@@ -98,12 +98,15 @@ Question type: ${questionType}. ${typeGuide}
 Requirements:
 - Exactly 4 answer choices.
 - Exactly one correct answer.
+- BEFORE writing, solve the problem yourself and double-check the arithmetic. The marked correctIndex MUST equal the choice that solves the problem. The explanation MUST reach the same numerical answer as the marked choice — no contradictions.
 - Distractors should reflect common student misconceptions, not random wrong answers.
 - Question stem and choices clear, unambiguous, age-appropriate.
 - Explanation references the correct answer and shows the reasoning a student should follow.
 - Use diverse student names from many cultures.
 - Numbers must be realistic for the grade. Show no negative numbers below grade 6.
 - Each choice contains ONLY the answer text. Do NOT include letter labels (no "A:", "A.", "(A)", or "A " prefix). The system adds A/B/C/D labels in the UI.
+- Output PLAIN TEXT only. Do NOT use LaTeX (\\frac, \\sqrt, \\(...\\), $$...$$, etc.). Write fractions as "1/4", multiplication as "3 × 4" or "3 * 4", division as "12 ÷ 3" or "12 / 3".
+- Content must be appropriate for K–12 students: no violence, weapons, drugs, alcohol, romance/dating, or scary themes.
 
 Output ONLY valid JSON, no preamble:
 {

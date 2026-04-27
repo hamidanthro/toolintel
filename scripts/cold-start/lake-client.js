@@ -86,11 +86,67 @@ function validateQuestion(item, subject, grade) {
     if (wc < min || wc > max) errors.push(`passage word count ${wc} outside ${min}-${max}`);
   }
 
-  const naughty = ['damn','hell','crap','stupid','idiot','dumb'];
-  const text = [item.question, ...(item.choices || []), item.explanation, item.passage?.text]
-    .filter(Boolean).join(' ').toLowerCase();
+  // Letter-prefix smell: a choice rendered as just 'A' or 'A.' or 'A:' or '(A)'
+  // means the model put labels in choices. UI re-labels A/B/C/D so this would
+  // double-label.
+  if (Array.isArray(item.choices)) {
+    for (let i = 0; i < item.choices.length; i++) {
+      const c = String(item.choices[i] || '').trim();
+      if (/^[A-D][\.\):]?$/.test(c) || /^\([A-D]\)$/.test(c)) {
+        errors.push(`choice ${i} is just a letter label`);
+        break;
+      }
+      if (/^[A-D][\.\):]\s+/.test(c) || /^\([A-D]\)\s+/.test(c)) {
+        errors.push(`choice ${i} starts with letter label`);
+        break;
+      }
+    }
+  }
+
+  // LaTeX rendering markers — UI doesn't render LaTeX. Reject so the
+  // generator retries in plain text.
+  const allText = [item.question, ...(item.choices || []), item.explanation, item.passage?.text]
+    .filter(Boolean).join(' ');
+  if (/\\\(|\\\)|\\\[|\\\]|\$\$|\\frac\b|\\sqrt\b|\\times\b|\\div\b/.test(allText)) {
+    errors.push('contains LaTeX syntax');
+  }
+
+  // Profanity / mean-spirited language — kids' product.
+  const naughty = [
+    'damn','hell','crap','stupid','idiot','dumb','sucks','shut up',
+    'kill','die','dead','death','suicide','murder','blood','gun','shoot',
+    'drug','drugs','alcohol','beer','wine','smoke','smoking','cigarette',
+    'sex','sexy','hot','dating','boyfriend','girlfriend','kiss',
+    'fight','punch','hate','racist'
+  ];
+  const lowerText = allText.toLowerCase();
   for (const w of naughty) {
-    if (new RegExp(`\\b${w}\\b`).test(text)) { errors.push(`disallowed: ${w}`); break; }
+    if (new RegExp(`\\b${w.replace(/\s+/g, '\\s+')}\\b`).test(lowerText)) {
+      errors.push(`disallowed for kids: ${w}`);
+      break;
+    }
+  }
+
+  // Grade-level numeric appropriateness.
+  if (subject === 'math') {
+    const earlyGrades = ['grade-k','grade-1','grade-2'];
+    const lowerGrades = ['grade-3','grade-4','grade-5'];
+    if (earlyGrades.includes(grade)) {
+      // Reject any number > 100 in the question (early grades stay within 0-100).
+      const nums = (item.question.match(/\b\d+(\.\d+)?\b/g) || []).map(Number);
+      if (nums.some(n => n > 100)) {
+        errors.push('early-grade question contains numbers > 100');
+      }
+      // No negatives below grade 6.
+      if (/-\d/.test(item.question) || /\bnegative\b/i.test(item.question)) {
+        errors.push('early-grade question contains negative numbers');
+      }
+    }
+    if (lowerGrades.includes(grade)) {
+      if (/-\d/.test(item.question) || /\bnegative\b/i.test(item.question)) {
+        errors.push('lower-grade question contains negative numbers');
+      }
+    }
   }
   return errors;
 }
