@@ -1,0 +1,43 @@
+{
+  "name": "StarTest — State Test Prep",
+  "short_name": "StarTest",
+  "description": "AI-powered state test prep for K–12. Real toys for correct answers. STAAR, CAASPP, FAST, TCAP, and 47 more.",
+  "start_url": "/?utm_source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#060d1f",
+  "theme_color": "#060d1f",
+  "categories": ["education", "kids"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "prefer_related_applications": false,
+  "icons": [
+    { "src": "/icons/icon-72.png",  "sizes": "72x72",   "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-96.png",  "sizes": "96x96",   "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-128.png", "sizes": "128x128", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-144.png", "sizes": "144x144", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-152.png", "sizes": "152x152", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-192-maskable.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icons/icon-384.png", "sizes": "384x384", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Continue practicing",
+      "short_name": "Practice",
+      "description": "Jump straight into your last practice session",
+      "url": "/practice.html?utm_source=pwa-shortcut",
+      "icons": [{ "src": "/icons/shortcut-practice.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Toys marketplace",
+      "short_name": "Toys",
+      "description": "Browse toys you can earn",
+      "url": "/marketplace.html?utm_source=pwa-shortcut",
+      "icons": [{ "src": "/icons/shortcut-toys.png", "sizes": "96x96" }]
+    }
+  ]
+}

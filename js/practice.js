@@ -657,6 +657,11 @@
           if (_streak % 5 === 0 && STATE_INFO && STATE_INFO.testName) {
             showToast(`${STATE_INFO.testName} streak: ${_streak} 🔥`);
           }
+          try {
+            document.dispatchEvent(new CustomEvent('startest:correct-answer', {
+              detail: { count: _streak }
+            }));
+          } catch (_) {}
         } else {
           window._stCorrectStreak = 0;
         }

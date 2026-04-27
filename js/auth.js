@@ -6,6 +6,30 @@
 // Stats are still cached locally for offline-friendliness but synced
 // to the cloud on each save so progress follows the student to any device.
 
+// ============================================================
+// SERVICE WORKER — register on load (fail silently if unsupported)
+// ============================================================
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then((registration) => {
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          if (newWorker) {
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                console.log('[SW] New version available — refresh to update');
+              }
+            });
+          }
+        });
+      })
+      .catch((err) => {
+        console.warn('[SW] Registration failed:', err.message);
+      });
+  });
+}
+
 (function () {
   const ENDPOINT = window.STAAR_TUTOR_ENDPOINT
     || 'https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com/';
@@ -1036,6 +1060,12 @@
           Admin panel
           <span class="profile-sheet-row-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg></span>
         </a>` : ''}
+        ${(window.STARTEST_PWA && !window.STARTEST_PWA.isInstalled()) ? `
+        <button class="profile-sheet-row" type="button" data-action="pwa-install">
+          <span class="profile-sheet-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
+          Install app
+          <span class="profile-sheet-row-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </button>` : ''}
         <button class="profile-sheet-row profile-sheet-row--signout" type="button" data-action="signout">
           <span class="profile-sheet-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg></span>
           Sign out
@@ -1070,6 +1100,17 @@
         try { window.location.assign('/'); } catch (_) { window.location.href = '/'; }
       }, 300);
     });
+    const installBtn = sheet.querySelector('[data-action="pwa-install"]');
+    if (installBtn) {
+      installBtn.addEventListener('click', () => {
+        closeSheet();
+        setTimeout(() => {
+          if (window.STARTEST_PWA && window.STARTEST_PWA.show) {
+            window.STARTEST_PWA.show();
+          }
+        }, 320);
+      });
+    }
   }
 
   // ============================================================
