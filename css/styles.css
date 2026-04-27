@@ -9628,3 +9628,166 @@ input[type="button"] {
     font-size: 26px !important;
   }
 }
+
+/* ============================================================
+   PROMPT 33 — Hero + ruthless reduction + 3-tab + personality
+   Mobile-only. Desktop pixel-identical.
+   ============================================================ */
+.mobile-hero { display: none; }
+
+@media (max-width: 768px) {
+  /* ---------- Step 1: Strip "Math" suffix on mobile only ---------- */
+  body.home-page .grade-card .grade-subject-suffix {
+    display: none !important;
+  }
+
+  /* ---------- Step 2: Cut "Most picked" treatment on mobile ---------- */
+  body.home-page .grade-card.grade-card--popular {
+    background: linear-gradient(180deg,
+      rgba(40, 53, 91, 0.5) 0%,
+      rgba(20, 29, 51, 0.5) 100%) !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset !important;
+    grid-template-areas: "title number" !important;
+    align-items: center !important;
+  }
+  body.home-page .grade-card.grade-card--popular .grade-card-icon {
+    color: rgba(255, 255, 255, 0.18) !important;
+    grid-row: auto !important;
+    align-self: center !important;
+  }
+  body.home-page .grade-card.grade-card--popular::after {
+    content: none !important;
+  }
+
+  /* ---------- Step 3: Hide group labels on mobile (cut per Elon) ---------- */
+  body.home-page .grade-group-label {
+    display: none !important;
+  }
+
+  /* ---------- Step 4: Cut ghost numerals — text-only cards ---------- */
+  body.home-page .grade-card .grade-card-icon {
+    display: none !important;
+  }
+  body.home-page .grade-card {
+    display: flex !important;
+    align-items: center !important;
+    grid-template-columns: none !important;
+    grid-template-areas: none !important;
+  }
+
+  /* ---------- Step 5: Hide old mobile-grade-intro; show new mobile-hero ---------- */
+  body.home-page .mobile-grade-intro {
+    display: none !important;
+  }
+
+  body.home-page .mobile-hero {
+    display: block;
+    text-align: left;
+    padding: 32px 20px 24px;
+    position: relative;
+  }
+
+  body.home-page .mobile-hero-star {
+    display: inline-block;
+    width: 36px;
+    height: 36px;
+    color: #fbbf24;
+    margin: 0 0 16px 0;
+    filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.4));
+    animation: hero-star-breathe 4s ease-in-out infinite;
+    transform-origin: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body.home-page .mobile-hero-star svg {
+    display: block;
+  }
+  @keyframes hero-star-breathe {
+    0%, 100% {
+      transform: scale(1) rotate(0deg);
+      filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.4));
+    }
+    50% {
+      transform: scale(1.06) rotate(-2deg);
+      filter: drop-shadow(0 0 18px rgba(251, 191, 36, 0.6));
+    }
+  }
+  body.home-page .mobile-hero-star.is-celebrating {
+    animation: hero-star-wiggle 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes hero-star-wiggle {
+    0% { transform: scale(1) rotate(0); }
+    25% { transform: scale(1.2) rotate(-15deg); }
+    50% { transform: scale(1.15) rotate(12deg); }
+    75% { transform: scale(1.18) rotate(-6deg); }
+    100% { transform: scale(1) rotate(0); }
+  }
+
+  /* Headline — period dropped, gold first line */
+  body.home-page .mobile-hero-headline {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-size: 38px;
+    font-weight: 400;
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    color: #ffffff;
+    margin: 0 0 10px 0;
+  }
+  body.home-page .mobile-hero-headline .mobile-hero-line1 {
+    color: #fbbf24;
+  }
+  body.home-page .mobile-hero-subhead {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.55);
+    margin: 0;
+    letter-spacing: -0.005em;
+  }
+
+  /* ---------- Step 6: Tab bar — 3 tabs distribution ---------- */
+  .mobile-tabbar {
+    justify-content: space-around !important;
+    padding: 6px 24px calc(6px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  .mobile-tabbar .mobile-tab:not(.mobile-tab--center) {
+    flex: 1;
+    max-width: 96px;
+  }
+  .mobile-tabbar .mobile-tab--center {
+    flex: 0 0 auto;
+    min-width: 80px;
+  }
+
+  /* ---------- Step 7: Profile sheet — Toy Marketplace featured row ---------- */
+  .profile-sheet-row--featured {
+    background: linear-gradient(180deg,
+      rgba(251, 191, 36, 0.08) 0%,
+      rgba(251, 191, 36, 0.02) 100%) !important;
+    border-color: rgba(251, 191, 36, 0.2) !important;
+  }
+  .profile-sheet-row--featured .profile-sheet-row-icon {
+    color: #fbbf24 !important;
+  }
+  .profile-sheet-row--featured .profile-sheet-row-text {
+    color: #ffffff !important;
+    font-weight: 600;
+  }
+  .profile-sheet-row-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .profile-sheet-row-meta {
+    font-size: 11px;
+    font-weight: 400;
+    color: rgba(251, 191, 36, 0.75);
+  }
+}
+
+@media (max-width: 380px) {
+  body.home-page .mobile-hero-headline {
+    font-size: 34px;
+  }
+}

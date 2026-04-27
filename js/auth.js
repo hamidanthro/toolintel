@@ -855,25 +855,17 @@
       ? `<span class="mobile-tab-avatar" style="background:${u.color || '#1e40af'}">${escapeHtml(avatar(u.displayName || u.username))}</span>`
       : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
 
+    // Prompt 33 — 3-tab bar: Home / Practice (gold center) / Profile (Toys folds into Profile)
     tabBar.innerHTML = `
       <a class="mobile-tab ${isOnHome ? 'is-active' : ''}" href="index.html" aria-label="Home">
         <span class="mobile-tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
         <span class="mobile-tab-label">Home</span>
       </a>
-      <a class="mobile-tab ${isOnMarketplace ? 'is-active' : ''}" href="marketplace.html" aria-label="Toys">
-        <span class="mobile-tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/></svg></span>
-        <span class="mobile-tab-label">Toys</span>
-        ${u ? `<span class="mobile-tab-badge" data-tab-balance>${balance}</span>` : ''}
-      </a>
       <a class="mobile-tab mobile-tab--center ${isOnPractice ? 'is-active' : ''}" href="${practiceHref}" aria-label="Practice">
-        <span class="mobile-tab-center-button"><svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"/></svg></span>
+        <span class="mobile-tab-center-button"><svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"/></svg></span>
         <span class="mobile-tab-label mobile-tab-label--center">Practice</span>
       </a>
-      <a class="mobile-tab ${isOnAbout ? 'is-active' : ''}" href="about.html" aria-label="How it works">
-        <span class="mobile-tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
-        <span class="mobile-tab-label">Learn</span>
-      </a>
-      <button type="button" class="mobile-tab ${isOnSettings ? 'is-active' : ''}" data-action="open-profile-sheet" aria-label="Profile">
+      <button type="button" class="mobile-tab ${(isOnSettings || isOnMarketplace) ? 'is-active' : ''}" data-action="open-profile-sheet" aria-label="Profile">
         <span class="mobile-tab-icon">${profileTabInner}</span>
         <span class="mobile-tab-label">${u ? 'Me' : 'Sign in'}</span>
       </button>
@@ -928,9 +920,19 @@
         <div class="profile-stat"><div class="profile-stat-value">${u.grade ? gradeShortLabel(u.grade) : '—'}</div><div class="profile-stat-label">Grade</div></div>
       </div>
       <nav class="profile-sheet-nav">
+        <a class="profile-sheet-row profile-sheet-row--featured" href="marketplace.html">
+          <span class="profile-sheet-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/></svg></span>
+          <span class="profile-sheet-row-text">Toy marketplace<span class="profile-sheet-row-meta">${wallet} available</span></span>
+          <span class="profile-sheet-row-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </a>
         <a class="profile-sheet-row" href="settings.html">
           <span class="profile-sheet-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 005.6 15a1.65 1.65 0 00-1.51-1H4a2 2 0 010-4h.09A1.65 1.65 0 005.6 9 1.65 1.65 0 005.27 7.18l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H10a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V10a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>
           Settings
+          <span class="profile-sheet-row-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </a>
+        <a class="profile-sheet-row" href="about.html">
+          <span class="profile-sheet-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
+          How it works
           <span class="profile-sheet-row-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg></span>
         </a>
         ${isAdmin ? `

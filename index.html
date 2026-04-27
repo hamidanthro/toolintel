@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260427ad" />
+  <link rel="stylesheet" href="css/styles.css?v=20260427ae" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -347,9 +347,14 @@
     </div>
   </section>
 
-  <header class="mobile-grade-intro" aria-hidden="false">
-    <h1 class="mobile-grade-title">Pick your grade.</h1>
-    <p class="mobile-grade-subtitle">No sign-up. Practice in seconds.</p>
+  <header class="mobile-hero" aria-hidden="false">
+    <div class="mobile-hero-star" role="button" tabindex="0" aria-label="StarTest">
+      <svg viewBox="0 0 24 24" fill="currentColor" width="36" height="36" aria-hidden="true">
+        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+      </svg>
+    </div>
+    <h1 class="mobile-hero-headline"><span class="mobile-hero-line1">AI-powered</span><br><span class="mobile-hero-line2">state test prep</span></h1>
+    <p class="mobile-hero-subhead">Built for kids who want to win</p>
   </header>
 
   <section id="grade-section" class="grades-section" hidden>
@@ -463,10 +468,10 @@
 
   <script src="js/prefs.js?v=20260426a"></script>
   <script src="js/fx.js?v=20260426a"></script>
-  <script src="js/auth.js?v=20260427h"></script>
+  <script src="js/auth.js?v=20260427k"></script>
   <script src="js/friends.js?v=20260426b"></script>
   <script src="js/staar-data.js"></script>
-  <script src="js/grade-card.js?v=20260427q"></script>
+  <script src="js/grade-card.js?v=20260427r"></script>
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -829,5 +834,23 @@
     Practice now
   </a>
 
+  <!-- Prompt 33 — Hero star personality (mobile only) -->
+  <script>
+  (function heroStarPersonality(){
+    if (!window.matchMedia || !window.matchMedia('(max-width: 768px)').matches) return;
+    function init(){
+      var star = document.querySelector('.mobile-hero-star');
+      if (!star) return;
+      function wiggle(){ star.classList.add('is-celebrating'); setTimeout(function(){ star.classList.remove('is-celebrating'); }, 600); }
+      setTimeout(wiggle, 800);
+      setInterval(wiggle, 12000);
+      star.style.cursor = 'pointer';
+      star.addEventListener('click', function(){ wiggle(); try { navigator.vibrate && navigator.vibrate(10); } catch(_){} });
+      star.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); wiggle(); } });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
+  })();
+  </script>
 </body>
 </html>

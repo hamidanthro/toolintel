@@ -119,7 +119,7 @@
         <span class="grade-card-eyebrow">State test &middot; ${subject.charAt(0) + subject.slice(1).toLowerCase()}</span>
         <span class="grade-card-icon">${m.icon}</span>
       </div>
-      <h3 class="grade-card-title">${grade.title}</h3>
+      <h3 class="grade-card-title">${(function(){ var t=String(grade.title||''); var sfx=' '+(subject.charAt(0)+subject.slice(1).toLowerCase()); var i=t.lastIndexOf(sfx); return i>0 ? t.slice(0,i)+'<span class="grade-subject-suffix">'+t.slice(i)+'</span>' : t; })()}</h3>
       <p class="grade-card-meta">${grade.categories.length} reporting categories</p>
       <div class="grade-card-foot">
         <span class="grade-card-age">${m.ages}</span>
