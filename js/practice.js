@@ -157,6 +157,11 @@
       if (keys.length > 60) {
         for (const k of keys.slice(0, keys.length - 60)) delete j.daily[k];
       }
+      // Aggregate counters used by the state-aware dashboard.
+      j.totalAnswered = (parseInt(j.totalAnswered, 10) || 0) + 1;
+      if (isCorrect) j.totalCorrect = (parseInt(j.totalCorrect, 10) || 0) + 1;
+      j.lastSession = new Date().toISOString();
+      j.lastSubject = SUBJECT_SLUG;
       localStorage.setItem(key, JSON.stringify(j));
       // Detect milestones to celebrate.
       const dailyGoal = (window.STAARPrefs && window.STAARPrefs.get().dailyGoal) || 5;

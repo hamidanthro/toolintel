@@ -28,15 +28,20 @@
     if (!$('state-picker')) return;
     if (!window.STATES_API) return;
 
-    // 1. Logged-in user with state -> redirect to their state page (unless ?stay=1)
+    // 1. Logged-in user with state -> redirect to their state page (unless ?stay=1
+    //    or this page hosts the state-aware dashboard, which takes over).
     const auth = window.STAARAuth;
     const user = (auth && auth.currentUser && auth.currentUser()) || null;
     if (user && user.state && window.STATES_API.getBySlug(user.state)) {
       const params = new URLSearchParams(location.search);
-      if (!params.has('stay')) {
+      const hasDashboard = !!document.getElementById('state-dashboard');
+      if (!params.has('stay') && !hasDashboard) {
         location.href = 'states/?s=' + user.state;
         return;
       }
+      // If the dashboard owns the page, leave the picker hidden via CSS
+      // (dashboard.js will hide #state-picker explicitly).
+      if (hasDashboard) return;
     }
 
     // 2. localStorage fast path -> show choice card (don't auto-redirect)

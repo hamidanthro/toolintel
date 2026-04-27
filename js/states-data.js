@@ -1306,6 +1306,79 @@
     /** Active count for marketing copy. */
     activeCount: function () {
       return window.STATES.filter(function (s) { return s.active; }).length;
+    },
+
+    // ============================================================
+    // TEST CALENDAR HELPERS
+    // ============================================================
+
+    /**
+     * Returns countdown info to the next test administration window for
+     * the given state. testWindowMonth is 1-indexed; we use the 15th of
+     * that month as the target test date. If this year's window has
+     * passed, target next year. Returns null if state not found.
+     */
+    daysUntilNextTestWindow: function (slug) {
+      var state = this.getBySlug(slug);
+      if (!state) return null;
+      var now = new Date();
+      var TEST_DAY = 15;
+      var testDate = new Date(now.getFullYear(), state.testWindowMonth - 1, TEST_DAY);
+      if (testDate < now) {
+        testDate = new Date(now.getFullYear() + 1, state.testWindowMonth - 1, TEST_DAY);
+      }
+      var msPerDay = 1000 * 60 * 60 * 24;
+      var daysUntil = Math.ceil((testDate - now) / msPerDay);
+      return {
+        days: daysUntil,
+        date: testDate,
+        monthName: testDate.toLocaleString('en-US', { month: 'long' }),
+        year: testDate.getFullYear(),
+        isUrgent: daysUntil <= 30,
+        isVeryUrgent: daysUntil <= 14,
+        isFar: daysUntil > 90
+      };
+    },
+
+    /**
+     * Format a state's test window into "Practice mode" framing for the
+     * dashboard hero. Returns { urgency, eyebrow, message, accentColor }
+     * or null if state not found.
+     */
+    getTestWindowMessage: function (slug) {
+      var calendar = this.daysUntilNextTestWindow(slug);
+      if (!calendar) return null;
+      var state = this.getBySlug(slug);
+      if (calendar.isVeryUrgent) {
+        return {
+          urgency: 'very-urgent',
+          eyebrow: 'Test in less than 2 weeks',
+          message: calendar.days + ' days until ' + state.testName + '. Every question matters.',
+          accentColor: '#f87171'
+        };
+      }
+      if (calendar.isUrgent) {
+        return {
+          urgency: 'urgent',
+          eyebrow: 'Test month',
+          message: calendar.days + ' days until ' + state.testName + ". You've got this.",
+          accentColor: '#fbbf24'
+        };
+      }
+      if (calendar.isFar) {
+        return {
+          urgency: 'far',
+          eyebrow: 'Building toward it',
+          message: calendar.days + ' days until ' + state.testName + ' in ' + calendar.monthName + '.',
+          accentColor: '#818cf8'
+        };
+      }
+      return {
+        urgency: 'normal',
+        eyebrow: 'Building skills',
+        message: calendar.days + ' days until ' + state.testName + ' in ' + calendar.monthName + '.',
+        accentColor: '#fbbf24'
+      };
     }
   };
 })();

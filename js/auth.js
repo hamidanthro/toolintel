@@ -16,8 +16,22 @@
     try { return JSON.parse(localStorage.getItem(LS_SESSION) || 'null'); }
     catch { return null; }
   }
-  function saveSession(s) { localStorage.setItem(LS_SESSION, JSON.stringify(s)); }
-  function clearSession() { localStorage.removeItem(LS_SESSION); }
+  function saveSession(s) {
+    localStorage.setItem(LS_SESSION, JSON.stringify(s));
+    try {
+      document.dispatchEvent(new CustomEvent('startest:auth-changed', {
+        detail: { user: (s && s.user) || null }
+      }));
+    } catch (_) {}
+  }
+  function clearSession() {
+    localStorage.removeItem(LS_SESSION);
+    try {
+      document.dispatchEvent(new CustomEvent('startest:auth-changed', {
+        detail: { user: null }
+      }));
+    } catch (_) {}
+  }
 
   function currentUser() {
     const s = loadSession();
