@@ -13451,3 +13451,14 @@ body.is-standalone .mobile-tab-bar { border-top-width: 1.5px; }
     0 1px 0 rgba(255, 255, 255, 0.2) inset,
     0 0 0 1px rgba(251, 191, 36, 0.2);
 }
+
+/* ============================================================
+   HOMEPAGE — hide the legacy state-picker section on desktop.
+   The hero dropdown + Go button replace it; the picker grid
+   remains for mobile only (where the hero CTA stacks small).
+   Per breakpoint contract: desktop is base, mobile overrides.
+   ============================================================ */
+.home-page .state-picker-section { display: none; }
+@media (max-width: 768px) {
+  .home-page .state-picker-section { display: block; }
+}
