@@ -10098,3 +10098,137 @@ input[type="button"] {
   .parent-quote-text { font-size: 28px; }
   .parent-quote::before { font-size: 100px; }
 }
+
+/* ============================================================
+   PROMPT 35 — Parent layer bug fixes + polish (overrides)
+   Appended last so it wins cascade. No new strategic rules.
+   ============================================================ */
+
+/* ---------- Quote section: hard containment ---------- */
+.parent-layer--quote {
+  text-align: center;
+  padding: 56px 24px;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.parent-quote-wrap {
+  max-width: 520px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.parent-quote-mark {
+  display: block;
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 80px;
+  line-height: 0.6;
+  font-weight: 400;
+  color: rgba(251, 191, 36, 0.3);
+  margin: 0 0 4px 0;
+  user-select: none;
+}
+
+/* Replace the old ::before quote glyph (no longer needed) */
+.parent-quote::before { content: none !important; }
+
+.parent-quote-text {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 22px;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.35;
+  letter-spacing: -0.015em;
+  color: rgba(255, 255, 255, 0.92);
+  margin: 0 0 20px 0;
+  max-width: none;
+}
+
+.parent-quote-attr {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.parent-quote-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: -0.005em;
+}
+
+.parent-quote-name::before {
+  content: '— ';
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.parent-quote-meta {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: -0.005em;
+}
+
+/* ---------- Toy showcase: background-image cropping ---------- */
+.toy-showcase-image {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.toy-showcase-label {
+  bottom: 10px;
+  left: 10px;
+  right: 10px;
+  padding: 5px 12px;
+  background: rgba(6, 13, 31, 0.78);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Quote responsive sizing */
+@media (max-width: 768px) {
+  .parent-layer--quote { padding: 48px 24px; }
+  .parent-quote-mark { font-size: 60px; }
+  .parent-quote-text { font-size: 19px; }
+
+  /* ---------- Footer clears the bottom tab bar ---------- */
+  body.home-page footer,
+  body.home-page .footer {
+    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  /* ---------- Tighter grade cards (~56px tall) ---------- */
+  body.home-page .grade-card {
+    padding: 12px 18px !important;
+  }
+  body.home-page .grade-card .grade-card-title,
+  body.home-page .grade-card .grade-title,
+  body.home-page .grade-card h3 {
+    font-size: 15px;
+    line-height: 1.15;
+  }
+
+  /* ---------- Star breathe animation safety net ---------- */
+  body.home-page .mobile-hero-star {
+    animation: hero-star-breathe 4s ease-in-out infinite !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .parent-quote-text { font-size: 17px; }
+}
+
+@media (min-width: 769px) {
+  .parent-quote-mark { font-size: 100px; }
+  .parent-quote-text { font-size: 28px; }
+}

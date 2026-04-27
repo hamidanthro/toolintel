@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260427bb" />
+  <link rel="stylesheet" href="css/styles.css?v=20260427cc" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -354,7 +354,7 @@
       </svg>
     </div>
     <h1 class="mobile-hero-headline"><span class="mobile-hero-line1">AI-powered</span><br><span class="mobile-hero-line2">state test prep</span></h1>
-    <p class="mobile-hero-subhead">Your kid practices. Earns real toys. We ship them.</p>
+    <p class="mobile-hero-subhead">Your kid practices. They earn real toys. We ship to your door.</p>
   </header>
 
   <section id="grade-section" class="grades-section" hidden>
@@ -412,22 +412,22 @@
       <h2 class="parent-h2">Real toys.<br>Shipped to your door.</h2>
       <p class="parent-h2-sub">Not points. Not stickers. Not virtual badges. Real things.</p>
     </header>
-    <div class="toy-showcase">
+    <div class="toy-showcase" id="toy-showcase">
       <div class="toy-showcase-item">
-        <img src="data/toys/lego.jpg" alt="LEGO building set" loading="lazy"/>
+        <div class="toy-showcase-image" style="background-image: url('data/toy-showcase/lego.jpg')"></div>
         <span class="toy-showcase-label">Building sets</span>
       </div>
       <div class="toy-showcase-item">
-        <img src="data/toys/camera.jpg" alt="Kids digital camera" loading="lazy"/>
+        <div class="toy-showcase-image" style="background-image: url('data/toy-showcase/camera.jpg')"></div>
         <span class="toy-showcase-label">Cameras</span>
       </div>
       <div class="toy-showcase-item">
-        <img src="data/toys/watch.jpg" alt="Smart watch for kids" loading="lazy"/>
+        <div class="toy-showcase-image" style="background-image: url('data/toy-showcase/watch.jpg')"></div>
         <span class="toy-showcase-label">Smart watches</span>
       </div>
       <div class="toy-showcase-item">
-        <img src="data/toys/blaster.jpg" alt="Gel blaster toy" loading="lazy"/>
-        <span class="toy-showcase-label">Gel blasters</span>
+        <div class="toy-showcase-image" style="background-image: url('data/toy-showcase/roblox.jpg')"></div>
+        <span class="toy-showcase-label">Roblox credit</span>
       </div>
     </div>
   </section>
@@ -457,13 +457,14 @@
   </section>
 
   <section class="parent-layer parent-layer--quote" aria-label="From a parent">
-    <blockquote class="parent-quote">
-      <p class="parent-quote-text">“My son used to fight me about practice. Now he asks if he can earn his next toy. He's done more math in a month than the whole school year.”</p>
-      <footer class="parent-quote-attr">
-        <span class="parent-quote-name">— A StarTest parent</span>
+    <div class="parent-quote-wrap">
+      <span class="parent-quote-mark" aria-hidden="true">&ldquo;</span>
+      <p class="parent-quote-text">My son used to fight me about practice. Now he asks if he can earn his next toy. He's done more math in a month than the whole school year.</p>
+      <div class="parent-quote-attr">
+        <span class="parent-quote-name">A StarTest parent</span>
         <span class="parent-quote-meta">San Antonio, TX</span>
-      </footer>
-    </blockquote>
+      </div>
+    </div>
   </section>
 
   <section class="parent-layer parent-layer--pricing" aria-label="Pricing">
@@ -961,12 +962,18 @@
   })();
   </script>
 
-  <!-- Prompt 34 — Toy showcase: pull live toys from marketplace API; placeholders remain on failure -->
+  <!-- Prompt 35 — Toy showcase: curated marketplace mapping; static fallback stays on miss -->
   <script>
   (function loadShowcaseToys(){
     var endpoint = 'https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com/';
+    var showcase = [
+      { match: /lego|building|construction|brick/i, label: 'Building sets' },
+      { match: /camera/i, label: 'Cameras' },
+      { match: /watch|smart\s*watch/i, label: 'Smart watches' },
+      { match: /roblox|robux|gift\s*card/i, label: 'Roblox credit' }
+    ];
     function go(){
-      var container = document.querySelector('.toy-showcase');
+      var container = document.querySelector('#toy-showcase');
       if (!container) return;
       fetch(endpoint, {
         method: 'POST',
@@ -976,19 +983,21 @@
         .then(function(r){ return r.ok ? r.json() : null; })
         .then(function(data){
           if (!data) return;
-          var toys = (data.toys || []).filter(function(t){ return t && t.imageUrl; }).slice(0, 4);
-          if (toys.length < 4) return; // keep placeholders
-          container.innerHTML = toys.map(function(t){
-            var label = String(t.name || '').split(' ').slice(0, 2).join(' ');
-            var safeAlt = String(t.name || 'Toy').replace(/"/g, '&quot;');
-            var safeLabel = label.replace(/</g, '&lt;');
+          var toys = data.toys || [];
+          var selected = showcase.map(function(s){
+            var toy = toys.find(function(t){ return t && t.imageUrl && s.match.test(t.name || ''); });
+            return toy ? { toy: toy, label: s.label } : null;
+          }).filter(Boolean);
+          if (selected.length < 4) return; // keep static fallback
+          container.innerHTML = selected.map(function(s){
+            var url = String(s.toy.imageUrl).replace(/'/g, '%27');
             return '<div class="toy-showcase-item">' +
-                     '<img src="' + t.imageUrl + '" alt="' + safeAlt + '" loading="lazy"/>' +
-                     '<span class="toy-showcase-label">' + safeLabel + '</span>' +
+                     '<div class="toy-showcase-image" style="background-image: url(\'' + url + '\')"></div>' +
+                     '<span class="toy-showcase-label">' + s.label + '</span>' +
                    '</div>';
           }).join('');
         })
-        .catch(function(){ /* silent — placeholders remain */ });
+        .catch(function(){ /* silent — static fallback stays */ });
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go);
     else go();
