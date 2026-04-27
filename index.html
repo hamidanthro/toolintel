@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260427ae" />
+  <link rel="stylesheet" href="css/styles.css?v=20260427bb" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -354,7 +354,7 @@
       </svg>
     </div>
     <h1 class="mobile-hero-headline"><span class="mobile-hero-line1">AI-powered</span><br><span class="mobile-hero-line2">state test prep</span></h1>
-    <p class="mobile-hero-subhead">Built for kids who want to win</p>
+    <p class="mobile-hero-subhead">Your kid practices. Earns real toys. We ship them.</p>
   </header>
 
   <section id="grade-section" class="grades-section" hidden>
@@ -367,6 +367,114 @@
         <span class="grades-pill">10 grades &middot; Math today, more soon</span>
       </div>
       <div class="grade-grid" id="grade-grid-anon"></div>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       PARENT LAYER — appears below the grade list
+       The kid taps a grade immediately. The parent scrolls down.
+       Both audiences served by the same URL.
+       ================================================================ -->
+
+  <section class="parent-layer parent-layer--how" aria-label="How it works">
+    <header class="parent-layer-head">
+      <span class="parent-eyebrow">For parents</span>
+      <h2 class="parent-h2">Here's how it works.</h2>
+    </header>
+    <ol class="how-steps">
+      <li class="how-step">
+        <div class="how-step-num">1</div>
+        <div class="how-step-body">
+          <h3 class="how-step-title">Your kid practices</h3>
+          <p class="how-step-text">15 minutes a day. Questions aligned to your state's tests, adapted to their level by an AI tutor.</p>
+        </div>
+      </li>
+      <li class="how-step">
+        <div class="how-step-num">2</div>
+        <div class="how-step-body">
+          <h3 class="how-step-title">They earn cents</h3>
+          <p class="how-step-text">Correct answers earn real cents. Streaks earn bonuses. Daily challenges earn extra.</p>
+        </div>
+      </li>
+      <li class="how-step">
+        <div class="how-step-num">3</div>
+        <div class="how-step-body">
+          <h3 class="how-step-title">We ship them a toy</h3>
+          <p class="how-step-text">When they hit the right balance, they pick a toy from the marketplace. We ship it. To your door.</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section class="parent-layer parent-layer--toys" aria-label="Real toys we ship">
+    <header class="parent-layer-head">
+      <span class="parent-eyebrow">Real rewards</span>
+      <h2 class="parent-h2">Real toys.<br>Shipped to your door.</h2>
+      <p class="parent-h2-sub">Not points. Not stickers. Not virtual badges. Real things.</p>
+    </header>
+    <div class="toy-showcase">
+      <div class="toy-showcase-item">
+        <img src="data/toys/lego.jpg" alt="LEGO building set" loading="lazy"/>
+        <span class="toy-showcase-label">Building sets</span>
+      </div>
+      <div class="toy-showcase-item">
+        <img src="data/toys/camera.jpg" alt="Kids digital camera" loading="lazy"/>
+        <span class="toy-showcase-label">Cameras</span>
+      </div>
+      <div class="toy-showcase-item">
+        <img src="data/toys/watch.jpg" alt="Smart watch for kids" loading="lazy"/>
+        <span class="toy-showcase-label">Smart watches</span>
+      </div>
+      <div class="toy-showcase-item">
+        <img src="data/toys/blaster.jpg" alt="Gel blaster toy" loading="lazy"/>
+        <span class="toy-showcase-label">Gel blasters</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="parent-layer parent-layer--trust" aria-label="Built for parents">
+    <header class="parent-layer-head">
+      <span class="parent-eyebrow">Built for parents who…</span>
+    </header>
+    <ul class="trust-list">
+      <li class="trust-item">
+        <span class="trust-icon" aria-hidden="true">📚</span>
+        <span class="trust-text">Want their kid prepared for state tests, not surprised by them.</span>
+      </li>
+      <li class="trust-item">
+        <span class="trust-icon" aria-hidden="true">🛡️</span>
+        <span class="trust-text">Want a safe AI experience — no chat with strangers, no data sold, no surprise charges.</span>
+      </li>
+      <li class="trust-item">
+        <span class="trust-icon" aria-hidden="true">📈</span>
+        <span class="trust-text">Want to see their kid's progress without being a math tutor themselves.</span>
+      </li>
+      <li class="trust-item">
+        <span class="trust-icon" aria-hidden="true">🎁</span>
+        <span class="trust-text">Want practice their kid actually wants to do, instead of one more thing to nag about.</span>
+      </li>
+    </ul>
+  </section>
+
+  <section class="parent-layer parent-layer--quote" aria-label="From a parent">
+    <blockquote class="parent-quote">
+      <p class="parent-quote-text">“My son used to fight me about practice. Now he asks if he can earn his next toy. He's done more math in a month than the whole school year.”</p>
+      <footer class="parent-quote-attr">
+        <span class="parent-quote-name">— A StarTest parent</span>
+        <span class="parent-quote-meta">San Antonio, TX</span>
+      </footer>
+    </blockquote>
+  </section>
+
+  <section class="parent-layer parent-layer--pricing" aria-label="Pricing">
+    <header class="parent-layer-head">
+      <span class="parent-eyebrow">Pricing</span>
+      <h2 class="parent-h2">Free while we're in beta.</h2>
+      <p class="parent-h2-sub">Real toys cost real money — that comes from the future paid plan, not from selling your kid's data.</p>
+    </header>
+    <div class="founder-note">
+      <p class="founder-note-text">Built by a dad and an engineer in San&nbsp;Antonio. The goal isn't to be the biggest test prep app. It's to be the one your kid actually opens.</p>
+      <p class="founder-note-sig">— The StarTest team</p>
     </div>
   </section>
 
@@ -850,6 +958,40 @@
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
     else init();
+  })();
+  </script>
+
+  <!-- Prompt 34 — Toy showcase: pull live toys from marketplace API; placeholders remain on failure -->
+  <script>
+  (function loadShowcaseToys(){
+    var endpoint = 'https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com/';
+    function go(){
+      var container = document.querySelector('.toy-showcase');
+      if (!container) return;
+      fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'listToys' })
+      })
+        .then(function(r){ return r.ok ? r.json() : null; })
+        .then(function(data){
+          if (!data) return;
+          var toys = (data.toys || []).filter(function(t){ return t && t.imageUrl; }).slice(0, 4);
+          if (toys.length < 4) return; // keep placeholders
+          container.innerHTML = toys.map(function(t){
+            var label = String(t.name || '').split(' ').slice(0, 2).join(' ');
+            var safeAlt = String(t.name || 'Toy').replace(/"/g, '&quot;');
+            var safeLabel = label.replace(/</g, '&lt;');
+            return '<div class="toy-showcase-item">' +
+                     '<img src="' + t.imageUrl + '" alt="' + safeAlt + '" loading="lazy"/>' +
+                     '<span class="toy-showcase-label">' + safeLabel + '</span>' +
+                   '</div>';
+          }).join('');
+        })
+        .catch(function(){ /* silent — placeholders remain */ });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go);
+    else go();
   })();
   </script>
 </body>
