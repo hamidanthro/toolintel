@@ -1,4 +1,4 @@
-/* StarTest Scratchpad — inline expandable canvas mounted directly below the
+/* GradeEarn Scratchpad — inline expandable canvas mounted directly below the
    question card on the practice page. Default collapsed; pressing S or
    clicking the toggle expands it. Auto-clears + collapses between questions.
    Mounts only when #scratchpad-mount is present in the DOM. */

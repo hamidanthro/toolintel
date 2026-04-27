@@ -1,9 +1,9 @@
 /**
- * StarTest — HERO STATE → GO
+ * GradeEarn — HERO STATE → GO
  *
  * Wires the homepage hero "Choose your state" <select> + "Go" button.
  * - Populates options from window.STATES_API.getAlphabetical().
- * - Restores last picked state from localStorage['startest.state'].
+ * - Restores last picked state from localStorage['gradeearn.state'].
  * - Enables Go only when a valid state is selected.
  * - On Go click, navigates to states/?s=<slug>.
  *
@@ -11,7 +11,7 @@
  * existing .hero-cta wrap rule lays out small viewports.
  */
 (function () {
-  var STORAGE_KEY = 'startest.state';
+  var STORAGE_KEY = 'gradeearn.state';
 
   function init() {
     var sel = document.getElementById('hero-state-select');

@@ -1,5 +1,5 @@
 /**
- * StarTest — ABOUT PAGE RENDERER
+ * GradeEarn — ABOUT PAGE RENDERER
  *
  * Reads ?s=<slug> from URL (optional). If present, renders state-flavored
  * content + JSON-LD with areaServed. If absent, renders generic about with
@@ -12,7 +12,7 @@
 (function () {
   const SITE_ORIGIN = location.origin && /^https?:/.test(location.origin)
     ? location.origin
-    : 'https://startest.ai';
+    : 'https://gradeearn.com';
   const STATES = window.STATES_API;
 
   function init() {
@@ -81,7 +81,7 @@
   }
 
   function updateSEO(state) {
-    const title = `How StarTest works for ${state.name} families — ${state.testName} test prep`;
+    const title = `How GradeEarn works for ${state.name} families — ${state.testName} test prep`;
     const description = `${state.testName} practice for ${state.name} kids. AI-powered, aligned to ${state.name} state standards. Real toys for correct answers. Free during beta.`;
 
     document.title = title;
@@ -102,7 +102,7 @@
       '@type': 'Article',
       headline: title,
       description: description,
-      publisher: { '@type': 'Organization', name: 'StarTest', url: SITE_ORIGIN },
+      publisher: { '@type': 'Organization', name: 'GradeEarn', url: SITE_ORIGIN },
       mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
       about: {
         '@type': 'EducationalOrganization',
@@ -120,7 +120,7 @@
 
     const title = document.getElementById('about-hero-title');
     if (title) {
-      title.innerHTML = `How StarTest works for <span class="about-hero-state">${escapeHtml(state.name)}</span> families.`;
+      title.innerHTML = `How GradeEarn works for <span class="about-hero-state">${escapeHtml(state.name)}</span> families.`;
     }
 
     const sub = document.getElementById('about-hero-sub');

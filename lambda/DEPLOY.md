@@ -26,7 +26,7 @@ All routes → toolintel-reviews Lambda
 
 ## AI Tutor (`tutor.js`)
 
-Provides interactive math help for StarTest students using AWS Bedrock (Claude).
+Provides interactive math help for GradeEarn students using AWS Bedrock (Claude).
 
 ### Lambda Setup
 1. Create Lambda function `staar-tutor` (Node.js 20.x)

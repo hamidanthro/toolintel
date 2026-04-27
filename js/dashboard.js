@@ -1,11 +1,11 @@
 /**
- * StarTest — STATE-AWARE DASHBOARD RENDERER
+ * GradeEarn — STATE-AWARE DASHBOARD RENDERER
  *
  * Powers the logged-in home page experience for users who have a state.
  * - Hides hero-anon, state-picker, legacy #dashboard
  * - Shows #state-dashboard with greeting, streak, test countdown,
  *   continue-practicing CTA, stats tiles, practice-ahead grades.
- * - Re-renders on `startest:auth-changed` event.
+ * - Re-renders on `gradeearn:auth-changed` event.
  */
 
 (function () {
@@ -136,6 +136,8 @@
 
     document.getElementById('sdash-ctx-test').textContent = state.testName;
     document.getElementById('sdash-ctx-grade').textContent = readableGrade(grade);
+    var subjEl = document.getElementById('sdash-ctx-subject');
+    if (subjEl) subjEl.textContent = lastSubject === 'reading' ? 'Reading' : 'Math';
   }
 
   function isFirstSessionToday(journey) {
@@ -216,5 +218,5 @@
   } else {
     init();
   }
-  document.addEventListener('startest:auth-changed', init);
+  document.addEventListener('gradeearn:auth-changed', init);
 })();

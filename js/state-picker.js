@@ -1,5 +1,5 @@
 /**
- * StarTest — STATE PICKER
+ * GradeEarn — STATE PICKER
  *
  * Powers the landing page state-selection experience:
  *   - IP-based auto-detect via ipapi.co
@@ -9,15 +9,15 @@
  *   - Logged-in users with saved state get auto-redirect to states/?s=<slug>
  *
  * Storage keys:
- *   startest.state              Selected state slug (e.g. "texas")
- *   startest.state-detected     Auto-detected state slug (cached for 24h)
- *   startest.state-detected-ts  Timestamp of last detection
+ *   gradeearn.state              Selected state slug (e.g. "texas")
+ *   gradeearn.state-detected     Auto-detected state slug (cached for 24h)
+ *   gradeearn.state-detected-ts  Timestamp of last detection
  */
 
 (function () {
-  const STORAGE_KEY = 'startest.state';
-  const DETECTED_KEY = 'startest.state-detected';
-  const DETECTED_TS_KEY = 'startest.state-detected-ts';
+  const STORAGE_KEY = 'gradeearn.state';
+  const DETECTED_KEY = 'gradeearn.state-detected';
+  const DETECTED_TS_KEY = 'gradeearn.state-detected-ts';
   const DETECT_TTL_MS = 24 * 60 * 60 * 1000; // 24h
   const GEOLOCATE_URL = 'https://ipapi.co/json/';
   // Hard cap: if we can't locate the user's state in 10s, give up and
@@ -273,7 +273,7 @@
   }
 
   // Public API
-  window.STARTEST_STATE = {
+  window.GRADEEARN_STATE = {
     get current() { return localStorage.getItem(STORAGE_KEY); },
     set: function (slug) {
       if (window.STATES_API && window.STATES_API.getBySlug(slug)) {

@@ -1,5 +1,5 @@
 /**
- * StarTest — Friends + safe chat
+ * GradeEarn — Friends + safe chat
  *
  * Safe-mode only: users exchange canned phrases / emoji reactions, never
  * free text. The chat code is validated server-side too.

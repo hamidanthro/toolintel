@@ -1,4 +1,4 @@
-// StarTest — AI Tutor Lambda (OpenAI)
+// GradeEarn — AI Tutor Lambda (OpenAI)
 // Provides interactive, age-appropriate math help when a student answers incorrectly.
 //
 // Endpoint:
@@ -87,7 +87,7 @@ function buildSystemPrompt(grade) {
     : '4-8';
   const maxSentences = gradeBand === 'K-3' ? 4 : 6;
 
-  return `You are the StarTest AI Tutor — a warm, encouraging, Socratic K-12 tutor for math, ELA, and science.
+  return `You are the GradeEarn AI Tutor — a warm, encouraging, Socratic K-12 tutor for math, ELA, and science.
 You're talking to a real kid right now who just got a question wrong (or asked for help). You're not a textbook. You're a friend who's good at this stuff.
 
 ## Your response structure (ALWAYS follow this)
@@ -144,7 +144,7 @@ If the student asks a follow-up:
 - Not a customer-service rep. Don't say "I'd be happy to help with that!"
 - Not a textbook. Don't lecture.
 - Not a parent. Don't moralize about effort.
-- Not pretending to be human. If asked, you're an AI tutor built into StarTest.`;
+- Not pretending to be human. If asked, you're an AI tutor built into GradeEarn.`;
 }
 
 function buildFirstUserMessage(payload) {
@@ -209,6 +209,9 @@ exports.handler = async (event) => {
   const action = payload.action || 'tutor';
   if (action === 'generate') {
     return await handleGenerate(payload);
+  }
+  if (action === 'getReadingBatch') {
+    return await handleGetReadingBatch(payload);
   }
   if (action === 'signup')   return await handleSignup(payload);
   if (action === 'login')    return await handleLogin(payload);
@@ -567,7 +570,7 @@ const VALID_STATE_SLUGS = new Set([
   'wisconsin','wyoming'
 ]);
 const VALID_SUBJECTS = new Set(['math','reading','science','social-studies']);
-const SUBJECTS_LIVE = new Set(['math']);
+const SUBJECTS_LIVE = new Set(['math', 'reading']);
 const DEFAULT_STATE = 'texas';
 const DEFAULT_SUBJECT = 'math';
 
@@ -2289,4 +2292,223 @@ async function handleAdminPatrolStats(payload) {
   } while (lastKey);
 
   return ok(counts);
+}
+
+// ============================================================
+// READING BATCH (R1) — serve N reading questions from the lake
+// for a state+grade. Each question carries its passage. The lake
+// fills via cold-start; if a bucket is too thin, generate fresh
+// (cost-budgeted to ~6 generations per request).
+// ============================================================
+const READING_TYPES = ['main-idea','key-detail','vocabulary','inference','author-purpose','text-structure'];
+const READING_BATCH_DEFAULT = 10;
+const READING_BATCH_MAX = 20;
+const READING_GEN_BUDGET = 6;
+
+async function handleGetReadingBatch(payload) {
+  const requestedState = payload.state ? String(payload.state).trim().toLowerCase() : null;
+  const grade = payload.grade ? String(payload.grade).trim().toLowerCase() : null;
+  if (requestedState && !isValidState(requestedState)) return bad(400, 'Invalid state');
+  if (!grade || !VALID_GRADES.has(grade)) return bad(400, 'Invalid grade');
+  if (grade === 'algebra-1' || grade === 'geometry') return bad(400, 'reading_not_in_grade');
+
+  let userState = null;
+  let userGrade = null;
+  if (payload.token) {
+    const auth = await verifyToken(payload.token);
+    if (auth && auth.username) {
+      try {
+        const u = await ddb.send(new GetCommand({ TableName: USERS_TABLE, Key: { username: auth.username } }));
+        if (u.Item) { userState = u.Item.state || null; userGrade = u.Item.grade || null; }
+      } catch (e) { /* fall through */ }
+    }
+  }
+  if (userState && requestedState && requestedState !== userState) return bad(403, 'state_mismatch');
+  if (userGrade && grade && !isGradeAllowed(userGrade, grade)) return bad(403, 'grade_mismatch');
+
+  const effectiveState = requestedState || userState || DEFAULT_STATE;
+  const count = Math.max(1, Math.min(READING_BATCH_MAX, parseInt(payload.count, 10) || READING_BATCH_DEFAULT));
+  const recent = Array.isArray(payload.recentContentIds) ? payload.recentContentIds.slice(0, 100) : [];
+  const recentSet = new Set(recent);
+
+  // Aim for an even split across the 6 reading question types.
+  const perType = Math.max(1, Math.ceil(count / READING_TYPES.length));
+  const buckets = READING_TYPES.map(t => ({
+    type: t,
+    poolKey: `${effectiveState}#${grade}#reading#teks-${t}`
+  }));
+
+  const apiKey = await getApiKey().catch(() => null);
+  const userIdForLake = (await verifyToken(payload.token).catch(() => null))?.username || 'guest';
+  const sessionId = payload.sessionId || null;
+  const out = [];
+  let cacheHits = 0, generated = 0, genBudgetUsed = 0;
+
+  for (const b of buckets) {
+    if (out.length >= count) break;
+    let pool;
+    try {
+      pool = await lake.readPoolForBucket({ poolKey: b.poolKey, recentContentIds: recent, limit: 100 });
+    } catch (err) {
+      console.warn('[reading] readPool failed:', err.message);
+      pool = [];
+    }
+    // Take up to perType from pool.
+    const fromPool = pool.filter(it => !recentSet.has(it.contentId)).slice(0, perType);
+    for (const item of fromPool) {
+      if (out.length >= count) break;
+      out.push(shapeReadingForClient(item));
+      cacheHits++;
+      // Fire-and-forget timesServed bump + event.
+      lake.recordEvent({
+        eventType: 'served', userId: userIdForLake, sessionId,
+        contentId: item.contentId, poolKey: b.poolKey,
+        state: effectiveState, grade, subject: 'reading',
+        meta: { fromCache: true }
+      }).catch(() => {});
+    }
+
+    // If this bucket is empty AND we have budget, generate one fresh question for it.
+    if (fromPool.length === 0 && genBudgetUsed < READING_GEN_BUDGET && apiKey && out.length < count) {
+      try {
+        const candidate = await generateReadingQuestionViaOpenAI({
+          stateSlug: effectiveState, grade, questionType: b.type, apiKey
+        });
+        const saveRes = await lake.savePoolItem({
+          poolKey: b.poolKey, candidate,
+          stateSlug: effectiveState, gradeSlug: grade,
+          subject: 'reading', questionType: `teks-${b.type}`,
+          generatedByUserId: userIdForLake, apiKey
+        });
+        genBudgetUsed++;
+        if (saveRes.saved) {
+          generated++;
+          out.push(shapeReadingForClient(saveRes.item));
+          lake.recordEvent({
+            eventType: 'generated', userId: userIdForLake, sessionId,
+            contentId: saveRes.contentId, poolKey: b.poolKey,
+            state: effectiveState, grade, subject: 'reading',
+            meta: { model: MODEL, fromCache: false }
+          }).catch(() => {});
+        }
+      } catch (err) {
+        console.warn('[reading] gen failed:', err.message);
+      }
+    }
+  }
+
+  // If still short, fill from any remaining pool items across buckets.
+  if (out.length < count) {
+    const haveIds = new Set(out.map(q => q.contentId));
+    for (const b of buckets) {
+      if (out.length >= count) break;
+      try {
+        const more = await lake.readPoolForBucket({ poolKey: b.poolKey, recentContentIds: [], limit: 100 });
+        for (const it of more) {
+          if (out.length >= count) break;
+          if (haveIds.has(it.contentId) || recentSet.has(it.contentId)) continue;
+          out.push(shapeReadingForClient(it));
+          haveIds.add(it.contentId);
+          cacheHits++;
+        }
+      } catch (e) { /* skip bucket */ }
+    }
+  }
+
+  return ok({
+    questions: out,
+    state: effectiveState,
+    grade,
+    subject: 'reading',
+    meta: { requested: count, cacheHits, generated, genBudgetUsed }
+  });
+}
+
+function shapeReadingForClient(item) {
+  // Lake stores {question, choices, correctIndex, explanation, passage} for cold-start;
+  // older items may have {prompt, answer}. Normalize to the shape practice.js expects:
+  // {type, prompt, choices, answer, explanation, passage, contentId, poolKey, questionType}.
+  const choices = Array.isArray(item.choices) ? item.choices.slice() : [];
+  let answer = item.answer || null;
+  if (!answer && Number.isFinite(item.correctIndex) && choices[item.correctIndex] != null) {
+    answer = String(choices[item.correctIndex]);
+  }
+  // Guarantee answer text appears among choices (case-insensitive).
+  if (answer && !choices.some(c => String(c).toLowerCase() === String(answer).toLowerCase())) {
+    choices.unshift(answer);
+  }
+  // Light shuffle so the correct answer isn't always first.
+  for (let i = choices.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [choices[i], choices[j]] = [choices[j], choices[i]];
+  }
+  return {
+    id: item.contentId,
+    contentId: item.contentId,
+    poolKey: item.poolKey,
+    type: 'multiple_choice',
+    subject: 'reading',
+    questionType: item.questionType || null,
+    prompt: item.question || item.prompt || '',
+    choices,
+    answer: answer || (choices[0] || ''),
+    explanation: item.explanation || '',
+    passage: item.passage || null,
+    teks: item.questionType || ''
+  };
+}
+
+async function generateReadingQuestionViaOpenAI({ stateSlug, grade, questionType, apiKey }) {
+  const meta = STATE_METADATA[stateSlug] || STATE_METADATA[DEFAULT_STATE];
+  const TYPE_GUIDES = {
+    'main-idea': 'a question asking for the main idea or central message of the passage.',
+    'key-detail': 'a question about a specific detail in the passage.',
+    'vocabulary': 'a question asking the meaning of a word or phrase as used in the passage.',
+    'inference': 'a question requiring the student to infer something not directly stated.',
+    'author-purpose': 'a question about why the author wrote the text or used a particular technique.',
+    'text-structure': 'a question about how the text is organized (sequence, cause/effect, comparison, etc.).'
+  };
+  const grLabel = grade === 'grade-k' ? 'kindergarten' : `grade ${grade.replace('grade-','')}`;
+  const wcRange = ['grade-k','grade-1','grade-2','grade-3','grade-4','grade-5'].includes(grade) ? '80-180 words' : '150-300 words';
+  const system = `You are an expert ${meta.testName} reading item writer.
+
+Generate ONE reading passage and ONE multiple-choice comprehension question for ${grLabel} students.
+
+Standards: align to ${meta.standards} for ${grLabel}.
+
+Passage:
+- Length: ${wcRange}.
+- Type: rotate across fiction, nonfiction, poetry, informational.
+- Topic: age-appropriate; favor universal themes (animals, nature, family, sports, history snippets, simple science).
+- Avoid: current events, politics, controversial topics.
+
+Question type: ${questionType}. ${TYPE_GUIDES[questionType] || ''}
+
+Requirements:
+- Question must be answerable from the passage.
+- Distractors plausible but clearly wrong on careful reading.
+- Explanation cites specific evidence in the passage.
+- Exactly 4 choices, exactly one correct.
+
+Output ONLY valid JSON:
+{
+  "passage": { "title": "...", "text": "...", "type": "fiction" },
+  "question": "...",
+  "choices": ["A","B","C","D"],
+  "correctIndex": 0,
+  "explanation": "..."
+}`;
+  const result = await callOpenAI(apiKey, {
+    model: MODEL,
+    messages: [
+      { role: 'system', content: system },
+      { role: 'user', content: 'Generate the question now.' }
+    ],
+    response_format: { type: 'json_object' },
+    temperature: 0.9,
+    max_tokens: 1400
+  });
+  const raw = result?.choices?.[0]?.message?.content || '{}';
+  const parsed = JSON.parse(raw);
+  return { ...parsed, _generatedBy: MODEL, _promptVersion: 'reading-v1' };
 }

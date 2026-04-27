@@ -6,9 +6,9 @@
   <meta name="theme-color" content="#060d1f" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="StarTest">
+  <meta name="apple-mobile-web-app-title" content="GradeEarn">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="application-name" content="StarTest">
+  <meta name="application-name" content="GradeEarn">
   <meta name="msapplication-TileColor" content="#060d1f">
   <meta name="msapplication-config" content="/browserconfig.xml">
   <link rel="manifest" href="/manifest.json">
@@ -17,15 +17,15 @@
   <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16.png">
   <link rel="shortcut icon" href="/favicon.ico">
   <meta name="format-detection" content="telephone=no" />
-  <title>StarTest — AI-powered state test prep for kids. Real toys for correct answers.</title>
-  <meta name="description" content="StarTest is AI-powered practice for your state's specific test — STAAR, CAASPP, FAST, TCAP, and 47 more. Kids earn real toys for correct answers. Free during beta." />
-  <meta property="og:title" content="StarTest — AI-powered state test prep for kids" />
+  <title>GradeEarn — AI-powered state test prep for kids. Real toys for correct answers.</title>
+  <meta name="description" content="GradeEarn is AI-powered practice for your state's specific test — STAAR, CAASPP, FAST, TCAP, and 47 more. Kids earn real toys for correct answers. Free during beta." />
+  <meta property="og:title" content="GradeEarn — AI-powered state test prep for kids" />
   <meta property="og:description" content="Practice tailored to your state's specific test. Real toys ship to your door for correct answers. Free during beta." />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://startest.ai/" />
-  <meta property="og:image" content="https://startest.ai/og-image.png" />
+  <meta property="og:url" content="https://gradeearn.com/" />
+  <meta property="og:image" content="https://gradeearn.com/og-image.png" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="StarTest — AI-powered state test prep" />
+  <meta name="twitter:title" content="GradeEarn — AI-powered state test prep" />
   <meta name="twitter:description" content="Practice for your state's test. Real toys for correct answers." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -376,7 +376,7 @@
   </section>
 
   <header class="mobile-hero" aria-hidden="false">
-    <div class="mobile-hero-star" role="button" tabindex="0" aria-label="StarTest">
+    <div class="mobile-hero-star" role="button" tabindex="0" aria-label="GradeEarn">
       <svg viewBox="0 0 24 24" fill="currentColor" width="36" height="36" aria-hidden="true">
         <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
       </svg>
@@ -542,7 +542,7 @@
       <span class="parent-quote-mark" aria-hidden="true">&ldquo;</span>
       <p class="parent-quote-text">My son used to fight me about practice. Now he asks if he can earn his next toy. He's done more math in a month than the whole school year.</p>
       <div class="parent-quote-attr">
-        <span class="parent-quote-name">A StarTest parent</span>
+        <span class="parent-quote-name">A GradeEarn parent</span>
         <span class="parent-quote-meta">San Antonio, TX</span>
       </div>
     </div>
@@ -556,7 +556,7 @@
     </header>
     <div class="founder-note">
       <p class="founder-note-text">Built by a dad and an engineer in San&nbsp;Antonio. The goal isn't to be the biggest test prep app. It's to be the one your kid actually opens.</p>
-      <p class="founder-note-sig">— The StarTest team</p>
+      <p class="founder-note-sig">— The GradeEarn team</p>
     </div>
   </section>
 
@@ -634,7 +634,7 @@
 
       <div class="footer-bottom">
         <div class="footer-copy">
-          &copy; <span id="year"></span> StarTest. All rights reserved.
+          &copy; <span id="year"></span> GradeEarn. All rights reserved.
         </div>
         <div class="footer-meta">
           <span class="footer-meta-item">Made for kids who want to win</span>
@@ -656,6 +656,7 @@
     </div>
   </footer>
 
+  <script src="js/migrate-storage.js?v=20260427a"></script>
   <script src="js/prefs.js?v=20260426a"></script>
   <script src="js/fx.js?v=20260426a"></script>
   <script src="js/states-data.js?v=20260427d"></script>
@@ -947,7 +948,7 @@
         if (!slug) return; // first-time user with no grade — keep grades.html for selection
         // Carry full state context (foundation: every contextual flow keeps state).
         const stateSlug = u.state || (() => {
-          try { return localStorage.getItem('startest.state'); } catch (_) { return null; }
+          try { return localStorage.getItem('gradeearn.state'); } catch (_) { return null; }
         })();
         const qs = stateSlug
           ? `?s=${encodeURIComponent(stateSlug)}&g=${encodeURIComponent(slug)}&subj=math`

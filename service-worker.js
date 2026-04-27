@@ -1,5 +1,5 @@
 /**
- * StarTest — Service Worker
+ * GradeEarn — Service Worker
  *
  * Strategy: cache-first for static assets, network-first for HTML and API calls.
  * Versioned cache: bump CACHE_VERSION to invalidate.
@@ -7,7 +7,7 @@
  * Critical: never cache API responses (Lambda calls). They must always be fresh.
  */
 
-const CACHE_VERSION = 'startest-v1';
+const CACHE_VERSION = 'gradeearn-v1';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 

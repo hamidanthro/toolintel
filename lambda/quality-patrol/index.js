@@ -1,5 +1,5 @@
 /**
- * StarTest — Quality Patrol Lambda (I3)
+ * GradeEarn — Quality Patrol Lambda (I3)
  *
  * Runs daily at 4am ET. Inspects the active content pool and:
  *  - retires questions with reportedCount >= 3

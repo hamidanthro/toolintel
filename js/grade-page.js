@@ -1,5 +1,5 @@
 /**
- * StarTest — GRADE PAGE RENDERER
+ * GradeEarn — GRADE PAGE RENDERER
  *
  * Reads ?s=<state>&g=<grade> from URL. Validates both.
  * Renders subject cards (Math live; Reading/Science/Social Studies coming soon).
@@ -25,8 +25,7 @@
       tagline: 'Comprehension, vocabulary, analysis.',
       icon: 'reading',
       color: '#818cf8',
-      live: false,
-      eta: 'Coming soon'
+      live: true
     },
     {
       slug: 'science',
@@ -126,7 +125,7 @@
     const span = ctaEl.querySelector('span');
     if (span) span.textContent = ctaLabel + ' ';
     err.hidden = false;
-    document.title = `${title} — StarTest`;
+    document.title = `${title} — GradeEarn`;
   }
 
   // ============================================================
@@ -134,7 +133,7 @@
   // ============================================================
 
   function populateSEO(state, gradeSlug, gradeName) {
-    const title = `${state.testName} ${gradeName} Practice — StarTest`;
+    const title = `${state.testName} ${gradeName} Practice — GradeEarn`;
     const description = `AI-powered ${state.testName} practice for ${gradeName} students in ${state.name}. Aligned to state standards. Real toys for correct answers. Free during beta.`;
 
     document.title = title;
@@ -158,7 +157,7 @@
       description: description,
       provider: {
         '@type': 'Organization',
-        name: 'StarTest',
+        name: 'GradeEarn',
         url: SITE_ORIGIN
       },
       educationalLevel: gradeName,
@@ -208,7 +207,32 @@
   function populateSubjects(state, gradeSlug) {
     const grid = document.getElementById('subject-grid');
 
+    // R1: per-state-per-grade subject availability. Falls back to true for math
+    // if the helper is missing (back-compat).
+    const offeredFor = function (subjSlug) {
+      if (window.STATES_API && typeof window.STATES_API.isSubjectInGrade === 'function') {
+        return window.STATES_API.isSubjectInGrade(state.slug, gradeSlug, subjSlug);
+      }
+      return subjSlug === 'math';
+    };
+
     grid.innerHTML = SUBJECTS.map(subj => {
+      const offered = offeredFor(subj.slug);
+      if (!offered) {
+        const gradeLabel = (GRADE_NAMES[gradeSlug] || gradeSlug);
+        return `
+          <div class="subject-card subject-card--unavailable" data-subject="${escapeHtml(subj.slug)}" aria-disabled="true">
+            <div class="subject-card-icon" style="--subject-color: ${subj.color}" aria-hidden="true">
+              ${getSubjectIcon(subj.icon)}
+            </div>
+            <div class="subject-card-body">
+              <h3 class="subject-card-name">${escapeHtml(subj.name)}</h3>
+              <p class="subject-card-tagline">Not tested in ${escapeHtml(gradeLabel)} for ${escapeHtml(state.testName)}</p>
+            </div>
+          </div>
+        `;
+      }
+
       const targetUrl = subj.live
         ? `practice.html?s=${encodeURIComponent(state.slug)}&g=${encodeURIComponent(gradeSlug)}&subj=${encodeURIComponent(subj.slug)}`
         : null;

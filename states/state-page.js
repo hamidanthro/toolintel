@@ -1,5 +1,5 @@
 /**
- * StarTest — STATE PAGE RENDERER
+ * GradeEarn — STATE PAGE RENDERER
  *
  * Reads ?s=<slug> from URL, looks up state metadata,
  * and populates the page with state-specific content.
@@ -39,7 +39,7 @@
     }
 
     // Persist this choice
-    try { localStorage.setItem('startest.state', slug); } catch (_) {}
+    try { localStorage.setItem('gradeearn.state', slug); } catch (_) {}
 
     // Populate
     populateSEO(state);
@@ -60,7 +60,7 @@
     if (loading) { loading.hidden = true; loading.style.display = 'none'; }
     const err = document.getElementById('state-error');
     if (err) err.hidden = false;
-    document.title = 'State not found — StarTest';
+    document.title = 'State not found — GradeEarn';
   }
 
   // ============================================================
@@ -87,7 +87,7 @@
     const jsonld = {
       '@context': 'https://schema.org',
       '@type': 'EducationalOrganization',
-      name: 'StarTest',
+      name: 'GradeEarn',
       url: SITE_ORIGIN,
       description: state.seoDescription,
       areaServed: {

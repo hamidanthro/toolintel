@@ -1,5 +1,5 @@
 /**
- * StarTest — PWA INSTALL PROMPT
+ * GradeEarn — PWA INSTALL PROMPT
  *
  * Captures `beforeinstallprompt` (Chrome/Edge/Android), and detects iOS Safari
  * to show a manual "Add to Home Screen" guide instead.
@@ -13,8 +13,8 @@
  */
 
 (function () {
-  const DISMISS_KEY = 'startest.pwa-dismissed-until';
-  const SHOWN_KEY = 'startest.pwa-shown-this-session';
+  const DISMISS_KEY = 'gradeearn.pwa-dismissed-until';
+  const SHOWN_KEY = 'gradeearn.pwa-shown-this-session';
   const DAY_MS = 24 * 60 * 60 * 1000;
 
   let deferredPrompt = null;
@@ -68,7 +68,7 @@
     isInstalled = true;
     deferredPrompt = null;
     if (window.STAARAuth && window.STAARAuth.showToast) {
-      window.STAARAuth.showToast('Installed! Look for the StarTest icon.');
+      window.STAARAuth.showToast('Installed! Look for the GradeEarn icon.');
     }
   });
 
@@ -76,7 +76,7 @@
   // ENGAGEMENT TRIGGERS
   // ============================================================
 
-  document.addEventListener('startest:auth-changed', (e) => {
+  document.addEventListener('gradeearn:auth-changed', (e) => {
     if (!e.detail || !e.detail.user) return;
 
     setTimeout(() => {
@@ -86,7 +86,7 @@
     }, 2000);
   });
 
-  document.addEventListener('startest:correct-answer', (e) => {
+  document.addEventListener('gradeearn:correct-answer', (e) => {
     const count = (e.detail && e.detail.count) || 0;
     if (count !== 2) return;
 
@@ -119,10 +119,10 @@
         </button>
 
         <div class="pwa-install-icon">
-          <img src="/icons/icon-192.png" alt="StarTest" />
+          <img src="/icons/icon-192.png" alt="GradeEarn" />
         </div>
 
-        <h3 class="pwa-install-title" id="pwa-title">Add StarTest to your home screen</h3>
+        <h3 class="pwa-install-title" id="pwa-title">Add GradeEarn to your home screen</h3>
         <p class="pwa-install-sub">
           Faster to open. Works offline. Looks and feels like a real app.
         </p>
@@ -164,7 +164,7 @@
           <polyline points="7 10 12 15 17 10"/>
           <line x1="12" y1="15" x2="12" y2="3"/>
         </svg>
-        Install StarTest
+        Install GradeEarn
       </button>
     `;
   }
@@ -200,7 +200,7 @@
         </li>
       </ol>
       <p class="pwa-ios-tip">
-        Already there? Look for the gold StarTest icon on your home screen.
+        Already there? Look for the gold GradeEarn icon on your home screen.
       </p>
     `;
   }
@@ -235,7 +235,7 @@
   // PUBLIC API
   // ============================================================
 
-  window.STARTEST_PWA = {
+  window.GRADEEARN_PWA = {
     isStandalone,
     isInstalled: () => isStandalone(),
     show: () => {

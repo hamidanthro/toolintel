@@ -1,5 +1,5 @@
 /**
- * StarTest — CONTENT LAKE MODULE
+ * GradeEarn — CONTENT LAKE MODULE
  *
  * The single interface for reading and writing content artifacts.
  * Every other Lambda handler talks to the lake through this module.

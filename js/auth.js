@@ -1,4 +1,4 @@
-// StarTest — Cloud accounts (username + password)
+// GradeEarn — Cloud accounts (username + password)
 //
 // Talks to the staar-tutor Lambda (same endpoint used by the AI tutor)
 // with action: signup | login | getStats | putStats.
@@ -43,7 +43,7 @@ if ('serviceWorker' in navigator) {
   function saveSession(s) {
     localStorage.setItem(LS_SESSION, JSON.stringify(s));
     try {
-      document.dispatchEvent(new CustomEvent('startest:auth-changed', {
+      document.dispatchEvent(new CustomEvent('gradeearn:auth-changed', {
         detail: { user: (s && s.user) || null }
       }));
     } catch (_) {}
@@ -51,7 +51,7 @@ if ('serviceWorker' in navigator) {
   function clearSession() {
     localStorage.removeItem(LS_SESSION);
     try {
-      document.dispatchEvent(new CustomEvent('startest:auth-changed', {
+      document.dispatchEvent(new CustomEvent('gradeearn:auth-changed', {
         detail: { user: null }
       }));
     } catch (_) {}
@@ -225,7 +225,7 @@ if ('serviceWorker' in navigator) {
         </form>
 
         <div class="signin-modal-footer">
-          <span class="signin-footer-text">New to StarTest?</span>
+          <span class="signin-footer-text">New to GradeEarn?</span>
           <a href="#" class="signin-footer-link" data-act="signup">Create an account</a>
         </div>
 
@@ -379,7 +379,7 @@ if ('serviceWorker' in navigator) {
     try {
       const list = (window.STATES_API && window.STATES_API.getAlphabetical && window.STATES_API.getAlphabetical()) || [];
       let stored = null;
-      try { stored = localStorage.getItem('startest.state'); } catch (_) {}
+      try { stored = localStorage.getItem('gradeearn.state'); } catch (_) {}
       list.forEach(s => {
         const opt = document.createElement('option');
         opt.value = s.slug;
@@ -418,8 +418,8 @@ if ('serviceWorker' in navigator) {
         const res = await api('signup', { username, password, displayName, email, grade, state: stateValue });
         saveSession({ token: res.token, user: res.user });
         try {
-          if (res.user && res.user.state) localStorage.setItem('startest.state', res.user.state);
-          else if (stateValue) localStorage.setItem('startest.state', stateValue);
+          if (res.user && res.user.state) localStorage.setItem('gradeearn.state', res.user.state);
+          else if (stateValue) localStorage.setItem('gradeearn.state', stateValue);
         } catch (_) {}
         await migrateLegacyStats();
         closeModal();
@@ -955,7 +955,7 @@ if ('serviceWorker' in navigator) {
       practiceHref = `${inStatesDir ? '../' : ''}index.html#state-picker`;
     } else {
       let storedState = null;
-      try { storedState = localStorage.getItem('startest.state'); } catch (_) {}
+      try { storedState = localStorage.getItem('gradeearn.state'); } catch (_) {}
       if (storedState && window.STATES_API && window.STATES_API.getBySlug(storedState)) {
         practiceHref = `${inStatesDir ? '' : 'states/'}?s=${encodeURIComponent(storedState)}`;
       } else {
@@ -1060,7 +1060,7 @@ if ('serviceWorker' in navigator) {
           Admin panel
           <span class="profile-sheet-row-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg></span>
         </a>` : ''}
-        ${(window.STARTEST_PWA && !window.STARTEST_PWA.isInstalled()) ? `
+        ${(window.GRADEEARN_PWA && !window.GRADEEARN_PWA.isInstalled()) ? `
         <button class="profile-sheet-row" type="button" data-action="pwa-install">
           <span class="profile-sheet-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
           Install app
@@ -1105,8 +1105,8 @@ if ('serviceWorker' in navigator) {
       installBtn.addEventListener('click', () => {
         closeSheet();
         setTimeout(() => {
-          if (window.STARTEST_PWA && window.STARTEST_PWA.show) {
-            window.STARTEST_PWA.show();
+          if (window.GRADEEARN_PWA && window.GRADEEARN_PWA.show) {
+            window.GRADEEARN_PWA.show();
           }
         }, 320);
       });

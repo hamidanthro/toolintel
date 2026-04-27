@@ -1,6 +1,6 @@
 {
-  "name": "StarTest — State Test Prep",
-  "short_name": "StarTest",
+  "name": "GradeEarn — State Test Prep",
+  "short_name": "GradeEarn",
   "description": "AI-powered state test prep for K–12. Real toys for correct answers. STAAR, CAASPP, FAST, TCAP, and 47 more.",
   "start_url": "/?utm_source=pwa",
   "scope": "/",

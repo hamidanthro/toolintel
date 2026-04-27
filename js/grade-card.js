@@ -1,4 +1,4 @@
-// StarTest — single source of truth for grade-card rendering and grade-gating.
+// GradeEarn — single source of truth for grade-card rendering and grade-gating.
 // Exposes:
 //   window.STAARGradeAccess.getVisibleGrades(user)   -> grade list a user can see
 //   window.STAARGradeAccess.canPracticeGrade(user, slug) -> bool

@@ -1,4 +1,4 @@
-// StarTest — interactive practice runner
+// GradeEarn — interactive practice runner
 // URL params:  ?g=<gradeSlug>&u=<unitId>&l=<lessonId>
 // Loads data/<gradeSlug>-curriculum.json, builds a question queue, checks answers,
 // and on incorrect answers calls the AI tutor endpoint for an interactive explanation.
@@ -20,11 +20,12 @@
   const STATES = window.STATES_API;
   const _u0 = (window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser()) || null;
 
-  // Subject — math is the only live subject; coming-soon subjects bounce back.
+  // Subject — math + reading are live; science / social-studies bounce back.
   let SUBJECT_SLUG = (params.get('subj') || 'math').toLowerCase();
   const _VALID_SUBJECTS = ['math', 'reading', 'science', 'social-studies'];
+  const _LIVE_SUBJECTS = ['math', 'reading'];
   if (!_VALID_SUBJECTS.includes(SUBJECT_SLUG)) SUBJECT_SLUG = 'math';
-  if (SUBJECT_SLUG !== 'math') {
+  if (!_LIVE_SUBJECTS.includes(SUBJECT_SLUG)) {
     if (params.get('s') && params.get('g')) {
       location.href = `grade.html?s=${encodeURIComponent(params.get('s'))}&g=${encodeURIComponent(params.get('g'))}`;
       return;
@@ -36,7 +37,7 @@
   let STATE_SLUG = params.get('s');
   if (!STATE_SLUG && _u0 && _u0.state) STATE_SLUG = _u0.state;
   if (!STATE_SLUG) {
-    try { STATE_SLUG = localStorage.getItem('startest.state') || null; } catch (_) {}
+    try { STATE_SLUG = localStorage.getItem('gradeearn.state') || null; } catch (_) {}
   }
   if (!STATE_SLUG) STATE_SLUG = 'texas';
   if (STATES && !STATES.getBySlug(STATE_SLUG)) STATE_SLUG = 'texas';
@@ -63,7 +64,7 @@
 
   if (!slug) {
     // No grade context — bounce to state page (or home if guest with no state).
-    if (params.get('s') || (_u0 && _u0.state) || (function(){ try { return localStorage.getItem('startest.state'); } catch(_) { return null; } })()) {
+    if (params.get('s') || (_u0 && _u0.state) || (function(){ try { return localStorage.getItem('gradeearn.state'); } catch(_) { return null; } })()) {
       location.href = `states/?s=${encodeURIComponent(STATE_SLUG)}`;
       return;
     }
@@ -101,7 +102,7 @@
         </div>
       </nav>
     `;
-    document.title = `${STATE_INFO.testName} ${gradeName} ${subjLabel} — StarTest`;
+    document.title = `${STATE_INFO.testName} ${gradeName} ${subjLabel} — GradeEarn`;
   }
   function escapePcb(s) {
     return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -268,6 +269,14 @@
     return;
   }
 
+  // ============================================================
+  // READING SUBJECT — lake-batch flow (no per-grade curriculum file).
+  // ============================================================
+  if (SUBJECT_SLUG === 'reading') {
+    startReading();
+    return;
+  }
+
   fetch(`data/${slug}-curriculum.json?v=20260426m`)
     .then(r => r.ok ? r.json() : Promise.reject('not-found'))
     .then(curr => start(curr))
@@ -415,8 +424,8 @@
           count: GENERATE,
           seed,
           topics,
-          sessionId: (window.StarTestLake && window.StarTestLake.startSession()) || null,
-          recentContentIds: (window.StarTestLake && window.StarTestLake.getRecent()) || []
+          sessionId: (window.GradeEarnLake && window.GradeEarnLake.startSession()) || null,
+          recentContentIds: (window.GradeEarnLake && window.GradeEarnLake.getRecent()) || []
         })
       });
       if (res.status === 403) {
@@ -622,8 +631,8 @@
       qbox.innerHTML = renderQuestion(q, isLocked);
       attachQuestionHandlers(q);
       // Lake: record question shown (Prompt I1)
-      if (window.StarTestLake && q.contentId) {
-        window.StarTestLake.onQuestionShown({
+      if (window.GradeEarnLake && q.contentId) {
+        window.GradeEarnLake.onQuestionShown({
           contentId: q.contentId,
           poolKey: q.poolKey,
           state: STATE_SLUG_RESOLVED,
@@ -635,10 +644,23 @@
 
     function attachQuestionHandlers(q) {
       const form = qbox.querySelector('form');
+      // Reading passage toggle (R2)
+      const passageEl = qbox.querySelector('#reading-passage');
+      if (passageEl) {
+        const toggleBtn = passageEl.querySelector('[data-act="passage-toggle"]');
+        if (toggleBtn) {
+          toggleBtn.addEventListener('click', () => {
+            const collapsed = passageEl.classList.toggle('reading-passage--collapsed');
+            toggleBtn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+            const label = toggleBtn.querySelector('.reading-passage-toggle-label');
+            if (label) label.textContent = collapsed ? 'Show passage' : 'Hide passage';
+          });
+        }
+      }
       // Lake: track radio choice changes for rapid-flip detection (Prompt I1)
-      if (window.StarTestLake) {
+      if (window.GradeEarnLake) {
         form.querySelectorAll('input[type="radio"][name="ans"]').forEach(r => {
-          r.addEventListener('change', () => window.StarTestLake.onChoiceFlip());
+          r.addEventListener('change', () => window.GradeEarnLake.onChoiceFlip());
         });
       }
       // Esc clears the typed answer (free-response only).
@@ -671,13 +693,13 @@
         }
         const isCorrect = checkAnswer(q, userAnswer);
         // Lake: record answer event (Prompt I1)
-        if (window.StarTestLake && q.contentId) {
+        if (window.GradeEarnLake && q.contentId) {
           let pickedIdx = null;
           if (q.type === 'multiple_choice' && Array.isArray(q.choices)) {
             const idx = q.choices.indexOf(userAnswer);
             if (idx >= 0) pickedIdx = idx;
           }
-          window.StarTestLake.onAnswered({
+          window.GradeEarnLake.onAnswered({
             contentId: q.contentId,
             poolKey: q.poolKey,
             pickedChoice: pickedIdx,
@@ -692,7 +714,7 @@
             showToast(`${STATE_INFO.testName} streak: ${_streak} 🔥`);
           }
           try {
-            document.dispatchEvent(new CustomEvent('startest:correct-answer', {
+            document.dispatchEvent(new CustomEvent('gradeearn:correct-answer', {
               detail: { count: _streak }
             }));
           } catch (_) {}
@@ -936,6 +958,67 @@
     setTimeout(() => { try { pop.remove(); } catch (_) {} }, 1300);
   }
 
+  // ============================================================
+  // READING START — fetch a batch of reading questions from the lake
+  // (state+grade), then runQuiz with a minimal curriculum stand-in.
+  // ============================================================
+  async function startReading() {
+    const grTitle = ({
+      'grade-k':'Kindergarten','grade-1':'Grade 1','grade-2':'Grade 2','grade-3':'Grade 3',
+      'grade-4':'Grade 4','grade-5':'Grade 5','grade-6':'Grade 6','grade-7':'Grade 7',
+      'grade-8':'Grade 8'
+    })[slug] || slug;
+    const fakeCurr = { grade: slug, title: `${grTitle} Reading`, units: [] };
+    try {
+      const res = await fetch(TUTOR_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'getReadingBatch',
+          token: (window.STAARAuth && window.STAARAuth.token && window.STAARAuth.token()) || null,
+          state: STATE_SLUG_RESOLVED,
+          grade: slug,
+          count: 15,
+          sessionId: (window.GradeEarnLake && window.GradeEarnLake.startSession()) || null,
+          recentContentIds: (window.GradeEarnLake && window.GradeEarnLake.getRecent()) || []
+        })
+      });
+      if (!res.ok) throw new Error('reading_batch_failed');
+      const data = await res.json();
+      const items = (data.questions || []).map(g => ({
+        id: g.id || g.contentId,
+        contentId: g.contentId || null,
+        poolKey: g.poolKey || null,
+        type: g.type || 'multiple_choice',
+        prompt: g.prompt || g.question || '',
+        choices: g.choices || [],
+        answer: g.answer || '',
+        explanation: g.explanation || '',
+        passage: g.passage || null,
+        _unit: { title: 'Reading' },
+        _lesson: { teks: g.questionType || g.teks || '', title: '' }
+      }));
+      if (!items.length) {
+        root.innerHTML = `
+          <h2>Reading practice</h2>
+          <div class="card">
+            <p style="color:var(--muted);">Building reading questions for ${escapeHtml(grTitle)} — give us a moment and try again.</p>
+            <p><a class="btn btn-primary" href="grade.html?s=${encodeURIComponent(STATE_SLUG_RESOLVED)}&g=${encodeURIComponent(slug)}">Back</a></p>
+          </div>`;
+        return;
+      }
+      runQuiz(fakeCurr, items, null, { enhance: null });
+    } catch (err) {
+      console.warn('[reading] fetch failed:', err.message);
+      root.innerHTML = `
+        <h2>Reading practice</h2>
+        <div class="card">
+          <p style="color:var(--muted);">We couldn’t load reading questions right now. Try again in a moment.</p>
+          <p><a class="btn btn-primary" href="grade.html?s=${encodeURIComponent(STATE_SLUG_RESOLVED)}&g=${encodeURIComponent(slug)}">Back</a></p>
+        </div>`;
+    }
+  }
+
   function renderQuestion(q, locked) {
     let body = '';
     if (q.type === 'multiple_choice') {
@@ -955,7 +1038,12 @@
     const readBtn = (window.STAARFx && window.STAARFx.readAloudEnabled())
       ? `<button type="button" class="q-read-btn" data-act="read" aria-label="Read question aloud" title="Read aloud">🔊</button>`
       : '';
+
+    // Reading passage (R2) — rendered above the question card when present.
+    const passageHtml = q.passage && q.passage.text ? renderPassage(q.passage) : '';
+
     return `
+      ${passageHtml}
       <form class="question-card">
         <div class="q-meta">
           <span>${escapeHtml(q._unit?.title || '')} · TEKS ${escapeHtml(q._lesson?.teks || '')}</span>
@@ -965,6 +1053,36 @@
         <div class="q-body">${body}</div>
         <button class="btn btn-primary" type="submit">Check answer</button>
       </form>`;
+  }
+
+  function renderPassage(p) {
+    const TYPE_LABEL = { fiction:'Story', nonfiction:'True story', poetry:'Poem', informational:'Article' };
+    const typeRaw = String(p.type || '').toLowerCase();
+    const typeLabel = TYPE_LABEL[typeRaw] || (typeRaw ? typeRaw[0].toUpperCase() + typeRaw.slice(1) : 'Passage');
+    const title = p.title || '';
+    const isMobile = window.innerWidth < 768;
+    const collapsedClass = isMobile ? ' reading-passage--collapsed' : '';
+    const ariaExpanded = isMobile ? 'false' : 'true';
+    const toggleLabel = isMobile ? 'Show passage' : 'Hide passage';
+    return `
+      <article class="reading-passage${collapsedClass}" id="reading-passage">
+        <header class="reading-passage-header">
+          <span class="reading-passage-type">${escapeHtml(typeLabel)}</span>
+          <h2 class="reading-passage-title">${escapeHtml(title)}</h2>
+          <button type="button" class="reading-passage-toggle" data-act="passage-toggle" aria-expanded="${ariaExpanded}" aria-controls="passage-text">
+            <span class="reading-passage-toggle-label">${toggleLabel}</span>
+            <svg class="reading-passage-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="18 15 12 9 6 15"/></svg>
+          </button>
+        </header>
+        <div class="reading-passage-text" id="passage-text">${formatPassageText(p.text || '')}</div>
+      </article>`;
+  }
+
+  function formatPassageText(text) {
+    return String(text)
+      .split(/\n\s*\n/)
+      .map(para => `<p>${escapeHtml(para).replace(/\n/g, '<br>')}</p>`)
+      .join('');
   }
 
   function getAnswerFromForm(q, form) {

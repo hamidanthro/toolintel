@@ -1,5 +1,5 @@
 /**
- * StarTest — Content lake client (Prompt I1)
+ * GradeEarn — Content lake client (Prompt I1)
  *
  * Lightweight telemetry layer that captures learning signals
  * (answers, hesitation, rapid flips, rage-quits, stuck patterns)
@@ -8,13 +8,13 @@
  * Zero UX changes: pure event capture.
  *
  * Public API:
- *   StarTestLake.startSession()
- *   StarTestLake.onQuestionShown({contentId, poolKey, state, grade, subject})
- *   StarTestLake.onChoiceFlip()
- *   StarTestLake.onAnswered({contentId, poolKey, pickedChoice, isCorrect})
- *   StarTestLake.pushRecent(contentId)
- *   StarTestLake.getRecent() -> string[]
- *   StarTestLake.recordEvent(eventType, payload)
+ *   GradeEarnLake.startSession()
+ *   GradeEarnLake.onQuestionShown({contentId, poolKey, state, grade, subject})
+ *   GradeEarnLake.onChoiceFlip()
+ *   GradeEarnLake.onAnswered({contentId, poolKey, pickedChoice, isCorrect})
+ *   GradeEarnLake.pushRecent(contentId)
+ *   GradeEarnLake.getRecent() -> string[]
+ *   GradeEarnLake.recordEvent(eventType, payload)
  */
 (function () {
   const RECENT_MAX = 50;
@@ -155,7 +155,7 @@
     } catch (_) {}
   });
 
-  window.StarTestLake = {
+  window.GradeEarnLake = {
     startSession, recordEvent,
     onQuestionShown, onChoiceFlip, onAnswered,
     pushRecent, getRecent
