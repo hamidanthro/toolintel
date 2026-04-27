@@ -44,7 +44,7 @@
   </script>
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&family=JetBrains+Mono:wght@400;500&display=swap">
-  <link rel="stylesheet" href="../css/styles.css?v=20260427ss">
+  <link rel="stylesheet" href="../css/styles.css?v=20260427tt">
 
   <script src="../js/states-data.js?v=20260427d"></script>
 </head>
@@ -107,20 +107,15 @@
   <!-- Main content — populated by JS -->
   <article class="state-content" id="state-content" hidden>
 
+    <!-- TOP FOLD: hero on the left, grade picker on the right -->
+    <div class="state-fold">
+
     <!-- HERO -->
     <header class="state-hero">
-      <div class="state-hero-grid">
-        <div class="state-hero-inner">
-          <h1 class="state-hero-title" id="hero-title">—</h1>
+      <div class="state-hero-inner">
+        <h1 class="state-hero-title" id="hero-title">—</h1>
 
-          <p class="state-hero-sub" id="hero-sub">—</p>
-
-          <!-- State-specific custom note (only renders if state has one) -->
-          <aside class="state-hero-note" id="hero-note" hidden>
-            <span class="state-hero-note-icon" aria-hidden="true">💡</span>
-            <span id="hero-note-text"></span>
-          </aside>
-        </div>
+        <p class="state-hero-sub" id="hero-sub">—</p>
 
         <aside class="state-hero-meta" aria-label="Test details">
           <dl class="state-hero-meta-list">
@@ -138,6 +133,12 @@
             </div>
           </dl>
         </aside>
+
+        <!-- State-specific custom note (only renders if state has one) -->
+        <aside class="state-hero-note" id="hero-note" hidden>
+          <span class="state-hero-note-icon" aria-hidden="true">💡</span>
+          <span id="hero-note-text"></span>
+        </aside>
       </div>
     </header>
 
@@ -153,6 +154,8 @@
         <!-- Populated by JS -->
       </div>
     </section>
+
+    </div><!-- /.state-fold -->
 
     <!-- TRUST / WHAT WE COVER -->
     <section class="state-trust-section">
