@@ -11084,7 +11084,7 @@ body.state-page > * {
 
 .state-grade-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 8px;
 }
 
@@ -11151,7 +11151,7 @@ body.state-page > * {
 
 .state-trust-title {
   font-family: 'Instrument Serif', serif;
-  font-size: 36px;
+  font-size: 32px;
   font-weight: 400;
   letter-spacing: -0.02em;
   color: #ffffff;
@@ -11290,7 +11290,7 @@ body.state-page > * {
   .state-grade-section { padding: 8px 20px 32px; }
   .state-grade-title { font-size: 22px; }
   .state-grade-sub { font-size: 14px; }
-  .state-grade-grid { grid-template-columns: 1fr; gap: 8px; }
+  .state-grade-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   .state-grade-card { padding: 16px 20px 16px 22px; min-height: 60px; }
   .state-grade-card-name { font-size: 15px; }
   .state-trust-section { padding: 32px 20px; margin-top: 32px; }
@@ -11322,7 +11322,7 @@ body.state-page > * {
   .state-hero-sub { font-size: 18px; }
   .state-fold > .state-grade-section { padding-top: 8px; padding-bottom: 16px; }
   .state-trust-section { padding: 80px 40px 72px; margin-top: 64px; }
-  .state-trust-title { font-size: 44px; }
+  .state-trust-title { font-size: 32px; }
   .state-trust-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
 }
 
