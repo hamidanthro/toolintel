@@ -29,8 +29,8 @@
  */
 
 (function () {
-  var SUBJECTS_DEFAULT = ['math'];
-  var SUBJECTS_COMING_SOON_DEFAULT = ['reading', 'science', 'social-studies'];
+  var SUBJECTS_DEFAULT = ['math', 'reading'];
+  var SUBJECTS_COMING_SOON_DEFAULT = ['science', 'social-studies'];
 
   window.STATES = [
     {
@@ -1311,6 +1311,30 @@
   ];
 
   // ============================================================
+  // PER-STATE-PER-GRADE SUBJECT NORMALIZATION (R1)
+  // ============================================================
+  // Most states test math + reading at every grade level they assess,
+  // but skip reading at high-school math (Algebra 1, Geometry).
+  // Texas overrides below; everyone else uses the default policy.
+  var TEXAS_SUBJECT_GRADES = {
+    math: ['grade-3','grade-4','grade-5','grade-6','grade-7','grade-8','algebra-1'],
+    reading: ['grade-3','grade-4','grade-5','grade-6','grade-7','grade-8'],
+    science: ['grade-5','grade-8'],
+    'social-studies': ['grade-8']
+  };
+  window.STATES.forEach(function (s) {
+    if (s.gradesTestedBySubject) return;
+    if (s.slug === 'texas') { s.gradesTestedBySubject = TEXAS_SUBJECT_GRADES; return; }
+    var grades = s.gradesTested || [];
+    s.gradesTestedBySubject = {
+      math:    grades.slice(),
+      reading: grades.filter(function (g) { return g !== 'algebra-1' && g !== 'geometry'; }),
+      science: grades.slice(),
+      'social-studies': grades.slice()
+    };
+  });
+
+  // ============================================================
   // STATE LOOKUP HELPERS — Available globally as window.STATES_API
   // ============================================================
   window.STATES_API = {
@@ -1349,6 +1373,13 @@
     isSubjectAvailable: function (stateSlug, subject) {
       var state = this.getBySlug(stateSlug);
       return state ? state.subjectsAvailable.indexOf(subject) !== -1 : false;
+    },
+    /** Check if a subject is tested in a specific grade for a state (R1). */
+    isSubjectInGrade: function (stateSlug, gradeSlug, subject) {
+      var state = this.getBySlug(stateSlug);
+      if (!state || !state.gradesTestedBySubject) return false;
+      var grades = state.gradesTestedBySubject[subject];
+      return Array.isArray(grades) && grades.indexOf(gradeSlug) !== -1;
     },
     /** Total count for marketing copy ("Practice for all 51 state tests"). */
     totalCount: function () {

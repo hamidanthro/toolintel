@@ -3,33 +3,31 @@
  * State-aware prompt builder + single-question generator.
  */
 const { getOpenAI } = require('./lake-client');
+const { getStateRecord } = require('./states-grades');
 
-const STATE_PROMPTS = {
-  texas: {
-    testName: 'STAAR',
-    standards: 'Texas Essential Knowledge and Skills (TEKS)',
-    authority: 'Texas Education Agency (TEA)',
-    style: 'Texas STAAR favors word problems with real-world contexts (Texas geography, Hispanic cultural contexts welcome, school-and-family scenarios). Math: 4-choice multiple choice. Rigor matches TEA released items.'
-  },
-  california: {
-    testName: 'CAASPP / Smarter Balanced',
-    standards: 'California Common Core State Standards',
-    authority: 'California Department of Education',
-    style: 'CAASPP uses computer-adaptive testing; questions follow Smarter Balanced format. Multi-step reasoning is common.'
-  },
-  florida: {
-    testName: 'FAST',
-    standards: 'Florida B.E.S.T. Standards',
-    authority: 'Florida Department of Education',
-    style: 'FAST uses three progress-monitoring windows. Questions match B.E.S.T. format which moved away from Common Core.'
-  },
-  'new-york': {
-    testName: 'New York State Tests',
-    standards: 'Next Generation Learning Standards (NGLS)',
-    authority: 'New York State Education Department',
-    style: 'NY uses paper and computer-based testing. Multi-step reasoning and academic vocabulary expected.'
-  }
+// Curated style overrides for flagship states. These describe legitimate
+// format quirks of each state's specific assessment (computer-adaptive,
+// progress-monitoring windows, paper-based, etc.) and are allowed to
+// reference their own state's test name. State metadata (testName /
+// standards / testAuthority) is NOT duplicated here — it is read from
+// js/states-data.js via getStateRecord().
+const STATE_STYLE_OVERRIDES = {
+  texas: 'Texas STAAR favors word problems with real-world contexts (Texas geography, Hispanic cultural contexts welcome, school-and-family scenarios). Math: 4-choice multiple choice. Rigor matches TEA released items.',
+  california: 'CAASPP uses computer-adaptive testing; questions follow Smarter Balanced format. Multi-step reasoning is common.',
+  florida: 'FAST uses three progress-monitoring windows. Questions match B.E.S.T. format which moved away from Common Core.',
+  'new-york': 'NY uses paper and computer-based testing. Multi-step reasoning and academic vocabulary expected.'
 };
+
+// Generic style guidance for any state without a curated override above.
+// Keeps content state-neutral so the per-state framing (testName / standards
+// / testAuthority injected from js/states-data.js) is the only thing that
+// distinguishes one state's questions from another's.
+const GENERIC_STYLE = [
+  'Use universally relatable word-problem contexts: sports, food, money, school, family, generic situations.',
+  'Do NOT reference specific U.S. landmarks, cities, monuments, regional foods, sports teams, or cultural touchstones tied to any state.',
+  'The state-specific flavor for this bucket is carried by the test framing (test name, standards, authority) injected separately — NOT by the problem content.',
+  'Use generic placeholder names for people (Maria, Jamal, Priya, Chen, etc.) and generic settings (a school, a store, a park, a library).'
+].join(' ');
 
 const QUESTION_TYPE_PROMPTS = {
   math: {
@@ -56,7 +54,23 @@ function gradeReadable(grade) {
 }
 
 function buildPrompt({ stateSlug, grade, subject, questionType }) {
-  const state = STATE_PROMPTS[stateSlug] || STATE_PROMPTS.texas;
+  const record = getStateRecord(stateSlug);
+  if (!record) {
+    throw new Error(`generators.buildPrompt: unknown state slug "${stateSlug}"`);
+  }
+  const testName = record.testName;
+  const testAuthority = record.testAuthority;
+  const standards = record.standards;
+  if (!testName) {
+    throw new Error(`generators.buildPrompt: state "${stateSlug}" is missing required metadata field testName`);
+  }
+  if (!testAuthority) {
+    throw new Error(`generators.buildPrompt: state "${stateSlug}" is missing required metadata field testAuthority`);
+  }
+  if (!standards) {
+    throw new Error(`generators.buildPrompt: state "${stateSlug}" is missing required metadata field standards`);
+  }
+  const style = STATE_STYLE_OVERRIDES[stateSlug] || GENERIC_STYLE;
   const typeGuide = QUESTION_TYPE_PROMPTS[subject]?.[questionType] || '';
   const grLabel = gradeReadable(grade);
   const earlyGrades = ['grade-k', 'grade-1', 'grade-2'];
@@ -71,13 +85,13 @@ CRITICAL FOR EARLY GRADES:
 - Keep all four answer choices similar in magnitude so wrong answers reflect real misconceptions, not orders-of-magnitude errors.` : '';
 
   if (subject === 'math') {
-    return `You are an expert ${state.testName} math item writer.${earlyHint}
+    return `You are an expert ${testName} math item writer.${earlyHint}
 
-Generate ONE multiple-choice math question for ${grLabel} students preparing for the ${state.testName}.
+Generate ONE multiple-choice math question for ${grLabel} students preparing for the ${testName}.
 
-Standards: align to ${state.standards} for ${grLabel}.
-Authority: ${state.authority}.
-Style: ${state.style}
+Standards: align to ${standards} for ${grLabel}.
+Authority: ${testAuthority}.
+Style: ${style}
 
 Question type: ${questionType}. ${typeGuide}
 
@@ -89,11 +103,12 @@ Requirements:
 - Explanation references the correct answer and shows the reasoning a student should follow.
 - Use diverse student names from many cultures.
 - Numbers must be realistic for the grade. Show no negative numbers below grade 6.
+- Each choice contains ONLY the answer text. Do NOT include letter labels (no "A:", "A.", "(A)", or "A " prefix). The system adds A/B/C/D labels in the UI.
 
 Output ONLY valid JSON, no preamble:
 {
   "question": "...",
-  "choices": ["A", "B", "C", "D"],
+  "choices": ["<answer text only>", "<answer text only>", "<answer text only>", "<answer text only>"],
   "correctIndex": 0,
   "explanation": "..."
 }`;
@@ -101,12 +116,12 @@ Output ONLY valid JSON, no preamble:
 
   if (subject === 'reading') {
     const wcRange = ['grade-k','grade-1','grade-2','grade-3','grade-4','grade-5'].includes(grade) ? '80-180 words' : '150-300 words';
-    return `You are an expert ${state.testName} reading item writer.
+    return `You are an expert ${testName} reading item writer.
 
 Generate ONE reading passage and ONE multiple-choice comprehension question for ${grLabel} students.
 
-Standards: align to ${state.standards} for ${grLabel}.
-Authority: ${state.authority}.
+Standards: align to ${standards} for ${grLabel}.
+Authority: ${testAuthority}.
 
 Passage:
 - Length: ${wcRange}.
@@ -120,12 +135,13 @@ Requirements:
 - Question must be answerable from the passage (no outside knowledge required).
 - Distractors plausible but clearly wrong on careful reading.
 - Explanation cites specific evidence in the passage.
+- Each choice contains ONLY the answer text. Do NOT include letter labels (no "A:", "A.", "(A)", or "A " prefix). The system adds A/B/C/D labels in the UI.
 
 Output ONLY valid JSON, no preamble:
 {
   "passage": { "title": "...", "text": "...", "type": "fiction" },
   "question": "...",
-  "choices": ["A", "B", "C", "D"],
+  "choices": ["<answer text only>", "<answer text only>", "<answer text only>", "<answer text only>"],
   "correctIndex": 0,
   "explanation": "..."
 }`;
@@ -134,7 +150,9 @@ Output ONLY valid JSON, no preamble:
   throw new Error(`Unsupported subject for cold-start: ${subject}`);
 }
 
-async function generateOne({ stateSlug, grade, subject, questionType }) {
+async function generateOne({ state, grade, subject, type }) {
+  const stateSlug = state;
+  const questionType = type;
   const systemPrompt = buildPrompt({ stateSlug, grade, subject, questionType });
   const completion = await getOpenAI().chat.completions.create({
     model: 'gpt-4o-mini',
@@ -156,4 +174,4 @@ async function generateOne({ stateSlug, grade, subject, questionType }) {
   };
 }
 
-module.exports = { generateOne, buildPrompt, STATE_PROMPTS, QUESTION_TYPE_PROMPTS };
+module.exports = { generateOne, buildPrompt, STATE_STYLE_OVERRIDES, GENERIC_STYLE, QUESTION_TYPE_PROMPTS };
