@@ -31,6 +31,7 @@ const QUESTION_TYPE_PROMPTS = {
 function gradeReadable(grade) {
   if (grade === 'grade-k') return 'kindergarten';
   if (grade === 'algebra-1') return 'Algebra 1 (high school)';
+  if (grade === 'geometry') return 'Geometry (high school)';
   return `grade ${grade.replace('grade-', '')}`;
 }
 
@@ -38,9 +39,19 @@ function buildPrompt({ stateSlug, grade, subject, questionType }) {
   const state = STATE_PROMPTS[stateSlug] || STATE_PROMPTS.texas;
   const typeGuide = QUESTION_TYPE_PROMPTS[subject]?.[questionType] || '';
   const grLabel = gradeReadable(grade);
+  const earlyGrades = ['grade-k', 'grade-1', 'grade-2'];
+  const earlyHint = earlyGrades.includes(grade) ? `
+
+CRITICAL FOR EARLY GRADES:
+- Vocabulary at or below the kid's reading level. Avoid "represents", "approximately", "expression". Use "shows", "about", "math sentence".
+- Grade K: counting 0-20, shapes, simple addition/subtraction within 10.
+- Grade 1: addition/subtraction within 20, place value (tens and ones).
+- Grade 2: addition/subtraction within 100, place value (hundreds), simple multiplication.
+- Word problems use concrete kid-relatable scenarios: cookies, blocks, animals, family.
+- Keep four answer choices similar in magnitude so wrong answers reflect real misconceptions.` : '';
 
   if (subject === 'math') {
-    return `You are an expert ${state.testName} math item writer.
+    return `You are an expert ${state.testName} math item writer.${earlyHint}
 
 Generate ONE multiple-choice math question for ${grLabel} students preparing for the ${state.testName}.
 

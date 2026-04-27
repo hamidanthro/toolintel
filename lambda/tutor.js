@@ -250,6 +250,7 @@ exports.handler = async (event) => {
   if (action === 'recordEvent')        return await handleRecordEvent(payload);
   if (action === 'reportContent')      return await handleReportContent(payload);
   if (action === 'adminPoolStats')     return await handleAdminPoolStats(payload);
+  if (action === 'adminPatrolStats')   return await handleAdminPatrolStats(payload);
 
   if (!payload.question || payload.studentAnswer == null || payload.correctAnswer == null) {
     return bad(400, 'Missing required fields: question, studentAnswer, correctAnswer');
@@ -2248,4 +2249,44 @@ async function handleAdminPoolStats(payload) {
     servedToday: servedCount,
     buckets: bucketList
   });
+}
+
+async function handleAdminPatrolStats(payload) {
+  const adminCheck = await requireAdmin(payload);
+  if (adminCheck.error) return adminCheck.error;
+
+  const counts = {
+    active: 0,
+    retired: 0,
+    flagged: 0,
+    autoRetiredLowAccuracy: 0,
+    autoRetiredReports: 0,
+    flaggedUserReports: 0,
+    unreviewed: 0,
+    preview: 0
+  };
+
+  let lastKey;
+  do {
+    const out = await ddb.send(new ScanCommand({
+      TableName: 'staar-content-pool',
+      ProjectionExpression: '#s, reviewStatus',
+      ExpressionAttributeNames: { '#s': 'status' },
+      ExclusiveStartKey: lastKey
+    }));
+    for (const i of (out.Items || [])) {
+      if (i.status === 'active') counts.active++;
+      else if (i.status === 'retired') counts.retired++;
+      const r = i.reviewStatus;
+      if (r === 'flagged') counts.flagged++;
+      else if (r === 'auto-retired-low-accuracy') counts.autoRetiredLowAccuracy++;
+      else if (r === 'auto-retired-reports') counts.autoRetiredReports++;
+      else if (r === 'flagged-user-reports') counts.flaggedUserReports++;
+      else if (r === 'unreviewed') counts.unreviewed++;
+      else if (r === 'preview') counts.preview++;
+    }
+    lastKey = out.LastEvaluatedKey;
+  } while (lastKey);
+
+  return ok(counts);
 }

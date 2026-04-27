@@ -45,11 +45,11 @@ const STATE_GRADES = {
     reading: ['grade-3','grade-4','grade-5','grade-6','grade-7','grade-8']
   },
   california: {
-    math:    ['grade-3','grade-4','grade-5','grade-6','grade-7','grade-8','algebra-1'],
+    math:    ['grade-3','grade-4','grade-5','grade-6','grade-7','grade-8'],
     reading: ['grade-3','grade-4','grade-5','grade-6','grade-7','grade-8']
   },
   florida: {
-    math:    ['grade-3','grade-4','grade-5','grade-6','grade-7','grade-8','algebra-1'],
+    math:    ['grade-k','grade-1','grade-2','grade-3','grade-4','grade-5','grade-6','grade-7','grade-8','algebra-1','geometry'],
     reading: ['grade-3','grade-4','grade-5','grade-6','grade-7','grade-8']
   },
   'new-york': {

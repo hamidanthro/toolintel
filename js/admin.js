@@ -734,6 +734,18 @@
       }
       const updated = $('content-updated');
       if (updated) updated.textContent = new Date().toLocaleTimeString();
+
+      // I3: patrol stats
+      try {
+        const p = await Auth.api('adminPatrolStats', { token: Auth.token() });
+        const set = (id, label, n) => { const el = $(id); if (el) el.textContent = `${label} ${(n||0).toLocaleString()}`; };
+        set('pill-active', 'active', p.active);
+        set('pill-retired', 'retired', p.retired);
+        set('pill-flagged-user', 'user-flagged', p.flaggedUserReports);
+        set('pill-auto-low', 'auto-retired (low acc)', p.autoRetiredLowAccuracy);
+        set('pill-auto-rep', 'auto-retired (reports)', p.autoRetiredReports);
+        set('pill-unreviewed', 'unreviewed', p.unreviewed);
+      } catch (e) { /* patrol stats optional */ }
     } catch (e) {
       const tbody = $('pool-tbody');
       if (tbody) tbody.innerHTML = `<tr><td colspan="7" style="color:var(--error);">${escapeHtml(e.message)}</td></tr>`;
