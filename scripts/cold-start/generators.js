@@ -4,6 +4,12 @@
  */
 const { getOpenAI } = require('./lake-client');
 const { getStateRecord } = require('./states-grades');
+const { judgeQuestion, JudgeRejectedTwiceError } = require('./judge');
+
+// Hard kill switch: COLD_START_JUDGE=off bypasses the judge entirely
+// and restores pre-judge behavior. Anything else (unset, "on", "true", etc.)
+// leaves the judge enabled.
+const JUDGE_ENABLED = process.env.COLD_START_JUDGE !== 'off';
 
 // Curated style overrides for flagship states. These describe legitimate
 // format quirks of each state's specific assessment (computer-adaptive,
@@ -153,15 +159,18 @@ Output ONLY valid JSON, no preamble:
   throw new Error(`Unsupported subject for cold-start: ${subject}`);
 }
 
-async function generateOne({ state, grade, subject, type }) {
-  const stateSlug = state;
-  const questionType = type;
-  const systemPrompt = buildPrompt({ stateSlug, grade, subject, questionType });
+// One OpenAI call. Returns { parsed, tokensUsed }. On the regen path,
+// pass the prior judge verdict via `regenFeedback` and the user message
+// will carry the failure-mode context to the model.
+async function _callGenerator(systemPrompt, regenFeedback) {
+  const userMessage = regenFeedback
+    ? `Generate the question now.\n\nPrevious attempt was rejected by quality review for: ${regenFeedback.failedChecks.join(', ')}. Specifically: ${regenFeedback.reasons.join(' ')} Generate a new question that fixes these issues.`
+    : 'Generate the question now.';
   const completion = await getOpenAI().chat.completions.create({
     model: 'gpt-4o-mini',
     messages: [
       { role: 'system', content: systemPrompt },
-      { role: 'user', content: 'Generate the question now.' }
+      { role: 'user', content: userMessage }
     ],
     response_format: { type: 'json_object' },
     temperature: 0.9,
@@ -169,12 +178,52 @@ async function generateOne({ state, grade, subject, type }) {
   });
   const text = completion.choices[0].message.content;
   const parsed = JSON.parse(text);
-  return {
-    ...parsed,
-    _generatedBy: 'gpt-4o-mini',
-    _promptVersion: 'cold-v1',
-    _tokensUsed: completion.usage?.total_tokens || 0
-  };
+  return { parsed, tokensUsed: completion.usage?.total_tokens || 0 };
+}
+
+async function generateOne({ state, grade, subject, type }) {
+  const stateSlug = state;
+  const questionType = type;
+  const systemPrompt = buildPrompt({ stateSlug, grade, subject, questionType });
+  const judgeContext = { stateSlug, subject, grade, gradeLabel: gradeReadable(grade) };
+
+  const first = await _callGenerator(systemPrompt, null);
+
+  if (!JUDGE_ENABLED) {
+    return {
+      ...first.parsed,
+      _generatedBy: 'gpt-4o-mini',
+      _promptVersion: 'cold-v1',
+      _tokensUsed: first.tokensUsed
+    };
+  }
+
+  const verdict1 = await judgeQuestion(first.parsed, judgeContext);
+  if (verdict1.verdict === 'pass') {
+    return {
+      ...first.parsed,
+      _generatedBy: 'gpt-4o-mini',
+      _promptVersion: 'cold-v1',
+      _tokensUsed: first.tokensUsed,
+      _judge: 'pass'
+    };
+  }
+
+  // First attempt rejected — regenerate ONCE with judge feedback appended
+  // to the user message. No third attempt: two strikes and out is intentional.
+  const second = await _callGenerator(systemPrompt, verdict1);
+  const verdict2 = await judgeQuestion(second.parsed, judgeContext);
+  if (verdict2.verdict === 'pass') {
+    return {
+      ...second.parsed,
+      _generatedBy: 'gpt-4o-mini',
+      _promptVersion: 'cold-v1-regen',
+      _tokensUsed: first.tokensUsed + second.tokensUsed,
+      _judge: 'pass-after-regen'
+    };
+  }
+
+  throw new JudgeRejectedTwiceError(verdict1.failedChecks, verdict2.failedChecks);
 }
 
 module.exports = { generateOne, buildPrompt, STATE_STYLE_OVERRIDES, GENERIC_STYLE, QUESTION_TYPE_PROMPTS };

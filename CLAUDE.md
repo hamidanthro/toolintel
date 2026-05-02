@@ -416,7 +416,7 @@ defaults globally.
 | 2 | Backend lambda refactor: (a) port the Phase 1 fix into `lambda/pool-topup/generators.js` (kill STATE_PROMPTS + Texas fallback there too); (b) replace lambda `STATE_METADATA` with a build-time JSON snapshot of `states-data.js` (with hash check) so the lambda has a single source of truth for state metadata | 🟥 NOT STARTED | See §0 #2. Lambda cannot `require()` the frontend file — needs a snapshot. |
 | 3 | Kill 4 retired-product surfaces (toolintel, StarTest residue, ReplyQuik AppRunner+widget, WealthDeskPro pricing.js+SES) | ⏳ pending | Detail in §6. Aggressive delete, NOT _legacy/ folder |
 | 4 | Legal cover: COPPA-compliant signup with age gate + parental consent, ToS, privacy policy, field-level encryption for parent PII, attorney review at end | ⏳ pending | COPPA + FERPA real risk: kids under 13, real money via toy redemption, shipping addresses in `staar-orders` |
-| 5 | AI review system: LLM-as-judge as permanent batch validator on every sweep bucket, $0.50/sweep cost cap, semantic checks for state-flavor + age + factual accuracy, drift detection on live lake daily | ⏳ pending | AI-only review — no humans in the loop |
+| 5 | AI review system: LLM-as-judge as permanent batch validator on every sweep bucket, $0.50/sweep cost cap, semantic checks for state-flavor + age + factual accuracy, drift detection on live lake daily | 🟨 PARTIAL | Cold-start CLI judge shipped (see §13). Lambda runtime extension + drift detection + quarantine table still pending (see §14). |
 | 6 | Reliability infra: deploy.sh (backup-first + dry-run + uncommitted-changes guard), ROLLBACK.md, CloudWatch alarms + SNS-to-email, DynamoDB PITR on all 5+ tables, Lambda versioning + prod alias, IAM cleanup off root | ⏳ pending | Critical: ~started this pass but pivoted to CLAUDE.md reconcile; resume next |
 | 7 | Run actual sweeps (math + reading) with all rails in place | ⏳ pending | Texas reading-passages is the headline blocker |
 
@@ -476,6 +476,90 @@ defaults globally.
 8. **Service worker pre-caches `/js/*.js` paths without query-string
    versions.** Once a kid's PWA caches old scripts, only a `CACHE_VERSION`
    bump can refresh them. Be deliberate about SW updates.
+
+---
+
+## 13. AI Quality Pipeline (cold-start CLI)
+
+**Question Sanity Judge** — final content gate before lake save. Lives in
+`scripts/cold-start/judge.js`. Wired into `scripts/cold-start/generators.js`
+inside `generateOne()` between the OpenAI generation call and the return.
+
+**What it checks** (gpt-4o-mini, temp 0, JSON mode):
+
+| Failure mode | What it catches |
+|---|---|
+| `AMBIGUITY` | Question wording allows >1 defensible answer |
+| `MULTIPLE_CORRECT` | A distractor also satisfies the question as written |
+| `FACTUAL` | Marked correct doesn't match the question wording (consistency only — `verifier.js` does the independent solve for math) |
+| `AGE_FIT` | Vocab / structure inappropriate for the stated grade |
+| `STATE_LEAK` | Non-flagship state's question references a state-specific landmark / place / person. Flagship states (texas / california / florida / new-york) may reference their own state freely. |
+| `ANSWER_LANGUAGE` | Correct choice is unclear (e.g. "C. one hundred or 100") |
+| `PROMPT_INJECTION` | Question contains instructions to the AI |
+
+**Canonical bad-example** (`scripts/cold-start/judge-fixtures/271142-ambiguous.json`):
+"In the number 271142, what is the value of the digit 1?" The digit 1 is at
+both the thousands place (1000) and the hundreds place (100). Two defensible
+answers, distractor design includes both. Judge MUST reject with at least
+`AMBIGUITY` and `MULTIPLE_CORRECT`. This is the regression case that proved
+the judge was needed.
+
+**Regen-on-reject loop** (`generators.js#generateOne`):
+1. OpenAI generates question.
+2. Judge evaluates. If pass: return.
+3. If reject: regenerate ONCE with judge feedback appended to user message
+   (`"Previous attempt was rejected for: <failedChecks>. Specifically:
+   <reasons>. Generate a new question that fixes these issues."`).
+4. Re-judge. If pass: return with `_promptVersion: 'cold-v1-regen'`.
+5. If reject again: throw `JudgeRejectedTwiceError`. Two strikes is
+   intentional — no third attempt. `run.js` catches it as a generic error,
+   increments `errors++`, and moves on within the same bucket.
+
+**Scope:** Cold-start CLI only. Lambda runtime paths
+(`lambda/tutor.js#handleGenerate` and `lambda/pool-topup/index.js`) are NOT
+yet judge-gated — that's tracked in §14 + Phase 2 in §9.
+
+**Cost:** ~250 input + ~150 output tokens per call ≈ $0.0001 with
+gpt-4o-mini. Per 1000-question sweep with ~30% rejection rate: ~$0.10–$0.15.
+
+**Operational controls:**
+- Hard kill switch: `COLD_START_JUDGE=off` in env restores pre-judge behavior.
+- Per-process budget: `COLD_START_JUDGE_MAX_CALLS` env (default 5000). When
+  exceeded, `JudgeBudgetExceededError` is thrown and the sweep halts rather
+  than silently skipping.
+- Module exposes `judge.stats` (`{calls, passes, rejects, totalTokensIn,
+  totalTokensOut}`) for run-level reporting (run.js does not yet read it —
+  see §14).
+
+**Test runner:** `node --test scripts/cold-start/judge.test.js` — runs the 5
+fixtures against live OpenAI. Auto-skipped if `OPENAI_API_KEY` is not set.
+Cost ~$0.0005 per full run. Add new regression cases by dropping a JSON file
+into `scripts/cold-start/judge-fixtures/`.
+
+---
+
+## 14. Deferred TODOs
+
+- **Quarantine table for rejected questions.** Today the judge logs to
+  console only and `generators.js` discards rejected output. Write rejected
+  questions to a `staar-quarantine` DynamoDB table (with prompt hash, model,
+  judge verdict, reasons, timestamp) so we can audit rubric drift and surface
+  false rejects.
+- **Embedding-similarity check at judge time.** Current dedup happens at
+  save in `lake-client.js` (cosine ≥ 0.92). Doing it at judge time would let
+  us regenerate with "this is too similar to existing question X" feedback
+  rather than dropping silently.
+- **Extend judge to lambda runtime.** Specifically: `lambda/tutor.js`
+  `generate` action and `lambda/pool-topup/index.js` need the same gate.
+  Same module bundled into the lambda zip — judge.js needs to be rewritten
+  to use raw `fetch` to avoid the `openai` npm dep that lambda code
+  intentionally avoids (see §6 deploy hazard).
+- **`run.js` should read `judge.stats`** and emit per-sweep summary (calls /
+  passes / rejects / token totals) into the existing `logs/run-<ts>.json`.
+  Stats are exposed but not consumed today.
+- **Distinguish `JudgeRejectedTwiceError` from generic errors in `run.js`**
+  so the bucket records "needs manual review" instead of treating it the
+  same as a network error.
 
 ---
 
