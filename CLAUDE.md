@@ -210,18 +210,23 @@ staar-tutor in AWS           ← what's actually serving traffic
 | Lambda | Local source of truth | Drift vs deployed |
 |---|---|---|
 | `staar-tutor` (tutor.js) | `lambda/tutor-build/tutor.js` | only 3 lines: `StarTest`→`GradeEarn` strings (the brand-rename commit was never deployed) |
-| `staar-tutor` (tutor.js) | `lambda/tutor.js` | **+321 / −5** lines — substantial forward-progress work that has not been packaged or deployed |
+| `staar-tutor` (tutor.js) | `lambda/tutor.js` vs `lambda/tutor-build/tutor.js` | **IN PARITY as of 2026-05-02** — both files have all 40 routes, all 80 named functions, and byte-identical handlers. Pre-edit drift was real (~321 / −5 lines, missing `getReadingBatch` / `adminPatrolStats` and their helpers); resolved by porting + appending the missing functions verbatim. Going forward: any edit to one of these files MUST land the same edit in the other in the same commit. |
 | `staar-tutor` (content-lake.js) | `lambda/tutor-build/content-lake.js` | 1 line (StarTest→GradeEarn header) |
 | `staar-tutor` (content-lake.js) | `lambda/content-lake.js` | +7 / −7 lines |
 | `staar-pool-topup` (index.js) | `lambda/pool-topup/index.js` | identical ✓ |
 | `staar-pool-topup` (generators.js) | `lambda/pool-topup/generators.js` | +12 / −1 lines — this is the **Phase 2** lambda refactor target (see §0 #2). The same fix that landed in cold-start in `a1730a5` needs to be ported here. Currently dormant because the EventBridge schedule is DISABLED. |
 | `staar-quality-patrol` (index.js) | `lambda/quality-patrol/index.js` | 1 line (StarTest→GradeEarn header) |
 
-**Trap:** `lambda/tutor-build/` is in `.gitignore`. Any change there is
-invisible to git review. So a deploy that uses `tutor-build/` as its source
-gets **zero code review**. This is the single biggest reliability hazard in
-the deploy story today, and Phase 6 (deploy.sh + ROLLBACK.md) is what fixes
-it.
+**Trap (mitigated as of 2026-05-02):** `lambda/tutor-build/` is in
+`.gitignore` as a directory, but the source files inside it
+(`tutor.js`, `content-lake.js`, etc.) are explicitly tracked via
+`git add -f`. Once a file is tracked, gitignore stops applying to it,
+so all edits to `tutor-build/tutor.js` show up in `git diff` and
+`git status` normally. Phase 6 deploy.sh now has a clean source to
+package; the mirror is no longer the surprise risk it was. Remaining
+caveat: `lambda/tutor-build/node_modules/`, `package-lock.json` etc.
+are still gitignored at the directory level — only the explicit `.js`
+mirrors are tracked.
 
 ---
 
@@ -600,13 +605,18 @@ into `scripts/cold-start/judge-fixtures/`.
 - **Voice consistency check:** extend the planned tutor-reply judge
   (TODO above) to score session summaries with the same banned-phrase
   rubric. Both surfaces share the same voice — same gate.
-- **`buildFirstUserMessage` references stale system-prompt structure.**
-  At `lambda/tutor.js:172` the user message includes the literal text
-  `"Respond using the structure in your system prompt: warm
-  acknowledgment, mistake awareness ..."`. The §15 prompt rewrite
-  removed the 4-step structure but left this user-message prelude
-  unchanged. The model still follows the new system prompt (system >
-  user), but the prelude is misleading. One small edit, separate commit.
+- **Pre-deploy parity hook:** before Phase 6 deploy.sh zips
+  `lambda/tutor-build/tutor.js`, run a script that diffs every named
+  function and every `if (action === '...')` route between
+  `tutor.js` and `tutor-build/tutor.js`. If drift > 0 lines, refuse
+  to deploy. Cheap insurance against the next time someone forgets to
+  mirror an edit.
+- **Long-term: build `tutor-build/` from `tutor.js` source via a build
+  step**, instead of maintaining the mirror by hand. A single-file copy
+  + dependency bundling (`esbuild --bundle --platform=node`) eliminates
+  this whole class of drift. Trade-off: introduces a build step the
+  house-style currently rejects (§3 "no bundler"). Worth re-litigating
+  once Phase 6 ships.
 
 ---
 
@@ -684,6 +694,18 @@ zip-and-upload deploy uses.)
 `staar-tutor` lambda still serves the old templated voice until Phase 6
 deploy.sh ships and the lambda is re-zipped + re-uploaded. Until then the
 ~20 testers continue hearing the old voice.
+
+**Companion fix (2026-05-02):** `buildFirstUserMessage` previously
+contained a leftover line referencing the old 4-step structure
+(`"Respond using the structure in your system prompt: warm
+acknowledgment, mistake awareness, one small step, then end with a
+Socratic question they can answer."`). That structure was removed by
+the §15 rewrite but the user-message prelude was missed. Both
+`lambda/tutor.js` and `lambda/tutor-build/tutor.js` now use a
+behavior-described prelude that doesn't enumerate steps and doesn't
+contradict the new system prompt: `"The student just submitted an
+answer to the question above and needs help. Respond as your system
+prompt directs."` Banned-phrase audit clean.
 
 ---
 

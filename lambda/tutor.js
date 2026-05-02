@@ -183,7 +183,7 @@ Question: ${clip(payload.question)}
 Correct answer: ${clip(String(payload.correctAnswer))}
 Student answered: ${clip(String(payload.studentAnswer || '(blank)'))}
 ${payload.explanation ? `Reference explanation: ${clip(payload.explanation, 600)}\n` : ''}
-The student needs help. Respond using the structure in your system prompt: warm acknowledgment, mistake awareness (if their answer reveals one), one small step, then end with a Socratic question they can answer.`;
+The student just submitted an answer to the question above and needs help. Respond as your system prompt directs.`;
 }
 
 // ============================================================
