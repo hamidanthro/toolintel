@@ -1,0 +1,12 @@
+# This directory holds rollback artifacts produced by ./deploy.sh.
+# Each deploy writes one zip here BEFORE pushing new code to AWS, so
+# the prior production state is always one command away from restore.
+#
+# Naming: <function>-<utc-timestamp>-<sha8>.zip
+#   sha8 = first 8 chars of the deployed CodeSha256 the backup captured.
+#
+# *.zip is gitignored. The directory itself is tracked via this .gitkeep
+# so a fresh checkout has the directory ready (deploy.sh creates it
+# defensively too).
+#
+# See ROLLBACK.md for how to use these.

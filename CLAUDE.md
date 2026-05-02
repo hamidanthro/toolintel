@@ -189,10 +189,20 @@ records for `hamid@gradeearn.com`.
 
 ---
 
-## 5. Lambda deploy — manual zip with a fragile two-step
+## 5. Lambda deploy — `./deploy.sh` (May 2)
 
-There is no deploy script in the repo today (Phase 6 of the build plan will
-add one). The current process is **manual** and has a structural drift hazard
+**Deploy is now scripted.** `./deploy.sh` packages and ships
+`lambda/tutor-build/` to AWS Lambda `staar-tutor` with 9 sequential
+guards, automatic backup, and a one-line rollback printed at the end.
+Full details + when-to-use + rollback procedure: §19 below + ROLLBACK.md.
+
+The historical state below describes what the deploy story used to be
+before §19 landed. Kept for context — anyone reading old git blame on
+`lambda/*` may need to know how things worked before.
+
+### Historical fragile two-step (pre-May 2)
+
+The current process is **manual** and has a structural drift hazard
 that's already biting:
 
 ```
@@ -426,7 +436,7 @@ defaults globally.
 | 3 | Kill 4 retired-product surfaces (toolintel, StarTest residue, ReplyQuik AppRunner+widget, WealthDeskPro pricing.js+SES) | ⏳ pending | Detail in §6. Aggressive delete, NOT _legacy/ folder |
 | 4 | Legal cover: COPPA-compliant signup with age gate + parental consent, ToS, privacy policy, field-level encryption for parent PII, attorney review at end | ⏳ pending | COPPA + FERPA real risk: kids under 13, real money via toy redemption, shipping addresses in `staar-orders` |
 | 5 | AI review system: LLM-as-judge as permanent batch validator on every sweep bucket, $0.50/sweep cost cap, semantic checks for state-flavor + age + factual accuracy, drift detection on live lake daily | 🟨 PARTIAL | Cold-start CLI judge shipped (see §13). Lambda runtime extension + drift detection + quarantine table still pending (see §14). |
-| 6 | Reliability infra: deploy.sh (backup-first + dry-run + uncommitted-changes guard), ROLLBACK.md, CloudWatch alarms + SNS-to-email, DynamoDB PITR on all 5+ tables, Lambda versioning + prod alias, IAM cleanup off root | ⏳ pending | Critical: ~started this pass but pivoted to CLAUDE.md reconcile; resume next |
+| 6 | Reliability infra: deploy.sh (backup-first + dry-run + uncommitted-changes guard), ROLLBACK.md, CloudWatch alarms + SNS-to-email, DynamoDB PITR on all 5+ tables, Lambda versioning + prod alias, IAM cleanup off root | 🟨 PARTIAL | deploy.sh + ROLLBACK.md + parity check shipped 2026-05-02 (see §19). Still pending: CloudWatch alarms, SNS-to-email, DynamoDB PITR, Lambda versioning + prod alias, IAM cleanup off root. |
 | 7 | Run actual sweeps (math + reading) with all rails in place | ⏳ pending | Texas reading-passages is the headline blocker |
 
 ---
@@ -662,6 +672,35 @@ into `scripts/cold-start/judge-fixtures/`.
   the deleted bin. Also worth a CSP header audit — without
   Content-Security-Policy the same-origin 3rd-party-script attack
   vector is open to anything someone adds in the future.
+- **Lambda Versioning + `prod` alias.** Adds another rollback path
+  beyond the zip-backup mechanism in §19: rollback becomes "point alias
+  at version N-1" (no upload, instant). Requires switching the API
+  Gateway integration target from `staar-tutor` to `staar-tutor:prod`,
+  and `deploy.sh` would `--publish` on every deploy and update the
+  alias. Maybe a one-day project; not blocking.
+- **CloudWatch alarms + SNS-to-email** for `staar-tutor` 5xx rate,
+  duration p99, throttles, and OpenAI timeout rate. SNS topic with
+  hamid@gradeearn.com subscribed. ~30 minutes of console clicking;
+  the §19 deploy.sh would benefit by referencing the alarm dashboard
+  in its post-deploy output.
+- **DynamoDB PITR (point-in-time recovery)** on all `staar-*` tables
+  (users, stats, toys, orders, friends, messages, content-pool,
+  explanations, content-events, tutor-responses). One AWS Console
+  click per table. Without this, a destructive bug after `staar-orders`
+  permanently loses live tester shipping addresses.
+- **Generalize deploy.sh to other lambdas.** Currently the parity
+  check is tutor-specific (hardcoded to compare `lambda/tutor.js` ↔
+  `lambda/tutor-build/tutor.js`). For `staar-pool-topup` and
+  `staar-quality-patrol`, the same script structure applies but with
+  a different source dir and a different (or skipped) parity check.
+  Refactor when we re-enable the EventBridge schedules in Phase 7.
+- **IAM cleanup off root.** AWS account is currently using root
+  credentials (`Arn: iam::860141646209:root`). `deploy.sh` works fine
+  with root, but root is the wrong identity for a daily-use deploy
+  tool. Create a dedicated `gradeearn-deployer` IAM user with
+  scoped-down permissions (`lambda:UpdateFunctionCode` on the specific
+  function ARNs, `lambda:GetFunction` on read, `s3:GetObject` on the
+  presigned URL host). Switch local AWS profile to that user.
 
 ---
 
@@ -906,6 +945,71 @@ so until Phase 6 deploy.sh ships and the lambda is re-zipped + re-
 uploaded, the call returns 404 / 500 and the frontend silently drops the
 placeholder. End-of-set screen looks like §16 baseline until the lambda
 catches up.
+
+---
+
+## 19. Deploy & rollback — `./deploy.sh` + ROLLBACK.md (May 2)
+
+The Phase 6 deploy tooling. Scripted, guarded, reversible.
+
+**One-line usage:**
+```sh
+./deploy.sh                # interactive — prompts for y/N before shipping
+./deploy.sh --yes          # non-interactive — assumes yes (use in known-good runs)
+./deploy.sh --allow-dirty  # ship even with uncommitted tutor-build/ changes (DANGEROUS)
+./deploy.sh --help         # full help block
+```
+
+Defaults to deploying `staar-tutor`. Pass any other function name as the
+first positional arg if you ever extend this to other lambdas.
+
+### What deploy.sh does (9 phases, abort on any failure)
+
+| # | Phase | What it guards against | Exit code on fail |
+|---|---|---|---|
+| 1 | PRECHECK | Missing `aws` / `zip` / `jq` / `shasum` / `git` / `curl`; AWS creds not configured | 1 |
+| 2 | GIT CLEAN | Uncommitted edits in `lambda/tutor-build/` (override with `--allow-dirty`) | 2 |
+| 3 | PARITY CHECK | `tutor.js` ↔ `tutor-build/tutor.js` drift via `scripts/check-tutor-parity.sh` | 3 |
+| 4 | FETCH FUNCTION INFO | Wrong handler name; AWS unreachable; AWS account confusion | 4 |
+| 5 | BACKUP | Downloads the deployed zip from AWS to `backups/<fn>-<utc>-<sha8>.zip` BEFORE any change | 5 |
+| 6 | PACKAGE | `npm install --omit=dev` + `zip -r` from `lambda/tutor-build/`; aborts if zip > 50 MiB (Lambda direct-upload limit) | 6 |
+| 7 | DRY RUN | `aws lambda update-function-code --dry-run` — catches IAM / size / runtime errors before commit | 7 |
+| 8 | CONFIRM | Prints summary; requires `y` keypress (skip with `--yes`) | 8 |
+| 9 | DEPLOY | `aws lambda update-function-code` for real, then `aws lambda wait function-updated`, then prints rollback command | 9 |
+
+### Parity check (`scripts/check-tutor-parity.sh`)
+
+Standalone, callable directly. Three checks:
+1. Sorted set of `function` / `async function` declarations must match across `tutor.js` and `tutor-build/tutor.js`
+2. Sorted set of `if (action === '...')` route names must match
+3. Three high-risk function bodies byte-identical: `buildSystemPrompt`, `buildSummarySystemPrompt`, `buildFirstUserMessage`
+
+Exit 0 = pass; 1 = drift detected with a printed diff. All output prefixed `[parity]` so deploy.sh can grep status.
+
+Verified passing 2026-05-02: 79 functions, 40 routes, 3 high-risk bodies all byte-identical (post commit `673db25`).
+
+### Backups
+
+- Live in `backups/` (gitignored — `*.zip` covers them, plus an explicit `backups/*.zip` in `.gitignore` for clarity)
+- Naming: `<function>-<utc-timestamp>-<sha8>.zip`
+- `sha8` = first 8 chars of the deployed `CodeSha256` (base64) — lets you correlate a backup to the exact production version it captures
+- `backups/.gitkeep` ensures the directory exists on a fresh checkout
+- Keep at least the last 5; clean older ones manually
+
+### Rollback
+
+Full procedure in `ROLLBACK.md`. The short version:
+
+1. **When in doubt, roll back.** Forward-fixes under pressure take longer than rollbacks. The backup is right there.
+2. The exact rollback command is printed at the bottom of every successful `deploy.sh` run — copy-paste from terminal scrollback.
+3. Worst case (no backup): re-deploy from a prior git commit using `git worktree`. Slower but always works because the post-`673db25` parity guarantee means every `tutor-build/tutor.js` commit is a deployable state.
+
+### What this commit does NOT do
+
+- **Doesn't enable Lambda Versioning + a `prod` alias.** Those are §14 deferred TODOs. With versioning, rollback becomes "point alias at version N-1" which is even faster than re-uploading a zip — but adds operational complexity.
+- **Doesn't deploy anything.** This commit only adds the tooling. Nine months of pent-up changes in `lambda/tutor-build/tutor.js` (the rebrand, the new tutor voice, the summarize-session action, etc.) will deploy when you run `./deploy.sh` for the first time.
+- **Doesn't add CloudWatch alarms or SNS-to-email.** Those are also §14 deferred TODOs.
+- **Doesn't address `lambda/pool-topup/` deploy** — same script can be adapted but pool-topup has its own source dir and the parity check is tutor-specific. Logged as a deferred TODO.
 
 ---
 

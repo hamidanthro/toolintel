@@ -1,3 +1,5 @@
 *.zip
 lambda/tutor-build/
 lambda/*.zip
+backups/*.zip
+build/
