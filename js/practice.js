@@ -565,6 +565,12 @@
   function runQuiz(curr, questions, meta, opts) {
     let i = 0;
     let correct = 0;
+    // Per-question results for the end-of-set summary call. Keep it to the
+    // fields the lambda actually needs (see handleSummarizeSession in
+    // lambda/tutor.js): brief question text, correct flag, the kid's
+    // wrong choice if any, the topic name. Capped to last 20 in the lambda.
+    const sessionResults = [];
+    const sessionStartedAt = Date.now();
     const sKey = sectionKey(meta);
     const isLocked = !!(sKey && window.STAARAuth?.isMastered?.(sKey));
 
@@ -741,6 +747,12 @@
           });
         }
         if (isCorrect) correct++;
+        sessionResults.push({
+          question: String(q.prompt || '').slice(0, 80),
+          correct: isCorrect,
+          wrongChoice: isCorrect ? null : String(userAnswer == null ? '' : userAnswer).slice(0, 60),
+          topic: q._unit?.title || null
+        });
         if (isCorrect) spawnPointsPop(qbox, difficultyCents(q));
         if (isCorrect) {
           const _streak = (window._stCorrectStreak = (window._stCorrectStreak || 0) + 1);
@@ -992,9 +1004,84 @@
         <div class="card">
           <h3>${pickEndHeader(correct, questions.length)}</h3>
           <p style="font-size:1.4rem;"><strong>${correct} / ${questions.length}</strong> correct (${pct}%)</p>
-          <a class="btn btn-primary" href="practice.html?${new URLSearchParams(Object.fromEntries([...params])).toString()}">Try again</a>
-          <a class="btn btn-secondary" href="grade.html?g=${slug}" style="margin-left:8px;color:var(--blue);border-color:var(--blue);">Back to ${curr.title}</a>
+          <div id="session-summary" class="session-summary tutor-output" style="margin:14px 0;padding:10px 14px;font-size:0.95rem;color:var(--text,#374151);background:var(--bg-soft,#f9fafb);border-left:3px solid var(--border,#e5e7eb);border-radius:6px;font-style:italic;">${thinkingHTML()}</div>
+          <a class="btn btn-primary" id="end-try-again" href="practice.html?${new URLSearchParams(Object.fromEntries([...params])).toString()}">Try again</a>
+          <a class="btn btn-secondary" id="end-back" href="grade.html?g=${slug}" style="margin-left:8px;color:var(--blue);border-color:var(--blue);">Back to ${curr.title}</a>
         </div>`;
+
+      // Fire the AI session summary in the background. The score is already
+      // visible above; this is purely additive. Silently drops on null /
+      // error / 8s timeout — the end-of-set screen looks like today minus
+      // the placeholder in any failure case.
+      const summaryController = new AbortController();
+      let summaryTimedOut = false;
+      const summaryTimeoutId = setTimeout(() => {
+        summaryTimedOut = true;
+        try { summaryController.abort(); } catch (_) {}
+      }, 8000);
+
+      const removeSummaryPlaceholder = () => {
+        const el = document.getElementById('session-summary');
+        if (el) el.remove();
+      };
+      const renderSummary = (text) => {
+        const el = document.getElementById('session-summary');
+        if (!el) return;
+        el.innerHTML = escapeHtml(String(text));
+        el.style.fontStyle = 'normal';
+      };
+
+      // Abort if the kid clicks away before the summary lands. Browser
+      // navigation would kill the fetch anyway, but explicit abort is
+      // cheaper than a stranded request and matches the prompt spec.
+      ['end-try-again', 'end-back'].forEach((id) => {
+        const btn = document.getElementById(id);
+        if (btn) {
+          btn.addEventListener('click', () => {
+            clearTimeout(summaryTimeoutId);
+            try { summaryController.abort(); } catch (_) {}
+          });
+        }
+      });
+
+      const ctx = buildTutorContext(null, stats, curr);
+      const summaryPayload = {
+        action: 'summarize-session',
+        studentName: ctx.studentName,
+        grade: ctx.studentGrade,
+        state: ctx.studentState,
+        testName: ctx.testName,
+        subject: SUBJECT_SLUG || 'math',
+        unitTitle: curr?.title || null,
+        results: sessionResults.slice(),
+        durationSeconds: Math.round((Date.now() - sessionStartedAt) / 1000),
+        perfectRun: perfect
+      };
+
+      (async () => {
+        try {
+          const res = await fetch(TUTOR_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(summaryPayload),
+            signal: summaryController.signal
+          });
+          clearTimeout(summaryTimeoutId);
+          if (!res.ok) { removeSummaryPlaceholder(); return; }
+          const data = await res.json();
+          if (!data || !data.summary) { removeSummaryPlaceholder(); return; }
+          renderSummary(data.summary);
+        } catch (err) {
+          clearTimeout(summaryTimeoutId);
+          if (err && err.name === 'AbortError') {
+            console.log('[summary]', summaryTimedOut ? 'timeout 8s' : 'aborted (navigation)');
+            removeSummaryPlaceholder();
+            return;
+          }
+          console.warn('[summary] failed:', err && err.message);
+          removeSummaryPlaceholder();
+        }
+      })();
     }
   }
 

@@ -583,8 +583,30 @@ into `scripts/cold-start/judge-fixtures/`.
   unreachable, does `TUTOR_FALLBACK_LINE` actually appear at 12s with
   the Retry button working? Manual QA item.
 - **A11y on the AI live region:** add `aria-live="polite"` to the
-  `.tutor-output` div so screen readers announce the AI message arrival
-  when it replaces the placeholder. One attribute, no other changes.
+  `.tutor-output` div AND the `#session-summary` div so screen readers
+  announce the AI message arrival when it replaces the placeholder. One
+  attribute, no other changes.
+- **Parent-facing weekly summary** that aggregates session summaries —
+  the data is already in the lake (`staar-content-events` records every
+  answered question, plus the new sessionResults captured at session-
+  finish). A weekly cron + a roll-up summarizer using the same voice
+  produces a parent email. Two ingredients: roll-up logic + email
+  delivery (SES, see §6d which already has SES wired but on the wrong
+  account).
+- **Telemetry on summary acceptance:** add a thumbs-up/down on the
+  `.session-summary` div, log to `staar-content-events` with
+  `eventType: 'summary-feedback', summaryId, verdict`. Lets us measure
+  real kid response to the summarizer's voice over time.
+- **Voice consistency check:** extend the planned tutor-reply judge
+  (TODO above) to score session summaries with the same banned-phrase
+  rubric. Both surfaces share the same voice — same gate.
+- **`buildFirstUserMessage` references stale system-prompt structure.**
+  At `lambda/tutor.js:172` the user message includes the literal text
+  `"Respond using the structure in your system prompt: warm
+  acknowledgment, mistake awareness ..."`. The §15 prompt rewrite
+  removed the 4-step structure but left this user-message prelude
+  unchanged. The model still follows the new system prompt (system >
+  user), but the prelude is misleading. One small edit, separate commit.
 
 ---
 
@@ -730,6 +752,93 @@ with the exclamation-heavy "Excellent!" replaced by calmer factual text.
 ~20 testers. The lambda contract is unchanged so this works against the
 currently-deployed lambda (which still serves the old StarTest-branded
 robotic prompt — see §15).
+
+---
+
+## 17. End-of-session AI summary (May 2)
+
+A new lambda action `summarize-session` produces a 2-4 sentence
+post-session reflection that renders below the score on the end-of-set
+screen. Distinct task from the live tutor (mid-question Socratic help),
+distinct system prompt (`buildSummarySystemPrompt`), but inherits the
+same voice principles from §15 — no template phrases, no rigid
+structure, varied output, banned-phrase discipline, grade-band
+sentence-length calibration.
+
+**Lambda action:** `POST /` with `{ action: 'summarize-session', ... }`.
+Defined at `lambda/tutor.js#handleSummarizeSession` (mirrored byte-
+identical at `lambda/tutor-build/tutor.js`).
+
+**Payload schema:**
+```js
+{
+  action: 'summarize-session',
+  studentName: string,        // displayName, first name only
+  grade: number,              // numeric grade (0 = K)
+  state: string,              // slug
+  testName: string,           // e.g. STAAR
+  subject: string,            // 'math' | 'reading'
+  unitTitle: string|null,     // unit/lesson name
+  results: [{                 // capped to 20 in the lambda
+    question: string,         // first 80 chars
+    correct: boolean,
+    wrongChoice: string|null, // kid's wrong choice if any
+    topic: string|null
+  }],
+  durationSeconds: number,
+  perfectRun: boolean
+}
+```
+
+**Response shape:** `{ summary: string }` on success,
+`{ summary: null, error: string }` on error. **Always HTTP 200** —
+errors are non-fatal; frontend treats null as "skip the summary block."
+
+**Voice rules baked into the system prompt:**
+- Up to 2-4 sentences depending on grade band (K-2: 2, 3-5: 3, 6-12: 4)
+- Acknowledge ONE specific topic the kid got right
+- Flag at most ONE specific topic to revisit (skipped entirely if no real
+  next-step exists)
+- End forward-looking (no motivational filler)
+- No game mechanics (cents, streaks, badges, levels) — about learning,
+  not the loop
+- Sparing first-name use — only on milestone moments, max once
+- All §15 banned phrases forbidden
+- Defense-in-depth: if the model leaks any banned substring or returns
+  empty, the lambda swaps in `'Solid session. Keep going.'` before
+  responding
+
+**Frontend wiring** in `js/practice.js#finish()`:
+- New `sessionResults[]` array populated in the answer-handler block
+- New `sessionStartedAt = Date.now()` for duration tracking
+- On end-of-set render, `<div id="session-summary">` placeholder appears
+  below the score with the `thinkingHTML()` dots
+- Background `fetch()` to `STAAR_TUTOR_ENDPOINT` with the payload above
+- `AbortController` + 8-second timeout
+- On success: placeholder content replaced by the summary text (italic
+  removed, normal weight)
+- On null / error / timeout / AbortError: placeholder is removed silently
+  — the end-of-set screen looks identical to the §16 baseline minus the
+  placeholder
+- Try Again / Back anchor clicks abort in-flight calls (browser-nav would
+  kill them anyway, but explicit abort matches the design)
+
+**Cost expectation:**
+- ~600 input + ~120 output tokens per call ≈ **$0.0002 per session**
+  with gpt-4o-mini ($0.15/M input + $0.60/M output)
+- At 5 sessions/kid/week × 20 testers = 100 calls/week → ~**$0.02/week**
+  today, scales linearly with session volume
+- At 1k paying customers × 5 sessions/week (the §1 goal) → ~$1/week.
+  Within the §10 "no cost-optimizing when there's headroom" rule.
+
+**Status:** UNSHIPPED on the lambda side. The frontend code that calls
+`summarize-session` is shipped (lives in `js/practice.js`) and gets
+deployed on the next `git push origin main` (GitHub Pages) — but the
+deployed `staar-tutor` lambda does not yet have the action registered,
+so until Phase 6 deploy.sh ships and the lambda is re-zipped + re-
+uploaded, the call returns 404 / 500 and the frontend silently drops the
+placeholder. End-of-set screen looks like §16 baseline until the lambda
+catches up.
 
 ---
 
