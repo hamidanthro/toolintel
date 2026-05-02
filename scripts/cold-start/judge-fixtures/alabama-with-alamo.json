@@ -1,0 +1,20 @@
+{
+  "name": "alabama-with-alamo",
+  "description": "An Alabama-state question whose word problem is set at the Alamo in San Antonio, Texas. Math is correct; the setting violates state-specific guardrails. Alabama is NOT a flagship state — own-state-only rule applies.",
+  "question": {
+    "question": "Maria visits the Alamo in San Antonio with her family. She buys 3 souvenir postcards at $5 each. How much does she spend on postcards?",
+    "choices": ["$8", "$12", "$15", "$18"],
+    "correctIndex": 2,
+    "explanation": "3 postcards × $5 each = $15."
+  },
+  "context": {
+    "stateSlug": "alabama",
+    "subject": "math",
+    "grade": "grade-3",
+    "gradeLabel": "grade 3"
+  },
+  "expected": {
+    "verdict": "reject",
+    "failedChecks": ["STATE_LEAK"]
+  }
+}

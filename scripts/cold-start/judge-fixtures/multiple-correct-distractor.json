@@ -1,0 +1,20 @@
+{
+  "name": "multiple-correct-distractor",
+  "description": "Three of the four choices are equivalent to 1/2. Only one is marked correct, but a kid could legitimately pick 2/4 or 3/6 and be right. The question wording allows multiple correct answers because of distractor design.",
+  "question": {
+    "question": "Which fraction is equal to 1/2?",
+    "choices": ["2/4", "3/6", "4/8", "5/9"],
+    "correctIndex": 0,
+    "explanation": "2/4 simplifies to 1/2 by dividing both numerator and denominator by 2."
+  },
+  "context": {
+    "stateSlug": "ohio",
+    "subject": "math",
+    "grade": "grade-4",
+    "gradeLabel": "grade 4"
+  },
+  "expected": {
+    "verdict": "reject",
+    "failedChecks": ["MULTIPLE_CORRECT"]
+  }
+}

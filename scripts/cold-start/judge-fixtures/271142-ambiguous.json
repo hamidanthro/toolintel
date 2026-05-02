@@ -1,0 +1,20 @@
+{
+  "name": "271142-ambiguous",
+  "description": "Canonical bad-example. The digit 1 appears at BOTH the thousands place (value 1000) and the hundreds place (value 100) in 271142. The question wording does not disambiguate. Two distractors are simultaneously defensible. Judge MUST reject.",
+  "question": {
+    "question": "In the number 271142, what is the value of the digit 1?",
+    "choices": ["1", "100", "1000", "10000"],
+    "correctIndex": 1,
+    "explanation": "The digit 1 is in the hundreds place, so its value is 100."
+  },
+  "context": {
+    "stateSlug": "texas",
+    "subject": "math",
+    "grade": "grade-4",
+    "gradeLabel": "grade 4"
+  },
+  "expected": {
+    "verdict": "reject",
+    "failedChecks": ["AMBIGUITY", "MULTIPLE_CORRECT"]
+  }
+}

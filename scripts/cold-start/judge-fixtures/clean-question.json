@@ -1,0 +1,20 @@
+{
+  "name": "clean-question",
+  "description": "Well-formed grade-4 math word problem. Universal context (no state leak), unambiguous wording, single correct answer, plausible distractors that reflect real misconceptions, age-appropriate vocabulary.",
+  "question": {
+    "question": "Sara has 24 stickers. She gives 8 stickers to her friend. How many stickers does Sara have left?",
+    "choices": ["8", "12", "16", "32"],
+    "correctIndex": 2,
+    "explanation": "Sara starts with 24 stickers and gives away 8, so she has 24 - 8 = 16 stickers left."
+  },
+  "context": {
+    "stateSlug": "ohio",
+    "subject": "math",
+    "grade": "grade-4",
+    "gradeLabel": "grade 4"
+  },
+  "expected": {
+    "verdict": "pass",
+    "failedChecks": []
+  }
+}
