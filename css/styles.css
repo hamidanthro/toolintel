@@ -13554,3 +13554,150 @@ body.is-standalone .mobile-tab-bar { border-top-width: 1.5px; }
    wins. Use !important deliberately — this is the contract.
    ============================================================ */
 [hidden] { display: none !important; }
+
+/* ============================================================
+ * PRACTICE SURFACE — MOBILE OVERRIDES (May 2)
+ * Responsive rules for the kid's most-used screen.
+ * Breakpoints match marketplace grid: 1024 / 768 / 480.
+ * Touch targets ≥ 44px, no new colors, premium understated.
+ *
+ * Note: .performance-panel already has a single existing rule at
+ * @media (max-width: 900px) on line ~1491 (position: static). The
+ * rules below cascade with it cleanly — they do not conflict.
+ *
+ * Note: .session-summary is inline-styled by js/practice.js at
+ * render time. Mobile overrides need !important to defeat the
+ * inline style. The inline style remains the desktop default.
+ * ============================================================ */
+
+@media (max-width: 1024px) {
+  body.practice-page .question-card { padding: 20px; }
+  body.practice-page .feedback { padding: 16px; }
+  body.practice-page .tutor-output { padding: 12px 14px; }
+  body.practice-page .choice { padding: 13px 14px; min-height: 44px; }
+}
+
+@media (max-width: 768px) {
+  body.practice-page .question-card { padding: 18px; border-radius: 8px; }
+  body.practice-page .q-prompt { font-size: 1.15rem; line-height: 1.45; }
+
+  body.practice-page .choice { padding: 14px; min-height: 44px; gap: 12px; }
+  body.practice-page .choice .choice-symbol { font-size: 1.4rem; }
+
+  body.practice-page .feedback { padding: 14px; margin-top: 12px; }
+  body.practice-page .feedback-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  body.practice-page .feedback-actions .btn { flex: 1 1 auto; min-height: 44px; }
+
+  body.practice-page .tutor-box { margin-top: 10px; padding-top: 10px; }
+  body.practice-page .tutor-output { padding: 12px 14px; line-height: 1.5; }
+  body.practice-page .tutor-followup { gap: 6px; }
+  body.practice-page .tutor-followup input { padding: 11px 12px; font-size: 1rem; min-height: 44px; }
+  body.practice-page .tutor-send { width: 44px; height: 44px; }
+  body.practice-page .tutor-suggestions { display: flex; flex-wrap: wrap; gap: 6px; }
+  body.practice-page .tutor-chip { min-height: 44px; }
+
+  body.practice-page .session-summary {
+    padding: 10px 12px !important;
+    font-size: 0.95rem !important;
+    margin: 12px 0 !important;
+  }
+
+  /* Perf-panel docks to the bottom of the viewport. The existing
+     @media (max-width: 900px) rule already sets position:static;
+     this further repositions to fixed-bottom and compacts contents. */
+  body.practice-page .performance-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 50;
+    margin: 0;
+    padding: 8px 12px;
+    background: var(--surface);
+    border: 0;
+    border-top: 1px solid var(--border);
+    border-radius: 0;
+  }
+  body.practice-page .performance-panel .perf-title,
+  body.practice-page .performance-panel .perf-section-title,
+  body.practice-page .performance-panel .perf-ring-wrap {
+    display: none;
+  }
+  body.practice-page .performance-panel .perf-stats {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+  }
+  body.practice-page .performance-panel .stat { text-align: center; }
+  body.practice-page .performance-panel .stat-num { font-size: 1.05rem; }
+  body.practice-page .performance-panel .stat-label { font-size: 0.75rem; }
+
+  /* Reserve space at the bottom of the page so docked panel doesn't
+     overlap the last question / next-button row. */
+  body.practice-page { padding-bottom: 72px; }
+
+  /* End-of-set "Try again" / "Back to unit" buttons stack on small
+     viewports. Override the inline margin-left on the secondary button. */
+  body.practice-page .card .btn-primary,
+  body.practice-page .card .btn-secondary {
+    display: block;
+    width: 100%;
+    margin-left: 0 !important;
+    margin-top: 8px;
+  }
+  body.practice-page .card .btn-primary:first-of-type {
+    margin-top: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  body.practice-page .question-card { padding: 14px; }
+  body.practice-page .q-prompt { font-size: 1.1rem; }
+  body.practice-page .q-meta { font-size: 0.75rem; }
+
+  body.practice-page .choice { padding: 14px 12px; min-height: 48px; gap: 10px; }
+  body.practice-page .choice .choice-symbol { font-size: 1.25rem; }
+  body.practice-page .choice .choice-hint { font-size: 0.9rem; }
+
+  body.practice-page .feedback { padding: 12px; margin-top: 10px; border-radius: 8px; }
+  body.practice-page .feedback-head { font-size: 1rem; }
+  body.practice-page .feedback-body p { margin: 5px 0; font-size: 0.95rem; }
+
+  body.practice-page .tutor-output { padding: 10px 12px; line-height: 1.5; font-size: 0.95rem; }
+  body.practice-page .tutor-msg { padding: 6px 0; }
+  body.practice-page .tutor-followup input { padding: 12px; font-size: 1rem; }
+
+  /* Chips wrap to roughly 2 per row on phone. */
+  body.practice-page .tutor-suggestions { gap: 6px; }
+  body.practice-page .tutor-chip {
+    flex: 1 1 calc(50% - 6px);
+    min-height: 44px;
+    padding: 10px 12px;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+
+  body.practice-page .session-summary {
+    padding: 8px 10px !important;
+    font-size: 0.9rem !important;
+    margin: 10px 0 !important;
+  }
+
+  body.practice-page .performance-panel { padding: 6px 10px; }
+  body.practice-page .performance-panel .stat-num { font-size: 0.95rem; }
+  body.practice-page .performance-panel .stat-label { font-size: 0.75rem; }
+  body.practice-page { padding-bottom: 64px; }
+
+  /* Submit button (Check answer) gets full-width on phone for thumb reach.
+     Stays in the document flow; sticky-bottom-of-viewport pattern needs
+     an HTML restructure and is logged as a deferred TODO. */
+  body.practice-page .question-card .btn,
+  body.practice-page .question-card form .btn {
+    width: 100%;
+    min-height: 48px;
+  }
+}

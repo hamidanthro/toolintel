@@ -617,6 +617,27 @@ into `scripts/cold-start/judge-fixtures/`.
   this whole class of drift. Trade-off: introduces a build step the
   house-style currently rejects (§3 "no bundler"). Worth re-litigating
   once Phase 6 ships.
+- **Mobile QA matrix for the practice surface** (post §18 commit):
+  iPhone 13 mini (375×667), iPhone 15 Pro (393×852), Pixel 6
+  (412×915), iPad portrait (768×1024), iPad landscape (1024×768).
+  Verify the question card, choices, feedback panel, tutor reply,
+  follow-up chips, end-of-set screen, session summary, and docked
+  performance-panel all render correctly on each. Cannot be automated;
+  needs a human on each device or in browser device-emulator mode.
+- **Streak / wallet toasts lack mobile rules.** They're rendered by
+  `js/auth.js` and `js/practice.js` at fixed bottom positions
+  (`.cents-toast`, `STAARFx.toast`) and on phone they overlap the
+  newly-docked `.performance-panel` band. Either add CSS to lift them
+  above the dock (`bottom: 80px` on phone) or have JS pick a different
+  position when the dock is active. Separate small commit.
+- **Scratchpad inline canvas** (`js/scratchpad.js`) needs its own
+  mobile sizing pass — currently sized assuming desktop viewport.
+  Out of scope for §18; flagged.
+- **Sticky-bottom submit button** ("Check answer" reachable with one
+  thumb without scrolling) requires an HTML restructure to put the
+  button outside the scrollable content area or use a sticky-friendly
+  parent layout. §18 implemented full-width as the easier first
+  improvement; true sticky-bottom-of-viewport is its own commit.
 
 ---
 
@@ -861,6 +882,61 @@ so until Phase 6 deploy.sh ships and the lambda is re-zipped + re-
 uploaded, the call returns 404 / 500 and the frontend silently drops the
 placeholder. End-of-set screen looks like §16 baseline until the lambda
 catches up.
+
+---
+
+## 18. Practice surface — responsive rules (May 2)
+
+The kid's most-used screen — question card, choices, feedback panel,
+tutor reply, follow-up chips, end-of-set screen, session summary,
+performance side-panel — inherited desktop CSS on phones (per the §C4
+audit finding). This commit adds responsive rules at the same three
+breakpoints the marketplace grid uses, so we don't introduce any new
+breakpoints into the design system.
+
+**Breakpoints (matching marketplace + dashboard grid):**
+- `@media (max-width: 1024px)` — tablet portrait
+- `@media (max-width: 768px)` — small tablet / phone landscape
+- `@media (max-width: 480px)` — phone portrait
+
+**Selectors with new mobile rules:**
+- `.question-card` — padding shrinks 24 → 20 → 18 → 14px
+- `.q-prompt` — font-size 1.2 → 1.15 → 1.1rem (one notch down at phone)
+- `.q-meta` — font-size 0.75rem on phone
+- `.choice` — padding tightens, `min-height: 44px` at ≤768 / `48px` at ≤480 (touch target)
+- `.choice .choice-symbol` — symbol font 1.5 → 1.4 → 1.25rem
+- `.feedback`, `.feedback-head`, `.feedback-body p` — padding + type scale down
+- `.feedback-actions` — flex-wrap with `min-height: 44px` button row at ≤768
+- `.tutor-box`, `.tutor-output`, `.tutor-msg`, `.tutor-followup`, `.tutor-followup input`, `.tutor-send` — padding + min-touch-target tweaks
+- `.tutor-suggestions` + `.tutor-chip` — wraps; chips become **2-per-row** at ≤480 via `flex: 1 1 calc(50% - 6px)`, `min-height: 44px`
+- `.session-summary` — `!important` on padding/font-size/margin to defeat the inline style set by JS in commit `7b0e960`
+- `.performance-panel` — **docks to bottom of viewport** at ≤768 (`position: fixed; bottom: 0`), hides title/section-title/ring, compacts the stats row to a horizontal flex strip; `body { padding-bottom: 72px }` reserves room
+- `.card .btn-primary / .btn-secondary` — end-of-set buttons stack vertically full-width at ≤768; the inline `margin-left:8px` on the secondary anchor is overridden via `margin-left: 0 !important`
+- `.question-card .btn` — submit button gets `width: 100%; min-height: 48px` at ≤480 for thumb reach
+
+**Design principles applied:**
+1. **Touch targets ≥ 44px** on all interactive surfaces at ≤768; 48px on the most-touched ones (choices + submit) at ≤480.
+2. **Padding shrinks but never disappears.** No edge-to-edge cramming — premium-understated stays premium.
+3. **Font sizes step down ONE notch at ≤480**, not two. Question stem stays prominent (1.1rem = 17.6px on phone).
+4. **No new colors.** Every color reference is `var(--…)`. Audit confirmed 0 hex codes and 0 raw rgba() in the new block.
+5. **No new breakpoints.** Only 1024 / 768 / 480 — the same three the marketplace, dashboard, hero, and practice-grid already use.
+6. **Desktop default rendering is byte-identical** to before this commit. New rules ONLY appear inside `@media` blocks.
+7. **`body.practice-page`-scoped** every rule so nothing leaks to the homepage, marketplace, admin, etc.
+
+**Perf-panel docked-bottom pattern** (worth adopting on other surfaces
+that have a side stats column on desktop): when the column doesn't fit
+in narrow viewports, fix it to the bottom edge (full width, single row),
+hide title/decoration, show only the most useful 2-3 stats. Add
+`padding-bottom` to body to reserve clearance. Same pattern would work
+for the dashboard `.welcome-actions` column or the marketplace cart
+summary at narrow widths.
+
+**Pre-existing rule worth knowing:** `.performance-panel` already had a
+single rule at `@media (max-width: 900px)` (line 1491) that sets
+`position: static`. The new rules at 768/480 cascade with that one
+cleanly — `position: fixed` at 768 wins over `static` at 900 because
+of cascade order. Worth a future tidy to consolidate the 900 → 768 jump
+into a single canonical breakpoint, but not urgent.
 
 ---
 
