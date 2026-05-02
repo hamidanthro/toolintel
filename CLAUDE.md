@@ -276,18 +276,22 @@ frontend is a safe rename target later.
 
 ### 6c. ReplyQuik (AI customer-support chatbot)
 
-**Still running on AWS AppRunner — verified 2026-05-02:**
+**Frontend widget: REMOVED 2026-05-02.** All 7 HTML pages
+(`admin.html`, `about.html`, `marketplace.html`, `404.html`,
+`practice.html`, `grades.html`, `settings.html`) no longer load
+`https://api.replyquik.com/widget.js`. The defensive mobile-hider CSS
+block in `styles.css` (the "PROMPT 28a" block at the old line 8667)
+that existed only to hide the widget on small screens was also removed
+in the same commit. **Token-exfiltration path closed.**
+
+**Backend: STILL RUNNING on AWS AppRunner.**
 - `replyquik-api-main` (RUNNING, last updated 2026-04-29)
 - `replyquik-api-staging` (RUNNING)
 - EventBridge rule `AWSAppRunnerManagedRuleForECREvent` is **ENABLED** and
   watches the `replyquik-backend` ECR repo for image pushes ("DO-NOT-DELETE.
   The rule is used by AWS AppRunner.").
-
-ReplyQuik also leaks into the GradeEarn frontend: every active HTML page
-(including `admin.html` and `practice.html`) loads
-`https://api.replyquik.com/widget.js`. Third-party JS that runs in
-gradeearn.com's origin can read the localStorage auth token. **High blast
-radius — kids' product.** Remove the widget tags as part of this phase.
+- Phase 3 finish requires AWS Console action (delete services, ECR repos,
+  IAM roles, CloudWatch log groups) — only Hamid can do this. See §14.
 
 ### 6d. WealthDeskPro (defunct finance product)
 
@@ -469,9 +473,12 @@ defaults globally.
    `staar-users`, `staar-orders` (shipping addresses), `staar-messages`,
    parent-consent flow. Lifetime cap $100 in `tutor.js` is the only built-in
    guard. Phase 4 is the legal cover.
-3. **Auth token in `localStorage`** + **third-party `replyquik` widget loaded
-   on every page including `admin.html`** = token-exfiltration path. Killing
-   the widget is part of Phase 3.
+3. **Auth token in `localStorage`.** The third-party `replyquik` widget
+   that previously created an exfil path on every page (including
+   `admin.html`) was removed 2026-05-02 (see §6c). Auth-in-localStorage
+   is still a generic XSS-exfil concern, but the specific same-origin
+   3rd-party-script vector is gone. Other 3rd-party scripts on the
+   pages should be audited (see §14 TODO).
 4. **DynamoDB has no PITR** confirmed. A bad lambda + a destructive bug =
    permanent data loss for live testers. Phase 6 fix.
 5. **No CloudWatch alarms / SNS / on-call.** Phase 6.
@@ -638,6 +645,23 @@ into `scripts/cold-start/judge-fixtures/`.
   button outside the scrollable content area or use a sticky-friendly
   parent layout. §18 implemented full-width as the easier first
   improvement; true sticky-bottom-of-viewport is its own commit.
+- **🟠 Phase 3 finish — ReplyQuik AppRunner deletion.** Frontend widget
+  removed in §6c. Backend still running and only Hamid can delete it
+  via AWS Console: (a) stop and delete `replyquik-api-main` and
+  `replyquik-api-staging` AppRunner services, (b) delete the
+  `replyquik-backend` ECR repository (or at least stop pushing to it),
+  (c) delete the `AWSAppRunnerManagedRuleForECREvent` EventBridge rule
+  if no other AppRunner service depends on it, (d) clean up any IAM
+  roles named `AppRunnerECRAccessRole-*` or similar that were specific
+  to ReplyQuik, (e) delete CloudWatch log groups
+  `/aws/apprunner/replyquik-*`. Surface this to Hamid as an explicit
+  AWS-action ask when ready.
+- **Audit other 3rd-party scripts on production pages** for the same
+  pattern. Quick grep on `*.html` for `<script src="https://"` and
+  decide which (Google Fonts, etc.) stay and which join ReplyQuik in
+  the deleted bin. Also worth a CSP header audit — without
+  Content-Security-Policy the same-origin 3rd-party-script attack
+  vector is open to anything someone adds in the future.
 
 ---
 
@@ -963,11 +987,12 @@ into a single canonical breakpoint, but not urgent.
    EventBridge (it was disabled in Phase 0). Don't re-enable the rule before
    the refactor — it will silently fall back to Texas for every other state.
 
-3. **Three retired products are still live in AWS or the page bundle.**
-   ReplyQuik (two AppRunner services RUNNING + a JS widget loaded on
-   every gradeearn.com page including admin), WealthDeskPro
-   (`pricing.js` SES wired to send from `wealthdeskpro@gmail.com` to
-   Hamid's personal inbox — currently dormant only because the zombie API
-   has zero traffic), and ToolIntel (23 lambdas + a whole second API
-   Gateway). All of this needs to die in Phase 3 before the COPPA / legal
-   work in Phase 4 can credibly claim a clean surface.
+3. **Three retired products still partially live in AWS.**
+   ReplyQuik widget removed from frontend 2026-05-02 (see §6c) but the
+   two AppRunner services are still RUNNING — Phase 3 finish needs
+   AWS Console action. WealthDeskPro (`pricing.js` SES wired to send
+   from `wealthdeskpro@gmail.com` to Hamid's personal inbox — currently
+   dormant only because the zombie API has zero traffic). ToolIntel
+   (23 lambdas + a whole second API Gateway, also dormant). All of this
+   needs to die in Phase 3 before the COPPA / legal work in Phase 4 can
+   credibly claim a clean surface.
