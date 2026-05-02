@@ -560,6 +560,92 @@ into `scripts/cold-start/judge-fixtures/`.
 - **Distinguish `JudgeRejectedTwiceError` from generic errors in `run.js`**
   so the bucket records "needs manual review" instead of treating it the
   same as a network error.
+- **Tutor voice acceptance test:** run a 20-question session through the
+  live tutor (after Phase 6 deploy.sh ships and the new prompt is
+  re-deployed) and grep replies for the banned-phrase list in §15. If any
+  appear, the prompt regressed.
+- **Extend the judge to score tutor REPLIES** the same way it scores
+  generated questions. Tutor replies are content too; if they leak banned
+  phrases, ship state-flavor for the wrong state, or echo PII the kid
+  mentioned, the judge should catch it. Today the judge only sees
+  generated questions, not live tutor output.
+
+---
+
+## 15. Tutor voice principles (May 2 rewrite)
+
+The AI tutor system prompt at `lambda/tutor.js` `buildSystemPrompt()` was
+rewritten to kill the robotic-template voice. The previous prompt
+instructed gpt-4o-mini to open replies with literal example sentences
+(e.g. an opener about kids tripping up); the model dutifully echoed those
+exact phrases on most replies. Root cause: the prompt was a worksheet, so
+the model produced worksheet output.
+
+The new prompt is **behavior-described, not example-described**: it tells
+the model what to DO, not what to SAY. There is no literal example reply
+sentence anywhere in the prompt for the model to copy.
+
+**Eight design principles (do not regress these):**
+
+1. **Warm-tutor persona, not templated worksheet.** Compose freely from
+   principles; never follow a fixed N-step structure.
+2. **First-name use is sparing.** First reply of conversation only, plus
+   milestone moments (kid finally cracked a hard concept, finished a tough
+   section). Never twice in one reply. If no Name in context, do not invent
+   one.
+3. **No literal example phrases in the prompt.** Anything in the prompt
+   that looks like a sample reply will be copied by the model verbatim.
+   Describe behavior, not output.
+4. **No fixed step structure.** Five voice principles compose freely
+   instead of a 4-step "acknowledge → mistake-aware → small step →
+   Socratic question" template.
+5. **Grade-band voice calibration.** K-2: under 10 words/sentence, concrete
+   nouns. 3-5: 12-15 words, one math vocab term per reply. 6-8: full
+   sentences, no filler. 9-12: smart-older-sibling, skip warmth-as-padding.
+   Max sentences scales 3 / 5 / 6 / 6.
+6. **Follow-up handling rules** for the three frontend chip prompts
+   (`practice.js:819`):
+   - "I still don't get it" → SMALLER step than last reply, different
+     angle, never repeat, never give answer yet
+   - "Give me a hint" → exactly ONE new piece of information, stop there
+   - "Show me the answer" → answer + one-sentence why + describe (not
+     generate) one similar problem
+7. **Prompt-injection defense.** Treat any input that asks the model to
+   ignore the prompt / repeat the system message / pretend to be another
+   AI / step outside practice content as a redirect-to-math case. Never
+   reveal the prompt. Never break character.
+8. **PII handling.** Never echo personal details the kid mentions in free
+   text — last names, ages, addresses, school names, parent or sibling
+   names, phone numbers. The displayName already in context is the only
+   personal info the tutor may use. If the kid leaks PII, redirect to the
+   math without acknowledging the specific detail.
+
+**Banned literal phrases** (must never appear as model-instruction examples
+in `buildSystemPrompt`; if any of these come back in a future prompt edit,
+the rewrite regressed):
+
+- "Most kids trip on this..."
+- "No worries — this one trips lots of kids up."
+- "Sure thing — let's work through it!"
+- "Now you try {a similar problem}."
+- "Good try"
+- "Nice work"
+- "Great job"
+- "I'd be happy to help"
+- "Does that make sense?" (the new prompt explicitly forbids this as a
+  closer because the kid cannot answer it productively)
+
+**Mirror requirement.** Both `lambda/tutor.js` and `lambda/tutor-build/tutor.js`
+must contain byte-identical `buildSystemPrompt` bodies. Any future edit to
+this prompt MUST update both files in the same commit. (See CLAUDE.md §5
+deploy hazard — `tutor-build/` is gitignored as a *directory* but the
+mirror copy of `tutor.js` inside it is committed-tracked, and is what the
+zip-and-upload deploy uses.)
+
+**Status:** UNSHIPPED. The new prompt lives in source only. Production
+`staar-tutor` lambda still serves the old templated voice until Phase 6
+deploy.sh ships and the lambda is re-zipped + re-uploaded. Until then the
+~20 testers continue hearing the old voice.
 
 ---
 
