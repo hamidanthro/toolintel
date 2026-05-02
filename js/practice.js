@@ -7,6 +7,40 @@
   const TUTOR_ENDPOINT = window.STAAR_TUTOR_ENDPOINT
     || 'https://api.toolintel.ai/tutor'; // override via window.STAAR_TUTOR_ENDPOINT before this script
 
+  // Tutor auto-fire timeout. If we don't have a reply in this long, the kid
+  // sees the stored explanation as fallback + a Retry button.
+  const TUTOR_TIMEOUT_MS = 12000;
+
+  // Friendly fallback line when the live tutor errors or times out. The
+  // stored explanation above stays visible — this is just the AI-side note.
+  // Frontend strings are subject to the same banned-phrase rules as the
+  // tutor system prompt — see CLAUDE.md §15 for the list.
+  const TUTOR_FALLBACK_LINE = "I'll get back to you — the standard explanation above is what to use for now.";
+
+  // End-of-set headers, score-band aware. Single lookup table so future
+  // tuning is one place. Growth-mindset language at the low end, varied
+  // tone elsewhere, celebration only on perfect.
+  const END_OF_SET_HEADERS = {
+    low:     "You learned a lot. Let's try again.",
+    mid:     "Solid round.",
+    high:    "Strong run.",
+    perfect: "Clean sweep."
+  };
+
+  const MASTERY_HEADERS = {
+    justMastered:    "Section mastered.",
+    alreadyMastered: "Section already mastered."
+  };
+
+  function pickEndHeader(correct, total) {
+    if (!total) return END_OF_SET_HEADERS.low;
+    if (correct === total) return END_OF_SET_HEADERS.perfect;
+    const pct = correct / total;
+    if (pct < 0.5) return END_OF_SET_HEADERS.low;
+    if (pct < 0.8) return END_OF_SET_HEADERS.mid;
+    return END_OF_SET_HEADERS.high;
+  }
+
   const root = document.getElementById('practice-root');
   const params = new URLSearchParams(location.search);
 
@@ -769,8 +803,7 @@
             : `<p><strong>Correct answer:</strong> ${escapeHtml(q.answer)}</p>
                <p>${escapeHtml(q.explanation || '')}</p>
                <div class="tutor-box">
-                 <button class="btn btn-primary" id="tutor-btn">Ask AI tutor for help</button>
-                 <div class="tutor-output" id="tutor-out" hidden></div>
+                 <div class="tutor-output" id="tutor-out"></div>
                  <form class="tutor-followup" id="tutor-followup" hidden>
                    <input type="text" id="tutor-q" placeholder="Ask a follow-up question…" />
                    <button class="tutor-send" type="submit" aria-label="Send">
@@ -791,18 +824,25 @@
         qCard.querySelectorAll('input,button').forEach(el => el.disabled = true);
       }
 
+      // In-flight tutor request controller. Aborted on Next Question click
+      // and on Retry (which restarts a fresh call). Scoped to this panel.
+      let currentTutorController = null;
+
       document.getElementById('next-btn').addEventListener('click', () => {
+        if (currentTutorController) {
+          try { currentTutorController.abort(); } catch (_) {}
+          currentTutorController = null;
+        }
         if (window.STAARFx) window.STAARFx.stopSpeak();
         i++;
         show();
       });
 
       if (!isCorrect) {
-        const tutorBtn = document.getElementById('tutor-btn');
         const tutorOut = document.getElementById('tutor-out');
         const followup = document.getElementById('tutor-followup');
         const tutorQ = document.getElementById('tutor-q');
-        let history = [];
+        const history = [];
 
         // Build full tutor context once.
         const tutorCtx = buildTutorContext(q, stats, curr);
@@ -827,11 +867,27 @@
           tutorOut.appendChild(wrap);
         };
 
-        tutorBtn.addEventListener('click', async () => {
-          tutorBtn.disabled = true;
-          tutorBtn.innerHTML = `${spinnerHTML()} <span>Thinking…</span>`;
-          tutorOut.hidden = false;
-          tutorOut.innerHTML = thinkingHTML();
+        // Single network call helper. Used by (a) auto-fire on wrong answer,
+        // (b) chip clicks via submitFollowup, (c) free-text follow-ups.
+        // Returns { reply } | { aborted: true } | { error: true }.
+        async function runTutor(userText, isInitial) {
+          if (currentTutorController) {
+            try { currentTutorController.abort(); } catch (_) {}
+          }
+          const ac = new AbortController();
+          currentTutorController = ac;
+          let timedOut = false;
+          const timeoutId = setTimeout(() => {
+            timedOut = true;
+            try { ac.abort(); } catch (_) {}
+          }, TUTOR_TIMEOUT_MS);
+
+          // Send history exactly the way the previous code did:
+          // initial auto-fire sends [], appending the placeholder user turn
+          // only after success. Follow-ups send history with the new user
+          // turn already pushed.
+          const sendHistory = isInitial ? [] : history.concat([{ role: 'user', content: userText }]);
+
           try {
             const reply = await callTutor(Object.assign({}, tutorCtx, {
               question: q.prompt,
@@ -840,22 +896,58 @@
               explanation: q.explanation,
               teks: q._lesson?.teks,
               topic: q._unit?.title,
-              history: []
-            }));
-            history.push({ role: 'user', content: 'Help me understand this problem.' });
+              history: sendHistory
+            }), ac.signal);
+            clearTimeout(timeoutId);
+            if (currentTutorController === ac) currentTutorController = null;
+            history.push({
+              role: 'user',
+              content: isInitial ? 'Help me understand this problem.' : userText
+            });
             history.push({ role: 'assistant', content: reply });
-            tutorOut.innerHTML = `<div class="tutor-msg assistant">${formatTutor(reply)}</div>`;
-            renderChips();
-            followup.hidden = false;
-            tutorBtn.style.display = 'none';
+            return { reply };
           } catch (err) {
-            tutorOut.innerHTML = `<div class="tutor-msg assistant error">AI tutor unavailable right now. Try again later.</div>`;
-            tutorBtn.disabled = false;
-            tutorBtn.textContent = 'Ask AI tutor for help';
+            clearTimeout(timeoutId);
+            if (currentTutorController === ac) currentTutorController = null;
+            // AbortError without timedOut means the kid clicked Next Question
+            // (or Retry while a previous call was in flight). Silent — no UI.
+            if (err && err.name === 'AbortError' && !timedOut) {
+              return { aborted: true };
+            }
+            console.warn('[tutor] failed', {
+              contentId: q.contentId,
+              name: err && err.name,
+              message: err && err.message,
+              timedOut: timedOut
+            });
+            return { error: true };
           }
-        });
+        }
 
-        followup.addEventListener('submit', async e => {
+        const renderError = () => {
+          tutorOut.innerHTML = `<div class="tutor-msg assistant error">${TUTOR_FALLBACK_LINE} <button type="button" id="tutor-retry" class="tutor-retry" style="margin-left:8px;padding:2px 10px;border:1px solid var(--border,#e5e7eb);background:transparent;border-radius:6px;cursor:pointer;font:inherit;color:inherit;">Retry</button></div>`;
+          const retryBtn = document.getElementById('tutor-retry');
+          if (retryBtn) {
+            retryBtn.addEventListener('click', () => { fireInitialTutor(); });
+          }
+        };
+
+        async function fireInitialTutor() {
+          tutorOut.innerHTML = `<div class="tutor-msg assistant tutor-loading"><span style="color:var(--text-muted,#6b7280);font-size:0.95rem;margin-right:8px;">AI tutor is reading…</span>${thinkingHTML()}</div>`;
+          const result = await runTutor(null, true);
+          if (result.aborted) return;
+          if (result.error) { renderError(); return; }
+          tutorOut.innerHTML = `<div class="tutor-msg assistant">${formatTutor(result.reply)}</div>`;
+          renderChips();
+          followup.hidden = false;
+        }
+
+        // Auto-fire the tutor as soon as the wrong-answer panel renders.
+        // The stored explanation above is the immediate fallback the kid
+        // can already read while this call is in flight.
+        fireInitialTutor();
+
+        followup.addEventListener('submit', async (e) => {
           e.preventDefault();
           const text = tutorQ.value.trim();
           if (!text) return;
@@ -864,25 +956,15 @@
           tutorOut.querySelector('.tutor-suggestions')?.remove();
           tutorOut.insertAdjacentHTML('beforeend', `<div class="tutor-msg user"><strong>You:</strong> ${escapeHtml(text)}</div>`);
           tutorOut.insertAdjacentHTML('beforeend', `<div class="tutor-msg loading">${thinkingHTML()}</div>`);
-          history.push({ role: 'user', content: text });
-          try {
-            const reply = await callTutor(Object.assign({}, tutorCtx, {
-              question: q.prompt,
-              correctAnswer: q.answer,
-              studentAnswer: userAnswer,
-              explanation: q.explanation,
-              teks: q._lesson?.teks,
-              topic: q._unit?.title,
-              history
-            }));
-            history.push({ role: 'assistant', content: reply });
-            tutorOut.querySelector('.tutor-msg.loading')?.remove();
-            tutorOut.insertAdjacentHTML('beforeend', `<div class="tutor-msg assistant">${formatTutor(reply)}</div>`);
-            renderChips();
-          } catch (err) {
-            tutorOut.querySelector('.tutor-msg.loading')?.remove();
-            tutorOut.insertAdjacentHTML('beforeend', `<div class="tutor-msg assistant error">AI tutor unavailable.</div>`);
+          const result = await runTutor(text, false);
+          tutorOut.querySelector('.tutor-msg.loading')?.remove();
+          if (result.aborted) return;
+          if (result.error) {
+            tutorOut.insertAdjacentHTML('beforeend', `<div class="tutor-msg assistant error">${TUTOR_FALLBACK_LINE}</div>`);
+            return;
           }
+          tutorOut.insertAdjacentHTML('beforeend', `<div class="tutor-msg assistant">${formatTutor(result.reply)}</div>`);
+          renderChips();
         });
       }
     }
@@ -900,15 +982,15 @@
         ? `<div class="mastered-banner mastered-celebrate">
              <span class="mastered-star">⭐</span>
              <div>
-               <div class="mastered-title">Excellent! Section ${justMastered ? 'mastered' : 'already mastered'}.</div>
-               <div class="mastered-sub">You've nailed every question. This section is locked from earning so you can explore new ones.</div>
+               <div class="mastered-title">${justMastered ? MASTERY_HEADERS.justMastered : MASTERY_HEADERS.alreadyMastered}</div>
+               <div class="mastered-sub">Every question correct. This section is locked from earning so you can explore new ones.</div>
              </div>
            </div>`
         : '';
       qbox.innerHTML = `
         ${banner}
         <div class="card">
-          <h3>Great work!</h3>
+          <h3>${pickEndHeader(correct, questions.length)}</h3>
           <p style="font-size:1.4rem;"><strong>${correct} / ${questions.length}</strong> correct (${pct}%)</p>
           <a class="btn btn-primary" href="practice.html?${new URLSearchParams(Object.fromEntries([...params])).toString()}">Try again</a>
           <a class="btn btn-secondary" href="grade.html?g=${slug}" style="margin-left:8px;color:var(--blue);border-color:var(--blue);">Back to ${curr.title}</a>
@@ -1105,13 +1187,14 @@
     return false;
   }
 
-  async function callTutor(payload) {
+  async function callTutor(payload, signal) {
     const res = await fetch(TUTOR_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
+      signal: signal
     });
-    if (!res.ok) throw new Error('Tutor request failed');
+    if (!res.ok) throw new Error(`Tutor request failed: HTTP ${res.status}`);
     const data = await res.json();
     return data.reply || data.message || '';
   }

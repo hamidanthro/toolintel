@@ -569,6 +569,22 @@ into `scripts/cold-start/judge-fixtures/`.
   phrases, ship state-flavor for the wrong state, or echo PII the kid
   mentioned, the judge should catch it. Today the judge only sees
   generated questions, not live tutor output.
+- **Replace `'✓ Correct!'` / `'✗ Not quite.'` per-answer headers** with
+  varied grade-band-aware short praise/empathy lines, sourced from a
+  small dictionary (no LLM call, no per-answer cost). Same pattern as
+  `END_OF_SET_HEADERS`.
+- **Replace streak / mastery toast strings** in `practice.js` (lines
+  714, 736, 740, 732) with varied versions. Currently every 5-in-a-row
+  produces the same toast string — repetition breaks the milestone feel.
+- **Auto-fire AI on RIGHT answers** for varied praise (~$0.0001 each ×
+  ~22k tutor calls/week ≈ +$2.20/wk). Design TBD — should it use a
+  dedicated lighter prompt or share the same tutor system prompt?
+- **Test the 12-second timeout end-to-end:** if the lambda is slow or
+  unreachable, does `TUTOR_FALLBACK_LINE` actually appear at 12s with
+  the Retry button working? Manual QA item.
+- **A11y on the AI live region:** add `aria-live="polite"` to the
+  `.tutor-output` div so screen readers announce the AI message arrival
+  when it replaces the placeholder. One attribute, no other changes.
 
 ---
 
@@ -646,6 +662,74 @@ zip-and-upload deploy uses.)
 `staar-tutor` lambda still serves the old templated voice until Phase 6
 deploy.sh ships and the lambda is re-zipped + re-uploaded. Until then the
 ~20 testers continue hearing the old voice.
+
+---
+
+## 16. Practice flow — wrong-answer UX (May 2 rewrite)
+
+The wrong-answer panel rewires from "kid clicks button to summon AI" to
+"AI fires automatically, with the stored explanation as immediate
+fallback." Lives in `js/practice.js#showFeedback()`.
+
+**The new flow on a wrong answer:**
+
+1. Wrong-answer panel renders immediately (header + correct-answer line +
+   stored `q.explanation`). No change to first-paint visual.
+2. Inside the same panel, an inline placeholder appears below the stored
+   explanation: muted "AI tutor is reading…" text + the existing animated
+   thinking dots.
+3. The tutor lambda is called automatically with the same payload shape
+   the button-click handler used to send (lambda contract preserved).
+4. On success: placeholder is replaced by the AI reply, the 3 follow-up
+   chips appear ("I still don't get it" / "Give me a hint" / "Show me the
+   answer"), and the free-text follow-up form unhides.
+5. On error or 12-second timeout: placeholder is replaced by
+   `TUTOR_FALLBACK_LINE` ("I'll get back to you — the standard explanation
+   above is what to use for now.") + a small Retry button. The stored
+   explanation above stays visible — that is the actual fallback content.
+6. **AbortController** cancels in-flight calls when the kid clicks Next
+   Question or Retry. Aborted-by-Next is silent (no UI flash); aborted-by-
+   timeout shows the fallback. Network errors and timeouts both log to
+   the console with `contentId / err.name / err.message / timedOut` flag.
+7. The `Ask AI tutor for help` button is **gone**. It was the entry point
+   under the old flow; auto-fire replaces it.
+
+**Single network helper** `runTutor(userText, isInitial)` is shared by the
+auto-fire path, chip clicks, and free-text follow-ups. No duplicate fetch
+code. Returns `{reply}` | `{aborted: true}` | `{error: true}`.
+
+**End-of-set headers** move from a single hardcoded `'Great work!'` to a
+score-band lookup table at the top of `practice.js`:
+
+```js
+const END_OF_SET_HEADERS = {
+  low:     "You learned a lot. Let's try again.",   // < 50%
+  mid:     "Solid round.",                          // 50-79%
+  high:    "Strong run.",                           // 80-99%
+  perfect: "Clean sweep."                           // 100%
+};
+```
+
+`pickEndHeader(correct, total)` returns the right key. Mastery banner
+similarly moves to `MASTERY_HEADERS = { justMastered, alreadyMastered }`,
+with the exclamation-heavy "Excellent!" replaced by calmer factual text.
+
+**Frontend strings still untouched** (deferred to later commits — listed in
+§14 TODOs):
+- `'✓ Correct!'` / `'✗ Not quite.'` headers in the per-question feedback
+  block (line 765).
+- Streak / mastery toast strings ("`${n}-in-a-row! 🔥`",
+  "`${n}-day streak! 🔥`", "`Daily mission complete! 🌟`") in the
+  answer-handler block (lines 714, 736, 740, 732).
+- Cents-loss toast `"oops, try again"` in `js/auth.js:569` (out of scope
+  for this commit; auth.js belongs to a separate later commit).
+- `'Keep going'` dashboard CTA in `index.html:314`.
+
+**Status:** SHIPPED locally. Frontend deploy is `git push origin main`
+(GitHub Pages, see §4) — the moment we push, the new flow is live for the
+~20 testers. The lambda contract is unchanged so this works against the
+currently-deployed lambda (which still serves the old StarTest-branded
+robotic prompt — see §15).
 
 ---
 
