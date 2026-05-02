@@ -219,8 +219,7 @@ staar-tutor in AWS           ← what's actually serving traffic
 
 | Lambda | Local source of truth | Drift vs deployed |
 |---|---|---|
-| `staar-tutor` (tutor.js) | `lambda/tutor-build/tutor.js` | only 3 lines: `StarTest`→`GradeEarn` strings (the brand-rename commit was never deployed) |
-| `staar-tutor` (tutor.js) | `lambda/tutor.js` vs `lambda/tutor-build/tutor.js` | **IN PARITY as of 2026-05-02** — both files have all 40 routes, all 80 named functions, and byte-identical handlers. Pre-edit drift was real (~321 / −5 lines, missing `getReadingBatch` / `adminPatrolStats` and their helpers); resolved by porting + appending the missing functions verbatim. Going forward: any edit to one of these files MUST land the same edit in the other in the same commit. |
+| `staar-tutor` (tutor.js) | DEPLOYED to AWS | **IN PARITY as of 2026-05-02 23:35:58 UTC.** Production `CodeSha256: T691FyBTacwlP0tZTdYAJAo40sRO4knDtTSoHBFPtJ4=`. Both files (`lambda/tutor.js` and `lambda/tutor-build/tutor.js`) have all 40 routes, all 80 named functions, and byte-identical handlers. Pre-deploy backup at `backups/staar-tutor-20260502T233536Z-ViioxY1I.zip` (sha256 `5628a8c7…`). Going forward: any edit to one of these files MUST land the same edit in the other in the same commit (parity check at `scripts/check-tutor-parity.sh` enforces this at deploy time). |
 | `staar-tutor` (content-lake.js) | `lambda/tutor-build/content-lake.js` | 1 line (StarTest→GradeEarn header) |
 | `staar-tutor` (content-lake.js) | `lambda/content-lake.js` | +7 / −7 lines |
 | `staar-pool-topup` (index.js) | `lambda/pool-topup/index.js` | identical ✓ |
@@ -436,7 +435,7 @@ defaults globally.
 | 3 | Kill 4 retired-product surfaces (toolintel, StarTest residue, ReplyQuik AppRunner+widget, WealthDeskPro pricing.js+SES) | ⏳ pending | Detail in §6. Aggressive delete, NOT _legacy/ folder |
 | 4 | Legal cover: COPPA-compliant signup with age gate + parental consent, ToS, privacy policy, field-level encryption for parent PII, attorney review at end | ⏳ pending | COPPA + FERPA real risk: kids under 13, real money via toy redemption, shipping addresses in `staar-orders` |
 | 5 | AI review system: LLM-as-judge as permanent batch validator on every sweep bucket, $0.50/sweep cost cap, semantic checks for state-flavor + age + factual accuracy, drift detection on live lake daily | 🟨 PARTIAL | Cold-start CLI judge shipped (see §13). Lambda runtime extension + drift detection + quarantine table still pending (see §14). |
-| 6 | Reliability infra: deploy.sh (backup-first + dry-run + uncommitted-changes guard), ROLLBACK.md, CloudWatch alarms + SNS-to-email, DynamoDB PITR on all 5+ tables, Lambda versioning + prod alias, IAM cleanup off root | 🟨 PARTIAL | deploy.sh + ROLLBACK.md + parity check shipped 2026-05-02 (see §19). Still pending: CloudWatch alarms, SNS-to-email, DynamoDB PITR, Lambda versioning + prod alias, IAM cleanup off root. |
+| 6 | Reliability infra: deploy.sh (backup-first + dry-run + uncommitted-changes guard), ROLLBACK.md, CloudWatch alarms + SNS-to-email, DynamoDB PITR on all 5+ tables, Lambda versioning + prod alias, IAM cleanup off root | 🟨 PARTIAL | deploy.sh + ROLLBACK.md + parity check shipped 2026-05-02 (see §19); **first production deploy ran successfully 2026-05-02 23:35:58 UTC**, lambda is now serving the May 2 stockpile (new tutor voice + summarize-session). Still pending: CloudWatch alarms, SNS-to-email, DynamoDB PITR, Lambda versioning + prod alias, IAM cleanup off root. |
 | 7 | Run actual sweeps (math + reading) with all rails in place | ⏳ pending | Texas reading-passages is the headline blocker |
 
 ---
@@ -774,10 +773,16 @@ deploy hazard — `tutor-build/` is gitignored as a *directory* but the
 mirror copy of `tutor.js` inside it is committed-tracked, and is what the
 zip-and-upload deploy uses.)
 
-**Status:** UNSHIPPED. The new prompt lives in source only. Production
-`staar-tutor` lambda still serves the old templated voice until Phase 6
-deploy.sh ships and the lambda is re-zipped + re-uploaded. Until then the
-~20 testers continue hearing the old voice.
+**Status:** ✅ SHIPPED 2026-05-02 23:35:58 UTC via `./deploy.sh`.
+Production `staar-tutor` CodeSha256: `T691FyBTacwlP0tZTdYAJAo40sRO4knDtTSoHBFPtJ4=`.
+Live tutor reply on a grade-4 math wrong-answer test:
+`"Hey TestKid! I see you answered 11 for 7 + 5. That's close, but let's
+think about it again. If you start with 7 and add 5, what do you get if
+you count up from 7? Can you try counting up from 7 to see how many you
+get?"` — uses first name once, 5 sentences (within cap), 1 exclamation
+(within cap), addresses the specific wrong answer, ends Socratically.
+Banned-phrase audit on the live reply: clean. Brand-string audit: clean
+(no "StarTest" leak). See §19 for the deploy log.
 
 **Companion fix (2026-05-02):** `buildFirstUserMessage` previously
 contained a leftover line referencing the old 4-step structure
@@ -937,14 +942,18 @@ errors are non-fatal; frontend treats null as "skip the summary block."
 - At 1k paying customers × 5 sessions/week (the §1 goal) → ~$1/week.
   Within the §10 "no cost-optimizing when there's headroom" rule.
 
-**Status:** UNSHIPPED on the lambda side. The frontend code that calls
-`summarize-session` is shipped (lives in `js/practice.js`) and gets
-deployed on the next `git push origin main` (GitHub Pages) — but the
-deployed `staar-tutor` lambda does not yet have the action registered,
-so until Phase 6 deploy.sh ships and the lambda is re-zipped + re-
-uploaded, the call returns 404 / 500 and the frontend silently drops the
-placeholder. End-of-set screen looks like §16 baseline until the lambda
-catches up.
+**Status:** ✅ SHIPPED on the lambda side 2026-05-02 23:35:58 UTC via
+`./deploy.sh`. Verified live: POST to the lambda with
+`{"action":"summarize-session"}` (deliberately missing payload) returned
+HTTP 200 with `{"summary":null,"error":"missing_results"}` — the exact
+shape designed in commit `7b0e960`. Old lambda would have returned
+"unknown action" or fallen through to the default tutor handler. The
+new action is wired and routing correctly.
+
+The frontend caller (`js/practice.js#finish()`) is committed but
+**not yet pushed to GitHub Pages** (`git push origin main` is the
+next decision; this prompt was lambda-only). When the frontend ships,
+the end-of-set screen will start producing real summaries.
 
 ---
 
@@ -1003,6 +1012,29 @@ Full procedure in `ROLLBACK.md`. The short version:
 1. **When in doubt, roll back.** Forward-fixes under pressure take longer than rollbacks. The backup is right there.
 2. The exact rollback command is printed at the bottom of every successful `deploy.sh` run — copy-paste from terminal scrollback.
 3. Worst case (no backup): re-deploy from a prior git commit using `git worktree`. Slower but always works because the post-`673db25` parity guarantee means every `tutor-build/tutor.js` commit is a deployable state.
+
+### First deploy log
+
+| When | UTC `2026-05-02T23:35:58Z` |
+|---|---|
+| Operator | Hamid (via `./deploy.sh`, no flags) |
+| Pre-deploy CodeSha256 | `Viiox+Y1I4Bo1tgh8cz86gszVfLFc0OZHVU7bqsZlCk=` (deployed 2026-04-27, StarTest-branded, 4-step rigid template) |
+| Post-deploy CodeSha256 | `T691FyBTacwlP0tZTdYAJAo40sRO4knDtTSoHBFPtJ4=` |
+| Backup zip | `backups/staar-tutor-20260502T233536Z-ViioxY1I.zip` (4,922,870 bytes, sha256 `5628a8c7e635238068d6d821f1ccfcea0b3355f2c57343991d553b6eab199429`) |
+| New deploy zip | `build/staar-tutor-20260502T233536Z.zip` (4,915,898 bytes, sha256 `4faf7517205369cc253f4b594dd600240a38d2c44ee249c3b534a81c114fb49e`) — slightly smaller than the backup because the new tutor.js + parity sync trimmed some legacy code |
+| Source | `lambda/tutor-build/` post commit `673db25` (parity-verified against `lambda/tutor.js`) |
+| What landed | The May 2 stockpile: warm free-form tutor voice (commit `0c44ff6`), `summarize-session` action (commit `7b0e960`), parity sync + stale prelude fix (commit `673db25`) |
+| Smoke test 1 (heartbeat, no auth) | HTTP 401 `{"error":"Not signed in"}` — clean dispatcher routing, no 5xx |
+| Smoke test 2 (`summarize-session` empty payload) | HTTP 200 `{"summary":null,"error":"missing_results"}` — exact shape from `7b0e960`; conclusively proves new code is live |
+| Smoke test 3 (real tutor reply, grade-4 wrong-answer) | HTTP 200 with reply: *"Hey TestKid! I see you answered 11 for 7 + 5. That's close, but let's think about it again. If you start with 7 and add 5, what do you get if you count up from 7? Can you try counting up from 7 to see how many you get?"* |
+| Banned-phrase audit on live reply | All 11 banned phrases (`trip`, `no worries`, `tricky`, `lots of kids`, `great job`, `nice work`, `good try`, `Most kids`, `let's work through`, `try a similar`, `Does that make sense`) absent from the reply ✓ |
+| Brand-string audit on live reply | `StarTest` / `Star Test` absent ✓ |
+| Voice analysis | 5 sentences (cap for grade-4/band 3-5: 5 ✓), 1 exclamation (cap: 1 ✓), kid's first name used once in opener (rule: first reply only ✓), specific wrong answer (`11`) addressed by name, ends Socratically with a question the kid can answer in <10 seconds |
+
+**Outcome:** clean. No rollback needed. The ~20 testers next time they
+hit a wrong answer will hear the new voice instead of "I'm an AI tutor
+built into StarTest" and the four-step "warm acknowledgment / mistake
+awareness / Socratic question" template.
 
 ### What this commit does NOT do
 
