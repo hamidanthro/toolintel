@@ -177,6 +177,10 @@ async function fillBucket(bucket, target, opts) {
       if (process.env.COLD_START_PROBE_RUN_ID) {
         record._probeRunId = process.env.COLD_START_PROBE_RUN_ID;
       }
+      // Same stamp pattern for sweep runs — see CLAUDE.md §31.
+      if (process.env.COLD_START_SWEEP_RUN_ID) {
+        record._sweepRunId = process.env.COLD_START_SWEEP_RUN_ID;
+      }
 
       if (opts.dryRun) {
         process.stdout.write('.');
