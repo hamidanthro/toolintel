@@ -698,14 +698,33 @@ into `scripts/cold-start/judge-fixtures/`.
   multi-choice. Filter scans confirm 0 deprecated + 0 broken remain.
   Recovery via `scripts/lake-audit/restore-hard-deleted-from-pitr.md`
   if needed within 35-day PITR window.
-- **Tombstone phase for judge-audit rejects.** The lake-wide judge audit
-  (§27, ~2000 active rows scanned with gpt-4o judge) produces an output
-  JSON with rejects + reasons. Next prompt cycle: a `tombstone-judge-rejects.js`
-  script that takes that JSON as input, dry-run-first, branches on type
-  (so the §22 numeric-over-tombstone class can't repeat), ships its
-  `restore-judge-tombstoned.js` companion in the same commit. Do NOT
-  auto-tombstone without sample-eyeballing 5-10 rejects per failure-mode
-  bucket first.
+- **Tombstone phase for judge-audit rejects.** The first lake-wide judge
+  audit (§27, 2,012 active rows / 87 rejects / 4.6% rate) produced
+  `scripts/lake-audit/output/judge-audit-2026-05-03T0601Z.json`. Next
+  prompt cycle: a `tombstone-judge-rejects.js` script that takes that
+  JSON as input, dry-run-first, branches on type (so the §22
+  numeric-over-tombstone class can't repeat), ships its
+  `restore-judge-tombstoned.js` companion in the same commit. Sample-
+  eyeball at least 5-10 rejects per failure-mode bucket (FACTUAL 67,
+  MULTIPLE_CORRECT 16, ANSWER_LANGUAGE 6, AMBIGUITY 2) before any
+  destructive action — gpt-4o still has letter-position quirks
+  (~1/3 of FACTUAL rejects in spot-check were "should be B, not A"
+  artifacts where A was correct).
+- **Re-audit the 126 fail-open rows.** Audit hit a 429 TPM limit
+  (gpt-4o org cap = 30k tokens/min) on 126 of 2012 rows, treated as
+  pass per the fail-open design. To verify these properly, re-run
+  the audit on just those contentIds — either (a) add proper
+  retry-with-exponential-backoff on 429 to the judge module's
+  `callJudgeOpenAI` helper, or (b) split full audit into multiple
+  runs spaced ~1 min apart to stay under TPM. Option (a) is the
+  right long-term fix; option (b) is the workaround for the
+  immediate re-audit pass.
+- **Audit script's cost estimator is wrong.** It uses $0.0001/call
+  (the gpt-4o-mini rate) — the §27 full audit reported $0.19 but
+  real cost was ~$3.77 (gpt-4o ≈ $0.002/call). One-line fix:
+  update the `costSoFar()` formula in
+  `scripts/lake-audit/audit-judge-existing-rows.js` to match the
+  current JUDGE_MODEL.
 - **Re-judge cadence.** When judge SYSTEM_PROMPT is updated to add a new
   failure mode (or change an existing definition), re-run
   `audit-judge-existing-rows.js` to find rows that pass today's judge
@@ -1772,14 +1791,59 @@ CLAUDE.md §10 "no cost-optimizing when there's headroom."
 | CloudWatch `[lambda-judge]` lines (verified) | `verdict=reject reasons=ANSWER_LANGUAGE` → `verdict=pass` (post-regen) → `verdict=pass` (numeric, second question) → `batch-summary kept=2 dropped=0 regenerated=1 judgeCalls=3 budgetExceeded=false` |
 | Outcome | clean — no rollback. Production lambda judge now uses gpt-4o; CloudWatch retrospective on the gpt-4o-mini bleed window (~04:43–05:52 UTC) is in §14 deferred TODOs. |
 
+### Lake-wide audit log (2026-05-03)
+
+First end-to-end run of the §26 audit on top of the gpt-4o judge.
+
+| Metric | Value |
+|---|---|
+| Active rows scanned | 2,012 |
+| Successfully judged | 1,886 |
+| FAIL-OPEN (429 TPM rate limit) | **126** — gpt-4o has a 30k tokens-per-minute org limit; ~6% of rows hit it and were treated as pass per design |
+| Pass | 1,799 |
+| Reject | **87** (4.6% of judged, 4.3% of all active) |
+| Wall-clock | ~89 minutes (1h 29m) |
+| Real OpenAI cost | ~$3.77 (script estimate of $0.19 uses old gpt-4o-mini per-call rate; real gpt-4o ≈ $0.002/call) |
+| Output JSON | `scripts/lake-audit/output/judge-audit-2026-05-03T0601Z.json` (82 KB; gitignored — `output/` is in `.gitignore`) |
+
+**Rejects by check:**
+| Check | Count |
+|---|---|
+| FACTUAL | 67 |
+| MULTIPLE_CORRECT | 16 |
+| ANSWER_LANGUAGE | 6 |
+| AMBIGUITY | 2 |
+
+**Top contaminated states:**
+california 18, alaska 17, connecticut 14, arkansas 13, alabama 8, arizona 7, colorado 6, texas 2, tennessee 2.
+
+**Rejects by type:** `multiple_choice` 84, `numeric` 3 — confirms the numeric-blind-spot fix took (only 3 numeric rejects total vs the pre-fix smoke's 13/13 numeric false positives).
+
+**3 random reject examples (sanitized):**
+
+1. **alaska / multiple_choice / FACTUAL** — *"Maria has 120 cookies that she wants to share equally among her 8 friends. How many cookies will each friend receive?"* choices `["15","12","10","18"]` correctIndex=0. Reason: *"the marked correct answer is A. 15, but ... should be B. 15, not A. 15."* — gpt-4o letter-position quirk; LIKELY FALSE POSITIVE (15 IS correct, A IS the right letter).
+
+2. **california / multiple_choice / FACTUAL** — *"Lila has 12 red and 8 blue crayons. What does the total number of crayons tell you about the types?"* choices ask "more red than blue" / "more blue" / etc. Reason: *"the question asks what the total tells you, but the marked correct answer compares quantities of red and blue."* — REAL BUG: the question stem and the marked-correct answer are mismatched.
+
+3. **connecticut / multiple_choice / ANSWER_LANGUAGE** — *"Maria, Jamal, Priya, and Chen are collecting stickers. ... who has the most stickers?"* choices `["30","24","22","19"]` correctIndex=0. Reason: *"correct answer 'A. 30' is phrased ambiguously because it presents a number rather than the name of the person."* — REAL BUG: question asks "who" but choices are numbers.
+
+So in this 3-sample eyeball: **2 of 3 rejects are real bugs** (vs gpt-4o-mini's 0/3 real-bug rate). The judge is now producing actionable signal.
+
 ### Status
 
 ✅ **Fix shipped via `./deploy.sh` 2026-05-03 05:52:14 UTC.** Both
 `lambda/judge.js` and `scripts/cold-start/judge.js` use `gpt-4o`
 going forward. Lambda production gate now produces trustable verdicts;
 cold-start sweeps no longer false-reject numeric questions; the
-lake-wide audit script (§26) is now safe to use as a tombstone
-driver after manual review.
+lake-wide audit script (§26) ran end-to-end and produced 87 reject
+candidates ready for manual review before tombstone (§14 deferred TODO).
+
+**Next action (deferred TODO §14):** sample-eyeball each of the 4
+failure-mode buckets (FACTUAL 67, MULTIPLE_CORRECT 16, ANSWER_LANGUAGE 6,
+AMBIGUITY 2). Build a tombstone-judge-rejects.js that takes the audit
+JSON as input, branches on type, ships a restore companion, dry-runs
+first. Re-judge the 126 fail-open rows with proper retry-on-429
+(or split into multiple runs to stay under TPM).
 
 ### Lessons for future judge work
 
