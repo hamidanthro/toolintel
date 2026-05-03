@@ -13709,13 +13709,30 @@ body.practice-page .card label {
 body.practice-page .card strong { color: #fde68a; }
 body.practice-page .card a:not(.btn) { color: #fde68a; }
 
-/* Same bug class as the .card override above — the §18 mobile rule for
-   the docked-bottom perf-panel used `background: var(--surface)` (white)
-   on a dark-theme element. Inner .stat-num is white text → invisible.
-   Override here, additive to §18, with matching dark-theme colors. */
+/* PRODUCTION BUG FIX (May 3, second pass): the §18 mobile rule docked
+   the perf-panel to bottom: 0 with position: fixed but only hid the
+   titles + ring. The .recent-dots strip (10×2 grid of dots) and the
+   .unit-rows list (7+ rows of topics like "Place Value", "Fractions",
+   "Addition", etc.) stayed visible. With those rendered, the
+   docked-bottom strip grew tall enough to overlap the actual question
+   content above — Hamid screenshotted the stats panel + topic list
+   stacked on top of "In the number 515,531, what is the value of the
+   5?" making the page unusable.
+
+   Fix per Option 1 (immediate ship): hide the entire .performance-panel
+   at <768px. Kid sees the question only. Mobile loses the
+   accuracy/progress sidebar but the practice surface works.
+
+   Future TODO §14: rebuild stats + topic progress as a collapsible
+   top drawer triggered by a tap-target — kid keeps progress visibility
+   on mobile. Out of scope for this hotfix. */
 @media (max-width: 768px) {
   body.practice-page .performance-panel {
-    background: rgba(10, 22, 40, 0.95);
-    border-top-color: rgba(255, 255, 255, 0.08);
+    display: none !important;
+  }
+  /* The §18 rule reserved 72px at body bottom for the docked panel.
+     Now that the panel is hidden, return that space to the kid. */
+  body.practice-page {
+    padding-bottom: 0;
   }
 }

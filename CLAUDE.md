@@ -672,6 +672,18 @@ into `scripts/cold-start/judge-fixtures/`.
   this whole class of drift. Trade-off: introduces a build step the
   house-style currently rejects (§3 "no bundler"). Worth re-litigating
   once Phase 6 ships.
+- **🟠 Mobile UX TODO: rebuild stats + topic list as collapsible top drawer.**
+  Currently hidden entirely on `<768px` (per the §31-class hotfix at
+  commit `1b38cc8` followup): the §18 docked-bottom approach made
+  `.performance-panel` grow tall enough to overlap the question
+  content (Hamid screenshotted the stats + topic list stacked on top
+  of "In the number 515,531, what is the value of the 5?"). Hiding
+  the panel was the immediate ship fix. The proper fix is a
+  collapsible drawer triggered by a tap-target (e.g. a small "stats"
+  pill at the top of the practice page that expands to show
+  accuracy/correct/answered/streak/recent-dots/unit-rows when
+  tapped). Kid keeps progress visibility on mobile without losing the
+  question content.
 - **Mobile QA matrix for the practice surface** (post §18 commit):
   iPhone 13 mini (375×667), iPhone 15 Pro (393×852), Pixel 6
   (412×915), iPad portrait (768×1024), iPad landscape (1024×768).
