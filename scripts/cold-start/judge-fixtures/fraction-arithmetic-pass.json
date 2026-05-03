@@ -1,0 +1,22 @@
+{
+  "name": "fraction-arithmetic-pass",
+  "description": "Genuinely correct grade-7 fraction arithmetic. Per smoothie 2/3 + 1/4 = 8/12 + 3/12 = 11/12 cups. For 3 smoothies, 11/12 * 3 = 33/12 = 2 9/12 = 2 3/4 cups. Marked correct C=2 3/4 ✓. Same kind of multi-step fraction work as the FAIL fixture, but with correct arithmetic — verifier MUST PASS this. Together with fraction-arithmetic-fail.json, this confirms the new verifier catches real bugs without over-rejecting clean content.",
+  "question": {
+    "type": "multiple_choice",
+    "question": "Amara is making fruit smoothies for her friends. She uses 2/3 of a cup of strawberries and 1/4 of a cup of blueberries for each smoothie. If she wants to make 3 smoothies, how many cups of fruit will she use in total?",
+    "choices": ["2 1/12", "2 1/4", "2 3/4", "1 1/2"],
+    "correctIndex": 2,
+    "explanation": "First, find the total amount of fruit per smoothie: 2/3 + 1/4. Common denominator is 12, so 2/3 = 8/12 and 1/4 = 3/12. Sum = 11/12 cups per smoothie. For 3 smoothies, multiply: (11/12) * 3 = 33/12. Convert to mixed: 33/12 = 2 9/12 = 2 3/4 cups. Therefore, the correct answer is 2 3/4 cups."
+  },
+  "context": {
+    "stateSlug": "texas",
+    "subject": "math",
+    "grade": "grade-7",
+    "gradeLabel": "grade 7"
+  },
+  "expected": {
+    "verdict": "pass",
+    "failedChecks": []
+  },
+  "verifierExpectsPass": true
+}

@@ -1,0 +1,21 @@
+{
+  "name": "well-leveled-grade-7-pass",
+  "description": "Grade-7-appropriate question requiring fraction multiplication of non-trivial fractions AND scaling — multi-step proportional reasoning. Cognitive demand matches grade 7 (rational-number operations). Must NOT trigger COGNITIVE_DEMAND_MISMATCH.",
+  "question": {
+    "type": "multiple_choice",
+    "question": "Sofia mixes 3/8 cup of strawberries with 2/3 cup of yogurt to make one smoothie. If she scales the recipe to make smoothies for 12 people, how many cups of yogurt does she need in total?",
+    "choices": ["8 cups", "6 cups", "9 cups", "7 1/2 cups"],
+    "correctIndex": 0,
+    "explanation": "Each smoothie uses 2/3 cup of yogurt. For 12 smoothies, multiply: (2/3) × 12 = 24/3 = 8 cups."
+  },
+  "context": {
+    "stateSlug": "texas",
+    "subject": "math",
+    "grade": "grade-7",
+    "gradeLabel": "grade 7"
+  },
+  "expected": {
+    "verdict": "pass",
+    "failedChecks": []
+  }
+}

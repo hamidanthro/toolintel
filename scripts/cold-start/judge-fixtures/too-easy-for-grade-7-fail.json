@@ -1,0 +1,21 @@
+{
+  "name": "too-easy-for-grade-7-fail",
+  "description": "Grade-7 stem dressing on grade-3-level math (single-step division of small whole numbers). Math is correct but cognitive demand is far below the stated grade — judge MUST flag COGNITIVE_DEMAND_MISMATCH per the §32 calibration. AGE_FIT does NOT apply (vocabulary is grade-7 appropriate); this is purely a math-rigor mismatch.",
+  "question": {
+    "type": "multiple_choice",
+    "question": "Sofia is making smoothies for her family. She uses 24 ÷ 6 cups of strawberries in total across 4 smoothies. How many cups does she use per smoothie if she divides them equally?",
+    "choices": ["1 cup", "2 cups", "0.5 cups", "4 cups"],
+    "correctIndex": 0,
+    "explanation": "First, 24 ÷ 6 = 4 cups total. Then 4 ÷ 4 smoothies = 1 cup per smoothie."
+  },
+  "context": {
+    "stateSlug": "texas",
+    "subject": "math",
+    "grade": "grade-7",
+    "gradeLabel": "grade 7"
+  },
+  "expected": {
+    "verdict": "reject",
+    "failedChecks": ["COGNITIVE_DEMAND_MISMATCH"]
+  }
+}

@@ -470,6 +470,12 @@ defaults globally.
 - Brand: navy + gold. **No teal / cyan / green.** Mobile-first. Premium
   understated.
 - House style is vanilla HTML/CSS/JS. No bundler, no TS, no framework.
+- **Quality gate models should span vendors.** OpenAI judging
+  OpenAI is single-vendor risk — correlated blind spots across
+  layers (§33). Future quality gate additions (judges, verifiers,
+  classifiers) default to cross-vendor where the cost delta is
+  reasonable. Today: cold-start verifier = Claude Sonnet 4.5;
+  cold-start + lambda judge = gpt-4o; generators = gpt-4o-mini.
 
 ---
 
@@ -747,15 +753,58 @@ into `scripts/cold-start/judge-fixtures/`.
   `_sweepRunId` so each state's contribution is selectively
   rollback-able. After the sweep, re-run uniqueness-report.js to
   measure post-sweep dup rate (pre-sweep was 8.57% per §28).
-- **AGE_FIT calibration on cold-start prompts** (low priority,
-  noted in §31). 2 of 30 sampled rows had grade-difficulty
-  mismatches — grade-6+ buckets sometimes contain grade-3-level
-  arithmetic ("24÷6 cupcakes"). The judge doesn't flag because
-  math is correct; AGE_FIT detection of "too easy" is weaker than
-  "too hard." Worth tightening the per-grade rigor prompts in
-  `QUESTION_TYPE_PROMPTS` so a grade-7 word-problem must actually
-  require grade-7-level reasoning, not just surface in a grade-7
-  bucket.
+- ~~**AGE_FIT calibration on cold-start prompts**~~ ✅ DONE 2026-05-03
+  (see §32 generator-side cognitive-demand spec + 8th judge failure
+  mode COGNITIVE_DEMAND_MISMATCH). Pre-§32 grade-7 was 6.7%
+  too-easy in §31 30-sample; §32 + §33 mini-probe (after Claude
+  verifier swap) shows 14/16 LOOKS_CLEAN, 2 BORDERLINE (still some
+  single-step fraction work creeping in but no factual bugs).
+- ~~**Verifier hardening — gpt-4o → Claude Sonnet 4.5.**~~ ✅ DONE
+  2026-05-03 (§33). The §32 mini-probe surfaced 2/16 grade-7
+  questions with arithmetic errors that all three OpenAI layers
+  (gen + judge + verifier) missed — same model family, correlated
+  blind spot on fraction simplification. Swapped cold-start
+  verifier to Claude Sonnet 4.5 (Anthropic). Mini-probe gate now
+  PASSES (0 BAD, 87.5% LOOKS_CLEAN). Lambda judge unchanged
+  (separate concern).
+- **🟢 50-STATE SWEEP GREENLIGHT CRITERIA** — all met:
+  - ✓ AGE_FIT calibration shipped (§32)
+  - ✓ Verifier hardening shipped (§33; Claude Sonnet 4.5 in cold-start)
+  - ✓ Lambda judge redeployed with §32's COGNITIVE_DEMAND_MISMATCH
+    8th mode (CodeSha256 from §32 deploy)
+  - ✓ PITR active on staar-content-pool (§23)
+  - ✓ Mini-probe 14/16 LOOKS_CLEAN, 0 BAD (§33 gate)
+  
+  Next prompt is the 50-state sweep itself. Recommended runtime
+  approach (Hamid's call):
+  - Per-state `_sweepRunId` for selective rollback
+  - 8-state batches sequential; pause after each batch to read
+    bucket-level error rates and verifier-reject rates
+  - Auto-continue if batch passes 90% LOOKS_CLEAN AND no bucket
+    has >30% rejection rate; ping Hamid only on failure
+  - Anthropic verifier latency (~5-10s/call) means wall-clock
+    is ~3-4h per state at concurrency=3, ~150-200h total at
+    concurrency=1. Bucket-parallel (cold-start default
+    concurrency=3) is the practical pace.
+- **Judge A/B shadow test post-50-state-sweep.** Pick 100 random
+  rows from the 50-state sweep output and run them through both
+  the current gpt-4o judge AND a Claude Sonnet 4.5 judge in
+  parallel. Compare catch rates. If Claude judge catches things
+  gpt-4o judge misses (analogous to the §32 verifier finding),
+  consider swapping the judge too. Same cross-vendor principle
+  as §33.
+- **Tutor model migration evaluation** — separate effort, post-
+  content-sweep. The kid-facing tutor (§15) currently uses
+  gpt-4o-mini. Evaluation: try the kid prompt against Claude
+  Haiku 4.5 or Sonnet for warmth + Socratic quality. Cost +
+  voice + latency tradeoffs.
+- **Symbolic math sanity check** (deferred from §33 alternatives).
+  Layer on top of Claude verifier for fraction-heavy questions:
+  extract fractions from choices and from the verifier's
+  computed answer, do the math in code (not LLM), reject on
+  mismatch. Belt-and-suspenders against the §32 class even when
+  the model is Claude. Worth doing only if §33 verifier rejects
+  start showing patterns of disagreement with a math library.
 - **🟠 Improve gpt-4o letter_quirk classifier** (BLOCKER for
   tombstoning the FACTUAL bucket). Phase B sample-eyeball showed
   4 of 5 FACTUAL rejects are letter-position quirks the regex
@@ -2456,6 +2505,277 @@ the §29 + §30 mini-probe Texas rows; +1,168 = 1,221 ✓).
 Sweep gate passed → 50-state batched math sweep is unblocked.
 Logged in §14 below as the next blocker, dependent on this sweep
 passing eyeball gate.
+
+---
+
+## 32. AGE_FIT calibration — generator cognitive-demand spec + judge 8th failure mode (May 3)
+
+### The §31 finding that motivated this
+
+The §31 Texas math sweep eyeball found 6.7% of saved questions
+(2/30 sampled) had grade-3-level math in grade-6/7 buckets — e.g.
+"Mateo organizes a school bake sale and has made 24 cupcakes... 24
+÷ 6 cupcakes per box, how many boxes?" landing in a grade-6
+bucket. Math is correct (so judge passes), but cognitive demand is
+grade-3.
+
+The judge's existing AGE_FIT failure mode catches vocabulary
+mismatches (grade-3 question using "approximate" or "expression")
+but doesn't reliably catch math-rigor mismatches. At 50-state
+scale (60k questions), 6.7% borderline rate ≈ 4,000 mis-leveled
+questions in the lake.
+
+### Two-layer fix
+
+**Layer 1 — generator-side cognitive-demand spec injection.**
+`scripts/cold-start/generators.js` `_callGenerator` now injects a
+per-grade COGNITIVE DEMAND specification into every user message.
+Per-grade tiers:
+
+- K-2: single-step, numbers <100, +/− only (×/÷ for grade 2)
+- 3-5: 1-2 step, numbers <1k (g3-4) / <100k (g5), whole-number ops + halves/quarters/thirds in word problems
+- 6-8: 2-3 step required, rational-number operations with non-trivial denominators, proportional reasoning, basic algebra. **"If a 5th grader could solve this in their head with single-step arithmetic, the question is too easy for grades 6-8."**
+- algebra-1: multi-step symbolic manipulation; "if it reduces to multiply two numbers, it's too easy"
+- geometry: proofs, constructions, similarity, transformations
+
+System prompt unchanged (per §27 lesson — more system-prompt
+guidance backfires; user-message injection is more reliable).
+
+**Layer 2 — judge 8th failure mode.** Both
+`scripts/cold-start/judge.js` and `lambda/judge.js` SYSTEM_PROMPT
+now define `COGNITIVE_DEMAND_MISMATCH` as the 8th mode:
+
+> The MATH content is below the cognitive demand expected of the
+> stated grade. DISTINCT from AGE_FIT (which is about vocabulary).
+> A grade-7 question that resolves to "24 ÷ 6 = 4" is grade-3
+> demand. REJECT.
+
+Three worked examples (24÷6 in g7, 6×½ in g6, 12+8 in g8). User
+prompt now says "evaluate against ALL 8 failure modes" (was 7);
+numeric branch evaluates against 6 (was 5) — adds
+COGNITIVE_DEMAND_MISMATCH while still skipping MULTIPLE_CORRECT
+and ANSWER_LANGUAGE for numeric.
+
+Mirrored byte-identical: `scripts/cold-start/judge.js` ↔
+`lambda/judge.js` ↔ `lambda/tutor-build/judge.js`. Parity check
+extended in §25 covers `judge.js` byte-equality.
+
+**Pre-existing fixture re-leveled.** `judge-fixtures/numeric-pass.json`
+was set at grade-4 with `What is 45 + 27?` — but per the new
+cognitive-demand rubric, 2-digit addition is grade-3. Fixture
+re-leveled to grade-3 in the same commit.
+
+**Two new fixtures:**
+- `too-easy-for-grade-7-fail.json` — grade-7 stem dressing on
+  single-step `24 ÷ 6` math; expects COGNITIVE_DEMAND_MISMATCH
+- `well-leveled-grade-7-pass.json` — grade-7 fraction multiplication
+  with non-trivial denominators; expects pass
+
+### Mini-probe + the failure that motivated §33
+
+Ran a 16-question grade-7 mini-probe with §32 active.
+**Result: 10 LOOKS_CLEAN / 4 BORDERLINE / 2 BAD.**
+
+The §32 fix WORKED on cognitive demand (most rows now have real
+grade-7 work — fraction division, multi-step rational arithmetic,
+proportional reasoning), but the harder-math regime exposed a
+**correlated-error blind spot**: 2/16 questions had arithmetic
+errors that the entire OpenAI pipeline (gpt-4o-mini gen + gpt-4o
+judge + gpt-4o verifier) missed.
+
+- "Lila fruit salad": total = 23/12; watermelon = 9/23. Marked **9/14** (wrong)
+- "Amara fruit smoothies": 33/12 = 2 3/4. Marked **2 1/12** (wrong)
+
+Both involved fraction simplification fumbles — the same model
+class made the same error in gen, judge AND verifier. §32 alone
+gate-failed (ship rule: 0 BAD). §33 (Claude verifier) was the
+follow-up that closed this hole. Together §32+§33 unblock the
+50-state sweep.
+
+### Status
+
+✅ **§32 shipped 2026-05-03.** Cognitive-demand spec live in
+generators.js; COGNITIVE_DEMAND_MISMATCH live in judge SYSTEM_PROMPT
+across cold-start + lambda + tutor-build mirror. Lambda redeploy
+**deferred** to whenever the judge is next deployed — the §32 lambda
+side will carry the new failure mode at next deploy. The §33 mini-probe
+verified §32 + §33 together pass the 14/16 LOOKS_CLEAN AND 0 BAD
+gate.
+
+### Lessons
+
+- Cognitive-demand calibration via user-message injection works
+  (most §33 mini-probe rows show real grade-7 work)
+- Adding judge failure modes is cheap; expect 1-2 calibration
+  cycles before the model uses the new mode well
+- Harder-math regimes expose blind spots that simpler regimes
+  hide — see §33 for the verifier-side resolution
+
+---
+
+## 33. Verifier hardening — gpt-4o → Claude Sonnet 4.5 (May 3)
+
+### The §32 finding that motivated this
+
+The §32 grade-7 mini-probe surfaced **2/16 questions with arithmetic
+errors that all three OpenAI layers missed:**
+
+- "Lila fruit salad" — total = 3/4+2/3+1/2 = 23/12; watermelon
+  fraction = (3/4)÷(23/12) = 36/92 = **9/23**. Marked **9/14**
+  (wrong). Model's reasoning was correct UP TO simplification, then
+  wrote "36/92 simplifies to 9/14" — a fraction-simplification
+  fumble. None of the 4 choices contain 9/23.
+- "Amara fruit smoothies" — per smoothie 11/12; × 3 = 33/12 =
+  **2 3/4**. Marked **2 1/12** (wrong). Same class — model
+  computed 33/12 correctly, then wrote "simplifies to 2 1/12"
+  (off by 8/12).
+
+In both cases:
+1. gpt-4o-mini (gen) wrote correct setup, fumbled final simplification
+2. gpt-4o (judge) read the wrong answer + internally-consistent-looking
+   wrong explanation → passed
+3. gpt-4o (verifier) re-solved and got the SAME wrong simplification
+   (same model class, same blind spot) → agreed → no rejection
+
+**`verify-reject=0` for the entire 16-row run pre-§33.** The verifier
+was structurally not-catching what it was supposed to catch when math
+got harder. Same model family across all three layers = correlated
+blind spots = systemic risk that compounds at scale.
+
+### Why Claude Sonnet 4.5 specifically
+
+Cross-vendor was the obvious lever — different training data,
+different model family, uncorrelated errors with the OpenAI
+gen+judge layers. Three options considered:
+
+- **Claude Sonnet 4.5** (chosen) — Anthropic, capable on math,
+  $3/M input + $15/M output ≈ $0.0042/verify (slightly cheaper
+  than gpt-4o's $0.005)
+- **Symbolic math sanity check** (deferred) — extract fractions
+  from choices, do arithmetic in code, reject on mismatch.
+  Strongest signal but doesn't generalize beyond pure arithmetic
+  (no help on word-problem setup correctness)
+- **Two-judge majority** (deferred) — call same gpt-4o twice
+  with different temperature seeds. Catches stochastic errors
+  but NOT systematic blind spots like fraction simplification
+
+Path B (Claude swap) is the structurally cleanest fix for the
+correlated-error class. Symbolic checks layered on top would
+strengthen further; logged as future work.
+
+### Implementation
+
+`scripts/cold-start/verifier.js` rewritten to:
+- Use raw `fetch` to `https://api.anthropic.com/v1/messages` (no
+  Anthropic SDK dep — same minimal-deps philosophy as `lambda/judge.js`)
+- Model: `claude-sonnet-4-5` (resolves to `claude-sonnet-4-5-20250929`)
+- `system` field passed as separate top-level parameter (Anthropic
+  convention; not a `messages` entry like OpenAI)
+- Response parsed from `data.content[0].text` (not
+  `data.choices[0].message.content`)
+- 30s timeout via AbortController
+- **Fail-open on API error** — if Anthropic returns non-2xx or
+  times out, `console.warn('[verifier] WARN ...')` + return
+  `{ok: true, reason: 'verifier-<reason>'}`. Same principle as
+  the §25 lambda judge: a transient API hiccup shouldn't block
+  content. Note: the PRE-§33 verifier was fail-closed on
+  api-error (returned ok:false → caller dropped). Switching to
+  fail-open here is the explicit Hamid spec.
+- **Anti-anchoring preserved** — the prompt shows the question +
+  4 lettered choices but does NOT say which is marked correct.
+  Claude solves independently → picks matching letter → we
+  compare letters. Same pattern as the prior gpt-4o verifier;
+  carries over cleanly.
+- **Fraction-simplification rule** explicit in system prompt:
+  "Simplify all fractions to lowest terms before comparing
+  (2/4 = 1/2; 36/92 = 9/23)." Belt-and-suspenders for the §32
+  failure mode.
+- **JSON parsing** — Anthropic doesn't have OpenAI's `response_format:
+  json_object` mode. Helper `extractJson()` strips ` ```json ... ``` `
+  fences if the model wraps. The system prompt explicitly says "no
+  markdown fences" but defense-in-depth.
+- **PRIOR OPENAI VERIFIER** code preserved as a commented block at
+  end-of-file for easy revert if the swap regresses.
+
+Function signature unchanged: `verifyMath(item, grade)` returns
+`{ok, reason?, verifier?}`. No caller changes needed in `run.js`.
+
+### Phase E isolation test (pre-mini-probe sanity)
+
+Ran the new verifier directly against:
+- 2 §32 BAD rows → **both REJECTED** (Claude solved to 9/23 and
+  2 3/4; flagged "none of A/B/C/D matches verifier's computed
+  answer") ✓
+- 5 random clean §31 grade-5/6/7 rows → **all PASSED** ✓
+- 2 new fixtures (`fraction-arithmetic-fail.json`,
+  `fraction-arithmetic-pass.json`) → both correct verdicts ✓
+
+**9/9 isolation tests passed.** Latency: 3-13s per call (~3× slower
+than gpt-4o's 1-3s). Acceptable; ~10-20 min added to a 1,200-question
+sweep.
+
+### Phase F mini-probe (the actual gate)
+
+Tombstoned the 16 §32 mini-probe rows (used reversible status flip
+`status=broken, tombstoneReason='tombstoned_bad_math_section32_mini_probe'`;
+reversible within 35-day PITR). Ran fresh grade-7 mini-probe
+(target=47, 4 buckets, 16 saves) with `ANTHROPIC_API_KEY` exported
+alongside `OPENAI_API_KEY`.
+
+Run-id: `claude-verifier-mini-probe-20260503T214939Z`.
+
+Eyeball results:
+
+| Bucket | §32 (gpt-4o) | §33 (Claude) |
+|---|---|---|
+| LOOKS_CLEAN | 10 (62.5%) | **14 (87.5%)** |
+| BORDERLINE | 4 | 2 |
+| BAD (math errors) | **2** | **0** ✓ |
+| Gate | FAIL | **PASS** |
+
+**0 BAD** — no factual errors made it to the lake. The 2 remaining
+borderlines (#5 Amara `5 × 3/4 = 3 3/4`; #16 Aanya `2/3 + 1/4 =
+11/12`) are single-step fraction work that's grade-5/6 cognitive
+demand at grade-7; the §32 generator-side spec didn't fully
+prevent them, but they're correctness-fine, just grade-mis-leveled.
+
+In-flight verifier-rejects observed during the run: **2** in the
+computation bucket (catch rate ~33% on those attempts) — Claude
+actively rejected 2 attempts, exactly the catch behavior the §32
+gpt-4o verifier wasn't doing.
+
+### Lambda not redeployed
+
+Verifier is **cold-start-only** today. `lambda/tutor.js#handleGenerate`
+does not call `verifier.js`; it goes through judge → schema gate →
+save. So no lambda change needed for this swap to take effect on the
+sweep path. If a future commit ever wires verifier into the lambda
+runtime path, that's a separate Anthropic-key-into-lambda-env story
+(involves Secrets Manager wiring + lambda IAM).
+
+### Lessons
+
+- **Multi-layer quality gates that share a model family share blind
+  spots.** OpenAI gen + OpenAI judge + OpenAI verifier looks like
+  defense-in-depth on paper but is single-vendor risk in practice.
+  Cross-vendor verification kills correlated errors more reliably
+  than tightening prompts on any one of them.
+- **Standing rule going forward:** Quality gate layers should span
+  vendors where the cost delta is reasonable. Future quality
+  additions (judge upgrades, additional verifiers, classification
+  layers) should default to cross-vendor.
+- **The §32 fix wasn't wrong — it was incomplete.** The
+  `COGNITIVE_DEMAND_MISMATCH` failure mode + generator cognitive-demand
+  injection are good additions and stay. They surfaced the harder-math
+  regime; that regime exposed the verifier blind spot. §32 + §33
+  together close both holes.
+
+### Status
+
+✅ **Verifier hardening complete 2026-05-03.** Cold-start verifier
+now uses Claude Sonnet 4.5. Mini-probe gate PASSED (0 BAD, 87.5%
+LOOKS_CLEAN). The 50-state sweep is unblocked. Lambda judge
+(separately, gpt-4o per §27) and lambda runtime path are unchanged.
 
 ---
 

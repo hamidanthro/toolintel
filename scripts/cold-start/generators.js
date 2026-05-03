@@ -187,11 +187,41 @@ function pickShuffledNames(n) {
   return out;
 }
 
-async function _callGenerator(systemPrompt, regenFeedback) {
+// Per-grade cognitive-demand specification injected into every user message.
+// §31 sweep eyeball found 6.7% of saved questions had grade-3-level math in
+// grade-6/7 buckets ("24÷6 cupcakes" in g6, "6×½ cups" in g7) — judge
+// passed because math is correct; AGE_FIT detection of "too easy" is
+// structurally weaker than "too hard." This concrete per-grade spec tells
+// gpt-4o-mini WHAT MAKES IT HARDER, per the §27 lesson that vague guidance
+// backfires. See CLAUDE.md §32.
+function cognitiveDemandFor(grade) {
+  const earlyElementary = ['grade-k', 'grade-1', 'grade-2'];
+  const upperElementary = ['grade-3', 'grade-4', 'grade-5'];
+  const middle = ['grade-6', 'grade-7', 'grade-8'];
+  if (earlyElementary.includes(grade)) {
+    return 'COGNITIVE DEMAND: single-step problems only. Numbers under 100. Operations limited to addition/subtraction (and very simple multiplication for grade 2). Use small whole-number contexts. No fractions, no decimals, no negatives.';
+  }
+  if (upperElementary.includes(grade)) {
+    return 'COGNITIVE DEMAND: 1-step or 2-step problems. Numbers under 1,000 in grades 3-4, under 100,000 in grade 5. Operations: +, −, ×, ÷ on whole numbers. Fractions only as concrete halves/quarters/thirds in word problems. The math should be elementary-level — no proportions, no algebra, no negatives.';
+  }
+  if (middle.includes(grade)) {
+    return 'COGNITIVE DEMAND: 2-3 step problems required. Include rational-number operations (fractions with non-trivial denominators, decimals, negative integers), proportional reasoning, basic algebraic expressions, geometry beyond perimeter/area, or statistics. The cognitive demand MUST exceed grade-5 work — if a 5th grader could solve this in their head with single-step arithmetic, the question is too easy for grades 6-8. Avoid bare "24 ÷ 6" or "5 × 7" framings even if dressed in middle-school context.';
+  }
+  if (grade === 'algebra-1') {
+    return 'COGNITIVE DEMAND: multi-step problems requiring algebraic manipulation. Functions, equations with variables on both sides, factoring, systems of equations, quadratics, inequalities, exponents. The work MUST require symbolic manipulation, not just numeric computation. If the question reduces to "multiply two numbers" or "divide x by y," it is too easy for Algebra I.';
+  }
+  if (grade === 'geometry') {
+    return 'COGNITIVE DEMAND: proofs, constructions, congruence/similarity reasoning, coordinate geometry, transformations. Numeric answers must come from non-trivial geometric reasoning, not arithmetic on given values.';
+  }
+  return 'COGNITIVE DEMAND: match the cognitive demand of the stated grade — not too easy, not too hard.';
+}
+
+async function _callGenerator(systemPrompt, regenFeedback, grade) {
   const namesLine = `Pick the protagonist's first name from this short list (one of these, your choice): ${pickShuffledNames(5).join(', ')}.`;
+  const demandLine = grade ? cognitiveDemandFor(grade) : '';
   const userMessage = regenFeedback
-    ? `Generate the question now. ${namesLine}\n\nPrevious attempt was rejected by quality review for: ${regenFeedback.failedChecks.join(', ')}. Specifically: ${regenFeedback.reasons.join(' ')} Generate a new question that fixes these issues.`
-    : `Generate the question now. ${namesLine}`;
+    ? `Generate the question now. ${namesLine}\n${demandLine}\n\nPrevious attempt was rejected by quality review for: ${regenFeedback.failedChecks.join(', ')}. Specifically: ${regenFeedback.reasons.join(' ')} Generate a new question that fixes these issues.`
+    : `Generate the question now. ${namesLine}\n${demandLine}`;
   const completion = await getOpenAI().chat.completions.create({
     model: 'gpt-4o-mini',
     messages: [
@@ -213,7 +243,7 @@ async function generateOne({ state, grade, subject, type }) {
   const systemPrompt = buildPrompt({ stateSlug, grade, subject, questionType });
   const judgeContext = { stateSlug, subject, grade, gradeLabel: gradeReadable(grade) };
 
-  const first = await _callGenerator(systemPrompt, null);
+  const first = await _callGenerator(systemPrompt, null, grade);
 
   if (!JUDGE_ENABLED) {
     return {
@@ -237,7 +267,7 @@ async function generateOne({ state, grade, subject, type }) {
 
   // First attempt rejected — regenerate ONCE with judge feedback appended
   // to the user message. No third attempt: two strikes and out is intentional.
-  const second = await _callGenerator(systemPrompt, verdict1);
+  const second = await _callGenerator(systemPrompt, verdict1, grade);
   const verdict2 = await judgeQuestion(second.parsed, judgeContext);
   if (verdict2.verdict === 'pass') {
     return {

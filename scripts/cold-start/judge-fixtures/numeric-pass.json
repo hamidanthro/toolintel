@@ -1,6 +1,6 @@
 {
   "name": "numeric-pass",
-  "description": "Clean numeric arithmetic question. Correct answer string matches stem (45+27=72). No state references. Grade-appropriate vocabulary. After the May 3 numeric branch, this MUST pass — pre-fix the cold-start judge would false-flag MULTIPLE_CORRECT or STATE_LEAK on this exact shape (50-row audit smoke caught 13 such false positives).",
+  "description": "Clean numeric arithmetic question. Correct answer string matches stem (45+27=72). No state references. Grade-appropriate vocabulary AND cognitive demand. After the May 3 numeric branch, this MUST pass — pre-fix the cold-start judge would false-flag MULTIPLE_CORRECT or STATE_LEAK on this exact shape (50-row audit smoke caught 13 such false positives). Set at grade-3 (was grade-4 in §27 — bumped down by §32 because 2-digit addition is grade-3 cognitive demand per the new COGNITIVE_DEMAND_MISMATCH rubric; the fixture's purpose is to verify numeric-branch handling, not test grade-4 rigor).",
   "question": {
     "type": "numeric",
     "question": "What is 45 + 27?",
@@ -10,8 +10,8 @@
   "context": {
     "stateSlug": "alabama",
     "subject": "math",
-    "grade": "grade-4",
-    "gradeLabel": "grade 4"
+    "grade": "grade-3",
+    "gradeLabel": "grade 3"
   },
   "expected": {
     "verdict": "pass",
