@@ -188,25 +188,52 @@ aws dynamodb get-item --table-name "$DST" \
 
 ### Cutting over to the restored table
 
-Two patterns; pick based on urgency vs cleanliness:
+PITR restore creates a NEW table — it doesn't replace the existing one
+in place. You always have at least one of these three patterns to do
+after the restored table is Active:
 
-**Pattern A — fast, requires lambda redeploy:**
-1. Update the lambda's `POOL_TABLE` env var (or constant in code) to point
-   at the restored table name
+**Pattern A — full table swap, fast, requires lambda redeploy.**
+Use when the entire live table is corrupted and you want the restored
+copy to BE the live table.
+1. Update the lambda's `POOL_TABLE` env var (or constant in code) to
+   point at the restored table name
 2. Redeploy the lambda via `./deploy.sh`
 3. Verify reads/writes hit the new table
-4. Delete the old (broken) table once you're confident: `aws dynamodb delete-table`
+4. Delete the old (broken) table once you're confident:
+   `aws dynamodb delete-table --table-name <old>`
 
-**Pattern B — transparent to the lambda, slower:**
-1. Copy data back from the restored table to the original table via
-   `aws dynamodb scan` + `aws dynamodb batch-write-item` (or via DynamoDB
-   Streams + a one-off Lambda)
+Total: ~5-15 minutes including deploy.
+
+**Pattern B — full copy-back to original, transparent, slower.**
+Use when you want the lambda to never know anything happened (no
+deploy needed, no env-var change).
+1. Scan + batch-write all rows from the restored table back into the
+   original table:
+   ```sh
+   aws dynamodb scan --table-name <restored> | \
+     # transform Items into BatchWriteItem PutRequests, batched 25 at a time
+     # then aws dynamodb batch-write-item per batch
+   ```
 2. Verify counts match
-3. Delete the restored table once original is confirmed good
+3. Delete the restored side-table
 
-Pattern A is faster (~5-15 min total). Pattern B is more transparent (the
-lambda doesn't need to know anything happened) but takes longer for tables
-with many rows.
+Slower (minutes per ~1000 rows for batch-write throttle), but
+zero-downtime and no deploy.
+
+**Pattern C — partial copy-back for targeted damage (the most common
+case for kid-product incidents like §22).** Use when only a SUBSET of
+rows are corrupted and the rest of the table is healthy.
+1. Restore to a side table (Pattern A's step 1 above)
+2. Identify the affected contentIds (e.g. via the audit JSON or a
+   custom scan)
+3. For each affected contentId, GetItem from the restored side table
+   and PutItem (or UpdateItem) back into the live table
+4. Verify the affected subset
+5. Delete the restored side table
+
+This is the pattern for "I broke 89 specific rows" — surgical,
+preserves any concurrent writes to other rows during the incident
+window, and avoids the deploy round-trip of Pattern A.
 
 ### After restore
 
@@ -220,9 +247,20 @@ with many rows.
 
 ### Cost of a restore
 
-The restore operation itself is free. Storage of the restored table costs
-the standard $0.25/GB-month. Old + new running in parallel doubles your
-storage cost briefly; cheaper than the alternative of permanent data loss.
+Two distinct charges to know:
+
+1. **One-time restore charge** — DynamoDB charges per GB of restored data.
+   At our scale (`staar-content-pool` ≈ 200 MB, others much smaller), a
+   single full restore is ~$0.20 - $2 total. Negligible.
+2. **Brief parallel-storage cost** — while the restored side-table exists
+   alongside the live one, you pay storage on both. At ~$0.25/GB-month on
+   our 0.19 GB total, parallel storage of EVERY staar-* table for a
+   month would cost ~$0.05 — also negligible. Drop the side-table once
+   the restore is verified to keep the bill clean.
+
+The ongoing PITR feature itself costs ~$0.04/month total for our
+staar-* tables (per CLAUDE.md §23). Both restore-time charges are
+on top of that ongoing rate.
 
 ---
 

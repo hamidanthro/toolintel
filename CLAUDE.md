@@ -1421,6 +1421,14 @@ scan + batch-write).
 - Restore takes minutes for our table sizes (would be hours for GB-scale)
 - The 35-day window is fixed by AWS; can't extend
 
+**Standing rule (load-bearing):** every NEW `staar-*` table created from
+this point forward MUST have PITR enabled at creation time, before any
+real data lands. Add a one-line `aws dynamodb update-continuous-backups`
+to whatever script or runbook creates the table. Never assume it's on by
+default — DynamoDB's default is DISABLED, and enabling-after-the-fact
+gives you zero recoverability for any data written before you flipped
+the switch.
+
 **What this commit does NOT do:**
 - Doesn't add CloudWatch alarms (still §14 deferred)
 - Doesn't set up automated AWS Backup snapshots (orthogonal to PITR;
