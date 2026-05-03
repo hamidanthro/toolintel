@@ -544,6 +544,18 @@ answers, distractor design includes both. Judge MUST reject with at least
 `AMBIGUITY` and `MULTIPLE_CORRECT`. This is the regression case that proved
 the judge was needed.
 
+**A second canonical AMBIGUITY example shipped 2026-05-03:**
+"Look at 85,759,578. What does the digit 5 represent?" — the digit 5
+appears at the ten-thousands place (50,000) AND the hundreds place (500).
+This one slipped to production via `lambda/tutor.js#handleGenerate`
+which had no judge gate at the time. The fix lives in §25 (lambda
+runtime judge); both this and the 271142 case are baked into both
+judge prompts so the model learns to flag any place-value question
+where the named digit appears in more than one position.
+
+**Lambda runtime judge — see §25** for the raw-fetch port that gates
+on-demand `handleGenerate` traffic.
+
 **Regen-on-reject loop** (`generators.js#generateOne`):
 1. OpenAI generates question.
 2. Judge evaluates. If pass: return.
@@ -589,11 +601,16 @@ into `scripts/cold-start/judge-fixtures/`.
   save in `lake-client.js` (cosine ≥ 0.92). Doing it at judge time would let
   us regenerate with "this is too similar to existing question X" feedback
   rather than dropping silently.
-- **Extend judge to lambda runtime.** Specifically: `lambda/tutor.js`
+- ~~**Extend judge to lambda runtime.** Specifically: `lambda/tutor.js`
   `generate` action and `lambda/pool-topup/index.js` need the same gate.
   Same module bundled into the lambda zip — judge.js needs to be rewritten
   to use raw `fetch` to avoid the `openai` npm dep that lambda code
-  intentionally avoids (see §6 deploy hazard).
+  intentionally avoids (see §6 deploy hazard).~~
+  **DONE for `lambda/tutor.js#handleGenerate` on 2026-05-03 — see §25.**
+  `lambda/pool-topup/index.js` is still untouched but the EventBridge
+  rule remains DISABLED (§0 #2), so it can't ship unjudged content
+  to the pool today. Wire judge into pool-topup before re-enabling that
+  rule.
 - **`run.js` should read `judge.stats`** and emit per-sweep summary (calls /
   passes / rejects / token totals) into the existing `logs/run-<ts>.json`.
   Stats are exposed but not consumed today.
@@ -1498,6 +1515,95 @@ Logical reclaim: ~10,230 rows / ~163 MB.
 contamination class. Cold-start sweep (when re-enabled — Phase 7) will
 generate fresh `cold-v2` content into a clean pool with no Texas
 fallback risk and no missing-correctIndex risk.
+
+---
+
+## 25. Lambda runtime judge (May 3)
+
+**Goal:** close the on-demand quality gap. The Question Sanity Judge
+(§13) only ran on the cold-start sweep; `lambda/tutor.js#handleGenerate`
+shipped questions to live kids unjudged. A production failure motivated
+this work: "Look at 85,759,578. What does the digit 5 represent?" — the
+digit 5 appears at the ten-thousands place AND the hundreds place. Same
+AMBIGUITY+MULTIPLE_CORRECT class as the 271142 fixture.
+
+**Module:** `lambda/judge.js` — raw-`fetch` port of
+`scripts/cold-start/judge.js`. No `openai` npm dep (§6 deploy hazard).
+Mirrored to `lambda/tutor-build/judge.js` (force-tracked, like the other
+`tutor-build/*.js` mirrors).
+
+**Wiring:** `lambda/tutor.js#handleGenerate` → after `sanitizeQuestions`
+and before the `savePoolItem` loop, calls `judge.gateBatch(sanitized, …)`.
+`gateBatch` does the regen-once-on-reject orchestration via a
+`regenOne(rejectedQ)` callback that re-invokes `callOpenAI` with the
+same generator system prompt and `count: 1` on the rejected question's
+TEKS.
+
+**Verdict shape:**
+| Verdict | Meaning |
+|---|---|
+| `pass` | clean — keep |
+| `reject` | one or more failure modes triggered — caller regens once, then drops |
+| `fail-open` | judge call timed out (8s) or OpenAI returned non-2xx — keep + log warning. Latency must NOT block kids on a generate. |
+
+**Knobs (env vars, set on the lambda config):**
+| Env var | Default | Effect |
+|---|---|---|
+| `LAMBDA_JUDGE` | (unset) | Set to `off` to bypass judge entirely — pure pass-through, zero OpenAI calls. Kill switch. |
+| `LAMBDA_JUDGE_MAX_CALLS_PER_INVOCATION` | `5` | Max judge calls per `handleGenerate` invocation. After budget, remaining questions are kept unjudged with a `mode=skip-budget` log line. Bound to the `regenerate-once` budget too — each regen-judge counts. |
+
+**Log prefix:** `[lambda-judge]` — grep CloudWatch with this. Sample lines
+verified in production after deploy (CodeSha256
+`AivQ/qLWPFEw4W+plpGTArqZqvlC27dS7Xgs2xA1E74=`,
+`2026-05-03T04:43:49Z`):
+```
+[lambda-judge] state=texas subj=math grade=4 verdict=pass
+[lambda-judge] batch-summary kept=1 dropped=0 regenerated=0 judgeCalls=1 budgetExceeded=false
+```
+
+**Response shape change:** `handleGenerate` now returns
+`{ questions, model, seed, judge: { kept, dropped, regenerated, judgeCalls, budgetExceeded } }`.
+The `judge` field is for client-side telemetry / debugging — frontend
+ignores it today, but it's there for future inspection. If
+`gated.batchEmpty` (everything dropped), responds `502 No questions
+passed quality gate` instead of shipping an empty batch.
+
+**85M case in the system prompt:** both `scripts/cold-start/judge.js`
+SYSTEM_PROMPT and `lambda/judge.js` SYSTEM_PROMPT now list the 85M
+case as Example B alongside 271142 (Example A). The prompt also adds
+a generalized rule: "When the same digit appears in more than one
+position of a number, place-value questions about 'the digit X' are
+AMBIGUITY unless the wording pins down WHICH occurrence."
+
+**Parity:** `scripts/check-tutor-parity.sh` extended with a 4th check
+that diffs `lambda/judge.js` byte-for-byte against
+`lambda/tutor-build/judge.js`. `./deploy.sh` runs the parity check at
+phase 3/9 and aborts on drift.
+
+**Test:** `scripts/lake-audit/test-judge-on-place-value-bug.js` —
+zero-network test with stubbed `global.fetch`. 8 cases / 22 checks:
+85M reject, clean pass, fail-open on 500, normalizer flips both
+directions, gateBatch drop-after-regen, gateBatch clean-batch keep,
+kill switch bypass. Run from repo root: `node
+scripts/lake-audit/test-judge-on-place-value-bug.js`.
+
+**Cost / latency:** Judge call ~250 in + ~150 out tokens at
+`gpt-4o-mini` ≈ $0.0001 per question. At budget=5 per invocation,
+worst-case +$0.0005 per generate call. Latency: ~1-2s per judge call
+sequential, capped at 8s by per-call timeout. Budget=5 keeps total
+judge overhead well inside the lambda's 30s timeout even with regens.
+
+**Cost-tuning knob:** to widen judge coverage of a 25-question batch,
+raise `LAMBDA_JUDGE_MAX_CALLS_PER_INVOCATION` (e.g. to 25). Default
+of 5 is the conservative initial rollout — judges the first 5
+questions per invocation, lets the rest through with a `skip-budget`
+log line. Tune up once production telemetry confirms the gate isn't
+producing false rejects in normal traffic.
+
+**Remaining gap:** `lambda/pool-topup/index.js` still has no judge,
+but its EventBridge rule is DISABLED (§0 #2). Wire judge into
+pool-topup BEFORE re-enabling the rule (deferred TODO in §14 already
+flipped to point here).
 
 ---
 
