@@ -162,10 +162,36 @@ Output ONLY valid JSON, no preamble:
 // One OpenAI call. Returns { parsed, tokensUsed }. On the regen path,
 // pass the prior judge verdict via `regenFeedback` and the user message
 // will carry the failure-mode context to the model.
+//
+// Culturally-diverse first-name pool injected into every user message.
+// gpt-4o-mini at temp 0.9 defaults to "Maria" across calls when given only
+// the system-prompt instruction "use diverse names" — see CLAUDE.md §29 +
+// §30. Per-call user-message injection of a SHUFFLED 5-name subset gives
+// the model a concrete short list to pick from, which it follows much more
+// reliably than the vague style instruction in the system prompt.
+const NAME_POOL = [
+  'Aanya', 'Aisha', 'Carlos', 'Chen', 'Diego',
+  'Fatima', 'Hiro', 'Imani', 'Jamal', 'Jin',
+  'Kenji', 'Liam', 'Mateo', 'Nia', 'Noah',
+  'Omar', 'Priya', 'Ravi', 'Sofia', 'Tatiana',
+  'Yusuf', 'Zara', 'Zoe', 'Amara', 'Lila'
+];
+
+function pickShuffledNames(n) {
+  const copy = NAME_POOL.slice();
+  const out = [];
+  for (let i = 0; i < n && copy.length; i++) {
+    const idx = Math.floor(Math.random() * copy.length);
+    out.push(copy.splice(idx, 1)[0]);
+  }
+  return out;
+}
+
 async function _callGenerator(systemPrompt, regenFeedback) {
+  const namesLine = `Pick the protagonist's first name from this short list (one of these, your choice): ${pickShuffledNames(5).join(', ')}.`;
   const userMessage = regenFeedback
-    ? `Generate the question now.\n\nPrevious attempt was rejected by quality review for: ${regenFeedback.failedChecks.join(', ')}. Specifically: ${regenFeedback.reasons.join(' ')} Generate a new question that fixes these issues.`
-    : 'Generate the question now.';
+    ? `Generate the question now. ${namesLine}\n\nPrevious attempt was rejected by quality review for: ${regenFeedback.failedChecks.join(', ')}. Specifically: ${regenFeedback.reasons.join(' ')} Generate a new question that fixes these issues.`
+    : `Generate the question now. ${namesLine}`;
   const completion = await getOpenAI().chat.completions.create({
     model: 'gpt-4o-mini',
     messages: [

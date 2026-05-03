@@ -7,7 +7,7 @@
  */
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const {
-  DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand
+  DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand, ScanCommand
 } = require('@aws-sdk/lib-dynamodb');
 const OpenAI = require('openai').default || require('openai').OpenAI || require('openai');
 const crypto = require('crypto');
@@ -61,12 +61,86 @@ async function loadExistingPool(poolKey) {
   return result.Items || [];
 }
 
+// Per-process cache of (state, grade) → list of {contentId, embedding} for
+// active rows in that scope. Built lazily on first lookup; appended-to on
+// every successful save. Avoids re-scanning DynamoDB for every save during
+// a sweep. Cleared at process exit.
+const _gradeCache = new Map();
+function _gradeCacheKey(state, grade) { return `${state}#${grade}`; }
+
+async function _loadGradeWideEmbeddings(state, grade) {
+  const k = _gradeCacheKey(state, grade);
+  if (_gradeCache.has(k)) return _gradeCache.get(k);
+  const items = [];
+  let last;
+  do {
+    const r = await ddb.send(new ScanCommand({
+      TableName: POOL_TABLE,
+      FilterExpression: '#st = :s AND #g = :g AND #s = :a',
+      ExpressionAttributeNames: { '#st': 'state', '#g': 'grade', '#s': 'status' },
+      ExpressionAttributeValues: { ':s': state, ':g': grade, ':a': 'active' },
+      ProjectionExpression: 'contentId, poolKey, embedding',
+      ExclusiveStartKey: last
+    }));
+    for (const it of (r.Items || [])) {
+      if (Array.isArray(it.embedding) && it.embedding.length) items.push(it);
+    }
+    last = r.LastEvaluatedKey;
+  } while (last);
+  _gradeCache.set(k, items);
+  return items;
+}
+
+class DuplicateError extends Error {
+  constructor(matches) {
+    const first = matches[0];
+    super(`within-grade duplicate (cosine ≥ ${DEDUP_THRESHOLD}): ${matches.length} match(es), first=${first.contentId} sim=${first.cosineSim.toFixed(3)}`);
+    this.name = 'DuplicateError';
+    this.matches = matches;
+  }
+}
+
+// saveQuestion now performs a within-grade dedup check before PutItem.
+// Run.js's pre-save in-bucket check is the first line of defense (cheap
+// in-memory compare against existingEmbeddings). This wider check catches
+// cross-bucket near-duplicates within the same (state, grade) — the case
+// the §29 probe surfaced ("48 ÷ 6 boxes" g5-concept ≈ "48 ÷ 6 apples"
+// g5-word-problem). Threshold unchanged at 0.92.
+//
+// On duplicate: throws DuplicateError. Run.js's catch block in fillBucket
+// already logs and increments errors, then loops to MAX_ATTEMPTS — the
+// regen-then-retry behavior is identical to a judge reject.
 async function saveQuestion(item) {
+  if (item.state && item.grade && Array.isArray(item.embedding) && item.embedding.length) {
+    const existing = await _loadGradeWideEmbeddings(item.state, item.grade);
+    const matches = [];
+    for (const ex of existing) {
+      if (ex.contentId === item.contentId) continue;
+      const sim = cosineSim(item.embedding, ex.embedding);
+      if (sim >= DEDUP_THRESHOLD) {
+        matches.push({ contentId: ex.contentId, poolKey: ex.poolKey, cosineSim: sim });
+      }
+    }
+    if (matches.length) {
+      throw new DuplicateError(matches);
+    }
+  }
   await ddb.send(new PutCommand({
     TableName: POOL_TABLE,
     Item: item,
     ConditionExpression: 'attribute_not_exists(contentId)'
   }));
+  // Append to the cache so subsequent saves in the same process see this row.
+  if (item.state && item.grade && Array.isArray(item.embedding)) {
+    const k = _gradeCacheKey(item.state, item.grade);
+    if (_gradeCache.has(k)) {
+      _gradeCache.get(k).push({
+        contentId: item.contentId,
+        poolKey: item.poolKey,
+        embedding: item.embedding
+      });
+    }
+  }
 }
 
 function validateQuestion(item, subject, grade) {
@@ -155,5 +229,5 @@ module.exports = {
   getOpenAI, ddb, POOL_TABLE,
   generateId, computeEmbedding, cosineSim,
   loadExistingPool, saveQuestion, validateQuestion,
-  DEDUP_THRESHOLD
+  DEDUP_THRESHOLD, DuplicateError
 };

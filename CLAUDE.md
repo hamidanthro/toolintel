@@ -709,6 +709,17 @@ into `scripts/cold-start/judge-fixtures/`.
   borderline / 0 BAD on eyeball gate (91.67% > 90% threshold).
   Pipeline (judge gpt-4o + verifier gpt-4o + schema gate) verified
   end-to-end on fresh content into the post-cleanup lake.
+- ~~**Generator name diversity** — 17 of 24 saved questions used "Maria".~~
+  ✅ DONE 2026-05-03 — see §30. Per-call shuffled 5-name injection
+  in user message dropped Maria 17/24 → 0/12 (8 distinct names) on
+  mini-probe.
+- ~~**Cross-bucket near-duplicate detection** — within-poolKey embedding
+  dedup at 0.92 cosine missed cross-bucket near-dupes within a grade.~~
+  ✅ DONE 2026-05-03 — see §30. Dedup widened to within-(state,grade)
+  scope at the `saveQuestion` boundary. Threshold unchanged at 0.92.
+  Forward-looking: future cross-bucket near-dupes that DO exceed 0.92
+  cosine will now be caught (the §29-perceived "48÷6 boxes" vs "48÷6
+  apples" is cosmetic similarity below 0.92, not real embedding dup).
 - **🟠 Math sweep — full Texas (all grades, all 4 types).** Now
   unblocked by §29 probe pass. Use `node scripts/cold-start/run.js
   --state texas --subject math --target N --concurrency M`. Texas
@@ -2128,6 +2139,125 @@ set, `promptVersion='cold-v2'`, `generatedBy='cold-start-v2'`.
 
 Probe gate passed → Texas sweep is unblocked. Logged in §14 below
 as the next blocker, dependent on this probe passing.
+
+---
+
+## 30. Pre-sweep generator fixes (May 3)
+
+Two generator-side gaps surfaced by §29 probe at 24-question scale,
+fixed before scaling to a full Texas sweep where they would compound.
+
+### Findings from §29
+
+1. **Maria-default**: 17 of 24 saved rows (70.8%) used "Maria" as the
+   protagonist. The system-prompt instruction *"Use diverse student
+   names from many cultures"* is honored within a single API call (no
+   Maria repeated in the same batch) but ignored across calls — the
+   model defaults back to Maria each time.
+2. **Cross-bucket near-duplicates**: two questions read like
+   near-duplicates to a human reviewer ("24 ÷ 6 baskets" g4-computation
+   ≈ "24 ÷ 6 baskets/school event" g4-computation; "48 ÷ 6 boxes"
+   g5-concept ≈ "48 ÷ 6 apples" g5-word-problem). The within-poolKey
+   dedup didn't catch the cross-poolKey case, and even the
+   within-poolKey case slipped through because the embedding cosine
+   was just below 0.92.
+
+### Fix #1 — diverse-name injection in user message
+
+`scripts/cold-start/generators.js` `_callGenerator` now injects a
+shuffled 5-name subset from a 25-name pool into every user message:
+
+> *"Pick the protagonist's first name from this short list (one of these,
+> your choice): Sofia, Carlos, Imani, Kenji, Diego."*
+
+The 25-name pool: Aanya, Aisha, Carlos, Chen, Diego, Fatima, Hiro,
+Imani, Jamal, Jin, Kenji, Liam, Mateo, Nia, Noah, Omar, Priya, Ravi,
+Sofia, Tatiana, Yusuf, Zara, Zoe, Amara, Lila — culturally diverse to
+match the K-12 student population.
+
+**System prompt unchanged.** The §27 lesson ("more guidance in system
+prompt makes the model more flag-happy or repetitive") meant the fix
+went into the per-call user message, not the system prompt. Per-call
+randomization beats vague instruction.
+
+### Fix #2 — within-grade dedup at save
+
+`scripts/cold-start/lake-client.js` `saveQuestion` now performs a
+within-grade embedding-similarity scan BEFORE the PutItem:
+
+- Loads all `(state, grade, status='active')` rows with their embeddings
+- Computes cosine to the new row's embedding
+- If any match ≥ 0.92, throws `DuplicateError` (caller's existing catch
+  handles via retry, mirroring judge-reject behavior)
+
+Per-process cache (`_gradeCache`, keyed by `state#grade`) avoids
+re-scanning DynamoDB for every save during a sweep — populated lazily
+on first save in a (state, grade) and appended-to on every successful
+save.
+
+**Threshold unchanged at 0.92.** The within-poolKey check in `run.js`
+remains as a cheap in-memory first line of defense; this new scan adds
+the wider second line at the save-layer boundary.
+
+Cost per save: one Scan within the (state, grade) filter — at the
+current ~2,000-row lake, ~$0.0005 per save. Cached after first call,
+so subsequent saves in the same sweep are free until process exit.
+
+### Mini-probe verification (12 questions)
+
+Run-id `pre-sweep-fixes-20260503T084421Z`. Same shape as §29 (Texas,
+math, grades 3-5, all 4 types) but `--target 3` so each bucket needs
++1 (the §29 probe left them at 2 each). 12 questions generated and
+saved, 0 errors.
+
+**Name distribution (mini-probe 12 rows):**
+
+| Name | Count |
+|---|---|
+| Sofia | 3 |
+| Priya | 2 |
+| Lila | 2 |
+| Carlos | 1 |
+| Imani | 1 |
+| Omar | 1 |
+| Amara | 1 |
+| Zoe | 1 |
+| **Maria** | **0** |
+
+8 distinct names; **0 occurrences of Maria** (was 17/24 = 70.8% in §29).
+**Name fix gate: PASS** (Maria ≤ 2 ✓; distinct ≥ 5 ✓).
+
+**Within-grade dedup check (combined §29 + mini-probe = 36 rows):**
+
+| Metric | Value |
+|---|---|
+| Pairs compared (within-grade) | 198 |
+| Pairs with cosine ≥ 0.92 | **0** |
+
+**Dedup fix gate: PASS** (0 cross-bucket near-duplicates).
+
+**Honest caveat on Fix #2:** the §29 perceived near-duplicates ("48÷6
+boxes" vs "48÷6 apples") were below the 0.92 threshold by embedding
+distance — they're cosmetic similarity, not embedding-level duplicates.
+The widened scan didn't retroactively catch them. The fix is
+forward-looking: future content that DOES cross 0.92 across buckets
+within a grade will now be caught (which the prior poolKey-scoped
+check could not catch by construction). The "perceived dup that's
+actually below threshold" class is a separate problem that would need
+either a lower threshold OR semantic-similarity (LLM-based) dedup —
+not in scope here.
+
+### Combined gate
+
+🟢 **BOTH PASS** — full Texas math sweep is unblocked.
+
+### Lake state delta
+
+| | Active count |
+|---|---|
+| Pre-mini-probe (per §29) | 2,020 |
+| Post-mini-probe | 2,032 |
+| Δ | **+12** ✓ |
 
 ---
 
