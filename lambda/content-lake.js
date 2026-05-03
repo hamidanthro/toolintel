@@ -175,14 +175,85 @@ async function readPoolForBucket({ poolKey, recentContentIds = [], limit = 100 }
  * Save a generated question to the pool. Returns { contentId, saved, reason }.
  * Performs validation + embedding + similarity dedup against existing pool items.
  */
+// ============================================================
+// Defensive schema gate for any PutItem to the pool.
+// Catches bug 186 (May 2 lake audit): rows getting saved with
+// correctIndex=null because the upstream writer didn't compute it.
+// Layer 2 of a 2-layer fix; Layer 1 is in lambda/tutor.js#sanitizeQuestions.
+//
+// Branches on candidate.type:
+//   multiple_choice (default) — requires choices[≥2] of non-empty strings
+//                                AND correctIndex int in [0, choices.length)
+//   numeric                   — requires non-empty answer string;
+//                                correctIndex may be null (not applicable)
+//
+// On reject: logs a structured CloudWatch line with prefix
+//   [lake.savePoolItem REJECTED]
+// so the rejection rate is grep-able as a production health metric.
+// Never throws — caller treats {saved:false, reason} as the outcome.
+// ============================================================
+function _enforceSaveSchema(candidate, contextForLog) {
+  const errors = [];
+  const t = candidate.type === 'numeric' ? 'numeric' : 'multiple_choice';
+
+  if (!candidate.state || typeof candidate.state !== 'string') errors.push('state_missing');
+  if (!candidate.subject || typeof candidate.subject !== 'string') errors.push('subject_missing');
+  if (candidate.grade == null || candidate.grade === '') errors.push('grade_missing');
+
+  const promptText = candidate.question || candidate.prompt || '';
+  if (typeof promptText !== 'string' || promptText.length < 6) errors.push('question_missing_or_short');
+
+  if (typeof candidate.explanation !== 'string') errors.push('explanation_missing');
+
+  if (t === 'multiple_choice') {
+    if (!Array.isArray(candidate.choices) || candidate.choices.length < 2) {
+      errors.push('choices_missing_or_too_few');
+    } else if (candidate.choices.some(c => !c || typeof c !== 'string')) {
+      errors.push('choices_contain_empty_or_non_string');
+    } else if (!Number.isInteger(candidate.correctIndex)
+               || candidate.correctIndex < 0
+               || candidate.correctIndex >= candidate.choices.length) {
+      errors.push('correctIndex_invalid');
+    }
+  } else {
+    // numeric: answer is the value; choices is not used.
+    if (!candidate.answer || typeof candidate.answer !== 'string') errors.push('numeric_answer_missing');
+  }
+
+  if (errors.length) {
+    const ctx = contextForLog || {};
+    console.warn(
+      `[lake.savePoolItem REJECTED] reason=${errors.join('+')} ` +
+      `contentId=${ctx.contentId || 'pending'} ` +
+      `state=${ctx.state || '?'} ` +
+      `subject=${ctx.subject || '?'} ` +
+      `grade=${ctx.grade || '?'} ` +
+      `type=${t}`
+    );
+  }
+  return errors;
+}
+
 async function savePoolItem({
   poolKey, candidate, stateSlug, gradeSlug, subject, questionType,
   generatedByUserId = null, apiKey = null, existingPool = null
 }) {
-  // Validate
+  // Validate (existing content-quality validator — checks prompt, answer,
+  // explanation, profanity, reading word count, etc).
   const valid = validateQuestion({ ...candidate, subject, grade: gradeSlug });
   if (!valid.valid) {
     return { saved: false, reason: 'invalid:' + valid.errors.join(';') };
+  }
+
+  // Schema gate (Layer 2 of the May 3 writer-bug fix). The existing
+  // validateQuestion does NOT check correctIndex; this does.
+  const schemaForGate = { ...candidate, state: stateSlug, subject, grade: gradeSlug };
+  const schemaErrors = _enforceSaveSchema(schemaForGate, {
+    contentId: 'pending',
+    state: stateSlug, subject, grade: gradeSlug
+  });
+  if (schemaErrors.length) {
+    return { saved: false, reason: 'schema:' + schemaErrors.join(';') };
   }
 
   // Embed (best-effort: if no apiKey, save without embedding)
@@ -476,6 +547,7 @@ module.exports = {
   areEmbeddingsTooSimilar,
   validateQuestion,
   validateExplanation,
+  _enforceSaveSchema,
   generateId,
   POOL_TABLE,
   EXPLANATIONS_TABLE,

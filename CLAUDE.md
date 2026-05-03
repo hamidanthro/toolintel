@@ -678,11 +678,10 @@ into `scripts/cold-start/judge-fixtures/`.
   Two distinct categories needing different handling: (a) **10,149
   cold-v1 rows already `status=deprecated`** — safe to hard-delete in a
   one-shot pass; reclaims ~170 MB and drops the 504 Texas-leak rows for
-  good; (b) **186 active+broken rows missing `correctIndex`** generated
-  by `lambda/tutor.js#handleGenerate` and currently servable to kids —
-  needs the writer path investigated first (likely a sanitizeQuestions
-  bug in the lambda's fire-and-forget save), then either flip them to
-  `status=broken` and stop serving, or hard-delete. Hamid's call on (a)
+  good; (b) **186 active+broken rows missing `correctIndex`** — currently
+  servable to kids; the writer-path bug that produced them is now FIXED
+  (see §21), but the 186 existing rows still need cleanup (flip to
+  `status=broken` and stop serving, or hard-delete). Hamid's call on (a)
   vs (b) order. Script lives at
   `scripts/lake-audit/tombstone-*.js` (TBD); it's deliberately not built
   yet — the audit + this TODO is the staging area.
@@ -1217,6 +1216,89 @@ array at all.
 take the audit JSON as input and either (a) hard-delete the 10,149
 already-deprecated rows, or (b) flip the 186 active+broken rows to
 `status: "broken"` and stop serving them, or (c) both. Hamid's call.
+
+---
+
+## 21. Lambda writer hardening (May 3)
+
+**Bug fixed:** `lambda/tutor.js#handleGenerate` was producing rows with
+`correctIndex: null` and `choices: null` for the on-demand multiple-choice
+generation path. The May 2 lake audit (§20) found 186 such rows already
+in the table — currently servable to kids, would render broken on read.
+
+**Two-defect chain (root cause):**
+
+1. `sanitizeQuestions` (lambda/tutor.js:630) builds the question item
+   from the OpenAI response with `answer` (the choice text) but
+   **never computes `correctIndex`**. The model returns `answer` as
+   choice text, never as an index, so `q.correctIndex` is `undefined`
+   coming out of the sanitizer.
+
+2. `savePoolItem` (lambda/content-lake.js:225) wrote
+   `correctIndex: typeof candidate.correctIndex === 'number' ? candidate.correctIndex : null`
+   — silently coercing the missing field to `null`. The existing
+   `validateQuestion` does NOT check `correctIndex`, so the schema-broken
+   row passed validation and got `PutItem`'d.
+
+**Two-layer fix (both layers ship in commit `<sha>`):**
+
+**Layer 1 — fix at source.** `sanitizeQuestions` now computes
+`item.correctIndex = item.choices.indexOf(item.answer)` after the
+post-shuffle assignment, with a defensive `< 0` guard that drops
+the row if the indexOf somehow fails. For numeric items, `correctIndex`
+is set to `null` explicitly (intentionally absent vs missing).
+
+**Layer 2 — defensive schema gate at PutItem boundary.** New private
+helper `_enforceSaveSchema(candidate, contextForLog)` in
+`lambda/content-lake.js`. Called inside `savePoolItem` after the
+existing `validateQuestion` and BEFORE the `PutItem`. Branches on
+`candidate.type`:
+- `multiple_choice` (default): requires `choices` array length ≥ 2 of
+  non-empty strings AND `correctIndex` integer in `[0, choices.length)`
+- `numeric`: requires `answer` non-empty string; `correctIndex` may be
+  `null` (not applicable to this shape)
+
+In both cases also requires: `state` (string), `subject` (string),
+`grade` (defined), `question` (string ≥ 6 chars), `explanation` (string).
+
+**On schema fail:** returns `{ saved: false, reason: 'schema:<errors>' }`
+without throwing. The caller's existing `.then(r => { if (!r.saved) ... })`
+handling continues — fire-and-forget save remains fire-and-forget; the
+lambda response to the kid is unaffected.
+
+**CloudWatch monitoring line:** every rejection prints
+
+```
+[lake.savePoolItem REJECTED] reason=<errors> contentId=<id|pending>
+state=<s> subject=<sj> grade=<g> type=<multiple_choice|numeric>
+```
+
+Grep CloudWatch logs for `[lake.savePoolItem REJECTED]` to monitor the
+rejection rate as a production health metric. After deploy: nonzero
+rate is expected initially (the model occasionally produces malformed
+shapes the gate catches); a SUSTAINED high rate means the model output
+quality regressed.
+
+**Test fixture:** `scripts/lake-audit/test-savepoolitem-validation.js`
+exercises the gate with one valid multiple-choice row, one valid
+numeric row, and 5 invalid shapes (missing `correctIndex`, empty
+choices, single choice, out-of-range `correctIndex`, `correctIndex: null`).
+All 7 cases pass. Run with:
+
+```sh
+NODE_PATH=$(pwd)/scripts/lake-audit/node_modules \
+  node scripts/lake-audit/test-savepoolitem-validation.js
+```
+
+**What this fix does NOT do:**
+- Does not modify the existing 186 broken rows in the table — that's
+  the tombstone phase (§14).
+- Does not address the OTHER subtle field-naming inconsistency the
+  audit surfaced: cold-start writes `promptVersion` while the lambda
+  writes `generatorPromptVersion`. The audit's PROMPT_VERSION_LEGACY
+  count includes 186 rows that aren't actually unversioned — they have
+  `generatorPromptVersion: 'v1'` but no `promptVersion` field. Cosmetic
+  for now; worth a one-line unification later.
 
 ---
 

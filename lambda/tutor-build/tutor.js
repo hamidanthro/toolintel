@@ -651,6 +651,19 @@ function sanitizeQuestions(arr, max) {
         const j = Math.floor(Math.random() * (i + 1));
         [item.choices[i], item.choices[j]] = [item.choices[j], item.choices[i]];
       }
+      // Bug fix (May 3): compute correctIndex from the post-shuffle answer
+      // position. Previously sanitizeQuestions never set correctIndex,
+      // so savePoolItem wrote correctIndex: null for every on-demand row
+      // (this is what produced the 186 broken rows the lake audit found).
+      // indexOf is exact (we just inserted item.answer into the array);
+      // -1 is a defensive impossibility guard.
+      item.correctIndex = item.choices.indexOf(item.answer);
+      if (item.correctIndex < 0) continue;
+    } else {
+      // Numeric type: choices are not used; correctIndex is meaningless.
+      // Set it to null explicitly so the savePoolItem schema gate can
+      // distinguish "intentionally absent" from "missing field".
+      item.correctIndex = null;
     }
 
     out.push(item);
