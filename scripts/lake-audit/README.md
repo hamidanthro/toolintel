@@ -179,6 +179,80 @@ broken multi-choice rows).
 
 ---
 
+## hard-delete-tombstoned.js
+
+Permanently `DeleteItem` rows from `staar-content-pool` matching one of two
+well-defined categories. **Writes to production. Reversible only via PITR**
+(35-day window — see `restore-hard-deleted-from-pitr.md` for the runbook).
+
+### Run
+
+```sh
+# Dry-run on a specific category
+node scripts/lake-audit/hard-delete-tombstoned.js --category=tombstoned-broken-mc
+
+# Apply for real
+node scripts/lake-audit/hard-delete-tombstoned.js --category=tombstoned-broken-mc --apply
+
+# Both categories in one run (default)
+node scripts/lake-audit/hard-delete-tombstoned.js --apply
+```
+
+### Categories
+
+- **`deprecated-cold-v1`** — `status='deprecated' AND promptVersion='cold-v1'`.
+  ~10,149 legacy rows from the Texas-fallback era. Already filtered out at
+  read time (status=deprecated → never served). Hard-deleting reclaims
+  storage and erases the 504 confirmed Texas-leak rows for good.
+- **`tombstoned-broken-mc`** — `status='broken' AND tombstoneReason=<§22 reason> AND type='multiple_choice'`.
+  The 97 broken multi-choice rows tombstoned after the writer-bug fix.
+  Genuinely malformed (missing `correctIndex`, garbage letter-label choices).
+- **`both`** — default. Deletes both categories in one run.
+
+### Safety contract (every guardrail)
+
+- **DEFAULT mode is DRY-RUN.** Requires `--apply` to delete.
+- **PITR precondition:** the script REFUSES to `--apply` if PITR is not
+  ENABLED on `staar-content-pool` (exit code 2 with explicit instructions).
+  Hard-delete without PITR = no recovery path. Don't.
+- **Re-fetches every target via DynamoDB scan with the LIVE filter** before
+  each batch. Never trusts a cached/stale list.
+- **Per-row safety re-check** before adding to a delete batch. For
+  `tombstoned-broken-mc`: row must STILL be `status=broken AND type=multiple_choice
+  AND tombstoneReason matches`. If anything diverged (e.g., concurrent write
+  flipped status), the row is SKIPPED with a logged reason.
+- **Defensive type check** specifically for `tombstoned-broken-mc`: refuses
+  to delete anything whose type isn't `multiple_choice` even if the live
+  filter returned it. Belt-and-suspenders against the §22 incident class.
+- **`BatchWriteItem` 25 rows max per request.** Sequential batches (not
+  parallel) — speed isn't the goal, safety is.
+- **Two-tier throttle handling** (added after the first Cat 1 run hit a
+  GSI throttle mid-run):
+  1. SDK-level `ThrottlingException` / `ProvisionedThroughputExceededException` /
+     `RequestLimitExceeded` / 5xx — retry the entire `BatchWriteCommand`
+     with exponential backoff: 200ms / 800ms / 3.2s / 10s (4 attempts after
+     the initial). Beyond that, throw and abort.
+  2. Per-item `UnprocessedItems` in a successful response — retry just
+     those at 100ms / 400ms / 1600ms (3 attempts).
+- Per-row log: `[hard-delete] contentId=<id> state=<s> category=<cat> action=<dry-run-would-delete|DELETED|SKIPPED:reason>`
+- Per-batch log: `[hard-delete] batch <n>/<total> sent=<N> deleted=<N> unprocessed=<N>`
+- Output JSON at `output/hard-delete-<UTC>.json` with full per-row results.
+
+### Cost
+
+DynamoDB on-demand DeleteItem ≈ 1 WCU per KB. Our rows are ~16 KB each
+(with embeddings). Upper bound for 10,246 rows = 164k WCU = **$0.21**.
+Functionally free.
+
+### Recovery if you regret a deletion
+
+`restore-hard-deleted-from-pitr.md` in this same directory documents the
+5-step PITR-based recovery (restore to side table → identify deleted
+contentIds from the hard-delete output JSON → surgical PutItem back into
+live → verify → drop side table). Window: 35 days from deletion.
+
+---
+
 ## Future scripts in this directory
 
 The convention here:

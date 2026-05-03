@@ -673,17 +673,11 @@ into `scripts/cold-start/judge-fixtures/`.
   button outside the scrollable content area or use a sticky-friendly
   parent layout. §18 implemented full-width as the easier first
   improvement; true sticky-bottom-of-viewport is its own commit.
-- **🟠 Lake cleanup — hard-delete phase for the 10,149 deprecated cold-v1
-  rows.** The active-broken category (b) was tombstoned in §22 (97
-  genuinely broken multi-choice rows now `status: broken`; the 89
-  numeric over-tombstones were restored). What remains: (a) **10,149
-  cold-v1 rows already `status: deprecated`** from the prior tombstone
-  pass — safe to hard-delete (reclaims ~170 MB and drops the 504
-  Texas-leak rows). Plus the 97 newly-`status: broken` multi-choice
-  rows: also candidates for hard-delete in the same pass. Total
-  deletion target: ~10,246 rows. Build a `hard-delete-tombstoned.js`
-  script in `scripts/lake-audit/` that takes status filter as an
-  arg, dry-run by default, BatchWriteItem with throttle handling.
+- ~~**Lake cleanup — hard-delete phase.**~~ ✅ DONE 2026-05-03 (see §24).
+  Deleted 10,246 rows total: 10,149 deprecated cold-v1 + 97 tombstoned
+  multi-choice. Filter scans confirm 0 deprecated + 0 broken remain.
+  Recovery via `scripts/lake-audit/restore-hard-deleted-from-pitr.md`
+  if needed within 35-day PITR window.
 - **🟠 Phase 3 finish — ReplyQuik AppRunner deletion.** Frontend widget
   removed in §6c. Backend still running and only Hamid can delete it
   via AWS Console: (a) stop and delete `replyquik-api-main` and
@@ -1436,6 +1430,74 @@ the switch.
   archival > 35 days; separate decision)
 - Doesn't generalize PITR to non-staar-* tables (toolintel-* legacy
   lambdas have tables but are dormant; not worth $0.10/month each)
+
+---
+
+## 24. Lake cleanup — hard-delete phase (May 3)
+
+**Goal:** permanently remove 10,246 dead rows from `staar-content-pool` —
+10,149 already-deprecated cold-v1 legacy rows (Texas-fallback era,
+including the 504 confirmed Texas-leak rows) plus 97 broken multi-choice
+rows tombstoned in §22 (writer-bug fingerprint, garbage letter-label
+choices). Net result: a fundamentally cleaner pool for the next sweep.
+
+**Pre-deletion baseline:**
+- 12,239 total rows / 194 MB
+- Status mix: ~1,903 servable active + ~10,149 deprecated + 186 (then
+  97 after §22 restored 89 numeric) broken
+
+**Deletion script:** `scripts/lake-audit/hard-delete-tombstoned.js` —
+dry-run-by-default, two-category (`deprecated-cold-v1`,
+`tombstoned-broken-mc`, or `both`), live-filter re-fetch per batch,
+per-row safety re-check, BatchWriteItem 25 at a time, two-tier throttle
+handling (SDK-level + UnprocessedItems), refuses to `--apply` if PITR
+not enabled. Output JSON per run at `scripts/lake-audit/output/hard-delete-<UTC>.json`.
+
+**Recovery runbook:** `scripts/lake-audit/restore-hard-deleted-from-pitr.md`
+documents the 5-step PITR-based undo (restore to side table → identify
+deleted contentIds from output JSON → surgical PutItem back → verify →
+drop side table). PITR window: 35 days from deletion.
+
+**Execution:**
+- Cat 2 (97 rows) — clean run: dry-run + apply both 97/97, 0 SKIPPED, 0 errors
+- Cat 1 (10,149 rows) — first run hit a GSI `ThrottlingException` mid-flight after
+  3,125 deletions (the script's retry only handled `UnprocessedItems`,
+  not SDK-level throttles). Fixed in same commit: added an outer
+  `sendBatchWithRetry` wrapper with exponential backoff
+  (200/800/3200/10000ms, 4 attempts). Re-ran on the remaining 7,024
+  rows; **9 SDK throttle retries fired and recovered cleanly**.
+- Total elapsed (combined runs): ~3 min wall-clock for Cat 1, ~30s for Cat 2.
+
+**Final state of `staar-content-pool`** (status filter scans, immediate):
+| Status | Count |
+|---|---|
+| active | **2,009** (the live servable pool) |
+| deprecated | 0 ✓ |
+| broken | 0 ✓ |
+
+Note: `describe-table` `ItemCount` / `SizeBytes` updates approximately
+every 6 hours, so it still shows pre-deletion totals (12,239 / 194 MB)
+for now. The status-filtered scans above are real-time and authoritative.
+Logical reclaim: ~10,230 rows / ~163 MB.
+
+**Lessons applied from the §22 incident:**
+1. **Sample-checked 5 random TARGETS per category before destructive run.**
+   Phase A confirmed Cat 1 was real legacy questions (`type=undefined`
+   from pre-type-field era) and Cat 2 was garbage letter-label choices
+   like `["B","D","A","C"]` — both unambiguous deletion candidates.
+2. **Type-branched targeting.** Cat 2 explicitly requires
+   `type='multiple_choice'` so the §22 over-tombstone of numeric rows
+   can't repeat.
+3. **Restore runbook shipped in the same commit** as the destructive
+   script (`restore-hard-deleted-from-pitr.md` next to `hard-delete-tombstoned.js`).
+4. **PITR backstop active** (CLAUDE.md §23) — removed the "cannot undo"
+   fear that gates hard-deletes. Script defensively refuses to `--apply`
+   if PITR is somehow disabled.
+
+**Next:** the lake is now in known-clean state for the legacy
+contamination class. Cold-start sweep (when re-enabled — Phase 7) will
+generate fresh `cold-v2` content into a clean pool with no Texas
+fallback risk and no missing-correctIndex risk.
 
 ---
 
