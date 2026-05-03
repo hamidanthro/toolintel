@@ -105,6 +105,80 @@ after Hamid reviews the audit results. See CLAUDE.md §20.
 
 ---
 
+## tombstone-active-broken.js
+
+Flips `status: active` → `status: broken` on rows the audit identified as
+`MISSING_REQUIRED_FIELDS` AND `status: active`. **Writes to production** but
+only updates a status field — **never hard-deletes**, fully reversible by
+the inverse update.
+
+### Run
+
+```sh
+# Dry-run (default — no writes; logs what it WOULD do)
+node scripts/lake-audit/tombstone-active-broken.js
+
+# Apply for real (requires explicit flag)
+node scripts/lake-audit/tombstone-active-broken.js --apply
+```
+
+### Safety
+
+- **DRY-RUN by default.** No `--apply` flag → no writes.
+- **Per-row re-fetch.** Before any UpdateItem, GetItem to confirm the
+  current state still matches what the audit recorded. If concurrent
+  writes changed the row, skip with a logged reason.
+- **`type: numeric` defensive check (added after the 2026-05-03
+  incident).** Refuses to tombstone any row whose `type` is `numeric` —
+  numeric questions legitimately have `correctIndex: null` and
+  `choices: null`. Without this gate, an old audit JSON with the
+  pre-fix MISSING_REQUIRED_FIELDS heuristic would repeat the original
+  incident.
+- **`ConditionExpression` on UpdateItem.** Refuses to overwrite if state
+  drifted between the GetItem and the UpdateItem. Concurrent writes by
+  any other path (lambda, judge, etc.) cannot be silently overwritten.
+- **Sequential.** Not parallel. ~10s for 200 rows. Speed isn't the goal,
+  safety is.
+- **Retry with exponential backoff** on throttle / 5xx (3 attempts at
+  100ms / 400ms / 1600ms). Past 3, log and skip.
+- Per-row log line: `[tombstone] contentId=<id> state=<s> action=<...>`.
+- Final summary printed + dumped to
+  `output/tombstone-<UTC-timestamp>.json` for incident audit.
+
+### Reversal
+
+Every UPDATED row got `tombstoneReason='active_missing_correctIndex_fixed_by_writer_2026-05-03'`.
+To restore them, write the inverse update keyed on the same contentIds:
+
+```sh
+# (See restore-falsely-tombstoned-numeric.js for the pattern, used in
+#  the 2026-05-03 incident to restore 89 rows.)
+```
+
+---
+
+## restore-falsely-tombstoned-numeric.js
+
+**One-off incident script** from the 2026-05-03 over-tombstone incident.
+Reads `/tmp/touched-numeric.json` (a list of contentIds produced during
+incident triage), and for each row that's currently `status: broken` with
+the matching `tombstoneReason`, flips it back to `status: active` and
+removes the tombstone metadata.
+
+This is preserved as the canonical pattern for "undo a tombstone" — copy
+it for any future restore. Not intended to be re-run; the input file is
+ephemeral.
+
+### Safety
+
+Same shape as the tombstone script: dry-run by default, per-row re-fetch
++ ConditionExpression so we only flip back the rows we actually
+tombstoned with the matching reason. Refuses to touch rows that aren't
+type=numeric (we never want to accidentally restore the 97 genuinely
+broken multi-choice rows).
+
+---
+
 ## Future scripts in this directory
 
 The convention here:

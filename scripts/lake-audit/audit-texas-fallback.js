@@ -160,12 +160,24 @@ function evaluateRow(row) {
 
   // (6) MISSING_REQUIRED_FIELDS — broken row shape
   // Schema uses `state` and `correctIndex` (NOT `stateSlug` and `answer`).
-  // Choices must be an array of length ≥ 2 to be answerable.
+  // BRANCH ON TYPE — incident 2026-05-03: original heuristic flagged
+  // every numeric question as broken because numeric rows legitimately
+  // have correctIndex=null and choices=null. Without the branch, 89 of
+  // 186 audit-flagged rows were valid numeric content. Fixed here so a
+  // future re-audit doesn't repeat the false-positive.
   const missing = [];
   if (!row.question) missing.push('question');
-  if (!Array.isArray(row.choices) || row.choices.length < 2) missing.push('choices');
-  if (typeof row.correctIndex !== 'number') missing.push('correctIndex');
   if (!row.state) missing.push('state');
+  const isNumeric = row.type === 'numeric';
+  if (isNumeric) {
+    // Numeric: answer must be a non-empty string. choices + correctIndex
+    // are by-design absent and MUST NOT be flagged here.
+    if (!row.answer || typeof row.answer !== 'string') missing.push('numeric_answer');
+  } else {
+    // multiple_choice (default): requires choices + correctIndex.
+    if (!Array.isArray(row.choices) || row.choices.length < 2) missing.push('choices');
+    if (typeof row.correctIndex !== 'number') missing.push('correctIndex');
+  }
   if (missing.length) {
     matches.push({ heuristic: 'MISSING_REQUIRED_FIELDS', hits: missing });
   }
@@ -234,12 +246,13 @@ async function main() {
       TableName: TABLE,
       // Drop the embedding to keep response payloads small (each row's
       // embedding is ~7KB; with 12k rows that's >80MB transferred).
-      ProjectionExpression: '#s, #st, #pk, contentId, #q, choices, correctIndex, explanation, passage, promptVersion, generatedBy, generatedAt, grade, subject, questionType, qualityScore, reviewStatus, tombstonedAt, tombstoneReason',
+      ProjectionExpression: '#s, #st, #pk, contentId, #q, choices, correctIndex, answer, #t, explanation, passage, promptVersion, generatedBy, generatedAt, grade, subject, questionType, qualityScore, reviewStatus, tombstonedAt, tombstoneReason',
       ExpressionAttributeNames: {
         '#s':  'state',
         '#st': 'status',
         '#pk': 'poolKey',
-        '#q':  'question'
+        '#q':  'question',
+        '#t':  'type'
       }
     };
     if (lastKey) params.ExclusiveStartKey = lastKey;

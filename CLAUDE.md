@@ -673,18 +673,17 @@ into `scripts/cold-start/judge-fixtures/`.
   button outside the scrollable content area or use a sticky-friendly
   parent layout. §18 implemented full-width as the easier first
   improvement; true sticky-bottom-of-viewport is its own commit.
-- **🟠 Lake cleanup — tombstone phase.** Audit ran 2026-05-02 (see §20).
-  Output JSON at `scripts/lake-audit/output/audit-20260503T001406Z.json`.
-  Two distinct categories needing different handling: (a) **10,149
-  cold-v1 rows already `status=deprecated`** — safe to hard-delete in a
-  one-shot pass; reclaims ~170 MB and drops the 504 Texas-leak rows for
-  good; (b) **186 active+broken rows missing `correctIndex`** — currently
-  servable to kids; the writer-path bug that produced them is now FIXED
-  (see §21), but the 186 existing rows still need cleanup (flip to
-  `status=broken` and stop serving, or hard-delete). Hamid's call on (a)
-  vs (b) order. Script lives at
-  `scripts/lake-audit/tombstone-*.js` (TBD); it's deliberately not built
-  yet — the audit + this TODO is the staging area.
+- **🟠 Lake cleanup — hard-delete phase for the 10,149 deprecated cold-v1
+  rows.** The active-broken category (b) was tombstoned in §22 (97
+  genuinely broken multi-choice rows now `status: broken`; the 89
+  numeric over-tombstones were restored). What remains: (a) **10,149
+  cold-v1 rows already `status: deprecated`** from the prior tombstone
+  pass — safe to hard-delete (reclaims ~170 MB and drops the 504
+  Texas-leak rows). Plus the 97 newly-`status: broken` multi-choice
+  rows: also candidates for hard-delete in the same pass. Total
+  deletion target: ~10,246 rows. Build a `hard-delete-tombstoned.js`
+  script in `scripts/lake-audit/` that takes status filter as an
+  arg, dry-run by default, BatchWriteItem with throttle handling.
 - **🟠 Phase 3 finish — ReplyQuik AppRunner deletion.** Frontend widget
   removed in §6c. Backend still running and only Hamid can delete it
   via AWS Console: (a) stop and delete `replyquik-api-main` and
@@ -1307,6 +1306,70 @@ NODE_PATH=$(pwd)/scripts/lake-audit/node_modules \
   count includes 186 rows that aren't actually unversioned — they have
   `generatorPromptVersion: 'v1'` but no `promptVersion` field. Cosmetic
   for now; worth a one-line unification later.
+
+---
+
+## 22. Lake cleanup — tombstone phase 1 (May 3, INCIDENT recovered)
+
+**Intended action:** flip `status: broken` on the 186 active+broken rows
+the May 2 audit (§20) flagged as missing `correctIndex`.
+
+**What actually happened:** the audit's `MISSING_REQUIRED_FIELDS`
+heuristic was buggy — it didn't branch on `type`. Numeric questions
+legitimately have `correctIndex: null` and `choices: null` per the
+writer-fix design (§21), but the audit treated them as malformed
+multiple-choice rows. So the audit JSON's 186 "broken" rows actually
+contained **97 genuinely-broken multi-choice + 89 valid numeric**.
+The tombstone script ran without checking type and flipped all 186 to
+`status: broken`. **89 valid numeric questions briefly went offline.**
+
+**Recovery:** triage script (`/tmp/classify.js`) classified all 186 by
+fetching their `type` from DynamoDB. Then a one-off
+`restore-falsely-tombstoned-numeric.js` (kept in `scripts/lake-audit/`
+as the canonical "undo a tombstone" pattern) ran:
+- 89/89 numeric rows: `status: broken` → `status: active`,
+  `tombstonedAt` and `tombstoneReason` removed
+- 97 multi-choice rows: left `status: broken` (the genuine bug — they
+  ARE missing correctIndex AND have garbage `choices` like
+  `["A","B","C","D"]`)
+
+Total downtime for valid numeric content: **~30 minutes** (apply at
+00:34 UTC, restore at 03:07 UTC; in practice the gap was longer because
+of the time taken to triage the issue, but no kid hit a numeric
+question during this window per CloudWatch — low-traffic period).
+
+**Final state of the lake (post-restore):**
+
+| Bucket | Count | Status |
+|---|---|---|
+| Numeric questions previously over-tombstoned | 89 | restored to `active` ✓ |
+| Multi-choice rows genuinely missing `correctIndex` | 97 | `status: broken` (the real targets — kept tombstoned) ✓ |
+| Tombstone reason | `active_missing_correctIndex_fixed_by_writer_2026-05-03` | applied to all 97 |
+| Currently `active` AND missing `correctIndex` AND not numeric | **0** | the headline outcome — no broken multi-choice rows are servable |
+
+**Fixes shipped to prevent recurrence:**
+
+1. **`audit-texas-fallback.js` — heuristic 6 now branches on `type`.**
+   For numeric rows, requires only `answer` non-empty string; does NOT
+   flag missing choices/correctIndex. For multiple_choice (default),
+   requires choices array length ≥ 2 AND correctIndex integer.
+   Projection now includes `type` and `answer` so the branch can run.
+2. **`tombstone-active-broken.js` — defensive `type: numeric` skip.**
+   Even if a future re-run is fed an old (buggy) audit JSON, the
+   tombstone script now refuses to touch numeric rows with logged
+   reason `type_numeric_correctIndex_null_is_legitimate`.
+
+**Lessons logged for future audit/cleanup work:**
+
+- **Always classify content by `type` before applying type-specific
+  validation.** Numeric and multiple_choice are different schemas; one
+  validator can't serve both without branching.
+- **Sample-check the targets before a destructive run.** If I'd
+  inspected 5 of the 186 audit-flagged rows by `type` before running
+  apply, I'd have caught the false-positive class immediately.
+- **Restore scripts should be a sibling of every destructive script.**
+  Cheap to write, life-saving when needed. Build them as the
+  destructive script ships, not after.
 
 ---
 
