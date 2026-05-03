@@ -24,6 +24,7 @@ const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const crypto = require('crypto');
 const lake = require('./content-lake');
+const judge = require('./judge');
 
 const MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
 const SECRET_NAME = process.env.OPENAI_SECRET_NAME || 'staar-tutor/openai-api-key';
@@ -504,9 +505,54 @@ async function handleGenerate(payload) {
     const raw = result?.choices?.[0]?.message?.content || '{}';
     let parsed;
     try { parsed = JSON.parse(raw); } catch { parsed = {}; }
-    const questions = sanitizeQuestions(parsed.questions, count);
-    if (!questions.length) {
+    const sanitized = sanitizeQuestions(parsed.questions, count);
+    if (!sanitized.length) {
       return bad(502, 'No questions generated');
+    }
+
+    // ===== Lambda runtime judge (May 3) =====
+    // Quality gate between OpenAI generation and lake save. Catches the
+    // ambiguity / multiple-correct / state-leak / age-fit class that the
+    // cold-start judge already gates on the sweep side. Regen-once on
+    // reject; drop on second reject; fail-open on timeout.
+    async function regenOne(rejectedQ) {
+      const topicMatch = topics.find(t => String(t.teks || '').toLowerCase() === String(rejectedQ.teks || '').toLowerCase());
+      const regenTopics = topicMatch ? [topicMatch] : [{ teks: rejectedQ.teks || '?', title: rejectedQ.unitTitle || '' }];
+      const regenSeed = `${seed}-regen-${Math.random().toString(36).slice(2, 8)}`;
+      const regenUser = buildGeneratorUser({ count: 1, seed: regenSeed, topics: regenTopics });
+      const r = await callOpenAI(apiKey, {
+        model: MODEL,
+        messages: [
+          { role: 'system', content: system },
+          { role: 'user', content: regenUser }
+        ],
+        response_format: { type: 'json_object' },
+        max_tokens: 600,
+        temperature: 0.9,
+        top_p: 0.95
+      });
+      const rawRegen = r?.choices?.[0]?.message?.content || '{}';
+      let parsedRegen;
+      try { parsedRegen = JSON.parse(rawRegen); } catch { parsedRegen = {}; }
+      const sanitizedRegen = sanitizeQuestions(parsedRegen.questions, 1);
+      return sanitizedRegen[0] || null;
+    }
+
+    const gated = await judge.gateBatch(sanitized, {
+      apiKey,
+      regenOne,
+      context: {
+        stateSlug: effectiveState,
+        subject: effectiveSubject,
+        grade,
+        gradeLabel: typeof grade === 'number' ? `Grade ${grade}` : String(grade || '')
+      }
+    });
+
+    const questions = gated.kept;
+    if (gated.batchEmpty) {
+      console.warn(`[handleGenerate] judge dropped entire batch original=${sanitized.length} dropped=${gated.dropped.length}`);
+      return bad(502, 'No questions passed quality gate');
     }
 
     // ===== Content-lake hook (Prompt I1) =====
@@ -537,9 +583,32 @@ async function handleGenerate(payload) {
           // duplicate or invalid — pool stays clean
         }
       }).catch(err => console.warn('[lake] save failed:', err.message));
+
+      // I2: log a 'generated' event so we can compute spend + cache miss rate.
+      lake.recordEvent({
+        eventType: 'generated',
+        userId: userIdForLake,
+        contentId,
+        poolKey,
+        state: effectiveState,
+        grade: String(grade),
+        subject: effectiveSubject,
+        meta: {
+          model: MODEL,
+          tokensUsed: q._tokensUsed || 0,
+          fromCache: false
+        }
+      }).catch(err => console.warn('[lake] event failed:', err.message));
     });
 
-    return ok({ questions, model: MODEL, seed });
+    const judgeMeta = {
+      kept: gated.kept.length,
+      dropped: gated.dropped.length,
+      regenerated: gated.regenerated,
+      judgeCalls: gated.judgeCalls,
+      budgetExceeded: gated.budgetExceeded
+    };
+    return ok({ questions, model: MODEL, seed, judge: judgeMeta });
   } catch (err) {
     console.error('Generate error:', err.message || err);
     return bad(502, 'Question generator unavailable');
@@ -699,7 +768,7 @@ const VALID_STATE_SLUGS = new Set([
   'wisconsin','wyoming'
 ]);
 const VALID_SUBJECTS = new Set(['math','reading','science','social-studies']);
-const SUBJECTS_LIVE = new Set(['math']);
+const SUBJECTS_LIVE = new Set(['math', 'reading']);
 const DEFAULT_STATE = 'texas';
 const DEFAULT_SUBJECT = 'math';
 
@@ -2338,13 +2407,51 @@ async function handleAdminPoolStats(payload) {
     .map(b => ({ ...b, avgQuality: b.count ? b.qualitySum / b.count : 0 }))
     .sort((a, b) => b.servedSum - a.servedSum);
 
+  // I2: scan today's events to compute generation count + cache hit rate + token spend.
+  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  let generatedCount = 0, servedCount = 0, tokensToday = 0;
+  try {
+    let lastKey;
+    do {
+      const evScan = await ddb.send(new ScanCommand({
+        TableName: 'staar-content-events',
+        FilterExpression: 'begins_with(eventDateKey, :d)',
+        ExpressionAttributeValues: { ':d': today },
+        ProjectionExpression: 'eventType, meta',
+        ExclusiveStartKey: lastKey
+      }));
+      for (const e of (evScan.Items || [])) {
+        if (e.eventType === 'generated') {
+          generatedCount++;
+          tokensToday += Number(e.meta?.tokensUsed || 0);
+        } else if (e.eventType === 'served') {
+          servedCount++;
+        }
+      }
+      lastKey = evScan.LastEvaluatedKey;
+    } while (lastKey);
+  } catch (err) {
+    console.warn('[adminPoolStats] events scan failed:', err.message);
+  }
+
+  // gpt-4o-mini blended ≈ $0.40/M tokens; embeddings are negligible.
+  const spendToday = (tokensToday / 1_000_000) * 0.40;
+  const cacheHitRate = servedCount > 0
+    ? Math.max(0, 1 - (generatedCount / servedCount))
+    : null;
+
   return ok({
     totalQuestions,
     flaggedCount,
-    cacheHitRate: null, // wired in I2 (events aggregator)
+    cacheHitRate,
+    spendToday: Number(spendToday.toFixed(4)),
+    tokensToday,
+    generatedToday: generatedCount,
+    servedToday: servedCount,
     buckets: bucketList
   });
 }
+
 async function handleAdminPatrolStats(payload) {
   const adminCheck = await requireAdmin(payload);
   if (adminCheck.error) return adminCheck.error;

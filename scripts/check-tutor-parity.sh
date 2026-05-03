@@ -13,6 +13,8 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 A="$REPO_ROOT/lambda/tutor.js"
 B="$REPO_ROOT/lambda/tutor-build/tutor.js"
+JA="$REPO_ROOT/lambda/judge.js"
+JB="$REPO_ROOT/lambda/tutor-build/judge.js"
 
 if [ ! -f "$A" ]; then
   echo "[parity] FAIL: $A not found" >&2
@@ -20,6 +22,14 @@ if [ ! -f "$A" ]; then
 fi
 if [ ! -f "$B" ]; then
   echo "[parity] FAIL: $B not found" >&2
+  exit 1
+fi
+if [ ! -f "$JA" ]; then
+  echo "[parity] FAIL: $JA not found" >&2
+  exit 1
+fi
+if [ ! -f "$JB" ]; then
+  echo "[parity] FAIL: $JB not found" >&2
   exit 1
 fi
 
@@ -81,6 +91,20 @@ for fn in buildSystemPrompt buildSummarySystemPrompt buildFirstUserMessage; do
   fi
 done
 
+# ============================================================
+# CHECK 4 — judge.js byte-identical between source and build
+# Lambda runtime judge (May 3) — full file diff because the module
+# is small and any drift between the two copies would mean the
+# deployed quality gate doesn't match the source we test against.
+# ============================================================
+if cmp -s "$JA" "$JB"; then
+  echo "[parity] OK: judge.js byte-identical between source and build"
+else
+  FAIL=1
+  echo "[parity] FAIL: judge.js differs between source and build (showing first 20 lines of diff):" >&2
+  diff "$JA" "$JB" | head -20 | sed 's/^/[parity]   /' >&2
+fi
+
 if [ "$FAIL" -ne 0 ]; then
   echo "[parity] ABORT — drift detected. Resolve before deploy." >&2
   echo "[parity] If this drift was intentional and tutor-build is the new source of truth," >&2
@@ -88,5 +112,5 @@ if [ "$FAIL" -ne 0 ]; then
   exit 1
 fi
 
-echo "[parity] PASS — tutor.js and tutor-build/tutor.js are in sync."
+echo "[parity] PASS — tutor.js, judge.js, and tutor-build/* are in sync."
 exit 0
