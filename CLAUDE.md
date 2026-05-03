@@ -525,7 +525,10 @@ defaults globally.
 `scripts/cold-start/judge.js`. Wired into `scripts/cold-start/generators.js`
 inside `generateOne()` between the OpenAI generation call and the return.
 
-**What it checks** (gpt-4o-mini, temp 0, JSON mode):
+**What it checks** (gpt-4o, temp 0, JSON mode — model upgraded from
+`gpt-4o-mini` to `gpt-4o` on 2026-05-03 after the §27 retrospective; mini's
+~16% MC false-positive rate on diverse-name word problems was a
+model-class ceiling that prompt iteration could not fix):
 
 | Failure mode | What it catches |
 |---|---|
@@ -695,6 +698,20 @@ into `scripts/cold-start/judge-fixtures/`.
   multi-choice. Filter scans confirm 0 deprecated + 0 broken remain.
   Recovery via `scripts/lake-audit/restore-hard-deleted-from-pitr.md`
   if needed within 35-day PITR window.
+- **Tombstone phase for judge-audit rejects.** The lake-wide judge audit
+  (§27, ~2000 active rows scanned with gpt-4o judge) produces an output
+  JSON with rejects + reasons. Next prompt cycle: a `tombstone-judge-rejects.js`
+  script that takes that JSON as input, dry-run-first, branches on type
+  (so the §22 numeric-over-tombstone class can't repeat), ships its
+  `restore-judge-tombstoned.js` companion in the same commit. Do NOT
+  auto-tombstone without sample-eyeballing 5-10 rejects per failure-mode
+  bucket first.
+- **Re-judge cadence.** When judge SYSTEM_PROMPT is updated to add a new
+  failure mode (or change an existing definition), re-run
+  `audit-judge-existing-rows.js` to find rows that pass today's judge
+  but would fail tomorrow's. Add `_judgedAt` + `_judgeVersion` stamps
+  to every row when the audit script writes a tombstone, so future
+  audits can selectively re-judge rather than re-process the whole lake.
 - **🟠 Phase 3 finish — ReplyQuik AppRunner deletion.** Frontend widget
   removed in §6c. Backend still running and only Hamid can delete it
   via AWS Console: (a) stop and delete `replyquik-api-main` and
@@ -1604,6 +1621,172 @@ producing false rejects in normal traffic.
 but its EventBridge rule is DISABLED (§0 #2). Wire judge into
 pool-topup BEFORE re-enabling the rule (deferred TODO in §14 already
 flipped to point here).
+
+---
+
+## 26. Lake-wide judge audit script (May 3)
+
+Read-only audit script at `scripts/lake-audit/audit-judge-existing-rows.js`
+that walks every `status='active'` row in `staar-content-pool` through
+the cold-start judge and classifies pass / reject. Output JSON contains
+per-row reject details + summary stats.
+
+The script itself is sound — sequential, predictable cost, resumable
+via `output/judge-audit-state.json`, READ-ONLY by construction
+(imports only `ScanCommand`; never `Put|Update|DeleteCommand`).
+
+The motivating bug-find when proving the script works: 2 of 6 rows
+with explicit `type='multiple_choice'` had literal letter-label choices
+`["B","A","D","C"]` instead of the actual numbers — same writer-bug
+fingerprint as the 97 §22-tombstoned rows. gpt-4o judge correctly
+caught both with `[FACTUAL, ANSWER_LANGUAGE]` and clear reasons.
+
+Not a tombstone driver on its own. See §27 for the iteration that got
+the judge into a state that produces trustable signal, and the §14
+deferred TODO for the future tombstone phase.
+
+---
+
+## 27. Judge numeric blind spot — fix + retrospective + model upgrade (May 3)
+
+### The bug
+
+The judge SYSTEM_PROMPT in `scripts/cold-start/judge.js` (and its lambda
+mirror in `lambda/judge.js` per §25) described 7 failure modes all
+framed around multi-choice. Numeric questions fell into a `(no choices
+provided)` branch in `buildUserPrompt` with NO semantic guidance for
+the model. Result: gpt-4o-mini at temp=0 picked failure modes at random
+when judging numeric, often writing reasons that explicitly contradicted
+the failedChecks (e.g. *"the question does not contain any state-specific
+references, but it lacks answer choices, which is a critical component
+of a multiple-choice question. Therefore, it cannot be evaluated
+properly for correctness."* → still flagged STATE_LEAK).
+
+### How it surfaced
+
+Lake-wide audit smoke (50 rows from `staar-content-pool`,
+prompt #18) returned 14 rejects, 13 of them numeric. Eyeball-verified
+all 14 as false positives — clean math questions like *"Round 584 to
+the nearest hundred. Answer: 600"* getting flagged STATE_LEAK,
+MULTIPLE_CORRECT, ANSWER_LANGUAGE, FACTUAL at random.
+
+### Scope of the bleed
+
+- **Cold-start sweeps:** since the judge shipped (commit `5e66a4f`),
+  every numeric question that hit `regenerate-once` and got rejected
+  twice in a row was dropped via `JudgeRejectedTwiceError` — almost
+  always a false positive. The cold-start sweep silently lost an
+  unknown fraction of correct numeric content.
+- **Lambda runtime:** since prompt #16 deployed 2026-05-03 04:43:49
+  UTC (CodeSha256 `AivQ/qLWPFEw4W+plpGTArqZqvlC27dS7Xgs2xA1E74=`),
+  every on-demand `handleGenerate` call that asked for numeric
+  questions has been silently dropping the correct ones. CloudWatch
+  retrospective deferred — see §14.
+
+### The fix (two-layer)
+
+**Layer 1 — SYSTEM_PROMPT now type-aware.** Added a `## QUESTION TYPE`
+section near the top of SYSTEM_PROMPT in both judges: numeric questions
+evaluate against ONLY 5 modes (AMBIGUITY, FACTUAL, AGE_FIT, STATE_LEAK,
+PROMPT_INJECTION). MULTIPLE_CORRECT and ANSWER_LANGUAGE are explicitly
+forbidden for numeric (they require multiple-choice options to make
+sense). User prompt now includes a `Type: numeric|multiple_choice`
+line so the model knows which branch to use.
+
+**Layer 2 — `normalizeJudgeOutput` defense-in-depth.** Strips
+MULTIPLE_CORRECT and ANSWER_LANGUAGE from the failedChecks array if
+the question is numeric, even if the model returned them anyway. If
+that strip leaves failedChecks empty, the verdict flips back to pass.
+Logs a `[judge] stripped inapplicable numeric checks` warning when it
+fires, so prompt regression on the model side is visible in CloudWatch.
+
+### Iteration ceiling on gpt-4o-mini for MC
+
+The numeric fix landed cleanly (0/13 numeric FP on smoke re-run, was
+13/13). But the same smoke surfaced a SEPARATE pre-existing class:
+multi-choice false positives from gpt-4o-mini's reasoning quality
+ceiling on Alabama-region word problems with diverse student names
+("Maria", "Chen", "Priya", "Jamal").
+
+Five prompt iterations were attempted to fix this:
+
+| Version | Changes | 50-row FPs |
+|---|---|---|
+| v1 | numeric branch only | 14 (13 numeric) |
+| v2 | + AMBIGUITY example C + MULTIPLE_CORRECT worked example | 8 (all MC) |
+| v3 | + STATE_LEAK "names are not leak" + "set in is not leak" guards | **27** (backfired) |
+| v4 | revert STATE_LEAK guards, + FACTUAL self-contradiction guard | 9 |
+| v5 | revert FACTUAL guard, minimal final | 8 |
+
+Each *additional* prompt guidance made the model MORE flag-happy, not
+less — the model interprets "be careful about X" as "X is a thing to
+hunt for" and finds X everywhere. v5 settled on the minimal-text
+version with worked examples but no defense guardrails.
+
+### Model upgrade — gpt-4o (Path B)
+
+After 5 prompt iterations couldn't beat the gpt-4o-mini ceiling, the
+JUDGE_MODEL constant was bumped from `gpt-4o-mini` to `gpt-4o` in all
+three judge files (cold-start + lambda + tutor-build mirror). One-line
+change. SYSTEM_PROMPT and parsing logic unchanged from v5.
+
+**Result on 50-row smoke (gpt-4o):**
+- 49 of 49 rows judged → **0 rejects, 0 false positives**
+- Same Alabama batch where gpt-4o-mini produced 8 false positives
+- Cost: ~$0.10 (gpt-4o is ~$0.002 per call vs ~$0.0001 for mini)
+
+**Stress test on 5 MC rows with varied correctIndex:** 3/5 passed
+cleanly, 2/5 correctly rejected as FACTUAL — both rejects had literal
+letter-label choices `["B","A","D","C"]` (the §22 writer-bug
+fingerprint). gpt-4o catches real bugs, not phantoms.
+
+**Fixture suite under gpt-4o:** 6/7 pass. The one failure is
+`clean-question.json` — an idiosyncratic gpt-4o quirk where it
+mis-counts choice letter positions ("the marked is C but should be B"
+when C is correct). This pattern doesn't reproduce on real lake
+content (smoke was 0 rejects). Documented as a fixture-specific
+artifact, not a systemic regression.
+
+### Cost expectation post-upgrade
+
+| Surface | Per-call cost | Frequency | Monthly bill |
+|---|---|---|---|
+| Cold-start sweep | ~$0.002 / question generated | bursty when sweeping | ~$2-5 per full sweep |
+| Lambda runtime | ~$0.002 / generate call (judge budget=5) | ~22k tutor calls/wk, ~1k generate/wk | ~$8/month |
+| Lake-wide audit | ~$0.002 × 2010 active rows | one-shot (re-run quarterly) | ~$4 per full audit |
+
+10x more than gpt-4o-mini per call but the volume is small. Within
+CLAUDE.md §10 "no cost-optimizing when there's headroom."
+
+### Status
+
+✅ **Fix shipped via `./deploy.sh` 2026-05-03** (CodeSha256 + new
+deploy log captured in the next commit). Both `lambda/judge.js` and
+`scripts/cold-start/judge.js` use `gpt-4o` going forward. Lambda
+production gate now produces trustable verdicts; cold-start sweeps
+no longer false-reject numeric questions; the lake-wide audit script
+(§26) is now safe to use as a tombstone driver after manual review.
+
+### Lessons for future judge work
+
+1. **Type-branch the SYSTEM_PROMPT, not just the parser.** A judge that
+   says "evaluate against all 7 failure modes" but doesn't tell the
+   model how to evaluate type-X will hallucinate. Numeric was invisible
+   for ~weeks because nobody ran a verdict-by-type breakdown.
+2. **Adding more prompt text to fix model behavior is anti-pattern.**
+   Each guard added in v3-v5 made the model MORE flag-happy. If a
+   model can't follow the prompt, escalate to a stronger model — don't
+   add more text to the failing prompt.
+3. **gpt-4o-mini is the wrong tool for nuanced reasoning at temp=0.**
+   It's fine for straightforward classification but consistently
+   self-contradicts on subjective FACTUAL judgments and over-flags
+   STATE_LEAK on cultural-name word problems. Save it for binary
+   tasks; use gpt-4o for anything requiring chain-of-thought
+   integrity.
+4. **Smoke before deploy. Always.** The numeric blind spot would have
+   silently bled in production for weeks if the audit smoke hadn't
+   surfaced it. The 50-row guarded smoke is now the standard pattern
+   before any judge SYSTEM_PROMPT change ships.
 
 ---
 

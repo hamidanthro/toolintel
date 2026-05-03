@@ -1,0 +1,20 @@
+{
+  "name": "numeric-ambiguity-fail",
+  "description": "271142 re-encoded as a numeric question (no choices). The digit 1 appears at both the hundreds (100) and thousands (1000) place — two defensible answers. AMBIGUITY must fire even without distractors. Proves the numeric branch still catches the canonical place-value bug.",
+  "question": {
+    "type": "numeric",
+    "question": "In 271142, what is the value of the digit 1?",
+    "answer": "100",
+    "explanation": "The 1 is in the hundreds place, so its value is 100."
+  },
+  "context": {
+    "stateSlug": "texas",
+    "subject": "math",
+    "grade": "grade-4",
+    "gradeLabel": "grade 4"
+  },
+  "expected": {
+    "verdict": "reject",
+    "failedChecks": ["AMBIGUITY"]
+  }
+}

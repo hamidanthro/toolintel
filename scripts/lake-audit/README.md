@@ -8,6 +8,99 @@ the audit JSON output here.
 
 ---
 
+## audit-judge-existing-rows.js
+
+Walks every `status='active'` row in `staar-content-pool` through the
+cold-start Question Sanity Judge (`scripts/cold-start/judge.js`) and
+classifies pass / reject. Writes per-row classification + summary to
+`output/judge-audit-<UTC-timestamp>.json`. **READ-ONLY by construction**:
+imports only `ScanCommand`; never imports `PutCommand`, `UpdateCommand`,
+or `DeleteCommand`.
+
+Catches the AMBIGUITY / MULTIPLE_CORRECT / STATE_LEAK / FACTUAL etc.
+contamination class that pre-dates the writer-side judge wiring
+(cold-start gate landed in commit `5e66a4f`; lambda gate landed in
+`405b613`).
+
+### Run
+
+```sh
+OPENAI_API_KEY=$(aws secretsmanager get-secret-value \
+    --secret-id staar-tutor/openai-api-key \
+    --query SecretString --output text) \
+  node scripts/lake-audit/audit-judge-existing-rows.js [--limit N] [--fresh]
+```
+
+Flags:
+- `--limit N` — process only the first N active rows (smoke / spot-check).
+- `--fresh` — delete the resume state file before starting.
+- `--help` — print usage and exit.
+
+Env vars:
+- `OPENAI_API_KEY` (required)
+- `JUDGE_AUDIT_MAX_CALLS` (default = active count + 50; throws if exceeded)
+
+### Sequential, predictable cost
+
+One judge call at a time. With `JUDGE_MODEL = 'gpt-4o'` (per CLAUDE.md
+§27 retrospective): ~250 input + 150 output tokens per call ≈ $0.002 per
+row. Full lake audit (~2000 rows) ≈ **$4** + ~30-60 minutes wall-clock.
+
+### Resumable
+
+Writes `output/judge-audit-state.json` every 100 rows. On crash,
+re-running picks up where it left off (skips already-processed
+contentIds). Clean completion (no `--limit`) writes the final
+timestamped JSON and deletes the state file.
+
+### Type branching
+
+Rows with `type: undefined` (legacy cold-start) are normalized at audit
+time: choices array → `multiple_choice`; non-empty answer string with
+no choices → `numeric`. The judge's `inferType` reads the same shape.
+Numeric rows skip MULTIPLE_CORRECT and ANSWER_LANGUAGE (per the §27
+type-aware SYSTEM_PROMPT branch); multi-choice evaluates against all 7.
+
+### Output JSON shape
+
+```jsonc
+{
+  "summary": {
+    "totalActive": 2010,
+    "totalJudged": 2010,
+    "totalPass": 1900,
+    "totalReject": 110,
+    "estimatedCostUSD": 4.02,
+    "rejectsByCheck": { "FACTUAL": 60, "AMBIGUITY": 20, ... },
+    "rejectsByState": { "alabama": 18, "texas": 12, ... },
+    "rejectsByType": { "multiple_choice": 90, "numeric": 20 }
+  },
+  "rejects": [
+    {
+      "contentId": "...", "poolKey": "...", "state": "...",
+      "subject": "...", "grade": "...", "type": "...",
+      "questionExcerpt": "first 200 chars",
+      "choices": [...] | null, "correctIndex": N | null,
+      "answer": "..." | null,
+      "failedChecks": ["FACTUAL"],
+      "reasons": ["..."]
+    }
+  ]
+}
+```
+
+Passes are NOT in the output (would bloat). Only rejects + summary
+counts are written.
+
+### What to do after reviewing the output
+
+This script does not delete. Tombstone of judge-audit rejects is its
+own future commit. Per the §22 lesson: ship a restore script in the
+same commit, dry-run-first, branch on type, and do NOT auto-tombstone
+without manual review of a sample.
+
+---
+
 ## audit-texas-fallback.js
 
 Scans every row in `staar-content-pool` and flags suspects against 8 heuristics

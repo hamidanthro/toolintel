@@ -1,0 +1,20 @@
+{
+  "name": "numeric-pass",
+  "description": "Clean numeric arithmetic question. Correct answer string matches stem (45+27=72). No state references. Grade-appropriate vocabulary. After the May 3 numeric branch, this MUST pass — pre-fix the cold-start judge would false-flag MULTIPLE_CORRECT or STATE_LEAK on this exact shape (50-row audit smoke caught 13 such false positives).",
+  "question": {
+    "type": "numeric",
+    "question": "What is 45 + 27?",
+    "answer": "72",
+    "explanation": "Adding 45 and 27 gives 72."
+  },
+  "context": {
+    "stateSlug": "alabama",
+    "subject": "math",
+    "grade": "grade-4",
+    "gradeLabel": "grade 4"
+  },
+  "expected": {
+    "verdict": "pass",
+    "failedChecks": []
+  }
+}
