@@ -673,6 +673,19 @@ into `scripts/cold-start/judge-fixtures/`.
   button outside the scrollable content area or use a sticky-friendly
   parent layout. §18 implemented full-width as the easier first
   improvement; true sticky-bottom-of-viewport is its own commit.
+- **🟠 Lake cleanup — tombstone phase.** Audit ran 2026-05-02 (see §20).
+  Output JSON at `scripts/lake-audit/output/audit-20260503T001406Z.json`.
+  Two distinct categories needing different handling: (a) **10,149
+  cold-v1 rows already `status=deprecated`** — safe to hard-delete in a
+  one-shot pass; reclaims ~170 MB and drops the 504 Texas-leak rows for
+  good; (b) **186 active+broken rows missing `correctIndex`** generated
+  by `lambda/tutor.js#handleGenerate` and currently servable to kids —
+  needs the writer path investigated first (likely a sanitizeQuestions
+  bug in the lambda's fire-and-forget save), then either flip them to
+  `status=broken` and stop serving, or hard-delete. Hamid's call on (a)
+  vs (b) order. Script lives at
+  `scripts/lake-audit/tombstone-*.js` (TBD); it's deliberately not built
+  yet — the audit + this TODO is the staging area.
 - **🟠 Phase 3 finish — ReplyQuik AppRunner deletion.** Frontend widget
   removed in §6c. Backend still running and only Hamid can delete it
   via AWS Console: (a) stop and delete `replyquik-api-main` and
@@ -1134,6 +1147,76 @@ single rule at `@media (max-width: 900px)` (line 1491) that sets
 cleanly — `position: fixed` at 768 wins over `static` at 900 because
 of cascade order. Worth a future tidy to consolidate the 900 → 768 jump
 into a single canonical breakpoint, but not urgent.
+
+---
+
+## 20. Lake cleanup — audit phase (May 2)
+
+**Why:** Pre commit `a1730a5` the cold-start generator silently fell back to
+Texas prompts whenever a non-flagship state was requested. Rows produced in
+that window can carry Texas landmarks (Alamo, San Antonio, etc.), the wrong
+test name (STAAR for non-Texas states), or wrong standards (TEKS) in the
+question text or explanation. The prior `tombstone-legacy.js` pass already
+deprecated 10,149 cold-v1 rows in bulk by status flip; this audit catches
+what slipped through that pass and what newer paths may have re-introduced.
+
+**Where:** `scripts/lake-audit/` — read-only, separate from cold-start.
+README documents every script in there and the strict no-delete rule.
+
+**What ran (`audit-texas-fallback.js` against production, 2026-05-02):**
+
+| Metric | Value |
+|---|---|
+| Total scanned | 12,238 |
+| Total suspect | 10,335 (84.45%) |
+| Clean rows | 1,903 (these are healthy `v1` / `reading-v1` lambda-generated rows) |
+| Output JSON | `scripts/lake-audit/output/audit-20260503T001406Z.json` (~9.5 MB; gitignored) |
+| Elapsed | 21 seconds |
+
+**Heuristic breakdown:**
+
+| Heuristic | Count | Notes |
+|---|---|---|
+| `PROMPT_VERSION_LEGACY` | 10,335 | Every suspect row matches; 10,149 are cold-v1, 186 are unversioned |
+| `STATE_LEAK_TEXAS` | 504 | Subset of the cold-v1 deprecated rows — confirms the original fallback bug surfaced in ~5% of cold-v1 generations |
+| `MISSING_REQUIRED_FIELDS` | 186 | All 186 are status=active, missing `correctIndex`. Came from `lambda/tutor.js#handleGenerate` (gpt-4o-mini stamp, no cold-start prefix). Currently servable but would error or render nonsense |
+| `STATE_LEAK_CALIFORNIA` / `_FLORIDA` / `_NEW_YORK` | 0 each | The fallback bug only contaminated toward Texas (the default state), no other-flagship leakage |
+| `STANDARDS_LEAK` (TEKS for non-TX) | 0 | Subsumed by STATE_LEAK_TEXAS in practice |
+| `TEST_NAME_LEAK` ("STAAR test"/etc for non-TX) | 0 | The fallback prompt referenced TEKS but used phrasing that didn't trigger this stricter pattern |
+
+**Status breakdown of suspects:**
+
+| Status | Count | Cleanup category |
+|---|---|---|
+| `deprecated` | 10,149 | Already not served. Hard-delete to reclaim ~170 MB of storage (would also drop 504 Texas-leak rows for good) |
+| `active` | 186 | **Currently servable, currently broken.** Investigate the writer path (`lambda/tutor.js#handleGenerate`) before either deleting or fixing |
+
+**Top 7 states by suspect count** (covers 99% of suspects):
+florida (1,986), arkansas (1,558), texas (1,428), alaska (1,400),
+alabama (1,400), california (1,226), arizona (1,200). Long tail:
+nebraska 52, colorado 44, tennessee 30. The 7-state concentration matches
+the cold-start sweep that ran in late April — those were the targeted
+states.
+
+**The 186 active+broken rows by state:**
+nebraska (52), tennessee (30), texas (28), california (26), florida (20),
+colorado (19), maryland (11). All have `generatedBy: "gpt-4o-mini"` (no
+cold-start prefix → they came from the lambda on-demand path, not from
+cold-start). All have `reviewStatus: "auto-approved"` (the lambda's
+fire-and-forget save with no judge gate per CLAUDE.md §7). Sample
+question: `"Which fraction is greater? 2/5 or 2/8"` — has no `choices`
+array at all.
+
+**What this commit does NOT do:**
+- Does not delete any row.
+- Does not modify any row.
+- Does not run a tombstone pass — that's its own deliberately-named
+  script in a separate commit, after Hamid reviews the audit JSON.
+
+**Next phase (deferred):** see §14. The tombstone-phase script will
+take the audit JSON as input and either (a) hard-delete the 10,149
+already-deprecated rows, or (b) flip the 186 active+broken rows to
+`status: "broken"` and stop serving them, or (c) both. Hamid's call.
 
 ---
 

@@ -1,0 +1,14 @@
+{
+  "name": "lake-audit",
+  "version": "1.0.0",
+  "private": true,
+  "description": "READ-ONLY audit scripts for staar-content-pool. No script in this directory ever deletes or updates production data.",
+  "type": "commonjs",
+  "scripts": {
+    "audit:texas-fallback": "node audit-texas-fallback.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.658.0",
+    "@aws-sdk/lib-dynamodb": "^3.658.0"
+  }
+}

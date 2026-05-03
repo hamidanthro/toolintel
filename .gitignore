@@ -3,3 +3,5 @@ lambda/tutor-build/
 lambda/*.zip
 backups/*.zip
 build/
+scripts/lake-audit/output/
+scripts/lake-audit/node_modules/
