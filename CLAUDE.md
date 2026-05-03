@@ -1758,14 +1758,28 @@ artifact, not a systemic regression.
 10x more than gpt-4o-mini per call but the volume is small. Within
 CLAUDE.md §10 "no cost-optimizing when there's headroom."
 
+### Deploy log (2026-05-03)
+
+| When | UTC `2026-05-03T05:52:14Z` |
+|---|---|
+| Pre-deploy CodeSha256 | `AivQ/qLWPFEw4W+plpGTArqZqvlC27dS7Xgs2xA1E74=` (lambda runtime judge with gpt-4o-mini) |
+| Post-deploy CodeSha256 | `zG/aOwzTCQnwySMT5VGjcQOe4yoNctbAesOnIQMQEoI=` |
+| Backup zip | `backups/staar-tutor-20260503T055152Z-AivQqLWP.zip` (4,923,274 bytes, sha256 `022bd0fea2d63c5130e16fa996919302ba99aaf942dbb752ed782cdb103513be`) |
+| New deploy zip | `build/staar-tutor-20260503T055152Z.zip` (4,924,308 bytes, sha256 `cc6fda3b0cd30909f0c92313e551a371039ee32a0d72d6c07ac3a72103101282`) |
+| Source | `lambda/tutor-build/` post commit `7f53f0b` |
+| What landed | numeric branch in SYSTEM_PROMPT + JUDGE_MODEL=`gpt-4o` + audit script |
+| Live smoke (handleGenerate, grade-4 math, count=2) | HTTP 200, `judge: { kept: 2, dropped: 0, regenerated: 1, judgeCalls: 3 }` — judge actively rejected one question (ANSWER_LANGUAGE), regenerated it, accepted replacement |
+| CloudWatch `[lambda-judge]` lines (verified) | `verdict=reject reasons=ANSWER_LANGUAGE` → `verdict=pass` (post-regen) → `verdict=pass` (numeric, second question) → `batch-summary kept=2 dropped=0 regenerated=1 judgeCalls=3 budgetExceeded=false` |
+| Outcome | clean — no rollback. Production lambda judge now uses gpt-4o; CloudWatch retrospective on the gpt-4o-mini bleed window (~04:43–05:52 UTC) is in §14 deferred TODOs. |
+
 ### Status
 
-✅ **Fix shipped via `./deploy.sh` 2026-05-03** (CodeSha256 + new
-deploy log captured in the next commit). Both `lambda/judge.js` and
-`scripts/cold-start/judge.js` use `gpt-4o` going forward. Lambda
-production gate now produces trustable verdicts; cold-start sweeps
-no longer false-reject numeric questions; the lake-wide audit script
-(§26) is now safe to use as a tombstone driver after manual review.
+✅ **Fix shipped via `./deploy.sh` 2026-05-03 05:52:14 UTC.** Both
+`lambda/judge.js` and `scripts/cold-start/judge.js` use `gpt-4o`
+going forward. Lambda production gate now produces trustable verdicts;
+cold-start sweeps no longer false-reject numeric questions; the
+lake-wide audit script (§26) is now safe to use as a tombstone
+driver after manual review.
 
 ### Lessons for future judge work
 
