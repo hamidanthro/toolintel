@@ -698,27 +698,43 @@ into `scripts/cold-start/judge-fixtures/`.
   multi-choice. Filter scans confirm 0 deprecated + 0 broken remain.
   Recovery via `scripts/lake-audit/restore-hard-deleted-from-pitr.md`
   if needed within 35-day PITR window.
-- **Tombstone phase for judge-audit rejects.** The first lake-wide judge
-  audit (§27, 2,012 active rows / 87 rejects / 4.6% rate) produced
-  `scripts/lake-audit/output/judge-audit-2026-05-03T0601Z.json`. Next
-  prompt cycle: a `tombstone-judge-rejects.js` script that takes that
-  JSON as input, dry-run-first, branches on type (so the §22
-  numeric-over-tombstone class can't repeat), ships its
-  `restore-judge-tombstoned.js` companion in the same commit. Sample-
-  eyeball at least 5-10 rejects per failure-mode bucket (FACTUAL 67,
-  MULTIPLE_CORRECT 16, ANSWER_LANGUAGE 6, AMBIGUITY 2) before any
-  destructive action — gpt-4o still has letter-position quirks
-  (~1/3 of FACTUAL rejects in spot-check were "should be B, not A"
-  artifacts where A was correct).
-- **Re-audit the 126 fail-open rows.** Audit hit a 429 TPM limit
-  (gpt-4o org cap = 30k tokens/min) on 126 of 2012 rows, treated as
-  pass per the fail-open design. To verify these properly, re-run
-  the audit on just those contentIds — either (a) add proper
-  retry-with-exponential-backoff on 429 to the judge module's
-  `callJudgeOpenAI` helper, or (b) split full audit into multiple
-  runs spaced ~1 min apart to stay under TPM. Option (a) is the
-  right long-term fix; option (b) is the workaround for the
-  immediate re-audit pass.
+- ~~**Tombstone phase for judge-audit rejects.**~~ ✅ DONE 2026-05-03
+  (Path 1 — see §28). 16 of 87 rejects tombstoned (the 14
+  MULTIPLE_CORRECT + 2 AMBIGUITY exclusive-bucket rows). Restore
+  companion shipped in the same commit. The other 70 audit
+  candidates (FACTUAL + ANSWER_LANGUAGE + 2 mixed combos) remain
+  `status='active'` pending the classifier-improvement TODOs below.
+- **🟠 Improve gpt-4o letter_quirk classifier** (BLOCKER for
+  tombstoning the FACTUAL bucket). Phase B sample-eyeball showed
+  4 of 5 FACTUAL rejects are letter-position quirks the regex
+  classifier missed — the model writes "should be A. 15, but the
+  calculation is 15, which matches the explanation" while flagging
+  FACTUAL anyway, on questions where 15 IS the marked answer A.
+  Better: extract the "should be X" value from the judge reason
+  via regex or LLM, compare to the marked-correct value, classify
+  as letter_quirk if they're equal. Would shrink the FACTUAL
+  bucket from 52 unprocessed → maybe ~10 real bugs. Then re-run
+  Phase B gate and tombstone if cleared.
+- **🟠 Investigate ANSWER_LANGUAGE bucket** (BLOCKER for tombstoning
+  it). Phase B sample showed 1 of 3 was a hallucinated "letter
+  prefix" issue the judge fabricated (the choices contained no
+  prefix). Either (a) hand-review the 6 ANSWER_LANGUAGE rejects
+  individually (cheap), or (b) re-judge them with a sharper prompt
+  that explicitly checks "is the letter prefix actually in the
+  choice text?" before flagging.
+- **Dedup-tombstone phase** (warranted — 8.57% > 5% trigger
+  threshold). The §28 uniqueness report found 171 rows in 57
+  exact-text duplicate groups (largest group: 11 identical rows
+  spanning multiple poolKeys). Plan a `dedup-tombstone.js` that:
+  picks one canonical row per group (oldest by `generatedAt`?),
+  tombstones the rest with `tombstoneReason='exact_dup_<groupHash>'`,
+  ships its restore companion in the same commit. Decide content
+  policy first: do we WANT same-text questions across multiple
+  states (state-agnostic seeds) or do we dedup to one canonical
+  row?
+- **Re-audit the 126 fail-open rows from §27 audit** (still
+  standing). Either retry-with-backoff in `callJudgeOpenAI` or
+  split runs to stay under 30k TPM.
 - **Audit script's cost estimator is wrong.** It uses $0.0001/call
   (the gpt-4o-mini rate) — the §27 full audit reported $0.19 but
   real cost was ~$3.77 (gpt-4o ≈ $0.002/call). One-line fix:
@@ -1865,6 +1881,116 @@ first. Re-judge the 126 fail-open rows with proper retry-on-429
    silently bled in production for weeks if the audit smoke hadn't
    surfaced it. The 50-row guarded smoke is now the standard pattern
    before any judge SYSTEM_PROMPT change ships.
+
+---
+
+## 28. Lake cleanup — tombstone judge rejects + uniqueness report (May 3)
+
+### Tombstone summary
+
+Path 1 cleanup of the §27 judge-audit (87 rejects total). Phase B
+sample-eyeball gate scoped the destructive action to two
+high-confidence buckets only:
+
+| Bucket | Audit count | Phase B FP rate | Action |
+|---|---|---|---|
+| FACTUAL | 67 | ~80% (4 of 5 sampled) | **PARKED** — gpt-4o letter_quirk pattern dominates; classifier improvement in §14 TODOs before tombstone |
+| ANSWER_LANGUAGE | 6 | ~33% (1 of 3 sampled) | **PARKED** — sample size small but failure pattern (judge fabricating "letter prefix" issues that don't exist in the data) is concerning |
+| MULTIPLE_CORRECT | 16 | ~20% (1 of 5 sampled) | tombstone — high signal-to-noise (multi-equivalent fractions, equivalent expressions, "14" + "14 apples" both as choices) |
+| AMBIGUITY | 2 | borderline (sample of 2) | tombstone — both are real ambiguous-wording cases |
+
+**Strict scope:** rows whose failedChecks are EXCLUSIVELY in
+{MULTIPLE_CORRECT, AMBIGUITY}. Combo rows
+(MULTIPLE_CORRECT+ANSWER_LANGUAGE = 1 row,
+FACTUAL+MULTIPLE_CORRECT = 1 row) were EXCLUDED because they touch
+parked buckets. Final candidate count: **16** (14 MULTIPLE_CORRECT
+alone + 2 AMBIGUITY alone).
+
+The other **70 audit candidates remain `status='active'` with no
+change.** FACTUAL (52 of 67 after letter_quirk classifier exclusion)
++ ANSWER_LANGUAGE (6) + 2 mixed combos = 70 not touched.
+
+### Tombstone execution
+
+| Step | Result |
+|---|---|
+| Pre-tombstone active count | 2,012 |
+| Candidates after strict filter | 16 |
+| Dry-run | 16/16 would-update, 0 errors |
+| Apply | 16/16 UPDATED, 0 errors, 0 skipped (no concurrent writes) |
+| Spot-check 5 random | all 5 confirm `status='broken'`, `tombstonedAt` set, `tombstoneReason='judge_audit_2026-05-03_<bucket>'`, `_judgeAuditId='judge-audit-2026-05-03T0601Z'` |
+| Post-tombstone active count | **1,996** (Δ = 16 ✓) |
+| Broken rows with `judge_audit_` reason | 16 ✓ |
+| Output JSON | `scripts/lake-audit/output/tombstone-judge-rejects-2026-05-03T0805Z.json` (gitignored) |
+| Restore companion | `scripts/lake-audit/restore-judge-rejects.js` ships in same commit (per §22). Verified parity: same retry helper, same ConditionExpression discipline, default-resolves to most recent tombstone JSON. |
+
+### Implementation notes
+
+- **DynamoDB underscore-attr gotcha** (same class as the audit
+  script's ProjectionExpression issue): underscore-prefixed field
+  names like `_judgeAuditId` cannot appear directly in
+  `UpdateExpression`. Must use `ExpressionAttributeNames` alias
+  (`#jaid`). First apply attempt errored on all 16 with the
+  Invalid-UpdateExpression syntax error — caught BEFORE any state
+  mutation, fixed in same prompt cycle, re-applied cleanly. The
+  ConditionExpression discipline meant that even if the first
+  attempt had partially succeeded, the restore script would handle
+  recovery cleanly.
+- **Tombstone reason format:** `judge_audit_2026-05-03_<failedChecks>`
+  where `<failedChecks>` is the joined list (e.g.
+  `judge_audit_2026-05-03_MULTIPLE_CORRECT`). The `_judgeAuditId`
+  field stores the audit-run filename
+  (`judge-audit-2026-05-03T0601Z`) so reviewers can trace back to
+  the exact audit JSON that flagged each row.
+
+### Uniqueness report
+
+Run on the post-tombstone active set (1,996 rows). Read-only.
+Output: `scripts/lake-audit/output/uniqueness-report-2026-05-03T0807Z.json`
+(gitignored).
+
+| Metric | Value |
+|---|---|
+| Total active | 1,996 |
+| Unique by exact text (whitespace-normalized) | 1,882 |
+| Exact-text duplicate groups | 57 |
+| Total rows in exact-text dup groups | 171 |
+| Rows with embeddings | 1,971 (98.7%) |
+| poolKey buckets compared | 242 |
+| Embedding pairs compared | 8,335 |
+| Embedding pairs ≥ 0.92 cosine within poolKey | **0** |
+| Total rows with any duplicate | 171 |
+| **% lake with at least one duplicate** | **8.57%** |
+| Largest exact-text dup group | 11 rows |
+
+**Why 0 embedding pairs but 171 exact-text dups:** the embedding
+check is intentionally constrained to within-poolKey (per §28 spec,
+state-flavor differences are by design). Exact-text dups span
+multiple poolKeys — same question stem appearing in
+alabama/grade-3/math AND alaska/grade-3/math AND others. These
+cross-bucket dups make up most of the 171. Whether they're "really
+duplicates that should be deduplicated" is a content-policy call:
+keep them as state-agnostic seeds, or dedup to one canonical row
+per question.
+
+**Top 5 exact-text dup groups (by group size):**
+- 11 rows: same stem appearing in 11 distinct poolKeys
+- 8 rows
+- 7 rows
+- 6 rows (×2)
+
+8.57% > the 5% threshold logged in §14 — a dedup-tombstone phase
+is now warranted. Logged as a follow-up TODO.
+
+### Status
+
+✅ **Path 1 cleanup complete 2026-05-03.** 16 high-confidence
+rejects tombstoned (status=broken, reversible via
+`restore-judge-rejects.js` within the 35-day PITR window). Lake
+active count: 2,012 → 1,996. The other 70 audit candidates
+(FACTUAL + ANSWER_LANGUAGE + 2 mixed combos) are still
+`status='active'` and untouched, awaiting classifier improvement
+before any further tombstone action.
 
 ---
 

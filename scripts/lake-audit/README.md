@@ -8,6 +8,99 @@ the audit JSON output here.
 
 ---
 
+## tombstone-judge-rejects.js + restore-judge-rejects.js
+
+Path 1 cleanup driver for high-confidence rejects from a judge-audit
+run. Per CLAUDE.md §28: scope is restricted to MULTIPLE_CORRECT and
+AMBIGUITY rejects whose failedChecks are EXCLUSIVELY in those two
+buckets. FACTUAL and ANSWER_LANGUAGE rejects are PARKED — Phase B
+gate showed >30% false-positive rate in those buckets without a
+better gpt-4o letter_quirk classifier (TODO §14).
+
+### tombstone-judge-rejects.js
+
+Flips `status: active` → `status: broken` and stamps
+`tombstoneReason='judge_audit_2026-05-03_<failedChecks>'` +
+`_judgeAuditId=<audit-run-id>` on each candidate. **Reversible**
+(status flip, no data loss); **never hard-deletes** in the same
+commit per §22.
+
+```sh
+# Dry-run (default — no writes)
+node scripts/lake-audit/tombstone-judge-rejects.js
+
+# Apply for real
+node scripts/lake-audit/tombstone-judge-rejects.js --apply
+
+# Custom audit JSON
+node scripts/lake-audit/tombstone-judge-rejects.js --audit <path>
+```
+
+### restore-judge-rejects.js (companion)
+
+Flips `status: broken` → `status: active` and removes the tombstone
+metadata for every row that was UPDATED in a given tombstone run.
+Required to ship in the same commit per the §22 lesson.
+
+```sh
+# Dry-run on the most recent tombstone run
+node scripts/lake-audit/restore-judge-rejects.js
+
+# Apply for real
+node scripts/lake-audit/restore-judge-rejects.js --apply
+
+# Specific tombstone JSON
+node scripts/lake-audit/restore-judge-rejects.js --tombstone <path>
+```
+
+### Safety contract (both scripts)
+
+- DRY-RUN by default; `--apply` required for any write
+- Per-row `GetItem` re-fetch before any `UpdateItem`
+- ConditionExpression on every `UpdateItem`:
+  - tombstone: `status = 'active'` (refuses to flip a row that
+    drifted to broken/deprecated since the audit)
+  - restore: `status = 'broken' AND begins_with(tombstoneReason, 'judge_audit_')`
+    (refuses to touch rows tombstoned by any other path)
+- Sequential, not parallel
+- Throttle retry with exponential backoff (3 attempts: 200/800/3200ms)
+- Type-aware log line shows whether numeric content is being touched
+- Output JSON per run at `output/{tombstone,restore}-judge-rejects-<UTC>.json`
+- PITR backstop active on the table (35-day window per §23 / ROLLBACK.md §4)
+
+---
+
+## uniqueness-report.js
+
+Read-only report on duplicate questions in the active set. Two
+detection methods:
+
+1. **EXACT_TEXT** — groups rows by `question.toLowerCase().replace(/\s+/g,' ').trim()`.
+   Catches character-for-character duplicates after whitespace
+   normalization. Includes cross-poolKey duplicates (same question
+   stem appearing in multiple state/grade buckets).
+
+2. **EMBEDDING_SIM** — cosine similarity ≥ 0.92 between rows in the
+   SAME poolKey bucket. Cross-poolKey pairs are NOT flagged
+   (state-flavor differences are by design — a Texas grade-3
+   question and an Alabama grade-3 question with similar wording
+   are not duplicates).
+
+```sh
+node scripts/lake-audit/uniqueness-report.js
+```
+
+Sub-30s on the current ~2000-row active set. O(N²) within each
+poolKey bucket (242 buckets, largest <200 rows). No DynamoDB writes.
+
+Output `output/uniqueness-report-<UTC>.json` with summary stats +
+top-N exact-duplicate groups + top-N embedding-similarity pairs.
+The summary includes `percentLakeWithDuplicate` — drives the
+decision on whether a dedup-tombstone phase is warranted (TODO §14
+threshold: >5% triggers planning).
+
+---
+
 ## audit-judge-existing-rows.js
 
 Walks every `status='active'` row in `staar-content-pool` through the
