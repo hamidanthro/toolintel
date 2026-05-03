@@ -13666,3 +13666,56 @@ body.is-standalone .mobile-tab-bar { border-top-width: 1.5px; }
     min-height: 48px;
   }
 }
+
+/* ============================================================
+ * PRACTICE SURFACE — generic .card dark-theme override (May 3)
+ *
+ * PRODUCTION BUG FIX: js/practice.js renders the end-of-set
+ * screen, the loading state, and a few other paths as
+ * <div class="card">…</div>. The generic .card rule (line 1124)
+ * sets background: var(--surface) which is #ffffff (white).
+ * body.practice-page sets `color: #ffffff` on the body, so all
+ * inherited text inside that white card was rendered as white
+ * on white — invisible content. Hamid screenshotted this on his
+ * iPhone after completing a practice session — the end-of-set
+ * "X / Y correct" line was unreadable.
+ *
+ * This rule only fires when the .card is on the practice page,
+ * so other pages (marketplace, dashboard, settings) that use
+ * .card with light-theme bodies are unaffected. Desktop AND
+ * mobile both benefit — the bug was never viewport-specific.
+ *
+ * Mirrors body.practice-page .question-card (line ~6078) for
+ * visual consistency: same subtle white-on-dark gradient,
+ * matching border, matching shadow.
+ * ============================================================ */
+
+body.practice-page .card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+  color: #ffffff;
+}
+body.practice-page .card h1,
+body.practice-page .card h2,
+body.practice-page .card h3,
+body.practice-page .card h4,
+body.practice-page .card p,
+body.practice-page .card li,
+body.practice-page .card label {
+  color: #ffffff;
+}
+body.practice-page .card strong { color: #fde68a; }
+body.practice-page .card a:not(.btn) { color: #fde68a; }
+
+/* Same bug class as the .card override above — the §18 mobile rule for
+   the docked-bottom perf-panel used `background: var(--surface)` (white)
+   on a dark-theme element. Inner .stat-num is white text → invisible.
+   Override here, additive to §18, with matching dark-theme colors. */
+@media (max-width: 768px) {
+  body.practice-page .performance-panel {
+    background: rgba(10, 22, 40, 0.95);
+    border-top-color: rgba(255, 255, 255, 0.08);
+  }
+}
