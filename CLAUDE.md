@@ -704,6 +704,23 @@ into `scripts/cold-start/judge-fixtures/`.
   companion shipped in the same commit. The other 70 audit
   candidates (FACTUAL + ANSWER_LANGUAGE + 2 mixed combos) remain
   `status='active'` pending the classifier-improvement TODOs below.
+- ~~**Math probe — Texas, 3 grades × 4 types × 2 = 24 questions.**~~
+  ✅ DONE 2026-05-03 — see §29. 24/24 saved, 22 LOOKS_CLEAN / 2
+  borderline / 0 BAD on eyeball gate (91.67% > 90% threshold).
+  Pipeline (judge gpt-4o + verifier gpt-4o + schema gate) verified
+  end-to-end on fresh content into the post-cleanup lake.
+- **🟠 Math sweep — full Texas (all grades, all 4 types).** Now
+  unblocked by §29 probe pass. Use `node scripts/cold-start/run.js
+  --state texas --subject math --target N --concurrency M`. Texas
+  has math grades 3-8 (per `gradesForState('texas','math')`) × 4
+  types = 24 buckets. At target=50 = 1,200 questions; at target=100
+  = 2,400. Cost estimate per question ~$0.01 all-in (gen + judge
+  + verifier with judge gpt-4o per §27). Decide target before
+  running. Reuse `COLD_START_PROBE_RUN_ID`-style stamping (use a
+  different env var name like `COLD_START_SWEEP_RUN_ID`) for
+  traceability. Embed dedup is per-bucket so cross-bucket dupes
+  may slip through — re-run uniqueness-report.js after the sweep
+  to measure (current lake is at 8.57% dup rate per §28).
 - **🟠 Improve gpt-4o letter_quirk classifier** (BLOCKER for
   tombstoning the FACTUAL bucket). Phase B sample-eyeball showed
   4 of 5 FACTUAL rejects are letter-position quirks the regex
@@ -1991,6 +2008,126 @@ active count: 2,012 → 1,996. The other 70 audit candidates
 (FACTUAL + ANSWER_LANGUAGE + 2 mixed combos) are still
 `status='active'` and untouched, awaiting classifier improvement
 before any further tombstone action.
+
+---
+
+## 29. Math content sweep — Texas probe (May 3)
+
+First real content generation into the post-cleanup lake. Goal: prove
+the cold-start judge + verifier pipeline produces shippable content
+end-to-end before committing to a full Texas sweep.
+
+### Probe spec
+
+- **State:** texas (flagship — own-state references like "San Antonio" are allowed)
+- **Subject:** math
+- **Grades:** grade-3, grade-4, grade-5
+- **Question types:** all 4 (`word-problem`, `computation`, `concept`, `data-interpretation`)
+- **Target:** 2 questions per bucket × 12 buckets = **24 total**
+- **Concurrency:** 1 (sequential per spec hard constraint)
+- **Run-id:** `probe-texas-math-20260503T082618Z` (env `COLD_START_PROBE_RUN_ID`, stamped on every saved row as `_probeRunId`)
+
+**Multi-choice only.** Cold-start as-built only generates MC
+(validation requires `choices.length === 4`). The spec asked for
+4 MC + 4 numeric per bucket, but per the hard constraint
+"DO NOT modify generators.js", numeric was out of scope. All 24
+saved rows are multi_choice.
+
+### Pipeline
+
+Each generated question went through 3 gates before save (none of
+which were modified for this probe — they're tested as-is per the
+hard constraint):
+
+1. **`generateOne` in `generators.js`** — gpt-4o-mini produces a
+   draft, then the cold-start judge (gpt-4o per §27) gates with a
+   regen-once-on-reject policy. `JudgeRejectedTwiceError` after
+   second reject — drop and retry from a fresh prompt.
+2. **`lake.validateQuestion`** — schema gate (4 choices, valid
+   correctIndex, ≥10-char explanation, no LaTeX, no profanity, no
+   bare letter labels).
+3. **`verifier.js#verifyMath`** — gpt-4o solves independently and
+   confirms its answer matches the marked `correctIndex`. Catches
+   the gpt-4o-mini arithmetic hallucinations the judge can miss.
+
+Two minor additions to `run.js` for traceability (NOT to the gates
+themselves):
+- Forward `_judge` ('pass' | 'pass-after-regen') from `generateOne`'s
+  return to the saved record.
+- If env `COLD_START_PROBE_RUN_ID` is set, stamp every saved row
+  with `_probeRunId` for find/restore traceability.
+
+### Result
+
+| Metric | Value |
+|---|---|
+| Buckets processed | 12 |
+| Attempts (incl. judge retries) | ~33 |
+| Judge-rejected-twice (dropped) | 3 (one per affected bucket; each bucket recovered to target) |
+| Verifier-rejected | 0 |
+| Validation-rejected | 0 |
+| Dedup-skipped | 0 |
+| **Saved rows** | **24** (all 12 buckets filled to target=2) |
+| Wall-clock | ~5 min |
+| Tokens consumed (gen only) | 19,020 |
+| Run.js cost estimate (gpt-4o-mini gen rate) | $0.008 |
+| Real cost estimate (gen + judge + verifier on gpt-4o) | ~$0.18 (gen $0.008 + judge ~33 calls × $0.002 = $0.07 + verifier 24 calls × $0.005 = $0.12) |
+
+**`_judge` distribution on saved rows:** 18 `pass`, 6 `pass-after-regen` (75% one-shot, 25% needed regen).
+
+### Eyeball gate
+
+All 24 saved questions printed and hand-classified:
+
+| Bucket | Count | Notes |
+|---|---|---|
+| LOOKS_CLEAN | **22** | Well-formed, math is correct, explanations match |
+| BORDERLINE | 2 | (1) row #10 grade-4 computation is a near-duplicate of row #9 ("24 ÷ 6 baskets" with different scenarios); embedding dedup at 0.92 cosine didn't catch them as the wording diverged. (2) row #16 grade-4 word-problem uses GCD(24,30) — mathematically clean but slightly advanced for grade-4 vocabulary. |
+| BAD | **0** | No quality problems the judge missed |
+
+**Gate:** ≥ 90% LOOKS_CLEAN AND 0 BAD → 22/24 = 91.67% LOOKS_CLEAN, 0 BAD → 🟢 **PROBE PASSES**.
+
+### Lake state
+
+| | Active count |
+|---|---|
+| Pre-probe (per §28) | 1,996 |
+| Post-probe | 2,020 |
+| Δ | **+24** ✓ exact match |
+
+3 random spot-checks via `GetItem` by `(poolKey, contentId)` — the
+same code path the practice flow uses to serve a question — all
+return clean rows with `status='active'`, `_judge` set, `_probeRunId`
+set, `promptVersion='cold-v2'`, `generatedBy='cold-start-v2'`.
+
+### One sample saved question per grade
+
+**Grade 3** (`texas#grade-3#math#teks-word-problem`,
+`q_0mopib0rp_6d2fe11c98f6`, judge=pass):
+> Maria has 12 apples. She gives 4 apples to her friend, Carlos, and then buys 5 more apples from the store. How many apples does Maria have now?
+> ✓ A. 13   B. 11   C. 10   D. 9
+
+**Grade 4** (`texas#grade-4#math#teks-data-interpretation`,
+`q_0mopidr98_3e2224ac0cc2`, judge=pass):
+> At a school petting zoo event… (table with Goats 8 / Sheep 5 / Chickens 12 / Rabbits 7)
+> How many more chickens than sheep were at the event?
+> ✓ A. 7   B. 8   C. 5   D. 12
+
+**Grade 5** (`texas#grade-5#math#teks-word-problem`,
+`q_0mopie0v2_cbc1dee89e8c`, judge=pass):
+> Maria and her brother, Diego, are collecting shells at the beach. Maria collected 35 shells, while Diego collected 47 shells. If they combine their shells and then share them equally, how many shells will each of them have?
+> ✓ A. 41   B. 36   C. 47   D. 42
+
+### Output
+
+`scripts/cold-start/output/probe-texas-math-20260503T082618Z.json`
+(82-question per-row dump). Output dir is gitignored (per
+`scripts/cold-start/output/` already in `.gitignore`).
+
+### Next action
+
+Probe gate passed → Texas sweep is unblocked. Logged in §14 below
+as the next blocker, dependent on this probe passing.
 
 ---
 

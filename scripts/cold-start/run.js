@@ -167,8 +167,16 @@ async function fillBucket(bucket, target, opts) {
         generatedAt: Date.now(),
         generatedBy: 'cold-start-v2',
         promptVersion: 'cold-v2',
-        tokensUsed: item._tokensUsed || 0
+        tokensUsed: item._tokensUsed || 0,
+        // Forward judge verdict from generateOne for traceability
+        // (pass | pass-after-regen | unknown if judge disabled).
+        _judge: item._judge || 'unknown'
       };
+      // Tag this run if a probe-run-id is set — lets us find/restore
+      // these specific rows later. See CLAUDE.md §29.
+      if (process.env.COLD_START_PROBE_RUN_ID) {
+        record._probeRunId = process.env.COLD_START_PROBE_RUN_ID;
+      }
 
       if (opts.dryRun) {
         process.stdout.write('.');
