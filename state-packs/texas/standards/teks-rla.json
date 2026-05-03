@@ -1,0 +1,184 @@
+{
+  "_meta": {
+    "subject": "rla",
+    "subject_full_name": "English Language Arts and Reading (ELAR)",
+    "version": "1.0",
+    "built": "2026-05-03",
+    "authority": "Texas Education Agency",
+    "primary_source": "19 TAC Chapter 110 (Texas Essential Knowledge and Skills for English Language Arts and Reading), 2017 revision in effect",
+    "source_url": "https://tea.texas.gov/academics/curriculum-standards/teks",
+    "source_status": "TEA gateway pages accessible; specific chapter URLs require navigation. Standards below are CLAUDE-SYNTHESIZED from training knowledge of publicly-published 19 TAC Chapter 110 (2017 ELAR TEKS, as currently in effect for STAAR). VERIFY against official TAC text before relying on for high-stakes content.",
+    "provenance_marker": "[CLAUDE-SYNTHESIZED]",
+    "structure_note": "ELAR TEKS organize by 5 strands that recur across grades: (1) Foundational language skills, (2) Comprehension skills, (3) Response skills, (4) Multiple-genre skills, (5) Author's purpose and craft. STAAR Reading tests primarily strands 2-5. The strand structure is consistent across grades; each grade applies the strand at increasing complexity."
+  },
+
+  "_strands": {
+    "1": "Foundational language skills (decoding, fluency, vocabulary)",
+    "2": "Comprehension skills (literal, inferential, evaluative)",
+    "3": "Response skills (responding to text in writing or discussion)",
+    "4": "Multiple genres (recognize and analyze across literary and informational genres)",
+    "5": "Author's purpose and craft (craft moves, genre conventions, purpose)"
+  },
+
+  "_passage_specs": {
+    "grade_3": "80-180 words. Mix of literary fiction, informational text, drama (limited), poetry. STAAR uses 4-5 passages per test.",
+    "grade_4": "150-250 words. Same genre mix; longer passages.",
+    "grade_5": "200-350 words. Cross-genre analysis introduced (compare two passages on same topic).",
+    "grade_6": "350-550 words. More inference. Multi-paragraph informational text.",
+    "grade_7": "400-600 words. Argumentative and persuasive text introduced as genre. Complex literary analysis.",
+    "grade_8": "500-750 words. Full-spectrum genre coverage. Multi-source analysis."
+  },
+
+  "grade_3": {
+    "tac_section": "110.5",
+    "stem": "3",
+    "standards": [
+      { "id": "3.4", "strand": 1, "text": "Use appropriate fluency (rate, accuracy, and prosody) when reading grade-level text.", "cognitive_demand": "low", "typical_question_shape": "Not directly tested on STAAR — measured in classroom" },
+      { "id": "3.6.A", "strand": 2, "text": "Establish purpose for reading assigned and self-selected texts.", "cognitive_demand": "low", "typical_question_shape": "Not directly STAAR-tested" },
+      { "id": "3.6.E", "strand": 2, "text": "Make connections to personal experiences, ideas in other texts, and society.", "cognitive_demand": "medium", "typical_question_shape": "Inference question; relate text to a stated context" },
+      { "id": "3.6.F", "strand": 2, "text": "Make inferences and use evidence to support understanding.", "cognitive_demand": "medium", "typical_question_shape": "What can be inferred from paragraph X? Best evidence = which line?" },
+      { "id": "3.6.G", "strand": 2, "text": "Evaluate details read to determine key ideas.", "cognitive_demand": "medium", "typical_question_shape": "Main idea / key idea question" },
+      { "id": "3.6.H", "strand": 2, "text": "Synthesize information to create new understanding.", "cognitive_demand": "high", "typical_question_shape": "Cross-passage synthesis (rare at grade 3)" },
+      { "id": "3.7.C", "strand": 3, "text": "Use text evidence to support an appropriate response.", "cognitive_demand": "medium", "typical_question_shape": "Best evidence question (often paired with inference question)" },
+      { "id": "3.8.A", "strand": 4, "text": "Infer the theme of a work, distinguishing theme from topic.", "cognitive_demand": "medium", "typical_question_shape": "Theme question on literary passage" },
+      { "id": "3.8.B", "strand": 4, "text": "Explain the relationships among the major and minor characters.", "cognitive_demand": "medium", "typical_question_shape": "Character relationship from literary passage" },
+      { "id": "3.8.C", "strand": 4, "text": "Analyze plot elements, including the sequence of events, the conflict, and the resolution.", "cognitive_demand": "medium", "typical_question_shape": "Plot/sequence/conflict/resolution question" },
+      { "id": "3.8.D", "strand": 4, "text": "Explain the influence of the setting, including historical and cultural settings, on the plot.", "cognitive_demand": "medium", "typical_question_shape": "Setting impact question" },
+      { "id": "3.9.D.i", "strand": 4, "text": "Recognize characteristics and structures of informational text including the central idea with supporting evidence.", "cognitive_demand": "medium", "typical_question_shape": "Central idea + supporting detail in informational text" },
+      { "id": "3.9.D.ii", "strand": 4, "text": "Recognize features such as captions, headings, sidebars, and graphics to locate and gain information.", "cognitive_demand": "low", "typical_question_shape": "Identify text feature or its purpose" },
+      { "id": "3.9.D.iii", "strand": 4, "text": "Recognize organizational patterns such as cause and effect and problem and solution.", "cognitive_demand": "medium", "typical_question_shape": "Identify organizational structure" },
+      { "id": "3.9.E.i", "strand": 4, "text": "Recognize characteristics of persuasive text and identify the author's claim.", "cognitive_demand": "medium", "typical_question_shape": "Identify author's claim in persuasive text" },
+      { "id": "3.10.A", "strand": 5, "text": "Explain the author's purpose and message within a text.", "cognitive_demand": "medium", "typical_question_shape": "Author's purpose: to inform / persuade / entertain / explain" },
+      { "id": "3.10.B", "strand": 5, "text": "Explain how the use of text structure contributes to the author's purpose.", "cognitive_demand": "high", "typical_question_shape": "Why did the author organize this passage in chronological order?" },
+      { "id": "3.10.D", "strand": 5, "text": "Describe how the author's use of imagery, literal and figurative language such as simile, and sound devices such as onomatopoeia achieves specific purposes.", "cognitive_demand": "medium", "typical_question_shape": "Identify simile/metaphor/onomatopoeia and its effect" },
+      { "id": "3.10.E", "strand": 5, "text": "Identify the use of literary devices, including first- or third-person point of view.", "cognitive_demand": "low", "typical_question_shape": "Identify POV" }
+    ]
+  },
+
+  "grade_4": {
+    "tac_section": "110.6",
+    "stem": "4",
+    "standards": [
+      { "id": "4.6.E", "strand": 2, "text": "Make connections to personal experiences, ideas in other texts, and society.", "cognitive_demand": "medium", "typical_question_shape": "Cross-text or text-to-life connection" },
+      { "id": "4.6.F", "strand": 2, "text": "Make inferences and use evidence to support understanding.", "cognitive_demand": "medium", "typical_question_shape": "Inference + best evidence pair" },
+      { "id": "4.6.G", "strand": 2, "text": "Evaluate details read to determine key ideas.", "cognitive_demand": "medium", "typical_question_shape": "Key/main idea identification" },
+      { "id": "4.6.H", "strand": 2, "text": "Synthesize information to create new understanding.", "cognitive_demand": "high", "typical_question_shape": "Compare two passages question" },
+      { "id": "4.6.I", "strand": 2, "text": "Monitor comprehension and make adjustments such as re-reading, using background knowledge, asking questions, and annotating when understanding breaks down.", "cognitive_demand": "low", "typical_question_shape": "Not STAAR-tested" },
+      { "id": "4.7.C", "strand": 3, "text": "Use text evidence to support an appropriate response.", "cognitive_demand": "medium", "typical_question_shape": "Best evidence question" },
+      { "id": "4.8.A", "strand": 4, "text": "Infer basic themes supported by text evidence.", "cognitive_demand": "medium", "typical_question_shape": "Theme question on literary passage" },
+      { "id": "4.8.B", "strand": 4, "text": "Explain the interactions of the characters and the changes they undergo.", "cognitive_demand": "medium", "typical_question_shape": "Character development / change question" },
+      { "id": "4.8.C", "strand": 4, "text": "Analyze plot elements, including the rising action, climax, falling action, and resolution.", "cognitive_demand": "medium", "typical_question_shape": "Plot structure analysis" },
+      { "id": "4.8.D", "strand": 4, "text": "Explain the influence of the setting on the plot.", "cognitive_demand": "medium", "typical_question_shape": "Setting impact" },
+      { "id": "4.9.D.i", "strand": 4, "text": "Recognize characteristics and structures of informational text including the central idea with supporting evidence.", "cognitive_demand": "medium", "typical_question_shape": "Central idea + supporting detail" },
+      { "id": "4.9.D.iii", "strand": 4, "text": "Recognize organizational patterns such as compare and contrast.", "cognitive_demand": "medium", "typical_question_shape": "Identify organizational pattern" },
+      { "id": "4.9.E.i", "strand": 4, "text": "Identify the author's claim by analyzing the text.", "cognitive_demand": "medium", "typical_question_shape": "Author's claim in persuasive text" },
+      { "id": "4.10.A", "strand": 5, "text": "Explain the author's purpose and message within a text.", "cognitive_demand": "medium", "typical_question_shape": "Author's purpose" },
+      { "id": "4.10.B", "strand": 5, "text": "Explain how the use of text structure contributes to the author's purpose.", "cognitive_demand": "high", "typical_question_shape": "Structure-purpose connection" },
+      { "id": "4.10.D", "strand": 5, "text": "Describe how the author's use of imagery, literal and figurative language, and sound devices achieves specific purposes.", "cognitive_demand": "medium", "typical_question_shape": "Figurative language identification + effect" }
+    ]
+  },
+
+  "grade_5": {
+    "tac_section": "110.7",
+    "stem": "5",
+    "standards": [
+      { "id": "5.6.E", "strand": 2, "text": "Make connections to personal experiences, ideas in other texts, and society.", "cognitive_demand": "medium", "typical_question_shape": "Cross-text or text-to-life" },
+      { "id": "5.6.F", "strand": 2, "text": "Make inferences and use evidence to support understanding.", "cognitive_demand": "medium", "typical_question_shape": "Inference + best evidence" },
+      { "id": "5.6.G", "strand": 2, "text": "Evaluate details read to determine key ideas.", "cognitive_demand": "medium", "typical_question_shape": "Key idea identification" },
+      { "id": "5.6.H", "strand": 2, "text": "Synthesize information to create new understanding.", "cognitive_demand": "high", "typical_question_shape": "Cross-passage synthesis" },
+      { "id": "5.7.C", "strand": 3, "text": "Use text evidence to support an appropriate response.", "cognitive_demand": "medium", "typical_question_shape": "Best evidence question" },
+      { "id": "5.8.A", "strand": 4, "text": "Infer multiple themes within and across texts using text evidence.", "cognitive_demand": "high", "typical_question_shape": "Multiple themes / cross-text theme" },
+      { "id": "5.8.B", "strand": 4, "text": "Analyze the relationships of and conflicts among the characters.", "cognitive_demand": "medium", "typical_question_shape": "Character conflict / relationship analysis" },
+      { "id": "5.8.C", "strand": 4, "text": "Analyze plot elements, including rising action, climax, falling action, resolution, and non-linear elements such as flashback.", "cognitive_demand": "high", "typical_question_shape": "Plot analysis including flashback" },
+      { "id": "5.9.D.i", "strand": 4, "text": "Recognize characteristics and structures of informational text including the central idea with supporting evidence.", "cognitive_demand": "medium", "typical_question_shape": "Informational central idea" },
+      { "id": "5.9.D.iii", "strand": 4, "text": "Recognize organizational patterns such as cause and effect and order of importance.", "cognitive_demand": "medium", "typical_question_shape": "Organizational pattern" },
+      { "id": "5.9.E.i", "strand": 4, "text": "Identify the author's claim by analyzing the text.", "cognitive_demand": "medium", "typical_question_shape": "Author's claim in persuasive text" },
+      { "id": "5.10.A", "strand": 5, "text": "Explain the author's purpose and message within a text.", "cognitive_demand": "medium", "typical_question_shape": "Author's purpose" },
+      { "id": "5.10.D", "strand": 5, "text": "Describe how the author's use of imagery, literal and figurative language, and sound devices achieves specific purposes.", "cognitive_demand": "medium", "typical_question_shape": "Figurative language + effect" }
+    ]
+  },
+
+  "grade_6": {
+    "tac_section": "110.22",
+    "stem": "6",
+    "standards": [
+      { "id": "6.5.F", "strand": 2, "text": "Make inferences and use evidence to support understanding.", "cognitive_demand": "medium", "typical_question_shape": "Inference + best evidence" },
+      { "id": "6.5.G", "strand": 2, "text": "Evaluate details read to determine key ideas.", "cognitive_demand": "medium", "typical_question_shape": "Key idea" },
+      { "id": "6.5.H", "strand": 2, "text": "Synthesize information to create new understanding.", "cognitive_demand": "high", "typical_question_shape": "Synthesis across passages or sections" },
+      { "id": "6.6.C", "strand": 3, "text": "Use text evidence to support an appropriate response.", "cognitive_demand": "medium", "typical_question_shape": "Best evidence" },
+      { "id": "6.7.A", "strand": 4, "text": "Infer multiple themes within and across texts using text evidence.", "cognitive_demand": "high", "typical_question_shape": "Cross-text theme" },
+      { "id": "6.7.B", "strand": 4, "text": "Analyze how the characters' internal and external responses develop the plot.", "cognitive_demand": "high", "typical_question_shape": "Character response → plot development" },
+      { "id": "6.7.C", "strand": 4, "text": "Analyze plot elements, including the rising action, climax, falling action, resolution, and non-linear elements such as flashback and foreshadowing.", "cognitive_demand": "high", "typical_question_shape": "Plot analysis with non-linear elements" },
+      { "id": "6.8.D.i", "strand": 4, "text": "Recognize characteristics and structures of informational text including the controlling idea or thesis with supporting evidence.", "cognitive_demand": "medium", "typical_question_shape": "Thesis + support" },
+      { "id": "6.8.E.i", "strand": 4, "text": "Analyze characteristics and structures of argumentative text by identifying the claim.", "cognitive_demand": "medium", "typical_question_shape": "Argumentative claim identification" },
+      { "id": "6.8.E.ii", "strand": 4, "text": "Explain how the author uses various types of evidence to support the argument.", "cognitive_demand": "high", "typical_question_shape": "Evidence type analysis (statistics, expert opinion, anecdote)" },
+      { "id": "6.9.A", "strand": 5, "text": "Explain the author's purpose and message within a text.", "cognitive_demand": "medium", "typical_question_shape": "Author's purpose" },
+      { "id": "6.9.B", "strand": 5, "text": "Analyze how the use of text structure contributes to the author's purpose.", "cognitive_demand": "high", "typical_question_shape": "Structure-purpose link" },
+      { "id": "6.9.D", "strand": 5, "text": "Describe how the author's use of figurative language such as metaphor and personification achieves specific purposes.", "cognitive_demand": "medium", "typical_question_shape": "Metaphor/personification + effect" },
+      { "id": "6.9.E", "strand": 5, "text": "Identify the use of literary devices, including subjective and objective tone.", "cognitive_demand": "medium", "typical_question_shape": "Tone identification" }
+    ]
+  },
+
+  "grade_7": {
+    "tac_section": "110.23",
+    "stem": "7",
+    "standards": [
+      { "id": "7.5.F", "strand": 2, "text": "Make inferences and use evidence to support understanding.", "cognitive_demand": "medium", "typical_question_shape": "Inference + best evidence" },
+      { "id": "7.5.G", "strand": 2, "text": "Evaluate details read to determine key ideas.", "cognitive_demand": "medium", "typical_question_shape": "Key idea" },
+      { "id": "7.5.H", "strand": 2, "text": "Synthesize information to create new understanding.", "cognitive_demand": "high", "typical_question_shape": "Multi-source synthesis" },
+      { "id": "7.7.A", "strand": 4, "text": "Infer multiple themes within and across texts using text evidence.", "cognitive_demand": "high", "typical_question_shape": "Cross-text theme inference" },
+      { "id": "7.7.C", "strand": 4, "text": "Analyze plot elements, including the rising action, climax, falling action, resolution, and non-linear elements such as flashback and foreshadowing.", "cognitive_demand": "high", "typical_question_shape": "Plot with non-linear elements" },
+      { "id": "7.8.E.i", "strand": 4, "text": "Analyze characteristics and structures of argumentative text by identifying the claim.", "cognitive_demand": "medium", "typical_question_shape": "Claim identification" },
+      { "id": "7.8.E.ii", "strand": 4, "text": "Explain how the author uses various types of evidence and rhetorical devices to support the argument.", "cognitive_demand": "high", "typical_question_shape": "Rhetorical device + evidence analysis" },
+      { "id": "7.9.A", "strand": 5, "text": "Explain the author's purpose and message within a text.", "cognitive_demand": "medium", "typical_question_shape": "Author's purpose" },
+      { "id": "7.9.D", "strand": 5, "text": "Describe how the author's use of figurative language such as personification and metaphor achieves specific purposes.", "cognitive_demand": "medium", "typical_question_shape": "Figurative language analysis" },
+      { "id": "7.9.E", "strand": 5, "text": "Identify the use of literary devices, including allusion, anachronism, and dialect.", "cognitive_demand": "medium", "typical_question_shape": "Literary device identification" }
+    ]
+  },
+
+  "grade_8": {
+    "tac_section": "110.24",
+    "stem": "8",
+    "standards": [
+      { "id": "8.5.F", "strand": 2, "text": "Make inferences and use evidence to support understanding.", "cognitive_demand": "medium", "typical_question_shape": "Inference + best evidence" },
+      { "id": "8.5.H", "strand": 2, "text": "Synthesize information to create new understanding.", "cognitive_demand": "high", "typical_question_shape": "Multi-source synthesis" },
+      { "id": "8.7.A", "strand": 4, "text": "Infer multiple themes within and across texts using text evidence.", "cognitive_demand": "high", "typical_question_shape": "Theme inference across multiple texts" },
+      { "id": "8.7.B", "strand": 4, "text": "Analyze how characters' internal and external responses develop the plot and reveal character.", "cognitive_demand": "high", "typical_question_shape": "Character development + plot connection" },
+      { "id": "8.7.C", "strand": 4, "text": "Analyze non-linear plot development such as flashbacks, foreshadowing, subplots, and parallel plot structures and compare it to linear plot development.", "cognitive_demand": "high", "typical_question_shape": "Complex plot structure analysis" },
+      { "id": "8.8.E.i", "strand": 4, "text": "Analyze characteristics and structures of argumentative text by identifying the claim and analyzing the argument.", "cognitive_demand": "high", "typical_question_shape": "Claim + argument analysis" },
+      { "id": "8.8.E.ii", "strand": 4, "text": "Identify the various types of evidence the author uses to support the argument.", "cognitive_demand": "high", "typical_question_shape": "Evidence type identification" },
+      { "id": "8.8.E.iii", "strand": 4, "text": "Identify the intended audience or reader.", "cognitive_demand": "medium", "typical_question_shape": "Audience identification" },
+      { "id": "8.9.A", "strand": 5, "text": "Explain the author's purpose and message within a text.", "cognitive_demand": "medium", "typical_question_shape": "Author's purpose" },
+      { "id": "8.9.D", "strand": 5, "text": "Describe how the author's use of figurative language such as extended metaphor achieves specific purposes.", "cognitive_demand": "medium", "typical_question_shape": "Extended figurative language analysis" },
+      { "id": "8.9.E", "strand": 5, "text": "Identify and analyze the use of literary devices, including multiple points of view and irony.", "cognitive_demand": "high", "typical_question_shape": "Multiple POV / irony analysis" }
+    ]
+  },
+
+  "english_1": {
+    "tac_section": "110.36",
+    "stem": "E1",
+    "course_note": "English I is taught in 9th grade in Texas; STAAR EOC required for graduation.",
+    "standards": [
+      { "id": "E1.4.F", "strand": 2, "text": "Make inferences and use evidence to support understanding.", "cognitive_demand": "medium", "typical_question_shape": "High school inference question" },
+      { "id": "E1.5.H", "strand": 2, "text": "Synthesize information across multiple sources.", "cognitive_demand": "high", "typical_question_shape": "Multi-source argument synthesis" },
+      { "id": "E1.7.A", "strand": 4, "text": "Analyze how themes are developed across literary works.", "cognitive_demand": "high", "typical_question_shape": "Cross-work theme analysis" },
+      { "id": "E1.7.B", "strand": 4, "text": "Analyze how characters' moral dilemmas advance the plot.", "cognitive_demand": "high", "typical_question_shape": "Moral dilemma + plot development" },
+      { "id": "E1.8.E", "strand": 4, "text": "Analyze the rhetorical structures of arguments, including counterarguments.", "cognitive_demand": "high", "typical_question_shape": "Counterargument analysis" },
+      { "id": "E1.9.A", "strand": 5, "text": "Analyze the author's purpose and the rhetorical effect of choices made.", "cognitive_demand": "high", "typical_question_shape": "Rhetorical analysis" },
+      { "id": "E1.9.D", "strand": 5, "text": "Analyze the use of literary devices, including extended metaphor, irony, allusion, and symbolism.", "cognitive_demand": "high", "typical_question_shape": "Sophisticated literary device analysis" }
+    ]
+  },
+
+  "english_2": {
+    "tac_section": "110.37",
+    "stem": "E2",
+    "course_note": "English II is taught in 10th grade in Texas; STAAR EOC required for graduation.",
+    "standards": [
+      { "id": "E2.4.F", "strand": 2, "text": "Make inferences and use textual evidence to support understanding.", "cognitive_demand": "medium", "typical_question_shape": "10th-grade inference" },
+      { "id": "E2.5.H", "strand": 2, "text": "Synthesize information across multiple sources to draw conclusions.", "cognitive_demand": "high", "typical_question_shape": "Source synthesis with evaluation" },
+      { "id": "E2.7.A", "strand": 4, "text": "Compare/contrast how themes are developed across literary works.", "cognitive_demand": "high", "typical_question_shape": "Cross-work theme comparison" },
+      { "id": "E2.8.E", "strand": 4, "text": "Analyze rhetorical structures including counterarguments and rebuttal.", "cognitive_demand": "high", "typical_question_shape": "Counterargument + rebuttal" },
+      { "id": "E2.9.A", "strand": 5, "text": "Analyze author's purpose, audience, and rhetorical context.", "cognitive_demand": "high", "typical_question_shape": "Full rhetorical context analysis" }
+    ]
+  }
+}

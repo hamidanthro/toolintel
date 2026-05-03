@@ -1,0 +1,80 @@
+{
+  "_meta": {
+    "subject": "social-studies",
+    "version": "1.0",
+    "built": "2026-05-03",
+    "authority": "Texas Education Agency",
+    "primary_source": "19 TAC Chapter 113 (Texas Essential Knowledge and Skills for Social Studies)",
+    "source_url": "https://tea.texas.gov/academics/curriculum-standards/teks",
+    "source_status": "[CLAUDE-SYNTHESIZED from training knowledge of 19 TAC Ch. 113. STAAR Social Studies in Texas: grade 8 (US History through 1877) and US History EOC (1877–present). Grade 7 covers Texas History but is NOT STAAR-tested currently. Verify against TAC.]",
+    "provenance_marker": "[CLAUDE-SYNTHESIZED]",
+    "neutrality_note": "Per state-packs/texas/cultural/contexts-avoided.md, social-studies content for kids must be especially careful around contested history and any politicized topic. The standards below are the official TEKS topics; the GENERATOR must frame them in STAAR-neutral language (e.g., 'expansion of federal power after the Civil War' is fine; 'good vs bad sides of the war' is not)."
+  },
+
+  "_strands_grade_8": {
+    "1": "History",
+    "2": "Geography",
+    "3": "Economics",
+    "4": "Government",
+    "5": "Citizenship",
+    "6": "Culture",
+    "7": "Science, technology, and society",
+    "8": "Social studies skills"
+  },
+
+  "grade_8": {
+    "tac_section": "113.20",
+    "stem": "8",
+    "course_title": "United States History to 1877",
+    "standards": [
+      { "id": "8.1A", "strand": 1, "text": "Identify the major eras and events in U.S. history through 1877, including colonization, revolution, drafting of the Declaration of Independence, creation and ratification of the Constitution, religious revivals, the Mexican-American War, the Civil War, and Reconstruction.", "cognitive_demand": "low", "typical_question_shape": "Sequence/era identification on a timeline" },
+      { "id": "8.2A", "strand": 1, "text": "Identify reasons for European exploration and colonization of North America, including the search for new trade routes, religious freedom, the spread of Christianity, and economic opportunities.", "cognitive_demand": "medium", "typical_question_shape": "Cause-effect of colonization" },
+      { "id": "8.3A", "strand": 1, "text": "Explain the reasons for the growth of representative government and institutions during the colonial period.", "cognitive_demand": "medium", "typical_question_shape": "Colonial governance development" },
+      { "id": "8.4A", "strand": 1, "text": "Analyze causes of the American Revolution, including the Proclamation of 1763, the Intolerable Acts, the Stamp Act, mercantilism, lack of representation in Parliament, and British economic policies following the French and Indian War.", "cognitive_demand": "high", "typical_question_shape": "Cause-and-effect chain leading to revolution" },
+      { "id": "8.5A", "strand": 1, "text": "Describe major issues and events of the early republic such as the establishment of political parties, the Marbury v. Madison decision, and the Louisiana Purchase.", "cognitive_demand": "medium", "typical_question_shape": "Early-republic event identification" },
+      { "id": "8.6A", "strand": 1, "text": "Explain how the Louisiana Purchase, expeditions of Lewis and Clark, the Indian Removal Act, the annexation of Texas, the Mexican-American War, and the concept of Manifest Destiny impacted the development of the United States.", "cognitive_demand": "high", "typical_question_shape": "Westward expansion + impact" },
+      { "id": "8.7A", "strand": 1, "text": "Analyze the impact of slavery on different sections of the United States.", "cognitive_demand": "high", "typical_question_shape": "Sectional differences over slavery (factual/economic, NOT moral debate)" },
+      { "id": "8.8A", "strand": 1, "text": "Explain the central role of the expansion of slavery in causing sectionalism, disagreement over states' rights, and the Civil War.", "cognitive_demand": "high", "typical_question_shape": "Causes of Civil War (factual analysis; per TEKS the central cause is the expansion of slavery)" },
+      { "id": "8.8B", "strand": 1, "text": "Identify significant events and people of the Civil War era, including Abraham Lincoln, Ulysses S. Grant, Robert E. Lee, Frederick Douglass, Harriet Tubman, the Emancipation Proclamation, and the Battle of Gettysburg.", "cognitive_demand": "low", "typical_question_shape": "Person-event matching" },
+      { "id": "8.9A", "strand": 1, "text": "Evaluate the impact of Reconstruction policies on the South.", "cognitive_demand": "high", "typical_question_shape": "Reconstruction policy impact" },
+      { "id": "8.10A", "strand": 2, "text": "Locate places and regions of importance in the United States during the 17th, 18th, and 19th centuries.", "cognitive_demand": "low", "typical_question_shape": "Map identification" },
+      { "id": "8.11A", "strand": 2, "text": "Analyze how physical characteristics of the environment influenced population distribution, settlement patterns, and economic activities in the United States during the 17th, 18th, and 19th centuries.", "cognitive_demand": "high", "typical_question_shape": "Geography-economy connection" },
+      { "id": "8.12A", "strand": 3, "text": "Identify economic differences among different regions of the United States.", "cognitive_demand": "medium", "typical_question_shape": "Regional economic comparison" },
+      { "id": "8.13A", "strand": 3, "text": "Analyze the causes and effects of economic differences among different regions of the United States at selected times.", "cognitive_demand": "high", "typical_question_shape": "Regional economy cause/effect" },
+      { "id": "8.15A", "strand": 4, "text": "Identify the influence of ideas from the Magna Carta, the English Bill of Rights, the Mayflower Compact, and the Declaration of Independence on the U.S. system of government.", "cognitive_demand": "medium", "typical_question_shape": "Founding-document influence" },
+      { "id": "8.16A", "strand": 4, "text": "Identify the influence of ideas such as separation of powers, checks and balances, federalism, popular sovereignty, the rule of law, and individual rights on the U.S. Constitution.", "cognitive_demand": "high", "typical_question_shape": "Constitutional principle identification in scenario" },
+      { "id": "8.17A", "strand": 4, "text": "Analyze the arguments of the Federalists and Anti-Federalists, including those of Alexander Hamilton, Patrick Henry, James Madison, and George Mason.", "cognitive_demand": "high", "typical_question_shape": "Federalist vs Anti-Federalist position identification" },
+      { "id": "8.18A", "strand": 4, "text": "Identify the origin of judicial review and analyze examples of congressional and presidential responses.", "cognitive_demand": "high", "typical_question_shape": "Judicial review case analysis" },
+      { "id": "8.19A", "strand": 5, "text": "Define and give examples of unalienable rights.", "cognitive_demand": "low", "typical_question_shape": "Unalienable rights identification" },
+      { "id": "8.20A", "strand": 5, "text": "Analyze the contributions of the Founding Fathers as models of civic virtue.", "cognitive_demand": "medium", "typical_question_shape": "Founding-figure contribution" },
+      { "id": "8.23A", "strand": 6, "text": "Identify selected racial, ethnic, and religious groups that settled in the United States and explain their reasons for immigration.", "cognitive_demand": "medium", "typical_question_shape": "Immigration group + reason matching" },
+      { "id": "8.24A", "strand": 6, "text": "Describe the historical development of the abolitionist movement.", "cognitive_demand": "high", "typical_question_shape": "Abolitionist movement evolution" },
+      { "id": "8.27A", "strand": 7, "text": "Explain the effects of technological and scientific innovations such as the steamboat, the cotton gin, and interchangeable parts.", "cognitive_demand": "medium", "typical_question_shape": "Innovation → economic impact" },
+      { "id": "8.29A", "strand": 8, "text": "Use a variety of primary and secondary sources, including biographies, indexes, voter information, news services, and journals.", "cognitive_demand": "medium", "typical_question_shape": "Source evaluation / primary vs secondary" },
+      { "id": "8.30A", "strand": 8, "text": "Use social studies terminology correctly.", "cognitive_demand": "low", "typical_question_shape": "Vocabulary in context" }
+    ]
+  },
+
+  "us_history": {
+    "tac_section": "113.41",
+    "stem": "USH",
+    "course_title": "United States History Studies Since 1877",
+    "course_note": "STAAR EOC required for graduation in Texas.",
+    "standards": [
+      { "id": "USH.1A", "strand": "History", "text": "Identify the major eras in U.S. history from 1877 to the present and describe their defining characteristics.", "cognitive_demand": "medium", "typical_question_shape": "Era identification with characteristic" },
+      { "id": "USH.2A", "strand": "History", "text": "Identify the major causes and events of World War I including German aggression, the sinking of the Lusitania, and the Zimmerman Telegram, and the U.S. entry into the war.", "cognitive_demand": "medium", "typical_question_shape": "WWI cause/effect" },
+      { "id": "USH.3A", "strand": "History", "text": "Identify reasons for the involvement of the United States in World War II.", "cognitive_demand": "medium", "typical_question_shape": "WWII US involvement reasons" },
+      { "id": "USH.4A", "strand": "History", "text": "Describe the impact of significant individuals such as Margaret Sanger and W. E. B. Du Bois on the progressive movement.", "cognitive_demand": "medium", "typical_question_shape": "Progressive era figure identification" },
+      { "id": "USH.5A", "strand": "History", "text": "Identify the major events and significant people of the Great Depression and the New Deal era such as the stock market crash, the Dust Bowl, and Franklin D. Roosevelt.", "cognitive_demand": "medium", "typical_question_shape": "Depression / New Deal events" },
+      { "id": "USH.7A", "strand": "History", "text": "Identify the major events and significant people of the Cold War such as the Truman Doctrine, the Marshall Plan, NATO, the Korean War, the Cuban Missile Crisis, and the Vietnam War.", "cognitive_demand": "medium", "typical_question_shape": "Cold War event identification" },
+      { "id": "USH.9A", "strand": "History", "text": "Trace the historical development of the civil rights movement from the late 1800s to the present, including the 13th, 14th, 15th, and 19th amendments and the role of leaders such as Martin Luther King Jr., Cesar Chavez, and Rosa Parks.", "cognitive_demand": "high", "typical_question_shape": "Civil rights movement timeline + leader" },
+      { "id": "USH.13A", "strand": "Geography", "text": "Identify the effects of population growth and distribution on the physical environment.", "cognitive_demand": "medium", "typical_question_shape": "Population growth → environmental effect" },
+      { "id": "USH.14A", "strand": "Economics", "text": "Explain why a free enterprise system of economics developed in the United States, including features such as private property, profit motive, free competition, and consumer sovereignty.", "cognitive_demand": "high", "typical_question_shape": "Free enterprise principle identification" },
+      { "id": "USH.17A", "strand": "Government", "text": "Describe how the U.S. Constitution has been amended and interpreted.", "cognitive_demand": "high", "typical_question_shape": "Amendment / interpretation of Constitution" },
+      { "id": "USH.19A", "strand": "Citizenship", "text": "Define and give examples of citizenship rights and responsibilities.", "cognitive_demand": "low", "typical_question_shape": "Citizenship identification" },
+      { "id": "USH.23A", "strand": "Culture", "text": "Identify cultural movements such as the Harlem Renaissance and the contributions of artists such as Aaron Douglas and writers such as Langston Hughes.", "cognitive_demand": "medium", "typical_question_shape": "Cultural movement identification" },
+      { "id": "USH.27A", "strand": "Science, technology", "text": "Explain the effects of innovations such as electric power, mass production, the assembly line, the telephone, and the airplane.", "cognitive_demand": "medium", "typical_question_shape": "Technology impact" },
+      { "id": "USH.29A", "strand": "Skills", "text": "Use a variety of primary and secondary sources, including biographies, indexes, voter information, news services, and journals.", "cognitive_demand": "medium", "typical_question_shape": "Source analysis" }
+    ]
+  }
+}

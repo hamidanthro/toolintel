@@ -1,0 +1,95 @@
+{
+  "_meta": {
+    "subject": "science",
+    "version": "1.0",
+    "built": "2026-05-03",
+    "authority": "Texas Education Agency",
+    "primary_source": "19 TAC Chapter 112 (Texas Essential Knowledge and Skills for Science), 2017 K-8 + 2021 high school revisions",
+    "source_url": "https://tea.texas.gov/academics/curriculum-standards/teks",
+    "source_status": "[CLAUDE-SYNTHESIZED from training knowledge of 19 TAC Ch. 112. STAAR Science is tested at grades 5, 8, and Biology EOC. Verify against TAC.]",
+    "provenance_marker": "[CLAUDE-SYNTHESIZED]",
+    "structure_note": "Science TEKS organize across four strands: (1) Matter and energy, (2) Force, motion, and energy, (3) Earth and space, (4) Organisms and environments. STAAR Science draws ~25% from each strand at grades 5 and 8. Biology EOC is structured by biology-specific content topics."
+  },
+
+  "_strands_grade_5_8": {
+    "1": "Matter and energy",
+    "2": "Force, motion, and energy",
+    "3": "Earth and space",
+    "4": "Organisms and environments"
+  },
+
+  "grade_5": {
+    "tac_section": "112.16",
+    "stem": "5",
+    "standards": [
+      { "id": "5.5A", "strand": 1, "text": "Classify matter based on measurable, testable, and observable physical properties, including mass, magnetism, physical state (solid, liquid, gas), relative density (sinking and floating using water as a reference point), solubility in water, and the ability to conduct or insulate thermal or electric energy.", "cognitive_demand": "medium", "typical_question_shape": "Property classification of objects shown in a chart or image" },
+      { "id": "5.5B", "strand": 1, "text": "Demonstrate that some mixtures maintain physical properties of their ingredients.", "cognitive_demand": "low", "typical_question_shape": "Mixture vs solution identification" },
+      { "id": "5.5C", "strand": 1, "text": "Identify changes that can occur in the physical properties of the ingredients of solutions such as dissolving salt in water or adding lemon juice to water.", "cognitive_demand": "medium", "typical_question_shape": "Solution behavior question" },
+      { "id": "5.6A", "strand": 2, "text": "Explore the uses of energy, including mechanical, light, thermal, electrical, and sound energy.", "cognitive_demand": "low", "typical_question_shape": "Identify energy type from scenario" },
+      { "id": "5.6B", "strand": 2, "text": "Demonstrate that the flow of electricity in circuits requires a complete path through which an electric current can pass and can produce light, heat, and sound.", "cognitive_demand": "medium", "typical_question_shape": "Circuit diagram; identify if it works (complete vs incomplete)" },
+      { "id": "5.6C", "strand": 2, "text": "Demonstrate that light travels in a straight line until it strikes an object or travels through one medium to another and demonstrate that light can be reflected such as the use of mirrors or other shiny surfaces and refracted such as the appearance of an object when observed through water.", "cognitive_demand": "medium", "typical_question_shape": "Light reflection/refraction in a diagram" },
+      { "id": "5.6D", "strand": 2, "text": "Design a simple experimental investigation that tests the effect of force on an object.", "cognitive_demand": "high", "typical_question_shape": "Experimental design question — pick valid setup" },
+      { "id": "5.7A", "strand": 3, "text": "Explore the processes that led to the formation of sedimentary rocks and fossil fuels.", "cognitive_demand": "medium", "typical_question_shape": "Rock cycle / fossil fuel formation" },
+      { "id": "5.7B", "strand": 3, "text": "Recognize how landforms such as deltas, canyons, and sand dunes are the result of changes to Earth's surface by wind, water, or ice.", "cognitive_demand": "medium", "typical_question_shape": "Landform + erosion process matching" },
+      { "id": "5.7C", "strand": 3, "text": "Identify alternative energy resources such as wind, solar, hydroelectric, geothermal, and biofuels.", "cognitive_demand": "low", "typical_question_shape": "Energy source identification" },
+      { "id": "5.8A", "strand": 3, "text": "Differentiate between weather and climate.", "cognitive_demand": "low", "typical_question_shape": "Weather vs climate scenario" },
+      { "id": "5.8B", "strand": 3, "text": "Explain how the Sun and the ocean interact in the water cycle.", "cognitive_demand": "medium", "typical_question_shape": "Water cycle diagram + sun's role" },
+      { "id": "5.8C", "strand": 3, "text": "Demonstrate that Earth rotates on its axis once approximately every 24 hours causing the day/night cycle and the apparent movement of the Sun across the sky.", "cognitive_demand": "medium", "typical_question_shape": "Day/night cycle from Earth rotation" },
+      { "id": "5.8D", "strand": 3, "text": "Identify and compare the physical characteristics of the Sun, Earth, and Moon.", "cognitive_demand": "low", "typical_question_shape": "Sun/Earth/Moon characteristic comparison" },
+      { "id": "5.9A", "strand": 4, "text": "Observe the way organisms live and survive in their ecosystem by interacting with the living and non-living elements.", "cognitive_demand": "medium", "typical_question_shape": "Organism-ecosystem interaction" },
+      { "id": "5.9B", "strand": 4, "text": "Describe how the flow of energy derived from the Sun, used by producers to create their own food, is transferred through a food chain and food web to consumers and decomposers.", "cognitive_demand": "high", "typical_question_shape": "Food chain / food web energy flow" },
+      { "id": "5.9C", "strand": 4, "text": "Predict the effects of changes in ecosystems caused by living organisms, including humans, such as the overpopulation of grazers or the building of highways.", "cognitive_demand": "high", "typical_question_shape": "Ecosystem disruption prediction" },
+      { "id": "5.9D", "strand": 4, "text": "Identify fossils as evidence of past living organisms and the nature of the environments at the time using models.", "cognitive_demand": "medium", "typical_question_shape": "Fossil interpretation" },
+      { "id": "5.10A", "strand": 4, "text": "Compare the structures and functions of different species that help them live and survive such as hooves on prairie animals or webbed feet in aquatic animals.", "cognitive_demand": "medium", "typical_question_shape": "Adaptation matching to environment" },
+      { "id": "5.10B", "strand": 4, "text": "Differentiate between inherited traits of plants and animals such as spines on a cactus or shape of a beak and learned behaviors such as an animal learning tricks or a child riding a bicycle.", "cognitive_demand": "medium", "typical_question_shape": "Inherited vs learned classification" },
+      { "id": "5.10C", "strand": 4, "text": "Describe the differences between complete and incomplete metamorphosis of insects.", "cognitive_demand": "low", "typical_question_shape": "Life-cycle stages comparison" }
+    ]
+  },
+
+  "grade_8": {
+    "tac_section": "112.20",
+    "stem": "8",
+    "standards": [
+      { "id": "8.5A", "strand": 1, "text": "Describe the structure of atoms, including the masses, electrical charges, and locations of protons, neutrons, and electrons.", "cognitive_demand": "medium", "typical_question_shape": "Atomic structure diagram or table interpretation" },
+      { "id": "8.5B", "strand": 1, "text": "Identify that protons determine an element's identity and that valence electrons determine its chemical properties, including reactivity.", "cognitive_demand": "medium", "typical_question_shape": "Element ID from atomic number / chemical reactivity" },
+      { "id": "8.5C", "strand": 1, "text": "Interpret the arrangement of the Periodic Table, including groups and periods, to explain how properties are used to classify elements.", "cognitive_demand": "medium", "typical_question_shape": "Periodic table interpretation question" },
+      { "id": "8.5D", "strand": 1, "text": "Recognize that chemical formulas are used to identify substances and determine the number of atoms of each element in chemical formulas containing subscripts.", "cognitive_demand": "low", "typical_question_shape": "Count atoms in formula" },
+      { "id": "8.5E", "strand": 1, "text": "Investigate how evidence of chemical reactions indicate that new substances with different properties are formed and how that relates to the law of conservation of mass.", "cognitive_demand": "high", "typical_question_shape": "Conservation of mass in reaction" },
+      { "id": "8.6A", "strand": 2, "text": "Demonstrate and calculate how unbalanced forces change the speed or direction of an object's motion.", "cognitive_demand": "medium", "typical_question_shape": "Net force calculation" },
+      { "id": "8.6B", "strand": 2, "text": "Differentiate between speed, velocity, and acceleration.", "cognitive_demand": "medium", "typical_question_shape": "Speed/velocity/acceleration discrimination" },
+      { "id": "8.6C", "strand": 2, "text": "Investigate and describe applications of Newton's law of inertia, law of force and acceleration, and law of action-reaction such as in vehicle restraints, sports activities, geological processes, and rocket launches.", "cognitive_demand": "high", "typical_question_shape": "Apply Newton's laws to scenario" },
+      { "id": "8.7A", "strand": 3, "text": "Model and illustrate how the tilted Earth rotates on its axis, causing day and night, and revolves around the Sun causing changes in seasons.", "cognitive_demand": "medium", "typical_question_shape": "Seasons + Earth tilt diagram" },
+      { "id": "8.7B", "strand": 3, "text": "Demonstrate and predict the sequence of events in the lunar cycle.", "cognitive_demand": "medium", "typical_question_shape": "Moon phase sequence" },
+      { "id": "8.7C", "strand": 3, "text": "Relate the position of the Moon and Sun to their effect on ocean tides.", "cognitive_demand": "medium", "typical_question_shape": "Spring vs neap tide / Moon position" },
+      { "id": "8.8A", "strand": 3, "text": "Describe components of the universe, including stars, nebulae, and galaxies, and use models such as the Hertzsprung-Russell diagram for classification.", "cognitive_demand": "medium", "typical_question_shape": "H-R diagram or galaxy classification" },
+      { "id": "8.8B", "strand": 3, "text": "Recognize that the Sun is a medium-sized star near the edge of a disc-shaped galaxy of stars and that the Sun is many thousands of times closer to Earth than any other star.", "cognitive_demand": "low", "typical_question_shape": "Solar system / galaxy scale" },
+      { "id": "8.9A", "strand": 3, "text": "Describe the historical development of evidence that supports plate tectonic theory.", "cognitive_demand": "medium", "typical_question_shape": "Plate tectonics evidence (Pangaea, fossils, rock matches)" },
+      { "id": "8.9B", "strand": 3, "text": "Relate plate tectonics to the formation of crustal features.", "cognitive_demand": "medium", "typical_question_shape": "Plate boundary → mountain/volcano/trench formation" },
+      { "id": "8.10A", "strand": 3, "text": "Recognize that the Sun provides the energy that drives convection within the atmosphere and oceans, producing winds and ocean currents.", "cognitive_demand": "medium", "typical_question_shape": "Convection in atmosphere/ocean" },
+      { "id": "8.10B", "strand": 3, "text": "Identify how global patterns of atmospheric movement influence local weather using weather maps that show high and low pressures and fronts.", "cognitive_demand": "high", "typical_question_shape": "Weather map interpretation" },
+      { "id": "8.11A", "strand": 4, "text": "Describe producer/consumer, predator/prey, and parasite/host relationships as they occur in food webs within marine, freshwater, and terrestrial ecosystems.", "cognitive_demand": "medium", "typical_question_shape": "Ecological relationship classification" },
+      { "id": "8.11B", "strand": 4, "text": "Investigate how organisms and populations in an ecosystem depend on and may compete for biotic and abiotic factors such as quantity of light, water, range of temperatures, or soil composition.", "cognitive_demand": "medium", "typical_question_shape": "Limiting factor / competition question" },
+      { "id": "8.11C", "strand": 4, "text": "Explore how short- and long-term environmental changes affect organisms and traits in subsequent populations.", "cognitive_demand": "high", "typical_question_shape": "Environmental change → population change" }
+    ]
+  },
+
+  "biology": {
+    "tac_section": "112.34",
+    "stem": "B",
+    "course_note": "Biology is taught in 9th or 10th grade in Texas; STAAR EOC required for graduation.",
+    "standards": [
+      { "id": "B.4A", "strand": "Cell structure and function", "text": "Compare and contrast prokaryotic and eukaryotic cells.", "cognitive_demand": "medium", "typical_question_shape": "Prokaryote vs eukaryote table or diagram" },
+      { "id": "B.4B", "strand": "Cell structure and function", "text": "Investigate and explain cellular processes, including homeostasis and transport of molecules.", "cognitive_demand": "medium", "typical_question_shape": "Diffusion/osmosis/active transport scenario" },
+      { "id": "B.5A", "strand": "Mechanisms of genetics", "text": "Describe the structure and function of DNA, including the relationship of nucleotides, the double helix, and protein synthesis.", "cognitive_demand": "high", "typical_question_shape": "DNA structure or transcription/translation" },
+      { "id": "B.6A", "strand": "Mechanisms of genetics", "text": "Identify components of DNA, identify how information for specifying the traits of an organism is carried in the DNA, and examine scientific explanations for the origin of DNA.", "cognitive_demand": "medium", "typical_question_shape": "DNA components / heredity" },
+      { "id": "B.6E", "strand": "Mechanisms of genetics", "text": "Identify and illustrate changes in DNA and evaluate the significance of these changes.", "cognitive_demand": "high", "typical_question_shape": "Mutation type and consequence" },
+      { "id": "B.7A", "strand": "Evolution and classification", "text": "Analyze and evaluate how evidence of common ancestry among groups is provided by the fossil record, biogeography, and homologies, including anatomical, molecular, and developmental.", "cognitive_demand": "high", "typical_question_shape": "Evolutionary evidence (fossils, comparative anatomy, DNA)" },
+      { "id": "B.8A", "strand": "Evolution and classification", "text": "Define taxonomy and recognize the importance of a standardized taxonomic system to the scientific community.", "cognitive_demand": "low", "typical_question_shape": "Taxonomic hierarchy (Kingdom → Species)" },
+      { "id": "B.9A", "strand": "Biological processes and systems", "text": "Compare the energy flow in photosynthesis to the energy flow in cellular respiration.", "cognitive_demand": "high", "typical_question_shape": "Photosynthesis vs cellular respiration comparison" },
+      { "id": "B.10A", "strand": "Biological processes and systems", "text": "Describe the interactions that occur among systems that perform the functions of regulation, nutrient absorption, reproduction, and defense from injury or illness in animals.", "cognitive_demand": "high", "typical_question_shape": "Body system interactions (e.g., nervous + endocrine)" },
+      { "id": "B.11A", "strand": "Interdependence within environmental systems", "text": "Describe the role of carbon, nitrogen, water, and other biogeochemical cycles within an ecosystem.", "cognitive_demand": "medium", "typical_question_shape": "Cycle diagram interpretation (carbon/nitrogen/water)" },
+      { "id": "B.11B", "strand": "Interdependence within environmental systems", "text": "Examine and analyze populations as a function of birth rate, death rate, immigration, and emigration.", "cognitive_demand": "high", "typical_question_shape": "Population dynamics calculation" },
+      { "id": "B.12A", "strand": "Interdependence within environmental systems", "text": "Interpret relationships, including predation, parasitism, commensalism, mutualism, and competition among organisms.", "cognitive_demand": "medium", "typical_question_shape": "Symbiosis classification" }
+    ]
+  }
+}

@@ -2779,6 +2779,120 @@ LOOKS_CLEAN). The 50-state sweep is unblocked. Lambda judge
 
 ---
 
+## 34. Texas State Knowledge Pack v1.0 — foundation for all Texas content generation (May 3)
+
+### Strategy pivot: per-state-deep, NOT bulk-50-state
+
+After §31 (Texas math sweep) and the §32 + §33 quality work, the
+strategic call is to go **Texas-COMPLETE depth-first** before
+expanding to other states. The 50-state bulk sweep that was
+greenlit at end-of-§33 is **PARKED** in favor of building deep
+state-specific foundations one state at a time.
+
+The rationale: high-quality state-flavor-authentic content for one
+state (Texas) is more valuable than mediocre coverage of 50 states.
+A kid in Texas using GradeEarn should see questions that feel
+indistinguishable from STAAR practice — same vocabulary, same
+question shapes, same cultural neutrality, same TEKS alignment —
+not generic test-prep filler.
+
+### Where the pack lives
+
+`state-packs/texas/` — 12 files, ~50KB:
+
+```
+state-packs/texas/
+├── README.md
+├── REVIEW-CHECKLIST.md          (30-item Hamid review)
+├── standards/                   (TEKS JSON for math, RLA, science, SS)
+├── test-fidelity/               (STAAR shape patterns + exemplars, no verbatim)
+├── cultural/                    (allowed contexts, avoided contexts, authentic names)
+├── pedagogy/                    (teaching-philosophy.md)
+└── lingo/                       (staar-vocabulary.md)
+```
+
+381 TEKS standards documented across all subjects (math 194, RLA 95,
+science 53, social studies 39).
+
+### Sources + provenance
+
+The TEA top-level URL is accessible; specific TEKS chapter URLs and
+the pre-2025 STAAR released-test PDFs are NOT directly accessible
+(TAC site migrated; Texas moved to online-only assessment via Cambium
+portal which requires student login). The pack therefore relies on
+CLAUDE-SYNTHESIZED training knowledge of publicly-published TEKS and
+publicly-known STAAR patterns. Every file in the pack has a clear
+`[CLAUDE-SYNTHESIZED]` marker at the top describing what was sourced
+where. Verify against current TEA materials before publishing
+dependent products.
+
+### What pipelines reference it
+
+- **`scripts/cold-start/generators.js#buildPrompt`** — should pull
+  TEKS text from `standards/teks-math.json` (or rla/science/ss),
+  question shapes from `test-fidelity/staar-question-shapes.md`,
+  cultural-allowed contexts from `cultural/contexts-allowed.md`,
+  authentic names from `cultural/authentic-names.json`, STAAR
+  vocabulary from `lingo/staar-vocabulary.md`.
+- **Cold-start judge** (`scripts/cold-start/judge.js`) and **lambda
+  judge** (`lambda/judge.js`) — already reference Texas as a
+  flagship state in their SYSTEM_PROMPTs (own-state references
+  allowed). Future judge updates can reference the pack's
+  `cultural/contexts-avoided.md` list directly.
+- **Future audit scripts** — any `audit-texas-*.js` should validate
+  generated content against the pack's standards and contexts.
+
+### Standing rules
+
+1. **NO Texas content generation without referencing this pack.** A
+   Texas generator prompt that ignores `cultural/contexts-allowed.md`
+   produces off-state content; one that ignores
+   `lingo/staar-vocabulary.md` uses generic phrasings instead of
+   STAAR-authentic ones. The pack must be wired into prompt
+   construction; this is mandatory not optional.
+2. **Same pack template required for every state we expand to.**
+   The next state pack (California / New York / Florida / etc.) must
+   mirror this pack's structure: `standards/`, `test-fidelity/`,
+   `cultural/`, `pedagogy/`, `lingo/`. Field names in `_meta` blocks
+   stay uniform so cross-state tooling remains simple.
+3. **Per-state-deep is the new default strategy.** Bulk sweep across
+   all 50 states is parked until the Texas-complete content is
+   shipped, validated, and the per-state-pack template is proven on
+   a second state. The §33 50-state-greenlight criteria still hold,
+   but the launch pattern is now per-state-pack-then-content, not
+   bulk.
+
+### Next actions (in order)
+
+1. Hamid reviews `state-packs/texas/REVIEW-CHECKLIST.md` (30-item,
+   ~10 min). Flags any inaccuracies.
+2. Wire the pack into `scripts/cold-start/generators.js#buildPrompt`
+   for Texas math (separate prompt cycle).
+3. Re-run a Texas math grade-7 mini-probe with pack-wired generator
+   + Claude verifier (per §33). Measure quality lift over the §33
+   baseline.
+4. If lift is meaningful, run a full Texas math sweep with the
+   pack-wired pipeline — REPLACING the §31 sweep content (or
+   tombstoning it; that's a separate decision).
+5. Repeat for Texas RLA, then Texas science, then Texas SS.
+6. THEN start the second state's pack.
+
+### Cost estimate to build packs for all 50 states
+
+If each state pack takes ~3-4 hours of Claude time (this pack took
+~1.5 hours of token-spend), 50 states × 3-4h = 150-200 hours of
+generation time. At Claude Sonnet 4.5 prices (~$3/M input + $15/M
+output), each pack ~$10-15 in tokens. 50 packs ≈ $500-750 total.
+Trivial vs the value of state-flavor-authentic content.
+
+But — building 50 state packs without Hamid review at each step is
+risky. The plan is build-Texas, ship-Texas-content, prove-it-works,
+then move to state #2. If state #2 reveals a structural weakness in
+the pack template, fix template, then continue. Don't bulk-build 50
+packs and find out one is wrong.
+
+---
+
 ## TOP 3 THINGS YOU SHOULD KNOW
 
 1. **The deploy story is held together by tape and is the single biggest

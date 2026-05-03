@@ -1,0 +1,103 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "built": "2026-05-03",
+    "purpose": "Culturally-diverse Texas-authentic name pool for question generation. Reflects Texas K-12 demographic mix (Hispanic ~40%, White ~28%, Black ~12%, Asian ~5%, Multi/Other ~15%). Anti-stereotype rule: any name from any pool can pair with any occupation, hobby, sport, science interest, or family structure.",
+    "provenance_marker": "[CLAUDE-SYNTHESIZED] from Census name-frequency data, Texas Demographic Center reports, and common Texas given-name patterns. Names selected for: (a) STAAR-style readability at K-12 grade levels, (b) avoiding overly trendy spellings that age out fast, (c) representing actual ethnolinguistic communities present in Texas — Mexican/Mexican-American, Anglo, African-American, Vietnamese-American, South-Asian American, etc.",
+    "demographic_target_for_question_pool": {
+      "hispanic": 0.40,
+      "anglo": 0.28,
+      "black": 0.12,
+      "asian": 0.10,
+      "other_multi": 0.10
+    },
+    "anti_stereotype_rule": "When the generator picks a name + occupation/activity, randomize independently. NEVER use ethnic-sounding names as a proxy for ethnic-stereotyped activities (e.g., not 'Diego at the food truck', not 'Aanya in advanced math'). Mix it up: Diego runs the science club, Aanya plays football, Sofia builds robots, Carlos teaches dance.",
+    "sourcing_note": "First-name pools weighted toward Texas-common given names per US SSA name-frequency data and Texas Department of State Health Services birth-record name frequencies. Last-name pools reflect Texas surname mix per Census surname tables. Specific name selection avoids overly-distinctive or attention-grabbing names that would distract from the math/reading content."
+  },
+
+  "first_names": {
+    "hispanic": [
+      "Sofia", "Maria", "Isabella", "Camila", "Valentina", "Lucia", "Mia", "Emma", "Ximena", "Andrea",
+      "Gabriela", "Daniela", "Victoria", "Luna", "Alejandra", "Carolina", "Paola", "Adriana", "Mariana", "Natalia",
+      "Diego", "Mateo", "Carlos", "Luis", "Miguel", "Santiago", "Sebastian", "Daniel", "Adrian", "Antonio",
+      "Andres", "Javier", "Fernando", "Eduardo", "Hugo", "Pablo", "Emilio", "Tomas", "Cristian", "Jorge",
+      "Jose", "Juan", "Manuel", "Roberto", "Alejandro", "Ricardo", "Esteban", "Mario", "Hector", "Ramon"
+    ],
+    "anglo": [
+      "Emma", "Olivia", "Charlotte", "Amelia", "Abigail", "Harper", "Evelyn", "Grace", "Madison", "Ella",
+      "Avery", "Scarlett", "Lily", "Hazel", "Aurora", "Eleanor", "Hannah", "Lucy", "Stella", "Caroline",
+      "Liam", "Noah", "Oliver", "Elijah", "James", "William", "Henry", "Mason", "Logan", "Jackson",
+      "Ethan", "Lucas", "Jacob", "Michael", "Daniel", "David", "Joseph", "Samuel", "Owen", "Wyatt",
+      "Caleb", "Jack", "Levi", "Carter", "Hudson", "Theodore", "Sebastian", "Andrew", "Joshua", "Ryan"
+    ],
+    "black": [
+      "Aaliyah", "Amara", "Imani", "Maya", "Zoe", "Nia", "Aaliyah", "Naomi", "Aniyah", "Jada",
+      "Kennedy", "Brielle", "Kayla", "Sanaa", "Janelle", "Layla", "Aaliyah", "Camille", "Saniya", "Trinity",
+      "Jamal", "Marcus", "Malik", "Andre", "Devon", "DeAndre", "Tyrone", "Jayden", "Elijah", "Cameron",
+      "Isaiah", "Xavier", "Kai", "Amari", "Damon", "Khalil", "Terrell", "Jordan", "Marquise", "Donovan",
+      "Rashad", "Justice", "Maurice", "Tyrese", "Reginald", "Quincy", "Maxwell", "Jamir", "Chance", "Dion"
+    ],
+    "asian": [
+      "Aanya", "Priya", "Kavya", "Anika", "Diya", "Riya", "Saanvi", "Ananya", "Aria", "Nisha",
+      "Mei", "Lin", "Ying", "Wei", "Xiu", "Ling",
+      "Linh", "Mai", "Thuy", "Anh", "Hoa",
+      "Yuki", "Sakura", "Hana", "Aiko", "Mika",
+      "Soo", "Ji", "Min", "Eun", "Hye",
+      "Arjun", "Krishna", "Rohit", "Vikram", "Aarav", "Vihaan", "Reyansh", "Aadi", "Ayaan", "Kiaan",
+      "Hiro", "Kenji", "Ryo", "Takeshi", "Akira", "Haruki",
+      "Bao", "Minh", "Khanh", "Tuan", "Long",
+      "Wei", "Jin", "Chen", "Liang", "Bo",
+      "Jun", "Hyun", "Sung", "Ho"
+    ],
+    "other_multi": [
+      "Aaliyah", "Skylar", "Riley", "Quinn", "Reese", "Rowan", "Sage", "Avery", "Logan", "Phoenix",
+      "Asher", "Ezra", "Atlas", "Kai", "River", "Justice", "Storm", "Sky", "Onyx", "Wren",
+      "Fatima", "Aisha", "Layla", "Yara", "Zara", "Amira", "Leila", "Salma", "Nour", "Hana",
+      "Omar", "Hassan", "Yusuf", "Karim", "Tarik", "Amir", "Jamal", "Khalil", "Faris", "Rami"
+    ]
+  },
+
+  "last_names": {
+    "hispanic": [
+      "Garcia", "Rodriguez", "Martinez", "Hernandez", "Lopez", "Gonzalez", "Perez", "Sanchez", "Ramirez", "Torres",
+      "Flores", "Rivera", "Gomez", "Diaz", "Reyes", "Cruz", "Morales", "Ortiz", "Gutierrez", "Chavez",
+      "Ramos", "Ruiz", "Alvarez", "Mendoza", "Vasquez", "Castillo", "Jimenez", "Moreno", "Romero", "Herrera",
+      "Medina", "Aguilar", "Vega", "Castro", "Ortega", "Rios", "Soto", "Marin", "Salazar", "Munoz"
+    ],
+    "anglo": [
+      "Smith", "Johnson", "Williams", "Brown", "Jones", "Davis", "Miller", "Wilson", "Moore", "Taylor",
+      "Anderson", "Thomas", "Jackson", "White", "Harris", "Martin", "Thompson", "Lewis", "Walker", "Hall",
+      "Allen", "Young", "King", "Wright", "Scott", "Green", "Adams", "Baker", "Nelson", "Carter",
+      "Mitchell", "Roberts", "Turner", "Phillips", "Campbell", "Parker", "Evans", "Edwards", "Collins", "Stewart",
+      "Sanchez", "Morris", "Rogers", "Reed", "Cook", "Bell", "Murphy", "Bailey", "Cooper", "Richardson"
+    ],
+    "black": [
+      "Williams", "Johnson", "Brown", "Jackson", "Harris", "Robinson", "Thompson", "Walker", "Young", "Lee",
+      "Carter", "Wright", "Mitchell", "Reed", "Bell", "Edwards", "Henderson", "Coleman", "Patterson", "Russell",
+      "Griffin", "Hayes", "Foster", "Bryant", "Alexander", "Russell", "Sanders", "Jenkins", "Perry", "Powell",
+      "Long", "Patterson", "Hughes", "Hayes", "Watson", "Sims", "Wallace", "Hawkins", "Holmes", "Jefferson"
+    ],
+    "asian": [
+      "Nguyen", "Tran", "Le", "Pham", "Vo", "Hoang", "Phan", "Vu", "Bui", "Do",
+      "Ho", "Ngo", "Duong", "Ly",
+      "Patel", "Singh", "Shah", "Kumar", "Sharma", "Reddy", "Gupta", "Joshi", "Mehta", "Desai",
+      "Wang", "Li", "Zhang", "Liu", "Chen", "Yang", "Huang", "Wu", "Zhao", "Lin",
+      "Kim", "Park", "Lee", "Choi", "Jeong", "Kang",
+      "Tanaka", "Yamamoto", "Sato", "Suzuki", "Watanabe"
+    ],
+    "other_multi": [
+      "Khan", "Ahmed", "Hassan", "Ali", "Hussein", "Rashid", "Saleh", "Abdullah", "Mohammed", "Iqbal",
+      "Williams", "Garcia", "Lee",
+      "Jefferson", "Madison", "Lincoln",
+      "James", "Bryant", "Sterling"
+    ]
+  },
+
+  "_usage_notes": {
+    "for_generators": "Pick a name pair (first + last) by sampling from a single demographic pool. So 'Sofia Martinez' (both hispanic) reads natural; 'Sofia Patel' (mixed) is OK in modern contexts but less common.",
+    "frequency_target": "Across a generated batch of N questions, the demographic distribution of names should approximate the target above (40/28/12/10/10). Don't sample 100% from one pool.",
+    "avoid_repetition": "Within a single API call's set of questions, don't reuse the same first name. The cold-start generator's name-injection (CLAUDE.md §30) shuffles 5 names per call from this pool — that pattern continues here.",
+    "sensitive_combinations": "A few names appear in multiple pools (e.g., 'Maria' is hispanic AND traditional Anglo Catholic; 'Sofia' is hispanic AND modern Anglo). That's fine — it reflects real Texas naming patterns. Just don't game it: the goal is realistic diversity, not maximizing pool overlaps.",
+    "spelling_consistency": "Use one spelling per name; don't randomize 'Sofia/Sophia/Sofía' — pick one (Sofia, no accent) and stay consistent."
+  }
+}
