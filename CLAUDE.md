@@ -1240,7 +1240,7 @@ in the table — currently servable to kids, would render broken on read.
    `validateQuestion` does NOT check `correctIndex`, so the schema-broken
    row passed validation and got `PutItem`'d.
 
-**Two-layer fix (both layers ship in commit `<sha>`):**
+**Two-layer fix (commits `756e0a4` + `796258e`, deployed `<post-deploy-commit-sha>` 2026-05-03 00:43:42 UTC):**
 
 **Layer 1 — fix at source.** `sanitizeQuestions` now computes
 `item.correctIndex = item.choices.indexOf(item.answer)` after the
@@ -1289,6 +1289,14 @@ All 7 cases pass. Run with:
 NODE_PATH=$(pwd)/scripts/lake-audit/node_modules \
   node scripts/lake-audit/test-savepoolitem-validation.js
 ```
+
+**Deploy log (2026-05-03 00:43:42 UTC):**
+- Pre-deploy CodeSha256: `T691FyBTacwlP0tZTdYAJAo40sRO4knDtTSoHBFPtJ4=` (the May 2 voice + summarize-session deploy)
+- Post-deploy CodeSha256: `BYV10YhPY2nydt65nfs6svBoJQ4NQj69i9mkdxoilCI=`
+- Backup: `backups/staar-tutor-20260503T004325Z-T691FyBT.zip`
+- Smoke test 1 (tutor regression): reply *"Hey TestKid! I see you answered 11 instead of 12. Let's think about it together…"* — voice intact, banned-phrase audit clean
+- Smoke test 2 (handleGenerate): returned 3 questions, first has `correctIndex: present` (vs previously absent — Layer 1 confirmed working end-to-end). Sample question: *"Maya has 34 stickers. Liam gives her 25 more stickers..."* with `choices: ["60","49","68","59"]`, `answer: "59"`, `correctIndex: 3` (after shuffle).
+- CloudWatch `[lake.savePoolItem REJECTED]` events in first 5 min: **0**. Gate armed and quiet — expected for low-volume smoke testing; nonzero rate would be the model occasionally producing malformed shapes that the gate is now silently dropping.
 
 **What this fix does NOT do:**
 - Does not modify the existing 186 broken rows in the table — that's
