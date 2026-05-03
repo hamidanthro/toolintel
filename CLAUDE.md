@@ -116,7 +116,7 @@ top priority for the next phase of work.
 
 ## 2. What this is
 
-**GradeEarn** (gradeearn.com) is a K-12 state-test-prep PWA where kids
+**GradeEarn** is a K-12 state-test-prep PWA where kids
 practice for their state's test (STAAR, CAASPP, FAST, TCAP, etc., all 50
 states + DC) and **earn cents redeemable for real toys** capped at $100 per
 kid lifetime. Free during beta. ~20 real testers in production.
@@ -127,7 +127,9 @@ rebrands left substantial dead code; see §6 "Active legacy to retire".
 
 - Working dir: `/Users/bob/clawd/toolintel/`
 - Git remote: `git@github.com:hamidanthro/toolintel.git`
-- Production domain: `gradeearn.com` (CNAME file → GitHub Pages)
+- **Current production URL: `toolintel.ai`** (the live site testers use today)
+- Future production URL: `gradeearn.com` (the rebrand-target domain — `CNAME` file in repo points here, but DNS for gradeearn.com is not yet pointing at GitHub Pages; planned cutover later)
+- **Brand name everywhere = "GradeEarn"** regardless of current URL — the "toolintel" string is the legacy host name only, not a name to use in copy or UI
 - AWS account: `860141646209` (us-east-1)
 
 ---
@@ -166,10 +168,22 @@ Verified 2026-05-02 against `gh repo view hamidanthro/toolintel`:
 - No `.github/workflows/` directory
 - No `gh-pages` branch (only `main` and `staging` on origin)
 - No `_config.yml`, no `.nojekyll`
-- `CNAME` = `gradeearn.com`
+- `CNAME` = `gradeearn.com` (the future domain — see below)
 
 **Deploy mechanism:** GitHub Pages serves the `main` branch root directly.
 A `git push origin main` is the deploy. Live within ~1–2 minutes.
+
+**Live URL = `https://toolintel.ai`** today. The repo's `CNAME` file says
+`gradeearn.com` (the rebrand-target domain), but the DNS for gradeearn.com
+is **not yet pointed at GitHub Pages**. Until that DNS cutover happens,
+testers reach the site at `toolintel.ai`. After cutover, the same Pages
+deploy will serve at gradeearn.com and toolintel.ai can retire.
+
+How GitHub Pages handles two domains in this state: it serves whatever
+custom domain DNS resolves to its IPs. toolintel.ai's DNS still points
+at the Pages IPs (legacy), so it continues to work. gradeearn.com's DNS
+doesn't, so it doesn't. CNAME in repo doesn't break toolintel.ai because
+GitHub Pages serves any verified custom domain, not just the one in CNAME.
 
 **Implications:**
 - There is no staging/preview environment for the live site. (`staging`
@@ -184,8 +198,13 @@ A `git push origin main` is the deploy. Live within ~1–2 minutes.
 - A push to `main` is not reversible by deleting the branch (Pages will just
   show 404). Reverts must be commits.
 
-**DNS:** Namecheap manages `gradeearn.com`; Google Workspace owns the MX
-records for `hamid@gradeearn.com`.
+**DNS:** Namecheap manages both `gradeearn.com` and presumably `toolintel.ai`.
+Google Workspace owns the MX records for `hamid@gradeearn.com`.
+
+**Brand-vs-host distinction:** the brand name to use everywhere — in copy,
+in UI, in marketing — is **GradeEarn**, regardless of which URL is live.
+"toolintel" is a legacy host name only, never something to surface to
+end users.
 
 ---
 
@@ -1035,6 +1054,24 @@ Full procedure in `ROLLBACK.md`. The short version:
 hit a wrong answer will hear the new voice instead of "I'm an AI tutor
 built into StarTest" and the four-step "warm acknowledgment / mistake
 awareness / Socratic question" template.
+
+### Frontend deploy log
+
+The other half of "going live" — pushing the frontend half of the May 2
+stockpile to GitHub Pages.
+
+| When | UTC `2026-05-02` (push timestamp matched `git log`) |
+|---|---|
+| Operator | Hamid (via `git push origin main`) |
+| Commits pushed | **11 commits** (`8c88ed2` → `69f2528`) — the entire May 2 stockpile from the cold-start judge through the lambda-deploy-log commit |
+| Push output | `0181292..69f2528  main -> main` — clean fast-forward, no force-push, no rebase |
+| Live URL | `https://toolintel.ai` (NOT gradeearn.com — see §4) |
+| Propagation observed | The 5-minute initial poll against `gradeearn.com` timed out — that domain isn't live yet (CNAME-in-repo intent, not current DNS). Re-pointed smoke tests at `toolintel.ai` and the new code was already serving (sub-second response). |
+| Smoke test 1 (homepage) | HTTP 200, 56,686 bytes; ReplyQuik script tag references = 0 (the one match is a benign `<!--` comment in `index.html` documenting the prior removal); StarTest brand = 0; "GradeEarn" brand = 13 occurrences ✓ |
+| Smoke test 2 (`/css/styles.css`) | HTTP 200, 373,211 bytes, line count 13,668 (matches local source byte-for-byte); "PRACTICE SURFACE — MOBILE OVERRIDES" marker present ✓ |
+| Smoke test 3 (`/js/practice.js`) | HTTP 200, 71,149 bytes; `END_OF_SET_HEADERS` (6 refs), `TUTOR_FALLBACK_LINE` (3 refs), `session-summary` (3 refs); `Ask AI tutor for help` button = 0 (auto-fire replaced it) ✓ |
+| Live integration test | Tutor reply via the same payload as the lambda smoke: *"Hey TestKid! I see you answered 11, which is close but not quite right. Let's think about it this way: if you have 7 and you add 5 more, what do you get? Can you try counting up from 7 by 5?"* — banned-phrase audit clean, 4 sentences (within cap), 1 exclamation (within cap), name once (rule), doesn't give answer (`12` count = 0) ✓ |
+| Outcome | clean. Frontend and lambda are now BOTH on May 2 code. The Apr 27 era (StarTest brand, 4-step rigid prompt, ReplyQuik widget on 7 pages, desktop-only practice CSS, click-to-tutor wrong-answer flow) is fully retired. |
 
 ### What this commit does NOT do
 
