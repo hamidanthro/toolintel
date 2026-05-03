@@ -130,6 +130,102 @@ account ID ready (`860141646209`) and the function name (`staar-tutor`).
 
 ---
 
+## 4. Restore a DynamoDB table via PITR
+
+**When to use:** catastrophic data loss on a `staar-*` table — mass deletion,
+table-wide bad write, a buggy script that touched too many rows, the kind
+of incident where the in-place "flip status back" undo we used in §22 of
+CLAUDE.md doesn't scale because the damage is too broad or too time-sensitive
+to enumerate row-by-row.
+
+**Window:** PITR keeps every change for the last 35 days (DynamoDB's fixed
+retention). Earliest restorable timestamp varies per table — see CLAUDE.md
+§23 for the as-enabled date per table.
+
+**What PITR can and cannot do:**
+- ✅ Restore to a NEW table at ANY second within the 35-day window
+- ✅ Granular: restore to e.g. `2026-05-03T03:00:00Z` (one second before
+  the bad write) and inspect the state
+- ❌ Cannot restore IN PLACE — must restore to a new table name
+- ❌ Cannot restore individual rows — it's a whole-table operation
+- ❌ Restored table starts with PITR DISABLED — re-enable on it before relying
+
+### The 5-step restore
+
+```sh
+# 1. Find the earliest restorable timestamp for this table
+aws dynamodb describe-continuous-backups --table-name staar-content-pool \
+  --query 'ContinuousBackupsDescription.PointInTimeRecoveryDescription.EarliestRestorableDateTime' \
+  --output text
+
+# 2. Pick a target time. Use the timestamp just BEFORE the bad write.
+#    For incident triage: check CloudWatch logs to find the exact moment
+#    the bad write happened, then choose target = bad_write_time - 1s.
+TARGET=2026-05-03T03:00:00Z
+SRC=staar-content-pool
+DST=staar-content-pool-restored-$(date -u +%Y%m%dT%H%M%SZ)
+
+# 3. Kick off the restore. Returns immediately; restore runs in the background.
+aws dynamodb restore-table-to-point-in-time \
+  --source-table-name "$SRC" \
+  --target-table-name "$DST" \
+  --restore-date-time "$TARGET"
+
+# 4. Wait for the restored table to become Active (can take 10s of minutes
+#    for tables in the GBs; staar-content-pool at ~200MB is a few minutes)
+aws dynamodb wait table-exists --table-name "$DST"
+aws dynamodb describe-table --table-name "$DST" \
+  --query 'Table.{Status:TableStatus,ItemCount:ItemCount,Size:TableSizeBytes}' \
+  --output json
+
+# 5. Sanity-check restored contents BEFORE cutting over
+aws dynamodb scan --table-name "$DST" --select COUNT --output json | jq '.Count'
+# Spot-check a row that you know was healthy at the target time:
+aws dynamodb get-item --table-name "$DST" \
+  --key '{"poolKey":{"S":"texas#grade-3#math#teks-3.4a"},"contentId":{"S":"<known-good-id>"}}' \
+  --output json
+```
+
+### Cutting over to the restored table
+
+Two patterns; pick based on urgency vs cleanliness:
+
+**Pattern A — fast, requires lambda redeploy:**
+1. Update the lambda's `POOL_TABLE` env var (or constant in code) to point
+   at the restored table name
+2. Redeploy the lambda via `./deploy.sh`
+3. Verify reads/writes hit the new table
+4. Delete the old (broken) table once you're confident: `aws dynamodb delete-table`
+
+**Pattern B — transparent to the lambda, slower:**
+1. Copy data back from the restored table to the original table via
+   `aws dynamodb scan` + `aws dynamodb batch-write-item` (or via DynamoDB
+   Streams + a one-off Lambda)
+2. Verify counts match
+3. Delete the restored table once original is confirmed good
+
+Pattern A is faster (~5-15 min total). Pattern B is more transparent (the
+lambda doesn't need to know anything happened) but takes longer for tables
+with many rows.
+
+### After restore
+
+1. **Re-enable PITR on the restored table.** Restored tables start
+   PITR-disabled by default:
+   ```sh
+   aws dynamodb update-continuous-backups --table-name "$DST" \
+     --point-in-time-recovery-specification PointInTimeRecoveryEnabled=true
+   ```
+2. Add an entry to the rollback log below.
+
+### Cost of a restore
+
+The restore operation itself is free. Storage of the restored table costs
+the standard $0.25/GB-month. Old + new running in parallel doubles your
+storage cost briefly; cheaper than the alternative of permanent data loss.
+
+---
+
 ## Where backups live
 
 ```

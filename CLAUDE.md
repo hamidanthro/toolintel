@@ -454,7 +454,7 @@ defaults globally.
 | 3 | Kill 4 retired-product surfaces (toolintel, StarTest residue, ReplyQuik AppRunner+widget, WealthDeskPro pricing.js+SES) | ⏳ pending | Detail in §6. Aggressive delete, NOT _legacy/ folder |
 | 4 | Legal cover: COPPA-compliant signup with age gate + parental consent, ToS, privacy policy, field-level encryption for parent PII, attorney review at end | ⏳ pending | COPPA + FERPA real risk: kids under 13, real money via toy redemption, shipping addresses in `staar-orders` |
 | 5 | AI review system: LLM-as-judge as permanent batch validator on every sweep bucket, $0.50/sweep cost cap, semantic checks for state-flavor + age + factual accuracy, drift detection on live lake daily | 🟨 PARTIAL | Cold-start CLI judge shipped (see §13). Lambda runtime extension + drift detection + quarantine table still pending (see §14). |
-| 6 | Reliability infra: deploy.sh (backup-first + dry-run + uncommitted-changes guard), ROLLBACK.md, CloudWatch alarms + SNS-to-email, DynamoDB PITR on all 5+ tables, Lambda versioning + prod alias, IAM cleanup off root | 🟨 PARTIAL | deploy.sh + ROLLBACK.md + parity check shipped 2026-05-02 (see §19); **first production deploy ran successfully 2026-05-02 23:35:58 UTC**, lambda is now serving the May 2 stockpile (new tutor voice + summarize-session). Still pending: CloudWatch alarms, SNS-to-email, DynamoDB PITR, Lambda versioning + prod alias, IAM cleanup off root. |
+| 6 | Reliability infra: deploy.sh (backup-first + dry-run + uncommitted-changes guard), ROLLBACK.md, CloudWatch alarms + SNS-to-email, DynamoDB PITR on all 5+ tables, Lambda versioning + prod alias, IAM cleanup off root | 🟨 PARTIAL | deploy.sh + ROLLBACK.md + parity check shipped 2026-05-02 (see §19); first production deploy ran successfully 2026-05-02 23:35:58 UTC; **DynamoDB PITR enabled on all 10 staar-* tables 2026-05-03 (see §23)**. Still pending: CloudWatch alarms, SNS-to-email, Lambda versioning + prod alias, IAM cleanup off root. |
 | 7 | Run actual sweeps (math + reading) with all rails in place | ⏳ pending | Texas reading-passages is the headline blocker |
 
 ---
@@ -712,11 +712,9 @@ into `scripts/cold-start/judge-fixtures/`.
   hamid@gradeearn.com subscribed. ~30 minutes of console clicking;
   the §19 deploy.sh would benefit by referencing the alarm dashboard
   in its post-deploy output.
-- **DynamoDB PITR (point-in-time recovery)** on all `staar-*` tables
-  (users, stats, toys, orders, friends, messages, content-pool,
-  explanations, content-events, tutor-responses). One AWS Console
-  click per table. Without this, a destructive bug after `staar-orders`
-  permanently loses live tester shipping addresses.
+- ~~**DynamoDB PITR (point-in-time recovery)** on all `staar-*` tables.~~
+  ✅ DONE 2026-05-03 (see §23). All 10 tables ENABLED. Cost ~$0.04/month.
+  Restore procedure documented in ROLLBACK.md §4.
 - **Generalize deploy.sh to other lambdas.** Currently the parity
   check is tutor-specific (hardcoded to compare `lambda/tutor.js` ↔
   `lambda/tutor-build/tutor.js`). For `staar-pool-topup` and
@@ -1370,6 +1368,66 @@ question during this window per CloudWatch — low-traffic period).
 - **Restore scripts should be a sibling of every destructive script.**
   Cheap to write, life-saving when needed. Build them as the
   destructive script ships, not after.
+
+---
+
+## 23. DynamoDB Point-in-Time Recovery (PITR) — enabled May 3
+
+**Why:** Tonight's tombstone incident (§22) was recovered manually in
+~30 minutes by writing a one-off restore script. PITR makes this kind of
+recovery a single AWS CLI command — restore the entire table to any
+second within the last 35 days. Should have been enabled on day one.
+
+**Status:** all 10 `staar-*` tables now have PITR ENABLED.
+
+| Table | PITR | Earliest restorable |
+|---|---|---|
+| `staar-content-events` | ENABLED | 2026-05-02T22:51:41-05:00 |
+| `staar-content-pool` | ENABLED | **2026-04-27T12:51:09-05:00** (was already on; full 35-day window) |
+| `staar-explanations` | ENABLED | 2026-05-02T22:51:42-05:00 |
+| `staar-friends` | ENABLED | 2026-05-02T22:51:43-05:00 |
+| `staar-messages` | ENABLED | 2026-05-02T22:51:44-05:00 |
+| `staar-orders` | ENABLED | 2026-05-02T22:51:45-05:00 |
+| `staar-stats` | ENABLED | 2026-05-02T22:51:46-05:00 |
+| `staar-toys` | ENABLED | 2026-05-02T22:51:47-05:00 |
+| `staar-tutor-responses` | ENABLED | 2026-05-02T22:51:49-05:00 |
+| `staar-users` | ENABLED | 2026-05-02T22:51:50-05:00 |
+
+For 9 of 10 tables, the recoverable window starts now (May 2 22:51 CDT)
+and grows daily, capped at 35 days. After 2026-06-06, all 10 tables
+will have a full 35-day window.
+
+`staar-content-pool` was already PITR-enabled when this work started —
+its window goes back to April 27, which means tonight's tombstone
+incident IS within the recoverable window. Could have done a full
+table restore instead of the in-place row-by-row undo, had the in-place
+fix not worked.
+
+**Cost:** total `staar-*` size = 0.19 GB → PITR cost = **$0.038/month**
+at the $0.20/GB-month PITR rate. Effectively free for current scale.
+Even at 1k paying customers (the §1 goal), data growth would push
+this to maybe $5-10/month. Keep enabled forever.
+
+**How to restore:** ROLLBACK.md §4 documents the 5-step procedure
+(`describe-continuous-backups` → pick target time → `restore-table-to-point-in-time` →
+`wait table-exists` → sanity-check). Includes the cut-over patterns
+(Pattern A: lambda env-var swap + redeploy; Pattern B: copy-back via
+scan + batch-write).
+
+**Important caveats:**
+- Restore is to a NEW table — cannot restore in place
+- Restored table starts with PITR DISABLED — must re-enable before relying
+- Cannot restore individual rows — whole-table only
+- Restore takes minutes for our table sizes (would be hours for GB-scale)
+- The 35-day window is fixed by AWS; can't extend
+
+**What this commit does NOT do:**
+- Doesn't add CloudWatch alarms (still §14 deferred)
+- Doesn't set up automated AWS Backup snapshots (orthogonal to PITR;
+  PITR is for fine-grained time-travel, AWS Backup is for long-term
+  archival > 35 days; separate decision)
+- Doesn't generalize PITR to non-staar-* tables (toolintel-* legacy
+  lambdas have tables but are dormant; not worth $0.10/month each)
 
 ---
 
