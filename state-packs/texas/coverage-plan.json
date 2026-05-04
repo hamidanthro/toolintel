@@ -1,0 +1,118 @@
+{
+  "_meta": {
+    "subject": "math",
+    "version": "1.0",
+    "built": "2026-05-03",
+    "authority": "Texas Education Agency / GradeEarn",
+    "purpose": "Per-bucket fill targets weighted by STAAR frequency. Drives the §35 coverage-audit gap analysis and the next-sweep priority order.",
+    "weighting_rationale": "Tier per TEKS based on observed STAAR-released-form frequency. HEAVY = appears multiply on every released form. STANDARD = appears on most forms. LIGHT = niche / appears occasionally. TEXAS_SPECIFIC = personal-financial-literacy strand (Texas signature; not covered by Common Core / other states).",
+    "unit": "rows per (grade × TEKS × question-type) bucket",
+    "question_types": ["word-problem", "computation", "concept", "data-interpretation"],
+    "default_tier": "standard",
+    "provenance_marker": "[CLAUDE-SYNTHESIZED tier assignments per STAAR observation. Not authoritative; verify against TEA scoring weights when published. Hamid signed off on the per-tier numeric ranges 2026-05-03.]"
+  },
+
+  "tiers": {
+    "heavy": {
+      "target_per_type": 100,
+      "range": [100, 120],
+      "description": "Foundational, high-frequency on every released STAAR form. Multiple items per form. Drives the headline pass rate."
+    },
+    "standard": {
+      "target_per_type": 60,
+      "range": [50, 80],
+      "description": "Regular STAAR appearance. One or more items per form."
+    },
+    "light": {
+      "target_per_type": 40,
+      "range": [30, 50],
+      "description": "Niche topics. Appears occasionally; one item per form at most."
+    },
+    "texas_specific": {
+      "target_per_type": 40,
+      "range": [30, 50],
+      "description": "Texas Personal Financial Literacy strand (3.9 / 4.10 / 5.10 / 6.14 / 7.13 / 8.12). Texas signature; not in Common Core."
+    }
+  },
+
+  "default_tier": "standard",
+
+  "teks_tier": {
+    "grade-3": {
+      "3.2A": "heavy", "3.2B": "heavy", "3.2C": "standard", "3.2D": "standard",
+      "3.3A": "standard", "3.3B": "standard", "3.3F": "heavy", "3.3G": "standard", "3.3H": "heavy",
+      "3.4A": "heavy", "3.4D": "standard", "3.4E": "standard", "3.4F": "heavy", "3.4G": "heavy", "3.4H": "standard", "3.4K": "heavy",
+      "3.5A": "standard", "3.5B": "heavy", "3.5E": "light",
+      "3.6A": "standard", "3.6C": "standard", "3.6E": "light",
+      "3.7B": "heavy", "3.7C": "standard", "3.7D": "light", "3.7E": "standard",
+      "3.8A": "heavy", "3.8B": "heavy",
+      "3.9A": "texas_specific", "3.9C": "texas_specific", "3.9D": "texas_specific"
+    },
+    "grade-4": {
+      "4.2A": "heavy", "4.2B": "heavy", "4.2C": "standard", "4.2E": "standard", "4.2F": "standard", "4.2G": "standard", "4.2H": "standard",
+      "4.3A": "standard", "4.3B": "standard", "4.3C": "standard", "4.3D": "heavy", "4.3E": "heavy",
+      "4.4A": "heavy", "4.4B": "standard", "4.4D": "heavy", "4.4F": "heavy", "4.4H": "heavy",
+      "4.5A": "heavy", "4.5B": "standard", "4.5C": "standard", "4.5D": "heavy",
+      "4.6A": "standard", "4.6D": "standard",
+      "4.7C": "heavy",
+      "4.8A": "light", "4.8B": "standard", "4.8C": "standard",
+      "4.9A": "standard", "4.9B": "heavy",
+      "4.10A": "texas_specific", "4.10B": "texas_specific", "4.10E": "texas_specific"
+    },
+    "grade-5": {
+      "5.2A": "standard", "5.2B": "standard", "5.2C": "standard",
+      "5.3A": "standard", "5.3B": "heavy", "5.3C": "heavy", "5.3E": "heavy", "5.3F": "standard", "5.3H": "heavy", "5.3I": "standard", "5.3K": "heavy", "5.3L": "standard",
+      "5.4A": "light", "5.4B": "standard", "5.4C": "standard", "5.4F": "heavy", "5.4H": "heavy",
+      "5.5A": "standard", "5.6A": "standard", "5.6B": "heavy",
+      "5.7A": "standard",
+      "5.8A": "light", "5.8B": "heavy",
+      "5.9A": "standard", "5.9B": "standard", "5.9C": "heavy",
+      "5.10A": "texas_specific", "5.10F": "texas_specific"
+    },
+    "grade-6": {
+      "6.2A": "light", "6.2B": "light", "6.2C": "standard", "6.2D": "heavy", "6.2E": "standard",
+      "6.3A": "standard", "6.3B": "standard", "6.3C": "standard", "6.3D": "heavy", "6.3E": "heavy",
+      "6.4A": "standard", "6.4B": "heavy", "6.4D": "standard", "6.4E": "standard", "6.4G": "standard",
+      "6.5A": "heavy", "6.5B": "heavy", "6.5C": "standard",
+      "6.6A": "standard", "6.6C": "standard",
+      "6.7A": "heavy", "6.7B": "light", "6.7C": "heavy",
+      "6.8A": "standard", "6.8B": "standard", "6.8D": "heavy",
+      "6.10A": "standard", "6.12A": "light",
+      "6.14A": "texas_specific", "6.14F": "texas_specific"
+    },
+    "grade-7": {
+      "7.2A": "light",
+      "7.3A": "heavy", "7.3B": "heavy",
+      "7.4A": "standard", "7.4B": "standard", "7.4D": "heavy", "7.4E": "standard",
+      "7.5A": "standard", "7.5C": "standard",
+      "7.6A": "heavy", "7.6C": "standard", "7.6D": "heavy", "7.6I": "standard",
+      "7.7A": "standard",
+      "7.8A": "standard", "7.9A": "heavy", "7.9B": "heavy", "7.9C": "standard",
+      "7.10A": "standard", "7.11A": "heavy", "7.11B": "light",
+      "7.12A": "standard", "7.12B": "standard",
+      "7.13A": "texas_specific", "7.13E": "texas_specific"
+    },
+    "grade-8": {
+      "8.2A": "light", "8.2B": "standard", "8.2C": "standard", "8.2D": "standard",
+      "8.3A": "standard", "8.3B": "standard",
+      "8.4A": "heavy", "8.4B": "standard", "8.4C": "heavy",
+      "8.5A": "standard", "8.5B": "standard", "8.5G": "heavy", "8.5I": "heavy",
+      "8.7A": "heavy", "8.7B": "standard", "8.7C": "heavy", "8.7D": "heavy",
+      "8.8A": "standard", "8.8C": "heavy",
+      "8.10A": "standard",
+      "8.11A": "standard",
+      "8.12A": "texas_specific", "8.12D": "texas_specific"
+    },
+    "algebra-1": {
+      "A.2A": "standard", "A.2B": "standard", "A.2D": "standard", "A.2H": "standard",
+      "A.3A": "heavy", "A.3B": "standard", "A.3C": "standard",
+      "A.5A": "heavy", "A.5B": "standard", "A.5C": "heavy",
+      "A.6A": "standard", "A.6B": "heavy", "A.6C": "heavy",
+      "A.7A": "heavy", "A.7B": "standard", "A.7C": "standard",
+      "A.8A": "heavy",
+      "A.10A": "standard", "A.10B": "standard", "A.10E": "heavy",
+      "A.11A": "standard", "A.11B": "standard",
+      "A.12A": "light", "A.12B": "light"
+    }
+  }
+}

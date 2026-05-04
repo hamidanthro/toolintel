@@ -753,6 +753,36 @@ into `scripts/cold-start/judge-fixtures/`.
   `_sweepRunId` so each state's contribution is selectively
   rollback-able. After the sweep, re-run uniqueness-report.js to
   measure post-sweep dup rate (pre-sweep was 8.57% per §28).
+- **🟠 §35 prompt fix — boost Texas-flavor rate above 75%** (BLOCKER for
+  Texas math bulk fill via the pack-wired generator). The §35 24-question
+  probe hit 13/24 = 54% TX_FLAVORED, below the 75% gate. Root cause:
+  `_callGenerator` user-message line `(pick ONE, do not list them in
+  the question)` is read as "don't reference by name" → the model
+  produces generic backyard / classroom / bake-sale scenarios on
+  ~half the calls. One-line fix: replace with `(pick ONE and write
+  the question as if it happens in that specific Texas setting —
+  name the place, the food, the wildlife, the industry directly in
+  the question stem)`. Followed by a 12-question retry probe across
+  3 TEKS, gated at the same ≥75% TX_FLAVORED bar. After it passes:
+  unblock Texas math bulk fill (per the §35 coverage-plan, ~ 776 ×
+  60-100 = ~50k–80k rows total; phase by tier — HEAVY first, then
+  STANDARD, then TEXAS_SPECIFIC, then LIGHT).
+- **§35 generator wire-up validates math but not flavor.** The
+  pack-wired generator's TARGET STANDARD block + Claude verifier are
+  catching every math error in the §35 probe (0 BAD on 24 rows). The
+  remaining quality gap is purely on the cultural-flavor axis. Worth
+  noting that the math gate (which was previously the show-stopper
+  in the §32 + §33 work) is now solid; future iteration is on the
+  flavor axis only.
+- **§35 audit script — backfill TEKS for §31 historical rows.** The
+  1,168 §31-sweep rows have no `teks` field (the persistence wire-up
+  landed in §35). Coverage analysis per-TEKS is therefore blind to
+  99.3% of the lake until those rows get retroactively classified.
+  Two options: (a) re-judge them with a TEKS-classification prompt
+  (~$2-3 OpenAI cost for ~1,200 rows), or (b) write a simpler
+  pattern-matcher (regex on question stem + grade) — cheaper but
+  noisier. (a) is more accurate; either is fine for surfacing
+  WHICH §31 rows align to which TEKS without re-generating them.
 - ~~**AGE_FIT calibration on cold-start prompts**~~ ✅ DONE 2026-05-03
   (see §32 generator-side cognitive-demand spec + 8th judge failure
   mode COGNITIVE_DEMAND_MISMATCH). Pre-§32 grade-7 was 6.7%
@@ -2890,6 +2920,234 @@ risky. The plan is build-Texas, ship-Texas-content, prove-it-works,
 then move to state #2. If state #2 reveals a structural weakness in
 the pack template, fix template, then continue. Don't bulk-build 50
 packs and find out one is wrong.
+
+---
+
+## 35. Pack-wired math generator + coverage audit + plan + grade-mix probe (May 4)
+
+The §34 Texas pack is now wired into the cold-start math generator. A
+coverage-audit script reads the lake by (grade × TEKS × type) and
+joins against a STAAR-frequency-weighted plan to produce a per-bucket
+gap report. A 24-question pack-wired probe ran against 6 distinct
+HEAVY-tier under-covered TEKS (one per grade band, all word-problem)
+to validate the wire-up before any bulk fill. Probe gate **PARTIALLY
+FAILED** — see "Status" below.
+
+### What shipped (the scaffolding)
+
+1. **`scripts/cold-start/state-pack-loader.js`** — cached, read-only
+   loader. API: `loadPack`, `getTeksFor(state, subject, grade, id|'random')`,
+   `sampleCulturalContexts(state, n)`, `sampleAuthenticNames(state, n)`
+   (demographic-weighted), `sampleStaarPhrasings(state, subject, n)`,
+   `_clearCache`. Graceful fallback: returns null for any state without
+   a pack — non-Texas generation continues unchanged through the
+   §30/§32 pipeline (hardcoded NAME_POOL, no TEKS/contexts/stems
+   injection).
+
+2. **`scripts/cold-start/generators.js` wire-up** — `generateOne` now
+   loads pack enrichment per-call when `subject === 'math'`. The
+   system prompt gains a `TARGET STANDARD` block with the chosen
+   TEKS id/strand/text/cognitive_demand/typical_question_shape. The
+   user message gains: a contexts line ("Draw the question's scenario
+   from one of these state-authentic contexts: …"), a stems line
+   ("The question stem should sound like a real STAAR item. Reference
+   stem patterns: …"), and a names line that prefers pack-sourced
+   demographic-weighted names over the §30 hardcoded NAME_POOL.
+   `_packTeks` is attached to the returned item and forwarded by
+   `run.js` as a `teks` field on the saved record. **New optional
+   arg `teksOverride`** lets the §35 probe runner pin a specific TEKS
+   instead of the random pick — used for coverage-fill probing.
+
+3. **`state-packs/texas/coverage-plan.json`** — STAAR-frequency-weighted
+   per-bucket targets (Hamid signed off 2026-05-03). Tiers:
+   - **heavy** (target_per_type = 100, range 100–120) — foundational,
+     multi-item every released form (place value, fluency, fraction
+     equivalence, proportional reasoning, two-step equations,
+     Pythagorean, quadratics)
+   - **standard** (target_per_type = 60, range 50–80) — one+ item per
+     form (geometry classification, measurement, data graphs)
+   - **light** (target_per_type = 40, range 30–50) — niche / occasional
+   - **texas_specific** (target_per_type = 40, range 30–50) — Texas
+     Personal Financial Literacy strand (3.9 / 4.10 / 5.10 / 6.14 /
+     7.13 / 8.12), Texas signature, not in Common Core
+   
+   Default tier: standard. Every TEKS in the pack (194 standards) has
+   an explicit tier assignment.
+
+4. **`scripts/cold-start/coverage-audit.js`** — read-only DDB scan
+   classifying every active Texas math row by (grade × TEKS × type).
+   Joins against the pack TEKS taxonomy + the coverage plan. Outputs:
+   - markdown gap report (by grade × type, by TEKS, top-10 partial,
+     top-5 zero-coverage, Texas-financial-literacy gaps,
+     probe-target candidates)
+   - classification JSON (per-row, with orphan-TEKS list and
+     untagged-by-grade counts)
+   - `output/probe-target-teks.json` — 6 distinct TEKS for the probe
+     runner, deduped by id and diversified across grade bands
+   
+   Pure scan; no Put/Update/Delete. Pack and plan loaded once per
+   process.
+
+5. **`scripts/cold-start/probe-pack-wired.js`** — reads the
+   probe-target list, pins each TEKS via `teksOverride`, generates 4
+   questions per TEKS through the existing pipeline (judge + Claude
+   verifier + dedup), saves with a `_probeRunId` stamp for selective
+   rollback. Default: 24 questions across 6 TEKS.
+
+### Audit baseline (run 2026-05-03 23:54 UTC)
+
+| Metric | Value |
+|---|---|
+| Active Texas math rows scanned | **1,319** |
+| `grade-3..algebra-1` per-grade counts | 172–196 each |
+| Untagged TEKS (rows with no `teks` field) | **1,310 of 1,319** (99.3%) |
+| TEKS taxonomy coverage by grade | 0–3% (the §31 sweep was state-agnostic — no TEKS was carried through to the lake) |
+| Plan-driven gap: total planned buckets | **776** |
+| Buckets at-or-above target | **0** |
+| Buckets with zero coverage | **776** (every plan bucket needs a fresh fill) |
+| Texas Personal Financial Literacy buckets covered | **0 of 56** |
+
+The lake is essentially TEKS-untagged on launch — the §31 1,168-row
+sweep landed before this commit's `teks` field was wired through, so
+those rows can't be classified by TEKS without retroactive heuristic
+mapping. The §35 wire-up tags all NEW pack-wired rows with `teks`
+going forward. (A future audit pass could LLM-classify the §31 rows
+back to their best-fit TEKS, but that's a separate effort.)
+
+### Probe target list (6 distinct HEAVY-tier TEKS, one per grade)
+
+| # | grade | TEKS | strand | type | tier | gap |
+|---|---|---|---|---|---|---|
+| 1 | algebra-1 | A.10E | Polynomial expressions and operations | word-problem | heavy | 100 |
+| 2 | grade-3 | 3.2A | Number and operations | word-problem | heavy | 100 |
+| 3 | grade-4 | 4.2A | Number and operations | word-problem | heavy | 100 |
+| 4 | grade-5 | 5.3B | Number and operations (computation) | word-problem | heavy | 100 |
+| 5 | grade-6 | 6.2D | Number and operations | word-problem | heavy | 100 |
+| 6 | grade-7 | 7.11A | Expressions, equations, relationships | word-problem | heavy | 100 |
+
+### Probe execution (run-id `pack-wired-coverage-fill-grade-mix-20260503T235705Z`)
+
+| Metric | Value |
+|---|---|
+| Total saved | **24 / 24** (4 per TEKS × 6 TEKS) |
+| Wall-clock | ~12 min 23 s |
+| Judge `pass` | 11 (45.8%) |
+| Judge `pass-after-regen` | 13 (54.2%) — high judge-reject rate signals the harder TEKS (factoring, ordering rationals, two-step equations) push the model harder |
+| Verifier (Claude Sonnet 4.5) rejects | 0 |
+| Anthropic key | active (verifier ran live, did not fail-open) |
+| Output | `scripts/cold-start/output/pack-wired-probe-20260504T000928Z.json` |
+
+### Eyeball gate result — PARTIAL FAIL
+
+| Criterion | Threshold | Actual | Status |
+|---|---|---|---|
+| 0 BAD (math errors) | = 0 | **0 of 24** | ✅ PASS |
+| TX_FLAVORED rows | ≥ 18 / 24 (≥ 75%) | **13 of 24 (54%)** | ❌ FAIL |
+
+**Math gate clean.** All 24 questions verified by hand-arithmetic.
+Cross-vendor verifier (Claude Sonnet 4.5) caught nothing in this
+batch — meaning OpenAI gen + OpenAI judge + Claude verifier all
+agreed every question is correct. Notably, the §32 fraction-
+simplification class (Lila/Amara), the previous probe's division-
+with-remainder class (1,284 ÷ 8), and any new arithmetic blind
+spot did NOT appear here.
+
+**TX flavor gate failed.** 13 of 24 questions reference an actual
+Texas place name, wildlife/flora, or industry (Fredericksburg,
+Big Bend National Park, Gulf of Mexico redfish, Trinity River,
+Nacogdoches, Edwards Plateau, kolaches, prickly pear, bluebonnets,
+peach orchard, family ranch). The other 11 are math-clean but
+cultural-neutral (backyard garden, classroom mural, generic bake
+sale, generic BBQ). The pack-sourced names are landing
+consistently (Fatima, Valentina, Anika, Diya, Diego, Cristian,
+Aisha, Salma, Zoe, Luna, Aaliyah etc. — diverse Texas-K-12
+distribution, no Maria default), but contextual Texas references
+hit only ~half the questions.
+
+### Diagnosed root cause
+
+In `_callGenerator` user message:
+
+```
+Draw the question's scenario from one of these state-authentic
+contexts (pick ONE, do not list them in the question): <4 sampled>.
+```
+
+The phrase `do not list them in the question` is being read by
+gpt-4o-mini as "don't reference the context by name" rather than
+the intended "don't enumerate all four contexts in the question
+text." When the model interprets it strictly, it strips the
+Texas reference entirely and produces a generic backyard /
+classroom / school scenario.
+
+Proposed (NOT shipped) fix: replace the parenthetical with `(pick
+ONE and write the question as if it happens in that specific
+Texas setting — name the place, the food, the wildlife, the
+industry directly in the question stem).` Per the §27 lesson
+(more system-prompt guidance backfires; per-call user-message
+phrasing is the right knob), this is a one-line user-message
+change. Worth a focused 12-question retry probe before declaring
+fixed.
+
+### What did NOT ship
+
+- **No bulk fill of any bucket.** Per the user's hard constraint
+  ("STOP if gate fails. NO further iteration unless explicitly
+  approved"), the gap fill stays gap. The §31 sweep's 1,168 rows
+  remain TEKS-untagged. Bulk Texas math re-fill is now blocked on
+  the prompt-fix retry.
+- **The 24 probe rows are NOT tombstoned.** They're math-correct,
+  diverse-named, well-targeted to under-covered HEAVY-tier TEKS, and
+  every one of them is an upgrade over a §31 cold-v1 untagged row
+  (54% Texas flavor > 0% Texas flavor). They contribute to coverage
+  even at sub-gate quality. Hamid's call whether to keep or
+  selectively tombstone the 11 culturally-neutral ones.
+- **No CLAUDE.md §35 generator-prompt change.** The proposed fix is
+  in this section as a documented next step, not in the code.
+- **No re-judge of §31 historical rows.** Adding `teks` to existing
+  rows requires either a re-judge with TEKS-classification or an
+  LLM-classifier pass — separate effort, logged in §14.
+
+### Lessons logged
+
+1. **Persist the TEKS the generator chose.** The §31 sweep generated
+   useful content but didn't carry through the TEKS the prompt
+   referenced — making per-TEKS coverage analysis impossible after
+   the fact. Going forward, every pack-wired row carries `teks` so
+   the audit can classify it natively.
+2. **Sampled-context approach + a strict "don't name them"
+   instruction = neutral content half the time.** Either the sample
+   needs to be one-context-per-call (so the model can't get confused
+   about whether it's allowed to name THIS one) or the instruction
+   needs to flip from "don't list" to "directly name the chosen
+   one." The current intermediate state produces inconsistent
+   Texas-flavor.
+3. **The judge + Claude verifier are working as designed at this
+   scale.** Zero false-positive math rejections. Zero math errors
+   slipped through. The pipeline quality on the math axis is solid;
+   the remaining gap is purely on the Texas-flavor axis.
+4. **`teksOverride` is the right hook for coverage-fill probes.**
+   The default random pick keeps unsupervised generation diverse.
+   `teksOverride` lets a coverage-driven script pin specific TEKS
+   without modifying the unsupervised path.
+
+### Status
+
+🟡 **Scaffolding shipped, gate failed on TX_FLAVORED, no bulk
+generation.** The coverage-audit + plan + probe-runner machinery is
+production-ready and reusable for future per-state pack work. The
+generator wire-up works correctly for math content but the user-
+message contexts phrasing produces only ~54% Texas flavor — needs a
+one-line prompt fix + 12-question retry probe before unblocking the
+Texas math bulk fill. The 24 probe rows stay in the lake (math-clean,
+TEKS-tagged, gap-targeted; they meaningfully improve the per-TEKS
+coverage from 0/776 to 6/776 even at partial-gate quality).
+
+Next concrete action (deferred TODO §14): one-line user-message fix
+to `_callGenerator` (`do not list them in the question` → `name the
+place / food / wildlife / industry directly in the question stem`),
+followed by a 12-question retry probe across 3 TEKS, gated at the
+same ≥75% TX_FLAVORED bar.
 
 ---
 

@@ -170,7 +170,11 @@ async function fillBucket(bucket, target, opts) {
         tokensUsed: item._tokensUsed || 0,
         // Forward judge verdict from generateOne for traceability
         // (pass | pass-after-regen | unknown if judge disabled).
-        _judge: item._judge || 'unknown'
+        _judge: item._judge || 'unknown',
+        // §35: persist the TEKS the pack picked at generation time so
+        // coverage-audit can classify rows by (grade × TEKS × type).
+        // Null for non-Texas / non-math / pre-§35 rows.
+        teks: item._packTeks || null
       };
       // Tag this run if a probe-run-id is set — lets us find/restore
       // these specific rows later. See CLAUDE.md §29.

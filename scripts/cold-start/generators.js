@@ -5,6 +5,7 @@
 const { getOpenAI } = require('./lake-client');
 const { getStateRecord } = require('./states-grades');
 const { judgeQuestion, JudgeRejectedTwiceError } = require('./judge');
+const statePack = require('./state-pack-loader');
 
 // Hard kill switch: COLD_START_JUDGE=off bypasses the judge entirely
 // and restores pre-judge behavior. Anything else (unset, "on", "true", etc.)
@@ -59,7 +60,29 @@ function gradeReadable(grade) {
   return `grade ${grade.replace('grade-', '')}`;
 }
 
-function buildPrompt({ stateSlug, grade, subject, questionType }) {
+// Pack-grade enrichment for states that have a state-pack (CLAUDE.md §35).
+// Pulls a random TEKS for the grade + sampled cultural contexts + sampled
+// STAAR stem phrasings. Returns null for states without a pack — caller
+// falls back to the §30/§32 pipeline (hardcoded name pool, no
+// pack-grade injection).
+//
+// `teksOverride` (optional): pin to a specific TEKS id (e.g. "4.2A") instead
+// of random pick. Used by probe runners to exercise specific buckets from
+// the §35 coverage-audit gap report. If the override id isn't in the pack
+// for the given grade, returns null (probe will surface the misconfig).
+function getPackEnrichment(stateSlug, subject, grade, teksOverride) {
+  const pack = statePack.loadPack(stateSlug);
+  if (!pack) return null;
+  const teks = teksOverride
+    ? statePack.getTeksFor(stateSlug, subject, grade, teksOverride)
+    : statePack.getTeksFor(stateSlug, subject, grade, 'random');
+  const contexts = statePack.sampleCulturalContexts(stateSlug, 4);
+  const stems = statePack.sampleStaarPhrasings(stateSlug, subject, 2);
+  if (!teks) return null;
+  return { teks, contexts: contexts || [], stems: stems || [] };
+}
+
+function buildPrompt({ stateSlug, grade, subject, questionType, packEnrichment }) {
   const record = getStateRecord(stateSlug);
   if (!record) {
     throw new Error(`generators.buildPrompt: unknown state slug "${stateSlug}"`);
@@ -91,6 +114,20 @@ CRITICAL FOR EARLY GRADES:
 - Keep all four answer choices similar in magnitude so wrong answers reflect real misconceptions, not orders-of-magnitude errors.` : '';
 
   if (subject === 'math') {
+    // Pack-grade TEKS injection — replaces generic "align to TEKS" with
+    // a specific TEKS standard, its exact text, and the typical question
+    // shape observed on STAAR releases. See CLAUDE.md §35.
+    const packTeksBlock = packEnrichment && packEnrichment.teks
+      ? `
+
+TARGET STANDARD (this question MUST align to this specific TEKS):
+- TEKS ${packEnrichment.teks.id} (strand: ${packEnrichment.teks.strand})
+- Standard text: ${packEnrichment.teks.text}
+- Cognitive demand: ${packEnrichment.teks.cognitive_demand}
+- Typical question shape: ${packEnrichment.teks.typical_question_shape}
+`
+      : '';
+
     return `You are an expert ${testName} math item writer.${earlyHint}
 
 Generate ONE multiple-choice math question for ${grLabel} students preparing for the ${testName}.
@@ -98,7 +135,7 @@ Generate ONE multiple-choice math question for ${grLabel} students preparing for
 Standards: align to ${standards} for ${grLabel}.
 Authority: ${testAuthority}.
 Style: ${style}
-
+${packTeksBlock}
 Question type: ${questionType}. ${typeGuide}
 
 Requirements:
@@ -216,12 +253,27 @@ function cognitiveDemandFor(grade) {
   return 'COGNITIVE DEMAND: match the cognitive demand of the stated grade — not too easy, not too hard.';
 }
 
-async function _callGenerator(systemPrompt, regenFeedback, grade) {
-  const namesLine = `Pick the protagonist's first name from this short list (one of these, your choice): ${pickShuffledNames(5).join(', ')}.`;
+async function _callGenerator(systemPrompt, regenFeedback, grade, stateSlug, packEnrichment) {
+  // Name pool: prefer pack-sourced (demographic-weighted) when state has a
+  // pack; fall back to the §30 hardcoded NAME_POOL otherwise.
+  const packNames = stateSlug ? statePack.sampleAuthenticNames(stateSlug, 5) : null;
+  const nameList = (packNames && packNames.length >= 5 ? packNames : pickShuffledNames(5)).join(', ');
+  const namesLine = `Pick the protagonist's first name from this short list (one of these, your choice): ${nameList}.`;
+
   const demandLine = grade ? cognitiveDemandFor(grade) : '';
+
+  // Pack-grade extras: cultural contexts + STAAR stem phrasings — only when
+  // the state has a pack. Non-Texas states get the cleaner §30/§32 prompt.
+  const contextsLine = (packEnrichment && packEnrichment.contexts.length)
+    ? `\nDraw the question's scenario from one of these state-authentic contexts (pick ONE, do not list them in the question): ${packEnrichment.contexts.join('; ')}.`
+    : '';
+  const stemsLine = (packEnrichment && packEnrichment.stems.length)
+    ? `\nThe question stem should sound like a real ${getStateRecord(stateSlug)?.testName || ''} item. Reference stem patterns: "${packEnrichment.stems.join('"; "')}".`
+    : '';
+
   const userMessage = regenFeedback
-    ? `Generate the question now. ${namesLine}\n${demandLine}\n\nPrevious attempt was rejected by quality review for: ${regenFeedback.failedChecks.join(', ')}. Specifically: ${regenFeedback.reasons.join(' ')} Generate a new question that fixes these issues.`
-    : `Generate the question now. ${namesLine}\n${demandLine}`;
+    ? `Generate the question now. ${namesLine}\n${demandLine}${contextsLine}${stemsLine}\n\nPrevious attempt was rejected by quality review for: ${regenFeedback.failedChecks.join(', ')}. Specifically: ${regenFeedback.reasons.join(' ')} Generate a new question that fixes these issues.`
+    : `Generate the question now. ${namesLine}\n${demandLine}${contextsLine}${stemsLine}`;
   const completion = await getOpenAI().chat.completions.create({
     model: 'gpt-4o-mini',
     messages: [
@@ -237,20 +289,33 @@ async function _callGenerator(systemPrompt, regenFeedback, grade) {
   return { parsed, tokensUsed: completion.usage?.total_tokens || 0 };
 }
 
-async function generateOne({ state, grade, subject, type }) {
+async function generateOne({ state, grade, subject, type, teksOverride }) {
   const stateSlug = state;
   const questionType = type;
-  const systemPrompt = buildPrompt({ stateSlug, grade, subject, questionType });
+  // Load pack enrichment once per generation — cached per process.
+  // Returns null if the state has no pack; downstream handles that
+  // gracefully by falling back to the §30/§32 pipeline (no TEKS injection,
+  // hardcoded NAME_POOL, no contexts/stems).
+  // If teksOverride is set (used by §35 coverage-fill probes), the TEKS is
+  // pinned instead of random.
+  const packEnrichment = (subject === 'math')
+    ? getPackEnrichment(stateSlug, subject, grade, teksOverride)
+    : null;
+  if (packEnrichment) {
+    console.log(`[gen] state=${stateSlug} grade=${grade} pack-loaded TEKS=${packEnrichment.teks.id} contexts=${packEnrichment.contexts.length} stems=${packEnrichment.stems.length}`);
+  }
+  const systemPrompt = buildPrompt({ stateSlug, grade, subject, questionType, packEnrichment });
   const judgeContext = { stateSlug, subject, grade, gradeLabel: gradeReadable(grade) };
 
-  const first = await _callGenerator(systemPrompt, null, grade);
+  const first = await _callGenerator(systemPrompt, null, grade, stateSlug, packEnrichment);
 
   if (!JUDGE_ENABLED) {
     return {
       ...first.parsed,
       _generatedBy: 'gpt-4o-mini',
       _promptVersion: 'cold-v1',
-      _tokensUsed: first.tokensUsed
+      _tokensUsed: first.tokensUsed,
+      _packTeks: packEnrichment?.teks?.id || null
     };
   }
 
@@ -261,13 +326,14 @@ async function generateOne({ state, grade, subject, type }) {
       _generatedBy: 'gpt-4o-mini',
       _promptVersion: 'cold-v1',
       _tokensUsed: first.tokensUsed,
-      _judge: 'pass'
+      _judge: 'pass',
+      _packTeks: packEnrichment?.teks?.id || null
     };
   }
 
   // First attempt rejected — regenerate ONCE with judge feedback appended
   // to the user message. No third attempt: two strikes and out is intentional.
-  const second = await _callGenerator(systemPrompt, verdict1, grade);
+  const second = await _callGenerator(systemPrompt, verdict1, grade, stateSlug, packEnrichment);
   const verdict2 = await judgeQuestion(second.parsed, judgeContext);
   if (verdict2.verdict === 'pass') {
     return {
@@ -275,7 +341,8 @@ async function generateOne({ state, grade, subject, type }) {
       _generatedBy: 'gpt-4o-mini',
       _promptVersion: 'cold-v1-regen',
       _tokensUsed: first.tokensUsed + second.tokensUsed,
-      _judge: 'pass-after-regen'
+      _judge: 'pass-after-regen',
+      _packTeks: packEnrichment?.teks?.id || null
     };
   }
 
