@@ -9,14 +9,15 @@
     "unit": "rows per (grade × TEKS × question-type) bucket",
     "question_types": ["word-problem", "computation", "concept", "data-interpretation"],
     "default_tier": "standard",
-    "provenance_marker": "[CLAUDE-SYNTHESIZED tier assignments per STAAR observation. Not authoritative; verify against TEA scoring weights when published. Hamid signed off on the per-tier numeric ranges 2026-05-03.]"
+    "provenance_marker": "[CLAUDE-SYNTHESIZED tier assignments per STAAR observation. Not authoritative; verify against TEA scoring weights when published. Hamid signed off on the per-tier numeric ranges 2026-05-03.]",
+    "v1.1_change_2026-05-04": "HEAVY target_per_type lowered 100→50 per Hamid + §37 sizing decision. Mastery threshold 30, target 50, organic-growth headroom 80. Standard/Light/Texas_specific unchanged. Lowering HEAVY brings the pre-fill gap from ~27k to ~13k rows, fitting one bulk-fill session at concurrency=2."
   },
 
   "tiers": {
     "heavy": {
-      "target_per_type": 100,
-      "range": [100, 120],
-      "description": "Foundational, high-frequency on every released STAAR form. Multiple items per form. Drives the headline pass rate."
+      "target_per_type": 50,
+      "range": [50, 80],
+      "description": "Foundational, high-frequency on every released STAAR form. Multiple items per form. Drives the headline pass rate. v1.1 (2026-05-04): target_per_type lowered 100→50 — mastery threshold 30, target 50, organic-growth headroom 80."
     },
     "standard": {
       "target_per_type": 60,
