@@ -753,20 +753,32 @@ into `scripts/cold-start/judge-fixtures/`.
   `_sweepRunId` so each state's contribution is selectively
   rollback-able. After the sweep, re-run uniqueness-report.js to
   measure post-sweep dup rate (pre-sweep was 8.57% per §28).
-- **🟠 §35 prompt fix — boost Texas-flavor rate above 75%** (BLOCKER for
-  Texas math bulk fill via the pack-wired generator). The §35 24-question
-  probe hit 13/24 = 54% TX_FLAVORED, below the 75% gate. Root cause:
-  `_callGenerator` user-message line `(pick ONE, do not list them in
-  the question)` is read as "don't reference by name" → the model
-  produces generic backyard / classroom / bake-sale scenarios on
-  ~half the calls. One-line fix: replace with `(pick ONE and write
-  the question as if it happens in that specific Texas setting —
-  name the place, the food, the wildlife, the industry directly in
-  the question stem)`. Followed by a 12-question retry probe across
-  3 TEKS, gated at the same ≥75% TX_FLAVORED bar. After it passes:
-  unblock Texas math bulk fill (per the §35 coverage-plan, ~ 776 ×
-  60-100 = ~50k–80k rows total; phase by tier — HEAVY first, then
-  STANDARD, then TEXAS_SPECIFIC, then LIGHT).
+- ~~**🟠 §35 prompt fix — boost Texas-flavor rate above 75%**~~
+  ✅ DONE 2026-05-04 (see §36). One-block edit to `_callGenerator`
+  in `scripts/cold-start/generators.js` swapped the
+  confusing-negative `(do not list them in the question)` for
+  explicit-positive `(name the place / food / wildlife / industry
+  directly in the question stem so the kid can tell the question is
+  happening in Texas)`, scoped to `stateSlug === 'texas'`. §36
+  re-probe (same 6 TEKS, 24 questions): **22 / 24 = 92% TX_FLAVORED,
+  0 BAD** — gate passes cleanly. Generic-bucket count went from
+  11 / 24 → 0 / 24. Math gate stayed clean across §35 + §36 (48
+  pack-wired probe rows, 0 verifier-caught arithmetic errors).
+- **🟠 Texas math bulk fill — UNBLOCKED.** The §36 gate-pass
+  unblocks the Texas math bulk fill described in
+  `state-packs/texas/coverage-plan.json`: ~776 planned buckets ×
+  per-tier targets ≈ **50k–80k rows total**. Phase by tier per the
+  plan: HEAVY first (target_per_type=100, ~140 buckets ≈ 14k rows),
+  then STANDARD (60, ~330 buckets ≈ 20k rows), then TEXAS_SPECIFIC
+  (40, ~56 buckets ≈ 2.2k rows), then LIGHT (40, ~40 buckets ≈ 1.6k
+  rows). Within each tier-phase, sweep with `--state texas
+  --subject math --target <tier-target>` against `run.js` (the
+  pack-wire-up will tag every row with `teks` so coverage-audit can
+  re-classify post-sweep). At ~$0.009/row real cost (judge gpt-4o
+  + Claude verifier), HEAVY phase costs ~$130; full Texas math fill
+  ~$450-700. Rerun `coverage-audit.js` after each tier-phase to
+  confirm targets hit before proceeding to next tier. Use a
+  per-phase `_sweepRunId` for selective rollback.
 - **§35 generator wire-up validates math but not flavor.** The
   pack-wired generator's TARGET STANDARD block + Claude verifier are
   catching every math error in the §35 probe (0 BAD on 24 rows). The
@@ -3148,6 +3160,167 @@ to `_callGenerator` (`do not list them in the question` → `name the
 place / food / wildlife / industry directly in the question stem`),
 followed by a 12-question retry probe across 3 TEKS, gated at the
 same ≥75% TX_FLAVORED bar.
+
+---
+
+## 36. Texas-flavor instruction fix + re-probe (May 4)
+
+### The bug
+
+`scripts/cold-start/generators.js` `_callGenerator` user-message had
+the line:
+
+> `(pick ONE, do not list them in the question)`
+
+gpt-4o-mini consistently read "do not list them" as "don't reference
+the chosen context by name" and produced generic backyard / classroom
+/ school-bake-sale scenarios on roughly half of Texas calls. §35 probe
+landed at 13/24 = **54% TX_FLAVORED**, below the 75% gate. The bug
+is "telling the model what NOT to do is interpreted as a wider
+prohibition than intended" — same class as the §27 lesson that more
+SYSTEM-prompt guidance backfires.
+
+### The fix
+
+One-block edit, scoped to `stateSlug === 'texas'`. Non-Texas states
+get a slightly cleaner generic-state phrasing in the same edit
+(`pick ONE and reference it directly in the question stem`); the
+behavior change for non-Texas is minor and improves their flavor too
+without changing the gate.
+
+```js
+// pre-§36
+`(pick ONE, do not list them in the question): ${...}.`
+
+// §36 (texas branch)
+`Set the scenario in Texas. Pick ONE of these Texas contexts and
+weave it into the question as the natural setting — name the place
+/ food / wildlife / industry directly in the question stem so the
+kid can tell the question is happening in Texas. Texas contexts to
+choose from: ${...}.`
+```
+
+§32 COGNITIVE_DEMAND spec stays active. §30 fallback NAME_POOL stays
+active. Pack loader, audit, plan, judge, verifier, run.js — all
+untouched. Lambda is untouched.
+
+### Re-probe (run-id `pack-wired-flavor-fix-grade-mix-20260504T004756Z`)
+
+Same 6 TEKS as §35 (4 per TEKS = 24 questions, all word-problem,
+HEAVY tier). Same probe runner (`probe-pack-wired.js` reading the
+same `output/probe-target-teks.json`).
+
+| Metric | Value |
+|---|---|
+| Total saved | **24 / 24** |
+| Wall-clock | ~12.5 min |
+| Judge `pass` (first try) | 11 (45.8%) |
+| Judge `pass-after-regen` | 13 (54.2%) |
+| Verifier rejects (Claude Sonnet 4.5) | 1 (`verifier-bad-json` on Anthropic transient hiccup; recovered on retry) |
+| Output | `scripts/cold-start/output/pack-wired-probe-20260504T004821Z.json` |
+
+### Eyeball gate result — PASS
+
+| Criterion | Threshold | Actual | Status |
+|---|---|---|---|
+| 0 BAD (math errors) | = 0 | **0 / 24** | ✅ PASS |
+| TX_FLAVORED rows | ≥ 18 / 24 (≥ 75%) | **22 / 24 (92%)** | ✅ PASS |
+
+### Side-by-side (§35 baseline vs §36 fix)
+
+|                                 | §35 Probe (old phrasing) | §36 Probe (fixed phrasing) |
+|---------------------------------|--------------------------|----------------------------|
+| LOOKS_CLEAN_AND_TX_FLAVORED     | 13 / 24 (54%)            | **22 / 24 (92%)**          |
+| LOOKS_CLEAN_BUT_GENERIC         | 11 / 24                  | **0 / 24**                 |
+| BORDERLINE                      | 0 / 24                   | 2 / 24 (cog-demand only)   |
+| BAD (math errors)               | 0 / 24                   | 0 / 24                     |
+
+The fix landed clean. The "generic" bucket emptied entirely (was 11,
+now 0). 8/8 grade-3 + grade-4 + grade-5 + algebra-1 word problems
+now name a Texas place / food / wildlife. 4/4 grade-6 questions
+reference Enchanted Rock / Galveston / bluebonnets / Houston. 4/4
+grade-7 reference Lubbock / Texas football / Padre Island / Austin.
+The only soft spot remaining is grade-7 cognitive demand (#22
+single-step division and #23 single-step multiplication-then-
+subtraction) — both have correct math and Texas flavor but lower
+cognitive demand than the §32 spec recommends. Same class as the
+§32 BORDERLINE leftovers from the original mini-probe; not a §36
+regression.
+
+### Three sample questions showing the lift
+
+**§36 #5** (grade-3, was a generic-style scenario in §35 — now names
+the region directly):
+> *"Ella loves visiting the Rio Grande Valley to pick fresh oranges
+> and lemons. One day, she picked 24 oranges and 18 lemons. How many
+> pieces of fruit did Ella pick in total?"* — Rio Grande Valley
+> citrus is the iconic Texas regional industry; pack `contexts-allowed.md`
+> §3 has it under Industries.
+
+**§36 #16** (grade-5, names the town AND the iconic Texas food):
+> *"Alejandra is organizing a barbecue in New Braunfels and plans to
+> serve brisket. Each pound of brisket feeds 8 people. If she buys
+> 125 pounds of brisket, how many people can she feed at her
+> barbecue?"* — New Braunfels (German-heritage Hill Country town)
+> + brisket (Texas BBQ) in one stem.
+
+**§36 #17** (grade-6, three Texas-cultural references in one stem):
+> *"Logan is helping his family prepare for a picnic at Enchanted
+> Rock. They plan to serve three types of food: brisket, chili, and
+> kolaches. They have 3.5 pounds of brisket, 2/3 pound of chili, and
+> 1.5 pounds of kolaches. If they want to determine which food has
+> the least weight, which food item should they choose?"* — landmark
+> (Enchanted Rock state natural area) + three Texas foods (brisket
+> = TX BBQ, chili = state dish, kolaches = East-Texas Czech
+> heritage). The model is now actively reaching into the pack's
+> Daily-Life-and-Culture section.
+
+### Lake state delta
+
+| | Active count |
+|---|---|
+| Pre-§36 (per §35 final) | 1,343 (1,319 + 24 §35 probe) |
+| Post-§36 (24 saved) | 1,367 |
+| Δ | +24 ✓ |
+
+The 24 §35 probe rows are NOT tombstoned (per spec — they're
+math-clean, just 11 of them are state-agnostic). They contribute to
+coverage even at sub-§35-gate quality. Per-TEKS row counts after §36
+on the 6 probe-target buckets: A.10E word-problem now has 8 rows (4
+§35 + 4 §36); 3.2A word-problem 8; 4.2A word-problem 8; 5.3B
+word-problem 8; 6.2D word-problem 8; 7.11A word-problem 8.
+
+### Lessons logged
+
+1. **Negative phrasings ("do not …") in user messages are stronger
+   than intended at gpt-4o-mini scale.** When a previous edit said
+   "do not list them," the model interpreted it as "do not include
+   them at all." Switching to positive-explicit ("name the place
+   directly") was a one-line fix that lifted the metric from 54% to
+   92% with zero infrastructure change.
+2. **Per-call user-message phrasing matters more than system-prompt
+   phrasing** for steerability at this model scale (consistent with
+   the §27 + §35 lessons). The system prompt didn't move; the user
+   message moved one block; flavor doubled.
+3. **The cognitive-demand axis (§32) is independently bounded.** The
+   §36 fix only affected scenario flavor, not math difficulty. Both
+   §22 / §23 borderlines have grade-7 stems with arithmetic that's
+   sub-grade-7. A future tightening of `cognitiveDemandFor('grade-7')`
+   could move the threshold but isn't blocking §35 bulk fill.
+4. **Math gate stays clean.** Across §35 + §36 = 48 pack-wired
+   probe questions, the verifier (Claude Sonnet 4.5) found zero
+   real math errors. Cross-vendor verification (§33) is doing its
+   job at scale.
+
+### Status
+
+🟢 **§36 fix shipped + gate passed.** The Texas math bulk fill (per
+§35 coverage-plan.json: ~ 776 buckets × per-tier targets ≈ 50k–80k
+total rows) is unblocked. The next prompt may proceed to bulk fill,
+phased by tier (HEAVY first per the §35 plan, then STANDARD, then
+TEXAS_SPECIFIC, then LIGHT). Reading + science + social studies
+generators still use the §35-era contexts phrasing; if/when those get
+pack wire-up, this same one-block fix should be applied to them too.
 
 ---
 

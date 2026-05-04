@@ -264,8 +264,21 @@ async function _callGenerator(systemPrompt, regenFeedback, grade, stateSlug, pac
 
   // Pack-grade extras: cultural contexts + STAAR stem phrasings — only when
   // the state has a pack. Non-Texas states get the cleaner §30/§32 prompt.
+  //
+  // §36: positive-explicit phrasing for the contexts injection. The
+  // pre-§36 wording was "(pick ONE, do not list them in the question)"
+  // which gpt-4o-mini consistently read as "don't reference the context
+  // by name" → it produced generic backyard / classroom / school
+  // scenarios on ~half of Texas calls (§35 probe: 13/24 = 54%
+  // TX_FLAVORED, below 75% gate). The new phrasing tells the model
+  // explicitly to set the question IN THE CONTEXT and name the place
+  // / food / wildlife / industry directly. Per §27 + §35, more
+  // SYSTEM-prompt guidance backfires; per-call USER-message phrasing
+  // is the right knob.
   const contextsLine = (packEnrichment && packEnrichment.contexts.length)
-    ? `\nDraw the question's scenario from one of these state-authentic contexts (pick ONE, do not list them in the question): ${packEnrichment.contexts.join('; ')}.`
+    ? (stateSlug === 'texas'
+      ? `\nSet the scenario in Texas. Pick ONE of these Texas contexts and weave it into the question as the natural setting — name the place / food / wildlife / industry directly in the question stem so the kid can tell the question is happening in Texas. Texas contexts to choose from: ${packEnrichment.contexts.join('; ')}.`
+      : `\nDraw the question's scenario from one of these state-authentic contexts (pick ONE and reference it directly in the question stem): ${packEnrichment.contexts.join('; ')}.`)
     : '';
   const stemsLine = (packEnrichment && packEnrichment.stems.length)
     ? `\nThe question stem should sound like a real ${getStateRecord(stateSlug)?.testName || ''} item. Reference stem patterns: "${packEnrichment.stems.join('"; "')}".`
