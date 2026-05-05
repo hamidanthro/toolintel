@@ -14069,3 +14069,37 @@ body.state-page .state-cta-strip {
 body.state-page .state-grade-section {
   margin-top: 8px;
 }
+
+/* ============================================================
+   §42 — Subject-picker page (grade.html): hide the redundant
+   hero block + step eyebrow + "Math is live" subhead so the
+   subject cards become the first interactive surface under the
+   breadcrumb.
+
+   Per Hamid screenshot at 5:24pm: arriving here, the kid saw the
+   same context (Texas / Grade 3 / STAAR) repeated 3-4 ways:
+     1. Breadcrumb says "← Texas / Grade 3"
+     2. Pill says "TEXAS · STAAR · GRADE 3"
+     3. Headline says "Grade 3 STAAR practice"
+     4. Subhead says "Practice questions aligned to STAAR..."
+     5. "Step 3 of 3"
+     6. "Pick a subject"
+     7. "Math is live. More subjects coming soon."
+   THEN finally the Math card. Below the fold.
+
+   Markup is preserved (JS still populates #hero-title etc. so
+   any future SEO/parent-facing redesign can opt back in). Just
+   visually hidden so the page reads:
+     [breadcrumb] → [Pick a subject] → [Math card]
+
+   Same trim applies on desktop because the marketing copy is
+   redundant on that path too (kid arrived from a state page).
+   ============================================================ */
+body.grade-page .grade-hero {
+  display: none;
+}
+/* Tighten the subject-section spacing now that it's the first
+   content under the breadcrumb (no hero pushing it down). */
+body.grade-page .subject-section {
+  margin-top: 8px;
+}
