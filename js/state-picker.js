@@ -223,6 +223,19 @@
 
     card.hidden = false;
     requestAnimationFrame(function () { card.dataset.shown = 'true'; });
+
+    // §39: with a saved-state Continue card visible, demote the
+    // mobile state-picker trigger to a small text link below it
+    // ("Pick a different state →"). CSS rules under
+    // body.has-saved-state .state-picker-trigger handle the visual
+    // restyle; here we only add the body class + swap the trigger
+    // label text. New visitors (no saved state) keep the trigger as
+    // the primary card-styled CTA.
+    document.body.classList.add('has-saved-state');
+    var triggerLabel = document.querySelector('.state-picker-trigger-label');
+    var triggerValue = document.querySelector('.state-picker-trigger-value');
+    if (triggerLabel) triggerLabel.textContent = 'Pick a different state';
+    if (triggerValue) triggerValue.textContent = '';
   }
 
   function runGeolocation() {

@@ -13925,3 +13925,92 @@ body.practice-page footer.footer,
 body.practice-select-page footer.footer {
   display: none;
 }
+
+/* ============================================================
+   §39 — Landing-page collapse: when there's a saved state, the
+   Continue card is the primary CTA; the state-picker dropdown
+   below it demotes to a small text-link rather than a competing
+   card-style button. Apple "one logo per screen" + Elon "one
+   primary action" applied to a returning visitor's first paint.
+
+   Only applies when body.has-saved-state (set by state-picker.js
+   showDetected). Mobile-focused but harmless on desktop because
+   the desktop layout already shows the grid as the primary picker;
+   the trigger button is mobile-only via earlier rules.
+   ============================================================ */
+body.has-saved-state .state-picker-trigger {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 8px 4px;
+  margin-top: 4px;
+  min-height: 0;
+  border-radius: 0;
+  display: inline-flex;
+  width: auto;
+  align-self: center;
+  color: rgba(251, 191, 36, 0.85);   /* muted gold link */
+  font-weight: 500;
+  text-decoration: none;
+}
+body.has-saved-state .state-picker-trigger:hover,
+body.has-saved-state .state-picker-trigger:focus-visible {
+  color: #fbbf24;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  background: transparent;
+}
+body.has-saved-state .state-picker-trigger:active {
+  background: transparent;
+  transform: none;
+}
+body.has-saved-state .state-picker-trigger .state-picker-trigger-info {
+  flex-direction: row;
+  gap: 4px;
+}
+body.has-saved-state .state-picker-trigger .state-picker-trigger-label {
+  font-size: 14px;
+  color: inherit;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+}
+body.has-saved-state .state-picker-trigger .state-picker-trigger-value {
+  display: none;
+}
+body.has-saved-state .state-picker-trigger .state-picker-trigger-chevron {
+  width: auto;
+  height: auto;
+  background: transparent;
+  border: none;
+  color: inherit;
+}
+body.has-saved-state .state-picker-trigger .state-picker-trigger-chevron svg {
+  width: 14px;
+  height: 14px;
+  transform: rotate(-90deg);   /* point right, like a "→" affordance */
+}
+/* Tighten the section under the Continue card: the inline picker
+   grid (mobile) is opened on tap, so we don't need it taking space
+   above the demoted link. Also reduce the section's eyebrow + title
+   styling to feel less like a primary headline once the user is
+   already a returning visitor. */
+body.has-saved-state .state-picker-eyebrow {
+  font-size: 11px;
+  opacity: 0.7;
+}
+body.has-saved-state .state-picker-title {
+  font-size: 18px;
+}
+body.has-saved-state .state-picker-sub {
+  font-size: 13px;
+}
+/* Tighten the gap between hero copy and Step 1 block since the
+   removed star left ~36px of vertical headroom. Mobile-only —
+   desktop already collapses .mobile-hero with display:none. */
+@media (max-width: 768px) {
+  .mobile-hero {
+    padding-top: 8px;
+    padding-bottom: 12px;
+  }
+}
