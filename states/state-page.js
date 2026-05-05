@@ -168,7 +168,12 @@
   function populateGradeGrid(state) {
     const grid = document.getElementById('state-grade-grid');
 
-    document.getElementById('grade-sub-test').textContent = state.testName;
+    // §41 (commit 9593091) removed the <span id="grade-sub-test"> from
+    // states/index.html when stripping the "Each grade has its own
+    // bank of practice questions, aligned to <test>" subhead. The
+    // setter that lived here threw TypeError on every state-detail
+    // page load, blocking populateGradeGrid before any grade buttons
+    // rendered. Line removed in §43 (this commit).
 
     const gradeNames = {
       'grade-k': 'Kindergarten',
