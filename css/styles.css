@@ -13892,3 +13892,26 @@ body.practice-page .card a:not(.btn) { color: #fde68a; }
     padding-bottom: 0;
   }
 }
+
+/* ============================================================
+   Footer suppression on focused-practice surfaces (May 5)
+
+   Hamid screenshotted his iPhone showing the homepage marketing
+   footer (GradeEarn star + AI tagline + 'All 50 states supported'
+   + Product/For Parents/Company/Legal nav columns) rendering
+   below the active practice question. That footer block is in
+   the HTML of practice.html and grades.html — copy-pasted from
+   the homepage when those pages were built.
+
+   Fix: hide the marketing footer on the two kid-focused
+   surfaces. Homepage (body.home-page), marketplace (body.
+   marketplace-page), about/admin/etc. keep the footer.
+
+   Markup is preserved (not deleted) so any future redesign that
+   wants a slim footer on practice — e.g. a single legal-link
+   row — has the structure to draw from.
+   ============================================================ */
+body.practice-page footer.footer,
+body.practice-select-page footer.footer {
+  display: none;
+}
