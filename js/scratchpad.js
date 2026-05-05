@@ -7,7 +7,7 @@
 
   const STORE_TOOL = 'staar.scratchpad.tool';
 
-  let root, toggleBtn, body, canvas, ctx, collapseBtn, clearBtn;
+  let root, toggleBtn, body, canvas, ctx, collapseBtn, clearBtn, closeBtn, questionClone;
   let tool = localStorage.getItem(STORE_TOOL) || 'pen';
   let drawing = false;
   let lastX = 0, lastY = 0;
@@ -15,6 +15,10 @@
   // Stroke history for undo
   let strokes = [];   // [{tool, points:[{x,y}], width}]
   let active = null;  // current stroke being drawn
+
+  // Mobile fullscreen mode threshold. Matches the practice-surface
+  // mobile rules in css/styles.css (§18 / §31 / §38).
+  function isMobile() { return window.matchMedia('(max-width: 767px)').matches; }
 
   function mountMarkup(host) {
     host.innerHTML = `
@@ -49,19 +53,26 @@
             </span>
             <span class="scratchpad-body-hint">Sketch your work — won't be graded</span>
             <div class="scratchpad-body-actions">
-              <button type="button" class="scratchpad-action-btn scratchpad-clear-btn" aria-label="Clear">
+              <button type="button" class="scratchpad-action-btn scratchpad-clear-btn" aria-label="Clear scratch work">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="3 6 5 6 21 6"/>
                   <path d="M19 6l-2 14a2 2 0 01-2 2H9a2 2 0 01-2-2L5 6M10 11v6M14 11v6"/>
                 </svg>
               </button>
-              <button type="button" class="scratchpad-action-btn scratchpad-collapse-btn" aria-label="Collapse">
+              <button type="button" class="scratchpad-action-btn scratchpad-collapse-btn" aria-label="Minimize (keep work)" title="Minimize — keep your work">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                   <path d="M3.5 9L7 5.5L10.5 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </button>
+              <button type="button" class="scratchpad-action-btn scratchpad-close-btn" aria-label="Close (discard work)" title="Close — discard your work">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
             </div>
           </div>
+          <div class="scratchpad-question-clone" aria-hidden="true"></div>
           <div class="scratchpad-canvas-area">
             <canvas class="scratchpad-canvas"></canvas>
           </div>
@@ -94,18 +105,71 @@
     }
   }
 
+  // Populate the in-overlay question clone from the live #qbox so the
+  // kid can re-read the stem + choices while drawing in fullscreen mode.
+  // Cleared on close; rebuilt every open() so the latest question is
+  // always shown.
+  function populateQuestionClone() {
+    if (!questionClone) return;
+    const qbox = document.getElementById('qbox');
+    if (!qbox) { questionClone.innerHTML = ''; return; }
+    // Clone the rendered question card. Strip handler-attached buttons
+    // (the clone is read-only, kid still answers in the real qbox after
+    // minimizing). Keeping the visual structure means the question stem,
+    // choices, and any feedback panels render with familiar styling.
+    const clone = qbox.cloneNode(true);
+    // Disable any inputs in the clone so the kid can't accidentally
+    // submit through it; they always answer through the real qbox.
+    clone.querySelectorAll('button, input, label').forEach(el => {
+      el.setAttribute('tabindex', '-1');
+      if (el.tagName === 'BUTTON' || el.tagName === 'INPUT') el.disabled = true;
+    });
+    questionClone.innerHTML = '';
+    questionClone.appendChild(clone);
+  }
+
   function open() {
-    root.setAttribute('data-state', 'expanded');
+    if (isMobile()) {
+      root.setAttribute('data-state', 'fullscreen');
+      populateQuestionClone();
+      // Lock body scroll so the page underneath doesn't wander.
+      document.body.classList.add('scratchpad-fullscreen-open');
+    } else {
+      root.setAttribute('data-state', 'expanded');
+    }
     toggleBtn.setAttribute('aria-expanded', 'true');
     // Defer canvas sizing until layout has updated.
     requestAnimationFrame(() => sizeCanvas(true));
   }
   function close() {
+    // Minimize: collapse but DO NOT clear strokes — kid can resume.
     root.setAttribute('data-state', 'collapsed');
     toggleBtn.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('scratchpad-fullscreen-open');
+  }
+  // Discard: confirm, then clear AND collapse. Used by the X button.
+  async function closeAndDiscard() {
+    if (strokes.length > 0) {
+      const confirmFn = (window.confirmModal || null);
+      let ok;
+      if (typeof confirmFn === 'function') {
+        ok = await confirmFn({
+          title: 'Discard scratch work?',
+          message: 'Your drawing will be cleared.',
+          confirmText: 'Discard',
+          cancelText: 'Keep working'
+        });
+      } else {
+        ok = window.confirm('Discard your scratch work?');
+      }
+      if (!ok) return;
+    }
+    clearCanvas();
+    close();
   }
   function toggle() {
-    if (root.getAttribute('data-state') === 'expanded') close();
+    const s = root.getAttribute('data-state');
+    if (s === 'expanded' || s === 'fullscreen') close();
     else open();
   }
 
@@ -253,9 +317,12 @@
     ctx = canvas.getContext('2d');
     collapseBtn = root.querySelector('.scratchpad-collapse-btn');
     clearBtn = root.querySelector('.scratchpad-clear-btn');
+    closeBtn = root.querySelector('.scratchpad-close-btn');
+    questionClone = root.querySelector('.scratchpad-question-clone');
 
     toggleBtn.addEventListener('click', open);
     collapseBtn.addEventListener('click', close);
+    closeBtn.addEventListener('click', closeAndDiscard);
     clearBtn.addEventListener('click', clearCanvas);
     root.querySelectorAll('.scratchpad-tool[data-tool="pen"], .scratchpad-tool[data-tool="eraser"]').forEach(b => {
       b.addEventListener('click', () => setTool(b.dataset.tool));
@@ -266,7 +333,23 @@
     wireDraw();
     bindShortcut();
     window.addEventListener('resize', () => {
-      if (root.getAttribute('data-state') === 'expanded') sizeCanvas(true);
+      const s = root.getAttribute('data-state');
+      if (s === 'expanded' || s === 'fullscreen') sizeCanvas(true);
+    });
+    // If the viewport crosses the mobile/desktop boundary while open,
+    // re-key the state so the right CSS branch applies.
+    window.addEventListener('resize', () => {
+      const s = root.getAttribute('data-state');
+      if (s === 'expanded' && isMobile()) {
+        root.setAttribute('data-state', 'fullscreen');
+        populateQuestionClone();
+        document.body.classList.add('scratchpad-fullscreen-open');
+        requestAnimationFrame(() => sizeCanvas(true));
+      } else if (s === 'fullscreen' && !isMobile()) {
+        root.setAttribute('data-state', 'expanded');
+        document.body.classList.remove('scratchpad-fullscreen-open');
+        requestAnimationFrame(() => sizeCanvas(true));
+      }
     });
   }
 
