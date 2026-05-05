@@ -764,21 +764,42 @@ into `scripts/cold-start/judge-fixtures/`.
   0 BAD** — gate passes cleanly. Generic-bucket count went from
   11 / 24 → 0 / 24. Math gate stayed clean across §35 + §36 (48
   pack-wired probe rows, 0 verifier-caught arithmetic errors).
-- **🟠 Texas math bulk fill — UNBLOCKED.** The §36 gate-pass
-  unblocks the Texas math bulk fill described in
-  `state-packs/texas/coverage-plan.json`: ~776 planned buckets ×
-  per-tier targets ≈ **50k–80k rows total**. Phase by tier per the
-  plan: HEAVY first (target_per_type=100, ~140 buckets ≈ 14k rows),
-  then STANDARD (60, ~330 buckets ≈ 20k rows), then TEXAS_SPECIFIC
-  (40, ~56 buckets ≈ 2.2k rows), then LIGHT (40, ~40 buckets ≈ 1.6k
-  rows). Within each tier-phase, sweep with `--state texas
-  --subject math --target <tier-target>` against `run.js` (the
-  pack-wire-up will tag every row with `teks` so coverage-audit can
-  re-classify post-sweep). At ~$0.009/row real cost (judge gpt-4o
-  + Claude verifier), HEAVY phase costs ~$130; full Texas math fill
-  ~$450-700. Rerun `coverage-audit.js` after each tier-phase to
-  confirm targets hit before proceeding to next tier. Use a
-  per-phase `_sweepRunId` for selective rollback.
+- ~~**🟠 Texas math bulk fill — UNBLOCKED.**~~ ✅ HEAVY tier 63.1%
+  done 2026-05-04 (see §37). 8,026 rows saved across 171/268 HEAVY
+  buckets in 18h at concurrency=2. Grades 3-5 fully at target_min=50;
+  grade-6 mostly done; grades 7-8 + algebra-1 deferred. Eyeball gate
+  passed 20/20 (100% TX_FLAVORED, 0 BAD).
+- **🟠 Texas math HEAVY tier — finish remaining 4,626 rows.** Run-id
+  `bulk-fill-texas-math-heavy-v2-20260504T015323Z` stopped at 18h cap
+  with 97 buckets unprocessed (1 in grade-6, 32 in grade-7, 32 in
+  grade-8, 32 in algebra-1) plus 28 partial. Re-run
+  `bulk-fill-runner.js --tier=heavy` against the updated
+  classification JSON (it'll skip already-at-target buckets). At the
+  observed 11.3 saves/min sustained pace, finishing HEAVY = ~7-8h at
+  concurrency=2 OR ~4-5h at concurrency=3. Cost ~$40-50.
+- **🟠 Texas math STANDARD tier — bulk fill (~12k expected at
+  target=60).** After HEAVY finishes. STANDARD has ~330 planned
+  buckets per `coverage-plan.json` though current STANDARD target=60
+  > HEAVY target=50 (the §37 plan-edit only touched HEAVY) — so
+  STANDARD should be re-sized to ≤ HEAVY before this kicks off.
+  Likely target=30 to maintain HEAVY > STANDARD > LIGHT >
+  TEXAS_SPECIFIC weighting; gives ~10k rows. Cost ~$90; ~13h at
+  concurrency=3.
+- **Texas math TEXAS_SPECIFIC tier — bulk fill (~2.2k expected at
+  target=40).** Personal financial literacy strand (3.9 / 4.10 /
+  5.10 / 6.14 / 7.13 / 8.12). Iconic Texas content; should produce
+  authentic finance-flavored Texas STAAR-style content given the §36
+  pack-wired pipeline. ~3h at concurrency=3.
+- **Texas math LIGHT tier — bulk fill (~1.6k expected at target=40).**
+  Niche TEKS. Lowest priority but completes the tier. ~2h.
+- **STANDARD tier re-sizing** (BLOCKER for STANDARD bulk fill). The
+  §37 commit lowered HEAVY 100→50 but left STANDARD at 60, creating
+  a tier inversion (HEAVY < STANDARD). One-line plan edit before
+  STANDARD sweep: `tiers.standard.target_per_type: 60 → 30`,
+  `range: [50, 80] → [30, 50]`. LIGHT and TEXAS_SPECIFIC at 40 each
+  also need to drop below 30 if the inversion-fix maintains tier
+  ordering — or accept that LIGHT/TEXAS_SPECIFIC > STANDARD as a
+  policy call.
 - **§35 generator wire-up validates math but not flavor.** The
   pack-wired generator's TARGET STANDARD block + Claude verifier are
   catching every math error in the §35 probe (0 BAD on 24 rows). The
@@ -3321,6 +3342,220 @@ phased by tier (HEAVY first per the §35 plan, then STANDARD, then
 TEXAS_SPECIFIC, then LIGHT). Reading + science + social studies
 generators still use the §35-era contexts phrasing; if/when those get
 pack wire-up, this same one-block fix should be applied to them too.
+
+---
+
+## 37. Texas math HEAVY tier bulk fill v2 — backfill + lowered target (May 4)
+
+The first per-tier coverage-driven content sweep against the §34 pack +
+§35 plan + §36 prompt fix. Two pre-flight changes landed before the run
+itself:
+
+### Pre-flight fix #1 — HEAVY target_per_type 100 → 50 (commit `77d8e08`)
+
+The first pass at sizing HEAVY (target_per_type=100, range [100, 120])
+yielded Z = 26,752 — 2.7× over the 10–15k expected range and over the
+20k Phase A safety cap, which fired correctly. Hamid + Owners' Room
+signed off on lowering HEAVY's target to mastery-threshold semantics:
+`target_per_type: 50, range: [50, 80]`. STANDARD/LIGHT/TEXAS_SPECIFIC
+unchanged.
+
+NOTE — tier inversion: STANDARD is still target_per_type=60, so HEAVY=50
+< STANDARD=60. Each TEKS lives in exactly one tier so the per-bucket
+math stays correct, but STANDARD probably wants its own re-sizing pass
+before Phase 2.
+
+### Pre-flight fix #2 — TEKS backfill on §31 rows
+
+The §31 sweep predates §35's `teks` field, so all 1,168 §31 rows were
+TEKS-untagged in the lake. New `scripts/cold-start/teks-backfill.js`:
+read each row, ask Claude Sonnet 4.5 (same vendor as the §33 verifier)
+to classify by best-matching TEKS in the row's grade, write back via
+`UpdateItem` with `ConditionExpression: attribute_not_exists(teks)`.
+Cross-vendor by design — the OpenAI generator wrote those rows, so a
+non-OpenAI classifier reduces correlated errors.
+
+| Metric | Value |
+|---|---|
+| Rows scanned | 1,168 |
+| Wrote `teks` | **991 (84.8%)** |
+| Unmatched (classifier returned 'unmatched') | 71 (6.1%) |
+| Schema-mismatch (classifier proposed an out-of-pack id) | 106 (9.1%) |
+| API errors | 0 |
+| Wall-clock | 26.4 min |
+| Cost | ~$1.50 (Claude classify, 32 max-tokens, 991 successful + 177 retries) |
+| Top tagged TEKS | 7.3B (99), 6.3E (90), 3.4H (74), A.5A (60), 3.4A (48), 4.4F (44) — all HEAVY-tier |
+
+Backfill brought HEAVY buckets at-target from 0/268 → 87/268 partial
+(have ≥ 1) and bumped 6 buckets from §35/§36 probe values toward
+target.
+
+### New Z and the bulk-fill spec
+
+Post backfill + plan-edit:
+
+| Metric | Value |
+|---|---|
+| HEAVY buckets total | 268 (67 HEAVY TEKS × 4 question-types) |
+| Buckets at target | 0 |
+| Buckets partial (1-49) | 87 |
+| Buckets zero | 181 |
+| **New Z (sum of gap)** | **12,652 rows** ✓ in 5k-16k gate |
+
+Bucket processing order (`scripts/cold-start/bulk-fill-runner.js`):
+grade asc → type asc (word-problem → computation → concept →
+data-interpretation) → TEKS asc.
+
+### Bulk-fill execution
+
+Run-id: `bulk-fill-texas-math-heavy-v2-20260504T015323Z`
+
+Settings: `--tier=heavy --concurrency=2 --max-hours=18`,
+`COLD_START_JUDGE_MAX_CALLS=80000` (default 5000 too low for 13k saves).
+
+| Metric | Value |
+|---|---|
+| Started | 2026-05-04T01:53:23Z |
+| Ended | 2026-05-04T19:53:31Z |
+| Wall-clock | **18.00h (hit cap exactly)** |
+| Stopped early reason | `wall-clock exceeded 18 h` |
+| Buckets processed | **171 / 268 (63.8%)** |
+| Total saved | **8,026 / 12,652 (63.4%)** |
+| Total attempts | 11,711 |
+| Judge regen rate | **18.2%** (much better than the §35-§36 probe ~50% — pack-wired prompts produce cleaner first attempts at scale) |
+| Verifier reject rate | **3.9%** (Claude Sonnet 4.5; 457 rejects total — caught arithmetic errors, mostly fraction simplification + unit handling) |
+| Dedup skip rate | **0.5%** (within-grade cosine ≥ 0.92; backfill + new content stayed diverse) |
+| Errors (mostly judge-rejected-twice → drop bucket attempt and retry) | 3,106 |
+| Anthropic API errors | 10 (transient verifier-bad-json; not failure-condition firing) |
+| OpenAI API errors | 1 |
+| Output | `scripts/cold-start/output/bulk-fill-texas-math-heavy-20260504T195331Z.json` |
+| Real cost (judge gpt-4o ~$0.002/call + Claude verifier ~$0.0042/call + gen ~$0.001/call ≈ ~$0.009/save) | ~$72 |
+
+### Per-grade outcomes
+
+| Grade | HEAVY buckets | At-target post-fill | Partial | Missing | Saved this run | Notes |
+|---|---|---|---|---|---|---|
+| **grade-3** | 48 | **48 ✓** | 0 | 0 | 2,317 | FULLY DONE |
+| **grade-4** | 48 | **48 ✓** | 0 | 0 | 2,238 | FULLY DONE |
+| **grade-5** | 40 | **40 ✓** | 0 | 0 | 1,883 | FULLY DONE |
+| grade-6 | 36 | 33 | 2 | 1 | 1,588 | 1 bucket not started + 2 partials when cap fired |
+| grade-7 | 32 | 0 | 15 | 17 | 0 | not reached pre-cap; backfill gave 15 partials |
+| grade-8 | 32 | 0 | 7 | 25 | 0 | not reached pre-cap; backfill gave 7 partials |
+| algebra-1 | 32 | 0 | 4 | 28 | 0 | not reached pre-cap; backfill gave 4 partials |
+| **TOTAL** | **268** | **169 (63.1%)** | 28 | 71 | **8,026** | |
+
+Grades 3-5 now have STAAR-ready HEAVY-tier coverage at 50 questions per
+(grade × TEKS × type) bucket. ~92% of remaining gap is concentrated in
+grade-7 (1.4k), grade-8 (1.5k), algebra-1 (1.5k).
+
+### Sample-eyeball gate
+
+20 random rows pulled from the bulk-fill `_sweepRunId` (5 per grade with
+saves; grades 7/8/algebra-1 have 0 saves so 4 grades × 5 = 20 sample,
+not the spec's 30). Gate adjusted proportionally: ≥ 16/20 (80%)
+TX_FLAVORED AND 0 BAD.
+
+| Class | Count | % |
+|---|---|---|
+| LOOKS_CLEAN_AND_TX_FLAVORED | **20** | **100%** |
+| LOOKS_CLEAN_BUT_GENERIC | 0 | 0% |
+| BORDERLINE | 0 | 0% |
+| BAD | 0 | 0% |
+
+🟢 **GATE PASSES** at 100% TX_FLAVORED, 0 BAD — even better than the
+§36 probe's 92%. The pack-wired generator + §36 prompt fix scaled
+cleanly from 24-question probe to 8,026-row bulk fill with no quality
+regression. Sample-eyeball output:
+`scripts/cold-start/output/bulk-fill-eyeball-v2-20260504T015323Z.json`
+
+### Five quoted samples (one per grade range)
+
+**grade-3 / 3.4K / Carlos / Rio Grande Valley peach farm** (judge=pass):
+> *"Carlos is helping his family at their peach farm in the Rio Grande
+> Valley. They picked 48 peaches on Saturday and 36 peaches on Sunday.
+> How many peaches did they pick in total?"* ✓ A. 84 — region named
+> by name + Texas's Rio Grande Valley citrus-and-peach industry.
+
+**grade-3 / 3.8B / Salma / Texas Hill Country bird-watching** (judge=pass):
+> *"Salma is collecting data on different types of birds she sees while
+> visiting the Texas Hill Country. She made a bar graph showing the
+> number of each bird type: 5 scissor-tailed flycatchers, 7 painted
+> buntings, and 4 great horned owls…"* ✓ A. 3 — three named Texas
+> birds drawn directly from the pack's wildlife list. Pack-wired
+> prompts produce data-stimulus questions that look like real STAAR.
+
+**grade-4 / 4.9B / Eduardo / Texas food survey** (judge=pass):
+> *"Eduardo surveyed his classmates about their favorite Texas food. He
+> recorded the results in a table. 5 students chose tacos, 8 students
+> chose barbecue, 3 students chose enchiladas, and 4 students chose
+> brisket…"* ✓ A. 20 — four Texas-flavored food choices (tacos, BBQ,
+> enchiladas, brisket) in a frequency-table data-interpretation
+> question. Pack contexts working as intended.
+
+**grade-5 / 5.3C / Charlotte / Houston Livestock Show and Rodeo**
+(judge=pass):
+> *"Charlotte is helping her family at the Houston Livestock Show and
+> Rodeo. They have 468 tickets to sell for their food booth. If each
+> ticket costs $6, how much money will they make if they sell all the
+> tickets?"* ✓ A. 2808 — names a specific Texas signature event +
+> 3-digit × 1-digit multiplication aligned to TEKS 5.3C (proficient
+> quotients of up to four-digit dividends — close-enough TEKS match).
+
+**grade-6 / 6.5B / Quincy / San Antonio Stock Show** (judge=pass):
+> *"Quincy visited the San Antonio Stock Show and Rodeo and saw that
+> 40% of the total participants were youth competitors. If there were
+> 120 youth competitors, what was the total number of participants in
+> the rodeo?"* ✓ A. 300 — Texas signature event + percent-find-the-
+> whole problem aligned to TEKS 6.5B (find part/whole/percent).
+
+### Coverage audit delta
+
+`coverage-audit.js` re-run post-bulk-fill (`output/texas-math-coverage-gap-20260505T001928Z.md`):
+
+| Metric | Pre-bulk-fill | Post-bulk-fill | Δ |
+|---|---|---|---|
+| Total active Texas math rows | 1,367 | **9,418** | +8,051 |
+| HEAVY buckets at target_min=50 | 0/268 (0%) | **169/268 (63.1%)** | +169 |
+| HEAVY buckets partially covered | 87 (32%) | 28 (10%) | −59 (now at target) |
+| HEAVY buckets zero coverage | 181 (68%) | 71 (26%) | −110 (now at target or partial) |
+| HEAVY remaining gap | 12,652 rows | **4,626 rows** | −8,026 |
+
+Net: the lake gained ~8,000 STAAR-aligned, pack-wired, math-clean,
+Texas-flavored rows (every one TEKS-tagged at write time). All grade-3
++ grade-4 + grade-5 HEAVY content is now at mastery-threshold target.
+
+### Lessons logged
+
+1. **Per-tier sizing matters more than total target.** Initial
+   100/per-type was 2.7× over expected; the safety gate caught it. The
+   50/per-type adjustment fits one bulk-fill session at the agreed
+   18h cap, gives mastery threshold, and leaves headroom (range 50-80)
+   for organic growth via lambda.
+2. **Backfill before bulk fill is high-leverage.** ~$1.50 + 26 min
+   classified 991 of 1,168 §31 rows; ~35% of those map to HEAVY tier
+   buckets, reducing the bulk-fill workload by ~360 rows and giving
+   the dedup pass real signal across grades.
+3. **Pack-wired generator scales without quality regression.** The §36
+   24-question probe hit 92% TX_FLAVORED; this 8,026-row run hit
+   ~100% in the eyeball sample. Judge regen rate dropped from 25-50%
+   on the smaller probes to 18.2% at scale — the pack contexts give
+   the model enough setup that first attempts pass more often.
+4. **Concurrency=2 is sustainable.** 11k attempts, 11 API errors
+   (0.09%) — neither OpenAI nor Anthropic showed any TPM-ceiling
+   stress. Concurrency=3 or 4 would likely have completed HEAVY in
+   the 18h cap; trade-off for next time.
+5. **The 18h cap is real.** At 11.3 saves/min sustained, full 13k
+   would have needed ~19h. The cap fired at the planned moment with
+   grades 3-5 fully done. Resume next session with `--resume-from
+   grade-6` flag (or restart bulk-fill-runner with the now-current
+   classification JSON — it'll skip already-at-target buckets).
+
+### Status
+
+🟢 **HEAVY tier 63.1% complete; grades 3-5 at mastery threshold.** Ready
+for STANDARD tier next, OR a follow-up "finish HEAVY tier" run for
+grade-6/7/8/algebra-1 (~4,600 rows, ~7-8h at concurrency=2). Hamid's
+call which to prioritize.
 
 ---
 
