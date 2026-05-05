@@ -6789,6 +6789,11 @@ body.practice-page .unit-row-fill {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    /* §40 — respect iOS notch/header so [✕] + [⌄] don't sit under
+       the browser chrome. env() falls back to 0 on browsers that
+       don't support it. */
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
   .scratchpad-inline[data-state="fullscreen"] .scratchpad-toggle { display: none; }
   .scratchpad-inline[data-state="fullscreen"] .scratchpad-body {
@@ -6798,24 +6803,27 @@ body.practice-page .unit-row-fill {
     flex-direction: column;
     animation: none;
   }
-  /* Header with title + actions stays at top, but the actions move to
-     a fixed top-right corner so [✕] and [⌄] are always reachable with
-     the thumb regardless of question-clone scroll. */
+  /* Header with title + actions sits at top of the overlay flow.
+     Actions absolute-positioned to the top-right of the OVERLAY
+     (not the viewport) so they sit below iOS browser chrome via
+     the overlay's safe-area padding-top. */
   .scratchpad-inline[data-state="fullscreen"] .scratchpad-body-header {
-    padding: 12px 16px;
+    padding: 8px 16px;
     flex-shrink: 0;
+    position: relative;
+    min-height: 44px;
   }
   .scratchpad-inline[data-state="fullscreen"] .scratchpad-body-hint { display: none; }
   .scratchpad-inline[data-state="fullscreen"] .scratchpad-body-actions {
-    position: fixed;
-    top: 10px;
+    position: absolute;
+    top: 6px;
     right: 12px;
     z-index: 1;
     gap: 8px;
   }
   .scratchpad-inline[data-state="fullscreen"] .scratchpad-action-btn {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     background: rgba(255, 255, 255, 0.08);
     border-color: rgba(255, 255, 255, 0.18);
     color: #ffffff;
@@ -6825,36 +6833,40 @@ body.practice-page .unit-row-fill {
     background: rgba(239, 68, 68, 0.18);
     border-color: rgba(239, 68, 68, 0.4);
   }
-  /* Question clone — visible in fullscreen mode, max 30vh,
-     scrollable so long stems still fit. */
+  /* Question clone — visible in fullscreen mode, capped at 18vh so
+     the canvas claims the dominant share of the screen (§40). The
+     stem is still scrollable inside the strip if it's long. */
   .scratchpad-inline[data-state="fullscreen"] .scratchpad-question-clone {
     display: block;
     flex-shrink: 0;
-    max-height: 30vh;
+    max-height: 18vh;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 8px 16px 12px;
+    padding: 4px 16px 8px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     background: rgba(255, 255, 255, 0.02);
   }
   /* The clone reuses the live #qbox markup; tighten spacing for the
      fullscreen header context so it reads as a compact reference, not
-     the primary interactive question. */
+     the primary interactive question. §40 — smaller stem font + line-
+     height so the question still reads cleanly in 18vh. */
   .scratchpad-inline[data-state="fullscreen"] .scratchpad-question-clone .question-card {
-    padding: 8px 0;
+    padding: 4px 0;
     background: transparent;
     border: none;
     box-shadow: none;
   }
   .scratchpad-inline[data-state="fullscreen"] .scratchpad-question-clone .q-prompt {
-    font-size: 0.95rem;
+    font-size: 14px;
     line-height: 1.35;
+    font-weight: 500;
+    margin: 0;
   }
   .scratchpad-inline[data-state="fullscreen"] .scratchpad-question-clone .choice {
-    padding: 6px 10px;
-    margin: 4px 0;
-    min-height: 32px;
-    font-size: 0.85rem;
+    padding: 4px 8px;
+    margin: 2px 0;
+    min-height: 28px;
+    font-size: 13px;
     pointer-events: none;
     opacity: 0.85;
   }
@@ -6876,16 +6888,26 @@ body.practice-page .unit-row-fill {
   }
   /* Drawing canvas takes the rest of the viewport AND is scrollable.
      The canvas itself is sized much taller than the visible area in
-     sizeCanvas() (Word-document feel — kid swipes through pages). */
+     sizeCanvas() (Word-document feel — kid swipes through pages).
+     §40 — explicit min-height: 50vh as a safety floor so flex
+     distribution can't accidentally squeeze the canvas-area when
+     the body-header / question-clone / toolbar combine for >50vh. */
   .scratchpad-inline[data-state="fullscreen"] .scratchpad-canvas-area {
     flex: 1 1 auto;
-    min-height: 0;
+    min-height: 50vh;
     height: auto;
-    padding: 10px;
+    padding: 6px 10px;
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
+  }
+  /* Lock the toolbar from shrinking — without this, flex distribution
+     can squeeze it when the canvas-area's min-height pushes the
+     column over the viewport. */
+  .scratchpad-inline[data-state="fullscreen"] .scratchpad-toolbar {
+    flex-shrink: 0;
+    padding: 8px 12px;
   }
   .scratchpad-inline[data-state="fullscreen"] .scratchpad-canvas {
     border-radius: 8px;
