@@ -6861,7 +6861,17 @@ body.practice-page .unit-row-fill {
   .scratchpad-inline[data-state="fullscreen"] .scratchpad-question-clone .q-meta,
   .scratchpad-inline[data-state="fullscreen"] .scratchpad-question-clone .feedback,
   .scratchpad-inline[data-state="fullscreen"] .scratchpad-question-clone .tutor-box,
-  .scratchpad-inline[data-state="fullscreen"] .scratchpad-question-clone .feedback-actions {
+  .scratchpad-inline[data-state="fullscreen"] .scratchpad-question-clone .feedback-actions,
+  /* Hide the answer-interaction surfaces inside the scratch overlay.
+     Kid uses scratch ONLY to work out the math; once they have the
+     answer, they minimize/close and type/select on the real practice
+     screen. Showing input + Check button here wastes vertical space
+     and creates two answer paths. (Multi-choice .choice labels stay
+     visible above as a read-only reference — see the .choice rule.) */
+  .scratchpad-inline[data-state="fullscreen"] .scratchpad-question-clone .num-input,
+  .scratchpad-inline[data-state="fullscreen"] .scratchpad-question-clone .question-card > button[type="submit"],
+  .scratchpad-inline[data-state="fullscreen"] .scratchpad-question-clone .q-read-btn,
+  .scratchpad-inline[data-state="fullscreen"] .scratchpad-question-clone .q-reward {
     display: none;
   }
   /* Drawing canvas takes the rest of the viewport AND is scrollable.
