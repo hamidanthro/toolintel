@@ -769,14 +769,18 @@ into `scripts/cold-start/judge-fixtures/`.
   buckets in 18h at concurrency=2. Grades 3-5 fully at target_min=50;
   grade-6 mostly done; grades 7-8 + algebra-1 deferred. Eyeball gate
   passed 20/20 (100% TX_FLAVORED, 0 BAD).
-- **🟠 Texas math HEAVY tier — finish remaining 4,626 rows.** Run-id
-  `bulk-fill-texas-math-heavy-v2-20260504T015323Z` stopped at 18h cap
-  with 97 buckets unprocessed (1 in grade-6, 32 in grade-7, 32 in
-  grade-8, 32 in algebra-1) plus 28 partial. Re-run
-  `bulk-fill-runner.js --tier=heavy` against the updated
-  classification JSON (it'll skip already-at-target buckets). At the
-  observed 11.3 saves/min sustained pace, finishing HEAVY = ~7-8h at
-  concurrency=2 OR ~4-5h at concurrency=3. Cost ~$40-50.
+- ~~**🟠 Texas math HEAVY tier — finish remaining 4,626 rows.**~~
+  ✅ MOSTLY DONE 2026-05-05 (finish run, see §37 Finish run subsection).
+  3,011 saves in 12h hit the cap with 234/268 HEAVY buckets at target
+  (87.3%). Grades 3-7 fully done; grade-8 30/32; algebra-1 0/32.
+  Lake total at 12,585 active.
+- **🟠 Texas math HEAVY tier — finish algebra-1 + 2 grade-8 partials.**
+  The §37 finish run hit the 12h cap before reaching algebra-1.
+  Remaining: ~1,615 rows across 32 algebra-1 buckets (4 partial, 28
+  zero) + 2 grade-8 partials (8.7B, 8.10A). Same runner, same plan,
+  same 80% TX_FLAVORED gate. At observed 4.2 saves/min on harder TEKS,
+  expected wall-clock ~6-8h at concurrency=2. Cost ~$15-20. After this:
+  HEAVY tier 100%.
 - **🟠 Texas math STANDARD tier — bulk fill (~12k expected at
   target=60).** After HEAVY finishes. STANDARD has ~330 planned
   buckets per `coverage-plan.json` though current STANDARD target=60
@@ -3556,6 +3560,159 @@ Texas-flavored rows (every one TEKS-tagged at write time). All grade-3
 for STANDARD tier next, OR a follow-up "finish HEAVY tier" run for
 grade-6/7/8/algebra-1 (~4,600 rows, ~7-8h at concurrency=2). Hamid's
 call which to prioritize.
+
+### Finish run (May 5)
+
+The §37 v2 run hit the 18h cap at 8,026 saves with ~4,626 rows still
+gap (3 grade-6 partials/missing + 32 grade-7 + 32 grade-8 + 32
+algebra-1 buckets). Per Hamid + Owners' Room signoff, kicked a
+follow-up bulk fill against the same plan + same runner, capped at
+12h to fit within one session.
+
+Run-id: `bulk-fill-texas-math-heavy-finish-20260505T003352Z`
+
+| Metric | Value |
+|---|---|
+| Started | 2026-05-05T00:33:52Z |
+| Ended | 2026-05-05T12:34:02Z |
+| Wall-clock | **12.00h (hit cap exactly)** |
+| Stopped early reason | `wall-clock exceeded 12 h` |
+| Buckets processed | **67 / 99 (67.7%)** |
+| Total saved | **3,011 / 4,626 (65.1%)** |
+| Total attempts | 6,810 |
+| Judge regen rate | 20.1% |
+| Verifier reject rate | 6.2% (vs v2's 3.9% — slope/Pythagorean/proportional reasoning push more arithmetic errors that Claude catches) |
+| Dedup skip rate | 0.1% |
+| Errors (mostly judge-rejected-twice → drop and retry) | 3,343 |
+| Anthropic API errors | 21 (transient verifier-bad-json, no consec-5 firing) |
+| OpenAI API errors | 2 |
+| Real cost (~$0.009/save) | ~$27 |
+| Output | `scripts/cold-start/output/bulk-fill-texas-math-heavy-20260505T123402Z.json` |
+
+**Per-grade outcomes (combined v2 + finish):**
+
+| Grade | HEAVY buckets | At-target post-finish | Notes |
+|---|---|---|---|
+| **grade-3** | 48 | **48 ✓** | Done in v2 |
+| **grade-4** | 48 | **48 ✓** | Done in v2 |
+| **grade-5** | 40 | **40 ✓** | Done in v2 |
+| **grade-6** | 36 | **36 ✓** | v2 did 33; finish closed last 3 |
+| **grade-7** | 32 | **32 ✓** | All from finish run |
+| grade-8 | 32 | 30 (2 partials) | Cap fired mid-grade-8 |
+| algebra-1 | 32 | 0 (4 partials, 28 zero) | Cap fired before algebra-1 reached |
+| **TOTAL** | **268** | **234 (87.3%)** | |
+
+### Sample-eyeball gate (finish run)
+
+15 random samples (5 each from grade-6, grade-7, grade-8 — algebra-1
+has 0 saves so couldn't sample). Gate adjusted to ≥12/15 (80%) since
+sample size is 15 not 30.
+
+| Class | Count | % |
+|---|---|---|
+| LOOKS_CLEAN_AND_TX_FLAVORED | **15** | **100%** |
+| LOOKS_CLEAN_BUT_GENERIC | 0 | 0% |
+| BORDERLINE | 0 | 0% |
+| BAD | 0 | 0% |
+
+🟢 **GATE PASSES** at 100% — same result as v2's eyeball. Pack-wired
+generator scaled cleanly into the harder grade-7/8 content (slope,
+Pythagorean, proportional reasoning, fraction arithmetic, volume of
+prisms/cylinders/cones). Locations referenced: El Paso, South Texas,
+Fredericksburg, Austin, San Antonio River Walk, Texas Hill Country,
+Padre Island National Seashore, Palo Duro Canyon, Kemp's ridley sea
+turtles, Texas ranch — pack contexts firing across all sampled rows.
+
+### Five quoted samples
+
+**grade-6 / 6.8D / Eduardo / El Paso community garden** (judge=pass-after-regen):
+> *"Eduardo is helping to plant a community garden in El Paso. The
+> garden will be shaped like a trapezoid, with a top base of 5.5
+> feet, a bottom base of 9.5 feet, and a height of 4 feet. What is
+> the area of the garden in square feet?"* ✓ A. 30 — trapezoid
+> area formula applied cleanly + Texas city setting.
+
+**grade-7 / 7.6A / Cristian / Padre Island National Seashore**
+(judge=pass-after-regen):
+> *"Cristian is observing the different types of birds in Padre
+> Island National Seashore. He counts the following: 12 scissor-tailed
+> flycatchers, 8 painted buntings, and 5 great horned owls…"* — three
+> Texas state-symbol birds in a sample-space probability question.
+
+**grade-7 / 7.9A / Isaiah / Texas ranch storage shed** (judge=pass):
+> *"Isaiah is helping his uncle build a rectangular prism-shaped
+> storage shed on their ranch in Texas. The shed will have a length
+> of 12 feet, a width of 8 feet, and a height of 6 feet. What is the
+> volume of the storage shed in cubic feet?"* ✓ A. 576
+
+**grade-8 / 8.7C / Zara / Austin Pythagorean** (judge=pass):
+> *"Zara is helping her grandfather build a small storage shed in
+> their backyard in Austin, Texas. The shed will be built in the
+> shape of a right triangle. The base of the shed is 6 feet long,
+> and the height is 8 feet."* ✓ A. 10 — Pythagorean Theorem on a
+> Texas backyard scenario.
+
+**grade-8 / 8.4C / Levi / Texas Kemp's ridley sea turtles slope**
+(judge=pass-after-regen):
+> *"Levi is studying the population of Kemp's ridley sea turtles
+> along the Texas coast. He collected data over several years and
+> created the following table…"* — slope from a real Texas-flavor
+> data table (Kemp's ridley is the official Texas state sea turtle).
+
+### Coverage audit delta
+
+`coverage-audit.js` re-run post-finish (`output/texas-math-coverage-gap-20260505T125931Z.md`):
+
+| Metric | Pre-finish | Post-finish | Δ |
+|---|---|---|---|
+| Total active Texas math rows | 9,418 | **12,585** | +3,167 |
+| HEAVY buckets at target_min=50 | 169/268 (63.1%) | **234/268 (87.3%)** | +65 |
+| HEAVY buckets partial | 28 (10%) | 6 (2.2%) | −22 |
+| HEAVY buckets zero | 71 (26%) | 28 (10.4%) | −43 (all in algebra-1) |
+| HEAVY remaining gap | 4,626 | **1,615** | −3,011 |
+
+Net: ~3,000 STAAR-aligned, pack-wired, math-clean, Texas-flavored
+rows added on top of §37's ~8,000. Combined v2 + finish = 11,037
+HEAVY-tier rows shipped this week. Lake total at 12,585 active.
+
+### What's still gap (finish run leftover)
+
+**~1,615 rows in 34 HEAVY buckets**, concentrated:
+- **grade-8: 2 buckets partial** (8.7B and 8.10A — small)
+- **algebra-1: 32 buckets** (4 partial from §37 backfill, 28 zero) ≈ ~1,500 rows
+
+Algebra I HEAVY TEKS not yet shipped: A.3A, A.5A, A.5C, A.6B, A.6C,
+A.7A, A.8A, A.10E (8 TEKS × 4 question types = 32 buckets, ~50 rows
+each). Logged as a §14 deferred TODO.
+
+### Lessons logged (additions to §37)
+
+6. **Verifier reject rate climbs with TEKS difficulty.** v2 (mostly
+   grades 3-6, fluency + place-value + simple geometry): 3.9% reject.
+   Finish run (mostly grades 7-8: slope, Pythagorean, proportional
+   reasoning, volume of cones/cylinders, fraction arithmetic): 6.2%
+   reject. Claude verifier is doing harder work and catching more
+   real errors. Quality stays clean (eyeball 100%), but each save
+   takes more attempts → wall-clock per save grows ~50% on harder
+   TEKS. Plan accordingly when sizing future runs by tier.
+7. **The 12h cap underestimated the algebra-1 chunk.** At 4.2
+   saves/min sustained, 32 algebra-1 buckets × 50 rows = 1,600 rows
+   would have needed ~6.3h alone — but they were last in the queue
+   and cap fired before the queue reached them. For the next run
+   (algebra-1 finish), expected wall-clock is ~6-8h at concurrency=2.
+
+### Status (updated)
+
+🟢 **HEAVY tier 87.3% complete (234/268 buckets, 12,585 active rows
+in lake).** Grades 3-7 all at mastery threshold. Grade-8 nearly
+done (2 small partials). Algebra-1 the only remaining gap.
+
+Next run options (Hamid's call):
+- **Finish algebra-1 + 2 grade-8 partials**: ~1,615 rows, ~6-8h at
+  concurrency=2. Brings HEAVY to 100% in one session.
+- **Skip to STANDARD tier**: requires the plan re-sizing step
+  (HEAVY=50 < STANDARD=60 inversion needs fixing first per §14).
+- **Both, in sequence**: finish HEAVY then start STANDARD next session.
 
 ---
 
