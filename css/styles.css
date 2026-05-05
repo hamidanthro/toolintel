@@ -6941,6 +6941,17 @@ body.practice-page .unit-row-fill {
    bounce when the kid swipes inside the canvas. */
 body.scratchpad-fullscreen-open { overflow: hidden; }
 
+/* §45 — score-display surfaces would otherwise render above the
+   scratch overlay (.cents-toast lives at z-index 9999 vs the
+   overlay's 9000). On phone that landed the +pts toast right
+   over the overlay's [✕] / [⌄] buttons (top: 80px), trapping
+   the kid inside scratch paper. Hide them while scratch is open. */
+body.scratchpad-fullscreen-open .cents-toast,
+body.scratchpad-fullscreen-open .points-pill,
+body.scratchpad-fullscreen-open .wallet-pill {
+  display: none !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .scratchpad-inline { transition: none; }
   .scratchpad-inline[data-state="expanded"] .scratchpad-body { animation: none; }
