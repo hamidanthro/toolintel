@@ -6758,6 +6758,12 @@ body.practice-page .unit-row-fill {
    Hidden by default so desktop expanded mode is unchanged. */
 .scratchpad-question-clone { display: none; }
 
+/* Scroll buttons in toolbar — only relevant when the canvas overflows
+   (fullscreen mode); hidden by default so the desktop side-panel
+   toolbar stays unchanged. */
+.scratchpad-scroll-btn,
+.scratchpad-scroll-divider { display: none; }
+
 /* ============================================================
    FULLSCREEN MODE — mobile only (<768px). Old behavior was a
    small inline panel that obscured the question; new behavior
@@ -6858,15 +6864,37 @@ body.practice-page .unit-row-fill {
   .scratchpad-inline[data-state="fullscreen"] .scratchpad-question-clone .feedback-actions {
     display: none;
   }
-  /* Drawing canvas takes the rest of the viewport. */
+  /* Drawing canvas takes the rest of the viewport AND is scrollable.
+     The canvas itself is sized much taller than the visible area in
+     sizeCanvas() (Word-document feel — kid swipes through pages). */
   .scratchpad-inline[data-state="fullscreen"] .scratchpad-canvas-area {
     flex: 1 1 auto;
     min-height: 0;
     height: auto;
     padding: 10px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
   .scratchpad-inline[data-state="fullscreen"] .scratchpad-canvas {
     border-radius: 8px;
+    /* The canvas is taller than the visible area; explicit display:block
+       prevents inline-baseline gaps. */
+    display: block;
+  }
+  /* Scroll button styling — only visible in fullscreen mode where the
+     canvas overflows. Hidden on desktop expanded mode. */
+  .scratchpad-inline[data-state="fullscreen"] .scratchpad-scroll-btn {
+    display: flex;
+  }
+  .scratchpad-inline[data-state="fullscreen"] .scratchpad-scroll-divider {
+    display: inline-block;
+  }
+  /* Push scroll buttons to the right edge of the toolbar so they're
+     reachable with the thumb separately from the drawing tools. */
+  .scratchpad-inline[data-state="fullscreen"] .scratchpad-scroll-divider {
+    margin-left: auto;
   }
   .scratchpad-inline[data-state="fullscreen"] .scratchpad-toolbar {
     flex-shrink: 0;

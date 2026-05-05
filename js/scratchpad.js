@@ -87,6 +87,13 @@
             <button type="button" class="scratchpad-tool scratchpad-undo-btn" data-tool="undo" aria-label="Undo">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 00-15-6.7L3 13"/></svg>
             </button>
+            <span class="scratchpad-tool-divider scratchpad-scroll-divider"></span>
+            <button type="button" class="scratchpad-tool scratchpad-scroll-btn scratchpad-scroll-up-btn" aria-label="Scroll up">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+            </button>
+            <button type="button" class="scratchpad-tool scratchpad-scroll-btn scratchpad-scroll-down-btn" aria-label="Scroll down">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
           </div>
         </div>
       </div>`;
@@ -286,13 +293,32 @@
     const rect = surface.getBoundingClientRect();
     if (rect.width <= 0 || rect.height <= 0) return;
     dpr = Math.max(1, window.devicePixelRatio || 1);
-    canvas.style.width = rect.width + 'px';
-    canvas.style.height = rect.height + 'px';
-    canvas.width = Math.floor(rect.width * dpr);
-    canvas.height = Math.floor(rect.height * dpr);
+    // In fullscreen mode the canvas is "Word-document tall" — multi-page
+    // vertical drawing space the kid scrolls through. The parent
+    // .scratchpad-canvas-area handles overflow:auto. In normal expanded
+    // mode the canvas matches its parent height (single visible page).
+    const fullscreen = root && root.getAttribute('data-state') === 'fullscreen';
+    const cssWidth = rect.width;
+    const cssHeight = fullscreen ? Math.max(1800, Math.round(rect.height * 4)) : rect.height;
+    canvas.style.width = cssWidth + 'px';
+    canvas.style.height = cssHeight + 'px';
+    canvas.width = Math.floor(cssWidth * dpr);
+    canvas.height = Math.floor(cssHeight * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     if (preserve) redrawAll();
-    else { strokes = []; active = null; ctx.clearRect(0, 0, rect.width, rect.height); }
+    else { strokes = []; active = null; ctx.clearRect(0, 0, cssWidth, cssHeight); }
+  }
+
+  // Page-up / page-down scroll the .scratchpad-canvas-area (the parent
+  // of the canvas) by ~80% of its visible height, smooth-scrolled. Used
+  // in fullscreen mode where the canvas is much taller than the
+  // viewport and touch-action: none on the canvas blocks swipe-scroll.
+  function scrollPage(direction) {
+    if (!canvas) return;
+    const surface = canvas.parentElement;
+    if (!surface) return;
+    const delta = surface.clientHeight * 0.8 * (direction || 1);
+    surface.scrollBy({ top: delta, left: 0, behavior: 'smooth' });
   }
 
   function bindShortcut() {
@@ -328,6 +354,8 @@
       b.addEventListener('click', () => setTool(b.dataset.tool));
     });
     root.querySelector('.scratchpad-undo-btn').addEventListener('click', undo);
+    root.querySelector('.scratchpad-scroll-up-btn').addEventListener('click', () => scrollPage(-1));
+    root.querySelector('.scratchpad-scroll-down-btn').addEventListener('click', () => scrollPage(1));
 
     setTool(tool, true);
     wireDraw();
