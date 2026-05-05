@@ -44,7 +44,7 @@
   </script>
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&family=JetBrains+Mono:wght@400;500&display=swap">
-  <link rel="stylesheet" href="../css/styles.css?v=20260427zz">
+  <link rel="stylesheet" href="../css/styles.css?v=20260505f">
 
   <script src="../js/migrate-storage.js?v=20260427a"></script>
   <script src="../js/states-data.js?v=20260427d"></script>
@@ -146,8 +146,11 @@
     <!-- GRADE PICKER -->
     <section class="state-grade-section" id="state-grade-section">
       <header class="state-grade-head">
-        <h2 class="state-grade-title">Pick your kid's grade</h2>
-        <p class="state-grade-sub">Each grade has its own bank of practice questions, aligned to <span id="grade-sub-test">—</span>.</p>
+        <h2 class="state-grade-title">Pick your grade</h2>
+        <!-- §41: removed "Each grade has its own bank…" subhead.
+             Kid here already chose Texas — they want grade buttons,
+             not redundant explainer text. The state context is
+             carried by the breadcrumb above. -->
       </header>
 
       <div class="state-grade-grid" id="state-grade-grid" role="list">

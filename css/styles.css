@@ -14036,3 +14036,36 @@ body.has-saved-state .state-picker-sub {
     padding-bottom: 12px;
   }
 }
+
+/* ============================================================
+   §41 — State-detail page: hide marketing surfaces, surface
+   the grade picker.
+
+   Per Hamid screenshot at 5:19pm: kids who already chose their
+   state landed on a page with 6 paragraphs of marketing copy
+   (STAAR/TEKS description, fact grid, trust cards, CTA strip)
+   above the grade buttons. Grade 3 was below the fold. The
+   page is step 2 of an onboarding flow — they need to PICK A
+   GRADE AND PRACTICE, not read.
+
+   Markup is preserved (marketing copy stays in the HTML for SEO
+   crawlers and any future redesign that wants to bring it back
+   on a separate parent-facing route). It's hidden via display:
+   none here so the grade picker becomes the first visible
+   surface under the breadcrumb.
+
+   Same trim applies on desktop because (a) the marketing copy
+   is redundant once a state is picked, (b) the kid is the
+   primary user of this page, (c) parents who want test details
+   can find them on /about.
+   ============================================================ */
+body.state-page .state-hero,
+body.state-page .state-trust-section,
+body.state-page .state-cta-strip {
+  display: none;
+}
+/* Tighten the grade-section spacing now that it's the first
+   content under the breadcrumb. */
+body.state-page .state-grade-section {
+  margin-top: 8px;
+}
