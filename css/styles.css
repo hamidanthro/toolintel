@@ -14103,3 +14103,203 @@ body.grade-page .grade-hero {
 body.grade-page .subject-section {
   margin-top: 8px;
 }
+
+/* ============================================================
+   §44 — Practice question screen: question becomes the hero.
+
+   Hamid screenshot 5:44pm: kid loaded a question and saw 8
+   competing visual elements before the actual stem:
+     1. TX/STAAR pill row
+     2. "← Back to Grade 3 Math" link
+     3. "Grade 3 Math" h2 headline
+     4. Restart button
+     5. Progress bar + "1/25" counter
+     6. ADDITION & SUBTRACTION ... TEKS 3.4A pill
+     7. ±2 PTS pill
+     8. (finally) the question
+
+   Apple/Elon: question is the hero; everything else demoted.
+
+   Mobile-only — desktop side-panel + perf panel layout left
+   intact (kids on desktop have more screen real estate and the
+   layout already breathes).
+   ============================================================ */
+@media (max-width: 767px) {
+  /* (1) Collapse the .practice-context-bar pills into a unified
+     breadcrumb-text style so it reads "← TX · Grade 3 · Math". */
+  body.practice-page #practice-context-bar { padding: 8px 4px; }
+  body.practice-page .practice-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: nowrap;
+    position: relative;
+  }
+  body.practice-page .practice-breadcrumb-back {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.04);
+  }
+  body.practice-page .practice-breadcrumb-pills {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+  }
+  body.practice-page .practice-pill {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    white-space: nowrap;
+  }
+  /* Collapse state pill to just the abbr; hide the test name to
+     keep the breadcrumb tight. Test name is on the previous page. */
+  body.practice-page .practice-pill-state-test { display: none; }
+  /* Insert "·" separators between pills via ::before. */
+  body.practice-page .practice-pill + .practice-pill::before {
+    content: ' · ';
+    color: rgba(255, 255, 255, 0.35);
+    margin: 0 6px;
+  }
+
+  /* (2) Overflow menu styling */
+  body.practice-page .practice-breadcrumb-overflow {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    margin-left: auto;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.7);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  body.practice-page .practice-breadcrumb-overflow:hover,
+  body.practice-page .practice-breadcrumb-overflow[aria-expanded="true"] {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+  }
+  body.practice-page .practice-breadcrumb-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 4px;
+    z-index: 50;
+    min-width: 180px;
+    background: rgba(20, 29, 51, 0.98);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 6px;
+    box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.5);
+  }
+  body.practice-page .practice-breadcrumb-menu-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: #ffffff;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+  }
+  body.practice-page .practice-breadcrumb-menu-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  /* (3) Hide the in-card redundant header block: back-link + h2 +
+     in-card restart button. The breadcrumb above is the only path
+     indicator now; restart lives in the overflow menu. */
+  body.practice-page .practice-header .back-link,
+  body.practice-page .practice-header .practice-title-row h2,
+  body.practice-page .practice-header .btn-restart {
+    display: none;
+  }
+  /* The .practice-title-row only contained h2 + restart-btn; with
+     both hidden the row collapses to zero height — no extra
+     spacing rules needed. */
+  body.practice-page .practice-header .practice-title-row {
+    margin: 0;
+    padding: 0;
+  }
+
+  /* (4) Compact progress bar + inline counter, top-right of the
+     practice-header row. */
+  body.practice-page .practice-header {
+    padding: 4px 0 12px;
+  }
+  body.practice-page .practice-header .progress-bar {
+    margin-top: 0;
+  }
+  body.practice-page .practice-header .progress-track {
+    height: 4px;
+  }
+  body.practice-page .practice-header .progress-text {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.55);
+    text-align: right;
+    margin-top: 4px;
+  }
+
+  /* (5) Demote .q-meta to a quiet footer chip BELOW the question
+     by reordering it inside the form. */
+  body.practice-page .question-card {
+    display: flex;
+    flex-direction: column;
+  }
+  body.practice-page .question-card .q-prompt { order: 1; }
+  body.practice-page .question-card .q-body   { order: 2; }
+  body.practice-page .question-card > button[type="submit"] { order: 3; }
+  body.practice-page .question-card .q-meta {
+    order: 99;
+    margin-top: 14px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  /* Drop the loud "±N pts" pill background — render as muted text
+     "+N pts" instead. The main reward feedback fires after the
+     answer is checked anyway; this is just a kid-glance hint. */
+  body.practice-page .question-card .q-meta .q-reward {
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: rgba(251, 191, 36, 0.7);
+    font-weight: 500;
+  }
+
+  /* (6) Question is the hero — bump font + weight. */
+  body.practice-page .question-card .q-prompt {
+    font-size: 22px;
+    line-height: 1.35;
+    font-weight: 500;
+    color: #ffffff;
+    margin: 0 0 16px;
+  }
+}

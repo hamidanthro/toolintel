@@ -134,9 +134,61 @@
           <span class="practice-pill practice-pill--grade">${escapePcb(gradeName)}</span>
           <span class="practice-pill practice-pill--subject">${escapePcb(subjLabel)}</span>
         </div>
+        <!-- §44: overflow menu trigger. On mobile (<768px), the
+             original .btn-restart inside .practice-title-row is hidden
+             via CSS to declutter the question screen; this ... button
+             becomes the only restart entrypoint. Clicking it
+             programmatically clicks #restart-btn so all existing
+             confirm-modal + reload logic in runQuiz fires unchanged. -->
+        <button type="button" class="practice-breadcrumb-overflow" aria-label="More actions" aria-haspopup="menu" aria-expanded="false">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+        </button>
+        <div class="practice-breadcrumb-menu" role="menu" hidden>
+          <button type="button" role="menuitem" class="practice-breadcrumb-menu-item" data-action="restart">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+            <span>Restart practice</span>
+          </button>
+        </div>
       </nav>
     `;
     document.title = `${STATE_INFO.testName} ${gradeName} ${subjLabel} — GradeEarn`;
+
+    // Wire the overflow menu. Toggle on click, close on outside click,
+    // close on Escape. Restart item delegates to the original
+    // #restart-btn so the existing confirm-modal + restart flow fires.
+    const overflowBtn = bar.querySelector('.practice-breadcrumb-overflow');
+    const overflowMenu = bar.querySelector('.practice-breadcrumb-menu');
+    if (overflowBtn && overflowMenu) {
+      overflowBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const expanded = overflowBtn.getAttribute('aria-expanded') === 'true';
+        overflowBtn.setAttribute('aria-expanded', String(!expanded));
+        overflowMenu.hidden = expanded;
+      });
+      overflowMenu.querySelectorAll('[data-action]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const action = btn.dataset.action;
+          overflowBtn.setAttribute('aria-expanded', 'false');
+          overflowMenu.hidden = true;
+          if (action === 'restart') {
+            const realBtn = document.getElementById('restart-btn');
+            if (realBtn) realBtn.click();
+          }
+        });
+      });
+      document.addEventListener('click', (e) => {
+        if (!bar.contains(e.target)) {
+          overflowBtn.setAttribute('aria-expanded', 'false');
+          overflowMenu.hidden = true;
+        }
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && overflowBtn.getAttribute('aria-expanded') === 'true') {
+          overflowBtn.setAttribute('aria-expanded', 'false');
+          overflowMenu.hidden = true;
+        }
+      });
+    }
   }
   function escapePcb(s) {
     return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
