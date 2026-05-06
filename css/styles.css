@@ -7979,7 +7979,13 @@ input[type="button"] {
     max-height: 90dvh;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    /* §61 — overflow-y:auto so the modal scrolls when contents
+       exceed 90vh. Was overflow:hidden, which clipped the
+       'Create an account' footer + trust strip below the fold on
+       phone (the expected .signin-modal-body scroll wrapper isn't
+       rendered by the JS markup). */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .signin-modal-body {
     flex: 1;
