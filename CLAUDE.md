@@ -774,13 +774,12 @@ into `scripts/cold-start/judge-fixtures/`.
   3,011 saves in 12h hit the cap with 234/268 HEAVY buckets at target
   (87.3%). Grades 3-7 fully done; grade-8 30/32; algebra-1 0/32.
   Lake total at 12,585 active.
-- **🟠 Texas math HEAVY tier — finish algebra-1 + 2 grade-8 partials.**
-  The §37 finish run hit the 12h cap before reaching algebra-1.
-  Remaining: ~1,615 rows across 32 algebra-1 buckets (4 partial, 28
-  zero) + 2 grade-8 partials (8.7B, 8.10A). Same runner, same plan,
-  same 80% TX_FLAVORED gate. At observed 4.2 saves/min on harder TEKS,
-  expected wall-clock ~6-8h at concurrency=2. Cost ~$15-20. After this:
-  HEAVY tier 100%.
+- ~~**🟠 Texas math HEAVY tier — finish algebra-1 + 2 grade-8 partials.**~~
+  ✅ DONE 2026-05-06 (final closeout run, see §37 "Final closeout"
+  subsection). 1,615/1,615 saves across 34/34 buckets in 8.65h at
+  concurrency=2. HEAVY tier now **268/268 = 100% at target_min=50**.
+  Eyeball gate 20/20 LOOKS_CLEAN_AND_TX_FLAVORED, 0 BAD. Lake total
+  at 14,212 active. Texas math HEAVY is sealed.
 - **🟠 Texas math STANDARD tier — bulk fill (~12k expected at
   target=60).** After HEAVY finishes. STANDARD has ~330 planned
   buckets per `coverage-plan.json` though current STANDARD target=60
@@ -3701,18 +3700,201 @@ each). Logged as a §14 deferred TODO.
    and cap fired before the queue reached them. For the next run
    (algebra-1 finish), expected wall-clock is ~6-8h at concurrency=2.
 
-### Status (updated)
+### Status (post-finish-run, superseded by Final closeout below)
 
-🟢 **HEAVY tier 87.3% complete (234/268 buckets, 12,585 active rows
-in lake).** Grades 3-7 all at mastery threshold. Grade-8 nearly
-done (2 small partials). Algebra-1 the only remaining gap.
+🟢 HEAVY tier 87.3% complete (234/268 buckets, 12,585 active rows
+in lake) at end of finish run. Algebra-1 + 2 grade-8 partials
+remained. Closeout run kicked off May 5 → see next subsection.
 
-Next run options (Hamid's call):
-- **Finish algebra-1 + 2 grade-8 partials**: ~1,615 rows, ~6-8h at
-  concurrency=2. Brings HEAVY to 100% in one session.
-- **Skip to STANDARD tier**: requires the plan re-sizing step
-  (HEAVY=50 < STANDARD=60 inversion needs fixing first per §14).
-- **Both, in sequence**: finish HEAVY then start STANDARD next session.
+### Final closeout (May 5-6) — HEAVY tier sealed at 268/268
+
+The §37 finish run left algebra-1 (32 buckets, 0 saves) and two
+grade-8 partials (8.7D and 8.8C — what the finish-run subsection
+called "8.7B and 8.10A" was a notes error; the actual partials
+in the lake at finish-run end were 8.7D have=11 and 8.8C have=6).
+Closeout run kicked at 2026-05-05T13:05:34Z, capped at 10h, same
+runner / same plan / same pipeline (gpt-4o-mini gen + gpt-4o judge
++ Claude Sonnet 4.5 verifier + within-grade dedup + §36 TX-flavor
+fix).
+
+Run-id: `bulk-fill-texas-math-heavy-final-20260505T130534Z`
+
+| Metric | Value |
+|---|---|
+| Started | 2026-05-05T13:05:34Z |
+| Ended | 2026-05-05T21:44:24Z |
+| Wall-clock | **8.65h** (well under 10h cap) |
+| Buckets processed | **34 / 34 ✓** (32 algebra-1 + 2 grade-8) |
+| Total saved | **1,615 / 1,615 ✓** (no shortfall) |
+| Total attempts | 3,716 |
+| Judge regen rate | 22.8% |
+| Verifier reject rate | 8.7% (algebra-1 hardest tier yet — vs §37 v2 3.9% and finish-run 6.2%) |
+| Dedup skip rate | 0.1% |
+| Errors (judge-rejected-twice → drop & retry) | 1,767 |
+| Anthropic API errors | 79 (transient verifier-bad-json; no consec-5 fail) |
+| OpenAI API errors | 2 |
+| Real cost (~$0.009/save) | ~$15 |
+| Output | `scripts/cold-start/output/bulk-fill-texas-math-heavy-20260505T214424Z.json` |
+
+**Per-grade outcomes (combined v2 + finish + closeout):**
+
+| Grade | HEAVY buckets | At-target post-closeout | Notes |
+|---|---|---|---|
+| **grade-3** | 48 | **48 ✓** | Done in v2 |
+| **grade-4** | 48 | **48 ✓** | Done in v2 |
+| **grade-5** | 40 | **40 ✓** | Done in v2 |
+| **grade-6** | 36 | **36 ✓** | v2 + finish-run closed last 3 |
+| **grade-7** | 32 | **32 ✓** | All from finish-run |
+| **grade-8** | 32 | **32 ✓** | Closeout sealed last 2 partials |
+| **algebra-1** | 32 | **32 ✓** | All 32 from closeout |
+| **TOTAL** | **268** | **268 (100%) ✓** | |
+
+**Slowest closeout buckets** (algebra-1 quadratic content pushed
+verifier hard, lots of judge-reject-twice on quadratic functions):
+- A.6B / concept: 52min (162 attempts, 27 regens, 104 errors)
+- A.6B / data-interpretation: 50min (181 attempts, 35 regens, 18 verRej, 113 errors)
+- A.6B / word-problem: 52min (163 attempts, 41 regens, 103 errors)
+- A.6B / computation: 48min (161 attempts, 37 regens, 102 errors)
+
+**Fastest closeout buckets:**
+- A.7A / concept: 21min (71 attempts, 17 regens, 19 errors)
+- A.7A / word-problem: 28min (83 attempts, 18 regens, 28 errors)
+
+### Eyeball gate (20-row sample)
+
+10 random rows per grade (algebra-1 + grade-8 — the only two
+grades touched in this run). Gate: ≥80% TX_FLAVORED AND 0 BAD.
+
+| Class | Count | % |
+|---|---|---|
+| LOOKS_CLEAN_AND_TX_FLAVORED | **20** | **100%** |
+| LOOKS_CLEAN_BUT_GENERIC | 0 | 0% |
+| BORDERLINE | 0 | 0% |
+| BAD | 0 | 0% |
+
+🟢 **GATE PASSES** at 100% — same result as §37 v2 + finish-run.
+Pack-wired generator + §36 TX-flavor fix scaled cleanly into
+algebra-1's quadratic-functions content with zero math regression.
+
+Texas references in the sample (20 rows): Nacogdoches pecan pies,
+Texas cotton agriculture, Rio Grande Valley citrus orchard, Texas
+ranch fence, Austin community event, DFW Metroplex pecan tree,
+Austin venues, Arlington recycling, Houston garden, Austin garden
+parabola, Texas Hill Country gas trip, Texas wildflowers
+(Bluebonnets / Indian Paintbrush / Primrose), Texas Hill Country
+peach orchard cylinder, Houston BBQ batch sugar, Austin music
+festival stages, Texas hill country water tank, Texas football
+(Longhorns vs Mustangs), Galveston fishing cylinder tank, Texas
+BBQ brisket party, San Antonio Stock Show & Rodeo. Pack contexts
+firing across all sampled rows.
+
+### Sample saved questions
+
+**algebra-1 / A.5A / computation / Stella / Nacogdoches pecan pies** (judge=pass):
+> *"Stella is planning a school fundraiser in Nacogdoches to sell
+> Texas pecan pies. The cost to make each pie is represented by
+> the equation 5x + 10, where x is the number of pies. If she
+> wants to sell the pies for 15 dollars each, represented by the
+> equation 15y, and she plans to sell at least as many pies as
+> she makes, which equation must be solved to find the
+> break-even point?"* ✓ A. `5x + 10 = 15y`
+
+**algebra-1 / A.7A / data-interpretation / Luna / DFW Metroplex pecan tree** (judge=pass):
+> *"Luna is studying the growth of a pecan tree in her backyard
+> in the DFW Metroplex. The height of the tree in feet, h, can
+> be modeled by the quadratic equation h = -2(x - 3)² + 12,
+> where x represents the number of years since Luna planted the
+> tree. What is the maximum height of the tree?"* ✓ A. 12 —
+> vertex form, max at vertex y-coord since coefficient is negative.
+
+**algebra-1 / A.8A / word-problem / Marquise / Texas ranch fence**
+(judge=pass):
+> *"Marquise is designing a new ranch fence in Texas, and he
+> needs to enclose a rectangular area for his livestock. The
+> length of the fence will be 4 meters longer than twice the
+> width. If the area of the enclosed region is 128 square meters,
+> which equation can be used to find the width (w) of the fenced
+> area?"* ✓ C. `w(2w + 4) = 128` — width × length = area, with
+> length = 2w + 4.
+
+**grade-8 / 8.7D / data-interpretation / Linh / San Antonio Stock Show** (judge=pass):
+> *"During the San Antonio Stock Show, Linh is helping her family
+> set up a booth to sell homemade lemonade. They have a
+> cylindrical cooler with a radius of 2 feet and a height of 3
+> feet. The cooler is filled with lemonade. What is the volume
+> of the cooler in cubic feet? (Use π ≈ 3.14)"* ✓ B. 37.68 —
+> V = πr²h = 3.14 × 4 × 3.
+
+### Coverage audit delta
+
+`coverage-audit.js` re-run post-closeout
+(`output/texas-math-coverage-gap-20260506T003059Z.md`):
+
+| Metric | Pre-closeout | Post-closeout | Δ |
+|---|---|---|---|
+| Total active Texas math rows | 12,585 | **14,212** | +1,627 (1,615 saves + ~12 lambda on-demand) |
+| HEAVY buckets at target_min=50 | 234/268 (87.3%) | **268/268 (100%) ✓** | +34 |
+| HEAVY buckets partial | 6 (2.2%) | **0** | −6 |
+| HEAVY buckets zero | 28 (10.4%) | **0** | −28 |
+| HEAVY remaining gap | 1,615 | **0** | −1,615 |
+
+Combined v2 + finish + closeout = **12,652 HEAVY-tier rows
+shipped this week.** All 268 HEAVY buckets at mastery-threshold.
+
+### Tier coverage state (post-closeout)
+
+| Tier | Total | At target | Partial | Zero |
+|---|---|---|---|---|
+| **HEAVY** | 268 | **268 ✓** | 0 | 0 |
+| STANDARD | 392 | 0 | 59 | 333 |
+| LIGHT | 60 | 0 | 3 | 57 |
+| TEXAS_SPECIFIC | 56 | 0 | 2 | 54 |
+| **TOTAL** | 776 | **268** | 64 | 444 |
+
+The 65 STANDARD/LIGHT/TEXAS_SPECIFIC partials are the §35
+TEKS-backfill survivors (rows tagged but those buckets weren't
+targeted in any sweep yet). All cleanly addressable in the next
+sweep cycle.
+
+### Lessons logged (additions to §37, items 8-10)
+
+8. **Verifier reject rate scales with cognitive demand.** Per
+   tier-of-content data: §37 v2 (grades 3-6) 3.9%, finish-run
+   (grades 7-8) 6.2%, closeout (algebra-1 quadratics) 8.7%.
+   Future sweeps targeting harder subjects should plan for
+   ~10% verifier reject ceiling and provision wall-clock + cost
+   accordingly.
+2. **A.6B (quadratic functions: vertex form, transformations,
+   factoring) was the single hardest TEKS in the closeout.** All
+   four buckets (computation/concept/word-problem/data-interp)
+   needed 48-52min and 100+ errors each. Worth keeping in mind
+   when sweeping algebra-1 STANDARD next — A.6B's STANDARD
+   companions will likely show similar wall-clock.
+9. **The 8.7D / 8.8C grade-8 partials in this run finished fast**
+   (24 + 37 min combined for ~83 saves) — partial buckets with
+   §31 backfill seed material run much cheaper than zero-coverage
+   buckets because the seed material reduces the embedding-dedup
+   noise floor.
+10. **8.65h wall-clock for 1,615 saves = 3.1 saves/min** — slower
+    than v2's 5.5/min but consistent with the difficulty scaling
+    seen in lessons 6 & 8. Algebra-1 should be assumed to be the
+    bottleneck tier going forward; provision 1.5× the v2 wall-clock
+    estimate for algebra-1 work in any tier.
+
+### Status (post-closeout)
+
+🟢 **HEAVY tier 100% complete (268/268 buckets, 14,212 active
+rows in lake).** All 7 Texas math grades (3, 4, 5, 6, 7, 8,
+algebra-1) at mastery-threshold. Texas math HEAVY content is
+shippable to STAAR-prepping kids today.
+
+Next blocker: STANDARD tier bulk fill, which requires the
+tier-inversion fix first (HEAVY=50 < STANDARD=60 per §37
+plan-edit; see §14 deferred TODO). After STANDARD: TEXAS_SPECIFIC
+(personal financial literacy) and LIGHT.
+
+After Texas math is fully sealed: Texas RLA, Texas science,
+Texas SS, then state #2 pack.
 
 ---
 
