@@ -944,6 +944,9 @@
       //    §68 — CORRECT auto-advances 1.5s — no Next button needed.
       //         The Check button is replaced by a subtle progress
       //         indicator that drains over 1.5s, then we call show().
+      //    §71 — When a Fun Fact is selected for this CORRECT, the
+      //         auto-advance timer + drain bar are cancelled and the
+      //         fact card takes over as the kid's "continue" surface.
       //    WRONG keeps the manual Next button (kid needs reading time
       //         for the AI tutor + explanation; auto-advance feels
       //         punishing on a wrong answer).
@@ -962,6 +965,39 @@
           window._stAutoAdvance = setTimeout(() => {
             try { i++; show(); } catch (_) {}
           }, 1500);
+
+          // §71 — Fun Facts integration. Pure-fn selector returns null
+          // synchronously when the gate fails (frequency, paused, etc.)
+          // OR when the catalog isn't loaded yet (lazy fetch kicks off
+          // in the background; next correct will see it ready). When a
+          // fact IS returned, cancel auto-advance and mount the card.
+          // Race protection: capture i so a slow catalog fetch can't
+          // mount a stale card after the kid moved on.
+          if (window.FunFacts && typeof window.FunFacts.pickFactForCorrect === 'function') {
+            try {
+              const _u = (window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser()) || null;
+              const lifetimeCorrect = (_u && Number.isFinite(_u.lifetimeCorrect)) ? _u.lifetimeCorrect : 0;
+              const seqAtCall = i;
+              const fact = window.FunFacts.pickFactForCorrect({
+                isFirstTry: true,                  // No retry mechanism in this codebase — every check is first try.
+                lifetimeCorrect,
+                sessionCorrectCount: correct       // already incremented before showFeedback
+              });
+              if (fact && i === seqAtCall) {
+                if (window._stAutoAdvance) {
+                  clearTimeout(window._stAutoAdvance);
+                  window._stAutoAdvance = null;
+                }
+                const aa = qCard ? qCard.querySelector('.q-autoadvance') : null;
+                if (aa && aa.parentNode) aa.parentNode.removeChild(aa);
+                const isFirstFactEver = !(window.FunFacts._getFirstShownAt && window.FunFacts._getFirstShownAt());
+                mountFunFactCard(fact, isFirstFactEver, seqAtCall);
+              }
+            } catch (err) {
+              // Silent fallback — auto-advance still active, kid moves on normally.
+              console.warn('[funFacts] integration error:', err && err.message || err);
+            }
+          }
         } else {
           const nextInline = document.createElement('button');
           nextInline.type = 'button';
@@ -1569,6 +1605,76 @@
     }[c]));
   }
   function escapeAttr(s) { return escapeHtml(s); }
+
+  // §71 — Fun Fact card. Mounted inline at the end of the [data-role="inline-fb"]
+  // slot below the CORRECT feedback chip when window.FunFacts.pickFactForCorrect
+  // returns a fact. Replaces the auto-advance progress bar — kid taps "Got it!"
+  // to advance instead of the 1.5s timer firing.
+  const FUN_FACT_CATEGORY_EMOJI = {
+    animals: '🐙', space: '🚀', body: '🧠', food: '🥑',
+    texas: '⭐', sports: '🏀', inventions: '💡',
+    history: '📜', 'math-numbers': '🔢', 'weird-funny': '🎲'
+  };
+  function mountFunFactCard(fact, isFirstFactEver, seqAtCall) {
+    const qCard = qbox.querySelector('.question-card');
+    if (!qCard) return;
+    const fbSlot = qCard.querySelector('[data-role="inline-fb"]');
+    if (!fbSlot) return;
+
+    const icon = FUN_FACT_CATEGORY_EMOJI[fact.category] || '✨';
+    const card = document.createElement('div');
+    card.className = 'ff-card';
+    card.setAttribute('data-fact-id', fact.id);
+    card.setAttribute('role', 'group');
+    card.setAttribute('aria-label', 'Fun fact');
+    const welcomeHtml = isFirstFactEver
+      ? '<div class="ff-card-welcome">Welcome to fun facts</div>'
+      : '';
+    card.innerHTML = `
+      ${welcomeHtml}
+      <div class="ff-card-label" aria-hidden="true">★ Fun Fact</div>
+      <div class="ff-card-icon" aria-hidden="true">${icon}</div>
+      <div class="ff-card-body">${escapeHtml(fact.fact || '')}</div>
+      <button type="button" class="ff-card-cta" data-act="ff-got-it">Got it!</button>
+    `;
+    fbSlot.appendChild(card);
+
+    const cta = card.querySelector('[data-act="ff-got-it"]');
+    cta.addEventListener('click', () => {
+      try {
+        if (window.FunFacts && typeof window.FunFacts.markFactSeen === 'function') {
+          window.FunFacts.markFactSeen(fact.id);
+        }
+      } catch (_) {}
+      // Belt-and-suspenders: even though we cancelled it on mount, make
+      // sure no stray timer fires before we manually advance.
+      if (window._stAutoAdvance) {
+        try { clearTimeout(window._stAutoAdvance); } catch (_) {}
+        window._stAutoAdvance = null;
+      }
+      // Race guard — only advance if still on the same question. If the
+      // kid somehow navigated away (back button, sign out), don't double-fire.
+      if (i === seqAtCall) {
+        try { i++; show(); } catch (_) {}
+      }
+    });
+
+    // Defer focus to the next frame so the slide-up animation can start
+    // before the focus ring lands; reduces visual jank.
+    requestAnimationFrame(() => {
+      try { cta.focus({ preventScroll: false }); } catch (_) { try { cta.focus(); } catch (_) {} }
+    });
+  }
+
+  // §71 — Kick off catalog fetch on practice page init so the FIRST
+  // correct answer can already see a loaded catalog. Without this,
+  // the very first call returns null while the catalog loads in
+  // background and the kid skips a fact on their first correct.
+  try {
+    if (window.FunFacts && typeof window.FunFacts.loadCatalog === 'function') {
+      window.FunFacts.loadCatalog();
+    }
+  } catch (_) {}
 
   function spinnerHTML() {
     return `<span class="rainbow-spinner" aria-hidden="true"></span>`;

@@ -270,6 +270,7 @@
   function isPaused() { return _state.freq === 'paused'; }
 
   function _getSeenIds() { return _state.seen.slice(); }
+  function _getFirstShownAt() { return _state.firstShownAt; }
 
   // -------- server hydration --------
 
@@ -345,6 +346,7 @@
     loadCatalog,
     // Internal — exposed for tests + auth.js wiring + Phase 3 prefetch
     _getSeenIds,
+    _getFirstShownAt,
     _shouldShow,
     _selectNext,
     _hydrateFromServer,
