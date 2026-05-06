@@ -897,7 +897,14 @@
         });
       }
 
-      // 3. Populate the inline feedback slot (between body and button).
+      // 3. Populate the inline feedback slot (between body and Next button).
+      //    §59 — different content per state, owners' room verdict:
+      //      CORRECT: tight inline chip — symbol + points + brief explanation.
+      //               Kid got it right; no Socratic guidance needed.
+      //      WRONG:   AI tutor IS the feedback. The previous '✗ Not quite +
+      //               correct answer + explanation' chip duplicated the
+      //               tutor's first message, so kid saw the same content
+      //               twice. Slot now holds ONLY the tutor mount points.
       const fbSlot = qCard ? qCard.querySelector('[data-role="inline-fb"]') : null;
       if (fbSlot) {
         const explanation = String(q.explanation || '').trim();
@@ -905,10 +912,21 @@
           fbSlot.innerHTML = `
             <div class="q-inline-fb-head">✓ Correct!  <span class="q-inline-fb-pts">+${cents} pts earned</span></div>
             ${explanation ? `<div class="q-inline-fb-body">${escapeHtml(explanation)}</div>` : ''}`;
+          fbSlot.classList.remove('q-inline-fb--tutor');
         } else {
+          // Tutor mount points (#tutor-out, #tutor-q, #tutor-followup) match
+          // the IDs the AI-tutor wiring further down expects.
           fbSlot.innerHTML = `
-            <div class="q-inline-fb-head">✗ Not quite.  <span class="q-inline-fb-correct">Correct answer: <strong>${escapeHtml(q.answer)}</strong></span></div>
-            ${explanation ? `<div class="q-inline-fb-body">${escapeHtml(explanation)}</div>` : ''}`;
+            <div class="tutor-box">
+              <div class="tutor-output" id="tutor-out"></div>
+              <form class="tutor-followup" id="tutor-followup" hidden>
+                <input type="text" id="tutor-q" placeholder="Ask a follow-up question…" />
+                <button class="tutor-send" type="submit" aria-label="Send">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+                </button>
+              </form>
+            </div>`;
+          fbSlot.classList.add('q-inline-fb--tutor');
         }
         fbSlot.hidden = false;
       }
@@ -936,31 +954,9 @@
         }
       }
 
-      // 6. WRONG → append a slim tutor box BELOW the card (no head, no
-      //    duplicate explanation — those live in the inline slot above).
-      //    CORRECT → no out-of-card panel at all.
-      const fb = document.createElement('div');
-      if (isCorrect) {
-        // §56 — no out-of-card panel for correct answers. The inline
-        // chip + Next button is the entire UX.
-        // (Empty fb still appended below as a no-op so the next-btn
-        //  click handler attached further down can find #next-btn.)
-        fb.className = 'feedback feedback--placeholder';
-        fb.hidden = true;
-      } else {
-        fb.className = 'feedback feedback--tutor-only';
-        fb.innerHTML = `
-          <div class="tutor-box">
-            <div class="tutor-output" id="tutor-out"></div>
-            <form class="tutor-followup" id="tutor-followup" hidden>
-              <input type="text" id="tutor-q" placeholder="Ask a follow-up question…" />
-              <button class="tutor-send" type="submit" aria-label="Send">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
-              </button>
-            </form>
-          </div>`;
-      }
-      qbox.appendChild(fb);
+      // 6. §59 — out-of-card panel deleted entirely. Both states render
+      //    inside the question card now: CORRECT inline chip, WRONG AI
+      //    tutor (mount points injected at step 3 above). No appendChild.
 
       // In-flight tutor request controller. Aborted on Next Question click
       // and on Retry (which restarts a fresh call). Scoped to this panel.

@@ -14639,3 +14639,13 @@ body.practice-mode .site-footer,
 body.practice-mode .footer {
   display: none !important;
 }
+
+/* §59 — when q-inline-fb holds the AI tutor (WRONG state), strip
+   the chip's own border/bg/padding so the tutor's own styling
+   shows through cleanly. The tutor IS the feedback; no double-frame. */
+body.practice-page .question-card .q-inline-fb.q-inline-fb--tutor {
+  background: transparent !important;
+  border-color: transparent !important;
+  padding: 0 !important;
+  margin-top: 8px;
+}
