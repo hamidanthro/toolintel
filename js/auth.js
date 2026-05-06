@@ -1127,11 +1127,21 @@ if ('serviceWorker' in navigator) {
   }
 
   function ensureMobileTabBar() {
+    // §62 — Bottom nav removed entirely. After the §60 round-Practice
+    // FAB removal the bar was just Home + Sign in (or Home + Me when
+    // signed in). Two items doesn't earn a tab bar; Home is always
+    // active on the home page anyway. Top-right #user-slot now carries
+    // Sign in / avatar dropdown on every viewport.
+    document.body.classList.add('no-mobile-tabbar');
+    const stale = document.querySelector('.mobile-tabbar');
+    if (stale) stale.remove();
+    return;
+  }
+  function _legacyTabBarUnused() {
+    /* eslint-disable no-unreachable */
     const path = (location.pathname || '').toLowerCase();
-    // Practice runner gets full-screen mode — no tabbar.
     if (path.indexOf('practice.html') !== -1) {
       document.body.classList.add('no-mobile-tabbar');
-      // If a stale tabbar exists from a prior render, remove it.
       const stale = document.querySelector('.mobile-tabbar');
       if (stale) stale.remove();
       return;

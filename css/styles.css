@@ -8424,28 +8424,54 @@ input[type="button"] {
     display: none !important;
   }
 
-  /* Header: brand + points pill only (chat moves to friends area; user moves to Me tab) */
+  /* §62 — Header: brand left + Sign in / avatar dropdown right.
+     Bottom nav is gone (§62 in auth.js); top-right is the only auth
+     surface on phone now. Show the Sign in button (signed-out) and
+     the user-pill/menu (signed-in). Hide everything else
+     (chat-bell, admin-badge, primary nav links) — those route via
+     the avatar dropdown's "Settings" / "Admin panel" links. */
   .site-header {
     padding-top: calc(6px + env(safe-area-inset-top, 0px));
   }
   .site-header .container { height: 44px; }
   .site-header .nav,
-  .site-header .user-pill,
-  .site-header .user-menu,
   .site-header .chat-bell,
-  .site-header #user-slot .user-menu,
-  .site-header #user-slot .user-pill,
   .site-header #user-slot .chat-bell,
-  .site-header #user-slot .admin-badge,
-  .site-header #user-slot .user-signin {
+  .site-header #user-slot .admin-badge {
     display: none !important;
   }
+  .site-header #user-slot {
+    margin-left: auto;
+  }
+  .site-header #user-slot .user-signin {
+    display: inline-flex;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  .site-header #user-slot .user-pill {
+    display: inline-flex;
+    padding: 4px 6px;
+  }
+  .site-header #user-slot .user-pill .user-pill-name { display: none; }
   .site-header .wallet-pill,
   .site-header #user-slot .wallet-pill {
     display: inline-flex;
-    margin-left: auto;
     padding: 5px 10px;
     font-size: 12px;
+  }
+  /* user-menu uses JS-toggled [hidden] attribute → browser native
+     hide. Don't override it here so the dropdown opens cleanly. */
+
+  /* §62 — ReplyQuik chat widget repositioned bottom-LEFT. Best-effort
+     selectors covering common ReplyQuik wrapper patterns since their
+     widget injects from api.replyquik.com. */
+  iframe[src*="replyquik"],
+  div[class*="replyquik"],
+  div[id*="replyquik"],
+  [data-replyquik-widget] {
+    left: 12px !important;
+    right: auto !important;
   }
 
   /* Lift chat / friends widget above the tab bar */
