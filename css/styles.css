@@ -6941,14 +6941,23 @@ body.practice-page .unit-row-fill {
    bounce when the kid swipes inside the canvas. */
 body.scratchpad-fullscreen-open { overflow: hidden; }
 
-/* §45 — score-display surfaces would otherwise render above the
-   scratch overlay (.cents-toast lives at z-index 9999 vs the
-   overlay's 9000). On phone that landed the +pts toast right
-   over the overlay's [✕] / [⌄] buttons (top: 80px), trapping
-   the kid inside scratch paper. Hide them while scratch is open. */
+/* §45/§46 — surfaces that otherwise render above the scratch
+   overlay and block its [✕] / [⌄] buttons. The site-header is
+   the primary culprit: on body.practice-page the rule
+   `body.practice-page > * { position: relative; z-index: 1; }`
+   re-stacks every direct child of body, defeating .site-header's
+   declared z-index. The scratchpad-inline overlay wins inside
+   that stacking model but the site-header still paints above
+   the overlay's top-right action buttons in iOS Safari. Cleanest
+   fix is to hide the header (plus toast / pill surfaces) while
+   the kid is in scratch — they don't need the global nav while
+   drawing, and the [✕] / [⌄] buttons reach the top of the
+   viewport unblocked. */
+body.scratchpad-fullscreen-open .site-header,
 body.scratchpad-fullscreen-open .cents-toast,
 body.scratchpad-fullscreen-open .points-pill,
-body.scratchpad-fullscreen-open .wallet-pill {
+body.scratchpad-fullscreen-open .wallet-pill,
+body.scratchpad-fullscreen-open .user-slot {
   display: none !important;
 }
 
