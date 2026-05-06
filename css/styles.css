@@ -14526,3 +14526,104 @@ body.grade-page .subject-section {
 
 /* On light surfaces (admin etc.) muted gray instead of off-white. */
 body:not(.practice-page) .question-card .q-meta { color: var(--muted, #6b7280); }
+
+/* ============================================================
+   §56 — Practice card layout cleanup
+   - Inline feedback chip lives BETWEEN body and primary button
+   - Footer (.q-meta) demoted from caps-pill to muted single line
+     (overrides earlier body.practice-page .q-meta pill chrome)
+   - 'Need scratch paper?' link hidden once question is answered
+   - Guest banner styled as quiet bottom footer
+   ============================================================ */
+
+/* Inline feedback chip — sits inside the question card. */
+body.practice-page .question-card .q-inline-fb {
+  margin: 0 0 18px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid transparent;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.92);
+}
+body.practice-page .question-card[data-state="correct"] .q-inline-fb {
+  background: rgba(16, 185, 129, 0.10);
+  border-color: rgba(16, 185, 129, 0.35);
+}
+body.practice-page .question-card[data-state="wrong"] .q-inline-fb {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.30);
+}
+body.practice-page .q-inline-fb-head {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 6px;
+  color: #ffffff;
+}
+body.practice-page .question-card[data-state="correct"] .q-inline-fb-head { color: #6ee7b7; }
+body.practice-page .question-card[data-state="wrong"]   .q-inline-fb-head { color: #fca5a5; }
+body.practice-page .q-inline-fb-pts {
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  color: #6ee7b7;
+  margin-left: 6px;
+}
+body.practice-page .q-inline-fb-correct {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin-left: 6px;
+}
+body.practice-page .q-inline-fb-correct strong { color: #fde68a; font-weight: 700; }
+body.practice-page .q-inline-fb-body {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+/* Demote the footer chip — override the body.practice-page caps-pill rules
+   from line 6097-6117. Use double-class selector for higher specificity
+   plus !important on the visual properties to win the cascade. */
+body.practice-page .question-card .q-meta {
+  display: block !important;
+  margin: 14px 0 0 !important;
+  padding: 0 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  font-size: 0.78rem !important;
+  font-weight: 500 !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+  text-align: left !important;
+  background: transparent !important;
+  border: 0 !important;
+  flex-wrap: nowrap !important;
+}
+body.practice-page .question-card .q-meta > span,
+body.practice-page .question-card .q-meta > span:first-child {
+  display: inline !important;
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  letter-spacing: 0 !important;
+  color: inherit !important;
+  text-transform: none !important;
+}
+
+/* Hide 'Need scratch paper?' surface when an answer has been checked.
+   Re-shows on next question render (body.q-answered is removed). */
+body.q-answered .scratchpad-inline[data-state="collapsed"] { display: none; }
+
+/* Slim out-of-card tutor box (WRONG only). No header, no padding stack
+   above the tutor — was 22px+22px space; now just 14px breathing room. */
+body.practice-page .feedback--tutor-only {
+  margin-top: 14px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+body.practice-page .feedback--placeholder { display: none; }

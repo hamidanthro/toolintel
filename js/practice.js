@@ -283,16 +283,24 @@
     if (!bar) {
       bar = document.createElement('div');
       bar.id = 'guest-banner';
-      bar.style.cssText = 'background:#fef3c7;border:1px solid #fcd34d;color:#78350f;padding:10px 14px;border-radius:8px;margin-bottom:12px;font-size:0.92rem;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;';
+      // §56 — quiet footer style. No alert-yellow background, no border;
+      // muted single-line link below the question card. Was wasting hero
+      // real estate at the top of the practice page.
+      bar.style.cssText = 'margin-top:18px;padding:12px 14px;border-top:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.55);font-size:0.85rem;display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;text-align:center;';
       const root = document.getElementById('practice-root');
-      if (root && root.firstChild) root.insertBefore(bar, root.firstChild);
-      else if (root) root.appendChild(bar);
+      if (root) root.appendChild(bar); // §56 — bottom, not top
+    } else {
+      // If banner already exists at top from prior render, move it to the bottom.
+      const root = document.getElementById('practice-root');
+      if (root && bar.parentNode === root && bar !== root.lastChild) {
+        root.appendChild(bar);
+      }
     }
     const remaining = guestRemaining();
-    bar.innerHTML = `<span><strong>Guest mode:</strong> ${remaining} of ${GUEST_LIMIT} free practice questions remaining. Sign up to save progress, earn points, and unlock unlimited practice.</span>
-      <button type="button" class="btn btn-primary" style="padding:6px 14px;font-size:0.88rem;" id="guest-signup-btn">Sign up free</button>`;
+    bar.innerHTML = `<span>Trial mode · ${remaining} of ${GUEST_LIMIT} questions left.</span>
+      <a href="#" id="guest-signup-btn" style="color:#fbbf24;font-weight:600;text-decoration:none;">Sign up free to save progress →</a>`;
     const btn = document.getElementById('guest-signup-btn');
-    if (btn) btn.onclick = () => { if (window.STAARAuth && window.STAARAuth.showLogin) window.STAARAuth.showLogin(); };
+    if (btn) btn.onclick = (e) => { e.preventDefault(); if (window.STAARAuth && window.STAARAuth.showLogin) window.STAARAuth.showLogin(); };
   }
   function maybeBlockGuest() {
     if (!isGuest()) return false;
@@ -712,6 +720,10 @@
       if (i >= questions.length) {
         return finish();
       }
+      // §56 — drop body.q-answered so 'Need scratch paper?' link
+      // re-shows for the new question (it's hidden via CSS during
+      // CORRECT/WRONG states).
+      document.body.classList.remove('q-answered');
       // Reset the scratchpad between questions so kids don't see prior scribbles.
       try { window.STAARScratchpad?.reset(); } catch (_) {}
       progressNum.textContent = i + 1;
@@ -857,24 +869,27 @@
     }
 
     function showFeedback(q, userAnswer, isCorrect) {
-      // §54 — explicit state machine (asking → correct | wrong).
+      // §54 + §56 — explicit state machine (asking → correct | wrong).
+      // Single source of truth for feedback: inline inside the card,
+      // between the input and the primary button. The legacy out-of-card
+      // <div class="feedback">…</div> panel is gone (was double-rendering
+      // the symbol + explanation alongside the inline data-state chrome).
       const qCard = qbox.querySelector('.question-card');
       const cents = qCard ? parseInt(qCard.dataset.cents, 10) || 0 : 0;
       const nextLabel = i + 1 >= questions.length ? 'See results' : 'Next question →';
 
-      // 1. Flip card data-state. CSS uses this to color the border,
-      //    style the input as locked-but-readable, etc.
+      // 1. Flip card data-state — drives green/red border + input-lock CSS.
       if (qCard) qCard.setAttribute('data-state', isCorrect ? 'correct' : 'wrong');
+      // 1b. body.q-answered → CSS hides 'Need scratch paper?' link (kid is
+      //     done with this question; opening scratch now adds noise).
+      document.body.classList.add('q-answered');
 
-      // 2. Lock the inputs. Don't disable them — disabled hides the
-      //    kid's answer behind a greyed-out style. We want the kid
-      //    to see what they answered, just not be able to change it.
-      //    readOnly + pointer-events:none on choices does this; CSS
-      //    drives the visual via [data-state="correct"|"wrong"].
+      // 2. Lock the inputs. Read-only (text) + disabled (radios) so the
+      //    kid still sees what they answered, but can't edit.
       if (qCard) {
         qCard.querySelectorAll('input[name="ans"]').forEach(el => {
           if (el.type === 'radio') {
-            el.disabled = true; // radios use disabled for input-block
+            el.disabled = true;
           } else {
             el.readOnly = true;
             el.setAttribute('aria-readonly', 'true');
@@ -882,9 +897,23 @@
         });
       }
 
-      // 3. Replace the Check answer button with Next question (same
-      //    slot, same gold). The kid was about to tap Check; the
-      //    button under their thumb is now what advances.
+      // 3. Populate the inline feedback slot (between body and button).
+      const fbSlot = qCard ? qCard.querySelector('[data-role="inline-fb"]') : null;
+      if (fbSlot) {
+        const explanation = String(q.explanation || '').trim();
+        if (isCorrect) {
+          fbSlot.innerHTML = `
+            <div class="q-inline-fb-head">✓ Correct!  <span class="q-inline-fb-pts">+${cents} pts earned</span></div>
+            ${explanation ? `<div class="q-inline-fb-body">${escapeHtml(explanation)}</div>` : ''}`;
+        } else {
+          fbSlot.innerHTML = `
+            <div class="q-inline-fb-head">✗ Not quite.  <span class="q-inline-fb-correct">Correct answer: <strong>${escapeHtml(q.answer)}</strong></span></div>
+            ${explanation ? `<div class="q-inline-fb-body">${escapeHtml(explanation)}</div>` : ''}`;
+        }
+        fbSlot.hidden = false;
+      }
+
+      // 4. Replace Check button with Next (same slot under the thumb).
       const checkBtn = qCard ? qCard.querySelector('button[data-role="check"]') : null;
       if (checkBtn) {
         const nextInline = document.createElement('button');
@@ -896,8 +925,7 @@
         checkBtn.replaceWith(nextInline);
       }
 
-      // 4. Update the muted footer line with stake outcome. Same
-      //    location, same chrome, just earned/lost amount baked in.
+      // 5. Update muted footer line with stake outcome.
       const metaText = qCard ? qCard.querySelector('.q-meta-text') : null;
       if (metaText) {
         const base = metaText.textContent.replace(/ · ±?\d+ pts.*$/, '').replace(/ · ⭐ Mastered$/, '');
@@ -908,27 +936,30 @@
         }
       }
 
-      // 5. Append the feedback panel (explanation + tutor for wrong).
+      // 6. WRONG → append a slim tutor box BELOW the card (no head, no
+      //    duplicate explanation — those live in the inline slot above).
+      //    CORRECT → no out-of-card panel at all.
       const fb = document.createElement('div');
-      fb.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
-      fb.innerHTML = `
-        <div class="feedback-head">${isCorrect ? '✓ Correct!' : '✗ Not quite.'}</div>
-        <div class="feedback-body">
-          ${isCorrect
-            ? `<p>${escapeHtml(q.explanation || '')}</p>`
-            : `<p><strong>Correct answer:</strong> ${escapeHtml(q.answer)}</p>
-               <p>${escapeHtml(q.explanation || '')}</p>
-               <div class="tutor-box">
-                 <div class="tutor-output" id="tutor-out"></div>
-                 <form class="tutor-followup" id="tutor-followup" hidden>
-                   <input type="text" id="tutor-q" placeholder="Ask a follow-up question…" />
-                   <button class="tutor-send" type="submit" aria-label="Send">
-                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
-                   </button>
-                 </form>
-               </div>`
-          }
-        </div>`;
+      if (isCorrect) {
+        // §56 — no out-of-card panel for correct answers. The inline
+        // chip + Next button is the entire UX.
+        // (Empty fb still appended below as a no-op so the next-btn
+        //  click handler attached further down can find #next-btn.)
+        fb.className = 'feedback feedback--placeholder';
+        fb.hidden = true;
+      } else {
+        fb.className = 'feedback feedback--tutor-only';
+        fb.innerHTML = `
+          <div class="tutor-box">
+            <div class="tutor-output" id="tutor-out"></div>
+            <form class="tutor-followup" id="tutor-followup" hidden>
+              <input type="text" id="tutor-q" placeholder="Ask a follow-up question…" />
+              <button class="tutor-send" type="submit" aria-label="Send">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+              </button>
+            </form>
+          </div>`;
+      }
       qbox.appendChild(fb);
 
       // In-flight tutor request controller. Aborted on Next Question click
@@ -1315,11 +1346,15 @@
       : `±${cents} pts`;
     const metaParts = [topic, teks ? `TEKS ${teks}` : '', stake].filter(Boolean);
 
+    // §56 — inline feedback slot. Sits between input and primary
+    // button so the kid sees outcome → explanation → next-action in
+    // natural reading order. Hidden in ASKING; populated by showFeedback.
     return `
       ${passageHtml}
       <form class="question-card" data-state="asking" data-cents="${cents}">
         <div class="q-prompt">${readBtn}<span class="q-prompt-text">${escapeHtml(q.prompt)}</span></div>
         <div class="q-body">${body}</div>
+        <div class="q-inline-fb" data-role="inline-fb" hidden></div>
         <button class="btn btn-primary q-cta" type="submit" data-role="check">Check answer</button>
         <div class="q-meta" data-role="meta"><span class="q-meta-text">${metaParts.join(' · ')}</span></div>
       </form>`;
