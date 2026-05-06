@@ -154,23 +154,12 @@
     toggleBtn.setAttribute('aria-expanded', 'false');
     document.body.classList.remove('scratchpad-fullscreen-open');
   }
-  // Discard: confirm, then clear AND collapse. Used by the X button.
-  async function closeAndDiscard() {
-    if (strokes.length > 0) {
-      const confirmFn = (window.confirmModal || null);
-      let ok;
-      if (typeof confirmFn === 'function') {
-        ok = await confirmFn({
-          title: 'Discard scratch work?',
-          message: 'Your drawing will be cleared.',
-          confirmText: 'Discard',
-          cancelText: 'Keep working'
-        });
-      } else {
-        ok = window.confirm('Discard your scratch work?');
-      }
-      if (!ok) return;
-    }
+  // §55 — Discard: wipe canvas + collapse. Used by the X button.
+  // Previously prompted ("Discard your scratch work?") which adds
+  // friction and surfaced the browser-native confirm dialog mid-app.
+  // Kid uses minimize [⌄] to preserve work; close [✕] is the
+  // explicit "I'm done with this scratch" action.
+  function closeAndDiscard() {
     clearCanvas();
     close();
   }
