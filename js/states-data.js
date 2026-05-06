@@ -56,7 +56,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'alaska',
@@ -81,7 +81,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'arizona',
@@ -106,7 +106,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'arkansas',
@@ -131,7 +131,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'california',
@@ -156,7 +156,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'colorado',
@@ -181,7 +181,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'connecticut',
@@ -206,7 +206,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'delaware',
@@ -231,7 +231,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'district-of-columbia',
@@ -256,7 +256,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'florida',
@@ -281,7 +281,7 @@
       curriculumOverrideKey: null,
       features: { multipleWindows: true },
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'georgia',
@@ -306,7 +306,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'hawaii',
@@ -331,7 +331,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'idaho',
@@ -356,7 +356,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'illinois',
@@ -381,7 +381,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'indiana',
@@ -406,7 +406,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'iowa',
@@ -431,7 +431,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'kansas',
@@ -456,7 +456,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'kentucky',
@@ -481,7 +481,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'louisiana',
@@ -506,7 +506,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'maine',
@@ -531,7 +531,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'maryland',
@@ -556,7 +556,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'massachusetts',
@@ -581,7 +581,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'michigan',
@@ -606,7 +606,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'minnesota',
@@ -631,7 +631,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'mississippi',
@@ -656,7 +656,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'missouri',
@@ -681,7 +681,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'montana',
@@ -706,7 +706,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'nebraska',
@@ -731,7 +731,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'nevada',
@@ -756,7 +756,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'new-hampshire',
@@ -781,7 +781,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'new-jersey',
@@ -806,7 +806,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'new-mexico',
@@ -831,7 +831,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'new-york',
@@ -856,7 +856,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'north-carolina',
@@ -881,7 +881,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'north-dakota',
@@ -906,7 +906,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'ohio',
@@ -931,7 +931,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'oklahoma',
@@ -956,7 +956,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'oregon',
@@ -981,7 +981,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'pennsylvania',
@@ -1006,7 +1006,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'rhode-island',
@@ -1031,7 +1031,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'south-carolina',
@@ -1056,7 +1056,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'south-dakota',
@@ -1081,7 +1081,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'tennessee',
@@ -1106,7 +1106,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'texas',
@@ -1156,7 +1156,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'vermont',
@@ -1181,7 +1181,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'virginia',
@@ -1206,7 +1206,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'washington',
@@ -1231,7 +1231,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'west-virginia',
@@ -1256,7 +1256,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'wisconsin',
@@ -1281,7 +1281,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     },
     {
       slug: 'wyoming',
@@ -1306,7 +1306,7 @@
       curriculumOverrideKey: null,
       features: {},
       pricing: null,
-      active: true
+      active: false
     }
   ];
 

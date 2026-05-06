@@ -17,20 +17,21 @@
   <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16.png">
   <link rel="shortcut icon" href="/favicon.ico">
   <meta name="format-detection" content="telephone=no" />
-  <title>GradeEarn — AI-powered state test prep for kids. Real toys for correct answers.</title>
-  <meta name="description" content="GradeEarn is AI-powered practice for your state's specific test — STAAR, CAASPP, FAST, TCAP, and 47 more. Kids earn real toys for correct answers. Free during beta." />
-  <meta property="og:title" content="GradeEarn — AI-powered state test prep for kids" />
-  <meta property="og:description" content="Practice tailored to your state's specific test. Real toys ship to your door for correct answers. Free during beta." />
+  <title>STAAR Math Practice for Texas Kids — GradeEarn</title>
+  <meta name="description" content="AI-powered STAAR Math practice for Texas families. TEKS-aligned questions for grades 3-8 + Algebra 1. Real toys ship to your door for correct answers. Built by Texas parents." />
+  <meta name="keywords" content="STAAR, STAAR Math, TEKS, Texas STAAR practice, Texas test prep, STAAR Grade 3-8, Texas Algebra 1" />
+  <meta property="og:title" content="STAAR Math Practice for Texas Kids — GradeEarn" />
+  <meta property="og:description" content="AI-powered STAAR Math practice for Texas families. TEKS-aligned. Real toys ship to your door for correct answers." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://gradeearn.com/" />
   <meta property="og:image" content="https://gradeearn.com/og-image.png" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="GradeEarn — AI-powered state test prep" />
-  <meta name="twitter:description" content="Practice for your state's test. Real toys for correct answers." />
+  <meta name="twitter:title" content="STAAR Math Practice for Texas Kids — GradeEarn" />
+  <meta name="twitter:description" content="AI-powered STAAR Math practice for Texas families. Real toys for correct answers." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260505d" />
+  <link rel="stylesheet" href="css/styles.css?v=20260506b" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -73,24 +74,19 @@
       <div class="hero-left">
         <div class="hero-live-pill" id="hero-live">
           <span class="hero-live-dot" aria-hidden="true"></span>
-          <span id="hero-live-text">All 50 states</span>
+          <span id="hero-live-text">Texas STAAR practice</span>
         </div>
-        <h1 class="hero-headline">Master your<br><span class="headline-accent">state's</span> test.</h1>
-        <p class="hero-tagline-mobile">Practice. Earn. Get toys.</p>
-        <p>AI tutor aligned to your state's standards. Real toys for correct answers.</p>
-        <div class="hero-cta hero-cta-pill">
-          <label for="hero-state-select" class="visually-hidden">Choose your state</label>
-          <div class="hero-state-select-wrap">
-            <select id="hero-state-select" class="hero-state-select" aria-label="Choose your state">
-              <option value="">Choose your state</option>
-            </select>
-            <span class="hero-state-select-chevron" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-                <polyline points="6 9 12 15 18 9"/>
-              </svg>
-            </span>
-          </div>
-          <button type="button" id="hero-go-btn" class="btn btn-primary hero-go-btn" disabled aria-disabled="true">Practice &rarr;</button>
+        <h1 class="hero-headline">STAAR Math practice,<br>built for <span class="headline-accent">Texas</span> kids.</h1>
+        <p class="hero-tagline-mobile">TEKS-aligned. Real toys for correct answers.</p>
+        <p>TEKS-aligned questions, real toys for correct answers, made by parents who get it.</p>
+        <div class="hero-cta hero-cta-grades" aria-label="Pick a grade">
+          <a href="grade.html?s=texas&amp;g=grade-3" class="hero-grade-pill" data-grade="grade-3">Grade 3</a>
+          <a href="grade.html?s=texas&amp;g=grade-4" class="hero-grade-pill" data-grade="grade-4">Grade 4</a>
+          <a href="grade.html?s=texas&amp;g=grade-5" class="hero-grade-pill" data-grade="grade-5">Grade 5</a>
+          <a href="grade.html?s=texas&amp;g=grade-6" class="hero-grade-pill" data-grade="grade-6">Grade 6</a>
+          <a href="grade.html?s=texas&amp;g=grade-7" class="hero-grade-pill" data-grade="grade-7">Grade 7</a>
+          <a href="grade.html?s=texas&amp;g=grade-8" class="hero-grade-pill" data-grade="grade-8">Grade 8</a>
+          <a href="grade.html?s=texas&amp;g=algebra-1" class="hero-grade-pill" data-grade="algebra-1">Algebra 1</a>
         </div>
       </div>
       <div class="hero-right" aria-hidden="true">
@@ -372,75 +368,30 @@
   <!-- §39: removed duplicate .mobile-hero-star — top-left wordmark
        is the brand mark; one logo per screen. Hero copy preserved. -->
   <header class="mobile-hero" aria-hidden="false">
-    <h1 class="mobile-hero-headline"><span class="mobile-hero-line1">AI-powered</span><br><span class="mobile-hero-line2">state test prep</span></h1>
-    <p class="mobile-hero-subhead">Built for your state's specific test. Real toys ship to your door.</p>
+    <h1 class="mobile-hero-headline"><span class="mobile-hero-line1">STAAR Math practice,</span><br><span class="mobile-hero-line2">built for Texas kids.</span></h1>
+    <p class="mobile-hero-subhead">TEKS-aligned questions, real toys for correct answers, made by parents who get it.</p>
   </header>
 
-  <section class="state-picker-section" id="state-picker" aria-label="Pick your state">
-    <header class="state-picker-head">
-      <span class="state-picker-eyebrow">Step 1 of 3</span>
-      <h2 class="state-picker-title">What state is your kid in?</h2>
-      <p class="state-picker-sub">We tailor practice to your state's specific test.</p>
+  <!-- §47 — Texas-only pivot: state picker hidden in favor of direct
+       grade picker. The states-data.js code path is preserved (active
+       flag on each state record), and /states/?s=texas still works
+       via direct link if needed. Anchor id="state-picker" preserved
+       so existing in-page #state-picker links keep scrolling here. -->
+  <section class="grade-picker-section" id="state-picker" aria-label="Pick your kid's grade">
+    <header class="grade-picker-head">
+      <h2 class="grade-picker-title">Pick your kid's grade</h2>
+      <p class="grade-picker-sub">STAAR Math, TEKS-aligned. Tap a grade to start.</p>
     </header>
-
-    <div class="state-picker-detecting" id="state-detect-status" hidden aria-hidden="true"></div>
-
-    <div class="state-picker-detected" id="state-detected" hidden>
-      <div class="state-picker-detected-pin" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
-          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
-          <circle cx="12" cy="10" r="3"/>
-        </svg>
-      </div>
-      <div class="state-picker-detected-body">
-        <span class="state-picker-detected-label">Looks like you're in</span>
-        <span class="state-picker-detected-name" id="detected-state-name">—</span>
-      </div>
-      <a href="#" class="state-picker-detected-go" id="detected-state-go">
-        Continue
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-          <line x1="5" y1="12" x2="19" y2="12"/>
-          <polyline points="12 5 19 12 12 19"/>
-        </svg>
-      </a>
+    <div class="grade-picker-pills" id="anon-grade-pills">
+      <a href="grade.html?s=texas&amp;g=grade-3" class="grade-pill" data-grade="grade-3">Grade 3</a>
+      <a href="grade.html?s=texas&amp;g=grade-4" class="grade-pill" data-grade="grade-4">Grade 4</a>
+      <a href="grade.html?s=texas&amp;g=grade-5" class="grade-pill" data-grade="grade-5">Grade 5</a>
+      <a href="grade.html?s=texas&amp;g=grade-6" class="grade-pill" data-grade="grade-6">Grade 6</a>
+      <a href="grade.html?s=texas&amp;g=grade-7" class="grade-pill" data-grade="grade-7">Grade 7</a>
+      <a href="grade.html?s=texas&amp;g=grade-8" class="grade-pill" data-grade="grade-8">Grade 8</a>
+      <a href="grade.html?s=texas&amp;g=algebra-1" class="grade-pill" data-grade="algebra-1">Algebra 1</a>
     </div>
-
-    <button type="button" class="state-picker-trigger" id="state-picker-trigger">
-      <span class="state-picker-trigger-info">
-        <span class="state-picker-trigger-label">Or pick your state</span>
-        <span class="state-picker-trigger-value" id="state-picker-trigger-value">Choose…</span>
-      </span>
-      <span class="state-picker-trigger-chevron" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
-          <polyline points="6 9 12 15 18 9"/>
-        </svg>
-      </span>
-    </button>
-
-    <div class="state-picker-grid" id="state-picker-grid" role="listbox" aria-label="State list"></div>
   </section>
-
-  <div class="state-sheet-scrim" id="state-sheet-scrim" hidden></div>
-  <div class="state-sheet" id="state-sheet" role="dialog" aria-modal="true" aria-label="Pick your state" hidden>
-    <div class="state-sheet-handle" aria-hidden="true"></div>
-    <header class="state-sheet-header">
-      <h3 class="state-sheet-title">Pick your state</h3>
-      <button type="button" class="state-sheet-close" aria-label="Close">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18">
-          <line x1="18" y1="6" x2="6" y2="18"/>
-          <line x1="6" y1="6" x2="18" y2="18"/>
-        </svg>
-      </button>
-    </header>
-    <div class="state-sheet-search">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" aria-hidden="true">
-        <circle cx="11" cy="11" r="8"/>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-      </svg>
-      <input type="text" id="state-sheet-search" placeholder="Search states…" autocomplete="off" />
-    </div>
-    <ul class="state-sheet-list" id="state-sheet-list" role="listbox"></ul>
-  </div>
 
   <!-- ================================================================
        PARENT LAYER — appears below the grade list
@@ -572,12 +523,12 @@
             <span>Grade<span class="logo-accent">Earn</span></span>
           </a>
           <p class="footer-tagline">
-            AI-powered test prep for every state, every grade. Built for kids who want to win.
+            STAAR Math practice for Texas kids. TEKS-aligned. Real toys for correct answers.
           </p>
           <div class="footer-trust-row">
             <span class="footer-trust-pill">
               <span class="trust-dot"></span>
-              All 50 states supported
+              Texas families only — for now
             </span>
           </div>
         </div>
@@ -650,9 +601,12 @@
   <script src="js/migrate-storage.js?v=20260427a"></script>
   <script src="js/prefs.js?v=20260426a"></script>
   <script src="js/fx.js?v=20260426a"></script>
-  <script src="js/states-data.js?v=20260427d"></script>
-  <script src="js/hero-state-go.js?v=20260427a"></script>
-  <script src="js/state-picker.js?v=20260505a"></script>
+  <script src="js/states-data.js?v=20260506a"></script>
+  <!-- §47 — js/hero-state-go.js + js/state-picker.js removed from
+       landing. State-picker UI is hidden in favor of direct Texas
+       grade pills. Both files preserved on disk for re-activation. -->
+  <!--<script src="js/hero-state-go.js?v=20260427a"></script>-->
+  <!--<script src="js/state-picker.js?v=20260505a"></script>-->
   <script src="js/auth.js?v=20260427u"></script>
   <script src="js/lake-events.js?v=20260427a"></script>
   <script src="js/pwa-install.js?v=20260427a" defer></script>
@@ -974,11 +928,11 @@
         if (online >= 5) {
           text.textContent = `${online.toLocaleString()} students practicing right now`;
         } else {
-          text.textContent = 'Now serving students in all 50 states';
+          text.textContent = 'Texas STAAR practice — TEKS-aligned';
         }
         pill.hidden = false;
       } catch (_) {
-        text.textContent = 'Now serving students in all 50 states';
+        text.textContent = 'Texas STAAR practice — TEKS-aligned';
         pill.hidden = false;
       }
     }

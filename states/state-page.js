@@ -38,6 +38,16 @@
       return;
     }
 
+    // §47 — Texas-only pivot. If the state record exists but is
+    // marked active:false in states-data.js, render the
+    // "Coming soon" fallback rather than a populated state page.
+    // All routing + per-state data preserved; flip active:true to
+    // re-activate. SEO meta tags get noindex on inactive states.
+    if (state.active === false) {
+      showInactive(state);
+      return;
+    }
+
     // Persist this choice
     try { localStorage.setItem('gradeearn.state', slug); } catch (_) {}
 
@@ -53,6 +63,58 @@
     const loading = document.getElementById('state-loading');
     if (loading) { loading.hidden = true; loading.style.display = 'none'; }
     document.getElementById('state-content').hidden = false;
+  }
+
+  // §47 — Inactive-state fallback. Reuses the existing #state-error
+  // shell with rewritten copy + a Texas redirect button. Adds a
+  // <meta name="robots" content="noindex"> tag so Google doesn't
+  // index 50 stub pages. Sets Texas-aligned SEO so any social
+  // share preview from these URLs reads sensibly.
+  function showInactive(state) {
+    const loading = document.getElementById('state-loading');
+    if (loading) { loading.hidden = true; loading.style.display = 'none'; }
+
+    const inactiveTitle = `Coming soon for ${state.name} — GradeEarn (Texas STAAR practice)`;
+    const inactiveDesc = `GradeEarn is currently focused on Texas STAAR Math. ${state.name} support is coming. Try Texas STAAR practice today.`;
+
+    document.title = inactiveTitle;
+    const titleEl = document.getElementById('page-title');
+    if (titleEl) titleEl.textContent = inactiveTitle;
+    const descEl = document.getElementById('page-description');
+    if (descEl) descEl.setAttribute('content', inactiveDesc);
+    const ogt = document.getElementById('og-title'); if (ogt) ogt.setAttribute('content', inactiveTitle);
+    const ogd = document.getElementById('og-description'); if (ogd) ogd.setAttribute('content', inactiveDesc);
+    const twt = document.getElementById('twitter-title'); if (twt) twt.setAttribute('content', inactiveTitle);
+    const twd = document.getElementById('twitter-description'); if (twd) twd.setAttribute('content', inactiveDesc);
+
+    // noindex — don't let Google rank stub pages.
+    if (!document.querySelector('meta[name="robots"]')) {
+      const robots = document.createElement('meta');
+      robots.setAttribute('name', 'robots');
+      robots.setAttribute('content', 'noindex');
+      document.head.appendChild(robots);
+    }
+
+    // Reuse #state-error shell with Texas-redirect copy.
+    const err = document.getElementById('state-error');
+    if (err) {
+      const titleNode = err.querySelector('.state-error-title');
+      const textNode = err.querySelector('.state-error-text');
+      const ctaNode = err.querySelector('.state-error-cta');
+      if (titleNode) titleNode.textContent = `Coming soon for ${state.name}`;
+      if (textNode) textNode.textContent = `We're focused on Texas right now — building the deepest STAAR Math practice anywhere. ${state.name} is on the roadmap.`;
+      if (ctaNode) {
+        ctaNode.setAttribute('href', '../index.html');
+        const span = ctaNode.querySelector('span') || ctaNode.firstChild;
+        // Replace any existing visible text node with the Texas-redirect label.
+        ctaNode.childNodes.forEach(n => { if (n.nodeType === 3) n.textContent = ''; });
+        ctaNode.insertBefore(document.createTextNode('Try Texas STAAR practice '), ctaNode.firstChild);
+      }
+      err.hidden = false;
+    }
+
+    const breadcrumb = document.getElementById('breadcrumb-state');
+    if (breadcrumb) breadcrumb.textContent = `${state.name} · Coming soon`;
   }
 
   function showError() {

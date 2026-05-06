@@ -48,7 +48,7 @@
   <link rel="stylesheet" href="css/styles.css?v=20260427ll">
 
   <script src="js/migrate-storage.js?v=20260427a"></script>
-  <script src="js/states-data.js?v=20260427d"></script>
+  <script src="js/states-data.js?v=20260506a"></script>
 </head>
 <body class="about-page">
 
@@ -135,9 +135,9 @@
       <li class="about-step">
         <div class="about-step-num">1</div>
         <div class="about-step-body">
-          <h3 class="about-step-title">Pick your state, grade, subject.</h3>
+          <h3 class="about-step-title">Pick your kid's grade.</h3>
           <p class="about-step-text" id="step-1-text">
-            We tailor every question to your state's specific test — STAAR, CAASPP, FAST, TCAP, all 51 states. Aligned to the standards your kid's school actually teaches.
+            STAAR Math practice for Texas, every grade 3–8 plus Algebra 1. TEKS-aligned. Built by Texas parents who know exactly what's on the test.
           </p>
         </div>
       </li>
@@ -219,11 +219,13 @@
       </a>
     </div>
 
-    <!-- Generic states preview (shown when no state context). -->
+    <!-- Texas-only pivot (§47): generic 51-state preview hidden in
+         favor of a single Texas card. Underlying state-page routing
+         is preserved; flip active:true on a state record in
+         states-data.js to bring it back. -->
     <div class="about-states-preview" id="about-states-preview">
-      <p class="about-states-preview-text">We support all 51 state tests:</p>
-      <div class="about-states-preview-list" id="about-states-preview-list"></div>
-      <a class="about-states-preview-cta" href="index.html#state-picker">Pick your state →</a>
+      <p class="about-states-preview-text">Currently focused on Texas:</p>
+      <a class="about-states-preview-cta" href="index.html">Try STAAR practice →</a>
     </div>
   </section>
 
@@ -286,14 +288,14 @@
       <details class="about-faq-item">
         <summary class="about-faq-q">What grades and subjects do you cover?</summary>
         <div class="about-faq-a">
-          Math is live for every state's tested grades (typically 3–8, plus state-specific extras like Algebra 1 in Texas, K–10 in Florida). Reading, Science, and Social Studies are coming next. Your state's specific grade list shows on your state's page.
+          STAAR Math is live for Texas — every tested grade (3–8 plus Algebra 1). Reading, Science, and Social Studies are coming next. Other states are on the roadmap once we've made Texas the deepest STAAR practice anywhere.
         </div>
       </details>
 
       <details class="about-faq-item">
-        <summary class="about-faq-q">Why state-specific tests?</summary>
+        <summary class="about-faq-q">Why Texas-only?</summary>
         <div class="about-faq-a">
-          Because every state has different standards, different question formats, different rigor. STAAR isn't CAASPP isn't TCAP. Generic test prep wastes your kid's practice on questions they'll never see. We align to <em>your</em> state's specific test.
+          Because STAAR isn't CAASPP isn't TCAP. Every state has different standards, different question formats, different rigor. We're building the deepest TEKS-aligned STAAR Math practice anywhere — and we'll add other states once Texas is rock-solid.
         </div>
       </details>
 
@@ -319,7 +321,7 @@
       <h2 class="about-cta-title" id="about-cta-title">Ready to give it a try?</h2>
       <p class="about-cta-sub" id="about-cta-sub">Free during beta. Your kid picks toys. We ship them.</p>
       <a class="about-cta-btn" id="about-cta-btn" href="index.html#state-picker">
-        <span id="about-cta-btn-label">Pick your state</span>
+        <span id="about-cta-btn-label">Pick your kid's grade</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
       </a>
     </div>

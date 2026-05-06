@@ -14323,3 +14323,91 @@ body.grade-page .subject-section {
     margin: 0 0 16px;
   }
 }
+
+/* ============================================================
+   §47 — Texas-only pivot: grade-pill picker
+   Replaces the multi-state state-picker UI on the landing page.
+   Reuses the same anchor id (#state-picker) so existing in-page
+   links scroll to the right place. Brand: navy + gold, no new
+   colors per CLAUDE.md §10.
+   ============================================================ */
+
+.grade-picker-section {
+  padding: 48px 32px 64px;
+  max-width: 1100px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.grade-picker-head {
+  text-align: left;
+  margin-bottom: 24px;
+}
+
+.grade-picker-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 40px;
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  color: #ffffff;
+  margin: 0 0 8px 0;
+}
+
+.grade-picker-sub {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+}
+
+.grade-picker-pills {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.grade-pill,
+.hero-grade-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(251, 191, 36, 0.28);
+  text-decoration: none;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
+}
+.grade-pill:hover,
+.hero-grade-pill:hover {
+  background: rgba(251, 191, 36, 0.14);
+  border-color: rgba(251, 191, 36, 0.55);
+}
+.grade-pill:active,
+.hero-grade-pill:active {
+  transform: scale(0.98);
+}
+
+.hero-cta-grades {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 10px;
+  margin-top: 20px;
+  max-width: 520px;
+}
+
+@media (max-width: 768px) {
+  .grade-picker-section { padding: 32px 16px 48px; }
+  .grade-picker-title   { font-size: 32px; }
+  .grade-picker-pills   { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .grade-pill           { min-height: 60px; font-size: 16px; }
+  .hero-cta-grades      { grid-template-columns: repeat(2, 1fr); }
+  .hero-grade-pill      { min-height: 52px; font-size: 14px; padding: 12px 14px; }
+}

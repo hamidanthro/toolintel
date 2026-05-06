@@ -65,7 +65,7 @@
 
   function init() {
     if (!STATES) {
-      showError('Loading error', 'Please refresh the page.', 'index.html#state-picker', 'Home');
+      showError('Loading error', 'Please refresh the page.', 'index.html', 'Home');
       return;
     }
 
@@ -77,9 +77,23 @@
     if (!state) {
       showError(
         'State not found',
-        "We need to know which state you're in to tailor practice.",
-        'index.html#state-picker',
-        'Pick your state'
+        "We're focused on Texas STAAR practice right now.",
+        'index.html',
+        'Try Texas STAAR practice'
+      );
+      return;
+    }
+
+    // §47 — Texas-only pivot. Inactive state records still resolve
+    // (data preserved) but the grade page should redirect them home
+    // rather than try to populate a hero/subject grid for a state
+    // we have no content for. Active states render normally.
+    if (state.active === false) {
+      showError(
+        `Coming soon for ${state.name}`,
+        `We're focused on Texas STAAR practice right now. ${state.name} is on the roadmap.`,
+        'index.html',
+        'Try Texas STAAR practice'
       );
       return;
     }
