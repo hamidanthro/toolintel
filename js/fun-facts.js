@@ -149,8 +149,12 @@
     let levelPool = pool.filter(f => f.wowLevel === targetLevel);
     if (levelPool.length === 0) levelPool = pool;
 
-    // 40% Texas-relevance bias.
-    const wantTexas = Math.random() < 0.40;
+    // §74 — 15% Texas-relevance bias (was 40%; produced ~46% effective
+    // hit rate against a 10% Texas catalog — felt Texas-only). 15% gives
+    // a state-pride bump above the 10% baseline without takeover. After
+    // Phase 5 expands the catalog to ~5% Texas, this lands at ~17%
+    // effective — healthy pride boost on a deep global catalog.
+    const wantTexas = Math.random() < 0.15;
     const texasPool = levelPool.filter(f => f.isTexasRelevant === true);
     const finalPool = (wantTexas && texasPool.length > 0) ? texasPool : levelPool;
 
