@@ -14916,3 +14916,60 @@ body.practice-page .question-card .q-inline-fb.q-inline-fb--tutor {
     background: rgba(251, 191, 36, 0.07);
   }
 }
+
+/* ============================================================
+   §66 — Premium polish pass 4 (8 surgical pixel fixes)
+   1. Top bar 24/32px gutter
+   2. Star icon optical-center alignment
+   3. Headline punctuation (HTML, no CSS)
+   4. Letter-spacing weight balance (line1 tighter, line2 default)
+   5. Tagline rgba(255,255,255,0.92) — already in §63, no change
+   6. Trust signal em-dash separator (HTML, no CSS)
+   7. Section label letter-spacing 0.16em
+   8. Section label parent-voice copy (HTML, no CSS)
+   ============================================================ */
+
+/* §66 fix 1 — Top bar gutters. .site-header .container is the
+   flex row; pad it 24px mobile / 32px desktop so the wordmark
+   and Sign in button don't touch screen edges. */
+@media (max-width: 768px) {
+  .site-header .container {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+  }
+}
+@media (min-width: 769px) {
+  .site-header .container {
+    padding-left: 32px !important;
+    padding-right: 32px !important;
+  }
+}
+
+/* §66 fix 2 — Star icon optical-center. .brand has
+   align-items:center; flex centers bounding boxes, but the
+   visual mass of the star sits below text x-height. Nudge up
+   by 1px for true optical balance. */
+.site-header .brand .brand-logo,
+.site-header .brand > svg {
+  position: relative;
+  top: -1px;
+}
+
+@media (max-width: 768px) {
+  /* §66 fix 4 — Letter-spacing weight balance. Bold line gets
+     slightly condensed (-0.02em); italic stays default. Compensates
+     for italic gold reading heavier than bold white at same nominal
+     spacing. */
+  body.home-page .mobile-hero-headline .mobile-hero-line1 {
+    letter-spacing: -0.02em !important;
+  }
+  body.home-page .mobile-hero-headline .mobile-hero-line2 {
+    letter-spacing: 0 !important;
+  }
+
+  /* §66 fix 7 — Caps label letter-spacing 0.16em (was 0.15em).
+     Tighter premium tracking. */
+  body.home-page .grade-picker-section .section-label {
+    letter-spacing: 0.16em !important;
+  }
+}
