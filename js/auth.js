@@ -1198,15 +1198,18 @@ if ('serviceWorker' in navigator) {
       ? `<span class="mobile-tab-avatar" style="background:${u.color || '#1e40af'}">${escapeHtml(avatar(u.displayName || u.username))}</span>`
       : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
 
-    // Prompt 33 — 3-tab bar: Home / Practice (gold center) / Profile (Toys folds into Profile)
+    // §60 — 2-tab bar: Home / Profile. Center round Practice FAB
+    // removed per Hamid (12:55pm). Practice routing now happens
+    // from the dashboard's 'Practice now' CTA + grade pills on
+    // landing; the FAB was redundant + occasionally rendered with
+    // dead-anchor hrefs (see §53 fix). practiceHref var kept above
+    // so the legacy compute path stays intact for any caller still
+    // using STAARAuth.practiceHref() — currently no callers but
+    // safer to leave the variable.
     tabBar.innerHTML = `
       <a class="mobile-tab ${isOnHome ? 'is-active' : ''}" href="${R('index.html')}" aria-label="Home">
         <span class="mobile-tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
         <span class="mobile-tab-label">Home</span>
-      </a>
-      <a class="mobile-tab mobile-tab--center ${isOnPractice ? 'is-active' : ''}" href="${practiceHref}" aria-label="Practice">
-        <span class="mobile-tab-center-button"><svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"/></svg></span>
-        <span class="mobile-tab-label mobile-tab-label--center">Practice</span>
       </a>
       <button type="button" class="mobile-tab ${(isOnSettings || isOnMarketplace) ? 'is-active' : ''}" data-action="open-profile-sheet" aria-label="Profile">
         <span class="mobile-tab-icon">${profileTabInner}</span>
