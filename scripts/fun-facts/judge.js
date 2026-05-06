@@ -31,9 +31,9 @@ Evaluate the given fact against these criteria:
 
 2. VOCAB_TOO_HARD: Are all words appropriate for a 3rd-grader at the BOTTOM of that range (i.e. a 2nd-grade reader)? Reject "fascinating," "phenomenon," "remarkable," "extraordinary," "approximately," "complex," "essentially," "consume," "comprise," "predominantly," and similar adult-register words. Concrete proper nouns (Octopus, Hedy Lamarr, Texas) are fine.
 
-3. SENTENCE_TOO_LONG: Is every sentence ≤12 words? Count words per sentence carefully (split on .!?). A title or single-word interjection counts as a sentence too.
+3. SENTENCE_TOO_LONG: Is every sentence ≤15 words? Count words per sentence carefully (split on .!?). A title or single-word interjection counts as a sentence too.
 
-4. TOO_LONG: Is total ≤35 words? Count all words across all sentences.
+4. TOO_LONG: Is total ≤40 words? Count all words across all sentences.
 
 5. REQUIRES_BACKGROUND: Does understanding require knowledge a 3rd-grader wouldn't have? E.g. references to Cold War, derivatives, plate tectonics without explaining, etc.
 
@@ -109,14 +109,14 @@ function extractJson(text) {
 function preCheckLength(fact) {
   const text = String(fact || '').trim();
   const totalWords = text.split(/\s+/).filter(Boolean).length;
-  if (totalWords > 35) {
+  if (totalWords > 40) {
     return { localReject: true, reasons: ['TOO_LONG'], note: `total=${totalWords} words` };
   }
   // Sentence split: handle . ! ? plus em-dash sentence chains.
   const sentences = text.split(/(?<=[.!?])\s+/).map(s => s.trim()).filter(Boolean);
   for (const s of sentences) {
     const w = s.split(/\s+/).filter(Boolean).length;
-    if (w > 12) {
+    if (w > 15) {
       return { localReject: true, reasons: ['SENTENCE_TOO_LONG'], note: `${w}-word sentence` };
     }
   }

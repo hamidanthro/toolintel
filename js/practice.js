@@ -726,7 +726,10 @@
     const FUN_FACT_CATEGORY_EMOJI = {
       animals: '🐙', space: '🚀', body: '🧠', food: '🥑',
       texas: '⭐', sports: '🏀', inventions: '💡',
-      history: '📜', 'math-numbers': '🔢', 'weird-funny': '🎲'
+      history: '📜', 'math-numbers': '🔢', 'weird-funny': '🎲',
+      // §73 — Phase 5 new categories
+      dinosaurs: '🦕', music: '🎵', geography: '🌍',
+      'robots-tech': '🤖', mythology: '🐉'
     };
     function mountFunFactCard(fact, isFirstFactEver, seqAtCall) {
       const qCard = qbox.querySelector('.question-card');
