@@ -5,3 +5,4 @@ backups/*.zip
 build/
 scripts/lake-audit/output/
 scripts/lake-audit/node_modules/
+scripts/fun-facts/output/
