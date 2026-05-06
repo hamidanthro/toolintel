@@ -1019,13 +1019,15 @@ async function handleSignup(payload, event) {
   // §52 — email uniqueness. No GSI on email; scan filter is fine for
   // the current row count and grows linearly — re-evaluate when the
   // table crosses ~10k rows (add a GSI then).
+  // §75 — Limit removed: DDB's Limit caps rows EXAMINED per page, not
+  // returned, so Scan + FilterExpression + Limit:1 was probabilistically
+  // missing matches when the matching row wasn't first examined.
   try {
     const dupe = await ddb.send(new ScanCommand({
       TableName: USERS_TABLE,
       FilterExpression: 'email = :e',
       ExpressionAttributeValues: { ':e': email },
-      ProjectionExpression: 'username',
-      Limit: 1
+      ProjectionExpression: 'username'
     }));
     if (dupe.Items && dupe.Items.length > 0) {
       return bad(409, 'An account with this email already exists. Try signing in or resetting your password.');
@@ -1229,14 +1231,14 @@ async function handleRequestPasswordReset(payload, event) {
   const userAgent = getRequestUA(event);
 
   // Find the user (no GSI on email — small table; scan is fine).
+  // §75 — Limit removed (was Limit:1 — see signup-uniqueness comment).
   let user = null;
   try {
     const r = await ddb.send(new ScanCommand({
       TableName: USERS_TABLE,
       FilterExpression: 'email = :e',
       ExpressionAttributeValues: { ':e': email },
-      ProjectionExpression: 'username, userId, email, displayName',
-      Limit: 1
+      ProjectionExpression: 'username, userId, email, displayName'
     }));
     user = (r.Items && r.Items[0]) || null;
   } catch (err) {
@@ -1667,14 +1669,14 @@ async function handleResendVerification(payload, event) {
   if (!isValidEmail(email)) return ok(generic);
 
   // Look up the user.
+  // §75 — Limit removed (was Limit:1 — see signup-uniqueness comment).
   let user = null;
   try {
     const r = await ddb.send(new ScanCommand({
       TableName: USERS_TABLE,
       FilterExpression: 'email = :e',
       ExpressionAttributeValues: { ':e': email },
-      ProjectionExpression: 'username, userId, email, displayName, emailVerified, emailVerificationLastSentAt, emailVerificationSendCount, emailVerificationCountResetAt',
-      Limit: 1
+      ProjectionExpression: 'username, userId, email, displayName, emailVerified, emailVerificationLastSentAt, emailVerificationSendCount, emailVerificationCountResetAt'
     }));
     user = (r.Items && r.Items[0]) || null;
   } catch (err) {
