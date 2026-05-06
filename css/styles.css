@@ -14629,3 +14629,13 @@ body.practice-page .feedback--tutor-only {
   border: 0;
 }
 body.practice-page .feedback--placeholder { display: none; }
+
+/* §58 — Practice flow chrome rule.
+   Hide the marketing footer on any page that's in the practice
+   flow (grade-picker → subject-picker → practice runner). The
+   header stays (kid uses brand link to navigate home). Keeps the
+   marketing footer for landing / about / marketplace. */
+body.practice-mode .site-footer,
+body.practice-mode .footer {
+  display: none !important;
+}
