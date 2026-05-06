@@ -15290,3 +15290,142 @@ body.practice-page .question-card[data-state="asking"] {
   .ff-card-body { font-size: 16px; max-width: 28ch; }
   .ff-card-cta { width: 100%; padding: 12px 28px; }
 }
+
+/* ==========================================================
+   §72 — Fun Facts settings panel (Phase 4)
+   Adds a "Fun Facts" card to the settings grid with frequency
+   segments + pause toggle. Overrides the default white
+   .settings-card with the §69/§71 gold-bordered navy gradient
+   so the engagement card visually pops in the Settings list.
+   ========================================================== */
+.ff-settings-section.settings-card,
+.ff-settings-section {
+  background: linear-gradient(180deg, #0d2249 0%, #061230 100%);
+  border: 1px solid rgba(251, 191, 36, 0.20);
+  border-radius: 16px;
+  padding: 22px 24px;
+}
+
+.ff-settings-section .ff-settings-title {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 4px;
+  letter-spacing: -0.01em;
+}
+
+.ff-settings-subtitle {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0 0 18px;
+}
+
+.ff-settings-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.ff-settings-row:last-child { margin-bottom: 0; }
+
+.ff-settings-label {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.78);
+  letter-spacing: 0.01em;
+}
+
+.ff-segments {
+  display: flex;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 4px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.ff-segment {
+  flex: 1;
+  padding: 9px 0;
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  color: rgba(255, 255, 255, 0.65);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 140ms, color 140ms;
+  min-height: 36px;
+}
+.ff-segment:hover { color: rgba(255, 255, 255, 0.92); }
+.ff-segment.active {
+  background: linear-gradient(180deg, #fbbf24, #f59e0b);
+  color: #1a1a2e;
+}
+.ff-segment:focus-visible {
+  outline: 2px solid rgba(251, 191, 36, 0.85);
+  outline-offset: 2px;
+}
+
+.ff-segments-disabled .ff-segment {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.ff-toggle-row {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ff-toggle {
+  width: 48px;
+  height: 28px;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+.ff-toggle-track {
+  display: block;
+  width: 48px;
+  height: 28px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
+  transition: background 180ms, border-color 180ms;
+}
+.ff-toggle-thumb {
+  display: block;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform 180ms cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+.ff-toggle-on .ff-toggle-track {
+  background: rgba(251, 191, 36, 0.85);
+  border-color: rgba(251, 191, 36, 0.6);
+}
+.ff-toggle-on .ff-toggle-thumb {
+  transform: translateX(20px);
+}
+.ff-toggle:focus-visible .ff-toggle-track {
+  outline: 2px solid rgba(251, 191, 36, 0.85);
+  outline-offset: 3px;
+}
+
+@media (max-width: 480px) {
+  .ff-settings-section { padding: 18px 16px; }
+  .ff-segment { font-size: 13px; padding: 10px 0; }
+}

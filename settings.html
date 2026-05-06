@@ -18,7 +18,7 @@
   <link rel="shortcut icon" href="/favicon.ico">
   <meta name="format-detection" content="telephone=no" />
   <title>Settings — GradeEarn</title>
-  <link rel="stylesheet" href="css/styles.css?v=20260506v" />
+  <link rel="stylesheet" href="css/styles.css?v=20260506x" />
 </head>
 <body>
   <header class="site-header">
@@ -39,6 +39,29 @@
       <p style="color:var(--muted);max-width:680px;margin:0 0 28px;">Make GradeEarn feel just right for you. These settings are saved on this device.</p>
 
       <div class="settings-grid">
+
+        <article class="settings-card ff-settings-section" data-section="fun-facts">
+          <h3 class="ff-settings-title">Fun Facts</h3>
+          <p class="ff-settings-subtitle"><span id="ff-seen-count">0</span> facts unlocked</p>
+
+          <div class="ff-settings-row">
+            <label class="ff-settings-label" for="ff-freq-segments">How often?</label>
+            <div class="ff-segments" id="ff-freq-segments" role="radiogroup" aria-label="Fun fact frequency">
+              <button type="button" class="ff-segment" data-freq="auto" role="radio" aria-checked="false">Auto</button>
+              <button type="button" class="ff-segment" data-freq="1"    role="radio" aria-checked="false">1</button>
+              <button type="button" class="ff-segment" data-freq="5"    role="radio" aria-checked="false">5</button>
+              <button type="button" class="ff-segment" data-freq="10"   role="radio" aria-checked="false">10</button>
+              <button type="button" class="ff-segment" data-freq="25"   role="radio" aria-checked="false">25</button>
+            </div>
+          </div>
+
+          <div class="ff-settings-row ff-toggle-row">
+            <label class="ff-settings-label" for="ff-pause-toggle">⏸ Pause fun facts</label>
+            <button type="button" class="ff-toggle" id="ff-pause-toggle" role="switch" aria-checked="false" aria-label="Pause fun facts">
+              <span class="ff-toggle-track"><span class="ff-toggle-thumb"></span></span>
+            </button>
+          </div>
+        </article>
 
         <article class="settings-card">
           <h3>Sound &amp; feel</h3>
@@ -119,6 +142,7 @@
   <script src="js/fx.js?v=20260426a"></script>
   <script src="js/states-data.js?v=20260506a"></script>
   <script src="js/fun-facts.js?v=20260506b"></script>
+  <script src="js/fun-facts-settings.js?v=20260506a"></script>
   <script src="js/auth.js?v=20260506p"></script>
   <script src="js/lake-events.js?v=20260427a"></script>
   <script src="js/pwa-install.js?v=20260427a" defer></script>

@@ -175,7 +175,13 @@
       try { window.FunFacts.setFrequency(v); } catch (_) { threw = true; }
       assert('accepts ' + JSON.stringify(v), !threw && window.FunFacts.getFrequency() === v);
     });
-    [0, 7, 100, 'foo', null, true].forEach(v => {
+    // §72 — null and undefined are both "clear override → Auto mode".
+    [null, undefined].forEach(v => {
+      let threw = false;
+      try { window.FunFacts.setFrequency(v); } catch (_) { threw = true; }
+      assert('accepts ' + JSON.stringify(v) + ' (Auto)', !threw && window.FunFacts.getFrequency() === undefined);
+    });
+    [0, 7, 100, 'foo', true].forEach(v => {
       let threw = false;
       try { window.FunFacts.setFrequency(v); } catch (_) { threw = true; }
       assert('rejects ' + JSON.stringify(v), threw);

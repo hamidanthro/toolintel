@@ -244,13 +244,15 @@
   }
 
   function setFrequency(value) {
-    // Validate.
+    // null and undefined both mean "clear override → use Auto rule".
+    // Normalize early so the rest of the fn treats them identically.
     let v = value;
+    if (v === null) v = undefined;
     if (typeof v === 'string' && v !== 'paused') {
       const n = parseInt(v, 10);
       if (Number.isFinite(n)) v = n;
     }
-    if (VALID_FREQS.indexOf(v) === -1 && v !== undefined) {
+    if (v !== undefined && VALID_FREQS.indexOf(v) === -1) {
       throw new Error('Invalid frequency: ' + value);
     }
 
@@ -260,6 +262,8 @@
     if (isSignedIn() && window.STAARAuth && window.STAARAuth.api) {
       window.STAARAuth.api('updateFunFactsState', {
         token: authToken(),
+        // Send null on the wire to signal "REMOVE the funFactsFreq attr"
+        // (lambda's setFrequency:null branch).
         setFrequency: v === undefined ? null : v
       }).catch(err => {
         console.warn('[funFacts] setFrequency sync failed:', err && err.message || err);
