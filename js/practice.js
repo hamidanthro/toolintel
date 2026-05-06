@@ -924,26 +924,23 @@
           fbSlot.innerHTML = `<div class="q-inline-fb-head">✓ <span class="q-inline-fb-pts">+${cents} pts earned</span>${explanationHtml}</div>`;
           fbSlot.classList.remove('q-inline-fb--tutor');
         } else {
-          // §68b — brief inline header (✗ + correct answer + brief
-          // explanation) above the AI tutor, per Hamid spec mockup.
-          // §59 had removed it as 'duplicate' but the explicit
-          // correct-answer line is fast-readable signal that the
-          // tutor's first message can't replace. Tutor mount points
-          // (#tutor-out, #tutor-q, #tutor-followup) follow.
+          // §69 — WRONG inline. Render only the static parts up-front:
+          //   - brief inline header (✗ + correct answer)
+          //   - brief explanation
+          //   - empty .tutor-box wrapper with #tutor-out only
+          // Follow-up form + chip buttons are NOT in the markup yet —
+          // they get insertAdjacentHTML'd by fireInitialTutor() ONLY
+          // on success. If the tutor fails or times out, we remove
+          // the entire .tutor-box silently. Kid never sees the
+          // 'I'll get back to you' apology.
           const briefExplanationHtml = explanation
             ? `<div class="q-inline-fb-body">${escapeHtml(explanation)}</div>`
             : '';
           fbSlot.innerHTML = `
             <div class="q-inline-fb-head">✗ Not quite. <span class="q-inline-fb-correct">The answer is <strong>${escapeHtml(q.answer)}</strong>.</span></div>
             ${briefExplanationHtml}
-            <div class="tutor-box">
+            <div class="tutor-box" id="tutor-box">
               <div class="tutor-output" id="tutor-out"></div>
-              <form class="tutor-followup" id="tutor-followup" hidden>
-                <input type="text" id="tutor-q" placeholder="Ask a follow-up question…" />
-                <button class="tutor-send" type="submit" aria-label="Send">
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
-                </button>
-              </form>
             </div>`;
           fbSlot.classList.remove('q-inline-fb--tutor');
         }
@@ -1017,19 +1014,44 @@
       }
 
       if (!isCorrect) {
+        // \u00a769 \u2014 WRONG-state tutor wiring. Follow-up form + chips are
+        // mounted lazily on the FIRST successful tutor reply (was
+        // pre-rendered with hidden attribute, which leaked through
+        // CSS specificity in some browsers). On tutor failure we
+        // remove the entire .tutor-box silently \u2014 kid never sees
+        // 'I'll get back to you' apology UI.
         const tutorOut = document.getElementById('tutor-out');
-        const followup = document.getElementById('tutor-followup');
-        const tutorQ = document.getElementById('tutor-q');
+        const tutorBox = document.getElementById('tutor-box');
+        let followup = null;
+        let tutorQ = null;
         const history = [];
 
         // Build full tutor context once.
         const tutorCtx = buildTutorContext(q, stats, curr);
 
         const submitFollowup = (text) => {
-          if (!text) return;
+          if (!text || !followup || !tutorQ) return;
           tutorQ.value = text;
           followup.dispatchEvent(new Event('submit', { cancelable: true }));
         };
+
+        // \u00a769 \u2014 mount the follow-up form + chips only after the
+        // tutor's first successful reply. Markup matches the
+        // previous pre-rendered version; just deferred to success.
+        function mountTutorInputs() {
+          if (followup) return; // idempotent
+          tutorBox.insertAdjacentHTML('beforeend', `
+            <form class="tutor-followup" id="tutor-followup">
+              <input type="text" id="tutor-q" placeholder="Ask a follow-up question\u2026" />
+              <button class="tutor-send" type="submit" aria-label="Send">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+              </button>
+            </form>
+          `);
+          followup = document.getElementById('tutor-followup');
+          tutorQ = document.getElementById('tutor-q');
+          followup.addEventListener('submit', onFollowupSubmit);
+        }
 
         const renderChips = () => {
           const wrap = document.createElement('div');
@@ -1102,22 +1124,22 @@
           }
         }
 
-        const renderError = () => {
-          tutorOut.innerHTML = `<div class="tutor-msg assistant error">${TUTOR_FALLBACK_LINE} <button type="button" id="tutor-retry" class="tutor-retry" style="margin-left:8px;padding:2px 10px;border:1px solid var(--border,#e5e7eb);background:transparent;border-radius:6px;cursor:pointer;font:inherit;color:inherit;">Retry</button></div>`;
-          const retryBtn = document.getElementById('tutor-retry');
-          if (retryBtn) {
-            retryBtn.addEventListener('click', () => { fireInitialTutor(); });
-          }
+        // §69 — silent failure: remove the entire .tutor-box from
+        // the DOM. The kid never sees 'I'll get back to you' apology.
+        // The inline feedback header above (✗ + correct answer +
+        // brief explanation) is the failsafe teaching for that beat.
+        const removeTutorBox = () => {
+          if (tutorBox && tutorBox.parentNode) tutorBox.parentNode.removeChild(tutorBox);
         };
 
         async function fireInitialTutor() {
           tutorOut.innerHTML = `<div class="tutor-msg assistant tutor-loading"><span style="color:var(--text-muted,#6b7280);font-size:0.95rem;margin-right:8px;">AI tutor is reading…</span>${thinkingHTML()}</div>`;
           const result = await runTutor(null, true);
           if (result.aborted) return;
-          if (result.error) { renderError(); return; }
+          if (result.error) { removeTutorBox(); return; }
           tutorOut.innerHTML = `<div class="tutor-msg assistant">${formatTutor(result.reply)}</div>`;
           renderChips();
-          followup.hidden = false;
+          mountTutorInputs(); // §69 — only after first successful reply
         }
 
         // Auto-fire the tutor as soon as the wrong-answer panel renders.
@@ -1125,7 +1147,7 @@
         // can already read while this call is in flight.
         fireInitialTutor();
 
-        followup.addEventListener('submit', async (e) => {
+        async function onFollowupSubmit(e) {
           e.preventDefault();
           const text = tutorQ.value.trim();
           if (!text) return;
@@ -1138,12 +1160,14 @@
           tutorOut.querySelector('.tutor-msg.loading')?.remove();
           if (result.aborted) return;
           if (result.error) {
-            tutorOut.insertAdjacentHTML('beforeend', `<div class="tutor-msg assistant error">${TUTOR_FALLBACK_LINE}</div>`);
+            // §69 — kid is in the conversation now; brief soft-fail
+            // is OK. Keep it short — no apology paragraph.
+            tutorOut.insertAdjacentHTML('beforeend', `<div class="tutor-msg assistant error">Try again in a moment.</div>`);
             return;
           }
           tutorOut.insertAdjacentHTML('beforeend', `<div class="tutor-msg assistant">${formatTutor(result.reply)}</div>`);
           renderChips();
-        });
+        }
       }
     }
 
