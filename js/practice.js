@@ -710,6 +710,78 @@
       });
     }
 
+    // §71 — Fun Fact card. Mounted inline at the end of the
+    // [data-role="inline-fb"] slot below the CORRECT feedback chip
+    // when window.FunFacts.pickFactForCorrect returns a fact. Replaces
+    // the auto-advance progress bar — kid taps "Got it!" to advance
+    // instead of the 1.5s timer firing.
+    //
+    // §71-FIX: this helper MUST be defined inside runQuiz so it
+    // closes over qbox / i / show / the local correct counter.
+    // Originally lived at IIFE-level, where qbox / i / show resolved
+    // to undefined → ReferenceError on every call → silently swallowed
+    // by the integration's try/catch → the card never mounted, the
+    // auto-advance bar was already removed, the kid was stuck. Hamid
+    // screenshot 5:12pm.
+    const FUN_FACT_CATEGORY_EMOJI = {
+      animals: '🐙', space: '🚀', body: '🧠', food: '🥑',
+      texas: '⭐', sports: '🏀', inventions: '💡',
+      history: '📜', 'math-numbers': '🔢', 'weird-funny': '🎲'
+    };
+    function mountFunFactCard(fact, isFirstFactEver, seqAtCall) {
+      const qCard = qbox.querySelector('.question-card');
+      if (!qCard) return;
+      const fbSlot = qCard.querySelector('[data-role="inline-fb"]');
+      if (!fbSlot) return;
+
+      const icon = FUN_FACT_CATEGORY_EMOJI[fact.category] || '✨';
+      const card = document.createElement('div');
+      card.className = 'ff-card';
+      card.setAttribute('data-fact-id', fact.id);
+      card.setAttribute('role', 'group');
+      card.setAttribute('aria-label', 'Fun fact');
+      const welcomeHtml = isFirstFactEver
+        ? '<div class="ff-card-welcome">Welcome to fun facts</div>'
+        : '';
+      card.innerHTML = `
+        ${welcomeHtml}
+        <div class="ff-card-label" aria-hidden="true">★ Fun Fact</div>
+        <div class="ff-card-icon" aria-hidden="true">${icon}</div>
+        <div class="ff-card-body">${escapeHtml(fact.fact || '')}</div>
+        <button type="button" class="ff-card-cta" data-act="ff-got-it">Got it!</button>
+      `;
+      fbSlot.appendChild(card);
+
+      const cta = card.querySelector('[data-act="ff-got-it"]');
+      // §71-FIX: stopPropagation defends against any ancestor click
+      // listener (the question-card form, the inline-fb slot, etc.)
+      // swallowing the click before our handler runs. type="button"
+      // already keeps it out of form submission, but belt-and-suspenders
+      // here is cheap insurance after the scope-bug class.
+      cta.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        try {
+          if (window.FunFacts && typeof window.FunFacts.markFactSeen === 'function') {
+            window.FunFacts.markFactSeen(fact.id);
+          }
+        } catch (_) {}
+        if (window._stAutoAdvance) {
+          try { clearTimeout(window._stAutoAdvance); } catch (_) {}
+          window._stAutoAdvance = null;
+        }
+        if (i === seqAtCall) {
+          try { i++; show(); } catch (_) {}
+        }
+      });
+
+      // Defer focus to the next frame so the slide-up animation can start
+      // before the focus ring lands; reduces visual jank.
+      requestAnimationFrame(() => {
+        try { cta.focus({ preventScroll: false }); } catch (_) { try { cta.focus(); } catch (_) {} }
+      });
+    }
+
     function show() {
       // §68 — clear pending auto-advance from a previous CORRECT
       // state. The qbox.innerHTML reset below would orphan the
@@ -1605,66 +1677,6 @@
     }[c]));
   }
   function escapeAttr(s) { return escapeHtml(s); }
-
-  // §71 — Fun Fact card. Mounted inline at the end of the [data-role="inline-fb"]
-  // slot below the CORRECT feedback chip when window.FunFacts.pickFactForCorrect
-  // returns a fact. Replaces the auto-advance progress bar — kid taps "Got it!"
-  // to advance instead of the 1.5s timer firing.
-  const FUN_FACT_CATEGORY_EMOJI = {
-    animals: '🐙', space: '🚀', body: '🧠', food: '🥑',
-    texas: '⭐', sports: '🏀', inventions: '💡',
-    history: '📜', 'math-numbers': '🔢', 'weird-funny': '🎲'
-  };
-  function mountFunFactCard(fact, isFirstFactEver, seqAtCall) {
-    const qCard = qbox.querySelector('.question-card');
-    if (!qCard) return;
-    const fbSlot = qCard.querySelector('[data-role="inline-fb"]');
-    if (!fbSlot) return;
-
-    const icon = FUN_FACT_CATEGORY_EMOJI[fact.category] || '✨';
-    const card = document.createElement('div');
-    card.className = 'ff-card';
-    card.setAttribute('data-fact-id', fact.id);
-    card.setAttribute('role', 'group');
-    card.setAttribute('aria-label', 'Fun fact');
-    const welcomeHtml = isFirstFactEver
-      ? '<div class="ff-card-welcome">Welcome to fun facts</div>'
-      : '';
-    card.innerHTML = `
-      ${welcomeHtml}
-      <div class="ff-card-label" aria-hidden="true">★ Fun Fact</div>
-      <div class="ff-card-icon" aria-hidden="true">${icon}</div>
-      <div class="ff-card-body">${escapeHtml(fact.fact || '')}</div>
-      <button type="button" class="ff-card-cta" data-act="ff-got-it">Got it!</button>
-    `;
-    fbSlot.appendChild(card);
-
-    const cta = card.querySelector('[data-act="ff-got-it"]');
-    cta.addEventListener('click', () => {
-      try {
-        if (window.FunFacts && typeof window.FunFacts.markFactSeen === 'function') {
-          window.FunFacts.markFactSeen(fact.id);
-        }
-      } catch (_) {}
-      // Belt-and-suspenders: even though we cancelled it on mount, make
-      // sure no stray timer fires before we manually advance.
-      if (window._stAutoAdvance) {
-        try { clearTimeout(window._stAutoAdvance); } catch (_) {}
-        window._stAutoAdvance = null;
-      }
-      // Race guard — only advance if still on the same question. If the
-      // kid somehow navigated away (back button, sign out), don't double-fire.
-      if (i === seqAtCall) {
-        try { i++; show(); } catch (_) {}
-      }
-    });
-
-    // Defer focus to the next frame so the slide-up animation can start
-    // before the focus ring lands; reduces visual jank.
-    requestAnimationFrame(() => {
-      try { cta.focus({ preventScroll: false }); } catch (_) { try { cta.focus(); } catch (_) {} }
-    });
-  }
 
   // §71 — Kick off catalog fetch on practice page init so the FIRST
   // correct answer can already see a loaded catalog. Without this,
