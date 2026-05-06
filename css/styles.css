@@ -7776,13 +7776,16 @@ input[type="button"] {
   .site-header { padding: 8px 16px; }
   .site-header .container { height: 48px; gap: 8px; }
 
-  /* Hide center nav + user pill + chat — they go in hamburger */
+  /* §70 — Hide center nav + chat-bell + admin badge on mobile.
+     The .user-pill and .user-menu are EXPLICITLY NOT hidden here —
+     §62's mobile rule below shows the avatar dropdown as the
+     primary auth surface on phone. Block 1's old !important hiders
+     for .user-pill / .user-menu would beat §62's non-important
+     show-rule, leaving signed-in users with no avatar (Hamid screenshot
+     12:50pm). Keep nav/chat/admin hidden — those route via the
+     dropdown's links. */
   .site-header .nav,
-  .site-header .user-pill,
-  .site-header .user-menu,
   .site-header .chat-bell,
-  .site-header #user-slot .user-menu,
-  .site-header #user-slot .user-pill,
   .site-header #user-slot .chat-bell,
   .site-header #user-slot .admin-badge {
     display: none !important;
@@ -15123,4 +15126,64 @@ body.practice-page .question-card[data-state="asking"] {
 }
 @media (prefers-reduced-motion: reduce) {
   body.practice-page .question-card[data-state="asking"] { animation: none; }
+}
+
+/* ==========================================================
+   §70 — User-menu dropdown polish + sign-out flow
+   Hamid screenshot 12:50pm: signed-in user saw NO avatar +
+   NO sign-out path (constitutional right violation per
+   Owners' Room). Block 1's old !important hider for
+   .user-pill / .user-menu was removed at line 7779; this
+   block adds the dropdown's Material-spec polish:
+     - dropdown header (name + @username, no email locally)
+     - section divider before destructive actions
+     - red-tinted "Sign out" button
+     - 44px tap target on avatar (extends invisible hit area)
+   ========================================================== */
+.user-menu-header {
+  padding: 10px 12px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 4px;
+}
+.user-menu-header-name {
+  display: block;
+  color: #f9fafb;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 2px;
+}
+.user-menu-header-handle {
+  display: block;
+  color: rgba(255, 255, 255, 0.55);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 0.78rem;
+}
+.user-menu-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 4px 4px;
+}
+.user-menu button.user-menu-signout,
+.user-menu .user-menu-signout {
+  color: rgba(248, 113, 113, 0.92);
+}
+.user-menu button.user-menu-signout:hover {
+  background: rgba(239, 68, 68, 0.10);
+  color: rgba(252, 165, 165, 1);
+}
+
+/* Avatar tap target — visible 36px circle, invisible hit area
+   extends to 44x44pt per Material/Apple HIG.
+   Use ::before pseudo to extend hit area without disturbing layout. */
+.site-header .user-pill {
+  position: relative;
+}
+.site-header .user-pill::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 999px;
+  /* No background — purely a hit area. */
 }

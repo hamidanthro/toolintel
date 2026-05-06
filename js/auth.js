@@ -57,6 +57,38 @@ if ('serviceWorker' in navigator) {
     } catch (_) {}
   }
 
+  // §70 — Sign-out flow with kid-protection. Detect mid-practice
+  // (path matches practice.html OR a question card is in the
+  // ASKING state) and show a confirm before tearing down auth.
+  // Otherwise: instant sign-out → redirect → toast on landing.
+  function isMidPractice() {
+    try {
+      if (/\/practice\.html(?:[?#].*)?$/.test(location.pathname + location.search)) return true;
+      if (document.querySelector('.question-card[data-state="asking"]')) return true;
+    } catch (_) {}
+    return false;
+  }
+  function attemptSignOut() {
+    if (isMidPractice()) {
+      const ok = window.confirm('End session and sign out?\nYour progress is saved.');
+      if (!ok) return;
+    }
+    try { localStorage.setItem('staar:just-signed-out', '1'); } catch (_) {}
+    clearSession();
+    try { window.location.assign('/'); } catch (_) { window.location.href = '/'; }
+  }
+  // Surface a brief toast on the landing page after a sign-out.
+  function maybeShowSignedOutToast() {
+    try {
+      if (localStorage.getItem('staar:just-signed-out') !== '1') return;
+      localStorage.removeItem('staar:just-signed-out');
+      // STAARFx is loaded by fx.js; if it's not on the page, skip silently.
+      if (window.STAARFx && typeof window.STAARFx.toast === 'function') {
+        window.STAARFx.toast('Signed out.', { kind: 'win', duration: 1800 });
+      }
+    } catch (_) {}
+  }
+
   function currentUser() {
     const s = loadSession();
     return s && s.user ? s.user : null;
@@ -67,6 +99,19 @@ if ('serviceWorker' in navigator) {
   }
 
   function avatar(name) { return (name || '?').trim().charAt(0).toUpperCase() || '?'; }
+
+  // §70 — Stable per-user avatar color. djb2 hash → palette of 6
+  // brand-friendly colors. Each user gets a consistent color across
+  // sessions/devices (small dopamine hit, kid-friendly identity).
+  // Used as fallback when user.color is not set on the session.
+  function stableUserColor(seed) {
+    const palette = ['#7c3aed', '#ec4899', '#14b8a6', '#f59e0b', '#3b82f6', '#10b981'];
+    const s = String(seed || '');
+    let h = 5381;
+    for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+    return palette[Math.abs(h) % palette.length];
+  }
+
   function escapeHtml(s) {
     return String(s ?? '').replace(/[&<>"']/g, c => ({
       '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -892,6 +937,8 @@ if ('serviceWorker' in navigator) {
     const wallet = formatCents(u.balanceCents || 0);
     const adminBadge = u.isAdmin ? `<a href="${R('admin.html')}" class="admin-badge" title="Admin panel">Admin</a>` : '';
     const adminLink = u.isAdmin ? `<a href="${R('admin.html')}" class="user-menu-link">Admin panel</a>` : '';
+    // §70 — fall back to djb2-derived stable color if user.color is not set.
+    const avatarColor = u.color || stableUserColor(u.username || u.displayName || '');
     slot.innerHTML = `
       ${adminBadge}
       <a href="${R('marketplace.html')}" class="wallet-pill" title="Toy marketplace">
@@ -902,16 +949,20 @@ if ('serviceWorker' in navigator) {
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
         <span class="chat-bell-dot" id="chat-bell-dot" hidden></span>
       </button>
-      <button type="button" class="user-pill" id="user-pill">
-        <span class="profile-avatar small" style="background:${u.color || '#1e40af'}">${escapeHtml(avatar(u.displayName || u.username))}</span>
+      <button type="button" class="user-pill" id="user-pill" aria-haspopup="true" aria-expanded="false" aria-label="Account menu">
+        <span class="profile-avatar small" style="background:${avatarColor}">${escapeHtml(avatar(u.displayName || u.username))}</span>
         <span class="user-pill-name">${escapeHtml(u.displayName || u.username)}</span>
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
       </button>
-      <div class="user-menu" id="user-menu" hidden>
-        <div class="user-menu-meta">@${escapeHtml(u.username)}</div>
+      <div class="user-menu" id="user-menu" role="menu" hidden>
+        <div class="user-menu-header">
+          <span class="user-menu-header-name">${escapeHtml(u.displayName || u.username)}</span>
+          <span class="user-menu-header-handle">@${escapeHtml(u.username)}</span>
+        </div>
         ${adminLink}
-        <a href="${R('settings.html')}" class="user-menu-link">Settings</a>
-        <button type="button" data-act="logout">Sign out</button>
+        <a href="${R('settings.html')}" class="user-menu-link" role="menuitem">Settings</a>
+        <div class="user-menu-divider" aria-hidden="true"></div>
+        <button type="button" class="user-menu-signout" data-act="logout" role="menuitem">Sign out</button>
       </div>`;
     const pill = slot.querySelector('#user-pill');
     const menu = slot.querySelector('#user-menu');
@@ -922,18 +973,43 @@ if ('serviceWorker' in navigator) {
         window.dispatchEvent(new CustomEvent('staar:open-friends'));
       });
     }
+    // §70 — Persistent open/close. Outside-click + Esc both close.
+    // Listeners attach on open, detach on close so duplicate opens
+    // don't stack handlers. Previous code used { once: true } which
+    // worked only on the FIRST close; subsequent opens left the
+    // outside-click handler dead.
+    let menuOpen = false;
+    const onDocClick = (e) => { if (!slot.contains(e.target)) closeMenu(); };
+    const onKeyDown = (e) => { if (e.key === 'Escape') closeMenu(); };
+    function openMenu() {
+      if (menuOpen) return;
+      menu.hidden = false;
+      pill.setAttribute('aria-expanded', 'true');
+      menuOpen = true;
+      // setTimeout 0 so the click that opened it doesn't immediately
+      // bubble to document and close it.
+      setTimeout(() => {
+        document.addEventListener('click', onDocClick);
+        document.addEventListener('keydown', onKeyDown);
+      }, 0);
+    }
+    function closeMenu() {
+      if (!menuOpen) return;
+      menu.hidden = true;
+      pill.setAttribute('aria-expanded', 'false');
+      menuOpen = false;
+      document.removeEventListener('click', onDocClick);
+      document.removeEventListener('keydown', onKeyDown);
+    }
     pill.addEventListener('click', e => {
       e.stopPropagation();
-      menu.hidden = !menu.hidden;
+      menuOpen ? closeMenu() : openMenu();
     });
-    document.addEventListener('click', () => { menu.hidden = true; }, { once: true });
-    menu.querySelector('[data-act="logout"]').addEventListener('click', () => {
-      menu.hidden = true;
-      clearSession();
-      // Always return to the landing page on sign-out so the dashboard
-      // (or any authed view) is fully torn down — no stale state.
-      try { window.location.assign('/'); } catch (_) { window.location.href = '/'; }
+    // Close on any menu-item click (the link/button still routes).
+    menu.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('click', () => closeMenu());
     });
+    menu.querySelector('[data-act="logout"]').addEventListener('click', () => attemptSignOut());
     try { ensureMobileMenu(); } catch (_) {}
     try { ensureMobileTabBar(); } catch (_) {}
     // Live-update tab bar balance badge if present.
@@ -1096,8 +1172,7 @@ if ('serviceWorker' in navigator) {
     const signoutBtn = panel.querySelector('[data-act="signout"]');
     if (signoutBtn) signoutBtn.addEventListener('click', () => {
       close();
-      clearSession();
-      try { window.location.assign('/'); } catch (_) { window.location.href = '/'; }
+      attemptSignOut();
     });
   }
 
@@ -1320,10 +1395,7 @@ if ('serviceWorker' in navigator) {
     });
     sheet.querySelector('[data-action="signout"]').addEventListener('click', () => {
       closeSheet();
-      setTimeout(() => {
-        clearSession();
-        try { window.location.assign('/'); } catch (_) { window.location.href = '/'; }
-      }, 300);
+      setTimeout(() => attemptSignOut(), 300);
     });
     const installBtn = sheet.querySelector('[data-action="pwa-install"]');
     if (installBtn) {
@@ -1420,6 +1492,7 @@ if ('serviceWorker' in navigator) {
     ensureMobileTabBar();
     setupInputFocusedClass();
     setupIOSKeyboardHandler();
+    maybeShowSignedOutToast();
     if (window.STAARAuth.requireLoginOnLoad && !currentUser()) {
       showLogin();
     } else if (currentUser()) {
