@@ -278,7 +278,7 @@ if ('serviceWorker' in navigator) {
     overlay.querySelector('[data-act="forgot"]').addEventListener('click', e => {
       e.preventDefault();
       if (window.STAARAuth && window.STAARAuth.showToast) {
-        window.STAARAuth.showToast('Password reset is coming soon. Email support@toolintel.ai if you need help.');
+        window.STAARAuth.showToast('Password reset is coming soon. Email support@gradeearn.com if you need help.');
       }
     });
 

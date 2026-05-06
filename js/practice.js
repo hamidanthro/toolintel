@@ -5,7 +5,7 @@
 
 (function () {
   const TUTOR_ENDPOINT = window.STAAR_TUTOR_ENDPOINT
-    || 'https://api.toolintel.ai/tutor'; // override via window.STAAR_TUTOR_ENDPOINT before this script
+    || 'https://api.gradeearn.com/tutor'; // override via window.STAAR_TUTOR_ENDPOINT before this script
 
   // Tutor auto-fire timeout. If we don't have a reply in this long, the kid
   // sees the stored explanation as fallback + a Retry button.

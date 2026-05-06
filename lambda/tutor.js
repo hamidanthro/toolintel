@@ -40,6 +40,22 @@ const S3_REGION = process.env.AWS_REGION || 'us-east-1';
 const ADMIN_USERNAMES = (process.env.ADMIN_USERNAMES || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
 const LIFETIME_CAP_CENTS = 10000; // $100
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || '*';
+// §48 — domain-cutover allowlist. Echoes back the request's Origin
+// when it matches the allowlist (CORS-correct for credentialed
+// requests later, and avoids leaking '*' to unknown origins). Falls
+// back to ALLOWED_ORIGIN env (default '*') when Origin is missing or
+// not in the list, so existing deployment behavior is preserved
+// until env ALLOWED_ORIGINS is set. toolintel.ai retained during
+// the gradeearn.com DNS propagation window (~24h).
+const ALLOWED_ORIGIN_LIST = (process.env.ALLOWED_ORIGINS || [
+  'https://gradeearn.com',
+  'https://www.gradeearn.com',
+  'https://toolintel.ai',
+  'https://www.toolintel.ai',
+  'http://localhost:8000',
+  'http://localhost:5173',
+  'http://127.0.0.1:8000'
+].join(',')).split(',').map(s => s.trim()).filter(Boolean);
 const TOKEN_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days
 
 const sm = new SecretsManagerClient({});
@@ -62,12 +78,30 @@ async function getApiKey() {
   return cachedKey;
 }
 
-const cors = {
+// §48 — `cors` is `let` not `const` so we can update Access-Control-
+// Allow-Origin per request. setCorsForRequest(event) runs at handler
+// entry and picks the matching origin from ALLOWED_ORIGIN_LIST. ok()
+// and bad() read this object as before.
+let cors = {
   'Content-Type': 'application/json',
   'Access-Control-Allow-Origin': ALLOWED_ORIGIN,
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type'
 };
+
+function pickAllowedOrigin(event) {
+  const headers = (event && event.headers) || {};
+  let reqOrigin = '';
+  for (const k of Object.keys(headers)) {
+    if (k.toLowerCase() === 'origin') { reqOrigin = headers[k]; break; }
+  }
+  if (reqOrigin && ALLOWED_ORIGIN_LIST.includes(reqOrigin)) return reqOrigin;
+  return ALLOWED_ORIGIN;
+}
+
+function setCorsForRequest(event) {
+  cors['Access-Control-Allow-Origin'] = pickAllowedOrigin(event);
+}
 
 function ok(body) {
   return { statusCode: 200, headers: cors, body: JSON.stringify(body) };
@@ -322,6 +356,8 @@ async function callOpenAI(apiKey, body) {
 }
 
 exports.handler = async (event) => {
+  // §48 — set CORS Allow-Origin per request from the allowlist.
+  setCorsForRequest(event);
   const method = event.httpMethod || event.requestContext?.http?.method;
   if (method === 'OPTIONS') {
     return { statusCode: 200, headers: cors, body: '' };
