@@ -348,6 +348,16 @@ if ('serviceWorker' in navigator) {
         const res = await api('login', { username, password });
         saveSession({ token: res.token, user: res.user });
         await pullStats();
+        // §72 — Fun Facts state hydration. Server values win on sign-in
+        // (cross-device consistency). Fire-and-forget — failure falls
+        // back to localStorage which the module already loaded on init.
+        try {
+          if (window.FunFacts && typeof window.FunFacts._hydrateFromServer === 'function') {
+            api('getFunFactsState', { token: res.token })
+              .then(s => window.FunFacts._hydrateFromServer(s))
+              .catch(() => {});
+          }
+        } catch (_) {}
         closeModal();
         refreshHeader();
         onLoginSuccess();
@@ -559,6 +569,7 @@ if ('serviceWorker' in navigator) {
           saveSession({ token: res.token, user: res.user });
           try { if (res.user && res.user.state) localStorage.setItem('gradeearn.state', res.user.state); } catch (_) {}
           await migrateLegacyStats();
+          migrateGuestFunFactsToServer(res.token);
           closeModal();
           refreshHeader();
           onLoginSuccess();
@@ -660,6 +671,7 @@ if ('serviceWorker' in navigator) {
           saveSession({ token: res.token, user: res.user });
           try { if (res.user && res.user.state) localStorage.setItem('gradeearn.state', res.user.state); } catch (_) {}
           await migrateLegacyStats();
+          migrateGuestFunFactsToServer(res.token);
           okEl.textContent = 'Verified. Signing you in…';
           okEl.hidden = false;
           setTimeout(() => {
@@ -788,6 +800,24 @@ if ('serviceWorker' in navigator) {
         await pushStats(slug, data);
       } catch (_) {}
     }
+  }
+
+  // §72 — guest→signup migration for fun-facts state. Reads any state
+  // built up while the kid was a guest (in localStorage), pushes it to
+  // the server's new account record via initialState (server only
+  // accepts it on a fresh record), then clears the guest state so a
+  // future sign-in doesn't re-apply it. Fire-and-forget.
+  function migrateGuestFunFactsToServer(token) {
+    try {
+      if (!window.FunFacts || typeof window.FunFacts._exportLocalForSignup !== 'function') return;
+      const initialState = window.FunFacts._exportLocalForSignup();
+      if (!initialState) return;
+      api('updateFunFactsState', { token, initialState })
+        .then(() => {
+          try { window.FunFacts._clearLocalGuestState(); } catch (_) {}
+        })
+        .catch(() => {});
+    } catch (_) {}
   }
 
   function onLoginSuccess() {

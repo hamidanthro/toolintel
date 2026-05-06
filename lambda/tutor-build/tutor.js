@@ -403,6 +403,8 @@ exports.handler = async (event) => {
   if (action === 'resendVerification')   return await handleResendVerification(payload, event);
   if (action === 'getStats') return await handleGetStats(payload);
   if (action === 'putStats') return await handlePutStats(payload);
+  if (action === 'getFunFactsState')    return await handleGetFunFactsState(payload);
+  if (action === 'updateFunFactsState') return await handleUpdateFunFactsState(payload);
   if (action === 'earn')           return await handleEarn(payload);
   if (action === 'lose')           return await handleLose(payload);
   if (action === 'heartbeat')      return await handleHeartbeat(payload);
@@ -1807,6 +1809,152 @@ async function handleGetStats(payload) {
     if (it.slug) out[it.slug] = it.data;
   }
   return ok({ stats: out });
+}
+
+// ===== Fun Facts state (Phase 2) =====
+
+const FUN_FACTS_VALID_FREQS = [1, 5, 10, 25, 'paused'];
+const FUN_FACTS_SEEN_CAP = 200;
+
+async function handleGetFunFactsState(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  const r = await ddb.send(new GetCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username },
+    ProjectionExpression: 'funFactsFreq, funFactsSeen, funFactsFirstShownAt'
+  }));
+  const item = r.Item || {};
+  return ok({
+    funFactsFreq:         item.funFactsFreq,                         // number | 'paused' | undefined
+    funFactsSeen:         Array.isArray(item.funFactsSeen) ? item.funFactsSeen : [],
+    funFactsFirstShownAt: Number.isFinite(item.funFactsFirstShownAt) ? item.funFactsFirstShownAt : undefined
+  });
+}
+
+async function handleUpdateFunFactsState(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+
+  const markSeen        = payload.markSeen;
+  const setFrequency    = payload.setFrequency;
+  const setFirstShownAt = payload.setFirstShownAt;
+  const initialState    = payload.initialState;
+
+  // Validate inputs.
+  if (markSeen !== undefined && (typeof markSeen !== 'string' || markSeen.length === 0 || markSeen.length > 64)) {
+    return bad(400, 'markSeen must be a short string');
+  }
+  let freqToWrite = undefined;
+  if (setFrequency !== undefined) {
+    if (setFrequency === null) {
+      // Caller wants to clear the override. We use REMOVE in the update.
+      freqToWrite = null;
+    } else if (FUN_FACTS_VALID_FREQS.indexOf(setFrequency) === -1) {
+      return bad(400, 'Invalid setFrequency');
+    } else {
+      freqToWrite = setFrequency;
+    }
+  }
+  if (setFirstShownAt !== undefined &&
+      (!Number.isFinite(setFirstShownAt) || setFirstShownAt <= 0 || setFirstShownAt > Date.now() + 60_000)) {
+    return bad(400, 'Invalid setFirstShownAt');
+  }
+  if (initialState !== undefined &&
+      (initialState === null || typeof initialState !== 'object' || Array.isArray(initialState))) {
+    return bad(400, 'initialState must be an object');
+  }
+
+  // markSeen needs read-modify-write so we can FIFO-cap the array.
+  // setFrequency / setFirstShownAt / initialState are independent.
+  let setExprs = [];
+  let removeExprs = [];
+  let names = {};
+  let values = {};
+
+  if (markSeen !== undefined || setFirstShownAt !== undefined || initialState !== undefined) {
+    // Read current funFactsSeen to compute the new array.
+    const cur = await ddb.send(new GetCommand({
+      TableName: USERS_TABLE,
+      Key: { username: auth.username },
+      ProjectionExpression: 'funFactsSeen, funFactsFirstShownAt, funFactsFreq'
+    }));
+    const item = cur.Item || {};
+    const curSeen = Array.isArray(item.funFactsSeen) ? item.funFactsSeen.slice() : [];
+    const curFirstShownAt = Number.isFinite(item.funFactsFirstShownAt) ? item.funFactsFirstShownAt : undefined;
+    const curFreq = item.funFactsFreq;
+
+    // markSeen → append + FIFO cap.
+    if (markSeen !== undefined) {
+      if (curSeen.indexOf(markSeen) === -1) {
+        curSeen.push(markSeen);
+        if (curSeen.length > FUN_FACTS_SEEN_CAP) {
+          curSeen.splice(0, curSeen.length - FUN_FACTS_SEEN_CAP);
+        }
+        setExprs.push('funFactsSeen = :seen');
+        values[':seen'] = curSeen;
+      }
+    }
+
+    // setFirstShownAt — idempotent, only set if not already set.
+    if (setFirstShownAt !== undefined && !curFirstShownAt) {
+      setExprs.push('funFactsFirstShownAt = :fsa');
+      values[':fsa'] = setFirstShownAt;
+    }
+
+    // initialState — guest→signup migration. Only allowed if user has no
+    // fun-facts state yet. This avoids a guest's old state stomping on
+    // an account that already has progress.
+    if (initialState !== undefined) {
+      const noState = !curFreq && curSeen.length === 0 && !curFirstShownAt;
+      if (noState) {
+        if (initialState.funFactsFreq !== undefined &&
+            FUN_FACTS_VALID_FREQS.indexOf(initialState.funFactsFreq) >= 0) {
+          setExprs.push('funFactsFreq = :ifreq');
+          values[':ifreq'] = initialState.funFactsFreq;
+        }
+        if (Array.isArray(initialState.funFactsSeen)) {
+          const merged = initialState.funFactsSeen
+            .filter(x => typeof x === 'string')
+            .slice(-FUN_FACTS_SEEN_CAP);
+          setExprs.push('funFactsSeen = :iseen');
+          values[':iseen'] = merged;
+        }
+        if (Number.isFinite(initialState.funFactsFirstShownAt) && initialState.funFactsFirstShownAt > 0) {
+          setExprs.push('funFactsFirstShownAt = :ifsa');
+          values[':ifsa'] = initialState.funFactsFirstShownAt;
+        }
+      }
+    }
+  }
+
+  if (setFrequency !== undefined) {
+    if (freqToWrite === null) {
+      removeExprs.push('funFactsFreq');
+    } else {
+      setExprs.push('funFactsFreq = :freq');
+      values[':freq'] = freqToWrite;
+    }
+  }
+
+  if (setExprs.length === 0 && removeExprs.length === 0) {
+    return ok({ ok: true, noop: true });
+  }
+
+  let updateExpression = '';
+  if (setExprs.length) updateExpression += 'SET ' + setExprs.join(', ');
+  if (removeExprs.length) updateExpression += (updateExpression ? ' ' : '') + 'REMOVE ' + removeExprs.join(', ');
+
+  const params = {
+    TableName: USERS_TABLE,
+    Key: { username: auth.username },
+    UpdateExpression: updateExpression
+  };
+  if (Object.keys(values).length) params.ExpressionAttributeValues = values;
+  if (Object.keys(names).length)  params.ExpressionAttributeNames = names;
+
+  await ddb.send(new UpdateCommand(params));
+  return ok({ ok: true });
 }
 
 // ===== Wallet (earn / get) =====

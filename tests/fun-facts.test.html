@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>FunFacts Phase 2 — smoke tests</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 24px auto; padding: 16px; }
+    h1 { font-size: 18px; margin: 0 0 12px; }
+    #results { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; line-height: 1.6; }
+    .pass { color: #047857; }
+    .fail { color: #b91c1c; font-weight: 700; }
+    .summary { margin-top: 16px; padding: 12px; background: #f3f4f6; border-radius: 8px; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <h1>FunFacts Phase 2 — selector + state lifecycle smoke</h1>
+  <div id="results"></div>
+
+  <script>
+    // Mock STAARAuth before fun-facts.js loads. We don't want any real
+    // network calls; tests assert pure-function behavior + localStorage.
+    window.STAARAuth = {
+      currentUser: () => null,           // act as guest
+      token: () => null,
+      api: () => Promise.resolve({})
+    };
+    // Clear any pre-existing localStorage state so tests start clean.
+    ['gradeearn:ff:freq', 'gradeearn:ff:seen', 'gradeearn:ff:firstShownAt'].forEach(k => {
+      try { localStorage.removeItem(k); } catch (_) {}
+    });
+  </script>
+  <script src="../js/fun-facts.js"></script>
+  <script>
+    const out = document.getElementById('results');
+    let pass = 0, fail = 0;
+    function assert(label, cond, detail) {
+      const line = document.createElement('div');
+      if (cond) { pass++; line.className = 'pass'; line.textContent = 'PASS  ' + label; }
+      else      { fail++; line.className = 'fail'; line.textContent = 'FAIL  ' + label + (detail ? '  — ' + detail : ''); }
+      out.appendChild(line);
+    }
+    function section(name) {
+      const h = document.createElement('div');
+      h.style.cssText = 'margin-top:12px;font-weight:700;color:#1e3a8a';
+      h.textContent = '— ' + name;
+      out.appendChild(h);
+    }
+
+    // Synthetic catalog: 5 texas L1 + 3 space L2 + 2 weird-funny L3 = 10
+    const FAKE_CATALOG = [
+      { id: 'ff-tx-001', category: 'texas',       wowLevel: 1, isTexasRelevant: true,  fact: 'Texas was its own country.' },
+      { id: 'ff-tx-002', category: 'texas',       wowLevel: 1, isTexasRelevant: true,  fact: 'King Ranch bigger than Rhode Island.' },
+      { id: 'ff-tx-003', category: 'texas',       wowLevel: 1, isTexasRelevant: true,  fact: 'Bluebonnet is the state flower.' },
+      { id: 'ff-tx-004', category: 'texas',       wowLevel: 1, isTexasRelevant: true,  fact: 'Six flags have flown over Texas.' },
+      { id: 'ff-tx-005', category: 'texas',       wowLevel: 1, isTexasRelevant: true,  fact: 'Texas grows the most cotton.' },
+      { id: 'ff-sp-001', category: 'space',       wowLevel: 2, isTexasRelevant: false, fact: 'Saturn rings are billions of icy chunks.' },
+      { id: 'ff-sp-002', category: 'space',       wowLevel: 2, isTexasRelevant: false, fact: 'Jupiter has 95 known moons.' },
+      { id: 'ff-sp-003', category: 'space',       wowLevel: 2, isTexasRelevant: false, fact: 'Neptune winds reach 1,200 mph.' },
+      { id: 'ff-wf-001', category: 'weird-funny', wowLevel: 3, isTexasRelevant: false, fact: 'Wombat poop is cube-shaped.' },
+      { id: 'ff-wf-002', category: 'weird-funny', wowLevel: 3, isTexasRelevant: false, fact: 'Octopuses have three hearts.' }
+    ];
+
+    // ====== _shouldShow ======
+    section('_shouldShow gates');
+    const ss = window.FunFacts._shouldShow;
+
+    assert('returns false when isFirstTry=false',
+      ss({ isFirstTry: false, lifetimeCorrect: 10, sessionCorrectCount: 1, freq: 1 }) === false);
+    assert('returns false when freq=paused',
+      ss({ isFirstTry: true,  lifetimeCorrect: 10, sessionCorrectCount: 1, freq: 'paused' }) === false);
+    assert('returns true at session=1, lifetime<50, default freq',
+      ss({ isFirstTry: true, lifetimeCorrect: 10, sessionCorrectCount: 1 }) === true);
+    assert('returns false at session=0',
+      ss({ isFirstTry: true, lifetimeCorrect: 10, sessionCorrectCount: 0 }) === false);
+    assert('lifetime>=50 → every-5: returns false at session=4',
+      ss({ isFirstTry: true, lifetimeCorrect: 100, sessionCorrectCount: 4 }) === false);
+    assert('lifetime>=50 → every-5: returns true at session=5',
+      ss({ isFirstTry: true, lifetimeCorrect: 100, sessionCorrectCount: 5 }) === true);
+    assert('lifetime>=50 → every-5: returns true at session=10',
+      ss({ isFirstTry: true, lifetimeCorrect: 100, sessionCorrectCount: 10 }) === true);
+    assert('manual override 10 wins over default',
+      ss({ isFirstTry: true, lifetimeCorrect: 10, sessionCorrectCount: 5,  freq: 10 }) === false);
+    assert('manual override 10: triggers at session=10',
+      ss({ isFirstTry: true, lifetimeCorrect: 10, sessionCorrectCount: 10, freq: 10 }) === true);
+    assert('manual override 25: triggers at session=25',
+      ss({ isFirstTry: true, lifetimeCorrect: 200, sessionCorrectCount: 25, freq: 25 }) === true);
+
+    // ====== _selectNext ======
+    section('_selectNext determinism');
+    const sn = window.FunFacts._selectNext;
+
+    {
+      const f = sn({ catalog: FAKE_CATALOG, seenIds: [], isFirstFactEver: true });
+      assert('first fact ever → texas L1', f && f.category === 'texas' && f.wowLevel === 1, 'got ' + (f && f.id));
+    }
+    {
+      // First-ever with all 5 texas L1 already seen → fall through to general
+      const seen = ['ff-tx-001','ff-tx-002','ff-tx-003','ff-tx-004','ff-tx-005'];
+      const f = sn({ catalog: FAKE_CATALOG, seenIds: seen, isFirstFactEver: true });
+      assert('first-ever fallback when texas-L1 exhausted',
+        f && seen.indexOf(f.id) === -1, 'got ' + (f && f.id));
+    }
+    {
+      // Subsequent — never returns a seen id across many trials
+      const seen = ['ff-tx-001','ff-sp-001','ff-wf-001'];
+      let leaked = 0;
+      for (let i = 0; i < 200; i++) {
+        const f = sn({ catalog: FAKE_CATALOG, seenIds: seen, isFirstFactEver: false });
+        if (f && seen.indexOf(f.id) >= 0) leaked++;
+      }
+      assert('subsequent: never returns a seen id (200 trials)', leaked === 0, 'leaked=' + leaked);
+    }
+    {
+      // All seen → defensive fallback returns L1
+      const allIds = FAKE_CATALOG.map(f => f.id);
+      const f = sn({ catalog: FAKE_CATALOG, seenIds: allIds, isFirstFactEver: false });
+      assert('defensive fallback when all seen', f && f.wowLevel === 1, 'got ' + (f && JSON.stringify({id:f.id,wow:f.wowLevel})));
+    }
+
+    section('_selectNext distribution (1000 trials)');
+    {
+      // With nothing seen and a balanced catalog, level distribution should
+      // be roughly 60/30/10 ± 10 percentage-points (loose tolerance — RNG).
+      const counts = { 1: 0, 2: 0, 3: 0 };
+      for (let i = 0; i < 1000; i++) {
+        const f = sn({ catalog: FAKE_CATALOG, seenIds: [], isFirstFactEver: false });
+        if (f) counts[f.wowLevel] = (counts[f.wowLevel] || 0) + 1;
+      }
+      const tot = counts[1] + counts[2] + counts[3];
+      const p1 = counts[1] / tot, p2 = counts[2] / tot, p3 = counts[3] / tot;
+      assert(`L1 ≈ 60% (got ${(p1*100).toFixed(1)}%)`, p1 > 0.50 && p1 < 0.70);
+      assert(`L2 ≈ 30% (got ${(p2*100).toFixed(1)}%)`, p2 > 0.20 && p2 < 0.40);
+      assert(`L3 ≈ 10% (got ${(p3*100).toFixed(1)}%)`, p3 > 0.04 && p3 < 0.18);
+    }
+
+    // ====== state lifecycle ======
+    section('markFactSeen + FIFO cap');
+
+    // Reset state cleanly.
+    window.FunFacts._clearLocalGuestState();
+    window.FunFacts.markFactSeen('ff-tx-001');
+    assert('markFactSeen appends to seen list',
+      window.FunFacts._getSeenIds().indexOf('ff-tx-001') >= 0);
+    assert('markFactSeen sets firstShownAt on first call',
+      Number.isFinite(window.FunFacts._state.firstShownAt) && window.FunFacts._state.firstShownAt > 0);
+    {
+      const before = window.FunFacts._state.firstShownAt;
+      window.FunFacts.markFactSeen('ff-tx-002');
+      assert('firstShownAt is idempotent (not overwritten on subsequent marks)',
+        window.FunFacts._state.firstShownAt === before);
+    }
+    {
+      // Push 250 distinct ids; expect cap at 200 with FIFO eviction.
+      window.FunFacts._clearLocalGuestState();
+      for (let i = 0; i < 250; i++) {
+        window.FunFacts.markFactSeen('ff-bulk-' + String(i).padStart(4, '0'));
+      }
+      const ids = window.FunFacts._getSeenIds();
+      assert('FIFO cap at 200', ids.length === 200, 'len=' + ids.length);
+      assert('oldest 50 evicted', ids.indexOf('ff-bulk-0000') === -1);
+      assert('newest still present', ids.indexOf('ff-bulk-0249') >= 0);
+    }
+    {
+      // localStorage round-trip
+      window.FunFacts._clearLocalGuestState();
+      window.FunFacts.markFactSeen('ff-rt-001');
+      const raw = localStorage.getItem('gradeearn:ff:seen');
+      assert('localStorage gradeearn:ff:seen contains the id',
+        raw && JSON.parse(raw).indexOf('ff-rt-001') >= 0, 'raw=' + raw);
+    }
+
+    section('setFrequency validation');
+    [1, 5, 10, 25, 'paused'].forEach(v => {
+      let threw = false;
+      try { window.FunFacts.setFrequency(v); } catch (_) { threw = true; }
+      assert('accepts ' + JSON.stringify(v), !threw && window.FunFacts.getFrequency() === v);
+    });
+    [0, 7, 100, 'foo', null, true].forEach(v => {
+      let threw = false;
+      try { window.FunFacts.setFrequency(v); } catch (_) { threw = true; }
+      assert('rejects ' + JSON.stringify(v), threw);
+    });
+    {
+      // setFrequency('paused') → isPaused() true
+      window.FunFacts.setFrequency('paused');
+      assert('isPaused() true after setFrequency(paused)', window.FunFacts.isPaused() === true);
+      window.FunFacts.setFrequency(5);
+      assert('isPaused() false after setFrequency(5)', window.FunFacts.isPaused() === false);
+    }
+
+    section('_hydrateFromServer');
+    {
+      window.FunFacts._clearLocalGuestState();
+      window.FunFacts._hydrateFromServer({
+        funFactsFreq: 25,
+        funFactsSeen: ['ff-srv-001', 'ff-srv-002'],
+        funFactsFirstShownAt: 1700000000000
+      });
+      assert('hydrate: freq=25', window.FunFacts.getFrequency() === 25);
+      assert('hydrate: seen mirrored', window.FunFacts._getSeenIds().length === 2);
+      assert('hydrate: firstShownAt set', window.FunFacts._state.firstShownAt === 1700000000000);
+      // Verify localStorage was written too
+      assert('hydrate: localStorage freq written', localStorage.getItem('gradeearn:ff:freq') === '25');
+    }
+
+    section('_exportLocalForSignup');
+    {
+      window.FunFacts._clearLocalGuestState();
+      assert('export: null when no state', window.FunFacts._exportLocalForSignup() === null);
+      window.FunFacts.setFrequency(10);
+      window.FunFacts.markFactSeen('ff-guest-001');
+      const exp = window.FunFacts._exportLocalForSignup();
+      assert('export: includes funFactsFreq', exp && exp.funFactsFreq === 10);
+      assert('export: includes funFactsSeen', exp && Array.isArray(exp.funFactsSeen) && exp.funFactsSeen.length === 1);
+      assert('export: includes funFactsFirstShownAt', exp && Number.isFinite(exp.funFactsFirstShownAt));
+    }
+
+    // Final
+    const summary = document.createElement('div');
+    summary.className = 'summary ' + (fail === 0 ? 'pass' : 'fail');
+    summary.textContent = `RESULT: ${pass} passed, ${fail} failed`;
+    out.appendChild(summary);
+    // Encode for headless extraction.
+    document.title = `RESULT::pass=${pass}::fail=${fail}`;
+  </script>
+</body>
+</html>
