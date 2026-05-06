@@ -22,6 +22,7 @@ const {
 } = require('@aws-sdk/lib-dynamodb');
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+const { SESv2Client, SendEmailCommand } = require('@aws-sdk/client-sesv2');
 const crypto = require('crypto');
 const lake = require('./content-lake');
 const judge = require('./judge');
@@ -40,6 +41,12 @@ const S3_REGION = process.env.AWS_REGION || 'us-east-1';
 const ADMIN_USERNAMES = (process.env.ADMIN_USERNAMES || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
 const LIFETIME_CAP_CENTS = 10000; // $100
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || '*';
+// §50 — password reset settings
+const RESET_TOKENS_TABLE = process.env.RESET_TOKENS_TABLE || 'staar-password-reset-tokens';
+const RESET_TTL_SECONDS = 15 * 60; // 15 minutes
+const RESET_RATE_LIMIT_HOUR = 3;
+const SES_FROM_EMAIL = process.env.SES_FROM_EMAIL || 'hello@gradeearn.com';
+const RESET_BASE_URL = process.env.RESET_BASE_URL || 'https://gradeearn.com/reset-password.html';
 // §48 — domain-cutover allowlist. Echoes back the request's Origin
 // when it matches the allowlist (CORS-correct for credentialed
 // requests later, and avoids leaking '*' to unknown origins). Falls
@@ -61,6 +68,7 @@ const TOKEN_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days
 const sm = new SecretsManagerClient({});
 const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 const s3 = new S3Client({ region: S3_REGION });
+const ses = new SESv2Client({ region: process.env.AWS_REGION || 'us-east-1' });
 let cachedKey = null;
 let cachedAuthSecret = null;
 
@@ -383,6 +391,8 @@ exports.handler = async (event) => {
   }
   if (action === 'signup')   return await handleSignup(payload);
   if (action === 'login')    return await handleLogin(payload);
+  if (action === 'requestPasswordReset') return await handleRequestPasswordReset(payload, event);
+  if (action === 'confirmPasswordReset') return await handleConfirmPasswordReset(payload);
   if (action === 'getStats') return await handleGetStats(payload);
   if (action === 'putStats') return await handlePutStats(payload);
   if (action === 'earn')           return await handleEarn(payload);
@@ -1061,6 +1071,276 @@ async function handleLogin(payload) {
       isAdmin: isAdmin(user.username)
     }
   });
+}
+
+// ===== §50 Password reset =====
+// Two routes:
+//   action=requestPasswordReset  body: { email }
+//     Always returns generic 200 (anti-enumeration). Generates a
+//     32-byte token, stores SHA-256(token) + meta in
+//     staar-password-reset-tokens with 15-min TTL, sends email via
+//     SES from hello@gradeearn.com. Rate-limited 3/hr per email.
+//   action=confirmPasswordReset  body: { token, newPassword }
+//     Single-use, expiry-checked. Updates user passwordHash + salt.
+//
+// Tokens are never stored raw — only their SHA-256 hash. The TTL on
+// expiresAt auto-cleans expired rows. Send-failures (SES sandbox,
+// missing identity, etc.) are logged to CloudWatch + recorded on
+// the token row as sesStatus='failed' so the audit trail catches
+// them; user-facing response stays generic.
+
+function sha256Hex(s) {
+  return crypto.createHash('sha256').update(String(s)).digest('hex');
+}
+function getRequestIP(event) {
+  const ctx = (event && event.requestContext && event.requestContext.http) || {};
+  return String(ctx.sourceIp || '').slice(0, 64);
+}
+function getRequestUA(event) {
+  const headers = (event && event.headers) || {};
+  for (const k of Object.keys(headers)) {
+    if (k.toLowerCase() === 'user-agent') return String(headers[k] || '').slice(0, 240);
+  }
+  return '';
+}
+function isValidEmail(s) {
+  return typeof s === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s) && s.length <= 200;
+}
+function buildResetEmailBody(resetUrl) {
+  const text = [
+    'Hi,',
+    '',
+    'We got a request to reset your GradeEarn password.',
+    '',
+    'Click the link below to set a new password (expires in 15 minutes):',
+    resetUrl,
+    '',
+    "Didn't request this? You can safely ignore this email — your password won't change.",
+    '',
+    '— GradeEarn'
+  ].join('\n');
+  const html = [
+    '<div style="font-family:Inter,Arial,sans-serif;color:#111;max-width:520px;margin:0 auto;padding:24px;">',
+    '  <p style="margin:0 0 16px;">Hi,</p>',
+    '  <p style="margin:0 0 16px;">We got a request to reset your GradeEarn password.</p>',
+    '  <p style="margin:0 0 16px;">Click the link below to set a new password (expires in 15 minutes):</p>',
+    '  <p style="margin:0 0 24px;"><a href="' + resetUrl + '" style="display:inline-block;background:#0b1726;color:#fbbf24;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:600;">Reset your password</a></p>',
+    '  <p style="margin:0 0 16px;color:#555;">Or paste this URL into your browser:<br><span style="font-family:JetBrains Mono,monospace;font-size:13px;word-break:break-all;">' + resetUrl + '</span></p>',
+    '  <p style="margin:24px 0 0;color:#666;font-size:13px;">Didn\'t request this? You can safely ignore this email — your password won\'t change.</p>',
+    '  <p style="margin:8px 0 0;color:#666;font-size:13px;">— GradeEarn</p>',
+    '</div>'
+  ].join('');
+  return { text, html };
+}
+
+async function handleRequestPasswordReset(payload, event) {
+  const email = String(payload.email || '').trim().toLowerCase().slice(0, 200);
+  // Generic response shape — never reveals whether the email exists.
+  const generic = { ok: true, message: "If that email matches an account, we've sent a reset link. Check your inbox." };
+
+  if (!isValidEmail(email)) {
+    // Even invalid input returns the generic shape — don't help an
+    // attacker map valid-format-vs-not.
+    console.log('[reset] invalid email format');
+    return ok(generic);
+  }
+
+  const nowMs = Date.now();
+  const nowSec = Math.floor(nowMs / 1000);
+  const ipAddress = getRequestIP(event);
+  const userAgent = getRequestUA(event);
+
+  // Find the user (no GSI on email — small table; scan is fine).
+  let user = null;
+  try {
+    const r = await ddb.send(new ScanCommand({
+      TableName: USERS_TABLE,
+      FilterExpression: 'email = :e',
+      ExpressionAttributeValues: { ':e': email },
+      ProjectionExpression: 'username, userId, email, displayName',
+      Limit: 1
+    }));
+    user = (r.Items && r.Items[0]) || null;
+  } catch (err) {
+    console.error('[reset] user lookup failed:', err.message || err);
+    return ok(generic);
+  }
+
+  // Rate limit: count tokens issued for this email in the last hour.
+  const oneHourAgo = nowSec - 3600;
+  let recentCount = 0;
+  try {
+    const r = await ddb.send(new ScanCommand({
+      TableName: RESET_TOKENS_TABLE,
+      FilterExpression: 'email = :e AND createdAtSec > :h',
+      ExpressionAttributeValues: { ':e': email, ':h': oneHourAgo },
+      ProjectionExpression: 'tokenHash',
+      Limit: 10
+    }));
+    recentCount = (r.Items && r.Items.length) || 0;
+  } catch (err) {
+    console.error('[reset] rate-limit lookup failed:', err.message || err);
+  }
+  if (recentCount >= RESET_RATE_LIMIT_HOUR) {
+    console.log('[reset] rate-limited email=', sha256Hex(email).slice(0, 12), 'count=', recentCount);
+    return ok(generic);
+  }
+
+  // Generate token + hash.
+  const token = crypto.randomBytes(32).toString('base64url');
+  const tokenHash = sha256Hex(token);
+  const expiresAt = nowSec + RESET_TTL_SECONDS;
+  const createdAt = new Date(nowMs).toISOString();
+
+  // Persist token record. Always write — even if user is null — so
+  // the rate limit + audit trail catches enumeration attempts.
+  let sesStatus = 'pending';
+  let sesError = '';
+  try {
+    await ddb.send(new PutCommand({
+      TableName: RESET_TOKENS_TABLE,
+      Item: {
+        tokenHash,
+        email,
+        userId: (user && user.userId) || null,
+        username: (user && user.username) || null,
+        expiresAt,           // unix epoch seconds — used by DDB TTL
+        createdAt,           // ISO timestamp
+        createdAtSec: nowSec,// unix seconds for rate-limit scan
+        usedAt: null,
+        ipAddress,
+        userAgent,
+        sesStatus,
+        sesError
+      }
+    }));
+  } catch (err) {
+    console.error('[reset] token put failed:', err.message || err);
+    return ok(generic);
+  }
+
+  // If user not found, return generic without sending anything.
+  if (!user) {
+    console.log('[reset] no-user email-hash=', sha256Hex(email).slice(0, 12));
+    return ok(generic);
+  }
+
+  // Send the email.
+  const resetUrl = `${RESET_BASE_URL}?token=${encodeURIComponent(token)}`;
+  const body = buildResetEmailBody(resetUrl);
+  try {
+    await ses.send(new SendEmailCommand({
+      FromEmailAddress: SES_FROM_EMAIL,
+      Destination: { ToAddresses: [email] },
+      Content: {
+        Simple: {
+          Subject: { Data: 'Reset your GradeEarn password', Charset: 'UTF-8' },
+          Body: {
+            Text: { Data: body.text, Charset: 'UTF-8' },
+            Html: { Data: body.html, Charset: 'UTF-8' }
+          }
+        }
+      }
+    }));
+    sesStatus = 'sent';
+    console.log('[reset] sent email-hash=', sha256Hex(email).slice(0, 12), 'username=', user.username);
+  } catch (err) {
+    sesStatus = 'failed';
+    sesError = (err && err.name + ': ' + (err.message || '')) || 'unknown';
+    console.error('[reset] SES send failed:', sesError);
+  }
+
+  // Update token record with SES outcome (audit).
+  if (sesStatus !== 'pending') {
+    try {
+      await ddb.send(new UpdateCommand({
+        TableName: RESET_TOKENS_TABLE,
+        Key: { tokenHash },
+        UpdateExpression: 'SET sesStatus = :s, sesError = :e',
+        ExpressionAttributeValues: { ':s': sesStatus, ':e': sesError }
+      }));
+    } catch (_) { /* best-effort */ }
+  }
+
+  return ok(generic);
+}
+
+async function handleConfirmPasswordReset(payload) {
+  const token = String(payload.token || '').trim();
+  const newPassword = String(payload.newPassword || '');
+
+  if (!token || token.length < 16) {
+    return bad(400, 'Invalid or expired link');
+  }
+  if (newPassword.length < 6 || newPassword.length > 128) {
+    return bad(400, 'Password must be at least 6 characters');
+  }
+
+  const tokenHash = sha256Hex(token);
+  const nowSec = Math.floor(Date.now() / 1000);
+
+  let rec;
+  try {
+    const r = await ddb.send(new GetCommand({
+      TableName: RESET_TOKENS_TABLE,
+      Key: { tokenHash }
+    }));
+    rec = r.Item || null;
+  } catch (err) {
+    console.error('[reset] confirm get failed:', err.message || err);
+    return bad(400, 'Invalid or expired link');
+  }
+
+  if (!rec) return bad(400, 'Invalid or expired link');
+  if (rec.usedAt) return bad(400, 'This link has already been used');
+  if (typeof rec.expiresAt !== 'number' || rec.expiresAt <= nowSec) {
+    return bad(400, 'This link has expired');
+  }
+  if (!rec.username) {
+    // Token was issued for an email with no matching user.
+    return bad(400, 'Invalid or expired link');
+  }
+
+  // Re-fetch user to make sure they still exist.
+  const userRes = await ddb.send(new GetCommand({
+    TableName: USERS_TABLE,
+    Key: { username: rec.username }
+  }));
+  const user = userRes.Item;
+  if (!user) return bad(400, 'Invalid or expired link');
+
+  // Hash new password with fresh salt.
+  const newSalt = crypto.randomBytes(16).toString('hex');
+  const newHash = hashPassword(newPassword, newSalt);
+
+  // Update user record.
+  await ddb.send(new UpdateCommand({
+    TableName: USERS_TABLE,
+    Key: { username: user.username },
+    UpdateExpression: 'SET passwordHash = :h, salt = :s, passwordChangedAt = :t',
+    ExpressionAttributeValues: {
+      ':h': newHash,
+      ':s': newSalt,
+      ':t': Date.now()
+    }
+  }));
+
+  // Mark token used (single-use enforcement). Read-side check
+  // above already rejects if usedAt is set; this is the durable
+  // record of consumption + cleanup before TTL fires.
+  try {
+    await ddb.send(new UpdateCommand({
+      TableName: RESET_TOKENS_TABLE,
+      Key: { tokenHash },
+      UpdateExpression: 'SET usedAt = :u',
+      ExpressionAttributeValues: { ':u': new Date().toISOString() }
+    }));
+  } catch (err) {
+    console.warn('[reset] token mark-used failed:', err.message || err);
+  }
+
+  console.log('[reset] confirmed username=', user.username);
+  return ok({ ok: true, message: 'Password updated. Please sign in with your new password.' });
 }
 
 // ===== Stats sync =====

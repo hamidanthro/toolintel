@@ -14411,3 +14411,28 @@ body.grade-page .subject-section {
   .hero-cta-grades      { grid-template-columns: repeat(2, 1fr); }
   .hero-grade-pill      { min-height: 52px; font-size: 14px; padding: 12px 14px; }
 }
+
+/* §50 — forgot-password modal additions */
+.auth-modal .modal-cta { width: 100%; margin-top: 8px; }
+.auth-success {
+  color: #047857;
+  background: rgba(167, 243, 208, 0.18);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  margin: 12px 0 0;
+}
+.modal-footer-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 14px;
+}
+.auth-modal .auth-link {
+  color: var(--navy, #0b1726);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+.auth-modal .auth-link:hover { color: #f59e0b; text-decoration: underline; }

@@ -277,9 +277,7 @@ if ('serviceWorker' in navigator) {
 
     overlay.querySelector('[data-act="forgot"]').addEventListener('click', e => {
       e.preventDefault();
-      if (window.STAARAuth && window.STAARAuth.showToast) {
-        window.STAARAuth.showToast('Password reset is coming soon. Email hello@gradeearn.com if you need help.');
-      }
+      showForgotPassword(userIn.value);
     });
 
     const submit = async () => {
@@ -311,6 +309,64 @@ if ('serviceWorker' in navigator) {
     overlay.querySelector('[data-act="signup"]').addEventListener('click', e => {
       e.preventDefault();
       showSignup(userIn.value);
+    });
+  }
+
+  // ----- Forgot password screen (§50) -----
+  function showForgotPassword(prefilledHint) {
+    const overlay = openModal(`
+      <h3 class="modal-title">Reset your password</h3>
+      <p class="modal-message">Enter the email you signed up with. If it matches an account, we'll send a reset link.</p>
+
+      <label class="auth-label">Email</label>
+      <input type="email" class="auth-input" id="fp-email" maxlength="120" placeholder="you@example.com" autocomplete="email" />
+
+      <button class="btn btn-primary modal-cta" id="fp-submit">Send reset link</button>
+      <p class="auth-error" id="fp-err" hidden></p>
+      <p class="auth-success" id="fp-ok" hidden></p>
+      <div class="modal-footer-row">
+        <a href="#" class="auth-link" data-act="back-to-signin">Back to sign in</a>
+      </div>
+    `);
+    const emailIn = overlay.querySelector('#fp-email');
+    const btn = overlay.querySelector('#fp-submit');
+    const err = overlay.querySelector('#fp-err');
+    const okMsg = overlay.querySelector('#fp-ok');
+    if (prefilledHint && /@/.test(prefilledHint)) emailIn.value = prefilledHint;
+    setTimeout(() => emailIn.focus(), 30);
+
+    const submit = async () => {
+      err.hidden = true;
+      okMsg.hidden = true;
+      const email = (emailIn.value || '').trim().toLowerCase();
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        err.textContent = 'Please enter a valid email.';
+        err.hidden = false;
+        return;
+      }
+      setBusy(btn, true, 'Sending…');
+      try {
+        // Always returns generic 200 — anti-enumeration. We never
+        // tell the user whether the email matched an account; they
+        // either get an email or they don't.
+        await api('requestPasswordReset', { email });
+        okMsg.textContent = "Check your inbox. If that email matches an account, you'll see a reset link in a minute or two.";
+        okMsg.hidden = false;
+        emailIn.disabled = true;
+        btn.disabled = true;
+        btn.textContent = 'Sent';
+      } catch (e) {
+        err.textContent = e.message || "Couldn't send reset link. Try again in a minute.";
+        err.hidden = false;
+      } finally {
+        setBusy(btn, false);
+      }
+    };
+    emailIn.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
+    btn.addEventListener('click', submit);
+    overlay.querySelector('[data-act="back-to-signin"]').addEventListener('click', e => {
+      e.preventDefault();
+      showLogin();
     });
   }
 
