@@ -14856,3 +14856,63 @@ body.practice-page .question-card .q-inline-fb.q-inline-fb--tutor {
       0 4px 12px -2px rgba(0, 0, 0, 0.30) !important;
   }
 }
+
+/* ============================================================
+   §65 — Premium polish pass 3 (band fix + Sign in depth +
+   italic saturation + section anchor quieter)
+   ============================================================ */
+
+@media (max-width: 768px) {
+  /* §65 BAND FIX — Hide the desktop .hero entirely on phone.
+     showDashboard() un-hides it for guests (heroAnon.hidden=false)
+     so the user-agent display:none from [hidden] no longer applies.
+     On phone the responsive rules collapsed its CONTENT but its
+     starfield + hero-grid + amber/blue drift glows kept rendering
+     as a visible band-with-dots under the header. .mobile-hero
+     below already carries the proper hero markup; .hero is pure
+     visual noise on phone. */
+  body.home-page .hero,
+  body.home-page #hero-anon {
+    display: none !important;
+  }
+}
+
+/* §65 Sign in button — premium depth without losing ghost feel.
+   Subtle inner ring (gold) + soft drop shadow + 8px backdrop blur
+   so it sits with weight on whatever's behind it. Stays
+   transparent fill, gold border, gold text. */
+.user-slot .user-signin,
+.user-slot .user-signin.btn {
+  box-shadow:
+    0 0 0 1px rgba(251, 191, 36, 0.18) inset,
+    0 1px 2px rgba(0, 0, 0, 0.30),
+    0 0 14px rgba(251, 191, 36, 0.10);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+.user-slot .user-signin:hover,
+.user-slot .user-signin.btn:hover {
+  box-shadow:
+    0 0 0 1px rgba(251, 191, 36, 0.28) inset,
+    0 2px 4px rgba(0, 0, 0, 0.35),
+    0 0 18px rgba(251, 191, 36, 0.18);
+}
+
+@media (max-width: 768px) {
+  /* §65 Italic line — reduce gold saturation. Was 100% gold
+     (#fbbf24) which read heavier than the bold-white headline
+     above it because gold-on-navy contrasts harder than
+     white-on-navy. Now ~82% saturation: still gold-tinted,
+     visually subordinate to the heavy line. */
+  body.home-page .mobile-hero-headline .mobile-hero-line2 {
+    color: rgba(251, 191, 36, 0.82) !important;
+  }
+
+  /* §65 Section anchor — quieter + full content width.
+     Was rgba(251,191,36,0.13) which read as a small bracket;
+     now rgba(...,0.07) full width — barely-there breathing
+     anchor instead of a visible line. */
+  body.home-page .grade-picker-section .section-label::before {
+    background: rgba(251, 191, 36, 0.07);
+  }
+}
