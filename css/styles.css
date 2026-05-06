@@ -14447,3 +14447,82 @@ body.grade-page .subject-section {
   padding-left: 0.4em; /* visual recentre with letter-spacing */
 }
 .verify-code-input::placeholder { letter-spacing: 0.4em; opacity: 0.35; }
+
+/* ============================================================
+   §54 — Practice question card state machine
+   States: data-state="asking" | "correct" | "wrong"
+   - asking: default border, input editable, gold Check button
+   - correct: green border, input read-only, gold Next button
+   - wrong: red border, input read-only, gold Next button
+   Footer chip (.q-meta) demoted from caps-pill pair to single
+   muted sentence-case line.
+   ============================================================ */
+
+/* Question card border reflects state. The default border lives
+   on .question-card; we override on data-state with !important
+   to beat the body.practice-page-scoped border rules. */
+.question-card[data-state="correct"] {
+  border-color: rgba(16, 185, 129, 0.55) !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12) !important;
+}
+.question-card[data-state="wrong"] {
+  border-color: rgba(239, 68, 68, 0.55) !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12) !important;
+}
+
+/* Lock the input visually — readOnly leaves the kid's text visible
+   so they can see what they answered, but no edit affordance. */
+.question-card[data-state="correct"] .num-input,
+.question-card[data-state="wrong"] .num-input {
+  cursor: default;
+  caret-color: transparent;
+}
+.question-card[data-state="correct"] .num-input {
+  border-color: rgba(16, 185, 129, 0.45);
+  background: rgba(16, 185, 129, 0.06);
+  color: #047857;
+}
+.question-card[data-state="wrong"] .num-input {
+  border-color: rgba(239, 68, 68, 0.45);
+  background: rgba(239, 68, 68, 0.06);
+  color: #b91c1c;
+}
+
+/* MC choices: lock pointer events on every label, then re-style
+   the kid's selected one + the canonical correct one. */
+.question-card[data-state="correct"] .choice,
+.question-card[data-state="wrong"] .choice {
+  pointer-events: none;
+  opacity: 0.7;
+}
+.question-card[data-state="correct"] .choice:has(input:checked) {
+  border-color: rgba(16, 185, 129, 0.55) !important;
+  background: rgba(16, 185, 129, 0.10) !important;
+  opacity: 1;
+}
+.question-card[data-state="wrong"] .choice:has(input:checked) {
+  border-color: rgba(239, 68, 68, 0.55) !important;
+  background: rgba(239, 68, 68, 0.10) !important;
+  opacity: 1;
+}
+
+/* Demote the q-meta footer chip from loud-caps to muted single-line.
+   Beats the older .q-meta { text-transform: uppercase; ... } at
+   line 1230 because this rule is more specific (selector chain). */
+.question-card .q-meta {
+  display: block;
+  margin: 14px 0 0;
+  padding: 0;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.45);
+  text-align: left;
+}
+.question-card .q-meta-text { display: inline; }
+.question-card .q-meta-earn { color: rgba(16, 185, 129, 0.85); font-weight: 600; }
+.question-card .q-meta-lose { color: rgba(239, 68, 68, 0.7); }
+
+/* On light surfaces (admin etc.) muted gray instead of off-white. */
+body:not(.practice-page) .question-card .q-meta { color: var(--muted, #6b7280); }

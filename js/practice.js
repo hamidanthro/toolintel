@@ -857,6 +857,58 @@
     }
 
     function showFeedback(q, userAnswer, isCorrect) {
+      // §54 — explicit state machine (asking → correct | wrong).
+      const qCard = qbox.querySelector('.question-card');
+      const cents = qCard ? parseInt(qCard.dataset.cents, 10) || 0 : 0;
+      const nextLabel = i + 1 >= questions.length ? 'See results' : 'Next question →';
+
+      // 1. Flip card data-state. CSS uses this to color the border,
+      //    style the input as locked-but-readable, etc.
+      if (qCard) qCard.setAttribute('data-state', isCorrect ? 'correct' : 'wrong');
+
+      // 2. Lock the inputs. Don't disable them — disabled hides the
+      //    kid's answer behind a greyed-out style. We want the kid
+      //    to see what they answered, just not be able to change it.
+      //    readOnly + pointer-events:none on choices does this; CSS
+      //    drives the visual via [data-state="correct"|"wrong"].
+      if (qCard) {
+        qCard.querySelectorAll('input[name="ans"]').forEach(el => {
+          if (el.type === 'radio') {
+            el.disabled = true; // radios use disabled for input-block
+          } else {
+            el.readOnly = true;
+            el.setAttribute('aria-readonly', 'true');
+          }
+        });
+      }
+
+      // 3. Replace the Check answer button with Next question (same
+      //    slot, same gold). The kid was about to tap Check; the
+      //    button under their thumb is now what advances.
+      const checkBtn = qCard ? qCard.querySelector('button[data-role="check"]') : null;
+      if (checkBtn) {
+        const nextInline = document.createElement('button');
+        nextInline.type = 'button';
+        nextInline.id = 'next-btn';
+        nextInline.className = 'btn btn-primary q-cta';
+        nextInline.setAttribute('data-role', 'next');
+        nextInline.textContent = nextLabel;
+        checkBtn.replaceWith(nextInline);
+      }
+
+      // 4. Update the muted footer line with stake outcome. Same
+      //    location, same chrome, just earned/lost amount baked in.
+      const metaText = qCard ? qCard.querySelector('.q-meta-text') : null;
+      if (metaText) {
+        const base = metaText.textContent.replace(/ · ±?\d+ pts.*$/, '').replace(/ · ⭐ Mastered$/, '');
+        if (isCorrect) {
+          metaText.innerHTML = escapeHtml(base) + ' · <span class="q-meta-earn">+' + cents + ' pts earned ✓</span>';
+        } else {
+          metaText.innerHTML = escapeHtml(base) + ' · <span class="q-meta-lose">0 pts</span>';
+        }
+      }
+
+      // 5. Append the feedback panel (explanation + tutor for wrong).
       const fb = document.createElement('div');
       fb.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
       fb.innerHTML = `
@@ -876,17 +928,8 @@
                  </form>
                </div>`
           }
-        </div>
-        <div class="feedback-actions">
-          <button class="btn btn-primary" id="next-btn">${i + 1 >= questions.length ? 'See results' : 'Next question'}</button>
         </div>`;
       qbox.appendChild(fb);
-
-      // Disable inputs in the original question card only (not the feedback/tutor controls)
-      const qCard = qbox.querySelector('.question-card');
-      if (qCard) {
-        qCard.querySelectorAll('input,button').forEach(el => el.disabled = true);
-      }
 
       // In-flight tutor request controller. Aborted on Next Question click
       // and on Retry (which restarts a fresh call). Scoped to this panel.
@@ -1253,9 +1296,6 @@
       body = `<input class="num-input" type="text" name="ans" autocomplete="off" placeholder="Your answer" required />`;
     }
     const cents = difficultyCents(q);
-    const reward = locked
-      ? `<span class="q-reward q-reward-locked" title="Section mastered — review only">⭐ Mastered</span>`
-      : `<span class="q-reward" title="Correct: +${cents} pts  •  Wrong: −${cents} pts">±${cents} pts</span>`;
     const readBtn = (window.STAARFx && window.STAARFx.readAloudEnabled())
       ? `<button type="button" class="q-read-btn" data-act="read" aria-label="Read question aloud" title="Read aloud">🔊</button>`
       : '';
@@ -1263,16 +1303,25 @@
     // Reading passage (R2) — rendered above the question card when present.
     const passageHtml = q.passage && q.passage.text ? renderPassage(q.passage) : '';
 
+    // §54 — explicit state machine. data-state drives CSS visuals
+    // (border color, input lock styling). Footer chip demoted from
+    // pair-of-pills (caps + ±N PTS) to a single muted sentence-case
+    // line. Reward text is the only stake-info shown; topic/TEKS
+    // moves into the same line, lowercase + separated by middots.
+    const topic = q._unit?.title ? escapeHtml(q._unit.title) : '';
+    const teks = q._lesson?.teks ? escapeHtml(q._lesson.teks) : '';
+    const stake = locked
+      ? '⭐ Mastered'
+      : `±${cents} pts`;
+    const metaParts = [topic, teks ? `TEKS ${teks}` : '', stake].filter(Boolean);
+
     return `
       ${passageHtml}
-      <form class="question-card">
-        <div class="q-meta">
-          <span>${escapeHtml(q._unit?.title || '')} · TEKS ${escapeHtml(q._lesson?.teks || '')}</span>
-          ${reward}
-        </div>
+      <form class="question-card" data-state="asking" data-cents="${cents}">
         <div class="q-prompt">${readBtn}<span class="q-prompt-text">${escapeHtml(q.prompt)}</span></div>
         <div class="q-body">${body}</div>
-        <button class="btn btn-primary" type="submit">Check answer</button>
+        <button class="btn btn-primary q-cta" type="submit" data-role="check">Check answer</button>
+        <div class="q-meta" data-role="meta"><span class="q-meta-text">${metaParts.join(' · ')}</span></div>
       </form>`;
   }
 
