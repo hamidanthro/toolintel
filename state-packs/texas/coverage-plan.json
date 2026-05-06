@@ -10,7 +10,8 @@
     "question_types": ["word-problem", "computation", "concept", "data-interpretation"],
     "default_tier": "standard",
     "provenance_marker": "[CLAUDE-SYNTHESIZED tier assignments per STAAR observation. Not authoritative; verify against TEA scoring weights when published. Hamid signed off on the per-tier numeric ranges 2026-05-03.]",
-    "v1.1_change_2026-05-04": "HEAVY target_per_type lowered 100→50 per Hamid + §37 sizing decision. Mastery threshold 30, target 50, organic-growth headroom 80. Standard/Light/Texas_specific unchanged. Lowering HEAVY brings the pre-fill gap from ~27k to ~13k rows, fitting one bulk-fill session at concurrency=2."
+    "v1.1_change_2026-05-04": "HEAVY target_per_type lowered 100→50 per Hamid + §37 sizing decision. Mastery threshold 30, target 50, organic-growth headroom 80. Standard/Light/Texas_specific unchanged. Lowering HEAVY brings the pre-fill gap from ~27k to ~13k rows, fitting one bulk-fill session at concurrency=2.",
+    "v1.2_change_2026-05-05": "Tier inversion fix — STANDARD 60→30, LIGHT 40→25, TEXAS_SPECIFIC 40→30. Maintains HEAVY (50) > STANDARD (30) ≥ TEXAS_SPECIFIC (30) > LIGHT (25). Same mastery-threshold rationale as §37 v1.1 HEAVY edit. Drops STANDARD pre-fill gap from ~22k (at target=60) to ~10-12k rows, fitting one bulk-fill session."
   },
 
   "tiers": {
@@ -20,19 +21,19 @@
       "description": "Foundational, high-frequency on every released STAAR form. Multiple items per form. Drives the headline pass rate. v1.1 (2026-05-04): target_per_type lowered 100→50 — mastery threshold 30, target 50, organic-growth headroom 80."
     },
     "standard": {
-      "target_per_type": 60,
-      "range": [50, 80],
-      "description": "Regular STAAR appearance. One or more items per form."
+      "target_per_type": 30,
+      "range": [30, 50],
+      "description": "Regular STAAR appearance. One or more items per form. v1.2 (2026-05-05): target_per_type lowered 60→30 to maintain HEAVY > STANDARD tier ordering."
     },
     "light": {
-      "target_per_type": 40,
-      "range": [30, 50],
-      "description": "Niche topics. Appears occasionally; one item per form at most."
+      "target_per_type": 25,
+      "range": [25, 40],
+      "description": "Niche topics. Appears occasionally; one item per form at most. v1.2 (2026-05-05): target_per_type lowered 40→25 to maintain STANDARD ≥ LIGHT tier ordering."
     },
     "texas_specific": {
-      "target_per_type": 40,
+      "target_per_type": 30,
       "range": [30, 50],
-      "description": "Texas Personal Financial Literacy strand (3.9 / 4.10 / 5.10 / 6.14 / 7.13 / 8.12). Texas signature; not in Common Core."
+      "description": "Texas Personal Financial Literacy strand (3.9 / 4.10 / 5.10 / 6.14 / 7.13 / 8.12). Texas signature; not in Common Core. v1.2 (2026-05-05): target_per_type lowered 40→30 to align with STANDARD."
     }
   },
 
