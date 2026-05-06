@@ -154,7 +154,17 @@ if ('serviceWorker' in navigator) {
       ${html}
     </div>`;
     document.body.appendChild(overlay);
-    requestAnimationFrame(() => overlay.classList.add('open'));
+    // §71 — set opacity:1 inline immediately. The CSS transition
+    // approach (.open class flip) gets stuck at opacity 0 when
+    // openModal is called right after another (e.g. tapping
+    // "Create an account" from inside the sign-in modal). Repro'd
+    // 7/7 in headless Chrome at 375x667 even after force-reflow +
+    // double-rAF workarounds. Using inline style sidesteps the
+    // transition stall — the modal snaps in (no fade) but is at
+    // least visible. Trade-off: lose the 180ms fade-in animation;
+    // win: modal actually opens. Worth it.
+    overlay.classList.add('open');
+    overlay.style.opacity = '1';
     overlay.addEventListener('click', e => { if (e.target === overlay) dismissModal(); });
     overlay.querySelector('[data-act="close"]').addEventListener('click', dismissModal);
     document.addEventListener('keydown', escClose);
@@ -170,6 +180,9 @@ if ('serviceWorker' in navigator) {
   function closeModal() {
     const m = document.querySelector('.modal-overlay.auth-modal');
     if (m) {
+      // §71 — clear the inline opacity:1 set on open so removing
+      // .open lets the CSS rule (opacity:0) take over and fade.
+      m.style.opacity = '';
       m.classList.remove('open');
       setTimeout(() => m.remove(), 180);
     }
@@ -282,7 +295,11 @@ if ('serviceWorker' in navigator) {
       </div>
     `;
     document.body.appendChild(overlay);
-    requestAnimationFrame(() => overlay.classList.add('open'));
+    // §71 — see openModal for the rationale. Snap-in via inline style
+    // instead of fade-in via transition; transition gets stuck at op=0
+    // when modals swap quickly.
+    overlay.classList.add('open');
+    overlay.style.opacity = '1';
     overlay.addEventListener('click', e => { if (e.target === overlay) dismissModal(); });
     overlay.querySelector('[data-act="close"]').addEventListener('click', dismissModal);
     document.addEventListener('keydown', escClose);
