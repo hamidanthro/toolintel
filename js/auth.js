@@ -1151,39 +1151,40 @@ if ('serviceWorker' in navigator) {
     const isOnAbout       = path.indexOf('about') !== -1;
     const isOnSettings    = path.indexOf('settings') !== -1 || path.indexOf('admin') !== -1;
 
-    // Smart Practice routing (Prompt 36b/36c):
-    // - on a state page  -> scroll to that state's grade picker
-    // - logged-in user with state + grade -> direct practice
-    // - logged-in user with grade only    -> state picker on landing
-    // - guest with localStorage state     -> state detail page
-    // - first-time visitor                -> state picker on landing
+    // §53 — Texas-only Practice routing. Two changes vs prior logic:
+    //   1. State is always 'texas' regardless of user.state (legacy users
+    //      whose stored state is California/etc would have been routed to
+    //      practice.html?s=california, which lands on a broken page since
+    //      only Texas content exists post-§47).
+    //   2. Never produce a hash-only href ('#state-picker', '#state-grade-section')
+    //      when that anchor is hidden or the user is already on that page —
+    //      the browser does a silent scroll-to-anchor and the tap looks dead
+    //      (Hamid screenshot 10:52pm bug). Always emit a hard navigation.
     const inStatesDir = path.indexOf('/states/') !== -1;
     const currentParams = new URLSearchParams(location.search);
     const currentStateSlug = currentParams.get('s');
     const currentGradeSlug = currentParams.get('g');
-    const isOnStatePage = inStatesDir && currentStateSlug
-      && window.STATES_API && window.STATES_API.getBySlug(currentStateSlug);
+    const isOnStatePage = inStatesDir && currentStateSlug === 'texas';
     const isOnGradePage = path.indexOf('grade.html') !== -1
       && path.indexOf('grades.html') === -1
       && currentStateSlug && currentGradeSlug;
 
+    const TX_SLUG = 'texas';
     let practiceHref;
     if (isOnGradePage) {
+      // On /grade.html?s=...&g=... — already chose grade. Send to practice.
       practiceHref = `practice.html?s=${encodeURIComponent(currentStateSlug)}&g=${encodeURIComponent(currentGradeSlug)}&subj=math`;
-    } else if (u && u.state && u.grade) {
-      practiceHref = `${inStatesDir ? '../' : ''}practice.html?s=${encodeURIComponent(u.state)}&g=${encodeURIComponent(u.grade)}&subj=math`;
-    } else if (isOnStatePage) {
-      practiceHref = '#state-grade-section';
     } else if (u && u.grade) {
-      practiceHref = `${inStatesDir ? '../' : ''}index.html#state-picker`;
+      // Signed-in kid with a grade — send straight into Texas math.
+      practiceHref = `${inStatesDir ? '../' : ''}practice.html?s=${TX_SLUG}&g=${encodeURIComponent(u.grade)}&subj=math`;
+    } else if (isOnStatePage) {
+      // On /states/?s=texas — scroll to in-page grade picker (anchor exists
+      // on that page, populated by state-page.js).
+      practiceHref = '#state-grade-section';
     } else {
-      let storedState = null;
-      try { storedState = localStorage.getItem('gradeearn.state'); } catch (_) {}
-      if (storedState && window.STATES_API && window.STATES_API.getBySlug(storedState)) {
-        practiceHref = `${inStatesDir ? '' : 'states/'}?s=${encodeURIComponent(storedState)}`;
-      } else {
-        practiceHref = `${inStatesDir ? '../' : ''}index.html#state-picker`;
-      }
+      // Anonymous OR signed-in-without-grade → Texas grade-picker page.
+      // Hard navigation so the tap visibly moves the user somewhere new.
+      practiceHref = `${inStatesDir ? '' : 'states/'}?s=${TX_SLUG}`;
     }
     const balance = u ? (u.balanceCents || 0) : 0;
 
