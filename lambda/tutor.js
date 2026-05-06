@@ -47,6 +47,12 @@ const RESET_TTL_SECONDS = 15 * 60; // 15 minutes
 const RESET_RATE_LIMIT_HOUR = 3;
 const SES_FROM_EMAIL = process.env.SES_FROM_EMAIL || 'hello@gradeearn.com';
 const RESET_BASE_URL = process.env.RESET_BASE_URL || 'https://gradeearn.com/reset-password.html';
+
+// §52 — email verification settings
+const EMAIL_VERIFICATION_TABLE = process.env.EMAIL_VERIFICATION_TABLE || 'staar-email-verification-codes';
+const EMAIL_VERIFICATION_TTL_SECONDS = 15 * 60; // 15 minutes
+const EMAIL_VERIFICATION_RESEND_COOLDOWN_MS = 60 * 1000; // 60s between sends
+const EMAIL_VERIFICATION_RATE_LIMIT_HOUR = 3;          // max 3 sends per hour
 // §48 — domain-cutover allowlist. Echoes back the request's Origin
 // when it matches the allowlist (CORS-correct for credentialed
 // requests later, and avoids leaking '*' to unknown origins). Falls
@@ -389,10 +395,12 @@ exports.handler = async (event) => {
   if (action === 'getReadingBatch') {
     return await handleGetReadingBatch(payload);
   }
-  if (action === 'signup')   return await handleSignup(payload);
+  if (action === 'signup')   return await handleSignup(payload, event);
   if (action === 'login')    return await handleLogin(payload);
   if (action === 'requestPasswordReset') return await handleRequestPasswordReset(payload, event);
   if (action === 'confirmPasswordReset') return await handleConfirmPasswordReset(payload);
+  if (action === 'verifyEmail')          return await handleVerifyEmail(payload);
+  if (action === 'resendVerification')   return await handleResendVerification(payload, event);
   if (action === 'getStats') return await handleGetStats(payload);
   if (action === 'putStats') return await handlePutStats(payload);
   if (action === 'earn')           return await handleEarn(payload);
@@ -970,19 +978,15 @@ async function requireAdmin(payload) {
   return { auth };
 }
 
-async function handleSignup(payload) {
+async function handleSignup(payload, event) {
   const username = sanitizeUsername(payload.username);
   const password = String(payload.password || '');
   const displayName = String(payload.displayName || '').trim().slice(0, 32) || username;
   const email = String(payload.email || '').trim().toLowerCase().slice(0, 120);
   const grade = sanitizeGrade(payload.grade);
-  // Optional state at signup. If provided, must be a valid slug; otherwise stored as null.
-  // Existing users without state continue working; they can call setState later.
-  const stateRaw = payload.state ? String(payload.state).trim().toLowerCase() : null;
-  if (stateRaw && !isValidState(stateRaw)) {
-    return bad(400, 'Invalid state');
-  }
-  const state = stateRaw || null;
+  // §52 — Texas-only pivot: server-side hard-set to 'texas'. Client-supplied
+  // state is ignored. Re-activation of other states would flip this back.
+  const state = 'texas';
 
   if (username.length < 3 || username.length > 24) {
     return bad(400, 'Username must be 3-24 characters (letters, numbers, _ . -)');
@@ -990,13 +994,18 @@ async function handleSignup(payload) {
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return bad(400, 'Please enter a valid email address');
   }
-  if (password.length < 6 || password.length > 128) {
-    return bad(400, 'Password must be at least 6 characters');
+  // §52 — hardened password rule: ≥8 chars + at least one letter + at least one number.
+  if (password.length < 8 || password.length > 128) {
+    return bad(400, 'Password must be at least 8 characters');
+  }
+  if (!/[a-zA-Z]/.test(password) || !/\d/.test(password)) {
+    return bad(400, 'Password must include both letters and numbers');
   }
   if (!grade) {
     return bad(400, 'Please pick your current grade');
   }
 
+  // §52 — username uniqueness (existing path).
   const existing = await ddb.send(new GetCommand({
     TableName: USERS_TABLE,
     Key: { username }
@@ -1005,10 +1014,30 @@ async function handleSignup(payload) {
     return bad(409, 'That username is already taken');
   }
 
+  // §52 — email uniqueness. No GSI on email; scan filter is fine for
+  // the current row count and grows linearly — re-evaluate when the
+  // table crosses ~10k rows (add a GSI then).
+  try {
+    const dupe = await ddb.send(new ScanCommand({
+      TableName: USERS_TABLE,
+      FilterExpression: 'email = :e',
+      ExpressionAttributeValues: { ':e': email },
+      ProjectionExpression: 'username',
+      Limit: 1
+    }));
+    if (dupe.Items && dupe.Items.length > 0) {
+      return bad(409, 'An account with this email already exists. Try signing in or resetting your password.');
+    }
+  } catch (err) {
+    console.error('[signup] email-dupe scan failed:', err.message || err);
+    // Don't block signup if the dedup scan itself fails — log + proceed.
+  }
+
   const salt = crypto.randomBytes(16).toString('hex');
   const passwordHash = hashPassword(password, salt);
   const userId = 'u_' + crypto.randomBytes(6).toString('hex');
   const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+  const nowMs = Date.now();
 
   try {
     await ddb.send(new PutCommand({
@@ -1025,7 +1054,15 @@ async function handleSignup(payload) {
         color,
         balanceCents: 0,
         lifetimeCents: 0,
-        createdAt: Date.now()
+        createdAt: nowMs,
+        // §52 — email verification fields. emailVerified=false until
+        // the kid/parent enters the 6-digit code we just sent. Login
+        // refuses unverified accounts (handleLogin checks this).
+        emailVerified: false,
+        emailVerifiedAt: null,
+        emailVerificationLastSentAt: null,
+        emailVerificationSendCount: 0,
+        emailVerificationCountResetAt: nowMs
       },
       ConditionExpression: 'attribute_not_exists(username)'
     }));
@@ -1036,8 +1073,30 @@ async function handleSignup(payload) {
     throw err;
   }
 
-  const token = await makeToken(userId, username);
-  return ok({ token, user: { userId, username, displayName, grade, state, color, balanceCents: 0, lifetimeCents: 0, isAdmin: isAdmin(username) } });
+  // §52 — fire-and-forget verification email. If SES fails we log + return
+  // success-with-warning so the user can hit resend; signup itself succeeded.
+  let verificationSent = true;
+  try {
+    await issueVerificationCode({ email, userId, username, displayName, event });
+  } catch (err) {
+    console.error('[signup] verification send failed:', err.message || err);
+    verificationSent = false;
+  }
+
+  // §52 — DO NOT auto-issue an auth token here. The account is unverified;
+  // sign-in is gated on emailVerified. Return a payload that tells the
+  // frontend to show the "Enter 6-digit code" view.
+  return ok({
+    success: true,
+    requiresVerification: true,
+    verificationSent,
+    email,
+    userId,
+    username,
+    displayName,
+    grade,
+    state
+  });
 }
 
 async function handleLogin(payload) {
@@ -1056,6 +1115,23 @@ async function handleLogin(payload) {
 
   const candidate = hashPassword(password, user.salt);
   if (!timingSafeEqual(candidate, user.passwordHash)) return fail();
+
+  // §52 — gate sign-in on email verification. Pre-§52 accounts default to
+  // emailVerified=undefined; treat that as verified (grandfathered) so the
+  // ~12 existing testers don't get locked out. Only NEW accounts (where the
+  // field is explicitly false) are gated.
+  if (user.emailVerified === false) {
+    return {
+      statusCode: 403,
+      headers: cors,
+      body: JSON.stringify({
+        error: 'email_not_verified',
+        message: 'Please verify your email before signing in. We sent you a 6-digit code at signup.',
+        email: user.email,
+        displayName: user.displayName || user.username
+      })
+    };
+  }
 
   const token = await makeToken(user.userId, user.username);
   return ok({
@@ -1272,8 +1348,12 @@ async function handleConfirmPasswordReset(payload) {
   if (!token || token.length < 16) {
     return bad(400, 'Invalid or expired link');
   }
-  if (newPassword.length < 6 || newPassword.length > 128) {
-    return bad(400, 'Password must be at least 6 characters');
+  // §52 — match signup rule: ≥8 chars + at least one letter + at least one number.
+  if (newPassword.length < 8 || newPassword.length > 128) {
+    return bad(400, 'Password must be at least 8 characters');
+  }
+  if (!/[a-zA-Z]/.test(newPassword) || !/\d/.test(newPassword)) {
+    return bad(400, 'Password must include both letters and numbers');
   }
 
   const tokenHash = sha256Hex(token);
@@ -1341,6 +1421,305 @@ async function handleConfirmPasswordReset(payload) {
 
   console.log('[reset] confirmed username=', user.username);
   return ok({ ok: true, message: 'Password updated. Please sign in with your new password.' });
+}
+
+// ===== §52 Email verification =====
+// Three concerns here:
+//   issueVerificationCode(...)        — generate, hash, store, send. Used
+//                                       at signup AND from resend handler.
+//   handleVerifyEmail({email, code})  — confirm code, flip user verified.
+//   handleResendVerification({email}) — rate-limited resend (60s cooldown,
+//                                       3/hour cap), generic 200 always.
+//
+// Codes are 6-digit numeric (zero-padded) for ergonomic mobile entry.
+// Never stored raw — only SHA-256(code+email) so codes can't be brute-
+// forced from a leaked DB. Single-use, 15-min TTL (auto-cleanup).
+
+function generateSixDigitCode() {
+  // Cryptographically uniform 0-999999. randomInt(min, max) is exclusive
+  // on max, so this gives us 0..999999 inclusive of 0.
+  return String(crypto.randomInt(0, 1000000)).padStart(6, '0');
+}
+function hashCode(code, email) {
+  // Bind code to email so a leaked DB row doesn't let an attacker
+  // verify ANY email by reusing a brute-forced code — the hash is
+  // useless without the right email pair.
+  return crypto.createHash('sha256').update(String(code) + '|' + String(email).toLowerCase()).digest('hex');
+}
+function buildVerificationEmailBody(displayName, code) {
+  const safeName = String(displayName || '').slice(0, 60) || 'there';
+  const text = [
+    'Hi ' + safeName + ',',
+    '',
+    'Welcome to GradeEarn! Enter this code on the verification page to activate your account:',
+    '',
+    '  ' + code,
+    '',
+    'This code expires in 15 minutes.',
+    '',
+    "Didn't sign up? You can ignore this email.",
+    '',
+    '— GradeEarn'
+  ].join('\n');
+  const html = [
+    '<div style="font-family:Inter,Arial,sans-serif;color:#111;max-width:520px;margin:0 auto;padding:24px;">',
+    '  <p style="margin:0 0 16px;">Hi ' + safeName + ',</p>',
+    '  <p style="margin:0 0 16px;">Welcome to GradeEarn! Enter this code on the verification page to activate your account:</p>',
+    '  <div style="margin:24px 0;text-align:center;font-family:JetBrains Mono,monospace;font-size:36px;font-weight:700;letter-spacing:0.4em;color:#0b1726;background:#fde68a;padding:18px;border-radius:10px;">' + code + '</div>',
+    '  <p style="margin:0 0 16px;color:#555;">This code expires in 15 minutes.</p>',
+    '  <p style="margin:24px 0 0;color:#666;font-size:13px;">Didn\'t sign up? You can ignore this email.</p>',
+    '  <p style="margin:8px 0 0;color:#666;font-size:13px;">— GradeEarn</p>',
+    '</div>'
+  ].join('');
+  return { text, html };
+}
+
+async function issueVerificationCode({ email, userId, username, displayName, event }) {
+  const nowMs = Date.now();
+  const nowSec = Math.floor(nowMs / 1000);
+  const code = generateSixDigitCode();
+  const codeHash = hashCode(code, email);
+  const ipAddress = getRequestIP(event);
+  const userAgent = getRequestUA(event);
+
+  // Persist code row.
+  await ddb.send(new PutCommand({
+    TableName: EMAIL_VERIFICATION_TABLE,
+    Item: {
+      codeHash,
+      email,
+      userId: userId || null,
+      username: username || null,
+      expiresAt: nowSec + EMAIL_VERIFICATION_TTL_SECONDS, // DDB TTL
+      createdAt: new Date(nowMs).toISOString(),
+      createdAtSec: nowSec,
+      usedAt: null,
+      ipAddress,
+      userAgent,
+      sesStatus: 'pending',
+      sesError: ''
+    }
+  }));
+
+  // Send email.
+  const body = buildVerificationEmailBody(displayName, code);
+  let sesStatus = 'pending';
+  let sesError = '';
+  try {
+    await ses.send(new SendEmailCommand({
+      FromEmailAddress: SES_FROM_EMAIL,
+      Destination: { ToAddresses: [email] },
+      Content: {
+        Simple: {
+          Subject: { Data: 'Verify your GradeEarn account', Charset: 'UTF-8' },
+          Body: {
+            Text: { Data: body.text, Charset: 'UTF-8' },
+            Html: { Data: body.html, Charset: 'UTF-8' }
+          }
+        }
+      }
+    }));
+    sesStatus = 'sent';
+    console.log('[verify] sent username=', username);
+  } catch (err) {
+    sesStatus = 'failed';
+    sesError = (err && err.name + ': ' + (err.message || '')) || 'unknown';
+    console.error('[verify] SES send failed:', sesError);
+  }
+
+  // Audit: stamp SES outcome on the code row.
+  try {
+    await ddb.send(new UpdateCommand({
+      TableName: EMAIL_VERIFICATION_TABLE,
+      Key: { codeHash },
+      UpdateExpression: 'SET sesStatus = :s, sesError = :e',
+      ExpressionAttributeValues: { ':s': sesStatus, ':e': sesError }
+    }));
+  } catch (_) { /* best-effort */ }
+
+  // Update user record: rolling-hour rate-limit counter + last-sent timestamp.
+  if (username) {
+    try {
+      // Read current counter window. If older than 1 hour, reset.
+      const u = await ddb.send(new GetCommand({
+        TableName: USERS_TABLE,
+        Key: { username },
+        ProjectionExpression: 'emailVerificationSendCount, emailVerificationCountResetAt'
+      }));
+      const cur = u.Item || {};
+      const oneHourAgo = nowMs - 60 * 60 * 1000;
+      const resetAt = (typeof cur.emailVerificationCountResetAt === 'number')
+        ? cur.emailVerificationCountResetAt : 0;
+      const startFresh = resetAt < oneHourAgo;
+      const newCount = startFresh ? 1 : ((parseInt(cur.emailVerificationSendCount, 10) || 0) + 1);
+      const newResetAt = startFresh ? nowMs : resetAt;
+      await ddb.send(new UpdateCommand({
+        TableName: USERS_TABLE,
+        Key: { username },
+        UpdateExpression: 'SET emailVerificationLastSentAt = :ls, emailVerificationSendCount = :c, emailVerificationCountResetAt = :ra',
+        ExpressionAttributeValues: {
+          ':ls': nowMs,
+          ':c': newCount,
+          ':ra': newResetAt
+        }
+      }));
+    } catch (err) {
+      console.warn('[verify] rate-limit counter update failed:', err.message || err);
+    }
+  }
+
+  if (sesStatus !== 'sent') {
+    // Bubble up so handleSignup can flag verificationSent=false.
+    const e = new Error(sesError || 'SES send failed');
+    e.code = 'SES_SEND_FAILED';
+    throw e;
+  }
+}
+
+async function handleVerifyEmail(payload) {
+  const email = String(payload.email || '').trim().toLowerCase().slice(0, 200);
+  const code = String(payload.code || '').trim();
+
+  if (!isValidEmail(email)) return bad(400, 'Invalid email');
+  if (!/^\d{6}$/.test(code)) return bad(400, 'Code must be 6 digits');
+
+  const codeHash = hashCode(code, email);
+  const nowSec = Math.floor(Date.now() / 1000);
+
+  let rec;
+  try {
+    const r = await ddb.send(new GetCommand({
+      TableName: EMAIL_VERIFICATION_TABLE,
+      Key: { codeHash }
+    }));
+    rec = r.Item || null;
+  } catch (err) {
+    console.error('[verify] code get failed:', err.message || err);
+    return bad(400, 'Invalid or expired code');
+  }
+
+  if (!rec) return bad(400, 'Invalid or expired code');
+  if (rec.usedAt) return bad(400, 'This code has already been used');
+  if (typeof rec.expiresAt !== 'number' || rec.expiresAt <= nowSec) {
+    return bad(400, 'This code has expired. Click resend to get a new one.');
+  }
+  if (rec.email !== email) return bad(400, 'Invalid or expired code');
+
+  // Look up user (token row stored username at issue-time).
+  if (!rec.username) return bad(400, 'Invalid or expired code');
+  const userRes = await ddb.send(new GetCommand({
+    TableName: USERS_TABLE,
+    Key: { username: rec.username }
+  }));
+  const user = userRes.Item;
+  if (!user) return bad(400, 'Invalid or expired code');
+
+  // Idempotency: if already verified, accept silently and sign in.
+  const nowMs = Date.now();
+  if (user.emailVerified !== true) {
+    await ddb.send(new UpdateCommand({
+      TableName: USERS_TABLE,
+      Key: { username: user.username },
+      UpdateExpression: 'SET emailVerified = :v, emailVerifiedAt = :t',
+      ExpressionAttributeValues: { ':v': true, ':t': nowMs }
+    }));
+  }
+
+  // Mark code used (single-use enforcement).
+  try {
+    await ddb.send(new UpdateCommand({
+      TableName: EMAIL_VERIFICATION_TABLE,
+      Key: { codeHash },
+      UpdateExpression: 'SET usedAt = :u',
+      ExpressionAttributeValues: { ':u': new Date(nowMs).toISOString() }
+    }));
+  } catch (err) {
+    console.warn('[verify] code mark-used failed:', err.message || err);
+  }
+
+  // Auto-sign-in: account is now verified, return a token so the user
+  // doesn't have to type their password right after verifying.
+  const token = await makeToken(user.userId, user.username);
+  console.log('[verify] confirmed username=', user.username);
+  return ok({
+    token,
+    user: {
+      userId: user.userId,
+      username: user.username,
+      displayName: user.displayName || user.username,
+      grade: user.grade || null,
+      state: user.state || null,
+      color: user.color || '#1e40af',
+      balanceCents: user.balanceCents || 0,
+      lifetimeCents: user.lifetimeCents || 0,
+      isAdmin: isAdmin(user.username)
+    }
+  });
+}
+
+async function handleResendVerification(payload, event) {
+  const email = String(payload.email || '').trim().toLowerCase().slice(0, 200);
+  // Generic-200 envelope (anti-enumeration). Never reveals whether
+  // the email matched an account / whether it was already verified.
+  const generic = { ok: true, message: "If that email matches an unverified account, we've sent a fresh code." };
+  if (!isValidEmail(email)) return ok(generic);
+
+  // Look up the user.
+  let user = null;
+  try {
+    const r = await ddb.send(new ScanCommand({
+      TableName: USERS_TABLE,
+      FilterExpression: 'email = :e',
+      ExpressionAttributeValues: { ':e': email },
+      ProjectionExpression: 'username, userId, email, displayName, emailVerified, emailVerificationLastSentAt, emailVerificationSendCount, emailVerificationCountResetAt',
+      Limit: 1
+    }));
+    user = (r.Items && r.Items[0]) || null;
+  } catch (err) {
+    console.error('[verify] resend lookup failed:', err.message || err);
+    return ok(generic);
+  }
+
+  if (!user) {
+    console.log('[verify] resend no-user email-hash=', sha256Hex(email).slice(0, 12));
+    return ok(generic);
+  }
+  if (user.emailVerified === true) {
+    console.log('[verify] resend already-verified username=', user.username);
+    return ok(generic);
+  }
+
+  // Rate limit: 60s cooldown.
+  const nowMs = Date.now();
+  const lastSent = parseInt(user.emailVerificationLastSentAt, 10) || 0;
+  if (lastSent && (nowMs - lastSent) < EMAIL_VERIFICATION_RESEND_COOLDOWN_MS) {
+    const waitSec = Math.ceil((EMAIL_VERIFICATION_RESEND_COOLDOWN_MS - (nowMs - lastSent)) / 1000);
+    return bad(429, `Please wait ${waitSec}s before requesting another code.`);
+  }
+  // Rate limit: 3/hour rolling.
+  const oneHourAgo = nowMs - 60 * 60 * 1000;
+  const resetAt = (typeof user.emailVerificationCountResetAt === 'number') ? user.emailVerificationCountResetAt : 0;
+  const windowFresh = resetAt >= oneHourAgo;
+  const sendCount = windowFresh ? (parseInt(user.emailVerificationSendCount, 10) || 0) : 0;
+  if (sendCount >= EMAIL_VERIFICATION_RATE_LIMIT_HOUR) {
+    return bad(429, 'Too many requests. Try again in an hour.');
+  }
+
+  try {
+    await issueVerificationCode({
+      email,
+      userId: user.userId,
+      username: user.username,
+      displayName: user.displayName || user.username,
+      event
+    });
+  } catch (err) {
+    console.error('[verify] resend send failed:', err.message || err);
+    // Generic 200 even on send failure — anti-enumeration. The
+    // CloudWatch log + sesStatus on the code row catch the failure.
+  }
+
+  return ok(generic);
 }
 
 // ===== Stats sync =====

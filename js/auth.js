@@ -88,8 +88,12 @@ if ('serviceWorker' in navigator) {
     let data = {};
     try { data = await res.json(); } catch (_) {}
     if (!res.ok) {
-      const err = new Error(data.error || `Request failed (${res.status})`);
+      // §52 — surface the structured error payload (e.g. { error: 'email_not_verified', email, displayName })
+      // so callers can branch on it. message stays human-friendly.
+      const friendly = (data && (data.message || data.error)) || `Request failed (${res.status})`;
+      const err = new Error(friendly);
       err.status = res.status;
+      err.payload = data || {};
       throw err;
     }
     return data;
@@ -298,6 +302,20 @@ if ('serviceWorker' in navigator) {
         refreshHeader();
         onLoginSuccess();
       } catch (e) {
+        // \u00a752 \u2014 server returns 403 with error='email_not_verified' for
+        // unverified accounts. Drop into the verify-email view with a
+        // fresh resend (server auto-issues on resendVerification).
+        if (e && e.status === 403 && e.payload && e.payload.error === 'email_not_verified') {
+          // Trigger a fresh code and show the verify UI.
+          api('resendVerification', { email: e.payload.email }).catch(() => {});
+          showVerifyEmail({
+            email: e.payload.email,
+            displayName: e.payload.displayName || username,
+            verificationSent: true,
+            origin: 'login'
+          });
+          return;
+        }
         err.textContent = e.message || 'Sign-in failed. Try again.';
         err.hidden = false;
       } finally {
@@ -372,6 +390,33 @@ if ('serviceWorker' in navigator) {
 
   // ----- Signup screen -----
   function showSignup(prefilledUsername) {
+    // §52 — preferred grade comes from URL (?g=grade-3) when the kid arrived
+    // via the landing-page grade pill. We pre-fill + hide the grade picker
+    // in that case. State field removed entirely (Texas-only pivot).
+    let preferredGrade = '';
+    try {
+      const params = new URLSearchParams(location.search);
+      const g = String(params.get('g') || '').trim();
+      if (/^(grade-(k|[1-9]|1[0-2])|algebra-1)$/.test(g)) preferredGrade = g;
+    } catch (_) {}
+
+    const gradeOptions = [
+      ['grade-k', 'Kindergarten'],
+      ['grade-1', '1st grade'],
+      ['grade-2', '2nd grade'],
+      ['grade-3', '3rd grade'],
+      ['grade-4', '4th grade'],
+      ['grade-5', '5th grade'],
+      ['grade-6', '6th grade'],
+      ['grade-7', '7th grade'],
+      ['grade-8', '8th grade'],
+      ['algebra-1', 'Algebra I']
+    ].map(([v, label]) =>
+      `<option value="${v}"${preferredGrade === v ? ' selected' : ''}>${label}</option>`
+    ).join('');
+
+    const gradeFieldHidden = !!preferredGrade;
+
     const overlay = openModal(`
       <h3 class="modal-title">Create your account</h3>
       <p class="modal-message">Pick a username and password. You can sign in from any device.</p>
@@ -386,33 +431,21 @@ if ('serviceWorker' in navigator) {
       <input type="text" class="auth-input" id="su-user" maxlength="24" autocomplete="username"
              autocapitalize="off" placeholder="letters, numbers, _ . -" value="${escapeHtml(prefilledUsername || '')}" />
 
-      <label class="auth-label">Password (at least 6 characters)</label>
-      <input type="password" class="auth-input" id="su-pass" autocomplete="new-password" />
+      <label class="auth-label">Password</label>
+      <input type="password" class="auth-input" id="su-pass" autocomplete="new-password" placeholder="At least 8 characters with letters and numbers" />
+      <p class="auth-hint">Must be at least 8 characters and include both letters and numbers.</p>
 
       <label class="auth-label">Retype password</label>
       <input type="password" class="auth-input" id="su-pass2" autocomplete="new-password" />
 
-      <label class="auth-label">Your grade right now</label>
-      <select class="auth-input" id="su-grade">
-        <option value="">Pick your grade…</option>
-        <option value="grade-k">Kindergarten</option>
-        <option value="grade-1">1st grade</option>
-        <option value="grade-2">2nd grade</option>
-        <option value="grade-3">3rd grade</option>
-        <option value="grade-4">4th grade</option>
-        <option value="grade-5">5th grade</option>
-        <option value="grade-6">6th grade</option>
-        <option value="grade-7">7th grade</option>
-        <option value="grade-8">8th grade</option>
-        <option value="algebra-1">Algebra I</option>
-      </select>
-      <p class="auth-hint">You'll only see questions for your grade and higher. This can't be changed later.</p>
-
-      <label class="auth-label">Your state</label>
-      <select class="auth-input" id="su-state">
-        <option value="">Pick your state…</option>
-      </select>
-      <p class="auth-hint">We'll tailor practice to your state's specific test.</p>
+      <div id="su-grade-field"${gradeFieldHidden ? ' hidden' : ''}>
+        <label class="auth-label">Your grade right now</label>
+        <select class="auth-input" id="su-grade">
+          <option value="">Pick your grade…</option>
+          ${gradeOptions}
+        </select>
+        <p class="auth-hint">You'll only see questions for your grade and higher. This can't be changed later.</p>
+      </div>
 
       <p class="auth-error" id="su-err" hidden></p>
       <div class="modal-actions">
@@ -426,24 +459,9 @@ if ('serviceWorker' in navigator) {
     const passIn = overlay.querySelector('#su-pass');
     const pass2In = overlay.querySelector('#su-pass2');
     const gradeIn = overlay.querySelector('#su-grade');
-    const stateIn = overlay.querySelector('#su-state');
     const err = overlay.querySelector('#su-err');
     const btn = overlay.querySelector('[data-act="create"]');
     setTimeout(() => nameIn.focus(), 50);
-
-    // Populate states alphabetically; preselect detected/stored state.
-    try {
-      const list = (window.STATES_API && window.STATES_API.getAlphabetical && window.STATES_API.getAlphabetical()) || [];
-      let stored = null;
-      try { stored = localStorage.getItem('gradeearn.state'); } catch (_) {}
-      list.forEach(s => {
-        const opt = document.createElement('option');
-        opt.value = s.slug;
-        opt.textContent = `${s.name} (${s.testName})`;
-        if (stored && s.slug === stored) opt.selected = true;
-        stateIn.appendChild(opt);
-      });
-    } catch (_) {}
 
     overlay.querySelector('[data-act="back"]').addEventListener('click', () => showLogin(userIn.value));
 
@@ -454,8 +472,7 @@ if ('serviceWorker' in navigator) {
       const username = (userIn.value || '').trim().toLowerCase();
       const password = passIn.value || '';
       const password2 = pass2In.value || '';
-      const grade = gradeIn.value || '';
-      const stateValue = (stateIn && stateIn.value) || '';
+      const grade = gradeIn.value || preferredGrade || '';
 
       if (!displayName) { fail('Please enter a display name.'); return; }
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 120) {
@@ -464,23 +481,38 @@ if ('serviceWorker' in navigator) {
       if (!/^[a-z0-9_.-]{3,24}$/.test(username)) {
         fail('Username must be 3–24 characters: letters, numbers, _ . -'); return;
       }
-      if (password.length < 6) { fail('Password must be at least 6 characters.'); return; }
-      if (password !== password2) { fail('Passwords don’t match.'); return; }
+      // §52 — hardened password rule: ≥8 chars + letter + number. Mirrors server.
+      if (password.length < 8) { fail('Password must be at least 8 characters.'); return; }
+      if (!/[a-zA-Z]/.test(password) || !/\d/.test(password)) {
+        fail('Password must include both letters and numbers.'); return;
+      }
+      if (password !== password2) { fail("Passwords don't match."); return; }
       if (!grade) { fail('Please pick your current grade.'); return; }
-      if (!stateValue) { fail('Please pick your state.'); return; }
 
       setBusy(btn, true, 'Creating…');
       try {
-        const res = await api('signup', { username, password, displayName, email, grade, state: stateValue });
-        saveSession({ token: res.token, user: res.user });
-        try {
-          if (res.user && res.user.state) localStorage.setItem('gradeearn.state', res.user.state);
-          else if (stateValue) localStorage.setItem('gradeearn.state', stateValue);
-        } catch (_) {}
-        await migrateLegacyStats();
-        closeModal();
-        refreshHeader();
-        onLoginSuccess();
+        // §52 — server hard-codes state='texas'; client doesn't send it.
+        const res = await api('signup', { username, password, displayName, email, grade });
+        if (res && res.requiresVerification) {
+          // §52 — go to the 6-digit-code view in the same modal.
+          showVerifyEmail({
+            email: res.email || email,
+            displayName: res.displayName || displayName,
+            grade: res.grade || grade,
+            verificationSent: res.verificationSent !== false,
+            origin: 'signup'
+          });
+          return;
+        }
+        // Fallback: pre-§52 flow (auto-token). Shouldn't fire post-deploy.
+        if (res && res.token) {
+          saveSession({ token: res.token, user: res.user });
+          try { if (res.user && res.user.state) localStorage.setItem('gradeearn.state', res.user.state); } catch (_) {}
+          await migrateLegacyStats();
+          closeModal();
+          refreshHeader();
+          onLoginSuccess();
+        }
       } catch (e) {
         fail(e.message || 'Could not create account. Try again.');
       } finally {
@@ -491,6 +523,141 @@ if ('serviceWorker' in navigator) {
 
     [nameIn, emailIn, userIn, passIn, pass2In].forEach(i => i.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); }));
     btn.addEventListener('click', submit);
+  }
+
+  // ----- §52 Email verification screen -----
+  // Used both after signup and from the sign-in flow when the user
+  // tries to log in but the account isn't verified yet.
+  function showVerifyEmail({ email, displayName, grade, verificationSent, origin }) {
+    const intro = origin === 'login'
+      ? `Your account isn't verified yet. We sent a fresh 6-digit code to <strong>${escapeHtml(email)}</strong>.`
+      : (verificationSent === false
+        ? `We had trouble sending the verification email. Click <strong>Resend</strong> below to try again.`
+        : `We sent a 6-digit code to <strong>${escapeHtml(email)}</strong>. Enter it below to activate your account.`);
+
+    const overlay = openModal(`
+      <h3 class="modal-title">Verify your email</h3>
+      <p class="modal-message">${intro}</p>
+
+      <label class="auth-label">6-digit code</label>
+      <input type="text" class="auth-input verify-code-input" id="ve-code"
+             inputmode="numeric" autocomplete="one-time-code" maxlength="6"
+             pattern="\\d{6}" placeholder="••••••" />
+      <p class="auth-hint">Code expires in 15 minutes. Check your spam folder if you don't see it.</p>
+
+      <p class="auth-error" id="ve-err" hidden></p>
+      <p class="auth-success" id="ve-ok" hidden></p>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="ve-resend">Resend code</button>
+        <button type="button" class="btn btn-primary" id="ve-verify">Verify &amp; sign in</button>
+      </div>
+      <div class="modal-footer-row">
+        <a href="#" class="auth-link" id="ve-back">Use a different email</a>
+      </div>
+    `);
+    const codeIn = overlay.querySelector('#ve-code');
+    const verifyBtn = overlay.querySelector('#ve-verify');
+    const resendBtn = overlay.querySelector('#ve-resend');
+    const errEl = overlay.querySelector('#ve-err');
+    const okEl = overlay.querySelector('#ve-ok');
+    const backLink = overlay.querySelector('#ve-back');
+    setTimeout(() => codeIn.focus(), 60);
+
+    // Numeric-only filter; auto-submit when 6 digits are present.
+    codeIn.addEventListener('input', () => {
+      const cleaned = (codeIn.value || '').replace(/\D/g, '').slice(0, 6);
+      if (cleaned !== codeIn.value) codeIn.value = cleaned;
+      if (cleaned.length === 6) verify();
+    });
+    codeIn.addEventListener('keydown', e => { if (e.key === 'Enter') verify(); });
+
+    let resendCooldownTimer = null;
+    function startResendCooldown(seconds) {
+      let remaining = seconds;
+      resendBtn.disabled = true;
+      resendBtn.textContent = `Resend in ${remaining}s`;
+      if (resendCooldownTimer) clearInterval(resendCooldownTimer);
+      resendCooldownTimer = setInterval(() => {
+        remaining -= 1;
+        if (remaining <= 0) {
+          clearInterval(resendCooldownTimer);
+          resendCooldownTimer = null;
+          resendBtn.disabled = false;
+          resendBtn.textContent = 'Resend code';
+        } else {
+          resendBtn.textContent = `Resend in ${remaining}s`;
+        }
+      }, 1000);
+    }
+    // Start cooldown immediately if signup just sent a fresh code.
+    if (verificationSent !== false) startResendCooldown(60);
+
+    async function verify() {
+      errEl.hidden = true;
+      okEl.hidden = true;
+      const code = (codeIn.value || '').trim();
+      if (!/^\d{6}$/.test(code)) {
+        errEl.textContent = 'Enter the 6-digit code from your email.';
+        errEl.hidden = false;
+        return;
+      }
+      setBusy(verifyBtn, true, 'Verifying…');
+      try {
+        const res = await api('verifyEmail', { email, code });
+        // Server returns auth token + user on success — auto-sign-in.
+        if (res && res.token) {
+          saveSession({ token: res.token, user: res.user });
+          try { if (res.user && res.user.state) localStorage.setItem('gradeearn.state', res.user.state); } catch (_) {}
+          await migrateLegacyStats();
+          okEl.textContent = 'Verified. Signing you in…';
+          okEl.hidden = false;
+          setTimeout(() => {
+            closeModal();
+            refreshHeader();
+            onLoginSuccess();
+          }, 600);
+        } else {
+          errEl.textContent = 'Verified, but sign-in failed. Try logging in.';
+          errEl.hidden = false;
+        }
+      } catch (e) {
+        errEl.textContent = e.message || 'Invalid or expired code.';
+        errEl.hidden = false;
+      } finally {
+        setBusy(verifyBtn, false);
+      }
+    }
+    verifyBtn.addEventListener('click', verify);
+
+    async function resend() {
+      errEl.hidden = true;
+      okEl.hidden = true;
+      setBusy(resendBtn, true, 'Sending…');
+      try {
+        await api('resendVerification', { email });
+        okEl.textContent = "Check your inbox. If that email matches an unverified account, you'll see a fresh code.";
+        okEl.hidden = false;
+        startResendCooldown(60);
+      } catch (e) {
+        // 429 from the server: cooldown not yet elapsed.
+        const msg = (e && e.message) || '';
+        const m = msg.match(/(\d+)s/);
+        if (m) startResendCooldown(parseInt(m[1], 10) || 60);
+        errEl.textContent = msg || "Couldn't resend right now. Try again in a minute.";
+        errEl.hidden = false;
+      } finally {
+        // Don't re-enable resend manually — startResendCooldown handles that.
+        if (!resendCooldownTimer) setBusy(resendBtn, false);
+      }
+    }
+    resendBtn.addEventListener('click', resend);
+
+    backLink.addEventListener('click', e => {
+      e.preventDefault();
+      if (resendCooldownTimer) clearInterval(resendCooldownTimer);
+      showSignup();
+    });
   }
 
   // ----- Stats sync helpers -----
