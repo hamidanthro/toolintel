@@ -157,20 +157,8 @@ if ('serviceWorker' in navigator) {
             <path d="M4 4L12 12M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
         </button>
-        <div class="signin-modal-brand">
-          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-            <path d="M20 4L25 14L36 15.5L28 23L30 34L20 28.5L10 34L12 23L4 15.5L15 14L20 4Z"
-              fill="url(#modalStarGrad)"
-              stroke="rgba(251, 191, 36, 0.4)" stroke-width="0.5"/>
-            <defs>
-              <linearGradient id="modalStarGrad" x1="4" y1="4" x2="36" y2="34" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#fde68a"/><stop offset="0.5" stop-color="#fbbf24"/><stop offset="1" stop-color="#f59e0b"/>
-              </linearGradient>
-            </defs>
-          </svg>
-        </div>
         <h2 id="signin-title" class="signin-modal-title">Welcome back</h2>
-        <p class="signin-modal-subtitle">Sign in to keep your progress, streaks, and points across every device.</p>
+        <p class="signin-modal-subtitle">Sign in to keep your progress.</p>
 
         <div class="signin-sso-buttons">
           <button type="button" class="signin-sso-btn" data-sso="google" data-comingsoon="true">
@@ -190,7 +178,7 @@ if ('serviceWorker' in navigator) {
           </button>
         </div>
 
-        <div class="signin-divider"><span class="signin-divider-text">or sign in with username</span></div>
+        <div class="auth-divider" aria-hidden="true"></div>
 
         <form class="signin-form" novalidate>
           <div class="signin-field">

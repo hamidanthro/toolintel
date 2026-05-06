@@ -14973,3 +14973,60 @@ body.practice-page .question-card .q-inline-fb.q-inline-fb--tutor {
     letter-spacing: 0.16em !important;
   }
 }
+
+/* ============================================================
+   §67 — Sign-in modal compaction
+   Sign in button was below-the-fold on iPhone (Hamid 10:43am).
+   Cut the chrome so the button is visible without scroll on
+   any viewport ≥568px tall.
+   ============================================================ */
+
+/* Modal container — tighter padding + max-height that never
+   exceeds viewport. Internal overflow-y for the rare overflow. */
+.signin-modal {
+  padding: 28px 24px 20px !important;
+  max-height: min(90vh, 700px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Title / subtitle — tightened margins. */
+.signin-modal-title {
+  font-size: 28px !important;
+  margin-bottom: 6px !important;
+}
+.signin-modal-subtitle {
+  margin-bottom: 18px !important;
+  font-size: 13px !important;
+}
+
+/* OAuth button stack — tighter gap + smaller bottom margin. */
+.signin-sso-buttons {
+  gap: 8px !important;
+  margin-bottom: 14px !important;
+}
+
+/* §67 Auth divider — bare 1px line, no text label. Replaces
+   the noisy '.signin-divider' / '.signin-divider-text' chrome. */
+.auth-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.07);
+  margin: 14px 0 18px;
+  border: 0;
+}
+
+/* Form fields — tighter vertical rhythm. */
+.signin-form { gap: 12px !important; }
+.signin-field { gap: 4px !important; }
+
+/* Modal footer ('New to GradeEarn? Create an account') —
+   tighter top spacing. */
+.signin-modal-footer {
+  margin-top: 16px !important;
+  padding-top: 14px !important;
+}
+
+/* §67 — On phone, ensure the modal+contents fit a 568px+ viewport
+   even with iOS bottom safe-area. The mobile @media at line ~7973
+   already sets max-height: 90vh / 90dvh on .signin-modal; the
+   tighter padding above brings the button above the fold. */
