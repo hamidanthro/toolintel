@@ -924,9 +924,18 @@
           fbSlot.innerHTML = `<div class="q-inline-fb-head">✓ <span class="q-inline-fb-pts">+${cents} pts earned</span>${explanationHtml}</div>`;
           fbSlot.classList.remove('q-inline-fb--tutor');
         } else {
-          // Tutor mount points (#tutor-out, #tutor-q, #tutor-followup) match
-          // the IDs the AI-tutor wiring further down expects.
+          // §68b — brief inline header (✗ + correct answer + brief
+          // explanation) above the AI tutor, per Hamid spec mockup.
+          // §59 had removed it as 'duplicate' but the explicit
+          // correct-answer line is fast-readable signal that the
+          // tutor's first message can't replace. Tutor mount points
+          // (#tutor-out, #tutor-q, #tutor-followup) follow.
+          const briefExplanationHtml = explanation
+            ? `<div class="q-inline-fb-body">${escapeHtml(explanation)}</div>`
+            : '';
           fbSlot.innerHTML = `
+            <div class="q-inline-fb-head">✗ Not quite. <span class="q-inline-fb-correct">The answer is <strong>${escapeHtml(q.answer)}</strong>.</span></div>
+            ${briefExplanationHtml}
             <div class="tutor-box">
               <div class="tutor-output" id="tutor-out"></div>
               <form class="tutor-followup" id="tutor-followup" hidden>
@@ -936,7 +945,7 @@
                 </button>
               </form>
             </div>`;
-          fbSlot.classList.add('q-inline-fb--tutor');
+          fbSlot.classList.remove('q-inline-fb--tutor');
         }
         fbSlot.hidden = false;
       }
@@ -957,7 +966,7 @@
           advance.className = 'q-autoadvance';
           advance.setAttribute('data-role', 'autoadvance');
           advance.innerHTML = `
-            <span class="q-autoadvance-text">Loading next question…</span>
+            <span class="q-autoadvance-text">Auto-advancing in 1.5s…</span>
             <span class="q-autoadvance-bar" aria-hidden="true"><span class="q-autoadvance-fill"></span></span>`;
           checkBtn.replaceWith(advance);
           window._stAutoAdvance = setTimeout(() => {

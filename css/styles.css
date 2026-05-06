@@ -15108,3 +15108,19 @@ body.practice-page .q-inline-fb-head {
   font-weight: 600;
 }
 body.practice-page .question-card[data-state="correct"] .q-inline-fb-pts { color: #6ee7b7; }
+
+/* §68b — Question-card cross-fade on render (after auto-advance
+   from CORRECT, after Next on WRONG, on initial mount).
+   Brief 320ms opacity rise so the swap feels intentional, not
+   a hard cut. data-state='asking' is the entry state for any
+   freshly rendered question; the keyframe runs once. */
+body.practice-page .question-card[data-state="asking"] {
+  animation: question-fade-in 320ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+@keyframes question-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.practice-page .question-card[data-state="asking"] { animation: none; }
+}
