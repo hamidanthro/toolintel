@@ -7,15 +7,9 @@
   const TUTOR_ENDPOINT = window.STAAR_TUTOR_ENDPOINT
     || 'https://api.gradeearn.com/tutor'; // override via window.STAAR_TUTOR_ENDPOINT before this script
 
-  // Tutor auto-fire timeout. If we don't have a reply in this long, the kid
-  // sees the stored explanation as fallback + a Retry button.
+  // Tutor auto-fire timeout. If we don't have a reply in this long, the
+  // entire .tutor-box is removed silently — see fireInitialTutor() / §69.
   const TUTOR_TIMEOUT_MS = 12000;
-
-  // Friendly fallback line when the live tutor errors or times out. The
-  // stored explanation above stays visible — this is just the AI-side note.
-  // Frontend strings are subject to the same banned-phrase rules as the
-  // tutor system prompt — see CLAUDE.md §15 for the list.
-  const TUTOR_FALLBACK_LINE = "I'll get back to you — the standard explanation above is what to use for now.";
 
   // End-of-set headers, score-band aware. Single lookup table so future
   // tuning is one place. Growth-mindset language at the low end, varied
@@ -931,8 +925,7 @@
           // Follow-up form + chip buttons are NOT in the markup yet —
           // they get insertAdjacentHTML'd by fireInitialTutor() ONLY
           // on success. If the tutor fails or times out, we remove
-          // the entire .tutor-box silently. Kid never sees the
-          // 'I'll get back to you' apology.
+          // the entire .tutor-box silently — kid sees no apology UI.
           const briefExplanationHtml = explanation
             ? `<div class="q-inline-fb-body">${escapeHtml(explanation)}</div>`
             : '';
@@ -1018,8 +1011,8 @@
         // mounted lazily on the FIRST successful tutor reply (was
         // pre-rendered with hidden attribute, which leaked through
         // CSS specificity in some browsers). On tutor failure we
-        // remove the entire .tutor-box silently \u2014 kid never sees
-        // 'I'll get back to you' apology UI.
+        // remove the entire .tutor-box silently \u2014 kid sees no
+        // apology UI, just feedback header + Next button.
         const tutorOut = document.getElementById('tutor-out');
         const tutorBox = document.getElementById('tutor-box');
         let followup = null;
@@ -1125,7 +1118,7 @@
         }
 
         // §69 — silent failure: remove the entire .tutor-box from
-        // the DOM. The kid never sees 'I'll get back to you' apology.
+        // the DOM. The kid never sees an apology UI.
         // The inline feedback header above (✗ + correct answer +
         // brief explanation) is the failsafe teaching for that beat.
         const removeTutorBox = () => {
