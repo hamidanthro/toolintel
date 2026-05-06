@@ -717,6 +717,14 @@
     }
 
     function show() {
+      // §68 — clear pending auto-advance from a previous CORRECT
+      // state. The qbox.innerHTML reset below would orphan the
+      // timer's setTimeout-driven advance call (harmless but extra
+      // i++; show()). Cancelling here is the clean fix.
+      if (window._stAutoAdvance) {
+        try { clearTimeout(window._stAutoAdvance); } catch (_) {}
+        window._stAutoAdvance = null;
+      }
       if (i >= questions.length) {
         return finish();
       }
@@ -897,21 +905,23 @@
         });
       }
 
-      // 3. Populate the inline feedback slot (between body and Next button).
-      //    §59 — different content per state, owners' room verdict:
-      //      CORRECT: tight inline chip — symbol + points + brief explanation.
-      //               Kid got it right; no Socratic guidance needed.
-      //      WRONG:   AI tutor IS the feedback. The previous '✗ Not quite +
-      //               correct answer + explanation' chip duplicated the
-      //               tutor's first message, so kid saw the same content
-      //               twice. Slot now holds ONLY the tutor mount points.
+      // 3. Populate the inline feedback slot (between body and CTA).
+      //    §59 + §68 — content per state:
+      //      CORRECT: single-line tight chip "✓ +N pts earned · explanation".
+      //               Kid got it right; auto-advance handles 'continue'.
+      //      WRONG:   AI tutor IS the feedback. Slot holds only tutor mount
+      //               points so the explanation + Socratic guidance live
+      //               inside the card without duplication.
       const fbSlot = qCard ? qCard.querySelector('[data-role="inline-fb"]') : null;
       if (fbSlot) {
         const explanation = String(q.explanation || '').trim();
         if (isCorrect) {
-          fbSlot.innerHTML = `
-            <div class="q-inline-fb-head">✓ Correct!  <span class="q-inline-fb-pts">+${cents} pts earned</span></div>
-            ${explanation ? `<div class="q-inline-fb-body">${escapeHtml(explanation)}</div>` : ''}`;
+          // §68 — single-line compact: pts + explanation in one row,
+          // separated by middle dot. Hamid 10:47am compaction call.
+          const explanationHtml = explanation
+            ? ` <span class="q-inline-fb-sep" aria-hidden="true">·</span> <span class="q-inline-fb-body-inline">${escapeHtml(explanation)}</span>`
+            : '';
+          fbSlot.innerHTML = `<div class="q-inline-fb-head">✓ <span class="q-inline-fb-pts">+${cents} pts earned</span>${explanationHtml}</div>`;
           fbSlot.classList.remove('q-inline-fb--tutor');
         } else {
           // Tutor mount points (#tutor-out, #tutor-q, #tutor-followup) match
@@ -931,27 +941,47 @@
         fbSlot.hidden = false;
       }
 
-      // 4. Replace Check button with Next (same slot under the thumb).
+      // 4. CTA replacement.
+      //    §68 — CORRECT auto-advances 1.5s — no Next button needed.
+      //         The Check button is replaced by a subtle progress
+      //         indicator that drains over 1.5s, then we call show().
+      //    WRONG keeps the manual Next button (kid needs reading time
+      //         for the AI tutor + explanation; auto-advance feels
+      //         punishing on a wrong answer).
       const checkBtn = qCard ? qCard.querySelector('button[data-role="check"]') : null;
       if (checkBtn) {
-        const nextInline = document.createElement('button');
-        nextInline.type = 'button';
-        nextInline.id = 'next-btn';
-        nextInline.className = 'btn btn-primary q-cta';
-        nextInline.setAttribute('data-role', 'next');
-        nextInline.textContent = nextLabel;
-        checkBtn.replaceWith(nextInline);
+        if (isCorrect) {
+          // Auto-advance: replace Check with a progress indicator
+          // that visually drains, then advances after 1.5s.
+          const advance = document.createElement('div');
+          advance.className = 'q-autoadvance';
+          advance.setAttribute('data-role', 'autoadvance');
+          advance.innerHTML = `
+            <span class="q-autoadvance-text">Loading next question…</span>
+            <span class="q-autoadvance-bar" aria-hidden="true"><span class="q-autoadvance-fill"></span></span>`;
+          checkBtn.replaceWith(advance);
+          window._stAutoAdvance = setTimeout(() => {
+            try { i++; show(); } catch (_) {}
+          }, 1500);
+        } else {
+          const nextInline = document.createElement('button');
+          nextInline.type = 'button';
+          nextInline.id = 'next-btn';
+          nextInline.className = 'btn btn-primary q-cta';
+          nextInline.setAttribute('data-role', 'next');
+          nextInline.textContent = nextLabel;
+          checkBtn.replaceWith(nextInline);
+        }
       }
 
-      // 5. Update muted footer line with stake outcome.
+      // 5. §68 — Update muted footer line. Drop the '±N pts' stake
+      //    chip since pts are now inline in the q-inline-fb head
+      //    on CORRECT, and 0 pts is implied on WRONG. Footer is
+      //    just topic + TEKS (informational, no scoring duplication).
       const metaText = qCard ? qCard.querySelector('.q-meta-text') : null;
       if (metaText) {
         const base = metaText.textContent.replace(/ · ±?\d+ pts.*$/, '').replace(/ · ⭐ Mastered$/, '');
-        if (isCorrect) {
-          metaText.innerHTML = escapeHtml(base) + ' · <span class="q-meta-earn">+' + cents + ' pts earned ✓</span>';
-        } else {
-          metaText.innerHTML = escapeHtml(base) + ' · <span class="q-meta-lose">0 pts</span>';
-        }
+        metaText.textContent = base;
       }
 
       // 6. §59 — out-of-card panel deleted entirely. Both states render
@@ -962,15 +992,20 @@
       // and on Retry (which restarts a fresh call). Scoped to this panel.
       let currentTutorController = null;
 
-      document.getElementById('next-btn').addEventListener('click', () => {
-        if (currentTutorController) {
-          try { currentTutorController.abort(); } catch (_) {}
-          currentTutorController = null;
-        }
-        if (window.STAARFx) window.STAARFx.stopSpeak();
-        i++;
-        show();
-      });
+      // §68 — CORRECT auto-advances; no #next-btn exists. WRONG renders
+      // the Next button; wire its click to advance.
+      const nextBtn = document.getElementById('next-btn');
+      if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+          if (currentTutorController) {
+            try { currentTutorController.abort(); } catch (_) {}
+            currentTutorController = null;
+          }
+          if (window.STAARFx) window.STAARFx.stopSpeak();
+          i++;
+          show();
+        });
+      }
 
       if (!isCorrect) {
         const tutorOut = document.getElementById('tutor-out');

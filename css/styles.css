@@ -14325,14 +14325,22 @@ body.grade-page .subject-section {
   }
 
   /* (5) Demote .q-meta to a quiet footer chip BELOW the question
-     by reordering it inside the form. */
+     by reordering it inside the form.
+     §68 — added explicit order for .q-inline-fb (3) and the Next
+     button (4) since both were missing from the flex order list
+     and rendering at TOP (order:0 default) — Hamid screenshot
+     10:47am showed feedback + Next ABOVE the question. Targeting
+     .q-cta covers both type=submit (Check) and type=button (Next). */
   body.practice-page .question-card {
     display: flex;
     flex-direction: column;
   }
-  body.practice-page .question-card .q-prompt { order: 1; }
-  body.practice-page .question-card .q-body   { order: 2; }
-  body.practice-page .question-card > button[type="submit"] { order: 3; }
+  body.practice-page .question-card .q-prompt        { order: 1; }
+  body.practice-page .question-card .q-body          { order: 2; }
+  body.practice-page .question-card .q-inline-fb     { order: 3; }
+  body.practice-page .question-card > button[type="submit"],
+  body.practice-page .question-card > button.q-cta,
+  body.practice-page .question-card > .q-autoadvance { order: 4; }
   body.practice-page .question-card .q-meta {
     order: 99;
     margin-top: 14px;
@@ -15030,3 +15038,73 @@ body.practice-page .question-card .q-inline-fb.q-inline-fb--tutor {
    even with iOS bottom safe-area. The mobile @media at line ~7973
    already sets max-height: 90vh / 90dvh on .signin-modal; the
    tighter padding above brings the button above the fold. */
+
+/* ============================================================
+   §68 — Practice page polish
+   - Hide wordmark on practice + practice-flow pages (breadcrumb
+     identifies the page; redundant)
+   - Auto-advance progress indicator on CORRECT state
+   - Single-line inline feedback chip
+   ============================================================ */
+
+/* Hide the GradeEarn brand on practice flow pages — breadcrumb
+   'TX · Grade 3 · Math' carries the identity. */
+body.practice-mode .site-header .brand {
+  display: none !important;
+}
+
+/* §68 Auto-advance indicator (CORRECT state). Replaces the Check
+   button slot. Subtle, drains over 1.5s to signal motion. */
+.q-autoadvance {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 0 4px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+}
+.q-autoadvance-text { letter-spacing: 0.01em; }
+.q-autoadvance-bar {
+  width: 80px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.q-autoadvance-fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+  transform-origin: left center;
+  animation: q-autoadvance-drain 1.5s linear forwards;
+}
+@keyframes q-autoadvance-drain {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
+}
+
+/* §68 Single-line CORRECT inline feedback. Pts + middle-dot +
+   explanation, all on one row. Wraps gracefully if explanation
+   pushes past viewport width. */
+body.practice-page .q-inline-fb-sep {
+  color: rgba(255, 255, 255, 0.30);
+  margin: 0 4px;
+}
+body.practice-page .q-inline-fb-body-inline {
+  color: rgba(255, 255, 255, 0.80);
+  font-weight: 400;
+  font-size: 0.92rem;
+}
+body.practice-page .q-inline-fb-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0;
+  margin-bottom: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+body.practice-page .question-card[data-state="correct"] .q-inline-fb-pts { color: #6ee7b7; }
