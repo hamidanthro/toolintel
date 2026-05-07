@@ -2022,6 +2022,10 @@ async function handleGetReadingItem(payload) {
   if (rawGrade === 'algebra-1') grade = '9';
   if (rawGrade === 'grade-k')   grade = 'k';
   const genre = payload.genre ? String(payload.genre).trim().toLowerCase() : null;
+  // Temporary debug log — remove after Phase 3 is confirmed working.
+  console.log('[reading] getReadingItem REQUEST:', JSON.stringify({
+    user: auth.username, state, rawGrade, grade, genre
+  }));
 
   // Pick the GSI partition. If genre specified, use exact key; else, pick a
   // genre at random from the v1 set.
@@ -2042,6 +2046,7 @@ async function handleGetReadingItem(payload) {
     console.error('[reading] getReadingItem GSI query failed:', err.message || err);
     return bad(500, 'Lookup failed');
   }
+  console.log('[reading] getReadingItem stateGradeGenre=' + stateGradeGenre + ' passagesFound=' + passages.length);
   if (passages.length === 0) {
     return ok({ passage: null, questions: [] });
   }
