@@ -1,8 +1,8 @@
 # Texas STAAR Reading — Grade 3 Knowledge Pack
 
-**Last updated:** 2026-05-07
+**Last updated:** 2026-05-07 (committee revisions: §6 + §9 + §10)
 **Scope:** Grade 3, realistic fiction + informational genres
-**Authors:** Hamid + Owners' Room (Test Specialist, Reading Editor, Cultural Reviewer)
+**Authors:** Hamid + Owners' Room (Apple, Tesla, Test Specialist, Reading Editor, Cultural Reviewer, Curriculum Director, Google UX, Security, Accessibility, Claude)
 **Used by:** `scripts/reading/generate-passage.js`, `scripts/reading/generate-question.js`, `scripts/reading/judge-passage.js`, `scripts/reading/judge-question.js` (Phase 1 — not yet shipped)
 
 ---
@@ -206,18 +206,30 @@ Persuasive informational text. Argues kids should join book clubs because they (
 
 These rules are committee-authored (not researched). The Cultural Reviewer + Curriculum Director set them; the judge enforces them.
 
-### Demographic representation
+### Demographic representation (revised per committee, 2026-05-07)
 
 Texas K-12 enrollment (TEA 2024 data, approximate):
 
-| Group | Share | Implication for passages |
+| Group | Share |
+|---|---|
+| Hispanic/Latino | ~52% |
+| White | ~24% |
+| Black/African American | ~13% |
+| Asian (Vietnamese, Filipino, Indian, Chinese, etc.) | ~5% |
+| Two or more races | ~3% |
+| Native American (Caddo, Comanche, Lipan Apache, Tonkawa, Wichita) | ~1% |
+
+**Generator protagonist-diversity ratio (per 100 passages, ±5%):**
+
+| Protagonist type | Target | Rationale |
 |---|---|---|
-| Hispanic/Latino | ~52% | Most-frequent protagonist demographic; default unless stated otherwise |
-| White | ~24% | Significant; not the default |
-| Black/African American | ~13% | Always present; never tokenized |
-| Asian (Vietnamese, Filipino, Indian, Chinese) | ~5% | Visible across passages; specific country origin matters |
-| Two or more races | ~3% | Underrepresented in test prep generally — make space |
-| Native American (Caddo, Comanche, Lipan Apache, Tonkawa, Wichita) | ~1% | Historically present; modern presence understated; include carefully |
+| Hispanic/Latino named protagonist | 35 | Most-frequent demographic, but matched to TEA pattern not enrollment-share |
+| Black named protagonist | 15 | Always present, never tokenized |
+| Asian named protagonist | 10 | Specific country origin matters (Vietnamese ≠ Chinese ≠ Indian) |
+| Other named diverse (Arab, multiracial, Native American) | 10 | Modern realistic fiction includes Native American kids in everyday situations |
+| **Demographically unmarked** | **30** | Animal protagonists, focal-object stories, family unit unspecified, or simply non-marker names like 'Sarah' or 'Henry'. TEA's released tests do NOT name every protagonist's race; we shouldn't either. |
+
+This is roughly the pattern observed in 2022-2024 STAAR released grade-3 RLA passages. **It over-represents diversity vs raw enrollment share by design** — practice content should give kids of every group consistent representation, not statistical-mirror representation.
 
 ### Names to use across passages (rotate; don't always pick from one bucket)
 
@@ -227,9 +239,17 @@ Texas K-12 enrollment (TEA 2024 data, approximate):
 - **South Asian:** Priya, Aarav, Aanya, Rohan, Diya, Vikram, Ananya, Ishaan, Nisha
 - **East/Southeast Asian:** Min, Linh, Kai, Hiro, Mei, Jin, Anh, Ren, Bao
 - **Arab/Muslim:** Fatima, Omar, Yusuf, Aisha, Zaid, Layla, Hassan, Nadia, Khalil
-- **Native American (only when historically appropriate):** Kai, Ayita, Tahkeome (drawn from Caddo, Cherokee, Comanche tribal traditions — research the specific tribe before naming)
+- **Native American (modern realistic fiction allowed):** Kai, Ayita, Tahkeome, Tala, Aiyana (drawn from Caddo, Cherokee, Comanche, Lipan Apache, Tonkawa traditions — research the specific tribe before naming)
 
 Keep at least **30 distinct names in active rotation** so no name appears more than 1-2 times per 50-passage batch.
+
+### Generator naming rule (per Apple committee call, 2026-05-07)
+
+The generator picks a name from the labeled pools (above) but **does NOT match name to story type**. Maria might get the soccer story, the tamale-shopping story, or the bird-watching story — name is independent of plot.
+
+This avoids the AI tendency to perform diversity by tying ethnic markers to story types ("Maria's piñata story" / "Aisha's hijab story"). Names are just names; cultural texture lives in the story when it's relevant.
+
+The judge enforces this: if a passage's plot is "the obvious cultural fit" for the protagonist's name (e.g. Maria + piñata, Aisha + hijab, Diego + soccer-as-cultural-touchstone), flag for `STEREOTYPE_RISK` and require regeneration with a different plot for that name.
 
 ### Settings (Texas-specific where natural)
 
@@ -237,6 +257,27 @@ Keep at least **30 distinct names in active rotation** so no name appears more t
 - **Texas regional ecosystems:** Hill Country, Big Bend, Padre Island, Caprock Canyons, Piney Woods, Coastal Plains, Edwards Plateau
 - **Don't use Texas as the only setting** — kids should encounter passages set in other places too. Roughly 60% Texas / 40% non-Texas split for v1.
 - **Settings outside Texas should be specific:** "a small town in Oregon" beats "a small town"; "her grandmother's village in Vietnam" beats "another country"
+
+### City distribution discipline (judge-enforced, per Google UX committee call)
+
+When generating a 50-passage batch, the judge tracks city counts. Rejection rule:
+
+- **Houston, Austin, Dallas, San Antonio:** ≤15% of batch each (≤7 passages per 50)
+- **Texas cities outside the top 4:** distribute across El Paso, Brownsville, Lubbock, Amarillo, Galveston, Corpus Christi, McAllen, Laredo, Waco, Tyler. Aim for at least 4 different cities in any 10-passage stretch.
+- **Non-Texas settings:** ≤40% of batch (per the 60/40 rule)
+
+This forces the generator beyond the "everything is Houston or Austin" trap LLMs default to.
+
+### Native American characters — modern realistic fiction (per Curriculum committee call, 2026-05-07)
+
+Native American kids exist in modern Texas — they have school days, soccer practice, missed homework, and birthday parties. Generator should produce Native American protagonists in modern realistic fiction at the same rate as other specifically-named diverse groups (~5-8% of named protagonists).
+
+**Tribal accuracy still matters when called out:**
+- Don't use generic "Native American" framing; use specific tribe (Caddo, Comanche, Lipan Apache, Tonkawa, Wichita — the major Texas-historic tribes)
+- Don't use Plains-stereotyped imagery (no feathered headdresses unless the passage is specifically about historic ceremony, which is informational not realistic-fiction territory)
+- DO use Native American kids in mundane situations: Kai's soccer team in Lubbock, Ayita finding a lost dog in Amarillo
+
+For **informational passages** about Indigenous Texas history, tribal accuracy is non-negotiable — research the specific tribe before generating.
 
 ### Avoid (cultural landmines)
 
@@ -253,7 +294,7 @@ Keep at least **30 distinct names in active rotation** so no name appears more t
 
 - **Diverse protagonists in mundane situations:** the kid happens to be Hispanic AND happens to lose her cat AND solves it.
 - **Texas-specific settings without overplaying:** Padre Island as the place where Sofia found a sand dollar, not as the place where Sofia learned about Texas history.
-- **Indigenous Texas history when historically appropriate:** Caddo mound builders, Comanche horse culture, Lipan Apache plant knowledge — for informational passages on Texas history specifically. Get the tribe right; don't conflate.
+- **Indigenous Texas history in informational passages:** Caddo mound builders, Comanche horse culture, Lipan Apache plant knowledge — get the tribe right; don't conflate. (Modern realistic fiction with Native American protagonists is covered in the dedicated subsection above — generator should treat them with the same frequency as other named diverse groups.)
 - **Modern Texas:** Houston tech scene, El Paso border art, Lubbock cotton/wind-energy, Austin music + tech, Dallas trade, Galveston coast/marine biology.
 - **Bilingual texture without explanation:** if Maria's grandmother says "ven aquí" once in a passage, don't translate — context carries it. STAAR does this in `Cheese for Dinner` ("Conejo" is the rabbit; never glossed).
 
@@ -305,21 +346,70 @@ The judge MUST flag:
 
 Reject any passage or question containing:
 
-- ❌ **Death** of any character (animal or human)
-- ❌ **Divorce, separation, family conflict** beyond minor (siblings sharing space is fine; parents fighting is not)
-- ❌ **Romance** — no crushes, no hand-holding, no "she liked him". Friendship that is clearly platonic is fine.
-- ❌ **Drugs, alcohol, smoking, vaping**
-- ❌ **Religion** as theology — Christmas/Hanukkah/Eid/Diwali OK only as a cultural celebration, no prayer dialogue, no theological claims
-- ❌ **Politics, voting, elections, parties, ideology**
-- ❌ **Violence** — even "the boy fell and bled" — out. Cuts and scrapes can heal off-screen.
-- ❌ **Bullying as central theme.** A brief mention of an unkind comment is OK; a whole passage about being bullied is not.
-- ❌ **Mental illness portrayal** at grade 3.
-- ❌ **Real public figures by name** — no Trump, Beyoncé, Elon Musk, current sports stars. Historical figures who are clearly removed (Wilma Rudolph, Patricia Bath, Marie Curie) are fine for informational.
-- ❌ **Brand names** — no Nike, McDonald's, Coca-Cola, Disney, Apple. Use generic ("his sneakers", "the burger restaurant").
-- ❌ **Made-up facts** presented as real in informational passages. Every fact must be verifiable.
-- ❌ **Off-color humor or slang** — including playground slang that's age-marginal ("sus", "bet", "no cap")
+- ❌ **Death** of any character (animal or human) — strict
+- ❌ **Divorce, separation** — strict; **sibling conflict OK if resolved within the passage** (per Curriculum committee call, 2026-05-07). Brothers fighting over the iPad and a parent helping resolve = fine. Brothers fighting and one runs away unresolved = rejected.
+- ❌ **Romance** — strict (no crushes, no hand-holding, no "she liked him"). Friendship that is clearly platonic is fine.
+- ❌ **Drugs, alcohol, smoking, vaping** — strict
+- ❌ **Religion as theology** — strict; **cultural celebration mention allowed** (Diwali/Eid/Hanukkah/Christmas as background detail in plot, but no prayer dialogue, no theological claims)
+- ❌ **Politics, voting, elections, parties, ideology** — strict
+- ❌ **Violence** — strict; **weather events allowed if no character is hurt** (per Curriculum committee call, 2026-05-07). "Rain ruined the picnic" = fine. "A hurricane swept through town" = fine if no one's injured. "The hurricane killed the family dog" = rejected for death + violence.
+- ❌ **Bullying** — strict as plot; **mention OK** (per Reading Editor committee call, 2026-05-07). "Diego said something mean and Maria felt sad for a moment" = fine in passing. A whole passage about being bullied = rejected.
+- ❌ **Mental illness portrayal** at grade 3 — strict (no anxiety/depression/etc. as character trait, even mild)
+- ❌ **Disability as deficit** (per Accessibility committee call, 2026-05-07) — REJECTED. A passage where the kid's blindness/deafness/autism is the "problem to be solved" = rejected. Patricia Bath as a successful Black female cataract surgeon in a biography = fine — disability is identity, not deficit. Ditto: Mae Jemison's experience as a Black woman in space, Helen Keller's life. Modern realistic fiction with disabled kids in everyday situations (Maya plays soccer; she also uses a wheelchair) = fine. **Disability is identity, not deficit.**
+- ❌ **Real public figures alive today** by name — strict (no Trump, Beyoncé, Elon Musk, current sports stars). Historical figures who are clearly removed (Wilma Rudolph, Patricia Bath, Marie Curie, Mae Jemison) are fine for informational.
+- ❌ **Brand names** — strict (no Nike, McDonald's, Coca-Cola, Disney, Apple). Use generic ("his sneakers", "the burger restaurant").
+- ❌ **Made-up facts** presented as real in informational passages — strict (every fact must be verifiable)
+- ❌ **Off-color humor or playground slang** ("sus", "bet", "no cap") — strict
 
 ## 10. Pipeline integration notes
+
+### Storage format (locked, per committee 2026-05-07)
+
+Passages are stored as **markdown** in `staar-passages.body`. Body is a plain string with:
+- Paragraph breaks via single blank lines between paragraphs
+- `## Heading` for informational sub-sections
+- `**bold**` for emphasis
+- `*italic*` for foreign words or technical terms
+- No HTML, no inline paragraph numbers, no images
+
+### Render format (locked, per committee 2026-05-07)
+
+Kid UI renders markdown to HTML via marked.js + DOMPurify (strict whitelist), then applies CSS:
+
+```css
+.passage-body {
+  counter-reset: para;
+}
+.passage-body p {
+  padding-left: 32px;
+  text-indent: -32px;
+  counter-increment: para;
+  position: relative;
+}
+.passage-body p::before {
+  content: counter(para);
+  display: inline-block;
+  width: 24px;
+  margin-right: 8px;
+  color: var(--gold-medium, rgba(251, 191, 36, 0.65));
+  font-weight: 600;
+  text-align: right;
+  font-feature-settings: "tnum";
+  /* aria-hidden via JS or via display:inline-block + content from CSS */
+}
+```
+
+The CSS counter() approach means **paragraph numbers are visual chrome**, not text. They:
+- Skip when the speaker reads (`Speech.play` uses the source markdown)
+- Skip in screen readers (CSS-generated content with aria-hidden parent)
+- Stay in sync with the generator's paragraph count automatically
+- Can be restyled later (color, size, font) without touching content
+
+### Question references match generator paragraph order
+
+The generator counts paragraphs in source markdown when composing questions. Question stems say "paragraph 4" as a literal string. Kid UI's CSS counter produces visible "4" at the start of paragraph 4. Match by structural order.
+
+If the generator says "in paragraph 4, the word X" and there are only 3 paragraphs in the body, the judge rejects the question for `OFF_TEXT`.
 
 ### Generation prompts
 
@@ -368,12 +458,12 @@ When section 4 stems are extended (e.g. when we ship 2-part questions or hot tex
 
 ## Open TODOs (Hamid review)
 
-These are research gaps to confirm or judgment calls to ratify:
+These remain after committee deliberation:
 
-1. **[TODO: confirm]** §1 testing time. State policy is a 4-hour session limit — but is there a practice-time recommendation per practice session for our app? Probably 15-20 min for a kid; not from TEA.
-2. **[TODO: confirm]** §2 Lexile band. Approximate guide only. If we ever want to publish "this passage is Lexile 650L" to parents, we need a real readability tool — `text-readability` npm or similar.
-3. **[TODO: confirm]** §6 ratio targets. The 60% Texas / 40% non-Texas split is a Cultural Reviewer call; you may want to dial that to 50/50 or 70/30 based on what feels right.
+1. **[TODO: confirm]** §1 testing time recommendation per practice session for our app (TEA's 4-hour state policy is for the actual test, not practice). Current best guess: 15-20 min per session.
+2. **[TODO: confirm]** §2 Lexile band — approximate guide only. Decide if we ever publish Lexile to parents (would need `text-readability` npm or similar).
+3. **[Resolved 2026-05-07]** ~~§6 ratio targets~~ → set to 35/15/10/10/30 per Test Specialist + Cultural Reviewer. See `architecture-decisions.md` Decision 2.
 4. **[TODO: confirm]** §6 names. The list is broad but not exhaustive. Add/remove based on community feedback once shipped.
-5. **[TODO: review]** §9 no-no list. The most opinionated section; you may want to soften "no romance" (some grade-3 books do have light crushes) or harden "no bullying" further.
-6. **[TODO: future expansion]** This KP is grade-3 + realistic-fiction + informational only. Phase 5+ work will add `texas-reading-grade4.md` (just word-count + Lexile band shifts), `texas-reading-poetry.md` (rhyme schemes, line-count rules), `texas-reading-drama.md` (act/scene structure, stage directions), etc. Each is additive.
-7. **[TODO: ship-blocker before Phase 1]** Decide: do we generate paragraph numbers as `(1)` `(2)` `(3)` inline before each paragraph, OR as `<p data-num="1">...` markup the kid UI renders? Spec needs to be locked before the schema is written.
+5. **[Resolved 2026-05-07]** ~~§9 no-no list~~ → softened sibling conflict (allowed if resolved), clarified weather (allowed if no harm), bullying (plot rejected, mention OK), added disability-as-deficit rejection. See `architecture-decisions.md` Decisions 4 + 5.
+6. **[TODO: future expansion]** This KP is grade-3 + realistic-fiction + informational + multiple-choice only. Phase 5+ work adds additive KPs for grade 4-8, poetry, drama, hot text, SCR/ECR.
+7. **[Resolved 2026-05-07]** ~~Paragraph numbering format~~ → markdown storage + CSS counter() rendering. See `architecture-decisions.md` Decision 1.
