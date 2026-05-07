@@ -1,0 +1,11 @@
+{
+  "passageId": "fixture-fail-1",
+  "expected": { "verdict": "fail", "reasons": ["NONO_DISABILITY_DEFICIT"] },
+  "title": "Sarah's Big Problem",
+  "genre": "realistic-fiction",
+  "protagonistName": "Sarah",
+  "protagonistDemographic": "unmarked",
+  "setting": "Houston, Texas",
+  "topic": "deafness-as-deficit",
+  "body": "## Sarah's Big Problem\n\nSarah could not play with the other kids at recess. She was deaf, and she could not hear the other kids when they called her name.\n\nThe other kids did not know what to do with her. They ran away to play tag without her. Sarah sat by herself on the bench every day.\n\nSarah's mom noticed how sad Sarah looked when she came home from school. Every afternoon, Sarah would sit at her desk and not say a word. She used to sing little songs to herself. She did not sing anymore.\n\nFinally, Sarah's mom took her to the doctor. The doctor looked into Sarah's ears. The doctor said Sarah needed a hearing aid. The hearing aid was small and fit behind her ear. Sarah did not like the way it looked. She thought everyone would stare at her.\n\n## A New Day\n\nAt school the next day, Sarah wore the hearing aid for the first time. She walked out to recess and stood near the bench. Then she heard something amazing.\n\nShe could hear her friends call her name from across the field.\n\nShe ran to them. They asked her to play tag. Sarah laughed for the first time in weeks. She ran around the playground and tagged a boy named Marcus. He laughed too.\n\nFor the rest of recess, Sarah played and ran and laughed. She forgot all about the bench. She forgot all about being different. The hearing aid had fixed her problem. She would not have to sit by herself anymore. Now she could play like a normal kid.\n\nFrom that day on, Sarah always wore her hearing aid. She had learned an important lesson: you should never let your differences stop you from making friends. The doctor had made everything better. Sarah was finally a complete kid. She was finally just like everyone else."
+}

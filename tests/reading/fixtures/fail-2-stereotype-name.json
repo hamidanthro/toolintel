@@ -1,0 +1,11 @@
+{
+  "passageId": "fixture-fail-2",
+  "expected": { "verdict": "fail", "reasons": ["STEREOTYPE_RISK"] },
+  "title": "Maria's Big Piñata",
+  "genre": "realistic-fiction",
+  "protagonistName": "Maria",
+  "protagonistDemographic": "hispanic-latino",
+  "setting": "San Antonio, Texas",
+  "topic": "pinata-birthday-party",
+  "body": "## Maria's Big Piñata\n\nMaria was getting ready for her big birthday party in San Antonio. She put on her brightly colored Mexican folk dress. She had picked it out at the mercado last week. The skirt had ribbons in red and green and white.\n\nIn the kitchen, Maria's abuela was making tamales. The smell of masa filled the whole house. Maria's tía was hanging up a giant piñata in the backyard. The piñata was shaped like a colorful donkey.\n\n\"Mi hija,\" her abuela called from the kitchen, \"come help me wrap the tamales.\"\n\nMaria ran to the kitchen. She watched her abuela fold the corn husks. She tried one herself. It was harder than it looked. The masa kept squishing out the sides.\n\n## The Party\n\nMaria's primos and primas were already arriving for the party. They all spoke Spanish to each other. Mariachi music played from the speakers. The garage door was open so the whole block could hear the trumpets.\n\nThe piñata was filled with Mexican candy. Her tío had stuffed it with dulces, paletas, and lollipops shaped like cactus. Maria's friends formed a line to take swings at it.\n\nMaria put on a blindfold. Her tío handed her the stick. She swung at the piñata three times before she finally hit it. Candy rained down on the grass. All the niños cheered and ran to grab the candy.\n\nLater, everyone ate tacos and rice and beans. The mariachi band played louder. Maria danced with her primos.\n\nMaria looked at her family laughing and dancing in the warm afternoon sun. She was so glad to be Mexican-American on this special day. Her culture was the most colorful and fun culture in the whole world. She wanted everyone in San Antonio to know how proud she was of her heritage."
+}

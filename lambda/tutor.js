@@ -34,6 +34,8 @@ const USERS_TABLE = process.env.USERS_TABLE || 'staar-users';
 const STATS_TABLE = process.env.STATS_TABLE || 'staar-stats';
 const TOYS_TABLE = process.env.TOYS_TABLE || 'staar-toys';
 const ORDERS_TABLE = process.env.ORDERS_TABLE || 'staar-orders';
+const PASSAGES_TABLE = process.env.PASSAGES_TABLE || 'staar-passages';   // §B2 Reading Phase 1
+const CONTENT_POOL_TABLE = process.env.CONTENT_POOL_TABLE || 'staar-content-pool';   // already exists; named here for reading-MC items
 const FRIENDS_TABLE = process.env.FRIENDS_TABLE || 'staar-friends';
 const MESSAGES_TABLE = process.env.MESSAGES_TABLE || 'staar-messages';
 const S3_TOY_BUCKET = process.env.S3_TOY_BUCKET || '';
@@ -405,6 +407,8 @@ exports.handler = async (event) => {
   if (action === 'putStats') return await handlePutStats(payload);
   if (action === 'getFunFactsState')    return await handleGetFunFactsState(payload);
   if (action === 'updateFunFactsState') return await handleUpdateFunFactsState(payload);
+  if (action === 'getReadingPassage')   return await handleGetReadingPassage(payload);
+  if (action === 'getReadingItem')      return await handleGetReadingItem(payload);
   if (action === 'earn')           return await handleEarn(payload);
   if (action === 'lose')           return await handleLose(payload);
   if (action === 'heartbeat')      return await handleHeartbeat(payload);
@@ -1982,6 +1986,80 @@ async function handleUpdateFunFactsState(payload) {
 
   await ddb.send(new UpdateCommand(params));
   return ok({ ok: true });
+}
+
+// ===== Reading practice (Phase 1) =====
+// §B2 — staar-passages stores markdown passage bodies; staar-content-pool
+// holds reading_mc question rows linked by passageId.
+
+async function handleGetReadingPassage(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  const passageId = String(payload.passageId || '').trim();
+  if (!passageId) return bad(400, 'Missing passageId');
+  try {
+    const r = await ddb.send(new GetCommand({
+      TableName: PASSAGES_TABLE,
+      Key: { passageId }
+    }));
+    if (!r.Item) return ok({ passage: null });
+    return ok({ passage: r.Item });
+  } catch (err) {
+    console.error('[reading] getReadingPassage failed:', err.message || err);
+    return bad(500, 'Lookup failed');
+  }
+}
+
+async function handleGetReadingItem(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  const state = String(payload.state || 'texas').trim().toLowerCase();
+  const grade = String(payload.grade || '3').trim();
+  const genre = payload.genre ? String(payload.genre).trim().toLowerCase() : null;
+
+  // Pick the GSI partition. If genre specified, use exact key; else, pick a
+  // genre at random from the v1 set.
+  const genreToUse = genre || (Math.random() < 0.5 ? 'realistic-fiction' : 'informational');
+  const stateGradeGenre = `${state}_${grade}_${genreToUse}`;
+
+  let passages = [];
+  try {
+    const r = await ddb.send(new QueryCommand({
+      TableName: PASSAGES_TABLE,
+      IndexName: 'stateGradeGenre-index',
+      KeyConditionExpression: 'stateGradeGenre = :sgg',
+      ExpressionAttributeValues: { ':sgg': stateGradeGenre },
+      Limit: 50
+    }));
+    passages = (r.Items || []).filter(p => !p.tombstoneAt);
+  } catch (err) {
+    console.error('[reading] getReadingItem GSI query failed:', err.message || err);
+    return bad(500, 'Lookup failed');
+  }
+  if (passages.length === 0) {
+    return ok({ passage: null, questions: [] });
+  }
+
+  const passage = passages[Math.floor(Math.random() * passages.length)];
+
+  // Fetch question pool for this passage from staar-content-pool
+  // (poolKey scheme: '<state>#<grade>#reading#<passageId>').
+  const poolKey = `${state}#${grade}#reading#${passage.passageId}`;
+  let questions = [];
+  try {
+    const r = await ddb.send(new QueryCommand({
+      TableName: CONTENT_POOL_TABLE,
+      KeyConditionExpression: 'poolKey = :pk',
+      ExpressionAttributeValues: { ':pk': poolKey },
+      Limit: 10
+    }));
+    questions = (r.Items || []).filter(q => q.status !== 'broken' && q.status !== 'deprecated');
+  } catch (err) {
+    // Non-fatal — return the passage even if the question fetch fails.
+    console.warn('[reading] getReadingItem question fetch failed:', err.message || err);
+  }
+
+  return ok({ passage, questions });
 }
 
 // ===== Wallet (earn / get) =====
