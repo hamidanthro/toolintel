@@ -737,6 +737,9 @@
       const fbSlot = qCard.querySelector('[data-role="inline-fb"]');
       if (!fbSlot) return;
 
+      // §73 — fact card mounts cancel any in-flight question speech.
+      try { if (window.Speech) window.Speech.stop(); } catch (_) {}
+
       const icon = FUN_FACT_CATEGORY_EMOJI[fact.category] || '✨';
       const card = document.createElement('div');
       card.className = 'ff-card';
@@ -746,7 +749,13 @@
       const welcomeHtml = isFirstFactEver
         ? '<div class="ff-card-welcome">Welcome to fun facts</div>'
         : '';
+      const speakerHtml = (window.Speech && window.Speech._isSupported())
+        ? `<button type="button" class="speech-btn ff-speech-btn" data-role="ff-speak" aria-label="Read aloud" aria-pressed="false">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4.03v8.05A4.5 4.5 0 0 0 16.5 12zM14 3.23v2.06a7 7 0 0 1 0 13.42v2.06a9 9 0 0 0 0-17.54z"/></svg>
+          </button>`
+        : '';
       card.innerHTML = `
+        ${speakerHtml}
         ${welcomeHtml}
         <div class="ff-card-label" aria-hidden="true">★ Fun Fact</div>
         <div class="ff-card-icon" aria-hidden="true">${icon}</div>
@@ -754,6 +763,30 @@
         <button type="button" class="ff-card-cta" data-act="ff-got-it">Got it!</button>
       `;
       fbSlot.appendChild(card);
+
+      // §73 — fact-card speaker wiring. Tap-to-play, tap-to-stop.
+      const speakBtn = card.querySelector('[data-role="ff-speak"]');
+      if (speakBtn && window.Speech) {
+        const setPlaying = (on) => {
+          speakBtn.classList.toggle('speech-btn--playing', !!on);
+          speakBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+          speakBtn.setAttribute('aria-label', on ? 'Stop reading' : 'Read aloud');
+        };
+        speakBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (window.Speech.isPlaying()) {
+            window.Speech.stop();
+            setPlaying(false);
+          } else {
+            window.Speech.play(fact.fact || '').then(() => setPlaying(false));
+            setPlaying(true);
+          }
+        });
+        window.Speech.onStateChange(state => {
+          if (state === 'idle') setPlaying(false);
+        });
+      }
 
       const cta = card.querySelector('[data-act="ff-got-it"]');
       // §71-FIX: stopPropagation defends against any ancestor click
@@ -764,6 +797,8 @@
       cta.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
+        // §73 — Got it! cancels any in-flight fact-card speech.
+        try { if (window.Speech) window.Speech.stop(); } catch (_) {}
         try {
           if (window.FunFacts && typeof window.FunFacts.markFactSeen === 'function') {
             window.FunFacts.markFactSeen(fact.id);
@@ -794,6 +829,8 @@
         try { clearTimeout(window._stAutoAdvance); } catch (_) {}
         window._stAutoAdvance = null;
       }
+      // §73 — cancel any in-flight speech when a new question loads.
+      try { if (window.Speech) window.Speech.stop(); } catch (_) {}
       if (i >= questions.length) {
         return finish();
       }
@@ -853,17 +890,39 @@
         // Auto-focus the input so kids can just type.
         setTimeout(() => { try { numInput.focus(); } catch (_) {} }, 50);
       }
-      // Read-aloud button (shown only when pref is on).
+      // §73 — Read-aloud button (always rendered when Speech is supported).
+      // Per Owners' Room: NEVER auto-play. Tap to play, tap to stop.
+      // Spoken text = prompt + (multi-choice → " Choices: A, B, C, D").
       const readBtn = qbox.querySelector('[data-act="read"]');
-      if (readBtn && window.STAARFx) {
-        readBtn.addEventListener('click', () => {
+      if (readBtn && window.Speech && window.Speech._isSupported()) {
+        const textToRead = (() => {
           const choices = (q.type === 'multiple_choice' && Array.isArray(q.choices))
             ? '. Choices: ' + q.choices.join(', ')
             : '';
-          window.STAARFx.speak(q.prompt + choices);
+          return String(q.prompt || '') + choices;
+        })();
+        const setPlaying = (on) => {
+          readBtn.classList.toggle('speech-btn--playing', !!on);
+          readBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+          readBtn.setAttribute('aria-label', on ? 'Stop reading' : 'Read aloud');
+        };
+        readBtn.addEventListener('click', () => {
+          if (window.Speech.isPlaying()) {
+            window.Speech.stop();
+            setPlaying(false);
+          } else {
+            window.Speech.play(textToRead).then(() => setPlaying(false));
+            setPlaying(true);
+          }
         });
-        // Auto-speak the prompt when a new question loads, so kids who can't read keep flowing.
-        setTimeout(() => window.STAARFx.speak(q.prompt), 250);
+        // Sync state if some other speaker (fact card) starts/stops.
+        window.Speech.onStateChange(state => {
+          // Only reflect playing state when WE are the source — proxy via
+          // checking aria-pressed first, then the global isPlaying. If
+          // something else started a different utterance our button should
+          // go idle.
+          if (state === 'idle') setPlaying(false);
+        });
       }
       form.addEventListener('submit', e => {
         e.preventDefault();
@@ -872,6 +931,8 @@
           showToast(q.type === 'multiple_choice' ? 'Pick an answer first.' : 'Type your answer first.');
           return;
         }
+        // §73 — Check cancels any in-flight question speech.
+        try { if (window.Speech) window.Speech.stop(); } catch (_) {}
         const isCorrect = checkAnswer(q, userAnswer);
         // Lake: record answer event (Prompt I1)
         if (window.GradeEarnLake && q.contentId) {
@@ -1495,8 +1556,12 @@
       body = `<input class="num-input" type="text" name="ans" autocomplete="off" placeholder="Your answer" required />`;
     }
     const cents = difficultyCents(q);
-    const readBtn = (window.STAARFx && window.STAARFx.readAloudEnabled())
-      ? `<button type="button" class="q-read-btn" data-act="read" aria-label="Read question aloud" title="Read aloud">🔊</button>`
+    // §73 — speaker is always rendered (pref no longer gates visibility).
+    // Hidden only if Web Speech API isn't supported by the device.
+    const readBtn = (window.Speech && window.Speech._isSupported())
+      ? `<button type="button" class="speech-btn q-speech-btn" data-act="read" data-role="speak" aria-label="Read aloud" aria-pressed="false">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4.03v8.05A4.5 4.5 0 0 0 16.5 12zM14 3.23v2.06a7 7 0 0 1 0 13.42v2.06a9 9 0 0 0 0-17.54z"/></svg>
+        </button>`
       : '';
 
     // Reading passage (R2) — rendered above the question card when present.

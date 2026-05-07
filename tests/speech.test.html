@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Speech (§73) — smoke tests</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 24px auto; padding: 16px; }
+    h1 { font-size: 18px; margin: 0 0 12px; }
+    #results { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; line-height: 1.6; }
+    .pass { color: #047857; }
+    .fail { color: #b91c1c; font-weight: 700; }
+    .note { color: #6b7280; font-size: 12px; margin-top: 12px; }
+    .summary { margin-top: 16px; padding: 12px; background: #f3f4f6; border-radius: 8px; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <h1>Speech §73 — pure-fn + state subscriber smoke</h1>
+  <p class="note">
+    End-to-end audio playback can't be asserted in headless Chrome.
+    These tests cover the pure-function surfaces (_normalize, voice
+    selection, state subscribers). Real audio + iOS Safari behavior
+    must be verified on the device manually.
+  </p>
+  <div id="results"></div>
+
+  <script>
+    // Stub speechSynthesis so speech.js's SUPPORTED check passes and
+    // _isSupported() returns true. We don't drive the audio path here.
+    window._mockVoices = [];
+    window._onVoicesChanged = null;
+    // window.speechSynthesis is a read-only Window API getter in Chrome —
+    // direct assignment silently no-ops. Redefine via Object.defineProperty.
+    Object.defineProperty(window, 'speechSynthesis', {
+      configurable: true,
+      writable: true,
+      value: {
+        speaking: false,
+        cancel: function () {},
+        speak: function () {},
+        getVoices: function () { return window._mockVoices.slice(); },
+        addEventListener: function (name, cb) { if (name === 'voiceschanged') window._onVoicesChanged = cb; }
+      }
+    });
+    window.SpeechSynthesisUtterance = function (text) { this.text = text; };
+  </script>
+  <script src="../js/speech.js"></script>
+  <script>
+    const out = document.getElementById('results');
+    let pass = 0, fail = 0;
+    function assert(label, cond, detail) {
+      const line = document.createElement('div');
+      if (cond) { pass++; line.className = 'pass'; line.textContent = 'PASS  ' + label; }
+      else      { fail++; line.className = 'fail'; line.textContent = 'FAIL  ' + label + (detail ? '  : ' + detail : ''); }
+      out.appendChild(line);
+    }
+    function section(name) {
+      const h = document.createElement('div');
+      h.style.cssText = 'margin-top:12px;font-weight:700;color:#1e3a8a';
+      h.textContent = '-- ' + name;
+      out.appendChild(h);
+    }
+
+    // ---------- _normalize ----------
+    section('_normalize: numbers');
+    const nz = window.Speech._normalize;
+    assert('"271,142" -> two hundred seventy-one thousand, one hundred forty-two',
+      nz('271,142').includes('two hundred seventy-one thousand') && nz('271,142').includes('forty-two'));
+    assert('"5,819" -> "five thousand eight hundred nineteen"',
+      nz('5,819') === 'five thousand eight hundred nineteen');
+    assert('"100" -> "one hundred"', nz('100') === 'one hundred');
+    assert('"12" -> "twelve"', nz('12') === 'twelve');
+    assert('"7" stays "7" (single digit untouched)', nz('7') === '7');
+    assert('"1000000" -> "one million"', nz('1000000') === 'one million');
+    assert('"85,759,578" works without crashing', /eight five|thousand|million/.test(nz('85,759,578')));
+
+    section('_normalize: decimals');
+    assert('"0.5" -> "zero point five"', nz('0.5') === 'zero point five');
+    assert('"3.14" -> "three point one four"', nz('3.14') === 'three point one four');
+    assert('"12.5 cm" includes centimeters', /centimeters/.test(nz('12.5 cm')));
+
+    section('_normalize: operators');
+    assert('"53 x 4 = 212" -> contains "times" and "equals"',
+      /times/.test(nz('53 × 4 = 212')) && /equals/.test(nz('53 × 4 = 212')));
+    assert('"6 div 2 = 3" -> contains "divided by"', /divided by/.test(nz('6 ÷ 2 = 3')));
+    assert('"5 + 7" -> contains "plus"', /plus/.test(nz('5 + 7')));
+    assert('"3 < 5" -> contains "less than"', /less than/.test(nz('3 < 5')));
+    assert('"9 > 4" -> contains "greater than"', /greater than/.test(nz('9 > 4')));
+
+    section('_normalize: edge cases');
+    const tx = nz('TEKS 3.4B passes');
+    assert('"TEKS 3.4B" preserves the label letter B', /TEKS/.test(tx) && /B/.test(tx));
+    assert('null/undefined/empty all return ""',
+      nz(null) === '' && nz(undefined) === '' && nz('') === '');
+
+    // ---------- public API surface ----------
+    section('public API');
+    assert('window.Speech.play is a function', typeof window.Speech.play === 'function');
+    assert('window.Speech.stop is a function', typeof window.Speech.stop === 'function');
+    assert('window.Speech.isPlaying is a function', typeof window.Speech.isPlaying === 'function');
+    assert('window.Speech.current is a function', typeof window.Speech.current === 'function');
+    assert('window.Speech.onStateChange is a function', typeof window.Speech.onStateChange === 'function');
+    assert('window.Speech._isSupported() === true with mock', window.Speech._isSupported() === true);
+    assert('isPlaying() false initially', window.Speech.isPlaying() === false);
+    assert('current() null initially', window.Speech.current() === null);
+
+    // ---------- onStateChange subscription ----------
+    section('onStateChange');
+    const events = [];
+    const unsub = window.Speech.onStateChange(s => events.push(s));
+    assert('onStateChange returns unsubscribe fn', typeof unsub === 'function');
+    // stop() while idle should be a no-op (no state-change event)
+    const lenBefore = events.length;
+    window.Speech.stop();
+    assert('stop() on idle fires no event', events.length === lenBefore);
+    // unsubscribe + verify
+    unsub();
+    const lenAfterUnsub = events.length;
+    window.Speech.stop();
+    assert('after unsub, no further events', events.length === lenAfterUnsub);
+
+    // ---------- voice cache + voiceschanged ----------
+    section('voice selection (iOS async quirk)');
+    assert('_getVoice() null before voices load', window.Speech._getVoice() === null);
+    window._mockVoices = [
+      { name: 'Alex',     lang: 'en-US' },
+      { name: 'Samantha', lang: 'en-US' },
+      { name: 'Karen',    lang: 'en-AU' }
+    ];
+    if (window._onVoicesChanged) window._onVoicesChanged();
+    const v = window.Speech._getVoice();
+    assert('_getVoice() picks Samantha after voiceschanged fires',
+      v && (v.name === 'Samantha'),
+      v ? 'got ' + v.name : 'null');
+
+    // ---------- summary ----------
+    const summary = document.createElement('div');
+    summary.className = 'summary ' + (fail === 0 ? 'pass' : 'fail');
+    summary.textContent = `RESULT: ${pass} passed, ${fail} failed`;
+    out.appendChild(summary);
+    document.title = `RESULT::pass=${pass}::fail=${fail}`;
+  </script>
+</body>
+</html>

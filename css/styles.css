@@ -15429,3 +15429,64 @@ body.practice-page .question-card[data-state="asking"] {
   .ff-settings-section { padding: 18px 16px; }
   .ff-segment { font-size: 13px; padding: 10px 0; }
 }
+
+/* ==========================================================
+   §73 — Speech speaker button (questions + fun-fact card)
+   Web Speech API, tap-to-play / tap-to-stop. Always visible
+   when supported, gold accent, 44×44 tap target with 20×20
+   visual icon. Pulse animation while playing.
+   ========================================================== */
+.speech-btn {
+  width: 44px;
+  height: 44px;
+  padding: 12px;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  color: rgba(251, 191, 36, 0.55);
+  cursor: pointer;
+  transition: color 140ms, background 140ms;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+.speech-btn:hover {
+  color: rgba(251, 191, 36, 0.85);
+  background: rgba(251, 191, 36, 0.08);
+}
+.speech-btn:focus-visible {
+  outline: 2px solid rgba(251, 191, 36, 0.85);
+  outline-offset: 2px;
+}
+.speech-btn--playing {
+  color: rgba(251, 191, 36, 1);
+  animation: speech-pulse 1.5s ease-in-out infinite;
+}
+@keyframes speech-pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.08); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .speech-btn--playing { animation: none; }
+}
+
+/* Question-card placement — top-right of .q-prompt */
+body.practice-page .q-prompt {
+  position: relative;
+  padding-right: 48px;
+}
+body.practice-page .q-prompt > .q-speech-btn {
+  position: absolute;
+  top: -4px;
+  right: -8px;
+}
+
+/* Fact-card placement — top-right of .ff-card */
+.ff-card { position: relative; }
+.ff-card > .ff-speech-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+}
