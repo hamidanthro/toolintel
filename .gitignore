@@ -6,3 +6,7 @@ build/
 scripts/lake-audit/output/
 scripts/lake-audit/node_modules/
 scripts/fun-facts/output/
+
+# tts lambda — node_modules are deploy-only artifacts
+lambda/tts/node_modules/
+lambda/tts/package-lock.json

@@ -45,6 +45,7 @@
   </script>
   <script src="../js/speech.js"></script>
   <script>
+  (async function () {
     const out = document.getElementById('results');
     let pass = 0, fail = 0;
     function assert(label, cond, detail) {
@@ -102,6 +103,160 @@
     assert('window.Speech._isSupported() === true with mock', window.Speech._isSupported() === true);
     assert('isPlaying() false initially', window.Speech.isPlaying() === false);
     assert('current() null initially', window.Speech.current() === null);
+    // §76 cloud TTS surface
+    assert('window.Speech.setMode is a function', typeof window.Speech.setMode === 'function');
+    assert('window.Speech.getMode() default is "auto"', window.Speech.getMode() === 'auto');
+    window.Speech.setMode('browser');
+    assert('setMode("browser") sticks', window.Speech.getMode() === 'browser');
+    window.Speech.setMode('cloud');
+    assert('setMode("cloud") sticks', window.Speech.getMode() === 'cloud');
+    window.Speech.setMode('garbage');
+    assert('setMode("garbage") is rejected, mode stays "cloud"', window.Speech.getMode() === 'cloud');
+    window.Speech.setMode('auto'); // reset for downstream tests
+
+    // ---------- §76 cloud TTS ----------
+    section('§76 cloud TTS — endpoint resolution + fallback cascade');
+    // No endpoint configured — cloud is unavailable, browser path used
+    delete window.STAAR_TTS_ENDPOINT;
+    delete window.STAAR_TUTOR_ENDPOINT;
+    assert('_ttsEndpoint() returns "" with no globals',
+      window.Speech._ttsEndpoint() === '');
+
+    // STAAR_TUTOR_ENDPOINT-derived
+    window.STAAR_TUTOR_ENDPOINT = 'https://example.com/';
+    assert('_ttsEndpoint() derives /tts from STAAR_TUTOR_ENDPOINT',
+      window.Speech._ttsEndpoint() === 'https://example.com/tts');
+    window.STAAR_TUTOR_ENDPOINT = 'https://example.com'; // no trailing slash
+    assert('_ttsEndpoint() handles missing trailing slash',
+      window.Speech._ttsEndpoint() === 'https://example.com/tts');
+
+    // Override via STAAR_TTS_ENDPOINT
+    window.STAAR_TTS_ENDPOINT = 'https://override.example.com/synth';
+    assert('STAAR_TTS_ENDPOINT override wins',
+      window.Speech._ttsEndpoint() === 'https://override.example.com/synth');
+    delete window.STAAR_TTS_ENDPOINT;
+
+    // ---- Mock fetch + Audio for cloud-path testing ----
+    let _origFetch = window.fetch;
+    let _origAudio = window.Audio;
+    let _fetchMode = 'success'; // 'success' | 'reject' | '500'
+    let _fetchCalls = 0;
+    window.fetch = function (url, opts) {
+      _fetchCalls++;
+      if (_fetchMode === 'reject') return Promise.reject(new Error('network down'));
+      if (_fetchMode === '500') return Promise.resolve({
+        ok: false, status: 500,
+        json: () => Promise.resolve({})
+      });
+      return Promise.resolve({
+        ok: true, status: 200,
+        json: () => Promise.resolve({ audioUrl: 'https://example.com/x.mp3', cached: false })
+      });
+    };
+
+    // Audio mock: configurable to either succeed (ended fires) or error (error fires)
+    let _audioMode = 'success'; // 'success' | 'error' | 'play-reject'
+    function makeAudio() {
+      const a = {
+        _listeners: {},
+        src: '', preload: '', crossOrigin: '',
+        addEventListener(name, cb) { this._listeners[name] = cb; },
+        removeAttribute() {},
+        load() {},
+        pause() {},
+        play() {
+          if (_audioMode === 'play-reject') return Promise.reject(new Error('autoplay blocked'));
+          // schedule the chosen event in next microtask
+          Promise.resolve().then(() => {
+            if (_audioMode === 'success') {
+              if (this._listeners.playing) this._listeners.playing();
+              if (this._listeners.ended) this._listeners.ended();
+            } else if (_audioMode === 'error') {
+              if (this._listeners.error) this._listeners.error();
+            }
+          });
+          return Promise.resolve();
+        }
+      };
+      return a;
+    }
+    window.Audio = function () { return makeAudio(); };
+
+    // Set endpoint so cloud is "available"
+    window.STAAR_TUTOR_ENDPOINT = 'https://api.example.com/';
+    window.Speech.setMode('auto');
+
+    // Track browser fallback via speechSynthesis.speak() calls (the real
+    // hook — patching window.Speech._playBrowser doesn't intercept the
+    // local closure call inside speech.js). The mock must also fire
+    // utterance.onend so _playBrowser's Promise resolves; otherwise
+    // every test that triggers fallback hangs forever.
+    let _speakCalls = 0;
+    window.speechSynthesis.speak = function (utterance) {
+      _speakCalls++;
+      Promise.resolve().then(() => {
+        if (utterance && typeof utterance.onstart === 'function') utterance.onstart();
+        if (utterance && typeof utterance.onend === 'function') utterance.onend();
+      });
+    };
+
+    function reset() {
+      _fetchCalls = 0;
+      _speakCalls = 0;
+    }
+
+    // Test 1: cloud success path — fetch called, speak NOT called
+    _fetchMode = 'success';
+    _audioMode = 'success';
+    reset();
+    await window.Speech.play('Hello world');
+    assert('cloud success: fetch called once', _fetchCalls === 1);
+    assert('cloud success: browser speak() NOT called', _speakCalls === 0);
+
+    // Test 2: fetch rejects → browser fallback fires
+    _fetchMode = 'reject';
+    reset();
+    await window.Speech.play('Hello again');
+    assert('fetch reject: fetch attempted', _fetchCalls === 1);
+    assert('fetch reject: browser speak() called', _speakCalls === 1);
+
+    // Test 3: fetch returns 500 → browser fallback fires
+    _fetchMode = '500';
+    reset();
+    await window.Speech.play('Once more');
+    assert('fetch 500: fetch attempted', _fetchCalls === 1);
+    assert('fetch 500: browser speak() called', _speakCalls === 1);
+
+    // Test 4: audio.error → browser fallback fires (after one re-fetch retry)
+    _fetchMode = 'success';
+    _audioMode = 'error';
+    reset();
+    await window.Speech.play('Audio failure case');
+    assert('audio error: fetch called twice (initial + retry)', _fetchCalls >= 2);
+    assert('audio error: browser speak() called after retry', _speakCalls === 1);
+
+    // Test 5: mode='cloud' on fetch failure does NOT fall back to browser
+    _fetchMode = 'reject';
+    reset();
+    window.Speech.setMode('cloud');
+    await window.Speech.play('Cloud-only mode');
+    assert('mode=cloud + fail: browser speak() NOT called', _speakCalls === 0);
+    window.Speech.setMode('auto');
+
+    // Test 6: mode='browser' bypasses cloud entirely
+    _fetchMode = 'success';
+    _audioMode = 'success';
+    reset();
+    window.Speech.setMode('browser');
+    await window.Speech.play('Browser-only mode');
+    assert('mode=browser: fetch NOT called', _fetchCalls === 0);
+    assert('mode=browser: browser speak() called', _speakCalls === 1);
+    window.Speech.setMode('auto');
+
+    // Restore originals
+    window.fetch = _origFetch;
+    window.Audio = _origAudio;
+    delete window.STAAR_TUTOR_ENDPOINT;
 
     // ---------- onStateChange subscription ----------
     section('onStateChange');
@@ -138,6 +293,7 @@
     summary.textContent = `RESULT: ${pass} passed, ${fail} failed`;
     out.appendChild(summary);
     document.title = `RESULT::pass=${pass}::fail=${fail}`;
+  })();
   </script>
 </body>
 </html>
