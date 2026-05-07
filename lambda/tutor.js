@@ -968,15 +968,40 @@ async function authedUser(payload) {
   return auth; // { userId, username }
 }
 
-function isAdmin(username) {
-  if (!username) return false;
-  return ADMIN_USERNAMES.includes(String(username).toLowerCase());
+// §B2 — Additive isAdmin migration.
+// Accepts either:
+//   - a user row object { username, isAdmin, ... } (preferred — reads
+//     the new DDB isAdmin column AND falls back to the env-var allowlist)
+//   - a username string (legacy callers; DDB column not consulted)
+// Both paths grant admin until Phase B3 deletes the legacy admin user
+// and empties ADMIN_USERNAMES.
+function isAdmin(input) {
+  if (!input) return false;
+  if (typeof input === 'object') {
+    if (input.isAdmin === true) return true;
+    const u = String(input.username || '').toLowerCase();
+    return ADMIN_USERNAMES.includes(u);
+  }
+  const u = String(input).toLowerCase();
+  return ADMIN_USERNAMES.includes(u);
 }
 
 async function requireAdmin(payload) {
   const auth = await authedUser(payload);
   if (!auth) return { error: bad(401, 'Not signed in') };
-  if (!isAdmin(auth.username)) return { error: bad(403, 'Admin only') };
+  // §B2 — fetch the user row so isAdmin() can consult the new
+  // DDB isAdmin column. Single GetItem on a tiny table; ~1-3ms.
+  // Fallback to the env-var path if the row read fails.
+  let row = null;
+  try {
+    const r = await ddb.send(new GetCommand({
+      TableName: USERS_TABLE,
+      Key: { username: auth.username },
+      ProjectionExpression: 'username, isAdmin'
+    }));
+    row = r.Item || null;
+  } catch (_) { /* fall back to env-var path via username string */ }
+  if (!isAdmin(row || auth.username)) return { error: bad(403, 'Admin only') };
   return { auth };
 }
 
@@ -1148,7 +1173,7 @@ async function handleLogin(payload) {
       color: user.color || '#1e40af',
       balanceCents: user.balanceCents || 0,
       lifetimeCents: user.lifetimeCents || 0,
-      isAdmin: isAdmin(user.username)
+      isAdmin: isAdmin(user)
     }
   });
 }
@@ -1656,7 +1681,7 @@ async function handleVerifyEmail(payload) {
       color: user.color || '#1e40af',
       balanceCents: user.balanceCents || 0,
       lifetimeCents: user.lifetimeCents || 0,
-      isAdmin: isAdmin(user.username)
+      isAdmin: isAdmin(user)
     }
   });
 }
@@ -2458,9 +2483,11 @@ async function handleLeaderboard(payload) {
 
   const r = await ddb.send(new ScanCommand({
     TableName: USERS_TABLE,
-    ProjectionExpression: 'username, displayName, slugCorrect, slugTotal, lifetimeCents'
+    // §B2 — include isAdmin so we can filter admin accounts from the
+    // public leaderboard.
+    ProjectionExpression: 'username, displayName, slugCorrect, slugTotal, lifetimeCents, isAdmin'
   }));
-  const items = r.Items || [];
+  const items = (r.Items || []).filter(it => !isAdmin(it));   // §B2: hide admins from public board
   const rows = items.map(it => {
     const t = userTotals(it);
     const acc = t.answered > 0 ? Math.round((t.correct / t.answered) * 100) : 0;
@@ -2516,9 +2543,9 @@ async function handleLiveCount(_payload) {
 // "Practicing" = heartbeat received in the last 3 minutes (heartbeats only
 // come from the practice page).
 async function handleAdminLiveUsers(payload) {
-  const auth = await authedUser(payload);
-  if (!auth) return bad(401, 'Not signed in');
-  if (!isAdmin(auth.username)) return bad(403, 'Admin only');
+  // §B2 — uniform admin gate (reads new DDB isAdmin column via requireAdmin).
+  const g = await requireAdmin(payload); if (g.error) return g.error;
+  const auth = g.auth;
 
   const now = Date.now();
   const onlineCutoff = now - 10 * 60 * 1000;
@@ -2577,9 +2604,9 @@ async function handleAdminLiveUsers(payload) {
 // Scan is fine for beta-stage volumes (<1000 users). Once we exceed
 // that, switch to the state-index GSI with parallel queries.
 async function handleAdminListStates(payload) {
-  const auth = await authedUser(payload);
-  if (!auth) return bad(401, 'Not signed in');
-  if (!isAdmin(auth.username)) return bad(403, 'Admin only');
+  // §B2 — uniform admin gate (reads new DDB isAdmin column via requireAdmin).
+  const g = await requireAdmin(payload); if (g.error) return g.error;
+  const auth = g.auth;
 
   const scan = await ddb.send(new ScanCommand({
     TableName: USERS_TABLE,

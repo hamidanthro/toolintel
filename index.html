@@ -31,7 +31,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260507a" />
+  <link rel="stylesheet" href="css/styles.css?v=20260507b" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -752,7 +752,22 @@
       if (gradeSection) gradeSection.hidden = true;
       renderGradeGrid();
 
-      document.getElementById('dash-greeting').innerHTML = `Welcome back, <span class="welcome-name">${escapeHtmlSafe(u.displayName || u.username)}</span>`;
+      // §B2 — admins shouldn't see "Welcome back, admin" or "Welcome back,
+      // hamidanthro" stripped of polish. When isAdmin and no real
+      // displayName is set (i.e. displayName === username), fall back to
+      // email local-part or "Admin". Kid accounts are unaffected because
+      // they always set a real displayName at signup.
+      const _greet = (() => {
+        if (u.isAdmin && (u.displayName === u.username || !u.displayName)) {
+          if (u.email && u.email.includes('@')) {
+            const lp = u.email.split('@')[0];
+            return lp.charAt(0).toUpperCase() + lp.slice(1);
+          }
+          return 'Admin';
+        }
+        return u.displayName || u.username;
+      })();
+      document.getElementById('dash-greeting').innerHTML = `Welcome back, <span class="welcome-name">${escapeHtmlSafe(_greet)}</span>`;
 
       try {
         const d = await window.STAARAuth.api('dashboard', { token: window.STAARAuth.token() });

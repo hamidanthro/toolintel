@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=20260507a" />
+  <link rel="stylesheet" href="css/styles.css?v=20260507b" />
 </head>
 <body class="admin-page">
   <header class="site-header">
@@ -51,7 +51,10 @@
       <div id="admin-gate" hidden>
         <p style="color:#fca5a5;">You are not signed in as an admin.</p>
       </div>
-      <div id="admin-body">
+      <div id="admin-body" hidden>
+        <!-- §B2 — hidden by default so the panel shell doesn't flash for
+             unauthenticated visitors. js/admin.js#gate() removes the
+             hidden attribute only after isAdmin check passes. -->
         <!-- Prominent "ship these now" panel so admin sees pending shipments immediately. -->
         <div id="ship-panel" class="ship-panel" hidden>
           <div class="ship-panel-head">
