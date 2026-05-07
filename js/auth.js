@@ -986,12 +986,19 @@ if ('serviceWorker' in navigator) {
     const adminLink = u.isAdmin ? `<a href="${R('admin.html')}" class="user-menu-link">Admin panel</a>` : '';
     // §70 — fall back to djb2-derived stable color if user.color is not set.
     const avatarColor = u.color || stableUserColor(u.username || u.displayName || '');
+    // §77 B4 — wallet pill at "0 pts" is a scoreboard showing zero.
+    // Hide it until the kid earns their first cent. After that it stays
+    // visible (motivation: see your earnings grow).
+    const balance = u.balanceCents || 0;
+    const walletPill = balance > 0
+      ? `<a href="${R('marketplace.html')}" class="wallet-pill" title="Toy marketplace">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 6v12M9 9h4.5a2 2 0 010 4H10a2 2 0 000 4h5"/></svg>
+          <span>${wallet}</span>
+        </a>`
+      : '';
     slot.innerHTML = `
       ${adminBadge}
-      <a href="${R('marketplace.html')}" class="wallet-pill" title="Toy marketplace">
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 6v12M9 9h4.5a2 2 0 010 4H10a2 2 0 000 4h5"/></svg>
-        <span>${wallet}</span>
-      </a>
+      ${walletPill}
       <button type="button" class="chat-bell" id="chat-bell" title="Friends &amp; chat" aria-label="Friends and chat">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
         <span class="chat-bell-dot" id="chat-bell-dot" hidden></span>

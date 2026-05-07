@@ -15752,3 +15752,183 @@ body[data-subject="reading"] .practice-pill--subject {
   background: rgba(251, 191, 36, 0.18);
   color: rgba(251, 191, 36, 0.95);
 }
+
+/* ==========================================================
+   §77 — Practice page UI overhaul (Owners' Room: Apple, Google,
+   Microsoft, Tesla). 12 locked fixes.
+
+   Style guide: every rule scoped to body.practice-page so the
+   homepage / marketplace / etc. stay untouched.
+   ========================================================== */
+
+/* B1: redundant back-link removed in JS (was: "← Back to Grade 3 Reading"
+       sibling of the breadcrumb back arrow). */
+
+/* B2: Page-title H1 replaced by a single eyebrow line in the question
+       header. Same visual weight as a small caption — the question card
+       becomes the visual hero. */
+body.practice-page .practice-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0 0 10px;
+}
+body.practice-page .practice-eyebrow-title {
+  color: rgba(255, 255, 255, 0.78);
+  text-transform: none;
+  font-weight: 600;
+}
+body.practice-page .practice-eyebrow-progress {
+  color: rgba(251, 191, 36, 0.90);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 12px;
+}
+body.practice-page .practice-eyebrow-sep {
+  color: rgba(255, 255, 255, 0.30);
+}
+body.practice-page .practice-eyebrow-restart {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* B5: Restart hidden on Q1 (no progress to lose). data-q="1" is set on
+       the .practice-header in renderQuiz; subsequent setQuestion calls
+       update the attribute. */
+body.practice-page .practice-header[data-q="1"] .practice-eyebrow-restart {
+  display: none;
+}
+
+/* B11: Top nav (Home / Toys / How it works) clutters the focus surface.
+        Hide entirely during practice — the breadcrumb back arrow is the
+        only navigation kids need mid-question. Brand mark + user pill
+        stay so the kid still has a clear sign-out path. */
+body.practice-page .site-header .nav { display: none !important; }
+
+/* B8: A/B/C/D letter chips on multiple-choice answers. Visible-bordered
+       circular chip on the left of each choice; the existing radio is
+       hidden (replaced visually by the lit-up chip). */
+body.practice-page .choice {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-left: 14px;
+}
+body.practice-page .choice .choice-letter {
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(251, 191, 36, 0.45);
+  background: rgba(251, 191, 36, 0.08);
+  color: rgba(251, 191, 36, 0.85);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0;
+  transition: all 140ms ease-out;
+}
+body.practice-page .choice .choice-content {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+/* Selected (radio :checked) — chip lights up gold-on-navy */
+body.practice-page .choice input[type="radio"]:checked ~ .choice-letter {
+  background: rgba(251, 191, 36, 0.95);
+  color: #0d1f3f;
+  border-color: rgba(251, 191, 36, 1);
+}
+/* Hover (desktop only) */
+@media (hover: hover) {
+  body.practice-page .choice:hover .choice-letter {
+    background: rgba(251, 191, 36, 0.18);
+    border-color: rgba(251, 191, 36, 0.7);
+  }
+}
+/* The native radio is now redundant — visual lives in the chip. Hide it
+   but keep it in the layout so keyboard nav + form-required validation
+   still work. */
+body.practice-page .choice input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 1px;
+  height: 1px;
+}
+
+/* Phone tightening for chips (44px hit-area requirement is satisfied
+   by the .choice's padding + min-height inherited from §74). */
+@media (max-width: 480px) {
+  body.practice-page .choice .choice-letter {
+    flex: 0 0 28px;
+    width: 28px;
+    height: 28px;
+    font-size: 13px;
+  }
+}
+
+/* B9: ensure all 4 answers stay above the fold at 375px / 667px (iPhone
+       SE) by tightening choice padding. The existing §74 mobile rules
+       already shrink padding; this just guarantees no extra growth from
+       the new letter chips. */
+
+/* B10: Mobile-sticky question card. Reading mode on phone — passage on
+        top scrolls internally (45vh per §75), question card sticks
+        below so the kid never has to scroll the page to find it. */
+@media (max-width: 767px) {
+  body.practice-page[data-subject="reading"] .question-card {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    /* Subtle shadow when sticky to separate from passage above */
+    box-shadow: 0 -4px 12px rgba(6, 13, 31, 0.20);
+  }
+}
+
+/* B12: kebab "..." overflow menu had only one item ("Restart practice"),
+        which is the same as the eyebrow Restart button. Hide on Q1
+        (nothing to restart) AND on desktop (Restart already visible in
+        the eyebrow). On mobile Q2+, kebab is the only restart entrypoint
+        because the eyebrow Restart hides on phone for space. */
+body.practice-page .practice-header[data-q="1"] ~ * .practice-breadcrumb-overflow,
+body.practice-page .practice-breadcrumb-overflow { /* default: visible */ }
+@media (max-width: 480px) {
+  /* On phone: hide the eyebrow Restart (use kebab instead) */
+  body.practice-page .practice-eyebrow-restart { display: none; }
+}
+@media (min-width: 481px) {
+  /* On desktop / tablet: kebab is redundant with eyebrow Restart */
+  body.practice-page .practice-breadcrumb-overflow { display: none; }
+}
+
+/* Compact restart button styling for the eyebrow placement */
+body.practice-page .practice-eyebrow .btn-restart {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.65);
+  cursor: pointer;
+  transition: color 140ms, border-color 140ms, background 140ms;
+}
+body.practice-page .practice-eyebrow .btn-restart:hover {
+  color: rgba(255, 255, 255, 0.95);
+  border-color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.06);
+}

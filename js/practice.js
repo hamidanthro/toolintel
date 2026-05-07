@@ -658,21 +658,30 @@
         </div>
       </div>` : '';
 
+    // §77 — UI overhaul (Owners' Room: Apple/Google/MS/Tesla):
+    //   B1: redundant "Back to ..." link removed (breadcrumb back arrow stays)
+    //   B2: H1 hero killed; eyebrow row "[title] · Question N of M" instead
+    //   B3: Restart wrapped in #restart-wrap; hidden by CSS until Q2
+    //       (.practice-header[data-q="1"]). Progress bar formula fixed below
+    //       in setQuestion: pct = ((i + 0.5) / N) * 100 so Q1/5 reads 10%
+    //       not 0% — kid sees momentum just by being on a question.
     root.innerHTML = `
       <div class="practice-layout">
         <div class="practice-main">
           ${lockedBanner}
-          <div class="practice-header">
-            <a class="back-link" href="grade.html?g=${slug}">← Back to ${curr.title}</a>
-            <div class="practice-title-row">
-              <h2>${titleBits.join(' › ')}</h2>
-              <button type="button" class="btn-restart" id="restart-btn" title="Start this practice over">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-                <span>Restart</span>
-              </button>
+          <div class="practice-header" data-q="1">
+            <div class="practice-eyebrow">
+              <span class="practice-eyebrow-title">${titleBits.join(' · ')}</span>
+              <span class="practice-eyebrow-sep">·</span>
+              <span class="practice-eyebrow-progress">Question <span id="progress-num">1</span> of ${questions.length}</span>
+              <span id="restart-wrap" class="practice-eyebrow-restart">
+                <button type="button" class="btn-restart" id="restart-btn" title="Start this practice over">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                  <span>Restart</span>
+                </button>
+              </span>
             </div>
             <div class="progress-bar"><div class="progress-track"><div class="progress-fill" id="bar"></div></div><div class="progress-pulse" id="bar-pulse"></div></div>
-            <div class="progress-text"><span id="progress-num">1</span> / ${questions.length}</div>
           </div>
           <div id="qbox"></div>
           <div id="scratchpad-mount"></div>
@@ -856,9 +865,16 @@
       // Reset the scratchpad between questions so kids don't see prior scribbles.
       try { window.STAARScratchpad?.reset(); } catch (_) {}
       progressNum.textContent = i + 1;
-      const pct = (i / questions.length) * 100;
+      // §77 B3 — kid sees momentum on Q1 (10%) instead of empty bar.
+      // (i + 0.5) / N — Q1/5=10%, Q2/5=30%, Q3/5=50%, Q4/5=70%, Q5/5=90%.
+      // The end-of-set screen sets the bar to 100% explicitly.
+      const pct = ((i + 0.5) / questions.length) * 100;
       bar.style.width = `${pct}%`;
       if (barPulse) barPulse.style.left = `${pct}%`;
+      // §77 B5 — Restart hidden on Q1 (no progress to lose). data-q on the
+      // header drives a CSS rule that hides #restart-wrap when q=1.
+      const headerEl = document.querySelector('.practice-header');
+      if (headerEl) headerEl.setAttribute('data-q', String(i + 1));
       const q = questions[i];
       markSeen(q.id);
       qbox.innerHTML = renderQuestion(q, isLocked, i, questions.length);
@@ -1616,10 +1632,16 @@
   function renderQuestion(q, locked, idx, total) {
     let body = '';
     if (q.type === 'multiple_choice') {
-      body = q.choices.map((c, idx) => `
+      // §77 B8 — A/B/C/D letter chips. STAAR uses lettered choices and
+      // kids need to learn "circle B." Letter chip is not just decoration:
+      // it expands the visual hit-target leftward and gives the choice a
+      // stable identity for screen readers.
+      const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
+      body = q.choices.map((c, cIdx) => `
         <label class="choice">
           <input type="radio" name="ans" value="${escapeAttr(c)}" required />
-          ${renderChoiceLabel(c)}
+          <span class="choice-letter" aria-hidden="true">${LETTERS[cIdx] || (cIdx + 1)}</span>
+          <span class="choice-content">${renderChoiceLabel(c)}</span>
         </label>
       `).join('');
     } else {

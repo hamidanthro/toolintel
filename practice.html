@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=20260507e" />
+  <link rel="stylesheet" href="css/styles.css?v=20260507f" />
 </head>
 <body class="practice-page practice-mode">
   <header class="site-header">
@@ -149,7 +149,7 @@
           integrity="sha384-eEu5CTj3qGvu9PdJuS+YlkNi7d2XxQROAFYOr59zgObtlcux1ae1Il3u7jvdCSWu"
           crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="js/reading-render.js?v=20260507a"></script>
-  <script src="js/auth.js?v=20260506p"></script>
+  <script src="js/auth.js?v=20260507a"></script>
   <script src="js/lake-events.js?v=20260427a"></script>
   <script src="js/pwa-install.js?v=20260427a" defer></script>
   <script src="js/friends.js?v=20260426b"></script>
@@ -157,10 +157,11 @@
   <script src="js/staar-data.js?v=20260425a"></script>
   <script src="js/grade-card.js?v=20260427r"></script>
   <script>window.STAAR_TUTOR_ENDPOINT = 'https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com/';</script>
-  <script src="js/practice.js?v=20260507e"></script>
+  <script src="js/practice.js?v=20260507f"></script>
   <script src="js/scratchpad.js?v=20260506f"></script>
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
-  <!-- ReplyQuik chat widget -->
-  <script src="https://api.replyquik.com/widget.js" data-id="c756eb68-8bf7-40a9-83fb-273f8aad12d6" defer></script>
+  <!-- ReplyQuik chat widget removed 2026-05-07 per Owners' Room §77 B7.
+       Token-exfil liability per CLAUDE.md §6c; the corresponding AWS
+       AppRunner backend deletion is a separate Hamid-action item. -->
 </body>
 </html>
