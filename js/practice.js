@@ -846,7 +846,7 @@
       if (barPulse) barPulse.style.left = `${pct}%`;
       const q = questions[i];
       markSeen(q.id);
-      qbox.innerHTML = renderQuestion(q, isLocked);
+      qbox.innerHTML = renderQuestion(q, isLocked, i, questions.length);
       attachQuestionHandlers(q);
       // Lake: record question shown (Prompt I1)
       if (window.GradeEarnLake && q.contentId) {
@@ -872,6 +872,46 @@
             toggleBtn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
             const label = toggleBtn.querySelector('.reading-passage-toggle-label');
             if (label) label.textContent = collapsed ? 'Show passage' : 'Hide passage';
+          });
+        }
+      }
+      // §74 Phase 3 — wire the new reading passage card (markdown body
+      // via ReadingRender; CSS counter renders paragraph numbers).
+      const passageCard = qbox.querySelector('.reading-passage-card');
+      if (passageCard && q.passage && q.passage.body) {
+        // Speaker — read plain text (no inline numbers, no markdown chars).
+        const speakBtn = passageCard.querySelector('[data-role="speak-passage"]');
+        if (speakBtn && window.Speech) {
+          const plainText = window.ReadingRender
+            ? window.ReadingRender.toPlainText(q.passage.body)
+            : (q.passage.body || '');
+          const setPlaying = (on) => {
+            speakBtn.classList.toggle('speech-btn--playing', !!on);
+            speakBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+            speakBtn.setAttribute('aria-label', on ? 'Stop reading' : 'Read passage aloud');
+          };
+          speakBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (window.Speech.isPlaying()) {
+              window.Speech.stop();
+              setPlaying(false);
+            } else {
+              window.Speech.play(plainText).then(() => setPlaying(false));
+              setPlaying(true);
+            }
+          });
+          window.Speech.onStateChange(state => { if (state === 'idle') setPlaying(false); });
+        }
+        // Expand toggle (40vh ↔ 80vh).
+        const expandBtn = passageCard.querySelector('[data-role="expand-passage"]');
+        if (expandBtn) {
+          expandBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const cur = passageCard.getAttribute('data-state') || 'default';
+            const next = cur === 'expanded' ? 'default' : 'expanded';
+            passageCard.setAttribute('data-state', next);
+            expandBtn.setAttribute('aria-pressed', next === 'expanded' ? 'true' : 'false');
           });
         }
       }
@@ -1493,34 +1533,49 @@
       'grade-8':'Grade 8'
     })[slug] || slug;
     const fakeCurr = { grade: slug, title: `${grTitle} Reading`, units: [] };
+    // §74 Phase 3 — fetch one passage + its question set via getReadingItem
+    // (Phase 1 lambda action). Gets back { passage: {...}, questions: [...] }.
+    // Each question is hydrated with the same passage object so renderQuestion
+    // can mount the passage card on every render (it's idempotent — same
+    // passageId = same DOM, just re-painted by qbox.innerHTML).
     try {
       const res = await fetch(TUTOR_ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          action: 'getReadingBatch',
+          action: 'getReadingItem',
           token: (window.STAARAuth && window.STAARAuth.token && window.STAARAuth.token()) || null,
           state: STATE_SLUG_RESOLVED,
-          grade: slug,
-          count: 15,
-          sessionId: (window.GradeEarnLake && window.GradeEarnLake.startSession()) || null,
-          recentContentIds: (window.GradeEarnLake && window.GradeEarnLake.getRecent()) || []
+          grade: slug
         })
       });
-      if (!res.ok) throw new Error('reading_batch_failed');
+      if (!res.ok) throw new Error('reading_item_failed_' + res.status);
       const data = await res.json();
-      const items = (data.questions || []).map(g => ({
-        id: g.id || g.contentId,
+      const passage = data.passage || null;
+      const rawQuestions = data.questions || [];
+      if (!passage || rawQuestions.length === 0) {
+        root.innerHTML = `
+          <h2>Reading practice</h2>
+          <div class="card">
+            <p style="color:var(--muted);">No reading passages available yet for ${escapeHtml(grTitle)}. Try Math while we add more reading content!</p>
+            <p><a class="btn btn-primary" href="index.html">Back to home</a></p>
+          </div>`;
+        return;
+      }
+      // §74 — map staar-content-pool reading_mc rows to runQuiz item shape.
+      const items = rawQuestions.map(g => ({
+        id: g.contentId || g.id,
         contentId: g.contentId || null,
         poolKey: g.poolKey || null,
-        type: g.type || 'multiple_choice',
-        prompt: g.prompt || g.question || '',
+        type: 'multiple_choice',
+        prompt: g.stem || g.prompt || '',
         choices: g.choices || [],
-        answer: g.answer || '',
+        answer: (Number.isFinite(g.correctIndex) && Array.isArray(g.choices)) ? g.choices[g.correctIndex] : (g.answer || ''),
+        correctIndex: g.correctIndex,
         explanation: g.explanation || '',
-        passage: g.passage || null,
-        _unit: { title: 'Reading' },
-        _lesson: { teks: g.questionType || g.teks || '', title: '' }
+        passage: passage,                     // ← attach the same passage to every question
+        _unit: { title: passage.title || 'Reading' },
+        _lesson: { teks: g.claimedTeks || g.teks || '', title: '' }
       }));
       if (!items.length) {
         root.innerHTML = `
@@ -1543,7 +1598,7 @@
     }
   }
 
-  function renderQuestion(q, locked) {
+  function renderQuestion(q, locked, idx, total) {
     let body = '';
     if (q.type === 'multiple_choice') {
       body = q.choices.map((c, idx) => `
@@ -1564,8 +1619,20 @@
         </button>`
       : '';
 
-    // Reading passage (R2) — rendered above the question card when present.
-    const passageHtml = q.passage && q.passage.text ? renderPassage(q.passage) : '';
+    // Reading passage rendering — two paths:
+    //  - §74 Phase 3 (markdown body via ReadingRender): when q.passage.body is present
+    //  - R2 legacy (plain text via formatPassageText): when q.passage.text is present
+    let passageHtml = '';
+    if (q.passage && q.passage.body && window.ReadingRender) {
+      passageHtml = renderReadingPassageCard(q.passage);
+    } else if (q.passage && q.passage.text) {
+      passageHtml = renderPassage(q.passage);
+    }
+    // §74 — question-of-N navigator for reading sets. Renders only when a
+    // passage is present (math single-question flow doesn't need it).
+    const navHtml = (q.passage && Number.isFinite(idx) && Number.isFinite(total))
+      ? `<div class="reading-q-nav" aria-label="Question position">Question ${idx + 1} of ${total}</div>`
+      : '';
 
     // §54 — explicit state machine. data-state drives CSS visuals
     // (border color, input lock styling). Footer chip demoted from
@@ -1586,11 +1653,36 @@
       ${passageHtml}
       <form class="question-card" data-state="asking" data-cents="${cents}">
         <div class="q-prompt">${readBtn}<span class="q-prompt-text">${escapeHtml(q.prompt)}</span></div>
+        ${navHtml}
         <div class="q-body">${body}</div>
         <div class="q-inline-fb" data-role="inline-fb" hidden></div>
         <button class="btn btn-primary q-cta" type="submit" data-role="check">Check answer</button>
         <div class="q-meta" data-role="meta"><span class="q-meta-text">${metaParts.join(' · ')}</span></div>
       </form>`;
+  }
+
+  // §74 Phase 3 — Reading passage card (markdown body via ReadingRender).
+  // Mounted above the question card on every reading-flow question render.
+  // Speaker icon wired by attachQuestionHandlers via [data-role="speak-passage"].
+  function renderReadingPassageCard(p) {
+    if (!p || !p.body) return '';
+    const title = String(p.title || '').replace(/^#{1,6}\s+/, '');
+    const innerHtml = window.ReadingRender ? window.ReadingRender.renderPassage(p.body) : '';
+    const speechSupported = window.Speech && window.Speech._isSupported && window.Speech._isSupported();
+    const speakerHtml = speechSupported
+      ? `<button type="button" class="speech-btn passage-speech-btn" data-role="speak-passage" aria-label="Read passage aloud" aria-pressed="false">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4.03v8.05A4.5 4.5 0 0 0 16.5 12zM14 3.23v2.06a7 7 0 0 1 0 13.42v2.06a9 9 0 0 0 0-17.54z"/></svg>
+        </button>`
+      : '';
+    return `
+      <article class="reading-passage-card" data-state="default" data-passage-id="${escapeAttr(p.passageId || '')}">
+        <header class="reading-passage-card-header">
+          <h2 class="reading-passage-card-title">${escapeHtml(title)}</h2>
+          ${speakerHtml}
+          <button type="button" class="reading-passage-expand" data-role="expand-passage" aria-label="Expand passage" aria-pressed="false" title="Expand">⤢</button>
+        </header>
+        <div class="reading-passage-card-body">${innerHtml}</div>
+      </article>`;
   }
 
   function renderPassage(p) {

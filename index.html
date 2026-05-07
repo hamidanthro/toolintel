@@ -31,7 +31,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260507b" />
+  <link rel="stylesheet" href="css/styles.css?v=20260507c" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -160,6 +160,19 @@
           </div>
         </div>
         <div class="welcome-actions">
+          <!-- §74 Reading Phase 3 — subject toggle. Default math; persists in
+               localStorage 'gradeearn:subject'. wirePracticeCTAs() reads it
+               and constructs ?subj=<value> on the Practice now href. -->
+          <div class="subject-toggle" role="radiogroup" aria-label="Choose subject">
+            <button type="button" class="subject-segment" data-subject="math" role="radio" aria-checked="true">
+              <span class="subject-icon" aria-hidden="true">🔢</span>
+              Math
+            </button>
+            <button type="button" class="subject-segment" data-subject="reading" role="radio" aria-checked="false">
+              <span class="subject-icon" aria-hidden="true">📖</span>
+              Reading
+            </button>
+          </div>
           <a href="grades.html" class="btn btn-primary btn-primary--large dash-practice-cta" data-practice-cta>
             Practice now
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
@@ -897,6 +910,49 @@
     function attachLeaderboardClicks() { /* leaderboard removed */ }
     async function refreshLeaderboard() { /* leaderboard removed */ }
 
+    // §74 — read the subject choice ('math' | 'reading'); default math.
+    function readSubject() {
+      try {
+        const v = localStorage.getItem('gradeearn:subject');
+        return (v === 'reading') ? 'reading' : 'math';
+      } catch (_) { return 'math'; }
+    }
+    function writeSubject(value) {
+      try { localStorage.setItem('gradeearn:subject', value); } catch (_) {}
+    }
+
+    // §74 — Subject toggle wiring. Lives on the home page; mirrors the choice
+    // into localStorage and re-rewires the Practice now href.
+    function wireSubjectToggle() {
+      const segs = document.querySelectorAll('.subject-toggle .subject-segment');
+      if (!segs.length) return;
+      const apply = () => {
+        const cur = readSubject();
+        segs.forEach(b => {
+          const on = b.dataset.subject === cur;
+          b.classList.toggle('active', on);
+          b.setAttribute('aria-checked', on ? 'true' : 'false');
+        });
+        wirePracticeCTAs();
+      };
+      apply();
+      segs.forEach(b => {
+        b.addEventListener('click', () => {
+          writeSubject(b.dataset.subject);
+          apply();
+        });
+        b.addEventListener('keydown', e => {
+          if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+          e.preventDefault();
+          const arr = Array.from(segs);
+          const cur = arr.findIndex(x => x.classList.contains('active'));
+          const next = (cur + (e.key === 'ArrowRight' ? 1 : -1) + arr.length) % arr.length;
+          arr[next].click();
+          arr[next].focus();
+        });
+      });
+    }
+
     // Route "Practice now" CTAs straight into a question when we know the user's grade.
     function wirePracticeCTAs() {
       try {
@@ -913,9 +969,10 @@
         const stateSlug = u.state || (() => {
           try { return localStorage.getItem('gradeearn.state'); } catch (_) { return null; }
         })();
+        const subj = readSubject();   // §74
         const qs = stateSlug
-          ? `?s=${encodeURIComponent(stateSlug)}&g=${encodeURIComponent(slug)}&subj=math`
-          : `?g=${encodeURIComponent(slug)}`;
+          ? `?s=${encodeURIComponent(stateSlug)}&g=${encodeURIComponent(slug)}&subj=${subj}`
+          : `?g=${encodeURIComponent(slug)}&subj=${subj}`;
         document.querySelectorAll('a[data-practice-cta], a.floating-practice-cta').forEach(a => {
           a.setAttribute('href', `practice.html${qs}`);
         });
@@ -962,10 +1019,10 @@
       }, 60000);
     }
 
-    window.onSTAARLogin = () => { showDashboard(); startLeaderboardPolling(); refreshLiveCount(); wirePracticeCTAs(); };
+    window.onSTAARLogin = () => { showDashboard(); startLeaderboardPolling(); refreshLiveCount(); wireSubjectToggle(); wirePracticeCTAs(); };
     document.addEventListener('DOMContentLoaded', () => {
       // Wait a tick for auth.js to restore session, then render.
-      setTimeout(() => { showDashboard(); startLeaderboardPolling(); refreshLiveCount(); startLivePolling(); wirePracticeCTAs(); }, 0);
+      setTimeout(() => { showDashboard(); startLeaderboardPolling(); refreshLiveCount(); startLivePolling(); wireSubjectToggle(); wirePracticeCTAs(); }, 0);
 
       // Cursor-reactive spotlight on hero (desktop / fine pointer only)
       const fine = window.matchMedia('(pointer: fine)').matches && window.innerWidth > 768;
