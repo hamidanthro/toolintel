@@ -360,22 +360,27 @@
   // ============================================================
   // READING SUBJECT — lake-batch flow (no per-grade curriculum file).
   // ============================================================
+  // NOTE: do NOT early-return here. Both reading + math paths kick off async
+  // work, then need the IIFE to keep running so the `const Stats = {...}`
+  // (and other deferred consts) at the bottom get initialized. Returning
+  // early leaves Stats in TDZ; when startReading's fetch resolves and calls
+  // runQuiz → Stats.load(), it throws "Cannot access 'Stats' before
+  // initialization", caught by the surrounding try/catch as a fetch failure.
   if (SUBJECT_SLUG === 'reading') {
     startReading();
-    return;
+  } else {
+    fetch(`data/${slug}-curriculum.json?v=20260426m`)
+      .then(r => r.ok ? r.json() : Promise.reject('not-found'))
+      .then(curr => start(curr))
+      .catch(() => {
+        root.innerHTML = `
+          <h2>Practice</h2>
+          <div class="card">
+            <p style="color:var(--muted);">Practice for this grade is coming soon.</p>
+            <p><a href="grades.html">Back to grades</a></p>
+          </div>`;
+      });
   }
-
-  fetch(`data/${slug}-curriculum.json?v=20260426m`)
-    .then(r => r.ok ? r.json() : Promise.reject('not-found'))
-    .then(curr => start(curr))
-    .catch(() => {
-      root.innerHTML = `
-        <h2>Practice</h2>
-        <div class="card">
-          <p style="color:var(--muted);">Practice for this grade is coming soon.</p>
-          <p><a href="grades.html">Back to grades</a></p>
-        </div>`;
-    });
 
   function renderHome() {
     root.innerHTML = `
