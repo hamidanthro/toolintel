@@ -15463,6 +15463,14 @@ body.practice-page .question-card[data-state="asking"] {
   color: rgba(251, 191, 36, 1);
   animation: speech-pulse 1.5s ease-in-out infinite;
 }
+
+/* §76 — Dual icon (muted/active). Show muted by default; swap to
+   active when the button has .speech-btn--playing. Kids can see at a
+   glance which speaker (passage or question) is currently speaking. */
+.speech-btn .speech-icon { display: none; }
+.speech-btn .speech-icon-muted { display: inline-block; }
+.speech-btn--playing .speech-icon-muted { display: none; }
+.speech-btn--playing .speech-icon-active { display: inline-block; }
 @keyframes speech-pulse {
   0%, 100% { transform: scale(1); }
   50%      { transform: scale(1.08); }
