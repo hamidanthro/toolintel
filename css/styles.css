@@ -15658,3 +15658,89 @@ body.practice-page .q-prompt > .q-speech-btn {
   .reading-passage-card-body h2, .reading-passage-card-body h3 { padding-left: 28px; font-size: 14px; }
   .subject-toggle { max-width: 100%; }
 }
+
+/* ==========================================================
+   §75 — Reading practice ergonomics fix (Phase 3.1)
+
+   Owners' Room (Apple, Google UX, Test Specialist, Accessibility,
+   Curriculum, Tesla): the Phase 3 layout had four competing scroll
+   surfaces and the question was below the fold. Fix:
+     - Hide right rail (.performance-panel) during reading
+     - Two-column desktop (≥768px): passage LEFT (sticky), question RIGHT
+     - Mobile (<768px): passage on top max-height 45vh, question below
+     - Q-of-N moved above question stem (gold-tinted)
+     - Tap targets to 44×44 (expand button was 36×36)
+
+   All rules scoped to body[data-subject="reading"] so math is untouched.
+   ========================================================== */
+
+/* ----- Hide right rail during reading ----- */
+body[data-subject="reading"] .performance-panel {
+  display: none !important;
+}
+
+/* Reclaim the 280px right-rail column when reading */
+body[data-subject="reading"] .practice-layout {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ----- Two-column desktop (≥768px): passage LEFT, question RIGHT ----- */
+@media (min-width: 768px) {
+  body[data-subject="reading"] #qbox {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+  }
+  body[data-subject="reading"] #qbox .reading-passage-card {
+    margin-bottom: 0;
+    /* Sticky so the passage stays in view while the question is answered */
+    position: sticky;
+    top: 88px; /* below site-header */
+    max-height: calc(100vh - 120px);
+  }
+  body[data-subject="reading"] #qbox .question-card {
+    /* Right column — natural flow */
+    margin-top: 0;
+  }
+  /* Expanded mode on desktop fills more of the column */
+  body[data-subject="reading"] #qbox .reading-passage-card[data-state="expanded"] {
+    max-height: calc(100vh - 120px);
+  }
+}
+
+/* ----- Mobile stacked (<768px) — bump passage room from 36vh→45vh ----- */
+@media (max-width: 767px) {
+  body[data-subject="reading"] .reading-passage-card {
+    max-height: 45vh;
+  }
+  body[data-subject="reading"] .reading-passage-card[data-state="expanded"] {
+    max-height: 80vh;
+  }
+}
+
+/* ----- Q-of-N relocated above question stem, gold-tinted ----- */
+body[data-subject="reading"] .reading-q-nav {
+  text-align: left;
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(251, 191, 36, 0.85);
+}
+
+/* ----- 44×44 tap target for expand button (was 36×36) ----- */
+body[data-subject="reading"] .reading-passage-expand {
+  width: 44px;
+  height: 44px;
+  font-size: 20px;
+}
+
+/* ----- Subject pill tinting (visual cue we're in reading mode) ----- */
+body[data-subject="reading"] .practice-pill--subject {
+  background: rgba(251, 191, 36, 0.18);
+  color: rgba(251, 191, 36, 0.95);
+}

@@ -60,6 +60,10 @@
     }
     SUBJECT_SLUG = 'math';
   }
+  // §75 — body[data-subject] hook for CSS layout overrides (two-col reading,
+  // hide right rail during reading, etc.). Set early so CSS applies before
+  // first paint of the practice surface.
+  try { document.body.setAttribute('data-subject', SUBJECT_SLUG); } catch (_) {}
 
   // State — URL → user record → localStorage → 'texas' fallback.
   let STATE_SLUG = params.get('s');
@@ -1657,8 +1661,8 @@
     return `
       ${passageHtml}
       <form class="question-card" data-state="asking" data-cents="${cents}">
-        <div class="q-prompt">${readBtn}<span class="q-prompt-text">${escapeHtml(q.prompt)}</span></div>
         ${navHtml}
+        <div class="q-prompt">${readBtn}<span class="q-prompt-text">${escapeHtml(q.prompt)}</span></div>
         <div class="q-body">${body}</div>
         <div class="q-inline-fb" data-role="inline-fb" hidden></div>
         <button class="btn btn-primary q-cta" type="submit" data-role="check">Check answer</button>
