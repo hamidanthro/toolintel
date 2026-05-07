@@ -1,0 +1,403 @@
+{
+  "passageRejects": [
+    {
+      "brief": {
+        "genre": "realistic-fiction",
+        "topic": "helping an elderly neighbor with a small task",
+        "setting": "El Paso, Texas",
+        "protagonistName": "Linh",
+        "protagonistDemographic": "asian"
+      },
+      "attempt": 1,
+      "title": "The Lost Recipe Card",
+      "verdict": {
+        "verdict": "fail",
+        "source": "structural",
+        "reasons": [
+          "STRUCT_WORD_COUNT_HIGH",
+          "STRUCT_PARAGRAPH_COUNT_HIGH"
+        ],
+        "confidence": 1,
+        "note": "structural: STRUCT_WORD_COUNT_HIGH, STRUCT_PARAGRAPH_COUNT_HIGH",
+        "factsRequireCheck": false,
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "brief": {
+        "genre": "realistic-fiction",
+        "topic": "helping an elderly neighbor with a small task",
+        "setting": "El Paso, Texas",
+        "protagonistName": "Linh",
+        "protagonistDemographic": "asian"
+      },
+      "attempt": 2,
+      "title": "The Garden Helper",
+      "verdict": {
+        "verdict": "fail",
+        "source": "structural",
+        "reasons": [
+          "STRUCT_FK_TOO_HIGH"
+        ],
+        "confidence": 1,
+        "note": "structural: STRUCT_FK_TOO_HIGH",
+        "factsRequireCheck": false,
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "brief": {
+        "genre": "realistic-fiction",
+        "topic": "helping an elderly neighbor with a small task",
+        "setting": "El Paso, Texas",
+        "protagonistName": "Linh",
+        "protagonistDemographic": "asian"
+      },
+      "attempt": 3,
+      "title": "The Missing Key",
+      "verdict": {
+        "verdict": "fail",
+        "source": "structural",
+        "reasons": [
+          "STRUCT_WORD_COUNT_LOW"
+        ],
+        "confidence": 1,
+        "note": "structural: STRUCT_WORD_COUNT_LOW",
+        "factsRequireCheck": false,
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "brief": {
+        "genre": "realistic-fiction",
+        "topic": "a rainy day picnic improvised indoors",
+        "setting": "Galveston, Texas",
+        "protagonistName": null,
+        "protagonistDemographic": "unmarked"
+      },
+      "attempt": 1,
+      "title": "The Indoor Picnic",
+      "verdict": {
+        "verdict": "fail",
+        "source": "structural",
+        "reasons": [
+          "STRUCT_WORD_COUNT_LOW"
+        ],
+        "confidence": 1,
+        "note": "structural: STRUCT_WORD_COUNT_LOW",
+        "factsRequireCheck": false,
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "brief": {
+        "genre": "realistic-fiction",
+        "topic": "a rainy day picnic improvised indoors",
+        "setting": "Galveston, Texas",
+        "protagonistName": null,
+        "protagonistDemographic": "unmarked"
+      },
+      "attempt": 2,
+      "title": "The Indoor Picnic",
+      "verdict": {
+        "verdict": "fail",
+        "source": "structural",
+        "reasons": [
+          "STRUCT_PARAGRAPH_COUNT_HIGH"
+        ],
+        "confidence": 1,
+        "note": "structural: STRUCT_PARAGRAPH_COUNT_HIGH",
+        "factsRequireCheck": false,
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "brief": {
+        "genre": "realistic-fiction",
+        "topic": "a rainy day picnic improvised indoors",
+        "setting": "Galveston, Texas",
+        "protagonistName": null,
+        "protagonistDemographic": "unmarked"
+      },
+      "attempt": 3,
+      "title": "The Indoor Picnic",
+      "verdict": {
+        "verdict": "fail",
+        "source": "structural",
+        "reasons": [
+          "STRUCT_PARAGRAPH_COUNT_HIGH"
+        ],
+        "confidence": 1,
+        "note": "structural: STRUCT_PARAGRAPH_COUNT_HIGH",
+        "factsRequireCheck": false,
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "brief": {
+        "genre": "informational",
+        "topic": "biography of Patricia Bath, eye doctor and inventor",
+        "setting": null,
+        "protagonistName": "Patricia Bath",
+        "protagonistDemographic": "black",
+        "subject": "Patricia Bath"
+      },
+      "attempt": 1,
+      "title": "Patricia Bath: Doctor of Light",
+      "verdict": {
+        "verdict": "fail",
+        "source": "structural",
+        "reasons": [
+          "STRUCT_FK_TOO_HIGH"
+        ],
+        "confidence": 1,
+        "note": "structural: STRUCT_FK_TOO_HIGH",
+        "factsRequireCheck": false,
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "brief": {
+        "genre": "informational",
+        "topic": "biography of Patricia Bath, eye doctor and inventor",
+        "setting": null,
+        "protagonistName": "Patricia Bath",
+        "protagonistDemographic": "black",
+        "subject": "Patricia Bath"
+      },
+      "attempt": 2,
+      "title": "Patricia Bath: Doctor of Light",
+      "verdict": {
+        "verdict": "fail",
+        "source": "structural",
+        "reasons": [
+          "STRUCT_FK_TOO_HIGH"
+        ],
+        "confidence": 1,
+        "note": "structural: STRUCT_FK_TOO_HIGH",
+        "factsRequireCheck": false,
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "brief": {
+        "genre": "informational",
+        "topic": "biography of Patricia Bath, eye doctor and inventor",
+        "setting": null,
+        "protagonistName": "Patricia Bath",
+        "protagonistDemographic": "black",
+        "subject": "Patricia Bath"
+      },
+      "attempt": 3,
+      "title": "A Doctor Who Changed How We See",
+      "verdict": {
+        "verdict": "fail",
+        "source": "structural",
+        "reasons": [
+          "STRUCT_FK_TOO_HIGH"
+        ],
+        "confidence": 1,
+        "note": "structural: STRUCT_FK_TOO_HIGH",
+        "factsRequireCheck": false,
+        "kpVersion": "commit:a90d167"
+      }
+    }
+  ],
+  "questionRejects": [
+    {
+      "passageBrief": "sea turtle behavior and habitat",
+      "attempt": 1,
+      "qIdx": 1,
+      "stem": "What is the central idea of the section titled 'Protecting Sea Turtles'?",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "WRONG_TEKS_LABEL"
+        ],
+        "confidence": 0.95,
+        "note": "The question asks for the 'central idea' of a section, which is a 7.D (supporting details/key idea) task, not 7.C (paraphrase). TEKS 7.C requires restating information in one's own words, while this question asks students to identify the ma",
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "passageBrief": "sea turtle behavior and habitat",
+      "attempt": 1,
+      "qIdx": 2,
+      "stem": "Based on the information in paragraphs 2 and 3, what can the reader conclude about female sea turtle",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "WRONG_TEKS_LABEL",
+          "STEM_NOT_REAL_STAAR"
+        ],
+        "confidence": 0.85,
+        "note": "The stem 'what can the reader conclude' is an inference question (TEKS 6.C is valid for inference), but the phrase 'Based on the information in paragraphs 2 and 3' signals a key-idea/supporting-details question (TEKS 7.C or 7.D). Real STAAR",
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "passageBrief": "sea turtle behavior and habitat",
+      "attempt": 2,
+      "qIdx": 1,
+      "stem": "What is the central idea of the section Where Sea Turtles Live?",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "WRONG_TEKS_LABEL"
+        ],
+        "confidence": 0.85,
+        "note": "The question asks for the 'central idea' of a section, which is a 7.C (paraphrase/main idea) task, not 7.D (supporting details). The question itself is well-constructed with one clear answer (A) and plausible distractors that reference real",
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "passageBrief": "sea turtle behavior and habitat",
+      "attempt": 2,
+      "qIdx": 2,
+      "stem": "Based on the information in paragraphs 8 and 9, what can the reader conclude about baby sea turtles?",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "WRONG_TEKS_LABEL"
+        ],
+        "confidence": 0.85,
+        "note": "The question asks for a conclusion based on specific paragraphs, which is an inference/comprehension task (TEKS 7.C or 7.D), not 6.C (making connections across texts/experiences). The question itself is well-constructed with one clear answe",
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "passageBrief": "sea turtle behavior and habitat",
+      "attempt": 3,
+      "qIdx": 1,
+      "stem": "What is the central idea of the section \"How Sea Turtles Breathe\"?",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "WRONG_TEKS_LABEL"
+        ],
+        "confidence": 0.85,
+        "note": "The question asks for the central idea of a section, which is a 7.D (supporting details/key idea) task, not 7.C (paraphrase). TEKS 7.C requires restating information in your own words, while this question asks students to identify the main ",
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "passageBrief": "sea turtle behavior and habitat",
+      "attempt": 3,
+      "qIdx": 3,
+      "stem": "Based on the information in paragraphs 8 and 9, what can the reader conclude about baby sea turtles?",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "WRONG_TEKS_LABEL",
+          "STEM_NOT_REAL_STAAR"
+        ],
+        "confidence": 0.85,
+        "note": "The stem 'what can the reader conclude' is an inference question (strand 7.C or 7.D for supporting details), not 6.G which requires finding text evidence. Additionally, this stem pattern doesn't match the §4 catalog—real STAAR uses 'Based o",
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "passageBrief": "Big Bend National Park geography and wildlife",
+      "attempt": 1,
+      "qIdx": 1,
+      "stem": "What is the central idea of paragraphs 6 and 7?",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "WRONG_TEKS_LABEL"
+        ],
+        "confidence": 0.95,
+        "note": "The question asks for the 'central idea' which is a 7.C (paraphrase/main idea) task, not 7.D (supporting details). TEKS 7.D asks students to identify details that support a given key idea, whereas this question asks students to identify the",
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "passageBrief": "Big Bend National Park geography and wildlife",
+      "attempt": 1,
+      "qIdx": 4,
+      "stem": "Based on the information in paragraphs 13 and 14, what can the reader conclude about the Rio Grande ",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "STEM_NOT_REAL_STAAR",
+          "WRONG_TEKS_LABEL"
+        ],
+        "confidence": 0.85,
+        "note": "The stem 'Based on the information in paragraphs X and Y, what can the reader conclude' is a valid inference pattern, but TEKS 6.G is specifically about finding TEXT EVIDENCE that supports a stated idea (often multiselect). This is an infer",
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "passageBrief": "Big Bend National Park geography and wildlife",
+      "attempt": 2,
+      "qIdx": 2,
+      "stem": "Based on paragraphs 3 and 4, what can the reader conclude about animals and plants in the Chihuahuan",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "WRONG_TEKS_LABEL"
+        ],
+        "confidence": 0.85,
+        "note": "The question asks for a conclusion based on text evidence (paragraphs 3-4 describe adaptations like ocotillo dropping leaves, cactus storing water, roadrunners hunting early morning, javelinas resting in shade). This is a 7.D question (supp",
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "passageBrief": "Big Bend National Park geography and wildlife",
+      "attempt": 2,
+      "qIdx": 4,
+      "stem": "What is the central idea of paragraphs 3 and 4?",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "WRONG_TEKS_LABEL"
+        ],
+        "confidence": 0.95,
+        "note": "The question asks for the central idea of paragraphs 3-4, which is a key-idea/main-idea question (TEKS 7.D or 6.C). TEKS 7.C is for paraphrasing specific sections in your own words, not identifying central ideas. The correct answer A is val",
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "passageBrief": "Big Bend National Park geography and wildlife",
+      "attempt": 3,
+      "qIdx": 2,
+      "stem": "Based on the information in paragraphs 4 and 5, what can the reader conclude about why animals hunt ",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "WRONG_TEKS_LABEL"
+        ],
+        "confidence": 0.85,
+        "note": "The question asks for an inference/conclusion based on text evidence, which is strand 6.G (text evidence) or 7.D (supporting details), not 6.C (making connections to other texts/life/world). The question itself is well-constructed with one ",
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "passageBrief": "Big Bend National Park geography and wildlife",
+      "attempt": 3,
+      "qIdx": 4,
+      "stem": "What does the reader learn about the Colima warbler from paragraph 6?",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "WRONG_TEKS_LABEL"
+        ],
+        "confidence": 0.95,
+        "note": "The question asks what the reader learns about the Colima warbler, which is a straightforward detail-retrieval question (TEKS 7.D - supporting details). TEKS 9.Diii is for character/plot analysis in fiction, but this is an informational tex",
+        "kpVersion": "commit:a90d167"
+      }
+    }
+  ]
+}

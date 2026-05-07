@@ -1,0 +1,127 @@
+{
+  "runId": "2026-05-07T17-06-16-525Z",
+  "startedAt": "2026-05-07T17:06:16.525Z",
+  "endedAt": "2026-05-07T17:11:32.572Z",
+  "wallClockSec": 316,
+  "briefsAttempted": 10,
+  "passagesSaved": 0,
+  "questionsSaved": 0,
+  "failed": 10,
+  "passageRejectReasons": {
+    "STRUCT_WORD_COUNT_HIGH": 1,
+    "STRUCT_PARAGRAPH_COUNT_HIGH": 3,
+    "STRUCT_FK_TOO_HIGH": 4,
+    "STRUCT_WORD_COUNT_LOW": 2
+  },
+  "questionRejectReasons": {
+    "WRONG_TEKS_LABEL": 12,
+    "STEM_NOT_REAL_STAAR": 3
+  },
+  "saved": [],
+  "gaveUp": [
+    {
+      "brief": {
+        "genre": "realistic-fiction",
+        "topic": "sibling conflict, two siblings sharing a tablet, resolution within passage",
+        "setting": "Brownsville, Texas",
+        "protagonistName": "Mateo",
+        "protagonistDemographic": "hispanic-latino"
+      },
+      "reason": "One or more parameter values were invalid: Type mismatch for Index Key generatedAt Expected: N Actual: S IndexName: status-generatedAt-index"
+    },
+    {
+      "brief": {
+        "genre": "realistic-fiction",
+        "topic": "a lost pet finding its way home",
+        "setting": "Lubbock, Texas",
+        "protagonistName": null,
+        "protagonistDemographic": "unmarked"
+      },
+      "reason": "One or more parameter values were invalid: Type mismatch for Index Key generatedAt Expected: N Actual: S IndexName: status-generatedAt-index"
+    },
+    {
+      "brief": {
+        "genre": "realistic-fiction",
+        "topic": "starting a new hobby (learning to play an instrument)",
+        "setting": "Houston, Texas",
+        "protagonistName": "Aaliyah",
+        "protagonistDemographic": "black"
+      },
+      "reason": "One or more parameter values were invalid: Type mismatch for Index Key generatedAt Expected: N Actual: S IndexName: status-generatedAt-index"
+    },
+    {
+      "brief": {
+        "genre": "realistic-fiction",
+        "topic": "helping an elderly neighbor with a small task",
+        "setting": "El Paso, Texas",
+        "protagonistName": "Linh",
+        "protagonistDemographic": "asian"
+      },
+      "reason": "passage-rejected-3x"
+    },
+    {
+      "brief": {
+        "genre": "realistic-fiction",
+        "topic": "a rainy day picnic improvised indoors",
+        "setting": "Galveston, Texas",
+        "protagonistName": null,
+        "protagonistDemographic": "unmarked"
+      },
+      "reason": "passage-rejected-3x"
+    },
+    {
+      "brief": {
+        "genre": "realistic-fiction",
+        "topic": "finding an interesting old object in a closet or attic",
+        "setting": "Amarillo, Texas",
+        "protagonistName": "Kai",
+        "protagonistDemographic": "native-american"
+      },
+      "reason": "One or more parameter values were invalid: Type mismatch for Index Key generatedAt Expected: N Actual: S IndexName: status-generatedAt-index"
+    },
+    {
+      "brief": {
+        "genre": "informational",
+        "topic": "sea turtle behavior and habitat",
+        "setting": null,
+        "protagonistName": null,
+        "protagonistDemographic": "unmarked",
+        "subject": "sea turtles"
+      },
+      "reason": "questions-below-min"
+    },
+    {
+      "brief": {
+        "genre": "informational",
+        "topic": "biography of Patricia Bath, eye doctor and inventor",
+        "setting": null,
+        "protagonistName": "Patricia Bath",
+        "protagonistDemographic": "black",
+        "subject": "Patricia Bath"
+      },
+      "reason": "passage-rejected-3x"
+    },
+    {
+      "brief": {
+        "genre": "informational",
+        "topic": "how wind chimes make sound",
+        "setting": null,
+        "protagonistName": null,
+        "protagonistDemographic": "unmarked",
+        "subject": "wind chimes"
+      },
+      "reason": "One or more parameter values were invalid: Type mismatch for Index Key generatedAt Expected: N Actual: S IndexName: status-generatedAt-index"
+    },
+    {
+      "brief": {
+        "genre": "informational",
+        "topic": "Big Bend National Park geography and wildlife",
+        "setting": "Big Bend National Park, Texas",
+        "protagonistName": null,
+        "protagonistDemographic": "unmarked",
+        "subject": "Big Bend National Park"
+      },
+      "reason": "questions-below-min"
+    }
+  ]
+}

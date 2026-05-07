@@ -1,0 +1,560 @@
+{
+  "passageRejects": [
+    {
+      "brief": {
+        "genre": "realistic-fiction",
+        "topic": "sibling conflict, two siblings sharing a tablet, resolution within passage",
+        "setting": "Brownsville, Texas",
+        "protagonistName": "Mateo",
+        "protagonistDemographic": "hispanic-latino"
+      },
+      "attempt": 1,
+      "title": "The Tablet Timer",
+      "verdict": {
+        "verdict": "fail",
+        "source": "structural",
+        "reasons": [
+          "STRUCT_PARAGRAPH_COUNT_HIGH"
+        ],
+        "confidence": 1,
+        "note": "structural: STRUCT_PARAGRAPH_COUNT_HIGH",
+        "factsRequireCheck": false,
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "brief": {
+        "genre": "realistic-fiction",
+        "topic": "sibling conflict, two siblings sharing a tablet, resolution within passage",
+        "setting": "Brownsville, Texas",
+        "protagonistName": "Mateo",
+        "protagonistDemographic": "hispanic-latino"
+      },
+      "attempt": 2,
+      "title": "The Tablet Timer",
+      "verdict": {
+        "verdict": "fail",
+        "source": "structural",
+        "reasons": [
+          "STRUCT_PARAGRAPH_COUNT_HIGH",
+          "STRUCT_FK_TOO_HIGH"
+        ],
+        "confidence": 1,
+        "note": "structural: STRUCT_PARAGRAPH_COUNT_HIGH, STRUCT_FK_TOO_HIGH",
+        "factsRequireCheck": false,
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "brief": {
+        "genre": "realistic-fiction",
+        "topic": "sibling conflict, two siblings sharing a tablet, resolution within passage",
+        "setting": "Brownsville, Texas",
+        "protagonistName": "Mateo",
+        "protagonistDemographic": "hispanic-latino"
+      },
+      "attempt": 3,
+      "title": "The Tablet Timer",
+      "verdict": {
+        "verdict": "fail",
+        "source": "structural",
+        "reasons": [
+          "STRUCT_WORD_COUNT_HIGH",
+          "STRUCT_PARAGRAPH_COUNT_HIGH"
+        ],
+        "confidence": 1,
+        "note": "structural: STRUCT_WORD_COUNT_HIGH, STRUCT_PARAGRAPH_COUNT_HIGH",
+        "factsRequireCheck": false,
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "brief": {
+        "genre": "realistic-fiction",
+        "topic": "starting a new hobby (learning to play an instrument)",
+        "setting": "Houston, Texas",
+        "protagonistName": "Aaliyah",
+        "protagonistDemographic": "black"
+      },
+      "attempt": 1,
+      "title": "Aaliyah's New Sound",
+      "verdict": {
+        "verdict": "fail",
+        "source": "structural",
+        "reasons": [
+          "STRUCT_PARAGRAPH_COUNT_HIGH"
+        ],
+        "confidence": 1,
+        "note": "structural: STRUCT_PARAGRAPH_COUNT_HIGH",
+        "factsRequireCheck": false,
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "brief": {
+        "genre": "realistic-fiction",
+        "topic": "helping an elderly neighbor with a small task",
+        "setting": "El Paso, Texas",
+        "protagonistName": "Linh",
+        "protagonistDemographic": "asian"
+      },
+      "attempt": 1,
+      "title": "The Forgotten Tomatoes",
+      "verdict": {
+        "verdict": "fail",
+        "source": "structural",
+        "reasons": [
+          "STRUCT_FK_TOO_HIGH",
+          "STRUCT_SENTENCE_TOO_LONG"
+        ],
+        "confidence": 1,
+        "note": "structural: STRUCT_FK_TOO_HIGH, STRUCT_SENTENCE_TOO_LONG",
+        "factsRequireCheck": false,
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "brief": {
+        "genre": "realistic-fiction",
+        "topic": "helping an elderly neighbor with a small task",
+        "setting": "El Paso, Texas",
+        "protagonistName": "Linh",
+        "protagonistDemographic": "asian"
+      },
+      "attempt": 2,
+      "title": "The Heavy Box",
+      "verdict": {
+        "verdict": "fail",
+        "source": "structural",
+        "reasons": [
+          "STRUCT_SENTENCE_TOO_LONG"
+        ],
+        "confidence": 1,
+        "note": "structural: STRUCT_SENTENCE_TOO_LONG",
+        "factsRequireCheck": false,
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "brief": {
+        "genre": "realistic-fiction",
+        "topic": "helping an elderly neighbor with a small task",
+        "setting": "El Paso, Texas",
+        "protagonistName": "Linh",
+        "protagonistDemographic": "asian"
+      },
+      "attempt": 3,
+      "title": "The Missing Recipe Box",
+      "verdict": {
+        "verdict": "fail",
+        "source": "structural",
+        "reasons": [
+          "STRUCT_PARAGRAPH_COUNT_HIGH"
+        ],
+        "confidence": 1,
+        "note": "structural: STRUCT_PARAGRAPH_COUNT_HIGH",
+        "factsRequireCheck": false,
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "brief": {
+        "genre": "realistic-fiction",
+        "topic": "a rainy day picnic improvised indoors",
+        "setting": "Galveston, Texas",
+        "protagonistName": null,
+        "protagonistDemographic": "unmarked"
+      },
+      "attempt": 1,
+      "title": "The Indoor Picnic",
+      "verdict": {
+        "verdict": "fail",
+        "source": "structural",
+        "reasons": [
+          "STRUCT_PARAGRAPH_COUNT_HIGH"
+        ],
+        "confidence": 1,
+        "note": "structural: STRUCT_PARAGRAPH_COUNT_HIGH",
+        "factsRequireCheck": false,
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "brief": {
+        "genre": "realistic-fiction",
+        "topic": "a rainy day picnic improvised indoors",
+        "setting": "Galveston, Texas",
+        "protagonistName": null,
+        "protagonistDemographic": "unmarked"
+      },
+      "attempt": 2,
+      "title": "The Indoor Picnic",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "MORALIZING_ENDING"
+        ],
+        "confidence": 0.95,
+        "note": "The final paragraph ('Sometimes the best days are the ones that don't go as planned...') is explicit moralizing. STAAR grade-3 realistic fiction ends when the story ends—no 'lesson learned' summary. Remove the final paragraph and end at 'It",
+        "factsRequireCheck": false,
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "brief": {
+        "genre": "realistic-fiction",
+        "topic": "finding an interesting old object in a closet or attic",
+        "setting": "Amarillo, Texas",
+        "protagonistName": "Kai",
+        "protagonistDemographic": "native-american"
+      },
+      "attempt": 1,
+      "title": "The Mystery Box",
+      "verdict": {
+        "verdict": "fail",
+        "source": "structural",
+        "reasons": [
+          "STRUCT_FK_TOO_HIGH"
+        ],
+        "confidence": 1,
+        "note": "structural: STRUCT_FK_TOO_HIGH",
+        "factsRequireCheck": false,
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "brief": {
+        "genre": "realistic-fiction",
+        "topic": "finding an interesting old object in a closet or attic",
+        "setting": "Amarillo, Texas",
+        "protagonistName": "Kai",
+        "protagonistDemographic": "native-american"
+      },
+      "attempt": 2,
+      "title": "The Mystery Box",
+      "verdict": {
+        "verdict": "fail",
+        "source": "structural",
+        "reasons": [
+          "STRUCT_PARAGRAPH_COUNT_HIGH"
+        ],
+        "confidence": 1,
+        "note": "structural: STRUCT_PARAGRAPH_COUNT_HIGH",
+        "factsRequireCheck": false,
+        "kpVersion": "commit:a90d167"
+      }
+    }
+  ],
+  "questionRejects": [
+    {
+      "passageBrief": "a rainy day picnic improvised indoors",
+      "attempt": 1,
+      "qIdx": 1,
+      "stem": "What is the central idea of paragraphs 7 through 11?",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "WRONG_TEKS_LABEL"
+        ],
+        "confidence": 0.95,
+        "note": "The question asks for the 'central idea' which is a 7.C (paraphrase/summarize) task, not 7.D (supporting details). Strand 7.D asks students to identify details that support a given key idea, but this question asks them to identify the key i",
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "passageBrief": "a rainy day picnic improvised indoors",
+      "attempt": 1,
+      "qIdx": 3,
+      "stem": "What is the most likely reason the author includes the details about the fan and ocean sounds in par",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "WRONG_TEKS_LABEL"
+        ],
+        "confidence": 0.85,
+        "note": "The question asks why the author includes specific details (fan, ocean sounds), which is author's purpose/craft. This maps to 10.D or 10.E (purpose of features/details), not 8.D (print/graphic features like headings, photos, charts). The qu",
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "passageBrief": "a rainy day picnic improvised indoors",
+      "attempt": 2,
+      "qIdx": 4,
+      "stem": "What is the central idea of paragraphs 15 through 18?",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "WRONG_TEKS_LABEL"
+        ],
+        "confidence": 0.95,
+        "note": "The question asks for the 'central idea' which is a key idea/main idea question (strand 7.D or 6.C), not paraphrase (7.C). Strand 7.C requires students to paraphrase text in their own words, but this question asks them to identify the overa",
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "passageBrief": "sea turtle behavior and habitat",
+      "attempt": 1,
+      "qIdx": 1,
+      "stem": "What is the central idea of the section Where Sea Turtles Live?",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "WRONG_TEKS_LABEL"
+        ],
+        "confidence": 0.95,
+        "note": "The question asks for the 'central idea' which is a 7.D (supporting details) or 6.C/10.A task, not 7.C (paraphrase). TEKS 7.C requires restating a section in your own words, while this asks students to identify the main point. The question ",
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "passageBrief": "biography of Patricia Bath, eye doctor and inventor",
+      "attempt": 1,
+      "qIdx": 1,
+      "stem": "What is the central idea of paragraphs 4 and 5?",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "WRONG_TEKS_LABEL"
+        ],
+        "confidence": 0.95,
+        "note": "The question asks for the 'central idea' of paragraphs 4-5, which is a 7.C (paraphrase/central idea) task, not 7.D (supporting details). The correct answer A accurately captures the main point of those paragraphs, and distractors are approp",
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "passageBrief": "biography of Patricia Bath, eye doctor and inventor",
+      "attempt": 1,
+      "qIdx": 3,
+      "stem": "Based on the information in paragraphs 6 through 8, what can the reader conclude about Patricia's in",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "WRONG_TEKS_LABEL"
+        ],
+        "confidence": 0.85,
+        "note": "The question asks what the reader can conclude based on information in paragraphs 6-8, which is an inference/conclusion question. This maps to strand 7.D (supporting details for a key idea) or 6.C (making connections), not 6.G (text evidenc",
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "passageBrief": "biography of Patricia Bath, eye doctor and inventor",
+      "attempt": 2,
+      "qIdx": 1,
+      "stem": "What is the central idea of paragraphs 4 and 5?",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "WRONG_TEKS_LABEL"
+        ],
+        "confidence": 0.95,
+        "note": "The question asks for the 'central idea' which is a 7.C (paraphrase/summarize) task, not 7.D (supporting details). Strand 7.D asks students to identify details that support a given key idea, whereas this question asks students to identify t",
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "passageBrief": "biography of Patricia Bath, eye doctor and inventor",
+      "attempt": 2,
+      "qIdx": 2,
+      "stem": "What is the most likely reason the author includes paragraph 7?",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "WRONG_TEKS_LABEL",
+          "WEAK_DISTRACTOR"
+        ],
+        "confidence": 0.85,
+        "note": "The question asks about the author's reason for including a paragraph, which is 10.A (author's purpose), not 10.D (print/graphic features). Additionally, distractor C is implausibly extreme ('only doctor') and D uses absolute language ('nev",
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "passageBrief": "biography of Patricia Bath, eye doctor and inventor",
+      "attempt": 2,
+      "qIdx": 3,
+      "stem": "Based on the information in paragraphs 9 and 10, what can the reader conclude about Patricia Bath's ",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "WRONG_TEKS_LABEL"
+        ],
+        "confidence": 0.85,
+        "note": "The question asks what the reader can 'conclude' from specific paragraphs about the invention's impact—this is an inference/key-idea question (strand 7.D or 6.G for text evidence), not 6.C which requires making connections to other texts, p",
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "passageBrief": "biography of Patricia Bath, eye doctor and inventor",
+      "attempt": 2,
+      "qIdx": 4,
+      "stem": "How does the author organize the selection?",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "DOUBLE_ANSWER",
+          "AMBIGUOUS"
+        ],
+        "confidence": 0.85,
+        "note": "Both A and C are defensible. The passage IS organized chronologically (birth 1942 → college → 1973 → 1980s → 1988 → 2019 death), but it's ALSO organized around problem-solution patterns (poor people can't afford care → free program; catarac",
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "passageBrief": "biography of Patricia Bath, eye doctor and inventor",
+      "attempt": 3,
+      "qIdx": 2,
+      "stem": "Based on the information in paragraphs 6 through 8, what can the reader conclude about Patricia's in",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "WRONG_TEKS_LABEL"
+        ],
+        "confidence": 0.85,
+        "note": "The question asks for a conclusion based on text evidence (paragraphs 6-8), which is a 6.G task (finding text evidence to support an idea). TEKS 6.C is about making connections between texts or to personal experience/world, which this quest",
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "passageBrief": "biography of Patricia Bath, eye doctor and inventor",
+      "attempt": 3,
+      "qIdx": 4,
+      "stem": "What key idea about Patricia Bath do the details in paragraphs 9 and 10 best support?",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "WRONG_TEKS_LABEL"
+        ],
+        "confidence": 0.85,
+        "note": "The question asks for the 'key idea' supported by details in paragraphs 9-10, which is a 7.D task (supporting details for a key idea). However, the stem uses the exact phrasing from 6.G questions in the STAAR catalog: 'What key idea about _",
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "passageBrief": "how wind chimes make sound",
+      "attempt": 1,
+      "qIdx": 1,
+      "stem": "What is the central idea of the selection?",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "WRONG_TEKS_LABEL"
+        ],
+        "confidence": 0.95,
+        "note": "The question asks for the central idea of the entire selection, which is a 7.C (paraphrase/central idea) task, not 7.D (supporting details). Option A correctly identifies the main concept that unifies the passage—how wind chimes work throug",
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "passageBrief": "how wind chimes make sound",
+      "attempt": 1,
+      "qIdx": 3,
+      "stem": "Based on the information in paragraphs 4 and 5, what can the reader conclude about the relationship ",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "WRONG_TEKS_LABEL"
+        ],
+        "confidence": 0.85,
+        "note": "The question asks the reader to draw a conclusion about the relationship between tube length and sound based on specific paragraphs. This is a key idea/inference question (strand 7.D or 6.C), not 6.G which requires finding text evidence to ",
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "passageBrief": "how wind chimes make sound",
+      "attempt": 2,
+      "qIdx": 1,
+      "stem": "What is the central idea of the section titled \"How Sound Happens\"?",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "WRONG_TEKS_LABEL"
+        ],
+        "confidence": 0.95,
+        "note": "The question asks for the central idea of a section, which is a 7.C (paraphrase/summarize) task, not 7.D (supporting details). The stem, answer, and distractors are all well-constructed and the marked answer is correct, but the TEKS classif",
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "passageBrief": "how wind chimes make sound",
+      "attempt": 2,
+      "qIdx": 4,
+      "stem": "Based on the information in the passage, what can the reader conclude about why longer tubes make lo",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "WRONG_TEKS_LABEL",
+          "WEAK_DISTRACTOR"
+        ],
+        "confidence": 0.95,
+        "note": "The question asks for a conclusion about a cause-effect relationship explicitly stated in the text ('Longer tubes vibrate more slowly. They make lower sounds'), which is 7.D (supporting details) or 10.C (text structure/cause-effect), not 6.",
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "passageBrief": "how wind chimes make sound",
+      "attempt": 3,
+      "qIdx": 1,
+      "stem": "What is the central idea of the section \"How Sound Happens\"?",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "WRONG_TEKS_LABEL"
+        ],
+        "confidence": 0.95,
+        "note": "The question asks for the 'central idea' of a section, which is a 7.D (supporting details/key idea) task, not 7.C (paraphrase). TEKS 7.C requires restating information in your own words, while this question asks students to identify the mai",
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "passageBrief": "how wind chimes make sound",
+      "attempt": 3,
+      "qIdx": 2,
+      "stem": "Based on the information in paragraphs 4 and 5, what can the reader conclude about the relationship ",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "WRONG_TEKS_LABEL",
+          "WEAK_DISTRACTOR"
+        ],
+        "confidence": 0.95,
+        "note": "This is a straightforward comprehension question asking students to conclude a cause-effect relationship explicitly stated in paragraphs 4-5. The correct TEKS is 7.D (supporting details) or possibly 10.C (text structure/cause-effect), not 6",
+        "kpVersion": "commit:a90d167"
+      }
+    },
+    {
+      "passageBrief": "Big Bend National Park geography and wildlife",
+      "attempt": 1,
+      "qIdx": 2,
+      "stem": "Based on the information in paragraphs 6 and 7, what can the reader conclude about Big Bend?",
+      "verdict": {
+        "verdict": "fail",
+        "source": "llm",
+        "reasons": [
+          "WRONG_TEKS_LABEL",
+          "STEM_NOT_REAL_STAAR"
+        ],
+        "confidence": 0.85,
+        "note": "The stem 'what can the reader conclude' is an inference question (strand 7.C or 6.C), not 6.G which requires finding text evidence. Additionally, the stem doesn't match §4 catalog patterns—real STAAR uses 'Based on the information in paragr",
+        "kpVersion": "commit:a90d167"
+      }
+    }
+  ]
+}

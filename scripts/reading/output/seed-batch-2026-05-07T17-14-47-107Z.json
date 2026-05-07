@@ -1,0 +1,168 @@
+{
+  "runId": "2026-05-07T17-14-47-107Z",
+  "startedAt": "2026-05-07T17:14:47.107Z",
+  "endedAt": "2026-05-07T17:19:35.919Z",
+  "wallClockSec": 289,
+  "briefsAttempted": 10,
+  "passagesSaved": 6,
+  "questionsSaved": 27,
+  "failed": 4,
+  "passageRejectReasons": {
+    "STRUCT_PARAGRAPH_COUNT_HIGH": 7,
+    "STRUCT_FK_TOO_HIGH": 3,
+    "STRUCT_WORD_COUNT_HIGH": 1,
+    "STRUCT_SENTENCE_TOO_LONG": 2,
+    "MORALIZING_ENDING": 1
+  },
+  "questionRejectReasons": {
+    "WRONG_TEKS_LABEL": 18,
+    "WEAK_DISTRACTOR": 3,
+    "DOUBLE_ANSWER": 1,
+    "AMBIGUOUS": 1,
+    "STEM_NOT_REAL_STAAR": 1
+  },
+  "saved": [
+    {
+      "passageId": "p_tx_3_rf_002",
+      "title": "The Long Walk Home",
+      "genre": "realistic-fiction",
+      "setting": "Lubbock, Texas",
+      "protagonistDemographic": "unmarked",
+      "wordCount": 338,
+      "fkGrade": 2.9,
+      "questionCount": 5,
+      "teksStrands": [
+        "3.B",
+        "9.Dii",
+        "9.Diii",
+        "6.G",
+        "8.C"
+      ]
+    },
+    {
+      "passageId": "p_tx_3_rf_003",
+      "title": "Aaliyah's Violin",
+      "genre": "realistic-fiction",
+      "setting": "Houston, Texas",
+      "protagonistDemographic": "black",
+      "wordCount": 383,
+      "fkGrade": 3.6,
+      "questionCount": 5,
+      "teksStrands": [
+        "3.B",
+        "10.A",
+        "6.G",
+        "9.Diii"
+      ]
+    },
+    {
+      "passageId": "p_tx_3_rf_005",
+      "title": "The Indoor Picnic",
+      "genre": "realistic-fiction",
+      "setting": "Galveston, Texas",
+      "protagonistDemographic": "unmarked",
+      "wordCount": 372,
+      "fkGrade": 3.6,
+      "questionCount": 4,
+      "teksStrands": [
+        "3.B",
+        "9.Dii",
+        "6.G",
+        "10.D"
+      ]
+    },
+    {
+      "passageId": "p_tx_3_rf_006",
+      "title": "The Mystery Box",
+      "genre": "realistic-fiction",
+      "setting": "Amarillo, Texas",
+      "protagonistDemographic": "native-american",
+      "wordCount": 317,
+      "fkGrade": 4,
+      "questionCount": 5,
+      "teksStrands": [
+        "10.A",
+        "9.Dii",
+        "3.A",
+        "6.G",
+        "9.Diii"
+      ]
+    },
+    {
+      "passageId": "p_tx_3_inf_007",
+      "title": "Sea Turtles of the Texas Coast",
+      "genre": "informational",
+      "setting": null,
+      "protagonistDemographic": "unmarked",
+      "wordCount": 501,
+      "fkGrade": 4.2,
+      "questionCount": 4,
+      "teksStrands": [
+        "3.B",
+        "6.G",
+        "10.A",
+        "10.C"
+      ]
+    },
+    {
+      "passageId": "p_tx_3_inf_010",
+      "title": "Where the River Bends",
+      "genre": "informational",
+      "setting": "Big Bend National Park, Texas",
+      "protagonistDemographic": "unmarked",
+      "wordCount": 537,
+      "fkGrade": 3.6,
+      "questionCount": 4,
+      "teksStrands": [
+        "3.B",
+        "10.A",
+        "10.C",
+        "10.E"
+      ]
+    }
+  ],
+  "gaveUp": [
+    {
+      "brief": {
+        "genre": "realistic-fiction",
+        "topic": "sibling conflict, two siblings sharing a tablet, resolution within passage",
+        "setting": "Brownsville, Texas",
+        "protagonistName": "Mateo",
+        "protagonistDemographic": "hispanic-latino"
+      },
+      "reason": "passage-rejected-3x"
+    },
+    {
+      "brief": {
+        "genre": "realistic-fiction",
+        "topic": "helping an elderly neighbor with a small task",
+        "setting": "El Paso, Texas",
+        "protagonistName": "Linh",
+        "protagonistDemographic": "asian"
+      },
+      "reason": "passage-rejected-3x"
+    },
+    {
+      "brief": {
+        "genre": "informational",
+        "topic": "biography of Patricia Bath, eye doctor and inventor",
+        "setting": null,
+        "protagonistName": "Patricia Bath",
+        "protagonistDemographic": "black",
+        "subject": "Patricia Bath"
+      },
+      "reason": "questions-below-min"
+    },
+    {
+      "brief": {
+        "genre": "informational",
+        "topic": "how wind chimes make sound",
+        "setting": null,
+        "protagonistName": null,
+        "protagonistDemographic": "unmarked",
+        "subject": "wind chimes"
+      },
+      "reason": "questions-below-min"
+    }
+  ]
+}
