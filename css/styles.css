@@ -15932,3 +15932,132 @@ body.practice-page .practice-eyebrow .btn-restart:hover {
   border-color: rgba(255, 255, 255, 0.45);
   background: rgba(255, 255, 255, 0.06);
 }
+
+/* ==========================================================
+   §77 Phase C — Tap-any-word definitions
+   ========================================================== */
+
+/* Word span — barely-visible by default; tappable hit-area expanded
+   via padding. Active state shows the popover. */
+.reading-passage-card-body .word {
+  position: relative;
+  cursor: pointer;
+  border-bottom: 1px dashed transparent;
+  transition: border-color 140ms, background 140ms;
+  padding: 0 1px;
+  border-radius: 2px;
+}
+@media (hover: hover) {
+  .reading-passage-card-body .word:hover {
+    border-bottom-color: rgba(251, 191, 36, 0.55);
+    background: rgba(251, 191, 36, 0.08);
+  }
+}
+.reading-passage-card-body .word--active {
+  background: rgba(251, 191, 36, 0.20);
+  border-bottom-color: rgba(251, 191, 36, 0.85);
+  color: #fde68a;
+}
+
+/* Popover — appears anchored to the tapped word, above by default,
+   below if not enough space. */
+.word-popover {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  min-width: 220px;
+  max-width: 320px;
+  background: #0d2249;
+  border: 1px solid rgba(251, 191, 36, 0.45);
+  border-radius: 10px;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.5);
+  padding: 12px 14px 14px;
+  font-family: 'Inter', system-ui, sans-serif;
+  text-align: left;
+  cursor: default;
+  animation: word-popover-in 140ms ease-out;
+}
+@keyframes word-popover-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(4px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+/* Triangle pointer */
+.word-popover::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 7px solid transparent;
+  border-top-color: rgba(251, 191, 36, 0.45);
+}
+.word-popover-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.word-popover-word {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  text-transform: lowercase;
+}
+.word-popover-speak {
+  width: 32px !important;
+  height: 32px !important;
+  padding: 6px !important;
+  flex: 0 0 32px;
+}
+.word-popover-speak svg {
+  width: 18px;
+  height: 18px;
+}
+.word-popover-close {
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: 0;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 50%;
+  flex: 0 0 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.word-popover-close:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.95);
+}
+.word-popover-body {
+  font-size: 14px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.92);
+}
+.word-popover-loading {
+  color: rgba(255, 255, 255, 0.55);
+  font-style: italic;
+}
+.word-popover-error {
+  color: rgba(255, 255, 255, 0.55);
+}
+.word-popover-def {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* Phone — popovers can run wider since passage card is full-width */
+@media (max-width: 480px) {
+  .word-popover {
+    min-width: 180px;
+    max-width: 260px;
+    padding: 10px 12px 12px;
+  }
+  .word-popover-word { font-size: 15px; }
+  .word-popover-body { font-size: 13px; }
+}

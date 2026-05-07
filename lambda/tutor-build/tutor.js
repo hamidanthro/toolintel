@@ -36,6 +36,7 @@ const TOYS_TABLE = process.env.TOYS_TABLE || 'staar-toys';
 const ORDERS_TABLE = process.env.ORDERS_TABLE || 'staar-orders';
 const PASSAGES_TABLE = process.env.PASSAGES_TABLE || 'staar-passages';   // §B2 Reading Phase 1
 const CONTENT_POOL_TABLE = process.env.CONTENT_POOL_TABLE || 'staar-content-pool';   // already exists; named here for reading-MC items
+const WORD_DEFINITIONS_TABLE = process.env.WORD_DEFINITIONS_TABLE || 'staar-word-definitions';   // §77 Phase C tap-any-word
 const FRIENDS_TABLE = process.env.FRIENDS_TABLE || 'staar-friends';
 const MESSAGES_TABLE = process.env.MESSAGES_TABLE || 'staar-messages';
 const S3_TOY_BUCKET = process.env.S3_TOY_BUCKET || '';
@@ -409,6 +410,7 @@ exports.handler = async (event) => {
   if (action === 'updateFunFactsState') return await handleUpdateFunFactsState(payload);
   if (action === 'getReadingPassage')   return await handleGetReadingPassage(payload);
   if (action === 'getReadingItem')      return await handleGetReadingItem(payload);
+  if (action === 'defineWord')          return await handleDefineWord(payload);
   if (action === 'earn')           return await handleEarn(payload);
   if (action === 'lose')           return await handleLose(payload);
   if (action === 'heartbeat')      return await handleHeartbeat(payload);
@@ -2071,6 +2073,100 @@ async function handleGetReadingItem(payload) {
   }
 
   return ok({ passage, questions });
+}
+
+// §77 Phase C — Tap-any-word definitions.
+// POST { action: 'defineWord', word: string, grade: number|string }
+// Returns { word, definition, cached }. Definitions are kid-friendly,
+// one sentence, written for the stated grade level. Permanent DDB cache
+// keyed by lowercased word + grade — definitions don't expire.
+async function handleDefineWord(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+
+  const rawWord = String(payload.word || '').trim().toLowerCase();
+  // Strip surrounding punctuation; allow internal apostrophe ("don't").
+  const word = rawWord.replace(/^[^a-z]+|[^a-z']+$/g, '');
+  if (!word || word.length < 2 || word.length > 32 || !/^[a-z][a-z']*[a-z]$/.test(word)) {
+    return bad(400, 'invalid_word');
+  }
+
+  // Normalize grade to a string in {k, 1..12, 9 for algebra-1}.
+  let gradeIn = String(payload.grade || '3').trim().toLowerCase();
+  gradeIn = gradeIn.replace(/^grade-/, '');
+  if (gradeIn === 'algebra-1') gradeIn = '9';
+  const gradeNum = (gradeIn === 'k') ? 0 : Math.max(0, Math.min(12, parseInt(gradeIn, 10) || 3));
+
+  const definitionKey = `def#${gradeNum}#${word}`;
+
+  // ---- Cache lookup ----
+  try {
+    const r = await ddb.send(new GetCommand({
+      TableName: WORD_DEFINITIONS_TABLE,
+      Key: { definitionKey }
+    }));
+    if (r.Item && r.Item.definition) {
+      return ok({ word, definition: r.Item.definition, cached: true });
+    }
+  } catch (err) {
+    console.warn('[defineWord] cache lookup failed:', err.message || err);
+  }
+
+  // ---- Generate via OpenAI gpt-4o-mini ----
+  let definition;
+  try {
+    const apiKey = await getApiKey();
+    const gradeLabel = gradeNum === 0 ? 'Kindergarten' : `Grade ${gradeNum}`;
+    const sys = `You define words for K-12 students in ONE simple sentence using vocabulary they already know. No examples, no etymology, no synonyms list — just the meaning. Output the definition only, nothing else.`;
+    const usr = `Define the word "${word}" for a ${gradeLabel} student. One sentence. Use words a ${gradeLabel} student knows. Stop after the sentence.`;
+    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        temperature: 0.4,
+        max_tokens: 80,
+        messages: [
+          { role: 'system', content: sys },
+          { role: 'user', content: usr }
+        ]
+      })
+    });
+    if (!res.ok) {
+      const errBody = await res.text().catch(() => '');
+      console.error('[defineWord] openai non-2xx:', res.status, errBody.substring(0, 200));
+      return bad(502, 'definition_generation_failed');
+    }
+    const j = await res.json();
+    definition = (j?.choices?.[0]?.message?.content || '').trim();
+    // Strip surrounding quotes if the model added them
+    definition = definition.replace(/^["']+|["']+$/g, '').trim();
+    if (!definition) return bad(502, 'definition_empty');
+    // Cap at 280 chars defensively
+    if (definition.length > 280) definition = definition.slice(0, 277) + '...';
+  } catch (err) {
+    console.error('[defineWord] generation error:', err.message || err);
+    return bad(502, 'definition_generation_failed');
+  }
+
+  // ---- Cache write (best-effort; don't block response on failure) ----
+  ddb.send(new PutCommand({
+    TableName: WORD_DEFINITIONS_TABLE,
+    Item: {
+      definitionKey,
+      word,
+      grade: gradeNum,
+      definition,
+      generatedBy: 'gpt-4o-mini',
+      generatedAt: Date.now()
+    }
+  })).catch(err => console.warn('[defineWord] cache write failed:', err.message || err));
+
+  console.log(`[defineWord] MISS word=${word} grade=${gradeNum} chars=${definition.length}`);
+  return ok({ word, definition, cached: false });
 }
 
 // ===== Wallet (earn / get) =====

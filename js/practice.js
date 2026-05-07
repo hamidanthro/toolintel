@@ -945,6 +945,9 @@
             expandBtn.setAttribute('aria-pressed', next === 'expanded' ? 'true' : 'false');
           });
         }
+        // §77 Phase C — tap-any-word definitions
+        wrapPassageWordsForTap(passageCard);
+        attachWordTapHandler(passageCard);
       }
       // Lake: track radio choice changes for rapid-flip detection (Prompt I1)
       if (window.GradeEarnLake) {
@@ -1720,6 +1723,184 @@
         </header>
         <div class="reading-passage-card-body">${innerHtml}</div>
       </article>`;
+  }
+
+  // ============================================================
+  // §77 Phase C — Tap-any-word definitions
+  // ============================================================
+  //
+  // Walks the passage body's text nodes and wraps each non-stopword
+  // token in a <span class="word" data-word="..."> so kids can tap any
+  // unfamiliar word and get a kid-friendly definition. Skips:
+  //   - tokens shorter than 3 chars (also handled by stopwords)
+  //   - stopwords (high-frequency Dolch/Fry list — see js/stopwords.js)
+  //   - punctuation-only tokens
+  //   - text inside <strong>/<em> tagged words (still tappable, just
+  //     wrapped through the same logic via the recursive walk)
+  //
+  // The walker preserves the existing CSS counter() paragraph numbering
+  // because we only modify text NODES, never element structure.
+
+  function wrapPassageWordsForTap(passageCard) {
+    if (!passageCard) return;
+    const body = passageCard.querySelector('.reading-passage-card-body');
+    if (!body || body.dataset.wordsWrapped === '1') return;
+    body.dataset.wordsWrapped = '1';
+    const stop = window.STAARStopwords || { has: () => false };
+
+    function walk(node) {
+      if (node.nodeType === 3) { // text
+        const text = node.nodeValue;
+        if (!text || !/[A-Za-z]/.test(text)) return;
+        // Tokenize while preserving non-word separators (spaces, punctuation).
+        const parts = text.split(/(\b[A-Za-z][A-Za-z']*\b)/);
+        const frag = document.createDocumentFragment();
+        let touched = false;
+        for (const part of parts) {
+          if (/^[A-Za-z][A-Za-z']*$/.test(part) && part.length >= 3 && !stop.has(part)) {
+            const span = document.createElement('span');
+            span.className = 'word';
+            span.dataset.word = part.toLowerCase();
+            span.textContent = part;
+            frag.appendChild(span);
+            touched = true;
+          } else {
+            frag.appendChild(document.createTextNode(part));
+          }
+        }
+        if (touched) node.parentNode.replaceChild(frag, node);
+        return;
+      }
+      if (node.nodeType !== 1) return;
+      // Skip nested headers/buttons/svg
+      const tag = node.nodeName.toLowerCase();
+      if (tag === 'button' || tag === 'svg' || tag === 'a' || tag === 'script') return;
+      // Iterate copy of children since we mutate
+      for (const child of Array.from(node.childNodes)) walk(child);
+    }
+    walk(body);
+  }
+
+  // Click delegation — one listener per passage card. Tap a word →
+  // fetch its definition, render a popover anchored to the word.
+  function attachWordTapHandler(passageCard) {
+    if (!passageCard || passageCard.dataset.wordHandlerWired === '1') return;
+    passageCard.dataset.wordHandlerWired = '1';
+
+    let openPopover = null;
+    let openWord = null;
+
+    const closeOpen = () => {
+      if (openPopover) {
+        openPopover.remove();
+        openPopover = null;
+      }
+      if (openWord) {
+        openWord.classList.remove('word--active');
+        openWord = null;
+      }
+    };
+
+    passageCard.addEventListener('click', async (ev) => {
+      const span = ev.target.closest('.word');
+      if (!span) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      if (openWord === span) { closeOpen(); return; }
+      closeOpen();
+      openWord = span;
+      span.classList.add('word--active');
+
+      const word = span.dataset.word;
+      const popover = document.createElement('div');
+      popover.className = 'word-popover';
+      popover.setAttribute('role', 'dialog');
+      popover.setAttribute('aria-label', `Definition of ${word}`);
+      popover.innerHTML = `
+        <div class="word-popover-header">
+          <span class="word-popover-word">${escapeHtml(word)}</span>
+          <button type="button" class="speech-btn word-popover-speak" data-role="speak-word" aria-label="Read word aloud" aria-pressed="false">${SPEECH_ICON_HTML}</button>
+          <button type="button" class="word-popover-close" aria-label="Close">×</button>
+        </div>
+        <div class="word-popover-body" data-role="def">
+          <span class="word-popover-loading">Looking it up…</span>
+        </div>
+      `;
+      span.appendChild(popover);
+      openPopover = popover;
+
+      // Speaker — read the word
+      const speakBtn = popover.querySelector('[data-role="speak-word"]');
+      if (speakBtn && window.Speech) {
+        speakBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (window.Speech.isPlaying()) {
+            window.Speech.stop();
+            speakBtn.classList.remove('speech-btn--playing');
+          } else {
+            window.Speech.play(word).then(() => speakBtn.classList.remove('speech-btn--playing'));
+            speakBtn.classList.add('speech-btn--playing');
+          }
+        });
+      }
+
+      // Close button + outside-click
+      const closeBtn = popover.querySelector('.word-popover-close');
+      if (closeBtn) closeBtn.addEventListener('click', (e) => { e.stopPropagation(); closeOpen(); });
+
+      // Fetch definition (sessionStorage cache → lambda)
+      const grade = (typeof slug === 'string') ? slug.replace(/^grade-/, '') : '3';
+      const cacheKey = `def#${grade}#${word}`;
+      let def = null;
+      try {
+        const cached = sessionStorage.getItem(cacheKey);
+        if (cached) def = cached;
+      } catch (_) {}
+      if (!def) {
+        try {
+          const res = await fetch(TUTOR_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'defineWord',
+              token: (window.STAARAuth && window.STAARAuth.token && window.STAARAuth.token()) || null,
+              word,
+              grade
+            })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            def = data.definition || null;
+            if (def) {
+              try { sessionStorage.setItem(cacheKey, def); } catch (_) {}
+            }
+          }
+        } catch (err) {
+          console.warn('[defineWord] fetch failed:', err.message || err);
+        }
+      }
+
+      // Render result (or sorry message)
+      if (openPopover === popover) {
+        const bodyEl = popover.querySelector('[data-role="def"]');
+        if (bodyEl) {
+          bodyEl.innerHTML = def
+            ? `<span class="word-popover-def">${escapeHtml(def)}</span>`
+            : `<span class="word-popover-error">We couldn't get a definition right now.</span>`;
+        }
+      }
+    });
+
+    // Outside-click + Esc dismiss
+    document.addEventListener('click', (e) => {
+      if (!openPopover) return;
+      if (passageCard.contains(e.target) && e.target.closest('.word-popover')) return;
+      closeOpen();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && openPopover) closeOpen();
+    });
   }
 
   function renderPassage(p) {
