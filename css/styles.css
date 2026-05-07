@@ -16061,3 +16061,79 @@ body.practice-page .practice-eyebrow .btn-restart:hover {
   .word-popover-word { font-size: 15px; }
   .word-popover-body { font-size: 13px; }
 }
+
+/* ==========================================================
+   §78 — Landing page fix (Owners' Room: Apple/Google/MS/Tesla)
+
+   Replaced the cramped chip row at #anon-grade-pills with a proper
+   #grade-grid-anon card grid (rendered by renderGradeGrid()). Card
+   styles already exist (.grade-card / .grade-grid); we just add a
+   sane container + give the earn banner a clear CTA path.
+   ========================================================== */
+
+/* Anon grade grid container — same .grade-grid as the dashboard but
+   centered with explicit max-width so cards don't span 1600px on
+   wide monitors (kid scale is 200px tile → 1100px is comfortable). */
+.grade-grid-anon {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding-inline: 0;
+}
+
+/* Earn banner now becomes a flex row so the CTA sits aligned to the
+   right of the body copy on desktop, wraps below on phone. */
+.rewards-callout#earn-banner {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.rewards-callout#earn-banner .earn-banner-body {
+  flex: 1 1 360px;
+  min-width: 0;
+}
+.earn-banner-cta {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: linear-gradient(180deg, #fde047 0%, #fbbf24 60%, #f59e0b 100%);
+  color: #0a1d3f;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  border: 1px solid rgba(251, 191, 36, 0.7);
+  border-radius: 999px;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 4px 14px -2px rgba(251, 191, 36, 0.45);
+  transition: transform 140ms ease-out, box-shadow 140ms ease-out, filter 140ms ease-out;
+}
+.earn-banner-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px -2px rgba(251, 191, 36, 0.55);
+  filter: brightness(1.04);
+}
+.earn-banner-cta:active {
+  transform: translateY(0);
+}
+.earn-banner-cta:focus-visible {
+  outline: 2px solid rgba(251, 191, 36, 0.95);
+  outline-offset: 3px;
+}
+
+/* Phone — banner stacks vertically; CTA goes full-width below text */
+@media (max-width: 640px) {
+  .rewards-callout#earn-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .earn-banner-cta {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 20px;
+  }
+}

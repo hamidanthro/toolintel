@@ -31,7 +31,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260507g" />
+  <link rel="stylesheet" href="css/styles.css?v=20260507h" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -375,6 +375,10 @@
         <div class="rewards-title earn-banner-title">Practice &rarr; Earn &rarr; Unlock real toys</div>
         <div class="rewards-subtitle earn-banner-sub">Sign in to earn cents for every correct answer, build daily streaks, and redeem real toys we ship anywhere in the U.S.</div>
       </div>
+      <button type="button" class="earn-banner-cta" id="earn-banner-btn" aria-label="Sign in to start earning">
+        Sign in to start earning
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
     </div>
   </section>
 
@@ -389,22 +393,15 @@
     <p class="mobile-hero-trust">20,000+ TEKS-aligned questions &nbsp;&mdash;&nbsp; built by parents</p>
   </header>
 
-  <!-- §47 — Texas-only pivot: state picker hidden in favor of direct
-       grade picker. The states-data.js code path is preserved (active
-       flag on each state record), and /states/?s=texas still works
-       via direct link if needed. Anchor id="state-picker" preserved
-       so existing in-page #state-picker links keep scrolling here. -->
+  <!-- §78 (Owners' Room landing fix) — chip row replaced by responsive
+       card grid as the canonical guest grade picker. JS in this file
+       (renderGradeGrid) populates #grade-grid-anon via the existing
+       window.STAARGradeCard.render() with variant='default'. The chip
+       row was clipped on desktop and competed visually with the
+       dashboard's compact tiles. One picker per page. -->
   <section class="grade-picker-section" id="state-picker" aria-label="Pick a grade">
     <span class="section-label">PICK YOUR KID&rsquo;S GRADE</span>
-    <div class="grade-picker-pills" id="anon-grade-pills">
-      <a href="grade.html?s=texas&amp;g=grade-3" class="grade-pill" data-grade="grade-3">Grade 3</a>
-      <a href="grade.html?s=texas&amp;g=grade-4" class="grade-pill" data-grade="grade-4">Grade 4</a>
-      <a href="grade.html?s=texas&amp;g=grade-5" class="grade-pill" data-grade="grade-5">Grade 5</a>
-      <a href="grade.html?s=texas&amp;g=grade-6" class="grade-pill" data-grade="grade-6">Grade 6</a>
-      <a href="grade.html?s=texas&amp;g=grade-7" class="grade-pill" data-grade="grade-7">Grade 7</a>
-      <a href="grade.html?s=texas&amp;g=grade-8" class="grade-pill" data-grade="grade-8">Grade 8</a>
-      <a href="grade.html?s=texas&amp;g=algebra-1" class="grade-pill" data-grade="algebra-1">Algebra 1</a>
-    </div>
+    <div class="grade-grid grade-grid-anon" id="grade-grid-anon"></div>
   </section>
 
   <!-- ================================================================
@@ -1114,7 +1111,8 @@
     else go();
   })();
   </script>
-  <!-- ReplyQuik chat widget -->
-  <script src="https://api.replyquik.com/widget.js" data-id="c756eb68-8bf7-40a9-83fb-273f8aad12d6" defer></script>
+  <!-- ReplyQuik chat widget removed 2026-05-07 (§78). Token-exfil
+       liability per CLAUDE.md §6c; AppRunner backend deletion is a
+       separate Hamid-action item. -->
 </body>
 </html>
