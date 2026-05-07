@@ -2014,7 +2014,13 @@ async function handleGetReadingItem(payload) {
   const auth = await authedUser(payload);
   if (!auth) return bad(401, 'Not signed in');
   const state = String(payload.state || 'texas').trim().toLowerCase();
-  const grade = String(payload.grade || '3').trim();
+  // Frontend sends slug-shaped grade ('grade-3'); GSI partition key uses
+  // numeric-only ('3'). Normalize: strip 'grade-' prefix; map 'algebra-1'
+  // to '9' (Phase 2 didn't seed algebra-1, but the mapping matches CLAUDE.md).
+  const rawGrade = String(payload.grade || '3').trim().toLowerCase();
+  let grade = rawGrade.replace(/^grade-/, '');
+  if (rawGrade === 'algebra-1') grade = '9';
+  if (rawGrade === 'grade-k')   grade = 'k';
   const genre = payload.genre ? String(payload.genre).trim().toLowerCase() : null;
 
   // Pick the GSI partition. If genre specified, use exact key; else, pick a
