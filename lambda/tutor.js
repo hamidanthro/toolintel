@@ -2013,8 +2013,11 @@ async function handleGetReadingPassage(payload) {
 }
 
 async function handleGetReadingItem(payload) {
-  const auth = await authedUser(payload);
-  if (!auth) return bad(401, 'Not signed in');
+  // Reading practice is open to guests (matches handleGenerate for math —
+  // 100-free-question gate is enforced client-side, not here). Resolve
+  // username best-effort for telemetry only; never block on auth.
+  const auth = await authedUser(payload).catch(() => null);
+  const username = auth?.username || 'guest';
   const state = String(payload.state || 'texas').trim().toLowerCase();
   // Frontend sends slug-shaped grade ('grade-3'); GSI partition key uses
   // numeric-only ('3'). Normalize: strip 'grade-' prefix; map 'algebra-1'
@@ -2026,7 +2029,7 @@ async function handleGetReadingItem(payload) {
   const genre = payload.genre ? String(payload.genre).trim().toLowerCase() : null;
   // Temporary debug log — remove after Phase 3 is confirmed working.
   console.log('[reading] getReadingItem REQUEST:', JSON.stringify({
-    user: auth.username, state, rawGrade, grade, genre
+    user: username, state, rawGrade, grade, genre
   }));
 
   // Pick the GSI partition. If genre specified, use exact key; else, pick a
