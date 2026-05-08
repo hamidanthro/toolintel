@@ -3948,6 +3948,95 @@ machine-readable index; rebuild from MD when needed.
 
 ---
 
+## 39. NO-REPEAT rule (locked 2026-05-08)
+
+**Scope:** every kid-facing serving path that has a finite content pool
+for a given (user, scope). Applies to **fun facts**, **practice
+questions** (math + reading + science), and **reading passages**.
+
+**The rule:**
+
+> Never repeat the same fun fact, question, or reading passage to the
+> same user until they have seen every available item in that pool's
+> scope. Only after the kid has exhausted the pool does the cycle
+> begin again from the start.
+
+**Why it matters:** repetition before exhaustion makes the experience
+feel broken to a returning kid ("I just saw this!"). Math content has
+~14k Texas rows so the cycle is long; fun facts and reading have
+hundreds today and the rule is more sharply felt. The kid trusts the
+app to keep showing them new things; the moment a duplicate lands
+before the pool is dry, that trust evaporates.
+
+**Scope keys** (a "pool's scope" = the set the user is currently
+drawing from):
+
+| Surface | Pool scope |
+|---|---|
+| Fun facts | `(userId, state, grade)` — Texas Grade 3 has its own pool, distinct from California Grade 5 |
+| Math questions | `(userId, state, grade, subject, unit/lesson)` — within a unit/lesson the kid sees every TEKS once before any repeat |
+| Reading passages | `(userId, state, grade)` — every passage in the grade pool before any repeat |
+| Reading questions | scoped per passage; if a kid re-takes a passage, their question set should rotate to questions they haven't seen yet on that passage |
+| Science | same as math (when content ships) |
+
+**Implementation requirements:**
+
+1. **Per-user seen state in DynamoDB** (already exists for fun facts;
+   needs extension to questions + passages):
+   - Fun facts: `staar-users.funFactsSeen[]` (FIFO-capped to ~500 ids
+     per kid; resets to empty when count reaches the live pool size,
+     i.e. the natural "cycle complete" trigger)
+   - Practice questions: `staar-stats.{userId, slug}.seenContentIds[]`
+     scoped per grade-slug — already conceptually present on the
+     stats record; needs server-side filtering on `handleGenerate`
+     (math) / `handleGetReadingItem` (reading) to exclude seenIds
+     until the pool is exhausted
+   - Reading passages: same `staar-stats` row; new field
+     `seenPassageIds[]` per (state, grade)
+
+2. **Server-side enforcement at the serving path** — never trust the
+   frontend to filter. The lambda must:
+   - Fetch the kid's seen-set for the scope on every serve
+   - Filter the candidate pool by NOT-IN seen-set
+   - When the filtered pool is empty (kid has seen everything),
+     reset the seen-set to empty AND start the next cycle from the
+     full pool. Stamp a `seenPoolCycle` counter on the stats row so
+     analytics knows which cycle a serve belongs to.
+
+3. **Migration** for existing testers: on first launch after this
+   rule ships, treat their existing seen-state as cycle 1; do NOT
+   wipe it. Subsequent serves naturally drain remaining unseen
+   content and roll into cycle 2 when empty.
+
+4. **Cycle rollover should be silent.** No "you've seen everything,
+   starting over!" UI; the kid just sees a new (or first-repeated)
+   item with no jarring transition. Optional: track per-cycle stats
+   internally for the parent dashboard ("Aaliyah has seen all 137
+   Grade 3 reading passages — starting cycle 2").
+
+**Existing partial implementation** (do NOT regress):
+
+- Fun facts: `lambda/tutor.js#handleUpdateFunFactsState` already accepts
+  a `markSeen` action and FIFO-caps the seen array. The frontend
+  (`js/fun-facts.js`) sends `seenIds` on every fetch and the lambda
+  excludes them from the candidate pool. ✓ Rule is partially met
+  here — verify the FIFO cap doesn't truncate so aggressively that a
+  kid's "old" fact comes back before pool exhaustion. Cap should be
+  >= the live pool size for that (state, grade).
+- Practice questions: `js/practice.js#markSeen` is **in-memory only**
+  per session. Re-opening the page resets it. Server-side seen state
+  on `staar-stats` is read but not used to filter the generate path.
+  This is the biggest gap to close.
+- Reading passages: `lambda/tutor.js#handleGetReadingItem` picks a
+  random passage with no seen filter. Will dupe after the second
+  serve in a 6-passage pool 1/6 of the time, every time. Same gap.
+
+**Status:** rule documented, NOT yet implemented across all surfaces.
+Fun facts is closest; questions + passages need the lambda-side
+filtering work. Each is its own focused commit when the time comes.
+
+---
+
 ## TOP 3 THINGS YOU SHOULD KNOW
 
 1. **The deploy story is held together by tape and is the single biggest
