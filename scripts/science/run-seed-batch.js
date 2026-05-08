@@ -322,7 +322,11 @@ async function processBrief(brief, opts, apiKey) {
   // write path (Phase E) lifts this object verbatim. Each question
   // row gets _judgedAt + _judgeVersion + verdict echo + _kpVersion.
   const judgedAt = nowIso();
-  const phase = opts.dryRun ? 'd2b-dry' : 'phase-e';
+  // Phase tag derives from --write (write path) vs default (dry-run).
+  // BUG-fixed in Phase F: parseArgs defaults dryRun=true and --write
+  // doesn't flip it, so the original `opts.dryRun ? ... : ...` ternary
+  // tagged real-write rows as 'd2b-dry'. Now keys on opts.write.
+  const phase = opts.write ? 'phase-e' : 'd2b-dry';
   const kpVersion = loadKP().version;
 
   const passageRow = {

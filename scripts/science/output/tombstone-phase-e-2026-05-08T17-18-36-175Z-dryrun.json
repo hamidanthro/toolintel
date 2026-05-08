@@ -1,0 +1,251 @@
+{
+  "runId": "2026-05-08T17-18-36-175Z",
+  "startedAt": "2026-05-08T17:18:36.175Z",
+  "mode": "dry-run",
+  "tombstoneStatus": "tombstoned-needs-tek-revalidation",
+  "tombstoneReason": "phase-e-tek-mismatch-baseline-2026-05-08",
+  "poolTargets": [
+    {
+      "poolKey": "texas#5#science#sci_tx_5_fec5c588",
+      "contentId": "q_69fc0903406d",
+      "claimedTeks": "5.8C",
+      "preState": {
+        "status": "broken",
+        "judgeConfidence": 0.95
+      }
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_fec5c588",
+      "contentId": "q_700bb31075f2",
+      "claimedTeks": "5.8C",
+      "preState": {
+        "status": "broken",
+        "judgeConfidence": 0.95
+      }
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_fec5c588",
+      "contentId": "q_b9d077a1c481",
+      "claimedTeks": "5.8C",
+      "preState": {
+        "status": "broken",
+        "judgeConfidence": 0.95
+      }
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_fec5c588",
+      "contentId": "q_d9f9372d3e2a",
+      "claimedTeks": "5.8C",
+      "preState": {
+        "status": "broken",
+        "judgeConfidence": 0.95
+      }
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_fec5c588",
+      "contentId": "q_f6565cc4c0ae",
+      "claimedTeks": "5.8C",
+      "preState": {
+        "status": "broken",
+        "judgeConfidence": 0.95
+      }
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_4384fc67",
+      "contentId": "q_3bb8f3672fec",
+      "claimedTeks": "5.7A",
+      "preState": {
+        "status": "broken",
+        "judgeConfidence": 0.95
+      }
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_4384fc67",
+      "contentId": "q_4904c5946994",
+      "claimedTeks": "5.6A",
+      "preState": {
+        "status": "broken",
+        "judgeConfidence": 0.95
+      }
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_4384fc67",
+      "contentId": "q_b0ccfba100a9",
+      "claimedTeks": "5.6A",
+      "preState": {
+        "status": "broken",
+        "judgeConfidence": 0.95
+      }
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_4384fc67",
+      "contentId": "q_d5e90eaed337",
+      "claimedTeks": "5.6A",
+      "preState": {
+        "status": "broken",
+        "judgeConfidence": 0.95
+      }
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_2877ad3d",
+      "contentId": "q_0a8842ed4d7c",
+      "claimedTeks": "5.10A",
+      "preState": {
+        "status": "broken",
+        "judgeConfidence": 0.5
+      }
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_2877ad3d",
+      "contentId": "q_145b58dba079",
+      "claimedTeks": "5.10A",
+      "preState": {
+        "status": "broken",
+        "judgeConfidence": 0.95
+      }
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_2877ad3d",
+      "contentId": "q_39a66d1fb481",
+      "claimedTeks": "5.10A",
+      "preState": {
+        "status": "broken",
+        "judgeConfidence": 0.95
+      }
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_2877ad3d",
+      "contentId": "q_c2fe0737c09a",
+      "claimedTeks": "5.6C",
+      "preState": {
+        "status": "broken",
+        "judgeConfidence": 0.95
+      }
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_ec4da887",
+      "contentId": "q_13ddb0bbc53e",
+      "claimedTeks": "5.12A",
+      "preState": {
+        "status": "broken",
+        "judgeConfidence": 0.95
+      }
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_ec4da887",
+      "contentId": "q_28bc38196817",
+      "claimedTeks": "5.8C",
+      "preState": {
+        "status": "broken",
+        "judgeConfidence": 0.95
+      }
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_ec4da887",
+      "contentId": "q_4fbf5960e4c5",
+      "claimedTeks": "5.12A",
+      "preState": {
+        "status": "broken",
+        "judgeConfidence": 0.95
+      }
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_ec4da887",
+      "contentId": "q_c1ade3ee6554",
+      "claimedTeks": "5.12A",
+      "preState": {
+        "status": "broken",
+        "judgeConfidence": 0.95
+      }
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_8733bc2d",
+      "contentId": "q_4b9d7d071249",
+      "claimedTeks": "5.6A",
+      "preState": {
+        "status": "broken",
+        "judgeConfidence": 0.95
+      }
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_8733bc2d",
+      "contentId": "q_c408bff1025b",
+      "claimedTeks": "5.6A",
+      "preState": {
+        "status": "broken",
+        "judgeConfidence": 0.95
+      }
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_8733bc2d",
+      "contentId": "q_c7f2cd483aea",
+      "claimedTeks": "5.6A",
+      "preState": {
+        "status": "broken",
+        "judgeConfidence": 0.95
+      }
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_8733bc2d",
+      "contentId": "q_eab769d06d5d",
+      "claimedTeks": "5.6A",
+      "preState": {
+        "status": "broken",
+        "judgeConfidence": 0.95
+      }
+    }
+  ],
+  "passageTargets": [
+    {
+      "passageId": "sci_tx_5_fec5c588",
+      "title": "Light Reflecting Off a Mirror",
+      "scenarioType": "described_diagram",
+      "regionTag": null,
+      "preState": {
+        "status": null
+      }
+    },
+    {
+      "passageId": "sci_tx_5_ec4da887",
+      "title": "Pond Ecosystem Components",
+      "scenarioType": "described_diagram",
+      "regionTag": null,
+      "preState": {
+        "status": null
+      }
+    },
+    {
+      "passageId": "sci_tx_5_8733bc2d",
+      "title": "Testing Objects That Sink or Float",
+      "scenarioType": "experiment",
+      "regionTag": null,
+      "preState": {
+        "status": null
+      }
+    },
+    {
+      "passageId": "sci_tx_5_4384fc67",
+      "title": "Testing Objects with a Magnet",
+      "scenarioType": "data_analysis",
+      "regionTag": null,
+      "preState": {
+        "status": null
+      }
+    },
+    {
+      "passageId": "sci_tx_5_2877ad3d",
+      "title": "Tracking Water Evaporation in Different Locations",
+      "scenarioType": "data_analysis",
+      "regionTag": null,
+      "preState": {
+        "status": null
+      }
+    }
+  ],
+  "updates": {
+    "poolUpdated": 0,
+    "poolFailed": 0,
+    "passageUpdated": 0,
+    "passageFailed": 0
+  }
+}
