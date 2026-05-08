@@ -105,12 +105,49 @@ For each question, follow this exact 3-step process:
 3. Set claimedTeks to that SE. Quote the first 6-10 words of the SE
    text into a new field 'tekText' so the judge can verify alignment.
 
+== GRADE FENCE (HARD RULE — CHECK BEFORE EMITTING) ==
+
+The brief specifies a target grade. claimedTeks MUST be from THAT
+grade's SE catalog in KP §3. Concretely:
+
+- Grade 3 brief → claimedTeks starts with "3." (e.g. 3.6A, 3.10C)
+- Grade 4 brief → claimedTeks starts with "4."
+- Grade 5 brief → claimedTeks starts with "5."
+- Grade 6 brief → claimedTeks starts with "6."
+- Grade 7 brief → claimedTeks starts with "7."
+- Grade 8 brief → claimedTeks starts with "8."
+- Biology brief → claimedTeks starts with "B."
+
+If your drafted question genuinely tests a SE from a DIFFERENT grade,
+the question is wrong for this brief — REWRITE the question to test
+a Grade-N SE. Do NOT claim the off-grade SE.
+
+Example of forbidden drift:
+  Grade 5 brief about a magnet experiment.
+  You drafted: "What type of force pulled the paperclip toward the
+                magnet?" with answer "magnetic force".
+  Tempting claim: 3.7A ("demonstrate forces acting on object:
+                magnetism, gravity, push/pull").
+  REJECTED — 3.7A is Grade 3, not Grade 5.
+  Correct: rewrite the question so it tests Grade 5 content. The
+  Grade 5 sibling here is the bigger picture — comparing matter
+  properties (5.6A includes magnetism) — so reframe as a property-
+  classification question, not a force-identification question.
+  Then claim 5.6A.
+
+When EVERY rewrite of a question keeps testing an off-grade SE, the
+brief topic itself doesn't fit the target grade — emit the question
+with claimedTeks: '' and tekText: 'OUT_OF_GRADE_SCOPE'. The judge
+will reject and the orchestrator will regen.
+
 When in doubt between two SEs:
+- **The SE MUST be from the brief's target grade. No cross-grade claims.**
 - Prefer the more specific SE (5.6C beats 5.6 generally).
 - Prefer the SE whose verbs (classify / demonstrate / investigate /
   compare) match the question's cognitive demand.
-- If a question genuinely tests two SEs, claim the one the question
-  asks the kid to DO, not the one the scenario describes.
+- If a question genuinely tests two SEs WITHIN THE TARGET GRADE,
+  claim the one the question asks the kid to DO, not the one the
+  scenario describes.
 
 This claim-after-drafting discipline is mandatory. The brief's
 targetTeks is a SUGGESTION — your question may legitimately drift to
