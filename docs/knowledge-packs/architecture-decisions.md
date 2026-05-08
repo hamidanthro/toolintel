@@ -114,3 +114,50 @@ Disability as identity (Patricia Bath's biography; Maya plays soccer and uses a 
 ### Rationale
 
 Critical accessibility gap in original KP. Disability is identity, not deficit. The original §9 didn't address disability framing at all; the Accessibility committee call closed the gap.
+
+---
+
+## Science schema (locked 2026-05-08)
+
+**Scope:** Texas Grades 3-8 + Biology. Text-only items in v1 (no diagrams).
+
+**Pipeline:** Mirror reading (`scripts/reading/`), NOT math (`scripts/cold-start/`).
+- Generator: Claude Sonnet 4.5 (matches reading)
+- Judge: gpt-4o (matches lambda runtime + cold-start math judge)
+- KP-driven via `docs/knowledge-packs/texas-science.md`
+
+**Pool key format** (mirrors reading exactly):
+- Standalone: `texas#<grade>#science#standalone`
+- Cluster (lab scenario): `texas#<grade>#science#<scenarioId>`
+- Grade is bare number (3, 4, 5, 6, 7, 8) or `"biology"`
+
+**Item row fields in `staar-content-pool`:**
+
+| Field | Value |
+|---|---|
+| `subject` | `"science"` |
+| `type` | `"science_mc"` \| `"science_multi_select"` \| `"science_inline"` \| `"science_numeric"` |
+| `stem` | question text |
+| `stemPattern` | e.g. `"Which of these..."` |
+| `choices` | string array |
+| `correctIndex` | int (or array for multi_select) |
+| `claimedTeks` | generator's claim, e.g. `"5.6A"` |
+| `teks` | post-judge verified TEK |
+| `strand` | one of: `matter_energy`, `force_motion_energy`, `earth_space`, `organisms_environments`, `bio_structures`, `bio_genetics`, `bio_evolution`, `bio_ecology`, `sci_eng_practices` |
+| `standardType` | `"Readiness"` \| `"Supporting"` \| `"Practice"` |
+| `regionTag` | optional Texas region tag (see KP §4) |
+| `scenarioId` | optional FK to `staar-passages` |
+| `_kpVersion`, `_judgeVerdict`, `_judgeVersion`, `_judgedAt` | reading conventions |
+
+**Lab scenarios:** Reuse `staar-passages` with `genre="science_scenario"`. No new table. Same passageId hash + stateGradeGenre GSI. Optional new field `scenarioType`: `"experiment"` | `"data_analysis"` | `"described_diagram"`.
+
+**Tables added:** ZERO. Reuses `staar-content-pool` + `staar-passages`.
+
+**Existing teks-science.json reconciliation:**
+- `state-packs/texas/standards/teks-science.json` is `[CLAUDE-SYNTHESIZED]` and has at least one wrong TAC section (lists §112.16 for Grade 5; actual is §112.7 per TEA 19 TAC Ch 112 Aug 2024 update).
+- The new `docs/knowledge-packs/texas-science.md` is TEA-verified (fetched live from tea.texas.gov 2026-05-07) and is the canonical source.
+- JSON file stays as machine-readable index; rebuild from MD when JSON is needed by code.
+
+**New tables:** ZERO.
+**Lambda changes for Phase B+C:** ZERO.
+**Frontend changes for Phase B+C:** ZERO.

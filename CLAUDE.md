@@ -3898,6 +3898,56 @@ Texas SS, then state #2 pack.
 
 ---
 
+## 38. Science section (Texas Phase 1) — foundation only (May 8)
+
+**Scope:** Grades 3-8 + Biology. Text-only items. Mirror reading pipeline.
+
+**Authority:** Hamid + Owners' Room (locked 2026-05-08).
+
+**Status:** Foundation only (this commit). No content generated yet.
+
+**Files:**
+- `docs/knowledge-packs/texas-science.md` — KP (TEA-verified, fetched live
+  from tea.texas.gov 2026-05-07; ~22KB / 416 lines covering ~76 SEs across
+  4 strands per grade plus Biology EOC, Texas regional context library
+  (§4), misconception library (§5), sample question patterns (§6),
+  generation rules (§7))
+- `prompts/science-judge-v1.md` — judge spec (~12KB / 253 lines; gpt-4o
+  temp 0; 9 new science-specific reason codes plus reuses existing
+  math-judge codes)
+- Schema documented in `docs/knowledge-packs/architecture-decisions.md`
+  ("Science schema (locked 2026-05-08)")
+
+**Tables:** Reuses `staar-content-pool` (subject='science') and
+`staar-passages` (genre='science_scenario'). **No new tables.**
+
+**Pipeline (planned, not built yet):**
+- `scripts/science/generate-question.js` (Claude Sonnet 4.5)
+- `scripts/science/generate-scenario.js` (Claude Sonnet 4.5)
+- `scripts/science/judge-question.js` (gpt-4o)
+- Lambda runtime mirrors math/reading: `lambda/judge.js` adds science branch
+
+**Pool key format** (mirrors reading exactly):
+- Standalone: `texas#<grade>#science#standalone`
+- Cluster (lab scenario): `texas#<grade>#science#<scenarioId>`
+- Grade is bare number (3..8) or `"biology"`
+
+**Locked decisions:**
+- No diagrams in v1 (judge rejects DIAGRAM_REQUIRED)
+- No constructed response in v1
+- 30-40% of questions carry a regionTag
+- At least 1 of 3 distractors per MC reflects a documented misconception (KP §5)
+- Hamid samples 10 of every 100 before sweep
+- No state without KP, no content type without judge first
+
+**Existing `state-packs/texas/standards/teks-science.json` is
+`[CLAUDE-SYNTHESIZED]`** and has at least one wrong TAC section (lists
+§112.16 for Grade 5; actual is §112.7 per TEA 19 TAC Ch 112 Aug 2024
+update). The new MD KP supersedes as canonical source. JSON stays as a
+machine-readable index; rebuild from MD when needed.
+
+---
+
 ## TOP 3 THINGS YOU SHOULD KNOW
 
 1. **The deploy story is held together by tape and is the single biggest
