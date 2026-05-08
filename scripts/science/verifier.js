@@ -45,8 +45,13 @@ const VERIFIER_MODEL = 'claude-sonnet-4-5';
 const VERIFIER_VERSION = 'science-verifier-v1';
 const ANTHROPIC_ENDPOINT = 'https://api.anthropic.com/v1/messages';
 const ANTHROPIC_VERSION = '2023-06-01';
-const TIMEOUT_MS = 30000;
-const MAX_TOKENS = 600;
+const TIMEOUT_MS = 45000;
+// Phase H bug-fix: 600 truncated Sonnet's output mid-prose for ~39% of
+// calls — the model emitted "Let me work through this..." preamble
+// before getting to JSON, never reached the closing brace. 1200 leaves
+// room for both the chain-of-thought (which we now prefill-suppress
+// anyway) and the JSON object.
+const MAX_TOKENS = 1200;
 
 const stats = {
   calls: 0,
@@ -57,17 +62,51 @@ const stats = {
   totalTokensOut: 0
 };
 
-function extractJson(text) {
-  const trimmed = String(text || '').trim();
+// Phase H bug-fix: 4-tier extractor.
+//   Tier 0 (NEW): assistant prefill — when we send `{ role:'assistant',
+//                 content: '{' }` as the last message, Anthropic
+//                 returns text WITHOUT the leading `{`. Restore it
+//                 before parsing.
+//   Tier 1: strict ```json...``` bookends
+//   Tier 2: any fenced block in the middle
+//   Tier 3 (NEW, replaces single-brace tier): last balanced top-level
+//                 {...} block — scans the string for matched braces
+//                 (string-aware) and returns the LAST complete object,
+//                 since chain-of-thought sometimes embeds {...} fragments
+//                 ("the answer is { '...' }") before the real JSON.
+function extractJson(text, prefilled) {
+  let trimmed = String(text || '').trim();
+  if (prefilled && trimmed && !trimmed.startsWith('{')) {
+    trimmed = '{' + trimmed;
+  }
   const strict = trimmed.match(/^```(?:json)?\s*([\s\S]*?)\s*```\s*$/);
   if (strict) return strict[1];
   const anyFence = trimmed.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
   if (anyFence) return anyFence[1];
-  const firstBrace = trimmed.indexOf('{');
-  const lastBrace = trimmed.lastIndexOf('}');
-  if (firstBrace >= 0 && lastBrace > firstBrace) {
-    return trimmed.slice(firstBrace, lastBrace + 1);
+  // Tier 3 — find LAST top-level balanced {...} block, string-aware
+  const blocks = [];
+  let depth = 0;
+  let inString = false;
+  let escape = false;
+  let start = -1;
+  for (let i = 0; i < trimmed.length; i++) {
+    const c = trimmed[i];
+    if (escape) { escape = false; continue; }
+    if (c === '\\') { escape = true; continue; }
+    if (c === '"') { inString = !inString; continue; }
+    if (inString) continue;
+    if (c === '{') {
+      if (depth === 0) start = i;
+      depth++;
+    } else if (c === '}') {
+      depth--;
+      if (depth === 0 && start >= 0) {
+        blocks.push(trimmed.slice(start, i + 1));
+        start = -1;
+      }
+    }
   }
+  if (blocks.length) return blocks[blocks.length - 1];
   return trimmed;
 }
 
@@ -96,7 +135,16 @@ Be skeptical. If you'd guess the question is testing a different SE than claimed
 ${sec3}
 == END KP §3 ==
 
-ONLY output valid JSON. No markdown fences, no preamble.`;
+== STRICT OUTPUT RULES ==
+
+Your response MUST start with the literal character "{" — no preamble,
+no "Let me work through this", no markdown fences. Just the JSON object.
+
+If you need to think, do it silently. The output is the JSON object only.
+
+Phase H learned this the hard way: 39% of calls truncated mid-prose
+because the model emitted reasoning before the JSON and ran out of
+tokens. Begin with "{". End with "}". Nothing before, nothing after.`;
 }
 
 function buildUserMessage(item) {
@@ -139,7 +187,16 @@ async function callAnthropic(systemPrompt, userMessage, apiKey) {
         max_tokens: MAX_TOKENS,
         temperature: 0,
         system: systemPrompt,
-        messages: [{ role: 'user', content: userMessage }]
+        // Phase H bug-fix: assistant-prefill the opening "{" so the
+        // model HAS to start with JSON. Anthropic continues from
+        // wherever the prefill ends; "Let me work through this..." is
+        // physically impossible because the previous turn already
+        // committed to a JSON object. The response text will NOT
+        // include the leading "{" — extractJson restores it (Tier 0).
+        messages: [
+          { role: 'user', content: userMessage },
+          { role: 'assistant', content: '{' }
+        ]
       })
     });
     if (!res.ok) {
@@ -256,7 +313,10 @@ async function verifyQuestion(item) {
 
   let parsed;
   try {
-    parsed = JSON.parse(extractJson(raw));
+    // prefilled=true: the model's response continues an assistant turn
+    // that already committed to "{", so the response text starts with
+    // the field after the brace, not the brace itself.
+    parsed = JSON.parse(extractJson(raw, true));
   } catch (err) {
     return failOpen(`json-parse:${(err.message || '').slice(0, 80)}`);
   }
