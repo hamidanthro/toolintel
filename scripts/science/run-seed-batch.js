@@ -42,6 +42,7 @@ const { generateScenario } = require('./generate-scenario');
 const { generateQuestionSet } = require('./generate-question');
 const { judgeQuestion } = require('./judge-question');
 const { judgeScenario } = require('./judge-scenario');
+const { verifyQuestion } = require('./verifier');
 const { loadKP } = require('./lib/load-kp');
 
 const STATE = 'texas';
@@ -51,6 +52,7 @@ const QUESTIONS_PER_SCENARIO = 5;
 const MIN_QUESTIONS_TO_KEEP = 4;
 const SCENARIO_CONCURRENCY = 3;
 const JUDGE_CONCURRENCY = 4;
+const VERIFIER_CONCURRENCY = 4;
 
 const OUTPUT_DIR = path.resolve(__dirname, 'output');
 
@@ -261,16 +263,15 @@ async function processBrief(brief, opts, apiKey) {
       continue;
     }
 
-    console.log(`${tag} attempt ${attempt}: judging ${questionSet.length} questions (concurrency=${JUDGE_CONCURRENCY})...`);
-    const verdicts = await mapConcurrent(questionSet, JUDGE_CONCURRENCY, async (q) => {
-      // The judge expects fields in spec shape (subj, tek_code,
-      // standard_type, region_tag, prompt). Map our generator output
-      // to that shape for the judge call only.
-      const judgeItem = {
+    // Build the canonical "judge-shape" item once per candidate so both
+    // verifier and judge see the same fields.
+    function judgeItemFor(q) {
+      return {
         type: 'multiple_choice',
         subj: 'science',
         grade: brief.grade,
         tek_code: q.claimedTeks,
+        claimedTeks: q.claimedTeks,
         strand: q.strand,
         standard_type: q.standardType,
         region_tag: q.regionTag,
@@ -280,29 +281,35 @@ async function processBrief(brief, opts, apiKey) {
         explanation: q.explanation,
         passage: scenario ? { title: scenario.title, body: scenario.body } : undefined
       };
-      return judgeQuestion(judgeItem);
+    }
+
+    // Phase H — VERIFIER STAGE. Runs first; only verifier-passers go
+    // to the judge. Two AI gates in fresh Anthropic contexts beats one
+    // model checking its own work in the same prompt thread. Fail-open
+    // on Anthropic error so verifier latency never blocks the sweep.
+    console.log(`${tag} attempt ${attempt}: verifying ${questionSet.length} questions (concurrency=${VERIFIER_CONCURRENCY})...`);
+    const verifications = await mapConcurrent(questionSet, VERIFIER_CONCURRENCY, async (q) => {
+      return verifyQuestion(judgeItemFor(q));
     });
 
-    const passing = [];
+    // Partition: verifier-pass survives to judge; verifier-reject is
+    // logged + recorded (does NOT call the judge).
+    const survivors = [];
+    const survivorIdx = [];
     for (let i = 0; i < questionSet.length; i++) {
-      const v = verdicts[i];
+      const ver = verifications[i];
       const candidate = questionSet[i];
-      if (v && !v.__error && v.verdict === 'pass') {
-        const prefix = '[judge]';
-        console.log(`${tag} ${prefix} q${i + 1}: pass conf=${v.confidence} source=${v.source}`);
-        passing.push({ q: candidate, v });
+      if (ver && !ver.__error && ver.verdict === 'pass') {
+        const prefix = ver.source === 'llm-error' ? '[verifier:fail-open]' : '[verifier]';
+        console.log(`${tag} ${prefix} q${i + 1}: pass conf=${ver.confidence} ans=${ver.verifierAnswer ?? '?'} agree=${ver.verifierAgreesWithGenerator ?? '?'} tek=${ver.tekAlignment} sci=${ver.scienceAccurate ?? '?'}`);
+        survivors.push(candidate);
+        survivorIdx.push(i);
       } else {
-        const prefix = v && v.source === 'llm-error' ? '[judge:fail-open]' : '[judge]';
-        const reasons = v && Array.isArray(v.reasons) ? v.reasons.join(', ') : '(none)';
+        const reasons = (ver && Array.isArray(ver.reasons)) ? ver.reasons.join(', ') : '(none)';
         const stemPreview = (candidate.stem || '').slice(0, 80);
-        console.log(`${tag} ${prefix} q${i + 1}: ${v?.verdict || '(error)'} reasons=[${reasons}] stem="${stemPreview}"`);
-        // Phase G: preserve the FULL question object on the reject path so
-        // future reject-sample-N.md can show the generator's TEK claim
-        // alongside the judge's reasons. Phase E's truncated 100-char stem
-        // + verdict-only made TEK_MISMATCH undiagnosable.
+        console.log(`${tag} [verifier] q${i + 1}: reject reasons=[${reasons}] genIdx=${candidate.correctIndex} verifierIdx=${ver?.verifierAnswer ?? '?'} stem="${stemPreview}"`);
         questionRejects.push({
-          attempt,
-          qIdx: i,
+          attempt, qIdx: i,
           stem: candidate.stem,
           claimedTeks: candidate.claimedTeks,
           tekText: candidate.tekText || null,
@@ -313,6 +320,54 @@ async function processBrief(brief, opts, apiKey) {
           explanation: candidate.explanation,
           regionTag: candidate.regionTag || null,
           rationale: candidate.rationale || null,
+          rejectedBy: 'verifier',
+          verifier: ver,
+          verdict: { verdict: 'reject', reasons: ver?.reasons || [], source: ver?.source || 'unknown', confidence: ver?.confidence }
+        });
+      }
+    }
+
+    if (survivors.length === 0) {
+      console.log(`${tag} attempt ${attempt}: 0/${questionSet.length} survived verifier — regen`);
+      continue; // skip judge entirely; cheaper to regen
+    }
+
+    console.log(`${tag} attempt ${attempt}: judging ${survivors.length} verifier-survivors (concurrency=${JUDGE_CONCURRENCY})...`);
+    const verdicts = await mapConcurrent(survivors, JUDGE_CONCURRENCY, async (q) => {
+      return judgeQuestion(judgeItemFor(q));
+    });
+
+    const passing = [];
+    for (let s = 0; s < survivors.length; s++) {
+      const v = verdicts[s];
+      const candidate = survivors[s];
+      const i = survivorIdx[s];                // original index in questionSet
+      const ver = verifications[i];
+      if (v && !v.__error && v.verdict === 'pass') {
+        const prefix = '[judge]';
+        console.log(`${tag} ${prefix} q${i + 1}: pass conf=${v.confidence} source=${v.source}`);
+        passing.push({ q: candidate, v, ver });
+      } else {
+        // Verifier passed, judge rejected — log the disagreement explicitly.
+        // Don't override either: question must pass BOTH gates.
+        const prefix = v && v.source === 'llm-error' ? '[judge:fail-open]' : '[verifier-judge-disagreement]';
+        const reasons = v && Array.isArray(v.reasons) ? v.reasons.join(', ') : '(none)';
+        const stemPreview = (candidate.stem || '').slice(0, 80);
+        console.log(`${tag} ${prefix} q${i + 1}: judge=${v?.verdict || '(error)'} reasons=[${reasons}] (verifier-passed) stem="${stemPreview}"`);
+        questionRejects.push({
+          attempt, qIdx: i,
+          stem: candidate.stem,
+          claimedTeks: candidate.claimedTeks,
+          tekText: candidate.tekText || null,
+          strand: candidate.strand,
+          standardType: candidate.standardType,
+          choices: candidate.choices,
+          correctIndex: candidate.correctIndex,
+          explanation: candidate.explanation,
+          regionTag: candidate.regionTag || null,
+          rationale: candidate.rationale || null,
+          rejectedBy: 'judge',
+          verifier: ver,
           verdict: v
         });
       }
@@ -379,7 +434,7 @@ async function processBrief(brief, opts, apiKey) {
   }
 
   const questionRows = savedQuestions.map((entry, i) => {
-    const { q, v } = entry;
+    const { q, v, ver } = entry;
     return {
       poolKey: poolKeyFor(brief.grade, scenario.scenarioId),
       contentId: contentIdFor(scenario.scenarioId, q.stem),
@@ -407,6 +462,16 @@ async function processBrief(brief, opts, apiKey) {
       _judgeVerdict: v.verdict,
       _judgeConfidence: v.confidence,
       _judgeReasons: v.reasons,
+      // Phase H — verifier provenance. Question passed BOTH the verifier
+      // and the judge, but we record the verifier's verdict so future
+      // audits can spot verifier↔judge agreement patterns.
+      _verifiedAt: judgedAt,
+      _verifierVersion: ver?.verifierVersion || null,
+      _verifierVerdict: ver?.verdict || null,
+      _verifierConfidence: ver?.confidence ?? null,
+      _verifierAgreed: ver?.verifierAgreesWithGenerator ?? null,
+      _verifierTekAlignment: ver?.tekAlignment || null,
+      _verifierScienceAccurate: ver?.scienceAccurate ?? null,
       _kpVersion: kpVersion,
       _phase: phase
     };
