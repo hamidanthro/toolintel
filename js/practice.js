@@ -916,6 +916,13 @@
           const plainText = window.ReadingRender
             ? window.ReadingRender.toPlainText(q.passage.body)
             : (q.passage.body || '');
+          // §76b — Prewarm cloud TTS the moment the passage mounts so
+          // the kid's tap on the speaker plays in ~50ms instead of
+          // waiting 1.5-3s for fetch + Google synth + audio download.
+          // Fire-and-forget; failure is silent (Speech.prewarm catches).
+          if (typeof window.Speech.prewarm === 'function') {
+            try { window.Speech.prewarm(plainText); } catch (_) {}
+          }
           const setPlaying = (on) => {
             speakBtn.classList.toggle('speech-btn--playing', !!on);
             speakBtn.setAttribute('aria-pressed', on ? 'true' : 'false');

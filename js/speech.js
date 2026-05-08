@@ -379,6 +379,63 @@
     return data.audioUrl;
   }
 
+  // §76b — Prewarm cache: { textKey → { url, audio, expiresAt } }.
+  // When a passage card mounts, practice.js calls Speech.prewarm(text)
+  // which fetches the /tts URL AND starts downloading the audio bytes
+  // via <audio preload='auto'>. By the time the kid taps the speaker,
+  // the audio is already in browser cache and plays in <100ms instead
+  // of waiting 1.5-3s for fetch + Google synth + audio download.
+  //
+  // Keyed by sha-ish hash of (text+voice). Cached entries live for the
+  // lifetime of the page (no eviction; passages are short-lived).
+  const _prewarmCache = new Map();
+
+  function _prewarmKey(text, voice) {
+    return `${voice}::${text.length}::${text.slice(0, 80)}`;
+  }
+
+  // Public — called from practice.js when a passage card mounts.
+  // Returns a Promise that resolves when the audio is preloaded
+  // (or rejects-quietly on any failure; never throws).
+  async function prewarm(text, opts) {
+    const o = opts || {};
+    if (!text) return;
+    const normalized = _normalize(text);
+    if (!normalized) return;
+    const voice = (o.voice && typeof o.voice === 'string') ? o.voice : CLOUD_DEFAULT_VOICE;
+    const key = _prewarmKey(normalized, voice);
+    if (_prewarmCache.has(key)) return; // already prewarming or warm
+    if (!_ttsEndpoint() || typeof fetch !== 'function') return;
+
+    // Mark in flight immediately to prevent duplicate prewarms
+    const placeholder = { url: null, audio: null, ready: false };
+    _prewarmCache.set(key, placeholder);
+
+    let url;
+    try {
+      url = await _fetchCloudAudioUrl(normalized, voice, _timeoutSignal(CLOUD_FETCH_TIMEOUT_MS).signal);
+    } catch (err) {
+      _prewarmCache.delete(key);
+      return;
+    }
+    placeholder.url = url;
+
+    // Start downloading the audio bytes by setting src on a hidden
+    // Audio element with preload='auto'. The browser fetches + decodes
+    // in the background; audio.readyState progresses through HAVE_*
+    // until HAVE_ENOUGH_DATA = 4 ("can play through to end").
+    const audio = new Audio();
+    audio.preload = 'auto';
+    audio.crossOrigin = 'anonymous';
+    audio.src = url;
+    placeholder.audio = audio;
+    audio.addEventListener('canplaythrough', () => { placeholder.ready = true; }, { once: true });
+    audio.addEventListener('error', () => { _prewarmCache.delete(key); }, { once: true });
+    // Trigger the load (some browsers need an explicit .load() with
+    // preload=auto to actually start the byte fetch).
+    try { audio.load(); } catch (_) {}
+  }
+
   // Plays text via cloud TTS. Returns a Promise<true> on full playback,
   // Promise<false> if a fallback is desired (any failure path).
   function _playCloud(normalizedText, opts) {
@@ -386,7 +443,56 @@
       const voice = (opts && opts.voice && typeof opts.voice === 'string')
         ? opts.voice : CLOUD_DEFAULT_VOICE;
 
-      // 1. Fetch presigned URL
+      // §76b — Prewarm short-circuit: if practice.js called
+      // Speech.prewarm() when the passage mounted, the URL + a fully-
+      // loaded <audio> element are already in _prewarmCache. Skip the
+      // /tts fetch AND the audio download — just call .play() on the
+      // pre-cached element and we get tap-to-sound in ~50ms instead
+      // of 1.5-3s.
+      const prewarmKey = _prewarmKey(normalizedText, voice);
+      const warm = _prewarmCache.get(prewarmKey);
+      if (warm && warm.url && warm.audio) {
+        const audio = warm.audio;
+        // Reset to start in case this is a re-tap
+        try { audio.currentTime = 0; } catch (_) {}
+        _cloudAudio = audio;
+        let endHandler, errHandler;
+        endHandler = () => {
+          if (_cloudAudio === audio) {
+            _cloudAudio = null;
+            _setState('idle');
+          }
+          audio.removeEventListener('error', errHandler);
+          resolve(true);
+        };
+        errHandler = () => {
+          // Prewarmed audio failed — drop from cache, fall back to fresh fetch
+          _prewarmCache.delete(prewarmKey);
+          if (_cloudAudio === audio) _cloudAudio = null;
+          _setState('idle');
+          audio.removeEventListener('ended', endHandler);
+          console.warn('[speech] prewarmed audio errored — falling back');
+          resolve(false);
+        };
+        audio.addEventListener('ended', endHandler, { once: true });
+        audio.addEventListener('error', errHandler, { once: true });
+        audio.addEventListener('playing', () => {
+          if (_cloudAudio === audio) _setState('playing');
+        }, { once: true });
+        try {
+          await audio.play();
+          return;
+        } catch (err) {
+          audio.removeEventListener('ended', endHandler);
+          audio.removeEventListener('error', errHandler);
+          if (_cloudAudio === audio) _cloudAudio = null;
+          _setState('idle');
+          console.warn('[speech] prewarmed audio.play() rejected:', err.message || err);
+          // Fall through to the fresh-fetch path below
+        }
+      }
+
+      // 1. Fetch presigned URL (no prewarm available, or prewarm failed)
       _cloudAbort = _timeoutSignal(CLOUD_FETCH_TIMEOUT_MS);
       let audioUrl;
       try {
@@ -476,6 +582,8 @@
     play, stop, isPlaying, current, onStateChange,
     _normalize, _isSupported, _getVoice,
     // §76 cloud TTS additions
-    setMode, getMode, _playCloud, _playBrowser, _ttsEndpoint
+    setMode, getMode, _playCloud, _playBrowser, _ttsEndpoint,
+    // §76b — call prewarm(text) on passage mount for instant tap-to-sound
+    prewarm
   };
 })();
