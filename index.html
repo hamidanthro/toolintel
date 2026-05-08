@@ -31,7 +31,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260507h" />
+  <link rel="stylesheet" href="css/styles.css?v=20260508a" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -667,7 +667,16 @@
           'grade-6':   'Middle School',
           'algebra-1': 'High School'
         };
+        // §78 — Texas-only pivot: guests on the landing page see ONLY
+        // the grades Texas STAAR actually tests. K/1/2 don't have STAAR
+        // content and would dead-end the kid on grade.html. The original
+        // chip row hardcoded this set; the card grid needs to match.
+        const TEXAS_STAAR_GRADES = new Set([
+          'grade-3','grade-4','grade-5','grade-6','grade-7','grade-8','algebra-1'
+        ]);
         visible.forEach(g => {
+          // Skip non-Texas-STAAR grades for guest landing card grid.
+          if (isAnon && !u && !TEXAS_STAAR_GRADES.has(g.slug)) return;
           const isCurrent = !!(u && u.grade === g.slug);
           if (isAnon && groupLabels[g.slug]) {
             const lbl = document.createElement('div');
@@ -692,9 +701,14 @@
             });
             grid.appendChild(tile);
           } else {
+            // Always include s=texas in the href so guest taps don't
+            // dead-end at "State not found" on grade.html (the default
+            // grade-card href omits the state param).
+            const stateSlug = (u && u.state) || 'texas';
             const card = window.STAARGradeCard.render(g, {
               variant: 'default',
-              isCurrent
+              isCurrent,
+              href: `grade.html?s=${encodeURIComponent(stateSlug)}&g=${encodeURIComponent(g.slug)}`
             });
             grid.appendChild(card);
           }
