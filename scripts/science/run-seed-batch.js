@@ -76,83 +76,108 @@ function getDdb() {
 const PASSAGES_TABLE = 'staar-passages';
 const POOL_TABLE = 'staar-content-pool';
 
-// ---- Hand-curated briefs — Phase E pilot, 20 Grade 5 across 4 strands ----
+// ---- Phase H briefs — 20 Grade 5, each maps to ONE content SE ----
 //
-// Distribution target:
-//   - 5 Matter & Energy        (5.6A/B/C)
-//   - 5 Force, Motion & Energy (5.7A/B, 5.8B/C)
-//   - 5 Earth & Space          (5.9A, 5.10A/B/C)
-//   - 5 Organisms & Environments (5.12A, 5.13A)
-// Mix scenarioTypes (~10 experiment / ~7 data_analysis / ~3 described_diagram).
-// 6 briefs carry a Texas regionTag; 14 region-neutral.
+// Locked redesign per Phase H spec:
+// - Each brief points at exactly ONE Grade-5 CONTENT SE (no Practices SEs,
+//   no cross-grade temptation).
+// - Topic phrased so the most natural question tests THAT SE — includes
+//   an explicit "asks them to relate/compare/identify..." hook.
+// - Banned phrasing that bait Practices SEs:
+//     "table", "graph", "data table", "variable", "repeat the experiment",
+//     "communicate findings", "use a tool", "Setup 1/2/3" (visual labels).
+// - Distribution: 5/5/5/5 across 4 content strands.
+// - 6 region tags (gulf_coast, hill_country, piney_woods, dfw, big_bend,
+//   panhandle) spread across strands.
+// - scenarioType mix: 8 experiment, 6 data_analysis, 6 described_diagram.
 const BRIEFS = [
   // ----- Matter & Energy (5) -----
-  { id: 'g5-density-relative-water', grade: 5, scenarioType: 'experiment',
-    topic: 'students testing whether different objects sink or float in water and inferring relative density',
+  // 5.6A — compare/contrast matter by physical properties (Readiness)
+  { id: 'g5-density-sink-float', grade: 5, scenarioType: 'experiment',
+    topic: 'students drop wooden, plastic, metal, and stone objects into a container of water and observe which sink and which float; the question asks them to relate floating or sinking to relative density compared with water',
     regionTag: null, targetTeks: '5.6A' },
-  { id: 'g5-mixture-iron-sand', grade: 5, scenarioType: 'experiment',
-    topic: 'students separating an iron-filings + sand mixture using a magnet and observing that each material kept its physical properties',
+  // 5.6A — magnetism + thermal conductivity (still 5.6A — physical properties)
+  { id: 'g5-magnet-iron-vs-plastic', grade: 5, scenarioType: 'described_diagram',
+    topic: 'a description of a kitchen drawer containing an iron nail, a copper penny, a plastic button, and a wooden spoon; the question asks the student to identify which property of matter explains why only the iron nail is attracted to a magnet',
+    regionTag: null, targetTeks: '5.6A' },
+  // 5.6B — mixtures retain physical properties (Supporting)
+  { id: 'g5-mixture-rice-beans', grade: 5, scenarioType: 'experiment',
+    topic: 'students pour a cup of rice and a cup of dried beans together in a bowl and stir; the question asks whether the rice and beans kept their original shape, color, and size after being mixed',
     regionTag: null, targetTeks: '5.6B' },
-  { id: 'g5-solution-conserve-mass', grade: 5, scenarioType: 'data_analysis',
-    topic: 'students massing salt and water separately, then massing the saltwater solution, recording numbers in a table to test conservation of matter',
-    regionTag: null, targetTeks: '5.6C' },
-  { id: 'g5-thermal-conductors-galveston', grade: 5, scenarioType: 'experiment',
-    topic: 'a Galveston classroom comparing how quickly heat moves through metal vs plastic spoons placed in hot water',
-    regionTag: 'gulf_coast', targetTeks: '5.6A' },
-  { id: 'g5-magnetic-classify', grade: 5, scenarioType: 'data_analysis',
-    topic: 'students sorting a tray of objects (paperclip, penny, plastic button, aluminum foil, iron nail) by whether a magnet picked them up, recording results in a table',
-    regionTag: null, targetTeks: '5.6A' },
+  // 5.6B — mixture properties (sand + iron filings) — emphasis on properties retained
+  { id: 'g5-mixture-iron-sand-properties', grade: 5, scenarioType: 'described_diagram',
+    topic: 'a description of iron filings mixed with dry sand in a clear cup; the question asks the student to identify which physical property of iron tells them iron filings did not change when mixed with sand',
+    regionTag: null, targetTeks: '5.6B' },
+  // 5.6C — solution conservation (Supporting)
+  { id: 'g5-solution-mass-conserved', grade: 5, scenarioType: 'experiment',
+    topic: 'students place a cup of water on a balance, read the mass, stir in a spoonful of sugar until it dissolves, and read the mass again; the question asks whether the total mass changed and what that tells them about matter when something dissolves',
+    regionTag: 'piney_woods', targetTeks: '5.6C' },
 
   // ----- Force, Motion & Energy (5) -----
-  { id: 'g5-circuit-complete', grade: 5, scenarioType: 'experiment',
-    topic: 'students testing four different battery + bulb + wire setups, observing which complete circuits light the bulb',
-    regionTag: null, targetTeks: '5.8B' },
-  { id: 'g5-light-reflect-mirror', grade: 5, scenarioType: 'described_diagram',
-    topic: 'a setup where a flashlight beam hits a mirror at an angle and reflects onto a wall, with the angles described in words',
-    regionTag: null, targetTeks: '5.8C' },
-  { id: 'g5-force-ramp-balloon', grade: 5, scenarioType: 'experiment',
-    topic: 'students designing investigations: a toy car on ramps of different heights, and a balloon rocket on a string with different inflation amounts',
-    regionTag: null, targetTeks: '5.7B' },
-  { id: 'g5-electric-circuit-houston', grade: 5, scenarioType: 'data_analysis',
-    topic: 'a Houston elementary class measuring how brightly a bulb lights with one, two, or three batteries connected in series, recording brightness rankings',
-    regionTag: 'gulf_coast', targetTeks: '5.8B' },
-  { id: 'g5-balanced-unbalanced', grade: 5, scenarioType: 'experiment',
-    topic: 'students playing tug-of-war: equal teams (no motion) vs unequal teams (motion toward stronger side), explaining force balance',
+  // 5.7A — equal vs unequal forces causing motion (Supporting)
+  { id: 'g5-tug-of-war-forces', grade: 5, scenarioType: 'experiment',
+    topic: 'students play tug-of-war, first with two equal teams of three on each side and the rope does not move, then with three students against one and the rope moves; the question asks the student to explain why the rope moves only in the second case',
     regionTag: null, targetTeks: '5.7A' },
+  // 5.7A — pushing a box on the floor (still 5.7A — equal/unequal forces)
+  { id: 'g5-box-push-friction', grade: 5, scenarioType: 'described_diagram',
+    topic: 'a description of one student pushing a heavy box across a classroom floor and the box not moving, then two students pushing together and the box sliding; the question asks the student to identify the relationship between the force applied and whether the box moves',
+    regionTag: null, targetTeks: '5.7A' },
+  // 5.7B — design a simple force investigation (Supporting)
+  { id: 'g5-toy-car-ramp-investigation', grade: 5, scenarioType: 'experiment',
+    topic: 'students roll a toy car down a wooden ramp set at three different heights and measure how far the car travels each time; the question asks the student to identify which factor was changed on purpose to test how force affects the car',
+    regionTag: null, targetTeks: '5.7B' },
+  // 5.8B — circuit requirements (Readiness)
+  { id: 'g5-circuit-broken-wire', grade: 5, scenarioType: 'described_diagram',
+    topic: 'a description of a battery connected to a small bulb with two wires; in one connection both wires touch the metal of the battery and the bulb lights, in another connection one wire touches only the plastic side of the battery and the bulb does not light; the question asks the student to identify what is required for an electrical circuit to power the bulb',
+    regionTag: 'gulf_coast', targetTeks: '5.8B' },
+  // 5.8C — light travels in straight line and can be reflected (Readiness)
+  { id: 'g5-light-flashlight-mirror', grade: 5, scenarioType: 'described_diagram',
+    topic: 'a description of a flashlight pointed at a flat mirror in a darkened room with the beam bouncing off the mirror onto a far wall; the question asks the student to identify what the light beam does when it hits the mirror surface',
+    regionTag: null, targetTeks: '5.8C' },
 
   // ----- Earth & Space (5) -----
-  { id: 'g5-earth-rotation-shadow', grade: 5, scenarioType: 'data_analysis',
-    topic: 'students measuring the length of a shadow from a stick at 9am, 12pm, and 3pm, recording inches in a table to investigate Earth rotation',
+  // 5.9A — Earth rotation causes day/night and Sun's apparent motion (Readiness)
+  { id: 'g5-shadow-morning-afternoon', grade: 5, scenarioType: 'data_analysis',
+    topic: 'a class observes the shadow of a flagpole and finds it points west in the morning and east in the afternoon; the question asks the student to identify what causes the shadow to change direction during the day',
     regionTag: null, targetTeks: '5.9A' },
-  { id: 'g5-sedimentary-rock-formation', grade: 5, scenarioType: 'described_diagram',
-    topic: 'a textbook description of layers of sand, mud, and shells settling at the bottom of an ocean over thousands of years, eventually compressing into sedimentary rock',
-    regionTag: null, targetTeks: '5.10B' },
-  { id: 'g5-water-cycle-sun', grade: 5, scenarioType: 'data_analysis',
-    topic: 'a class tracking water evaporation from an open pan in sunlight vs in shade over 5 days, with measurements in milliliters',
+  // 5.10A — Sun-water cycle interaction (Supporting)
+  { id: 'g5-puddle-evaporation-sun', grade: 5, scenarioType: 'data_analysis',
+    topic: 'a student observes a small rain puddle on a sunny morning and finds the puddle is gone by afternoon; the question asks the student to identify the role of the Sun in what happened to the water',
     regionTag: null, targetTeks: '5.10A' },
-  { id: 'g5-canyon-erosion-bigbend', grade: 5, scenarioType: 'experiment',
-    topic: 'a Big Bend field-trip class pouring water down a hillside model of sand and clay to observe how moving water carves channels and forms small canyon-like features',
-    regionTag: 'big_bend', targetTeks: '5.10C' },
-  { id: 'g5-shadow-pattern-piney-woods', grade: 5, scenarioType: 'data_analysis',
-    topic: 'an East Texas Piney Woods class recording where the morning Sun shines on the schoolyard each week for a month and noticing the shifting position',
-    regionTag: 'piney_woods', targetTeks: '5.9A' },
+  // 5.10B — sedimentary rock formation (Readiness)
+  { id: 'g5-sediment-layers-ocean', grade: 5, scenarioType: 'described_diagram',
+    topic: 'a description of layers of sand, mud, and small shells slowly settling on the floor of a calm sea over thousands of years and eventually being pressed together into solid rock; the question asks the student to identify the type of rock that forms from this process',
+    regionTag: 'gulf_coast', targetTeks: '5.10B' },
+  // 5.10B — fossil fuel formation (still 5.10B — sedimentary processes)
+  { id: 'g5-fossil-fuel-ancient-plants', grade: 5, scenarioType: 'described_diagram',
+    topic: 'a description of dead plants and tiny ocean creatures sinking to the bottom of an ancient swamp millions of years ago, getting buried under more layers, and slowly turning into coal and oil; the question asks the student to identify the process that formed these fossil fuels',
+    regionTag: 'big_bend', targetTeks: '5.10B' },
+  // 5.10C — wind/water/ice form landforms (Readiness)
+  { id: 'g5-canyon-water-erosion', grade: 5, scenarioType: 'experiment',
+    topic: 'students pour a cup of water down a hillside model made of sand and watch the water carve a small channel through the sand; the question asks the student to identify which natural process creates canyons and similar landforms over a long time',
+    regionTag: 'panhandle', targetTeks: '5.10C' },
 
   // ----- Organisms & Environments (5) -----
-  { id: 'g5-pond-ecosystem-biotic-abiotic', grade: 5, scenarioType: 'described_diagram',
-    topic: 'a description of a pond ecosystem listing biotic factors (frogs, water striders, algae, lily pads) and abiotic factors (water temperature, sunlight, rocks, dissolved oxygen)',
+  // 5.12A — organisms surviving via biotic + abiotic interactions (Readiness)
+  { id: 'g5-pond-frogs-temperature', grade: 5, scenarioType: 'experiment',
+    topic: 'students observe that a pond has many active frogs in spring and summer but few in winter; the question asks the student to identify what living factor and what nonliving factor most affect frog activity through the year',
     regionTag: null, targetTeks: '5.12A' },
-  { id: 'g5-prairie-survival-dfw', grade: 5, scenarioType: 'experiment',
-    topic: 'a DFW classroom planting two trays of grass — one watered daily, one watered weekly — and recording which trays grew taller and greener over 3 weeks',
-    regionTag: 'dfw', targetTeks: '5.13A' },
-  { id: 'g5-bird-beak-adapt', grade: 5, scenarioType: 'experiment',
-    topic: 'students using different tools (tweezers, chopsticks, spoons) to pick up rice, sunflower seeds, and water, modeling how beak shape suits different foods',
-    regionTag: null, targetTeks: '5.13A' },
-  { id: 'g5-food-web-hill-country-bats', grade: 5, scenarioType: 'data_analysis',
-    topic: 'a Hill Country class recording how many insects a Mexican free-tailed bat eats per night and discussing what would happen to the local insect population if the bat colony disappeared',
+  // 5.12A — Hill Country bats + insects (still 5.12A — population interactions)
+  { id: 'g5-bats-insects-hill-country', grade: 5, scenarioType: 'experiment',
+    topic: 'a Hill Country class learns that thousands of Mexican free-tailed bats fly out at dusk to eat moths and mosquitoes; the question asks the student to predict what would happen to the local insect population if the bat colony disappeared',
     regionTag: 'hill_country', targetTeks: '5.12A' },
-  { id: 'g5-decomposers-leaves-panhandle', grade: 5, scenarioType: 'experiment',
-    topic: 'a Panhandle class burying fallen leaves in soil and checking after 4 weeks vs after 8 weeks to observe decomposers breaking material down',
-    regionTag: 'panhandle', targetTeks: '5.12A' }
+  // 5.12A — DFW prairie ecosystem
+  { id: 'g5-prairie-grasshopper-rain', grade: 5, scenarioType: 'experiment',
+    topic: 'students learn that grasshoppers in a North Texas prairie eat grass that grows when there is enough rain; the question asks the student to identify what would most likely happen to the grasshopper population during a long drought',
+    regionTag: 'dfw', targetTeks: '5.12A' },
+  // 5.13A — structure-function adaptation (Readiness)
+  { id: 'g5-bird-beak-shape-food', grade: 5, scenarioType: 'experiment',
+    topic: 'students examine drawings of a hummingbird with a long thin beak that drinks flower nectar, a hawk with a sharp curved beak that tears meat, and a duck with a wide flat bill that filters water; the question asks the student to identify how each beak shape helps the bird get its specific food',
+    regionTag: null, targetTeks: '5.13A' },
+  // 5.13A — desert plant adaptations (still 5.13A — structure-function)
+  { id: 'g5-cactus-leaves-water', grade: 5, scenarioType: 'described_diagram',
+    topic: 'a description of a prickly pear cactus that has thick fleshy stems and tiny spines instead of broad leaves, growing in a hot, dry West Texas desert where rain is rare; the question asks the student to identify how the cactus structure helps it survive in that environment',
+    regionTag: 'big_bend', targetTeks: '5.13A' }
 ];
 
 // ---- CLI ----
