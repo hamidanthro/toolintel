@@ -286,16 +286,35 @@ async function processBrief(brief, opts, apiKey) {
     const passing = [];
     for (let i = 0; i < questionSet.length; i++) {
       const v = verdicts[i];
+      const candidate = questionSet[i];
       if (v && !v.__error && v.verdict === 'pass') {
         const prefix = '[judge]';
         console.log(`${tag} ${prefix} q${i + 1}: pass conf=${v.confidence} source=${v.source}`);
-        passing.push({ q: questionSet[i], v });
+        passing.push({ q: candidate, v });
       } else {
         const prefix = v && v.source === 'llm-error' ? '[judge:fail-open]' : '[judge]';
         const reasons = v && Array.isArray(v.reasons) ? v.reasons.join(', ') : '(none)';
-        const stem = (questionSet[i].stem || '').slice(0, 80);
-        console.log(`${tag} ${prefix} q${i + 1}: ${v?.verdict || '(error)'} reasons=[${reasons}] stem="${stem}"`);
-        questionRejects.push({ attempt, qIdx: i, stem, verdict: v });
+        const stemPreview = (candidate.stem || '').slice(0, 80);
+        console.log(`${tag} ${prefix} q${i + 1}: ${v?.verdict || '(error)'} reasons=[${reasons}] stem="${stemPreview}"`);
+        // Phase G: preserve the FULL question object on the reject path so
+        // future reject-sample-N.md can show the generator's TEK claim
+        // alongside the judge's reasons. Phase E's truncated 100-char stem
+        // + verdict-only made TEK_MISMATCH undiagnosable.
+        questionRejects.push({
+          attempt,
+          qIdx: i,
+          stem: candidate.stem,
+          claimedTeks: candidate.claimedTeks,
+          tekText: candidate.tekText || null,
+          strand: candidate.strand,
+          standardType: candidate.standardType,
+          choices: candidate.choices,
+          correctIndex: candidate.correctIndex,
+          explanation: candidate.explanation,
+          regionTag: candidate.regionTag || null,
+          rationale: candidate.rationale || null,
+          verdict: v
+        });
       }
     }
 
