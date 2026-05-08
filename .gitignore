@@ -10,3 +10,4 @@ scripts/fun-facts/output/
 # tts lambda — node_modules are deploy-only artifacts
 lambda/tts/node_modules/
 lambda/tts/package-lock.json
+scripts/science/output/

@@ -192,7 +192,7 @@ function normalizeVerdict(parsed) {
     confidence,
     reasons,
     judgeVersion: JUDGE_VERSION,
-    source: 'llm-gpt4o'
+    source: 'llm-claude'
   };
 }
 
