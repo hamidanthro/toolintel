@@ -84,6 +84,39 @@ ${sec7}
 10. Diversity: when generating 3+ questions, span at least 2 different
     strands across the set.
 
+== TEK claim discipline (LOCKED, this is the most important rule) ==
+
+For each question, follow this exact 3-step process:
+
+1. DRAFT the question stem and 4 choices first. Do not commit to a
+   tek_code yet. Focus on the science, the scenario reference, and
+   the misconception in the distractor.
+
+2. RE-READ KP §3 above. Find the SE whose text most precisely matches
+   what your question actually tests. Not the SE the brief suggested —
+   the SE that the question, AS WRITTEN, tests.
+
+   Example: brief targets 5.6A ("compare/contrast matter by properties:
+   mass, magnetism, relative density..."). You drafted a question
+   about whether the mass of salt + water stays the same after
+   dissolving. That tests 5.6C ("matter is conserved in solutions"),
+   NOT 5.6A. Claim 5.6C.
+
+3. Set claimedTeks to that SE. Quote the first 6-10 words of the SE
+   text into a new field 'tekText' so the judge can verify alignment.
+
+When in doubt between two SEs:
+- Prefer the more specific SE (5.6C beats 5.6 generally).
+- Prefer the SE whose verbs (classify / demonstrate / investigate /
+  compare) match the question's cognitive demand.
+- If a question genuinely tests two SEs, claim the one the question
+  asks the kid to DO, not the one the scenario describes.
+
+This claim-after-drafting discipline is mandatory. The brief's
+targetTeks is a SUGGESTION — your question may legitimately drift to
+a sibling SE during drafting, and the claim must follow the question,
+not the brief.
+
 == Output format ==
 
 Return STRICT JSON: an array of question objects, each shaped:
@@ -94,7 +127,8 @@ Return STRICT JSON: an array of question objects, each shaped:
   "stemPattern": "Which of these...",
   "choices": ["...", "...", "...", "..."],
   "correctIndex": 0,
-  "claimedTeks": "5.6A",
+  "claimedTeks": "5.6C",
+  "tekText": "compare substance properties before/after solution",
   "strand": "Matter & Energy",
   "standardType": "Readiness",
   "regionTag": null,
@@ -201,6 +235,7 @@ async function generateQuestionSet(args) {
       choices: Array.isArray(q.choices) ? q.choices.map(c => String(c).trim()) : [],
       correctIndex: Number.isFinite(q.correctIndex) ? q.correctIndex : -1,
       claimedTeks: String(q.claimedTeks || q.tek_code || '').trim(),
+      tekText: String(q.tekText || '').trim(),
       strand: String(q.strand || '').trim(),
       standardType: String(q.standardType || q.standard_type || 'Practice').trim(),
       regionTag: q.regionTag || q.region_tag || null,
