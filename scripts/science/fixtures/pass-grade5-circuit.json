@@ -1,0 +1,19 @@
+{
+  "type": "multiple_choice",
+  "subj": "science",
+  "grade": 5,
+  "tek_code": "5.8B",
+  "strand": "Force, Motion & Energy",
+  "standard_type": "Readiness",
+  "prompt": "A student builds a circuit with a battery, wires, and a small light bulb. The bulb does not light up. Which of these is most likely the reason?",
+  "choices": [
+    "The wires are too colorful",
+    "The circuit is not complete",
+    "The battery is too small to hold electricity",
+    "Light bulbs only work in the daytime"
+  ],
+  "correctIndex": 1,
+  "explanation": "An electrical circuit must be a complete loop for current to flow. If the circuit is broken anywhere, the bulb will not light up. The other answers reflect common misconceptions about electricity.",
+  "expectedVerdict": "pass",
+  "expectedReasonsSubset": []
+}

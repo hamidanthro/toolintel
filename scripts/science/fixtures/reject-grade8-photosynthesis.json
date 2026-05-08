@@ -1,0 +1,19 @@
+{
+  "type": "multiple_choice",
+  "subj": "science",
+  "grade": 8,
+  "tek_code": "8.6E",
+  "strand": "Matter & Energy",
+  "standard_type": "Readiness",
+  "prompt": "In photosynthesis, what do plants take in and release?",
+  "choices": [
+    "Take in oxygen, release carbon dioxide",
+    "Take in carbon dioxide, release oxygen",
+    "Take in water, release nitrogen",
+    "Take in sunlight, release heat"
+  ],
+  "correctIndex": 0,
+  "explanation": "Plants take in oxygen and release carbon dioxide during photosynthesis.",
+  "expectedVerdict": "reject",
+  "expectedReasonsSubset": ["SCIENCE_FACTUAL_ERROR"]
+}

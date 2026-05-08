@@ -1,0 +1,14 @@
+{
+  "type": "multiple_choice",
+  "subj": "science",
+  "grade": 5,
+  "tek_code": "5.12A",
+  "strand": "Organisms & Environments",
+  "standard_type": "Readiness",
+  "prompt": "Look at the food web shown above. If the rabbit population decreases, which animal will be most affected?",
+  "choices": ["Hawk", "Grass", "Earthworm", "Mushroom"],
+  "correctIndex": 0,
+  "explanation": "The hawk depends on rabbits as a primary food source.",
+  "expectedVerdict": "reject",
+  "expectedReasonsSubset": ["DIAGRAM_REQUIRED"]
+}
