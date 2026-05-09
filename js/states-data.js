@@ -1319,7 +1319,7 @@
   var TEXAS_SUBJECT_GRADES = {
     math: ['grade-3','grade-4','grade-5','grade-6','grade-7','grade-8','algebra-1'],
     reading: ['grade-3','grade-4','grade-5','grade-6','grade-7','grade-8'],
-    science: ['grade-5','grade-8'],
+    science: ['grade-3','grade-4','grade-5','grade-6','grade-7','grade-8'],
     'social-studies': ['grade-8']
   };
   window.STATES.forEach(function (s) {

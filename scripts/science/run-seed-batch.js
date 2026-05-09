@@ -177,19 +177,116 @@ const BRIEFS = [
   // 5.13A — desert plant adaptations (still 5.13A — structure-function)
   { id: 'g5-cactus-leaves-water', grade: 5, scenarioType: 'described_diagram',
     topic: 'a description of a prickly pear cactus that has thick fleshy stems and tiny spines instead of broad leaves, growing in a hot, dry West Texas desert where rain is rare; the question asks the student to identify how the cactus structure helps it survive in that environment',
-    regionTag: 'big_bend', targetTeks: '5.13A' }
+    regionTag: 'big_bend', targetTeks: '5.13A' },
+
+  // ============================================================
+  // Grade 3 briefs (TEKS §112.5) — practice-only, K-8 STAAR not
+  // tested at this grade, but kids on gradeearn at Grade 3 should
+  // see real Grade-3 TEKS-aligned content.
+  // Distribution: 5 per strand; grade-appropriate vocabulary
+  // (~age 8-9); NO Practices SE bait language.
+  // ============================================================
+
+  // ----- Matter & Energy (5) -----
+  // 3.6A — physical properties (sink/float)
+  { id: 'g3-rock-vs-cork-sink-float', grade: 3, scenarioType: 'experiment',
+    topic: 'a class drops a small rock and a cork stopper into a clear bowl of water; the rock sinks and the cork floats; the question asks the student to identify the physical property they observed in the rock and the cork',
+    regionTag: null, targetTeks: '3.6A' },
+  // 3.6A — physical properties (magnetism in mixed objects)
+  { id: 'g3-magnet-picks-which-objects', grade: 3, scenarioType: 'described_diagram',
+    topic: 'a description of a tray holding a steel paperclip, a wooden block, an aluminum can tab, and an iron nail; a student moves a strong magnet over the tray and finds the paperclip and the iron nail stick to the magnet but the wooden block and the aluminum can tab do not; the question asks the student to identify which physical property the magnet was testing',
+    regionTag: null, targetTeks: '3.6A' },
+  // 3.6B — solids vs liquids (shape vs container)
+  { id: 'g3-juice-poured-into-cup', grade: 3, scenarioType: 'described_diagram',
+    topic: 'a description of a wooden block and a cup of apple juice sitting on a table, then the juice being poured into a tall narrow glass while the wooden block is moved next to the glass; the question asks the student to identify what happens to the shape of each material when its container changes',
+    regionTag: null, targetTeks: '3.6B' },
+  // 3.6C — state changes from heating/cooling
+  { id: 'g3-ice-cube-on-counter', grade: 3, scenarioType: 'experiment',
+    topic: 'a student places an ice cube on a plate at room temperature and checks it every ten minutes; after thirty minutes there is no ice cube, only a small puddle of water; the question asks the student to identify what caused the ice to change',
+    regionTag: null, targetTeks: '3.6C' },
+  // 3.6D — combine materials based on properties
+  { id: 'g3-build-rain-cover', grade: 3, scenarioType: 'described_diagram',
+    topic: 'a Houston student wants to build a small cover that keeps a paper book dry on a rainy day; the choices in the supply box are a sheet of paper, a sheet of plastic, a piece of cotton cloth, and a piece of cardboard; the question asks the student to identify which material is best to use and why, based on its physical properties',
+    regionTag: 'gulf_coast', targetTeks: '3.6D' },
+
+  // ----- Force, Motion & Energy (5) -----
+  // 3.7A — forces (magnetism)
+  { id: 'g3-paperclip-pulled-by-magnet', grade: 3, scenarioType: 'experiment',
+    topic: 'a student holds a magnet just above a steel paperclip lying on a desk; without touching the paperclip, the paperclip jumps up and sticks to the magnet; the question asks the student to identify the type of force that pulled the paperclip',
+    regionTag: null, targetTeks: '3.7A' },
+  // 3.7A — gravity (ball rolls down ramp)
+  { id: 'g3-ball-rolls-down-ramp', grade: 3, scenarioType: 'experiment',
+    topic: 'a student props one end of a wooden board on a stack of books to make a ramp and places a small ball at the top of the ramp; when the student lets go, the ball rolls down the ramp without anyone pushing it; the question asks the student to identify the force that caused the ball to roll down',
+    regionTag: null, targetTeks: '3.7A' },
+  // 3.7B — push/pull change in position
+  { id: 'g3-push-pull-toy-truck', grade: 3, scenarioType: 'experiment',
+    topic: 'a student has a toy truck on a tabletop and the truck is not moving; the student pushes it with one finger and the truck slides forward; the question asks the student to identify what changed the position of the toy truck',
+    regionTag: null, targetTeks: '3.7B' },
+  // 3.8A — energy examples (sound)
+  { id: 'g3-clapping-hands-sound', grade: 3, scenarioType: 'described_diagram',
+    topic: 'a description of a student clapping their hands together loudly in a quiet classroom; everyone in the room hears the clap, even with their eyes closed; the question asks the student to identify which type of energy carried the clap to their ears',
+    regionTag: null, targetTeks: '3.8A' },
+  // 3.8B — speed related to mechanical energy
+  { id: 'g3-fast-vs-slow-marble', grade: 3, scenarioType: 'experiment',
+    topic: 'a student rolls a marble slowly across a smooth tabletop, then rolls a second marble of the same size much faster across the same table; the fast marble bumps a small block at the end and pushes it farther than the slow marble does; the question asks the student to identify what is different about the energy of the fast marble compared to the slow marble',
+    regionTag: null, targetTeks: '3.8B' },
+
+  // ----- Earth & Space (5) -----
+  // 3.9A — Sun, Earth, Moon system
+  { id: 'g3-moon-around-earth', grade: 3, scenarioType: 'described_diagram',
+    topic: 'a description of three balls used to model the solar system: a yellow ball labeled Sun in the middle, a blue ball labeled Earth that goes around the Sun, and a small gray ball labeled Moon that goes around Earth as Earth goes around the Sun; the question asks the student to identify what the Moon orbits',
+    regionTag: null, targetTeks: '3.9A' },
+  // 3.9B — order of planets
+  { id: 'g3-planets-in-order', grade: 3, scenarioType: 'described_diagram',
+    topic: 'a description of a poster showing the eight planets in our solar system in the correct order from the Sun, with names listed but no images: Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune; the question asks the student to identify which planet is third from the Sun',
+    regionTag: null, targetTeks: '3.9B' },
+  // 3.10A — day-to-day weather
+  { id: 'g3-windsock-weather', grade: 3, scenarioType: 'data_analysis',
+    topic: 'a student watches a windsock outside the school each morning and writes down what she observes; on Monday the windsock points east, on Tuesday it points east, on Wednesday it points east; the question asks the student to identify what this tells her about the wind that week',
+    regionTag: 'panhandle', targetTeks: '3.10A' },
+  // 3.10B — soil formation by weathering
+  { id: 'g3-cracked-rock-tiny-pieces', grade: 3, scenarioType: 'described_diagram',
+    topic: 'a description of a large rock at the edge of a creek that has been there for many years; over time the rock has cracked, and small bits of sand and tiny pebbles have collected around its base; the question asks the student to identify what process turned parts of the rock into the small pieces around it',
+    regionTag: 'hill_country', targetTeks: '3.10B' },
+  // 3.10C — rapid Earth-surface changes (landslide / volcano)
+  { id: 'g3-volcano-changes-land', grade: 3, scenarioType: 'described_diagram',
+    topic: 'a description of a hillside that was covered in green trees and grass; then a volcano nearby erupts and covers the hillside in hot ash and lava in just a few hours; the question asks the student to identify what kind of change to Earth\'s surface the eruption caused',
+    regionTag: null, targetTeks: '3.10C' },
+
+  // ----- Organisms & Environments (5) -----
+  // 3.12A — temperature/precipitation effects on animals
+  { id: 'g3-bears-winter-sleep', grade: 3, scenarioType: 'described_diagram',
+    topic: 'a description of a black bear that eats berries and fish all summer and fall; when winter comes and it gets very cold and food is hard to find, the bear curls up inside a den and stays asleep until spring; the question asks the student to identify what causes the bear to sleep through winter',
+    regionTag: null, targetTeks: '3.12A' },
+  // 3.12B — food chain energy flow
+  { id: 'g3-grass-rabbit-fox', grade: 3, scenarioType: 'described_diagram',
+    topic: 'a description of a simple food chain in a Texas field: grass grows in the field, rabbits eat the grass, and foxes eat the rabbits; the question asks the student to predict what would most likely happen to the foxes if a long drought killed almost all of the grass in the field',
+    regionTag: 'dfw', targetTeks: '3.12B' },
+  // 3.12D — fossils as evidence of past life
+  { id: 'g3-texas-fossil-shell', grade: 3, scenarioType: 'described_diagram',
+    topic: 'a description of a hiker in Central Texas who finds a small spiral-shaped shell pressed into a piece of limestone on a dry hillside; the hillside is far from any ocean today; the question asks the student to identify what the fossil shell tells us about that area long ago',
+    regionTag: 'hill_country', targetTeks: '3.12D' },
+  // 3.13A — external structures help survival
+  { id: 'g3-duck-webbed-feet', grade: 3, scenarioType: 'described_diagram',
+    topic: 'a description of a duck swimming on a pond using its wide webbed feet to push water behind it like paddles; on land the duck waddles slowly, but in the water it moves quickly; the question asks the student to identify how the duck\'s webbed feet help it survive',
+    regionTag: 'piney_woods', targetTeks: '3.13A' },
+  // 3.13B — life cycle (radish/beetle/butterfly)
+  { id: 'g3-radish-life-cycle', grade: 3, scenarioType: 'experiment',
+    topic: 'a student plants a radish seed in a cup of soil and waters it; after a few days a small green sprout appears, then leaves grow, then a small flower forms, and finally the plant makes new seeds; the question asks the student to identify what the very first stage of the radish life cycle is',
+    regionTag: null, targetTeks: '3.13B' }
 ];
 
 // ---- CLI ----
 function parseArgs(argv) {
-  const opts = { dryRun: true, write: false, briefId: null };
+  const opts = { dryRun: true, write: false, briefId: null, grade: null };
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--dry-run') opts.dryRun = true;
     else if (a === '--write') opts.write = true;
     else if (a === '--brief-id') opts.briefId = argv[++i];
+    else if (a === '--grade') opts.grade = parseInt(argv[++i], 10);
     else if (a === '--help' || a === '-h') {
-      console.log('Usage: run-seed-batch.js [--dry-run] [--write] [--brief-id <id>]');
+      console.log('Usage: run-seed-batch.js [--dry-run] [--write] [--brief-id <id>] [--grade <n>]');
       process.exit(0);
     }
   }
@@ -573,13 +670,13 @@ async function main() {
   // E.1: --write may target ALL briefs (full pilot) OR --brief-id <id>
   // (single-brief retry). Either is valid.
 
-  const briefs = opts.briefId
-    ? BRIEFS.filter(b => b.id === opts.briefId)
-    : BRIEFS.slice();
+  let briefs = BRIEFS.slice();
+  if (opts.briefId) briefs = briefs.filter(b => b.id === opts.briefId);
+  if (opts.grade != null) briefs = briefs.filter(b => b.grade === opts.grade);
 
   if (briefs.length === 0) {
-    console.error(`No briefs matched --brief-id=${opts.briefId || '(unset)'}.`);
-    console.error(`Available: ${BRIEFS.map(b => b.id).join(', ')}`);
+    console.error(`No briefs matched --brief-id=${opts.briefId || '(unset)'} --grade=${opts.grade ?? '(unset)'}.`);
+    console.error(`Available: ${BRIEFS.map(b => `${b.id}(g${b.grade})`).join(', ')}`);
     process.exit(1);
   }
 

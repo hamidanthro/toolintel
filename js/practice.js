@@ -35,6 +35,42 @@
     return END_OF_SET_HEADERS.high;
   }
 
+  // §15-aligned varied phrasings. Avoid banned literals (no "trip",
+  // "tricky", "no worries", "Most kids", "Good try", "Nice work",
+  // "Great job"). Short, factual, growth-mindset, ungushy.
+  const WRONG_HEADERS = [
+    "Not quite.",
+    "Almost.",
+    "Close, but no.",
+    "Not this time.",
+    "Off this time.",
+    "Worth another look."
+  ];
+  const DAILY_GOAL_TOASTS = [
+    "Daily mission complete! 🌟",
+    "Daily goal hit! 🌟",
+    "Done for today! 🌟",
+    "Daily quota cleared! 🌟"
+  ];
+  const STREAK_TOAST_TEMPLATES = [
+    n => `${n} in a row! 🔥`,
+    n => `${n} straight! 🔥`,
+    n => `${n} correct in a row 🔥`,
+    n => `${n}-streak 🔥`
+  ];
+  const STREAK_DAY_TEMPLATES = [
+    n => `${n}-day streak! 🔥`,
+    n => `${n} days strong 🔥`,
+    n => `${n} days running 🔥`,
+    n => `${n}-day mark hit 🔥`
+  ];
+  const STAAR_STREAK_TEMPLATES = [
+    (test, n) => `${test} streak: ${n} 🔥`,
+    (test, n) => `${test} ${n} in a row 🔥`,
+    (test, n) => `${test}: ${n} straight 🔥`
+  ];
+  function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
   const root = document.getElementById('practice-root');
   const params = new URLSearchParams(location.search);
 
@@ -198,8 +234,11 @@
     return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  // ---- Guest free-trial: 100 questions across all grades, no login required.
-  const GUEST_LIMIT = 100;
+  // ---- Guest free-trial: 5 questions across all grades, no login required.
+  // Enough to demo the full experience (question card, streak, wrong-answer
+  // AI tutor, end-of-set summary) without giving away the content library.
+  // Was 100 pre-2026-05-09 — that was effectively unlimited for typical use.
+  const GUEST_LIMIT = 5;
   const GUEST_KEY = 'staar.guest.answered';
   function isGuest() {
     return !(window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser());
@@ -301,8 +340,8 @@
       }
     }
     const remaining = guestRemaining();
-    bar.innerHTML = `<span>Trial mode · ${remaining} of ${GUEST_LIMIT} questions left.</span>
-      <a href="#" id="guest-signup-btn" style="color:#fbbf24;font-weight:600;text-decoration:none;">Sign up free to save progress →</a>`;
+    bar.innerHTML = `<span>Preview · ${remaining} of ${GUEST_LIMIT} free questions left.</span>
+      <a href="#" id="guest-signup-btn" style="color:#fbbf24;font-weight:600;text-decoration:none;">Sign up to unlock the full content library →</a>`;
     const btn = document.getElementById('guest-signup-btn');
     if (btn) btn.onclick = (e) => { e.preventDefault(); if (window.STAARAuth && window.STAARAuth.showLogin) window.STAARAuth.showLogin(); };
   }
@@ -314,10 +353,11 @@
     if (root) {
       root.innerHTML = `
         <div class="card" style="text-align:center;padding:36px;">
-          <h2 style="margin-top:0;">You answered ${GUEST_LIMIT} questions! 🎉</h2>
+          <h2 style="margin-top:0;">You finished your free preview! 🎉</h2>
           <p style="color:var(--muted);max-width:520px;margin:8px auto 20px;">
-            Sign up free to keep practicing, save your progress to any device, earn points
-            you can spend on toys in the marketplace, and climb the leaderboard.
+            Sign up free to unlock the full content library &mdash; thousands of TEKS-aligned
+            questions across every subject and grade, the AI tutor on every wrong answer, points
+            you can spend on real toys in the marketplace, and your streak saved on every device.
           </p>
           <p><button type="button" class="btn btn-primary" id="guest-cap-signup">Create your free account</button></p>
           <p style="font-size:0.88rem;margin-top:14px;"><a href="#" id="guest-cap-signin">Already have an account? Sign in</a></p>
@@ -1042,7 +1082,7 @@
         if (isCorrect) {
           const _streak = (window._stCorrectStreak = (window._stCorrectStreak || 0) + 1);
           if (_streak % 5 === 0 && STATE_INFO && STATE_INFO.testName) {
-            showToast(`${STATE_INFO.testName} streak: ${_streak} 🔥`);
+            showToast(pickRandom(STAAR_STREAK_TEMPLATES)(STATE_INFO.testName, _streak));
           }
           try {
             document.dispatchEvent(new CustomEvent('gradeearn:correct-answer', {
@@ -1060,15 +1100,15 @@
           if (milestones && milestones.dailyGoalHit) {
             window.STAARFx.confetti({ count: 90, duration: 1800 });
             window.STAARFx.playMilestone();
-            window.STAARFx.toast('Daily mission complete! 🌟', { kind: 'win' });
+            window.STAARFx.toast(pickRandom(DAILY_GOAL_TOASTS), { kind: 'win' });
           } else if (milestones && milestones.streakMilestone) {
             window.STAARFx.confetti({ count: 60, duration: 1400 });
             window.STAARFx.playMilestone();
-            window.STAARFx.toast(`${milestones.streakMilestone}-in-a-row! 🔥`, { kind: 'win' });
+            window.STAARFx.toast(pickRandom(STREAK_TOAST_TEMPLATES)(milestones.streakMilestone), { kind: 'win' });
           } else if (milestones && milestones.streakDayMilestone) {
             window.STAARFx.confetti({ count: 70, duration: 1600 });
             window.STAARFx.playMilestone();
-            window.STAARFx.toast(`${milestones.streakDayMilestone}-day streak! 🔥`, { kind: 'win' });
+            window.STAARFx.toast(pickRandom(STREAK_DAY_TEMPLATES)(milestones.streakDayMilestone), { kind: 'win' });
           }
         }
         if (isGuest()) {
@@ -1149,7 +1189,7 @@
             ? `<div class="q-inline-fb-body">${escapeHtml(explanation)}</div>`
             : '';
           fbSlot.innerHTML = `
-            <div class="q-inline-fb-head">✗ Not quite. <span class="q-inline-fb-correct">The answer is <strong>${escapeHtml(q.answer)}</strong>.</span></div>
+            <div class="q-inline-fb-head">✗ ${pickRandom(WRONG_HEADERS)} <span class="q-inline-fb-correct">The answer is <strong>${escapeHtml(q.answer)}</strong>.</span></div>
             ${briefExplanationHtml}
             <div class="tutor-box" id="tutor-box">
               <div class="tutor-output" id="tutor-out"></div>
