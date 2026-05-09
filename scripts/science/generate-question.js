@@ -20,11 +20,20 @@
 
 const { loadKP } = require('./lib/load-kp');
 
-const MODEL = 'claude-sonnet-4-5';
+// Phase I: model swap from Sonnet 4.5 to Opus 4.7. Pure model change —
+// no prompt edits. Hypothesis: stronger reasoning cuts the
+// ANSWER_FOUND_IN_PROMPT / SCIENCE_FACTUAL_ERROR / TEXAS_GEO_ERROR
+// classes that survive the H2 verifier+judge double gate. ~5x cost
+// per call ($0.015 → $0.075 typical) — total run ~$15-25.
+const MODEL = 'claude-opus-4-7';
 const ENDPOINT = 'https://api.anthropic.com/v1/messages';
 const ANTHROPIC_VERSION = '2023-06-01';
-const TIMEOUT_MS = 60000;
-const MAX_TOKENS = 1536;
+const TIMEOUT_MS = 90000;
+// Phase I retry: Sonnet sized fine at 1536. Opus 4.7 produces longer
+// explanations/rationales and truncated mid-JSON for 100% of calls
+// (parser breaks at position ~3600-4000, well past 1536 tokens'
+// worth of text). 4096 leaves ~3x headroom for 5-question batches.
+const MAX_TOKENS = 4096;
 
 function extractJson(text) {
   const trimmed = String(text || '').trim();
@@ -216,7 +225,10 @@ async function callAnthropic(systemPrompt, userMessage, apiKey) {
       body: JSON.stringify({
         model: MODEL,
         max_tokens: MAX_TOKENS,
-        temperature: 0.6,
+        // Opus 4.7 deprecated `temperature`. Anthropic returns 400
+        // 'temperature is deprecated for this model' if it's set.
+        // Sonnet 4.5 still accepts it. Keep 0.6 for Sonnet, omit for Opus.
+        ...(MODEL.startsWith('claude-opus-') ? {} : { temperature: 0.6 }),
         system: systemPrompt,
         messages: [{ role: 'user', content: userMessage }]
       })
