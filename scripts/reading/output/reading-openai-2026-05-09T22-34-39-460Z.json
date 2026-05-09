@@ -1,0 +1,172 @@
+{
+  "runId": "2026-05-09T22-34-39-460Z",
+  "startedAt": "2026-05-09T22:34:39.460Z",
+  "mode": "dry-run",
+  "briefsAttempted": 1,
+  "passed": 1,
+  "failed": 0,
+  "results": [
+    {
+      "ok": true,
+      "brief": {
+        "id": "g3-info-armadillos",
+        "genre": "informational",
+        "topic": "why nine-banded armadillos are so common in Texas — what they eat, where they live, why they roll up",
+        "setting": null,
+        "protagonistName": null,
+        "protagonistDemographic": "unmarked"
+      },
+      "passageRow": {
+        "passageId": "p_tx_3_info_c566fdc047c9",
+        "state": "texas",
+        "grade": "3",
+        "genre": "informational",
+        "stateGradeGenre": "texas_3_informational",
+        "title": "Armadillo Adventures in Texas",
+        "body": "## Armadillo Adventures in Texas\n\nHave you ever seen an armadillo in Texas? If you have, it was likely a nine-banded armadillo. These unique creatures are common across the state. But why do they thrive in Texas?\n\nNine-banded armadillos are small mammals with a hard, protective shell. This shell is made up of bony plates covered by a tough skin. When they feel threatened, armadillos can roll up into a ball. This helps protect them from predators.\n\nArmadillos are nocturnal, which means they are most active at night. During the day, they rest in burrows. These burrows are often found in forests, grasslands, and even near rivers. In Texas, the climate provides the warm temperatures that armadillos love.\n\nWhat do armadillos eat? These animals have a varied diet. They use their long snouts and sharp claws to dig up insects, worms, and other small creatures. They also enjoy eating fruits and plants. This diet helps control the insect population, making armadillos helpful to their environment.\n\nThe nine-banded armadillo is an excellent swimmer. It can hold its breath for several minutes and walk underwater. This skill helps them cross rivers and streams. As a result, armadillos can spread to new areas.\n\nTexas is a perfect home for the nine-banded armadillo. The state's mix of open spaces, forests, and a warm climate provides everything they need to thrive. Understanding these creatures helps us appreciate their role in Texas's natural environment.",
+        "topic": "why nine-banded armadillos are so common in Texas — what they eat, where they live, why they roll up",
+        "topicNotes": "Explores why nine-banded armadillos are common in Texas, focusing on habitat, diet, and behavior.",
+        "setting": null,
+        "protagonistName": null,
+        "protagonistDemographic": "unmarked",
+        "wordCount": 241,
+        "paragraphCount": 6,
+        "fkGrade": 7.2,
+        "lexileEstimate": 1240,
+        "status": "active",
+        "_generatedBy": "gpt-4o",
+        "_generatedAt": "2026-05-09T22:34:52.298Z",
+        "_pipelineVersion": "reading-openai-v1",
+        "_kpVersion": "unknown",
+        "_briefId": "g3-info-armadillos"
+      },
+      "questionRows": [
+        {
+          "poolKey": "texas#3#reading#p_tx_3_info_c566fdc047c9",
+          "contentId": "q_1906d2fcfb5b_0",
+          "state": "texas",
+          "grade": "3",
+          "subject": "reading",
+          "type": "multiple_choice",
+          "questionType": "main-idea",
+          "question": "What is the main idea of the passage 'Armadillo Adventures in Texas'?",
+          "choices": [
+            "Armadillos are only found in Texas.",
+            "The nine-banded armadillo thrives in Texas because of the environment.",
+            "Armadillos are dangerous animals.",
+            "Texas has a variety of wildlife, including armadillos."
+          ],
+          "correctIndex": 1,
+          "answer": "The nine-banded armadillo thrives in Texas because of the environment.",
+          "explanation": "The passage explains why the nine-banded armadillo thrives in Texas, focusing on the environment and characteristics of the armadillo.",
+          "passageId": "p_tx_3_info_c566fdc047c9",
+          "status": "active",
+          "_generatedBy": "gpt-4o",
+          "_generatedAt": "2026-05-09T22:34:52.298Z",
+          "_pipelineVersion": "reading-openai-v1",
+          "_briefId": "g3-info-armadillos"
+        },
+        {
+          "poolKey": "texas#3#reading#p_tx_3_info_c566fdc047c9",
+          "contentId": "q_b8406f91599f_1",
+          "state": "texas",
+          "grade": "3",
+          "subject": "reading",
+          "type": "multiple_choice",
+          "questionType": "key-detail",
+          "question": "According to the passage, what do armadillos primarily eat?",
+          "choices": [
+            "Only plants and fruits.",
+            "Only small mammals.",
+            "Insects, worms, and other small creatures.",
+            "Fish and birds."
+          ],
+          "correctIndex": 2,
+          "answer": "Insects, worms, and other small creatures.",
+          "explanation": "Paragraph 4 mentions that armadillos use their snouts and claws to dig up insects, worms, and other small creatures.",
+          "passageId": "p_tx_3_info_c566fdc047c9",
+          "status": "active",
+          "_generatedBy": "gpt-4o",
+          "_generatedAt": "2026-05-09T22:34:52.298Z",
+          "_pipelineVersion": "reading-openai-v1",
+          "_briefId": "g3-info-armadillos"
+        },
+        {
+          "poolKey": "texas#3#reading#p_tx_3_info_c566fdc047c9",
+          "contentId": "q_259067af436b_2",
+          "state": "texas",
+          "grade": "3",
+          "subject": "reading",
+          "type": "multiple_choice",
+          "questionType": "vocabulary",
+          "question": "What does the word 'nocturnal' mean as it is used in paragraph 3?",
+          "choices": [
+            "Active during the day.",
+            "Active at night.",
+            "Sleeps all day.",
+            "Eats only at night."
+          ],
+          "correctIndex": 1,
+          "answer": "Active at night.",
+          "explanation": "Paragraph 3 states armadillos are most active at night, indicating 'nocturnal' means active at night.",
+          "passageId": "p_tx_3_info_c566fdc047c9",
+          "status": "active",
+          "_generatedBy": "gpt-4o",
+          "_generatedAt": "2026-05-09T22:34:52.298Z",
+          "_pipelineVersion": "reading-openai-v1",
+          "_briefId": "g3-info-armadillos"
+        },
+        {
+          "poolKey": "texas#3#reading#p_tx_3_info_c566fdc047c9",
+          "contentId": "q_5750f6dcc399_3",
+          "state": "texas",
+          "grade": "3",
+          "subject": "reading",
+          "type": "multiple_choice",
+          "questionType": "inference",
+          "question": "Why can armadillos spread to new areas, according to the passage?",
+          "choices": [
+            "They are carried by humans.",
+            "They fly across rivers.",
+            "They can swim and walk underwater.",
+            "They build bridges."
+          ],
+          "correctIndex": 2,
+          "answer": "They can swim and walk underwater.",
+          "explanation": "Paragraph 5 explains that armadillos are excellent swimmers and can walk underwater, allowing them to spread to new areas.",
+          "passageId": "p_tx_3_info_c566fdc047c9",
+          "status": "active",
+          "_generatedBy": "gpt-4o",
+          "_generatedAt": "2026-05-09T22:34:52.298Z",
+          "_pipelineVersion": "reading-openai-v1",
+          "_briefId": "g3-info-armadillos"
+        },
+        {
+          "poolKey": "texas#3#reading#p_tx_3_info_c566fdc047c9",
+          "contentId": "q_1911463b9e1a_4",
+          "state": "texas",
+          "grade": "3",
+          "subject": "reading",
+          "type": "multiple_choice",
+          "questionType": "author-purpose",
+          "question": "What is the author's purpose in writing 'Armadillo Adventures in Texas'?",
+          "choices": [
+            "To warn readers about the dangers of armadillos.",
+            "To entertain readers with stories about armadillos.",
+            "To inform readers about the armadillo's habitat and behavior in Texas.",
+            "To persuade readers to protect armadillos."
+          ],
+          "correctIndex": 2,
+          "answer": "To inform readers about the armadillo's habitat and behavior in Texas.",
+          "explanation": "The passage provides information about the armadillo's habitat, behavior, and role in Texas, indicating the author's purpose is to inform.",
+          "passageId": "p_tx_3_info_c566fdc047c9",
+          "status": "active",
+          "_generatedBy": "gpt-4o",
+          "_generatedAt": "2026-05-09T22:34:52.298Z",
+          "_pipelineVersion": "reading-openai-v1",
+          "_briefId": "g3-info-armadillos"
+        }
+      ]
+    }
+  ]
+}

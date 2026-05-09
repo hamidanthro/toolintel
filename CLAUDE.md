@@ -128,7 +128,7 @@ rebrands left substantial dead code; see §6 "Active legacy to retire".
 - Working dir: `/Users/bob/clawd/toolintel/`
 - Git remote: `git@github.com:hamidanthro/toolintel.git`
 - **Current production URL: `toolintel.ai`** (the live site testers use today)
-- Future production URL: `gradeearn.com` (the rebrand-target domain — `CNAME` file in repo points here, but DNS for gradeearn.com is not yet pointing at GitHub Pages; planned cutover later)
+- Production URL: **`gradeearn.com`** (verified live 2026-05-09; HTTPS cert approved + serving same content as `toolintel.ai`. Both domains work — see `docs/dns-status.md` for the cutover state and the soft-deprecation runbook for `toolintel.ai`.)
 - **Brand name everywhere = "GradeEarn"** regardless of current URL — the "toolintel" string is the legacy host name only, not a name to use in copy or UI
 - AWS account: `860141646209` (us-east-1)
 
@@ -168,22 +168,26 @@ Verified 2026-05-02 against `gh repo view hamidanthro/toolintel`:
 - No `.github/workflows/` directory
 - No `gh-pages` branch (only `main` and `staging` on origin)
 - No `_config.yml`, no `.nojekyll`
-- `CNAME` = `gradeearn.com` (the future domain — see below)
+- `CNAME` = `gradeearn.com` (canonical custom domain)
 
 **Deploy mechanism:** GitHub Pages serves the `main` branch root directly.
 A `git push origin main` is the deploy. Live within ~1–2 minutes.
 
-**Live URL = `https://toolintel.ai`** today. The repo's `CNAME` file says
-`gradeearn.com` (the rebrand-target domain), but the DNS for gradeearn.com
-is **not yet pointed at GitHub Pages**. Until that DNS cutover happens,
-testers reach the site at `toolintel.ai`. After cutover, the same Pages
-deploy will serve at gradeearn.com and toolintel.ai can retire.
+**Live URLs (both work, verified 2026-05-09):**
+- `https://gradeearn.com` — canonical. DNS A → GitHub Pages CDN
+  (185.199.108-111.153). HTTPS cert approved, expires 2026-08-04,
+  covers `gradeearn.com` + `www.gradeearn.com`. `www.` 301-redirects
+  to apex. Currently `https_enforced: false` on the Pages config —
+  Hamid action item to flip via Repo → Settings → Pages.
+- `https://toolintel.ai` — legacy. DNS A → AWS CloudFront
+  (13.224.x.x), which fronts the same GitHub Pages origin. Still
+  serves identical content. Soft-deprecate runbook at
+  `docs/dns-status.md`; full retirement is a separate later
+  decision (no urgency).
 
-How GitHub Pages handles two domains in this state: it serves whatever
-custom domain DNS resolves to its IPs. toolintel.ai's DNS still points
-at the Pages IPs (legacy), so it continues to work. gradeearn.com's DNS
-doesn't, so it doesn't. CNAME in repo doesn't break toolintel.ai because
-GitHub Pages serves any verified custom domain, not just the one in CNAME.
+Both domains serving the same code is fine — GitHub Pages serves any
+verified custom domain. The `CNAME` file declares the canonical, but
+auxiliary domains pointing at the Pages CDN keep working.
 
 **Implications:**
 - There is no staging/preview environment for the live site. (`staging`

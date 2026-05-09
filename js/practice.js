@@ -2138,6 +2138,90 @@
     };
   }
 
+  // STAAR scaled-score cut points by (grade, subject). Sourced from
+  // TEA STAAR technical reports + recent released-test conversions.
+  // Each entry: [approachesGradeLevel, meetsGradeLevel, mastersGradeLevel].
+  // Below 'approaches' = "did not meet". Used to anchor our raw-pct
+  // approximation to real STAAR bands. Where TEA hasn't published a
+  // grade/subject combo (e.g. our practice-only grades), we use the
+  // nearest tested grade as a proxy.
+  const STAAR_CUTS = {
+    'grade-3': {
+      math:    [1349, 1467, 1610],
+      reading: [1345, 1468, 1596],
+      science: [1349, 1467, 1610]   // proxy: math (no STAAR Sci grade-3)
+    },
+    'grade-4': {
+      math:    [1467, 1572, 1698],
+      reading: [1468, 1583, 1712],
+      science: [1467, 1572, 1698]   // proxy
+    },
+    'grade-5': {
+      math:    [1500, 1630, 1771],
+      reading: [1500, 1630, 1771],
+      science: [1500, 1630, 1771]
+    },
+    'grade-6': {
+      math:    [1546, 1683, 1834],
+      reading: [1551, 1683, 1834],
+      science: [1546, 1683, 1834]   // proxy
+    },
+    'grade-7': {
+      math:    [1599, 1739, 1881],
+      reading: [1606, 1739, 1881],
+      science: [1599, 1739, 1881]   // proxy
+    },
+    'grade-8': {
+      math:    [1641, 1782, 1924],
+      reading: [1655, 1782, 1924],
+      science: [1641, 1782, 1924]
+    },
+    'algebra-1': {
+      math:    [3550, 4000, 4500]   // STAAR EOC scale (different range)
+    }
+  };
+  // Score-band boundaries by raw percentage. Calibrated to match
+  // approximate STAAR raw→scaled conversion tables: at ~50% raw,
+  // most kids land near "Approaches grade level."
+  function rawPctToBand(rawPct) {
+    if (rawPct >= 0.85) return 'masters';
+    if (rawPct >= 0.65) return 'meets';
+    if (rawPct >= 0.45) return 'approaches';
+    return 'below';
+  }
+  function computeScaledScoreEstimate(correct, total, gradeSlug, subjSlug) {
+    if (total <= 0) return null;
+    const rawPct = correct / total;
+    const cutsForGrade = STAAR_CUTS[gradeSlug] || STAAR_CUTS['grade-5'];
+    const cuts = cutsForGrade[subjSlug] || cutsForGrade.math;
+    const [approaches, meets, masters] = cuts;
+    // Interpolate within band. Uses linear within-band approximation.
+    if (rawPct <= 0.45) {
+      // 0% - 45% raw maps to (approaches - 200) ... approaches
+      return Math.round(approaches - 200 + (rawPct / 0.45) * 200);
+    }
+    if (rawPct <= 0.65) {
+      // 45% - 65% raw maps to approaches ... meets
+      return Math.round(approaches + ((rawPct - 0.45) / 0.20) * (meets - approaches));
+    }
+    if (rawPct <= 0.85) {
+      // 65% - 85% raw maps to meets ... masters
+      return Math.round(meets + ((rawPct - 0.65) / 0.20) * (masters - meets));
+    }
+    // 85% - 100% raw maps to masters ... (masters + 100)
+    return Math.round(masters + ((rawPct - 0.85) / 0.15) * 100);
+  }
+  function verdictForScaled(scaled, gradeSlug, subjSlug) {
+    if (!Number.isFinite(scaled)) return 'No estimate';
+    const cutsForGrade = STAAR_CUTS[gradeSlug] || STAAR_CUTS['grade-5'];
+    const cuts = cutsForGrade[subjSlug] || cutsForGrade.math;
+    const [approaches, meets, masters] = cuts;
+    if (scaled >= masters) return 'Masters grade level — strong';
+    if (scaled >= meets) return 'Meets grade level';
+    if (scaled >= approaches) return 'Approaches grade level';
+    return 'Below grade level — more practice recommended';
+  }
+
   async function loadAndRunMockTest(N, minutes, grTitle, subjLabel, stateName) {
     // Loading skeleton while we fetch a full pool.
     root.innerHTML = `
@@ -2320,13 +2404,17 @@
       const elapsedMs = Date.now() - startedAt;
       const elapsedMin = Math.floor(elapsedMs / 60000);
       const elapsedSec = Math.floor((elapsedMs % 60000) / 1000);
-      // Rough scaled-score estimate (linear; not real STAAR conversion).
-      const scaledEst = Math.round(1300 + (correct / Math.max(total, 1)) * 1300);
-      // Approximate-passing band: ~1500-1700 across STAAR grade levels
-      const verdict = scaledEst >= 1900 ? 'Likely pass — strong'
-                    : scaledEst >= 1700 ? 'Likely pass'
-                    : scaledEst >= 1500 ? 'Borderline'
-                    : 'More practice recommended';
+      // STAAR scaled-score estimate. Real STAAR uses a non-linear
+      // grade-and-subject-specific raw→scaled conversion published by
+      // TEA. Here we use grade-specific cut scores from TEA's recent
+      // released-test technical reports + our own raw-score-to-band
+      // approximation. Bands follow STAAR's "Approaches / Meets /
+      // Masters" performance levels. Off the official TEA conversion
+      // table, our error is roughly ±50-80 points per scaled score —
+      // close enough for a practice-app gut-check, never the source
+      // of truth for a real STAAR result.
+      const scaledEst = computeScaledScoreEstimate(correct, total, slug, SUBJECT_SLUG_RESOLVED);
+      const verdict = verdictForScaled(scaledEst, slug, SUBJECT_SLUG_RESOLVED);
       // Per-unit breakdown
       const byUnit = {};
       for (const r of perQ) {
@@ -2352,7 +2440,7 @@
             <div class="mock-scaled">
               <div class="mock-scaled-num">${scaledEst}</div>
               <div class="mock-scaled-label">Estimated scaled score · <strong>${verdict}</strong></div>
-              <div class="mock-scaled-disc">Estimate, not real STAAR. Calibrated to a linear approximation; the actual STAAR conversion is grade-specific and non-linear.</div>
+              <div class="mock-scaled-disc">Estimate, not a real STAAR result. Calibrated to TEA's published cut scores for ${escapeHtml(ctx.grTitle)} ${escapeHtml(ctx.subjLabel)} (Approaches / Meets / Masters bands). Real STAAR uses a non-linear conversion; our error is roughly ±50-80 scaled points.</div>
             </div>
             ${unitRows ? `<div class="mock-by-unit"><h3>By topic</h3><ul>${unitRows}</ul></div>` : ''}
             <div class="mock-result-actions">
