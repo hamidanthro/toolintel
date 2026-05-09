@@ -3339,10 +3339,18 @@ body.pref-large-text .choice { font-size: 1.1rem; }
 .trust-dot {
   width: 6px;
   height: 6px;
-  background: #10b981;
+  background: #fbbf24;
   border-radius: 50%;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.18);
   flex-shrink: 0;
+}
+.trust-dot--blue {
+  background: #60a5fa;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.18);
+}
+.trust-dot--gold {
+  background: #fde68a;
+  box-shadow: 0 0 0 3px rgba(253, 230, 138, 0.22);
 }
 .footer-nav-col {
   display: flex;
@@ -11762,6 +11770,20 @@ body.grade-page > * {
 
 .subject-card--live:active { transform: scale(0.98); }
 
+/* G5: arrow slides right on hover, icon micro-tilts. The subject-card
+   already has translateY+glow on hover — these add momentum to the
+   "tap me" affordance without overdoing it. */
+.subject-card .subject-card-action svg { transition: transform 200ms ease; }
+.subject-card .subject-card-icon { transition: transform 220ms ease; }
+@media (hover: hover) {
+  .subject-card--live:hover .subject-card-action svg { transform: translateX(3px); }
+  .subject-card--live:hover .subject-card-icon { transform: rotate(-4deg) scale(1.04); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .subject-card .subject-card-action svg,
+  .subject-card .subject-card-icon { transition: none; }
+}
+
 .subject-card--soon {
   cursor: not-allowed;
   opacity: 0.65;
@@ -12076,6 +12098,80 @@ body.grade-page > * {
   font-variant-numeric: tabular-nums;
 }
 @media (max-width: 380px) { .practice-pill--countdown { display: none; } }
+
+/* ============================================================
+   Loading button state. Add `data-loading="1"` (or .btn--loading)
+   to any .btn during submit. Shows a spinner, disables clicks.
+   ============================================================ */
+.btn[data-loading="1"], .btn.btn--loading {
+  pointer-events: none;
+  position: relative;
+  color: transparent !important;
+}
+.btn[data-loading="1"]::after, .btn.btn--loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 18px;
+  height: 18px;
+  border: 2px solid currentColor;
+  border-color: rgba(255, 255, 255, 0.3);
+  border-top-color: var(--gold, #fbbf24);
+  border-radius: 50%;
+  animation: btn-spin 720ms linear infinite;
+}
+@keyframes btn-spin { to { transform: rotate(360deg); } }
+.btn-primary[data-loading="1"]::after, .btn-primary.btn--loading::after {
+  border-color: rgba(0, 0, 0, 0.18);
+  border-top-color: rgba(0, 0, 0, 0.55);
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn[data-loading="1"]::after, .btn.btn--loading::after { animation: none; }
+}
+
+/* ============================================================
+   Loading skeletons — pre-baked shapes that match the eventual
+   real content. Pulse animation tuned to be calm (no shimmer
+   strobe), avoids the "your browser is buffering" feel.
+   Use:  <div class="ge-skel ge-skel-line"></div>
+         <div class="ge-skel ge-skel-block"></div>
+         <div class="ge-skel-card"> ... shapes inside ... </div>
+   ============================================================ */
+.ge-skel {
+  display: block;
+  background: linear-gradient(
+    100deg,
+    rgba(255, 255, 255, 0.04) 30%,
+    rgba(255, 255, 255, 0.10) 50%,
+    rgba(255, 255, 255, 0.04) 70%
+  );
+  background-size: 200% 100%;
+  border-radius: 4px;
+  animation: ge-skel-shimmer 1.4s ease-in-out infinite;
+}
+@keyframes ge-skel-shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: -100% 50%; }
+}
+.ge-skel-line { height: 14px; margin-bottom: 10px; }
+.ge-skel-line.short { width: 40%; }
+.ge-skel-line.medium { width: 70%; }
+.ge-skel-line.long { width: 100%; }
+.ge-skel-block { height: 64px; margin-bottom: 12px; border-radius: 8px; }
+.ge-skel-card {
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  margin-bottom: 14px;
+}
+.ge-skel-pill { width: 80px; height: 22px; border-radius: 999px; display: inline-block; }
+.ge-skel-circle { width: 56px; height: 56px; border-radius: 50%; }
+.ge-skel-stack { display: grid; gap: 8px; }
+@media (prefers-reduced-motion: reduce) {
+  .ge-skel { animation: none; background-position: 50% 50%; }
+}
 
 /* ============================================================
    Print-friendly worksheet mode (?print=1).
@@ -14706,7 +14802,9 @@ body:not(.practice-page) .question-card .q-meta { color: var(--muted, #6b7280); 
    - Guest banner styled as quiet bottom footer
    ============================================================ */
 
-/* Inline feedback chip — sits inside the question card. */
+/* Inline feedback chip — sits inside the question card.
+   G10: short fade+rise on render so the kid sees the result land
+   instead of popping in abruptly. Reduced-motion users get neither. */
 body.practice-page .question-card .q-inline-fb {
   margin: 0 0 18px;
   padding: 14px 16px;
@@ -14716,6 +14814,14 @@ body.practice-page .question-card .q-inline-fb {
   font-size: 0.95rem;
   line-height: 1.5;
   color: rgba(255, 255, 255, 0.92);
+  animation: q-fb-rise 220ms ease-out;
+}
+@keyframes q-fb-rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.practice-page .question-card .q-inline-fb { animation: none; }
 }
 body.practice-page .question-card[data-state="correct"] .q-inline-fb {
   background: rgba(16, 185, 129, 0.10);

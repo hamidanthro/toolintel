@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260509a" />
+  <link rel="stylesheet" href="css/styles.css?v=20260509b" />
 </head>
 <body class="marketplace-page">
   <header class="site-header">
@@ -89,8 +89,13 @@
       </div>
     </div>
 
-    <div id="market-root" class="toys-grid">
-      <p class="market-loading">Loading toys&hellip;</p>
+    <div id="market-root" class="toys-grid" aria-busy="true">
+      <div class="ge-skel-card"><div class="ge-skel ge-skel-block" style="height:140px;margin-bottom:14px;"></div><div class="ge-skel ge-skel-line medium"></div><div class="ge-skel ge-skel-line short"></div></div>
+      <div class="ge-skel-card"><div class="ge-skel ge-skel-block" style="height:140px;margin-bottom:14px;"></div><div class="ge-skel ge-skel-line medium"></div><div class="ge-skel ge-skel-line short"></div></div>
+      <div class="ge-skel-card"><div class="ge-skel ge-skel-block" style="height:140px;margin-bottom:14px;"></div><div class="ge-skel ge-skel-line medium"></div><div class="ge-skel ge-skel-line short"></div></div>
+      <div class="ge-skel-card"><div class="ge-skel ge-skel-block" style="height:140px;margin-bottom:14px;"></div><div class="ge-skel ge-skel-line medium"></div><div class="ge-skel ge-skel-line short"></div></div>
+      <div class="ge-skel-card"><div class="ge-skel ge-skel-block" style="height:140px;margin-bottom:14px;"></div><div class="ge-skel ge-skel-line medium"></div><div class="ge-skel ge-skel-line short"></div></div>
+      <div class="ge-skel-card"><div class="ge-skel ge-skel-block" style="height:140px;margin-bottom:14px;"></div><div class="ge-skel ge-skel-line medium"></div><div class="ge-skel ge-skel-line short"></div></div>
     </div>
 
     <div class="orders-block">
@@ -118,7 +123,18 @@
           </a>
           <p class="footer-tagline">STAAR Math practice for Texas kids. TEKS-aligned. Real toys for correct answers.</p>
           <div class="footer-trust-row">
-            <span class="footer-trust-pill"><span class="trust-dot"></span>Texas families only — for now</span>
+            <span class="footer-trust-pill">
+              <span class="trust-dot"></span>
+              Texas families only — for now
+            </span>
+            <span class="footer-trust-pill">
+              <span class="trust-dot trust-dot--blue"></span>
+              COPPA-aware · parent consent flow
+            </span>
+            <span class="footer-trust-pill">
+              <span class="trust-dot trust-dot--gold"></span>
+              No ads · no data sold
+            </span>
           </div>
         </div>
         <div class="footer-nav-col">

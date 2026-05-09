@@ -1756,9 +1756,12 @@
       console.warn('[reading] fetch failed:', err.message);
       root.innerHTML = `
         <h2>Reading practice</h2>
-        <div class="card">
-          <p style="color:var(--muted);">We couldn’t load reading questions right now. Try again in a moment.</p>
-          <p><a class="btn btn-primary" href="grade.html?s=${encodeURIComponent(STATE_SLUG_RESOLVED)}&g=${encodeURIComponent(slug)}">Back</a></p>
+        <div class="card" style="text-align:center;padding:32px;">
+          <div style="font-size:2.4rem;margin-bottom:8px;" aria-hidden="true">📚</div>
+          <p style="font-size:1.05rem;margin-bottom:6px;">We couldn’t load reading questions right now.</p>
+          <p style="color:var(--muted);margin-bottom:18px;">This usually clears up in a few seconds.</p>
+          <p><button type="button" class="btn btn-primary" onclick="location.reload()">Retry</button>
+            <a class="btn btn-secondary" href="grade.html?s=${encodeURIComponent(STATE_SLUG_RESOLVED)}&g=${encodeURIComponent(slug)}" style="margin-left:8px;">Back</a></p>
         </div>`;
     }
   }
@@ -1795,9 +1798,14 @@
       if (!scenario || rawQuestions.length === 0) {
         root.innerHTML = `
           <h2>Science practice</h2>
-          <div class="card">
-            <p style="color:var(--muted);">No science questions available yet for ${escapeHtml(grTitle)}. Try Math or Reading while we add more science content!</p>
-            <p><a class="btn btn-primary" href="index.html">Back to home</a></p>
+          <div class="card" style="text-align:center;padding:36px;">
+            <div style="font-size:3rem;margin-bottom:12px;" aria-hidden="true">🌱</div>
+            <p style="font-size:1.05rem;margin-bottom:6px;"><strong>${escapeHtml(grTitle)} science is coming soon.</strong></p>
+            <p style="color:var(--muted);max-width:480px;margin:0 auto 18px;">We're growing the science library one grade at a time — quality over quantity. In the meantime, math and reading are fully stocked and ready.</p>
+            <p>
+              <a class="btn btn-primary" href="practice.html?s=${encodeURIComponent(STATE_SLUG_RESOLVED)}&g=${encodeURIComponent(slug)}&subj=math">Practice Math</a>
+              <a class="btn btn-secondary" href="practice.html?s=${encodeURIComponent(STATE_SLUG_RESOLVED)}&g=${encodeURIComponent(slug)}&subj=reading" style="margin-left:8px;">Practice Reading</a>
+            </p>
           </div>`;
         return;
       }
@@ -1839,9 +1847,12 @@
       console.warn('[science] fetch failed:', err.message);
       root.innerHTML = `
         <h2>Science practice</h2>
-        <div class="card">
-          <p style="color:var(--muted);">We couldn’t load science questions right now. Try again in a moment.</p>
-          <p><a class="btn btn-primary" href="grade.html?s=${encodeURIComponent(STATE_SLUG_RESOLVED)}&g=${encodeURIComponent(slug)}">Back</a></p>
+        <div class="card" style="text-align:center;padding:32px;">
+          <div style="font-size:2.4rem;margin-bottom:8px;" aria-hidden="true">🔬</div>
+          <p style="font-size:1.05rem;margin-bottom:6px;">We couldn’t load science questions right now.</p>
+          <p style="color:var(--muted);margin-bottom:18px;">This usually clears up in a few seconds.</p>
+          <p><button type="button" class="btn btn-primary" onclick="location.reload()">Retry</button>
+            <a class="btn btn-secondary" href="grade.html?s=${encodeURIComponent(STATE_SLUG_RESOLVED)}&g=${encodeURIComponent(slug)}" style="margin-left:8px;">Back</a></p>
         </div>`;
     }
   }
@@ -1868,8 +1879,17 @@
       return;
     }
     root.innerHTML = `
-      <h2>Loading your review set…</h2>
-      <div class="card"><p style="color:var(--muted);">Pulling your most-recent wrong answers.</p></div>`;
+      <div class="ge-skel-card" aria-busy="true" aria-label="Loading your review set">
+        <div class="ge-skel ge-skel-line medium" style="margin-bottom:18px;"></div>
+        <div class="ge-skel ge-skel-line long"></div>
+        <div class="ge-skel ge-skel-line long"></div>
+        <div class="ge-skel ge-skel-line short"></div>
+        <div class="ge-skel-stack" style="margin-top:16px;">
+          <div class="ge-skel ge-skel-block"></div>
+          <div class="ge-skel ge-skel-block"></div>
+          <div class="ge-skel ge-skel-block"></div>
+        </div>
+      </div>`;
     try {
       const res = await fetch(TUTOR_ENDPOINT, {
         method: 'POST',
@@ -1915,9 +1935,12 @@
       console.warn('[review] fetch failed:', err.message);
       root.innerHTML = `
         <h2>Review your wrong answers</h2>
-        <div class="card">
-          <p style="color:var(--muted);">Couldn't load your review set right now. Try again in a moment.</p>
-          <p><a class="btn btn-primary" href="grade.html?s=${encodeURIComponent(STATE_SLUG_RESOLVED)}&g=${encodeURIComponent(slug)}">Back</a></p>
+        <div class="card" style="text-align:center;padding:32px;">
+          <div style="font-size:2.4rem;margin-bottom:8px;" aria-hidden="true">↻</div>
+          <p style="font-size:1.05rem;margin-bottom:6px;">Couldn't load your review set right now.</p>
+          <p style="color:var(--muted);margin-bottom:18px;">This usually clears up in a few seconds.</p>
+          <p><button type="button" class="btn btn-primary" onclick="location.reload()">Retry</button>
+            <a class="btn btn-secondary" href="grade.html?s=${encodeURIComponent(STATE_SLUG_RESOLVED)}&g=${encodeURIComponent(slug)}" style="margin-left:8px;">Back</a></p>
         </div>`;
     }
   }
@@ -1942,7 +1965,14 @@
     const reqN = parseInt(params.get('n'), 10);
     const N = [10, 25, 50].includes(reqN) ? reqN : 10;
 
-    root.innerHTML = `<h2>Building worksheet…</h2><p style="color:var(--muted);">Pulling ${N} ${escapeHtml(subjLabel)} questions for ${escapeHtml(grTitle)}.</p>`;
+    root.innerHTML = `
+      <div class="ge-skel-card" aria-busy="true" aria-label="Building worksheet">
+        <h2 style="margin-top:0;">Building your ${escapeHtml(subjLabel)} worksheet…</h2>
+        <p style="color:var(--muted);margin-bottom:18px;">${N} questions for ${escapeHtml(grTitle)}.</p>
+        <div class="ge-skel ge-skel-line long"></div>
+        <div class="ge-skel ge-skel-line long"></div>
+        <div class="ge-skel ge-skel-line medium"></div>
+      </div>`;
     let items = [];
     try {
       // Reuse pool — math: load curriculum JSON; reading/science: lambda.
