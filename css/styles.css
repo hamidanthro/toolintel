@@ -11770,6 +11770,64 @@ body.grade-page > * {
 
 .subject-card--live:active { transform: scale(0.98); }
 
+/* K4: header Cmd+K search hint. Desktop only — phones don't have a
+   physical keyboard so the kbd hint is misleading. Clicking opens the
+   palette via quick-search.js's data-quick-search-trigger handler. */
+.header-cmdk-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  margin-right: 12px;
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.02);
+  color: rgba(255,255,255,0.65);
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+.header-cmdk-hint:hover {
+  border-color: rgba(251, 191, 36, 0.35);
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.06);
+}
+.header-cmdk-kbd {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  padding: 1px 6px;
+  border: 1px solid rgba(255,255,255,0.14);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.04);
+  font-weight: 500;
+}
+@media (max-width: 768px) { .header-cmdk-hint { display: none; } }
+
+/* K3: question report link in feedback area. Subtle, opt-in. */
+.q-report-link {
+  display: inline-block;
+  margin-top: 12px;
+  background: none;
+  border: none;
+  padding: 4px 0;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.45);
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: rgba(255,255,255,0.18);
+  text-underline-offset: 3px;
+}
+.q-report-link:hover { color: rgba(255,255,255,0.7); }
+.q-report-link:disabled { cursor: default; opacity: 0.5; }
+.q-report-thanks {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 0.8rem;
+  color: rgba(96, 165, 250, 0.85);
+}
+
 /* J2: dashboard review-wrong-answers secondary CTA. Sits under the
    primary "Practice now" button. Only renders when count > 0. */
 .dash-secondary-cta {
@@ -14347,15 +14405,89 @@ body.practice-page .card a:not(.btn) { color: #fde68a; }
    Future TODO §14: rebuild stats + topic progress as a collapsible
    top drawer triggered by a tap-target — kid keeps progress visibility
    on mobile. Out of scope for this hotfix. */
+/* K1 mobile stats drawer (replaces the hotfix that hid the panel
+   entirely on phones). Default state: panel hidden. Tap the
+   floating "Stats" button on the breadcrumb to slide it in from
+   the bottom; tap the X (or outside) to dismiss. */
 @media (max-width: 768px) {
   body.practice-page .performance-panel {
     display: none !important;
   }
-  /* The §18 rule reserved 72px at body bottom for the docked panel.
-     Now that the panel is hidden, return that space to the kid. */
-  body.practice-page {
-    padding-bottom: 0;
+  body.practice-page.mobile-stats-open .performance-panel {
+    display: block !important;
+    position: fixed;
+    left: 8px; right: 8px; bottom: 8px;
+    width: auto;
+    max-height: 70vh;
+    overflow-y: auto;
+    z-index: 60;
+    padding: 18px 18px 14px;
+    border: 1px solid rgba(251, 191, 36, 0.28);
+    border-radius: 14px;
+    background: linear-gradient(180deg, #0d2249, #061230);
+    box-shadow: 0 24px 60px -12px rgba(0,0,0,0.6),
+                0 0 0 1px rgba(255,255,255,0.05) inset;
+    animation: stats-drawer-in 220ms ease-out;
   }
+  body.practice-page.mobile-stats-open .performance-panel .perf-title,
+  body.practice-page.mobile-stats-open .performance-panel .perf-section-title { display: block; }
+  body.practice-page.mobile-stats-open .performance-panel .perf-ring-wrap { display: flex; justify-content: center; }
+
+  /* Floating stats trigger — small pill in the breadcrumb area. */
+  .mobile-stats-trigger {
+    position: fixed;
+    right: 12px;
+    bottom: 14px;
+    z-index: 55;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(251, 191, 36, 0.30);
+    background: rgba(13, 34, 73, 0.88);
+    color: #fbbf24;
+    font-size: 0.82rem;
+    font-weight: 600;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 6px 18px -4px rgba(0,0,0,0.5);
+    cursor: pointer;
+  }
+  .mobile-stats-trigger:active { transform: scale(0.97); }
+  body.practice-page.mobile-stats-open .mobile-stats-trigger { display: none; }
+
+  /* Backdrop tap-to-close. */
+  body.practice-page.mobile-stats-open::after {
+    content: '';
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 55;
+    animation: stats-drawer-fade 180ms ease-out;
+  }
+
+  /* Close button on the drawer — same X icon style as the auth modal. */
+  .mobile-stats-close {
+    position: absolute;
+    top: 10px; right: 10px;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.10);
+    background: rgba(255,255,255,0.04);
+    color: rgba(255,255,255,0.7);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  body.practice-page:not(.mobile-stats-open) .mobile-stats-close { display: none; }
+
+  body.practice-page { padding-bottom: 0; }
+}
+@keyframes stats-drawer-in { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes stats-drawer-fade { from { opacity: 0; } to { opacity: 1; } }
+@media (min-width: 769px) {
+  /* Trigger only exists on phones. */
+  .mobile-stats-trigger, .mobile-stats-close { display: none !important; }
 }
 
 /* ============================================================

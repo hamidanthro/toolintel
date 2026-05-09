@@ -815,6 +815,39 @@
     const perfPanel = document.getElementById('perf-panel');
     const restartBtn = document.getElementById('restart-btn');
 
+    // K1: mobile stats drawer. On phones the perf-panel is hidden by
+    // default; a floating "Stats" pill toggles a fixed-bottom drawer.
+    // Tap-outside or X button dismisses. Inserted once per session.
+    if (!document.getElementById('mobile-stats-trigger')) {
+      const trigger = document.createElement('button');
+      trigger.id = 'mobile-stats-trigger';
+      trigger.type = 'button';
+      trigger.className = 'mobile-stats-trigger';
+      trigger.innerHTML = '<span aria-hidden="true">📊</span> Stats';
+      trigger.setAttribute('aria-label', 'Show your stats');
+      document.body.appendChild(trigger);
+      const close = document.createElement('button');
+      close.type = 'button';
+      close.className = 'mobile-stats-close';
+      close.setAttribute('aria-label', 'Close stats');
+      close.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="3" x2="11" y2="11"/><line x1="11" y1="3" x2="3" y2="11"/></svg>';
+      perfPanel.appendChild(close);
+      const closeDrawer = () => document.body.classList.remove('mobile-stats-open');
+      trigger.addEventListener('click', () => document.body.classList.toggle('mobile-stats-open'));
+      close.addEventListener('click', closeDrawer);
+      // Tap on backdrop closes (the ::after pseudo-element catches taps
+      // outside the panel; we listen on document instead since we can't
+      // attach to a pseudo).
+      document.addEventListener('click', (e) => {
+        if (!document.body.classList.contains('mobile-stats-open')) return;
+        if (perfPanel.contains(e.target) || trigger.contains(e.target)) return;
+        closeDrawer();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && document.body.classList.contains('mobile-stats-open')) closeDrawer();
+      });
+    }
+
     restartBtn.addEventListener('click', async () => {
       const answered = i + (qbox.querySelector('.feedback') ? 1 : 0);
       if (answered > 0) {
@@ -1023,6 +1056,42 @@
 
     function attachQuestionHandlers(q) {
       const form = qbox.querySelector('form');
+      // K7: keyboard nav. Press 1-4 (or A-D) to pick the choice. Enter
+      // submits the form. Skip when an input is focused (kid is typing
+      // a free-text follow-up to the AI tutor, etc.). Per-question; not
+      // attached when there's no form (review-mode list is the same shape).
+      if (form && q.type === 'multiple_choice' && Array.isArray(q.choices)) {
+        const onKey = (e) => {
+          // Skip if user is typing in any input/textarea
+          const t = e.target;
+          if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) {
+            // Allow on radios (those are choices) but not on text inputs.
+            if (t.type !== 'radio') return;
+          }
+          // Skip if any modal is open
+          if (document.querySelector('.modal-overlay, .qs-overlay')) return;
+          let idx = -1;
+          if (e.key >= '1' && e.key <= '6') idx = parseInt(e.key, 10) - 1;
+          else if (/^[a-fA-F]$/.test(e.key)) idx = e.key.toUpperCase().charCodeAt(0) - 65;
+          if (idx >= 0 && idx < q.choices.length) {
+            const radios = form.querySelectorAll('input[name="ans"]');
+            if (radios[idx]) {
+              radios[idx].checked = true;
+              radios[idx].focus();
+              e.preventDefault();
+            }
+          }
+        };
+        document.addEventListener('keydown', onKey);
+        // Detach when the question advances (qbox is rewritten on next).
+        const observer = new MutationObserver(() => {
+          if (!qbox.contains(form)) {
+            document.removeEventListener('keydown', onKey);
+            observer.disconnect();
+          }
+        });
+        observer.observe(qbox, { childList: true, subtree: true });
+      }
       // Reading passage toggle (R2)
       const passageEl = qbox.querySelector('#reading-passage');
       if (passageEl) {
@@ -1291,10 +1360,46 @@
             ${briefExplanationHtml}
             <div class="tutor-box" id="tutor-box">
               <div class="tutor-output" id="tutor-out" aria-live="polite" aria-atomic="false"></div>
-            </div>`;
+            </div>
+            ${q.contentId && q.poolKey ? `<button type="button" class="q-report-link" data-act="report" data-cid="${escapeHtml(q.contentId)}" data-pk="${escapeHtml(q.poolKey)}" aria-label="Report this question">Question seems wrong? Report it.</button>` : ''}`;
           fbSlot.classList.remove('q-inline-fb--tutor');
         }
         fbSlot.hidden = false;
+
+        // K3: report-this-question wiring. POSTs reportContent to the
+        // lambda so we capture the kid's flag. Auth required; guests
+        // get a sign-in prompt. One-shot per question (button removes
+        // itself after click).
+        const reportBtn = fbSlot.querySelector('[data-act="report"]');
+        if (reportBtn) {
+          reportBtn.addEventListener('click', async () => {
+            const auth = window.STAARAuth;
+            if (!auth || !auth.token || !auth.token()) {
+              showToast('Sign in to report a question.');
+              if (auth && auth.showLogin) auth.showLogin();
+              return;
+            }
+            reportBtn.disabled = true;
+            reportBtn.textContent = 'Reporting…';
+            try {
+              await fetch(TUTOR_ENDPOINT, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  action: 'reportContent',
+                  token: auth.token(),
+                  contentId: reportBtn.dataset.cid,
+                  poolKey: reportBtn.dataset.pk,
+                  reason: 'kid-flagged-wrong-or-confusing'
+                })
+              });
+              reportBtn.outerHTML = '<span class="q-report-thanks">✓ Thanks — we’ll review.</span>';
+            } catch (_) {
+              reportBtn.disabled = false;
+              reportBtn.textContent = 'Report failed — try again later';
+            }
+          });
+        }
       }
 
       // 4. CTA replacement.

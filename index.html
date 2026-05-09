@@ -31,7 +31,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260509d" />
+  <link rel="stylesheet" href="css/styles.css?v=20260509e" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -626,14 +626,14 @@
   <script src="js/prefs.js?v=20260426a"></script>
   <script src="js/fx.js?v=20260426a"></script>
   <script src="js/states-data.js?v=20260507a"></script>
-  <script src="js/quick-search.js?v=20260509a" defer></script>
+  <script src="js/quick-search.js?v=20260509b" defer></script>
   <!-- §47 — js/hero-state-go.js + js/state-picker.js removed from
        landing. State-picker UI is hidden in favor of direct Texas
        grade pills. Both files preserved on disk for re-activation. -->
   <!--<script src="js/hero-state-go.js?v=20260427a"></script>-->
   <!--<script src="js/state-picker.js?v=20260505a"></script>-->
   <script src="js/fun-facts.js?v=20260506c"></script>
-  <script src="js/speech.js?v=20260507c"></script>
+  <script src="js/speech.js?v=20260509a"></script>
   <script src="js/auth.js?v=20260507a"></script>
   <script src="js/lake-events.js?v=20260427a"></script>
   <script src="js/pwa-install.js?v=20260427a" defer></script>
@@ -850,9 +850,23 @@
         const best = parseInt(j.bestStreak, 10) || 0;
         const personalBest = parseInt(j.bestRunInARow, 10) || 0;
         document.getElementById('dash-streak').textContent = streak.toLocaleString();
-        document.getElementById('dash-streak-foot').textContent = streak > 0
-          ? (streak === 1 ? 'You started — keep it up tomorrow!' : `Best ever: ${best || streak} days`)
-          : 'Practice today to start a streak';
+        // K10: streak-about-to-break warning. If the kid has a multi-day
+        // streak AND hasn't practiced today AND it's after 5pm local,
+        // show an urgent "save your streak" message instead of the
+        // chill best-ever line.
+        const todayActed = (j.daily && j.daily[tk] && (j.daily[tk].answered > 0));
+        const hour = new Date().getHours();
+        const streakAtRisk = streak >= 2 && !todayActed && hour >= 17;
+        const footEl = document.getElementById('dash-streak-foot');
+        if (streakAtRisk) {
+          footEl.innerHTML = '🛑 <strong>Practice today</strong> to keep your ' + streak + '-day streak';
+          footEl.style.color = '#fbbf24';
+        } else {
+          footEl.style.color = '';
+          footEl.textContent = streak > 0
+            ? (streak === 1 ? 'You started — keep it up tomorrow!' : `Best ever: ${best || streak} days`)
+            : 'Practice today to start a streak';
+        }
         document.getElementById('dash-today-correct').textContent = todayCorrect.toLocaleString();
         document.getElementById('dash-today-foot').textContent = todayCorrect >= 5
           ? '✓ Daily goal reached!'

@@ -260,7 +260,14 @@
 
     return new Promise(resolve => {
       const u = new SpeechSynthesisUtterance(normalized);
-      u.rate  = (typeof o.rate  === 'number') ? o.rate  : 1.0;
+      // K6: per-user rate preference (0.7x-1.3x). Stored in localStorage
+      // by the settings page. Falls back to 1.0 if missing/invalid.
+      let prefRate = 1.0;
+      try {
+        const r = parseFloat(localStorage.getItem('gradeearn.speech.rate'));
+        if (Number.isFinite(r) && r >= 0.5 && r <= 1.5) prefRate = r;
+      } catch (_) {}
+      u.rate  = (typeof o.rate  === 'number') ? o.rate  : prefRate;
       u.pitch = (typeof o.pitch === 'number') ? o.pitch : 1.0;
       u.volume = (typeof o.volume === 'number') ? o.volume : 1.0;
       const v = o.voice || _getVoice();
