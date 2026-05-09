@@ -33,8 +33,15 @@
       tagline: 'Earth, life, physical, engineering.',
       icon: 'science',
       color: '#34d399',
+      // Phase K — science is live for the (state, grade) combos that have
+      // content seeded in DDB today. Texas Grade 5 only at launch (41
+      // questions across 9 scenarios, all verifier+judge passed).
+      // Other grades stay 'Coming soon' until their pool is seeded.
       live: false,
-      eta: 'Coming soon'
+      eta: 'Coming soon',
+      liveForGrade: function (stateSlug, gradeSlug) {
+        return stateSlug === 'texas' && gradeSlug === 'grade-5';
+      }
     },
     {
       slug: 'social-studies',
@@ -247,16 +254,23 @@
         `;
       }
 
-      const targetUrl = subj.live
+      // Phase K — per-(state, grade) liveness override. Defaults to
+      // subj.live for math/reading; science returns true only where
+      // we have content seeded.
+      const isLive = (typeof subj.liveForGrade === 'function')
+        ? subj.liveForGrade(state.slug, gradeSlug)
+        : subj.live;
+
+      const targetUrl = isLive
         ? `practice.html?s=${encodeURIComponent(state.slug)}&g=${encodeURIComponent(gradeSlug)}&subj=${encodeURIComponent(subj.slug)}`
         : null;
 
-      const tag = subj.live ? 'a' : 'div';
-      const hrefAttr = subj.live ? `href="${targetUrl}"` : '';
-      const liveClass = subj.live ? 'subject-card--live' : 'subject-card--soon';
+      const tag = isLive ? 'a' : 'div';
+      const hrefAttr = isLive ? `href="${targetUrl}"` : '';
+      const liveClass = isLive ? 'subject-card--live' : 'subject-card--soon';
 
       return `
-        <${tag} class="subject-card ${liveClass}" ${hrefAttr} data-subject="${escapeHtml(subj.slug)}" ${subj.live ? 'role="button"' : 'aria-disabled="true"'}>
+        <${tag} class="subject-card ${liveClass}" ${hrefAttr} data-subject="${escapeHtml(subj.slug)}" ${isLive ? 'role="button"' : 'aria-disabled="true"'}>
           <div class="subject-card-icon" style="--subject-color: ${subj.color}" aria-hidden="true">
             ${getSubjectIcon(subj.icon)}
           </div>
@@ -264,7 +278,7 @@
             <h3 class="subject-card-name">${escapeHtml(subj.name)}</h3>
             <p class="subject-card-tagline">${escapeHtml(subj.tagline)}</p>
           </div>
-          ${subj.live
+          ${isLive
             ? `<div class="subject-card-action">
                  <span class="subject-card-cta">Start</span>
                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>

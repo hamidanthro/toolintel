@@ -57,7 +57,7 @@
   // Subject — math + reading are live; science / social-studies bounce back.
   let SUBJECT_SLUG = (params.get('subj') || 'math').toLowerCase();
   const _VALID_SUBJECTS = ['math', 'reading', 'science', 'social-studies'];
-  const _LIVE_SUBJECTS = ['math', 'reading'];
+  const _LIVE_SUBJECTS = ['math', 'reading', 'science'];
   if (!_VALID_SUBJECTS.includes(SUBJECT_SLUG)) SUBJECT_SLUG = 'math';
   if (!_LIVE_SUBJECTS.includes(SUBJECT_SLUG)) {
     if (params.get('s') && params.get('g')) {
@@ -378,6 +378,8 @@
   // initialization", caught by the surrounding try/catch as a fetch failure.
   if (SUBJECT_SLUG === 'reading') {
     startReading();
+  } else if (SUBJECT_SLUG === 'science') {
+    startScience();
   } else {
     fetch(`data/${slug}-curriculum.json?v=20260426m`)
       .then(r => r.ok ? r.json() : Promise.reject('not-found'))
@@ -1634,6 +1636,89 @@
         <h2>Reading practice</h2>
         <div class="card">
           <p style="color:var(--muted);">We couldn’t load reading questions right now. Try again in a moment.</p>
+          <p><a class="btn btn-primary" href="grade.html?s=${encodeURIComponent(STATE_SLUG_RESOLVED)}&g=${encodeURIComponent(slug)}">Back</a></p>
+        </div>`;
+    }
+  }
+
+  // ============================================================
+  // SCIENCE START — Phase K. Mirror of startReading: one scenario +
+  // its 4-5 cluster questions per session via getScienceItem. Texas
+  // Grade 5 only at launch (per Phase I-J pilot scope). Scenario body
+  // is plain text; the same reading-passage UI handles it (ReadingRender
+  // → marked.js wraps paragraphs cleanly even without markdown headers).
+  // ============================================================
+  async function startScience() {
+    const grTitle = ({
+      'grade-k':'Kindergarten','grade-1':'Grade 1','grade-2':'Grade 2','grade-3':'Grade 3',
+      'grade-4':'Grade 4','grade-5':'Grade 5','grade-6':'Grade 6','grade-7':'Grade 7',
+      'grade-8':'Grade 8'
+    })[slug] || slug;
+    const fakeCurr = { grade: slug, title: `${grTitle} Science`, units: [] };
+    try {
+      const res = await fetch(TUTOR_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'getScienceItem',
+          token: (window.STAARAuth && window.STAARAuth.token && window.STAARAuth.token()) || null,
+          state: STATE_SLUG_RESOLVED,
+          grade: slug
+        })
+      });
+      if (!res.ok) throw new Error('science_item_failed_' + res.status);
+      const data = await res.json();
+      const scenario = data.scenario || null;
+      const rawQuestions = data.questions || [];
+      if (!scenario || rawQuestions.length === 0) {
+        root.innerHTML = `
+          <h2>Science practice</h2>
+          <div class="card">
+            <p style="color:var(--muted);">No science questions available yet for ${escapeHtml(grTitle)}. Try Math or Reading while we add more science content!</p>
+            <p><a class="btn btn-primary" href="index.html">Back to home</a></p>
+          </div>`;
+        return;
+      }
+      // The scenario row from staar-passages already has { title, body }.
+      // Reuse the reading-passage UI by treating it as a passage object —
+      // marked.js wraps plain-text paragraph breaks into <p> tags cleanly.
+      const passage = {
+        passageId: scenario.passageId,
+        title: scenario.title || 'Science scenario',
+        body: scenario.body || '',
+        scenarioType: scenario.scenarioType || null,
+        regionTag: scenario.regionTag || null
+      };
+      const items = rawQuestions.map(g => ({
+        id: g.contentId || g.id,
+        contentId: g.contentId || null,
+        poolKey: g.poolKey || null,
+        type: 'multiple_choice',
+        prompt: g.stem || g.prompt || '',
+        choices: g.choices || [],
+        answer: (Number.isFinite(g.correctIndex) && Array.isArray(g.choices)) ? g.choices[g.correctIndex] : (g.answer || ''),
+        correctIndex: g.correctIndex,
+        explanation: g.explanation || '',
+        passage: passage,
+        _unit: { title: passage.title || 'Science' },
+        _lesson: { teks: g.claimedTeks || g.teks || '', title: '' }
+      }));
+      if (!items.length) {
+        root.innerHTML = `
+          <h2>Science practice</h2>
+          <div class="card">
+            <p style="color:var(--muted);">Loading science questions for ${escapeHtml(grTitle)} — try again in a moment.</p>
+            <p><a class="btn btn-primary" href="grade.html?s=${encodeURIComponent(STATE_SLUG_RESOLVED)}&g=${encodeURIComponent(slug)}">Back</a></p>
+          </div>`;
+        return;
+      }
+      runQuiz(fakeCurr, items, null, { enhance: null });
+    } catch (err) {
+      console.warn('[science] fetch failed:', err.message);
+      root.innerHTML = `
+        <h2>Science practice</h2>
+        <div class="card">
+          <p style="color:var(--muted);">We couldn’t load science questions right now. Try again in a moment.</p>
           <p><a class="btn btn-primary" href="grade.html?s=${encodeURIComponent(STATE_SLUG_RESOLVED)}&g=${encodeURIComponent(slug)}">Back</a></p>
         </div>`;
     }

@@ -410,6 +410,7 @@ exports.handler = async (event) => {
   if (action === 'updateFunFactsState') return await handleUpdateFunFactsState(payload);
   if (action === 'getReadingPassage')   return await handleGetReadingPassage(payload);
   if (action === 'getReadingItem')      return await handleGetReadingItem(payload);
+  if (action === 'getScienceItem')      return await handleGetScienceItem(payload);
   if (action === 'defineWord')          return await handleDefineWord(payload);
   if (action === 'earn')           return await handleEarn(payload);
   if (action === 'lose')           return await handleLose(payload);
@@ -2076,6 +2077,84 @@ async function handleGetReadingItem(payload) {
   }
 
   return ok({ passage, questions });
+}
+
+// Phase K — Science serving path. Mirrors handleGetReadingItem byte-
+// faithfully where it can. One scenario + its 4-5 cluster questions
+// per call. Texas Grade 5 only at launch (per Phase I-J pilot scope).
+//
+// Pool key shape (per CLAUDE.md §38 schema lock):
+//   texas#<grade>#science#<scenarioId>            (cluster — what we have today)
+//   texas#<grade>#science#standalone              (no scenario — future)
+//
+// Scenarios live in staar-passages with genre='science_scenario',
+// indexed by stateGradeGenre (e.g. 'texas_5_science_scenario').
+async function handleGetScienceItem(payload) {
+  // Open to guests. Science content is non-PII, no per-user state in
+  // the response. Best-effort auth resolution for telemetry only.
+  const auth = await authedUser(payload).catch(() => null);
+  const username = auth?.username || 'guest';
+  const state = String(payload.state || 'texas').trim().toLowerCase();
+  const rawGrade = String(payload.grade || '5').trim().toLowerCase();
+  let grade = rawGrade.replace(/^grade-/, '');
+  if (rawGrade === 'algebra-1') grade = '9';
+  if (rawGrade === 'grade-k')   grade = 'k';
+
+  console.log('[science] getScienceItem REQUEST:', JSON.stringify({
+    user: username, state, rawGrade, grade
+  }));
+
+  // Query staar-passages for active science scenarios in this scope.
+  const stateGradeGenre = `${state}_${grade}_science_scenario`;
+  let scenarios = [];
+  try {
+    const r = await ddb.send(new QueryCommand({
+      TableName: PASSAGES_TABLE,
+      IndexName: 'stateGradeGenre-index',
+      KeyConditionExpression: 'stateGradeGenre = :sgg',
+      ExpressionAttributeValues: { ':sgg': stateGradeGenre },
+      Limit: 50
+    }));
+    // Filter active: status==='active' AND no legacy tombstoneAt field set.
+    // Phase J shipped status='active' (proper); reading uses tombstoneAt
+    // (legacy). Both checks for forward-compat.
+    scenarios = (r.Items || []).filter(p =>
+      !p.tombstoneAt && (p.status === undefined || p.status === 'active')
+    );
+  } catch (err) {
+    console.error('[science] getScienceItem GSI query failed:', err.message || err);
+    return bad(500, 'Lookup failed');
+  }
+  console.log('[science] getScienceItem stateGradeGenre=' + stateGradeGenre + ' scenariosFound=' + scenarios.length);
+  if (scenarios.length === 0) {
+    return ok({ scenario: null, questions: [] });
+  }
+
+  // Pick a random scenario for variety (NO-REPEAT enforcement is a
+  // future server-side seen-filter — see CLAUDE.md §39).
+  const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
+
+  // Fetch the question pool for this scenario.
+  // poolKey = '<state>#<grade>#science#<scenarioId>' per schema lock.
+  const poolKey = `${state}#${grade}#science#${scenario.passageId}`;
+  let questions = [];
+  try {
+    const r = await ddb.send(new QueryCommand({
+      TableName: CONTENT_POOL_TABLE,
+      KeyConditionExpression: 'poolKey = :pk',
+      ExpressionAttributeValues: { ':pk': poolKey },
+      Limit: 10
+    }));
+    // Active filter — drop tombstoned + broken + deprecated.
+    questions = (r.Items || []).filter(q =>
+      q.status === 'active' && q.status !== 'broken' && q.status !== 'deprecated'
+    );
+  } catch (err) {
+    console.warn('[science] getScienceItem question fetch failed:', err.message || err);
+  }
+  console.log('[science] getScienceItem poolKey=' + poolKey + ' questionsFound=' + questions.length);
+
+  return ok({ scenario, questions });
 }
 
 // §77 Phase C — Tap-any-word definitions.
