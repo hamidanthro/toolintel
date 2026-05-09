@@ -16434,3 +16434,20 @@ body.practice-page .practice-eyebrow .btn-restart:hover {
     padding: 14px 20px;
   }
 }
+
+/* ============================================================
+   Global reduced-motion guard — defense-in-depth.
+   Kills all CSS animations + transitions for users who've opted
+   into reduced motion. Individual rules already do this in many
+   places; this catches the long tail (47 keyframes, 21 explicit
+   guards as of 2026-05-09 audit).
+   Place at the very end so it cascades over everything.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

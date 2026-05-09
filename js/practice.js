@@ -982,6 +982,17 @@
       const q = questions[i];
       markSeen(q.id);
       qbox.innerHTML = renderQuestion(q, isLocked, i, questions.length);
+      // I6 smooth scroll-to-top for the question card so kids on phones
+      // don't end up reading the next question with the previous answer
+      // still mid-screen. Only fires on Q2+ (skip the initial paint).
+      if (i > 0) {
+        try {
+          const rect = qbox.getBoundingClientRect();
+          if (rect.top < 0 || rect.top > window.innerHeight * 0.5) {
+            qbox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        } catch (_) {}
+      }
       attachQuestionHandlers(q);
       // Lake: record question shown (Prompt I1)
       if (window.GradeEarnLake && q.contentId) {
