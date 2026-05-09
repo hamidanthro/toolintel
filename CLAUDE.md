@@ -302,24 +302,41 @@ DynamoDB tables and most env var names still carry the `staar-` /
 table is a migration, not a chore. The `STAAR_TUTOR_ENDPOINT` global on the
 frontend is a safe rename target later.
 
-### 6c. ReplyQuik (AI customer-support chatbot)
+### 6c. ReplyQuik (AI customer-support chatbot) — **🟢 ACTIVE PRODUCT, do NOT delete**
 
-**Frontend widget: REMOVED 2026-05-02.** All 7 HTML pages
-(`admin.html`, `about.html`, `marketplace.html`, `404.html`,
-`practice.html`, `grades.html`, `settings.html`) no longer load
-`https://api.replyquik.com/widget.js`. The defensive mobile-hider CSS
-block in `styles.css` (the "PROMPT 28a" block at the old line 8667)
-that existed only to hide the widget on small screens was also removed
-in the same commit. **Token-exfiltration path closed.**
+**Hamid correction 2026-05-09:** ReplyQuik is a **separate, real, in-
+production software** that Hamid runs alongside GradeEarn. Earlier
+CLAUDE.md notes treating it as "retired" were wrong. The infra below
+is the live product running today and **must not be deleted**.
 
-**Backend: STILL RUNNING on AWS AppRunner.**
-- `replyquik-api-main` (RUNNING, last updated 2026-04-29)
-- `replyquik-api-staging` (RUNNING)
-- EventBridge rule `AWSAppRunnerManagedRuleForECREvent` is **ENABLED** and
-  watches the `replyquik-backend` ECR repo for image pushes ("DO-NOT-DELETE.
-  The rule is used by AWS AppRunner.").
-- Phase 3 finish requires AWS Console action (delete services, ECR repos,
-  IAM roles, CloudWatch log groups) — only Hamid can do this. See §14.
+**GradeEarn separation:** the chat widget that USED to load on
+GradeEarn pages was removed 2026-05-02 (7 HTML pages no longer load
+`https://api.replyquik.com/widget.js`; defensive mobile-hider CSS
+block also gone). That removal was correct — GradeEarn shouldn't
+embed a third-party customer-support chat — but it does NOT imply
+ReplyQuik should be torn down. ReplyQuik runs independently on its
+own product surface; GradeEarn just isn't a customer of it.
+
+**Live infra (verified 2026-05-09; do not modify):**
+- `replyquik-api-main` AppRunner service: RUNNING
+- `replyquik-api-staging` AppRunner service: RUNNING
+- `replyquik-backend` ECR repo: present, ECR-pushed images deploy via
+  the EventBridge rule below
+- EventBridge rule `AWSAppRunnerManagedRuleForECREvent`: ENABLED
+  ("DO-NOT-DELETE. The rule is used by AWS AppRunner.")
+- SNS topic `replyquik-oauth-alerts`: present
+
+**Hands-off rules going forward:**
+1. Never delete or stop any `replyquik-*` AWS resource without an
+   explicit Hamid request that names ReplyQuik specifically.
+2. Don't add anything in GradeEarn that would compete with ReplyQuik
+   (kid-facing question-quality flags ≠ customer-support chat — those
+   are fine; an "ask us anything" chat widget would not be).
+3. Never re-add the ReplyQuik widget to a GradeEarn page (token-exfil
+   surface, see §12 #3); the products stay separate.
+
+**Earlier "Phase 3 finish — ReplyQuik AppRunner deletion" TODO is
+RETRACTED.** Don't surface it in future "what's next" lists.
 
 ### 6d. WealthDeskPro (defunct finance product)
 
@@ -451,7 +468,7 @@ defaults globally.
 | 0 | Disable background EventBridge rules to stop active bleed | ✅ DONE | `staar-pool-topup-hourly` and `staar-quality-patrol-daily` both verified DISABLED |
 | 1 | Refactor cold-start `scripts/cold-start/generators.js`: drop STATE_PROMPTS, drop Texas fallback, throw on unknown state | ✅ DONE | Landed in `a1730a5`. Verified 2026-05-02. See §0 #1. |
 | 2 | Backend lambda refactor: (a) port the Phase 1 fix into `lambda/pool-topup/generators.js` (kill STATE_PROMPTS + Texas fallback there too); (b) replace lambda `STATE_METADATA` with a build-time JSON snapshot of `states-data.js` (with hash check) so the lambda has a single source of truth for state metadata | 🟥 NOT STARTED | See §0 #2. Lambda cannot `require()` the frontend file — needs a snapshot. |
-| 3 | Kill 4 retired-product surfaces (toolintel, StarTest residue, ReplyQuik AppRunner+widget, WealthDeskPro pricing.js+SES) | ⏳ pending | Detail in §6. Aggressive delete, NOT _legacy/ folder |
+| 3 | Kill retired-product surfaces (toolintel, StarTest residue, WealthDeskPro pricing.js+SES). **NOT ReplyQuik** — that's a real product (§6c). | ✅ DONE 2026-05-09 | toolintel 22 lambdas + API + 38 orphan files deleted in `711293c`; WealthDeskPro lambda + SES identity gone in same commit. ReplyQuik remains live. |
 | 4 | Legal cover: COPPA-compliant signup with age gate + parental consent, ToS, privacy policy, field-level encryption for parent PII, attorney review at end | ⏳ pending | COPPA + FERPA real risk: kids under 13, real money via toy redemption, shipping addresses in `staar-orders` |
 | 5 | AI review system: LLM-as-judge as permanent batch validator on every sweep bucket, $0.50/sweep cost cap, semantic checks for state-flavor + age + factual accuracy, drift detection on live lake daily | 🟨 PARTIAL | Cold-start CLI judge shipped (see §13). Lambda runtime extension + drift detection + quarantine table still pending (see §14). |
 | 6 | Reliability infra: deploy.sh (backup-first + dry-run + uncommitted-changes guard), ROLLBACK.md, CloudWatch alarms + SNS-to-email, DynamoDB PITR on all 5+ tables, Lambda versioning + prod alias, IAM cleanup off root | 🟨 PARTIAL | deploy.sh + ROLLBACK.md + parity check shipped 2026-05-02 (see §19); first production deploy ran successfully 2026-05-02 23:35:58 UTC; **DynamoDB PITR enabled on all 10 staar-* tables 2026-05-03 (see §23)**. Still pending: CloudWatch alarms, SNS-to-email, Lambda versioning + prod alias, IAM cleanup off root. |
@@ -914,21 +931,17 @@ into `scripts/cold-start/judge-fixtures/`.
   but would fail tomorrow's. Add `_judgedAt` + `_judgeVersion` stamps
   to every row when the audit script writes a tombstone, so future
   audits can selectively re-judge rather than re-process the whole lake.
-- **🟠 Phase 3 finish — ReplyQuik AppRunner deletion.** Frontend widget
-  removed in §6c. Backend still running and only Hamid can delete it
-  via AWS Console: (a) stop and delete `replyquik-api-main` and
-  `replyquik-api-staging` AppRunner services, (b) delete the
-  `replyquik-backend` ECR repository (or at least stop pushing to it),
-  (c) delete the `AWSAppRunnerManagedRuleForECREvent` EventBridge rule
-  if no other AppRunner service depends on it, (d) clean up any IAM
-  roles named `AppRunnerECRAccessRole-*` or similar that were specific
-  to ReplyQuik, (e) delete CloudWatch log groups
-  `/aws/apprunner/replyquik-*`. Surface this to Hamid as an explicit
-  AWS-action ask when ready.
-- **Audit other 3rd-party scripts on production pages** for the same
-  pattern. Quick grep on `*.html` for `<script src="https://"` and
-  decide which (Google Fonts, etc.) stay and which join ReplyQuik in
-  the deleted bin. Also worth a CSP header audit — without
+- ~~**Phase 3 finish — ReplyQuik AppRunner deletion.**~~ **RETRACTED
+  2026-05-09 per Hamid:** ReplyQuik is a real, live product running
+  alongside GradeEarn, not a retired surface (see updated §6c). Do
+  NOT propose deletion. The widget removal from GradeEarn pages
+  (May 2) was the right scope — keeping the products separate — and
+  the ReplyQuik backend (`replyquik-api-main`, `replyquik-api-staging`,
+  `replyquik-backend` ECR, `AWSAppRunnerManagedRuleForECREvent`,
+  `replyquik-oauth-alerts`) all stay live and unchanged.
+- **Audit other 3rd-party scripts on production pages** — quick grep
+  on `*.html` for `<script src="https://"` and decide which (Google
+  Fonts, etc.) stay. Worth a CSP header audit — without
   Content-Security-Policy the same-origin 3rd-party-script attack
   vector is open to anything someone adds in the future.
 - **Lambda Versioning + `prod` alias.** Adds another rollback path
