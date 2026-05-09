@@ -13,6 +13,17 @@
 //   OPENAI_MODEL        (default: gpt-4o-mini)
 //   OPENAI_SECRET_NAME  (default: staar-tutor/openai-api-key)
 //   ALLOWED_ORIGIN      (default: *)
+//
+// Product boundary (CLAUDE.md §6c, locked 2026-05-09):
+//   This lambda serves GradeEarn ONLY. ReplyQuik is a separate, live
+//   product on its own AppRunner infra. This handler must never:
+//     - call any replyquik.com endpoint
+//     - read/write any replyquik-* DynamoDB table
+//     - access any replyquik-* Secrets Manager secret
+//     - read/write any replyquik-* S3 bucket
+//   Permissions are scoped at the IAM-policy level too (gradeearn-deployer
+//   has an explicit Deny on replyquik-* ARNs). Don't add code that would
+//   try to cross this line; the IAM and the CSP would block it anyway.
 
 const { SecretsManagerClient, GetSecretValueCommand } = require('@aws-sdk/client-secrets-manager');
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');

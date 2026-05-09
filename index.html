@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; media-src 'self' blob: data: https:; connect-src 'self' https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com https://api.gradeearn.com https://api.openai.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#060d1f" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -1124,8 +1125,6 @@
       }
     });
   </script>
-  <!-- ReplyQuik chat widget removed from homepage per Elon-pass: hero CTA is the only action.
-       Other pages (about, practice, marketplace, settings, admin, 404, grades) still load it. -->
 
   <!-- §60 — Floating 'Practice now' pill removed per Hamid (12:55pm).
        Same call as the bottom-nav center FAB removal. The dashboard
@@ -1199,8 +1198,5 @@
     else go();
   })();
   </script>
-  <!-- ReplyQuik chat widget removed 2026-05-07 (§78). Token-exfil
-       liability per CLAUDE.md §6c; AppRunner backend deletion is a
-       separate Hamid-action item. -->
 </body>
 </html>

@@ -8484,18 +8484,10 @@ input[type="button"] {
   /* user-menu uses JS-toggled [hidden] attribute → browser native
      hide. Don't override it here so the dropdown opens cleanly. */
 
-  /* §62 — ReplyQuik chat widget repositioned bottom-LEFT. Best-effort
-     selectors covering common ReplyQuik wrapper patterns since their
-     widget injects from api.replyquik.com. */
-  iframe[src*="replyquik"],
-  div[class*="replyquik"],
-  div[id*="replyquik"],
-  [data-replyquik-widget] {
-    left: 12px !important;
-    right: auto !important;
-  }
-
-  /* Lift chat / friends widget above the tab bar */
+  /* Lift any in-page chat/friends widget above the bottom tab bar.
+     ReplyQuik-specific selectors removed — that widget no longer
+     loads on GradeEarn pages, and the surface stays separate per
+     CLAUDE.md §6c. */
   .chat-widget,
   #chat-widget,
   [class*="chat-widget"],
