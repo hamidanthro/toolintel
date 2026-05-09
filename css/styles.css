@@ -12077,6 +12077,86 @@ body.grade-page > * {
 }
 @media (max-width: 380px) { .practice-pill--countdown { display: none; } }
 
+/* ============================================================
+   Print-friendly worksheet mode (?print=1).
+   Hides the chrome and renders questions in clean black-on-white
+   for paper. Answer key on its own page break.
+   ============================================================ */
+body.print-worksheet-mode {
+  background: white;
+  color: black;
+}
+body.print-worksheet-mode .practice-context-bar,
+body.print-worksheet-mode .performance-panel,
+body.print-worksheet-mode #guest-banner,
+body.print-worksheet-mode .practice-title-row,
+body.print-worksheet-mode header,
+body.print-worksheet-mode footer,
+body.print-worksheet-mode nav { display: none !important; }
+
+.ws-toolbar {
+  margin: 16px 0;
+  display: flex;
+  align-items: center;
+}
+.ws-page {
+  background: white;
+  color: #111;
+  padding: 24px 32px;
+  max-width: 720px;
+  margin: 0 auto;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.45;
+}
+.ws-header { border-bottom: 2px solid #111; margin-bottom: 18px; padding-bottom: 10px; }
+.ws-title { font-size: 1.25rem; font-weight: 700; }
+.ws-meta { font-size: 0.95rem; color: #444; margin-top: 6px; }
+.ws-passage { background: #f6f6f6; padding: 12px 16px; border-radius: 4px; margin-bottom: 22px; }
+.ws-passage h3 { margin: 0 0 6px; font-size: 1.05rem; }
+.ws-passage-body p { margin: 0 0 8px; font-size: 0.95rem; }
+.ws-questions { display: grid; gap: 18px; }
+.ws-question { break-inside: avoid; }
+.ws-q-head { font-size: 1rem; font-weight: 500; margin-bottom: 6px; }
+.ws-q-num { font-weight: 700; margin-right: 4px; }
+.ws-choices { display: grid; gap: 4px; padding-left: 16px; }
+.ws-choice { font-size: 0.95rem; }
+.ws-choice-letter { font-weight: 700; margin-right: 6px; }
+.ws-work-lines {
+  margin-top: 6px;
+  border-bottom: 1px solid #999;
+  height: 1.4em;
+}
+.ws-work-lines::after {
+  content: '';
+  display: block;
+  border-bottom: 1px solid #999;
+  margin-top: 1.4em;
+  height: 1.4em;
+}
+.ws-pagebreak { page-break-before: always; height: 0; }
+.ws-answer-key { margin-top: 32px; }
+.ws-answer-key h3 { font-size: 1.1rem; border-bottom: 1px solid #111; padding-bottom: 4px; }
+.ws-key-list { padding-left: 24px; }
+.ws-key-list li { margin: 6px 0; font-size: 0.95rem; }
+.ws-key-exp { font-size: 0.85rem; color: #555; margin: 2px 0 8px 0; }
+
+@media print {
+  body { background: white !important; color: black !important; }
+  .no-print, .ws-toolbar { display: none !important; }
+  .ws-page { padding: 0; max-width: none; }
+}
+
+/* Mastery tier badge — Bronze/Silver/Gold next to unit titles. */
+.unit-tier {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 0.85em;
+  vertical-align: middle;
+}
+.unit-tier--bronze { filter: drop-shadow(0 0 2px rgba(205, 127, 50, 0.4)); }
+.unit-tier--silver { filter: drop-shadow(0 0 2px rgba(192, 192, 192, 0.5)); }
+.unit-tier--gold   { filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.6)); }
+
 /* End-of-set quick-mode chip row. Lets kids change session size for the
    next round without going back to the grade page. */
 .practice-mode-row {

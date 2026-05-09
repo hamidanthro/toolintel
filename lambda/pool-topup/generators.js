@@ -2,14 +2,42 @@
  * Question generator for pool-topup Lambda.
  * Uses fetch (no openai npm dep) to keep zip small.
  * apiKey is read from process.env.OPENAI_API_KEY (set by handler).
+ *
+ * State metadata is loaded from states-snapshot.json (built by
+ * scripts/build-states-snapshot.js from js/states-data.js — the single
+ * source of truth per CLAUDE.md §8). NEVER falls back to a default
+ * state for an unknown slug; throws so the EventBridge schedule fails
+ * loudly instead of silently filling Texas content for every state.
+ *
+ * CLAUDE.md §0 #2 mandates this; matches the cold-start fix in `a1730a5`.
  */
 
-const STATE_PROMPTS = {
-  texas: { testName: 'STAAR', standards: 'Texas Essential Knowledge and Skills (TEKS)', authority: 'Texas Education Agency (TEA)', style: 'Texas STAAR favors word problems with real-world contexts. 4-choice multiple choice. Rigor matches TEA released items.' },
-  california: { testName: 'CAASPP / Smarter Balanced', standards: 'California Common Core State Standards', authority: 'California Department of Education', style: 'CAASPP uses computer-adaptive testing; Smarter Balanced format.' },
-  florida: { testName: 'FAST', standards: 'Florida B.E.S.T. Standards', authority: 'Florida Department of Education', style: 'FAST uses three progress-monitoring windows. B.E.S.T. format.' },
-  'new-york': { testName: 'New York State Tests', standards: 'Next Generation Learning Standards (NGLS)', authority: 'New York State Education Department', style: 'Multi-step reasoning and academic vocabulary.' }
-};
+const path = require('path');
+let _statesSnapshot = null;
+function loadStates() {
+  if (_statesSnapshot) return _statesSnapshot;
+  const snap = require('./states-snapshot.json');
+  if (!snap || !Array.isArray(snap.states) || !snap.states.length) {
+    throw new Error('states-snapshot.json missing or empty');
+  }
+  const byslug = {};
+  for (const s of snap.states) byslug[s.slug] = s;
+  _statesSnapshot = { snap, byslug };
+  return _statesSnapshot;
+}
+
+function getStateRecord(stateSlug) {
+  if (!stateSlug) {
+    throw new Error('pool-topup/generators: stateSlug required');
+  }
+  const slug = String(stateSlug).trim().toLowerCase();
+  const { byslug } = loadStates();
+  const rec = byslug[slug];
+  if (!rec) {
+    throw new Error(`pool-topup/generators: unknown state slug "${slug}". Snapshot has ${Object.keys(byslug).length} states. Rebuild via scripts/build-states-snapshot.js.`);
+  }
+  return rec;
+}
 
 const QUESTION_TYPE_PROMPTS = {
   math: {
@@ -36,7 +64,15 @@ function gradeReadable(grade) {
 }
 
 function buildPrompt({ stateSlug, grade, subject, questionType }) {
-  const state = STATE_PROMPTS[stateSlug] || STATE_PROMPTS.texas;
+  const rec = getStateRecord(stateSlug); // throws on unknown — no Texas fallback
+  const state = {
+    testName: rec.testName,
+    standards: rec.standards,
+    authority: rec.testAuthority,
+    // No per-state "style" copy — kept generic; pack-wired prompt path
+    // (scripts/cold-start) is where state-specific flavor injection happens.
+    style: `${rec.testName} multiple choice. Rigor matches ${rec.testAuthorityShort || rec.testAuthority || ''} released items.`
+  };
   const typeGuide = QUESTION_TYPE_PROMPTS[subject]?.[questionType] || '';
   const grLabel = gradeReadable(grade);
   const earlyGrades = ['grade-k', 'grade-1', 'grade-2'];
@@ -139,4 +175,4 @@ async function generateOne({ stateSlug, grade, subject, questionType }) {
   };
 }
 
-module.exports = { generateOne, buildPrompt, STATE_PROMPTS, QUESTION_TYPE_PROMPTS };
+module.exports = { generateOne, buildPrompt, getStateRecord, QUESTION_TYPE_PROMPTS };

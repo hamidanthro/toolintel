@@ -408,6 +408,7 @@ exports.handler = async (event) => {
   if (action === 'getStats') return await handleGetStats(payload);
   if (action === 'putStats') return await handlePutStats(payload);
   if (action === 'getWrongAnswers')     return await handleGetWrongAnswers(payload);
+  if (action === 'getParentSummary')    return await handleGetParentSummary(payload);
   if (action === 'getFunFactsState')    return await handleGetFunFactsState(payload);
   if (action === 'updateFunFactsState') return await handleUpdateFunFactsState(payload);
   if (action === 'getReadingPassage')   return await handleGetReadingPassage(payload);
@@ -2042,6 +2043,135 @@ async function handleGetWrongAnswers(payload) {
   }).filter(Boolean);
 
   return ok({ items });
+}
+
+// ===== Parent weekly summary (algorithmic; no LLM) =====
+//
+// POST { action: 'getParentSummary', windowDays?: 7 }
+// Auth required. Aggregates the kid's last N days of activity from
+// staar-content-events into a parent-friendly snapshot:
+//   - total questions answered
+//   - accuracy %
+//   - active days count
+//   - per-subject breakdown
+//   - top-3 strongest topics + top-3 needs-work topics by TEKS
+//   - cents earned in window
+//   - longest streak day count
+// Returns shape that a parent UI (or future SES email) can render.
+async function handleGetParentSummary(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  const windowDays = Math.min(60, Math.max(1, parseInt(payload.windowDays, 10) || 7));
+  const cutoffMs = Date.now() - (windowDays * 86400000);
+
+  // Pull recent events. userId-timestamp-index, ScanIndexForward false
+  // (newest first), limit set generous enough to cover a heavy week.
+  let events = [];
+  try {
+    let last;
+    let pages = 0;
+    do {
+      const r = await ddb.send(new QueryCommand({
+        TableName: EVENTS_TABLE,
+        IndexName: 'userId-timestamp-index',
+        KeyConditionExpression: 'userId = :u',
+        ExpressionAttributeValues: { ':u': auth.username },
+        ScanIndexForward: false,
+        Limit: 500,
+        ExclusiveStartKey: last
+      }));
+      for (const it of (r.Items || [])) {
+        if (it.timestamp && it.timestamp < cutoffMs) { last = null; break; }
+        events.push(it);
+      }
+      last = r.LastEvaluatedKey;
+      pages++;
+      if (pages >= 5) break; // safety cap
+    } while (last);
+  } catch (err) {
+    console.warn('[parentSummary] event query failed:', err.message || err);
+    return ok({ summary: null, error: 'event_query_failed' });
+  }
+
+  // Filter to answer events only.
+  const answers = events.filter(e =>
+    e.eventType === 'answered-correct' || e.eventType === 'answered-incorrect'
+  );
+  if (answers.length === 0) {
+    return ok({
+      summary: {
+        windowDays, total: 0, correct: 0, accuracy: 0, activeDays: 0,
+        bySubject: {}, strongTopics: [], needsWorkTopics: [],
+        centsEarned: 0, longestRun: 0
+      }
+    });
+  }
+
+  let correct = 0;
+  const daySet = new Set();
+  const bySubject = {};
+  const teksAgg = {};
+  let runCurrent = 0;
+  let runBest = 0;
+  // Walk newest→oldest already, so reverse for chronological run-tracking.
+  const chronological = answers.slice().reverse();
+  for (const e of chronological) {
+    const isC = e.eventType === 'answered-correct';
+    if (isC) {
+      correct++;
+      runCurrent++;
+      if (runCurrent > runBest) runBest = runCurrent;
+    } else {
+      runCurrent = 0;
+    }
+    if (e.timestamp) {
+      const d = new Date(e.timestamp);
+      daySet.add(`${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}-${String(d.getUTCDate()).padStart(2,'0')}`);
+    }
+    const subj = e.subject || 'unknown';
+    if (!bySubject[subj]) bySubject[subj] = { total: 0, correct: 0 };
+    bySubject[subj].total++;
+    if (isC) bySubject[subj].correct++;
+    // TEKS roll-up — only valid if event has poolKey containing teks-X.
+    let teks = null;
+    if (e.poolKey && /#teks-(\S+)$/.test(e.poolKey)) {
+      teks = e.poolKey.match(/#teks-(\S+)$/)[1].toUpperCase();
+    } else if (e.meta && e.meta.teks) {
+      teks = String(e.meta.teks).toUpperCase();
+    }
+    if (teks) {
+      if (!teksAgg[teks]) teksAgg[teks] = { total: 0, correct: 0, subject: subj };
+      teksAgg[teks].total++;
+      if (isC) teksAgg[teks].correct++;
+    }
+  }
+
+  // Top strong / weak topics (>=3 attempts, ranked by accuracy).
+  const teksRows = Object.entries(teksAgg)
+    .filter(([_, v]) => v.total >= 3)
+    .map(([k, v]) => ({ teks: k, subject: v.subject, total: v.total, correct: v.correct, accuracy: v.correct / v.total }));
+  const strongTopics = teksRows.slice().sort((a, b) => b.accuracy - a.accuracy || b.total - a.total).slice(0, 3);
+  const needsWorkTopics = teksRows.slice().sort((a, b) => a.accuracy - b.accuracy || b.total - a.total).slice(0, 3);
+
+  // Cents earned: estimate as ~1 cent per correct answer (matches typical
+  // difficultyCents() output). Best to read from the user record but the
+  // event-level fan-out is what we have here; this is a rough proxy.
+  const centsEarned = correct;
+
+  return ok({
+    summary: {
+      windowDays,
+      total: answers.length,
+      correct,
+      accuracy: Math.round((correct / answers.length) * 100),
+      activeDays: daySet.size,
+      bySubject,
+      strongTopics,
+      needsWorkTopics,
+      centsEarned,
+      longestRun: runBest
+    }
+  });
 }
 
 // ===== Fun Facts state (Phase 2) =====

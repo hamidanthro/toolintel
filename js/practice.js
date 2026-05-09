@@ -469,6 +469,8 @@
   // the lambda and re-runs them as a quiz. Auth required.
   if (params.get('review') === '1') {
     startReview();
+  } else if (params.get('print') === '1') {
+    startPrintWorksheet();
   } else if (SUBJECT_SLUG === 'reading') {
     startReading();
   } else if (SUBJECT_SLUG === 'science') {
@@ -1920,6 +1922,115 @@
     }
   }
 
+  // ============================================================
+  // Print-friendly worksheet mode — ?print=1[&n=N]
+  //
+  // Loads a question set the same way the regular quiz path does,
+  // then renders a clean printable HTML (numbered questions, A/B/C/D
+  // options, blank work lines, answer key on a separate page break).
+  // No DDB writes, no quiz state. Kid/parent hits browser Print.
+  // ============================================================
+  async function startPrintWorksheet() {
+    document.body.classList.add('print-worksheet-mode');
+    const grTitle = ({
+      'grade-k':'Kindergarten','grade-1':'Grade 1','grade-2':'Grade 2','grade-3':'Grade 3',
+      'grade-4':'Grade 4','grade-5':'Grade 5','grade-6':'Grade 6','grade-7':'Grade 7',
+      'grade-8':'Grade 8','algebra-1':'Algebra 1'
+    })[slug] || slug;
+    const subjLabel = SUBJECT_SLUG.charAt(0).toUpperCase() + SUBJECT_SLUG.slice(1).replace('-', ' ');
+    const stateName = STATE_INFO ? (STATE_INFO.name || STATE_INFO.nameAbbr) : '';
+    const reqN = parseInt(params.get('n'), 10);
+    const N = [10, 25, 50].includes(reqN) ? reqN : 10;
+
+    root.innerHTML = `<h2>Building worksheet…</h2><p style="color:var(--muted);">Pulling ${N} ${escapeHtml(subjLabel)} questions for ${escapeHtml(grTitle)}.</p>`;
+    let items = [];
+    try {
+      // Reuse pool — math: load curriculum JSON; reading/science: lambda.
+      if (SUBJECT_SLUG === 'reading' || SUBJECT_SLUG === 'science') {
+        const action = SUBJECT_SLUG === 'reading' ? 'getReadingItem' : 'getScienceItem';
+        const res = await fetch(TUTOR_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action, state: STATE_SLUG_RESOLVED, grade: slug,
+            token: (window.STAARAuth && window.STAARAuth.token && window.STAARAuth.token()) || null })
+        });
+        if (!res.ok) throw new Error('worksheet_load_failed');
+        const data = await res.json();
+        const rawQ = data.questions || [];
+        items = rawQ.map(g => ({
+          prompt: g.stem || g.prompt || '',
+          choices: g.choices || [],
+          answer: (Number.isFinite(g.correctIndex) && Array.isArray(g.choices)) ? g.choices[g.correctIndex] : (g.answer || ''),
+          correctIndex: g.correctIndex,
+          explanation: g.explanation || '',
+          passage: data.passage || data.scenario || null
+        })).slice(0, N);
+      } else {
+        const r = await fetch(`data/${slug}-curriculum.json?v=20260426m`);
+        if (!r.ok) throw new Error('curr_load_failed');
+        const curr = await r.json();
+        const pool = curr.units.flatMap(u => u.lessons.flatMap(l => l.questions));
+        const shuffled = pool.slice().sort(() => Math.random() - 0.5).slice(0, N);
+        items = shuffled.map(q => ({
+          prompt: q.prompt || q.question || '',
+          choices: q.choices || [],
+          answer: q.answer || '',
+          correctIndex: Number.isFinite(q.correctIndex) ? q.correctIndex : (q.choices ? q.choices.indexOf(q.answer) : -1),
+          explanation: q.explanation || ''
+        }));
+      }
+    } catch (err) {
+      root.innerHTML = `<div class="card"><h2>Couldn't build worksheet</h2><p>Try again in a moment.</p></div>`;
+      return;
+    }
+
+    if (items.length === 0) {
+      root.innerHTML = `<div class="card"><h2>No questions available</h2></div>`;
+      return;
+    }
+
+    const escapeP = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const passageBlock = items[0].passage
+      ? `<section class="ws-passage"><h3>${escapeP(items[0].passage.title || '')}</h3><div class="ws-passage-body">${escapeP(items[0].passage.body || '').split(/\n+/).map(p => `<p>${p}</p>`).join('')}</div></section>`
+      : '';
+    const qBlocks = items.map((q, i) => {
+      const choices = (q.choices || []).map((c, j) => `
+        <div class="ws-choice"><span class="ws-choice-letter">${'ABCD'[j] || ''}</span> ${escapeP(c)}</div>`).join('');
+      const workLines = q.choices && q.choices.length ? '' : `<div class="ws-work-lines"></div>`;
+      return `
+        <article class="ws-question">
+          <div class="ws-q-head"><span class="ws-q-num">${i + 1}.</span> ${escapeP(q.prompt)}</div>
+          ${choices ? `<div class="ws-choices">${choices}</div>` : workLines}
+        </article>`;
+    }).join('');
+    const answerKey = items.map((q, i) => {
+      const letter = (q.choices && q.choices.length && Number.isFinite(q.correctIndex)) ? ('ABCD'[q.correctIndex] || '?') : '';
+      const ans = q.answer || (q.choices && Number.isFinite(q.correctIndex) ? q.choices[q.correctIndex] : '');
+      return `<li><strong>${i + 1}.</strong> ${letter ? `${letter}. ` : ''}${escapeP(ans)}${q.explanation ? `<div class="ws-key-exp">${escapeP(q.explanation)}</div>` : ''}</li>`;
+    }).join('');
+
+    root.innerHTML = `
+      <div class="ws-toolbar no-print">
+        <button type="button" class="btn btn-primary" id="ws-print">🖨 Print worksheet</button>
+        <a class="btn btn-secondary" href="grade.html?s=${encodeURIComponent(STATE_SLUG_RESOLVED)}&g=${encodeURIComponent(slug)}" style="margin-left:8px;">Back</a>
+      </div>
+      <div class="ws-page">
+        <header class="ws-header">
+          <div class="ws-title">${escapeP(stateName)} ${escapeP(grTitle)} ${escapeP(subjLabel)} — Practice Worksheet</div>
+          <div class="ws-meta">Name: _________________________ &nbsp; Date: _____________</div>
+        </header>
+        ${passageBlock}
+        <div class="ws-questions">${qBlocks}</div>
+        <div class="ws-pagebreak"></div>
+        <section class="ws-answer-key">
+          <h3>Answer Key</h3>
+          <ol class="ws-key-list">${answerKey}</ol>
+        </section>
+      </div>`;
+    const btn = document.getElementById('ws-print');
+    if (btn) btn.onclick = () => window.print();
+  }
+
   function renderQuestion(q, locked, idx, total) {
     let body = '';
     if (q.type === 'multiple_choice') {
@@ -2541,6 +2652,17 @@
       return cells.join('');
     })();
 
+    // Mastery tiers — 4 levels visible per unit. Khan-Academy-style
+    // progression target. Requires ≥4 attempts at the unit before any
+    // tier shows (avoids "1/1 = 100%" looking like Gold).
+    function masteryTier(correct, total) {
+      if (total < 4) return null;
+      const pct = correct / total;
+      if (pct >= 0.9) return { name: 'Gold', glyph: '🥇' };
+      if (pct >= 0.75) return { name: 'Silver', glyph: '🥈' };
+      if (pct >= 0.5) return { name: 'Bronze', glyph: '🥉' };
+      return null;
+    }
     const unitRows = curr.units
       .slice()
       .sort((a, b) => a.order - b.order)
@@ -2556,9 +2678,11 @@
         }
         const pct = Math.round((us.correct / us.total) * 100);
         const color = pct >= 80 ? 'var(--success)' : pct >= 60 ? 'var(--accent)' : 'var(--error)';
+        const tier = masteryTier(us.correct, us.total);
+        const tierBadge = tier ? `<span class="unit-tier unit-tier--${tier.name.toLowerCase()}" title="${tier.name} mastery">${tier.glyph}</span>` : '';
         return `
           <div class="unit-row">
-            <div class="unit-row-title">${escapeHtml(u.title)}</div>
+            <div class="unit-row-title">${escapeHtml(u.title)}${tierBadge}</div>
             <div class="unit-row-bar"><div class="unit-row-fill" style="width:${pct}%;background:${color};"></div></div>
             <div class="unit-row-pct">${us.correct}/${us.total}</div>
           </div>`;
