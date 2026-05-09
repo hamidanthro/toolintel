@@ -43,7 +43,7 @@ const fs = require('fs');
 // the script cannot mutate the table even if a programmer accident
 // tried to.
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
-const { DynamoDBDocumentClient, ScanCommand } = require('@aws-sdk/lib-dynamodb');
+const { DynamoDBDocumentClient, ScanCommand, QueryCommand } = require('@aws-sdk/lib-dynamodb');
 
 // ---- args ----
 const args = process.argv.slice(2);
@@ -94,15 +94,20 @@ const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({
 }));
 const TABLE = 'staar-content-pool';
 
-// ---- scan all active rows ----
+// ---- query all active rows via status-generatedAt-index GSI ----
+// Was a full-table Scan + FilterExpression (~89 min on 2k rows; gets
+// linearly worse with table size). The GSI partition is keyed on
+// `status`, so a single Query on status='active' returns only the
+// active rows directly. O(active) instead of O(total).
 async function scanAllActive() {
   const items = [];
   let last;
   let pages = 0;
   do {
-    const res = await ddb.send(new ScanCommand({
+    const res = await ddb.send(new QueryCommand({
       TableName: TABLE,
-      FilterExpression: '#s = :a',
+      IndexName: 'status-generatedAt-index',
+      KeyConditionExpression: '#s = :a',
       ExpressionAttributeNames: {
         '#s': 'status', '#t': 'type', '#st': 'state',
         '#j': '_judge', '#jv': '_judgeVersion'
@@ -114,7 +119,7 @@ async function scanAllActive() {
     for (const it of (res.Items || [])) items.push(it);
     last = res.LastEvaluatedKey;
     pages++;
-    if (pages % 5 === 0) console.log(`[judge-audit] scan progress: ${items.length} rows so far (page ${pages})`);
+    if (pages % 5 === 0) console.log(`[judge-audit] query progress: ${items.length} rows so far (page ${pages})`);
   } while (last);
   return items;
 }
