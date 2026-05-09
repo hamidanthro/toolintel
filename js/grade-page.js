@@ -317,11 +317,17 @@
         const url = `practice.html?print=1&s=${encodeURIComponent(state.slug)}&g=${encodeURIComponent(gradeSlug)}&subj=${encodeURIComponent(subj.slug)}&n=10`;
         return `<a class="subject-extra-chip" href="${url}">🖨 Print ${escapeHtml(subj.name)} worksheet</a>`;
       }).join('');
+      // Mock test chips — one per LIVE subject. Mock STAAR is a real
+      // marketable feature: full-length timed test with predicted-score readout.
+      const mockChips = liveSubjects.map(subj => {
+        const url = `practice.html?mock=1&s=${encodeURIComponent(state.slug)}&g=${encodeURIComponent(gradeSlug)}&subj=${encodeURIComponent(subj.slug)}&n=40`;
+        return `<a class="subject-extra-chip subject-extra-chip--mock" href="${url}">📝 Mock ${escapeHtml(subj.name)} test (40q)</a>`;
+      }).join('');
       const reviewUrl = `practice.html?review=1&s=${encodeURIComponent(state.slug)}&g=${encodeURIComponent(gradeSlug)}&subj=math`;
       const reviewChip = `<a class="subject-extra-chip subject-extra-chip--review" href="${reviewUrl}">↻ Review your wrong answers</a>`;
       extras.innerHTML = `
         <div class="subject-extras-label">More ways to practice</div>
-        <div class="subject-extras-row">${printChips}${reviewChip}</div>
+        <div class="subject-extras-row">${mockChips}${printChips}${reviewChip}</div>
       `;
       grid.parentNode.insertBefore(extras, grid.nextSibling);
     }

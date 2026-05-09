@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# scripts/check-no-replyquik.sh
+# scripts/precommit.sh
 #
 # Pre-commit guardrail: fail the commit if it ADDS any reference to
 # 'replyquik' in GradeEarn code. Removals are fine (de-listing dormant
@@ -12,9 +12,9 @@
 # reaches main.
 #
 # Install:
-#   ln -sf ../../scripts/check-no-replyquik.sh .git/hooks/pre-commit
+#   ln -sf ../../scripts/precommit.sh .git/hooks/pre-commit
 # Or call it manually:
-#   ./scripts/check-no-replyquik.sh
+#   ./scripts/precommit.sh
 #
 # Bypass (rare):
 #   git commit --no-verify
@@ -22,7 +22,7 @@ set -e
 
 # Allowlist of paths where 'replyquik' references DOCUMENT the boundary
 # rather than introduce a coupling. Edits to these are OK.
-ALLOWED_PATHS_REGEX='^(CLAUDE\.md|scripts/check-no-replyquik\.sh|docs/|\.claude/projects/.*/memory/feedback_replyquik_is_live\.md)'
+ALLOWED_PATHS_REGEX='^(CLAUDE\.md|scripts/precommit.sh|docs/|\.claude/projects/.*/memory/feedback_replyquik_is_live\.md)'
 
 # Coupling indicators: lines that introduce an ACTUAL dependency on
 # replyquik (not just a doc comment). If the line mentions replyquik
@@ -36,7 +36,7 @@ ALLOWED_PATHS_REGEX='^(CLAUDE\.md|scripts/check-no-replyquik\.sh|docs/|\.claude/
 COUPLING_REGEX='(api\.replyquik|https?://[^"]*replyquik|require\(.*replyquik|import.*replyquik|src=.*replyquik|fetch\(.*replyquik|TableName.*replyquik|Bucket.*replyquik|FunctionName.*replyquik)'
 
 # Get staged diff (added lines only) for this commit. If running
-# outside a commit (e.g., manual ./scripts/check-no-replyquik.sh),
+# outside a commit (e.g., manual ./scripts/precommit.sh),
 # fall back to comparing working tree against HEAD.
 if git diff --cached --name-only --quiet 2>/dev/null; then
   DIFF=$(git diff HEAD)
@@ -74,10 +74,42 @@ if [ -n "$violations" ]; then
   echo "touch its AWS resources."
   echo ""
   echo "If this is a documentation update describing the boundary, add"
-  echo "the path to ALLOWED_PATHS_REGEX in scripts/check-no-replyquik.sh."
+  echo "the path to ALLOWED_PATHS_REGEX in scripts/precommit.sh."
   echo ""
   echo "To bypass for a one-off (rare): git commit --no-verify"
   exit 1
+fi
+
+# ============================================================
+# JS syntax check on every staged .js file. Catches the kind of
+# bug that would pass git review but break deploy.sh's parity check
+# (or worse, ship to GitHub Pages and brick the kid's browser).
+# Skipped if `node` isn't available; never blocks for a missing tool.
+# ============================================================
+if command -v node >/dev/null 2>&1; then
+  js_files=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null \
+    | grep -E '\.(js|mjs)$' \
+    | grep -v 'node_modules/' || true)
+  if [ -z "$js_files" ]; then
+    js_files=$(git diff --name-only --diff-filter=ACM HEAD 2>/dev/null \
+      | grep -E '\.(js|mjs)$' \
+      | grep -v 'node_modules/' || true)
+  fi
+  syntax_errors=""
+  for f in $js_files; do
+    [ -f "$f" ] || continue
+    if ! err=$(node --check "$f" 2>&1); then
+      syntax_errors="${syntax_errors}\n--- $f\n$err\n"
+    fi
+  done
+  if [ -n "$syntax_errors" ]; then
+    echo ""
+    echo "❌ COMMIT BLOCKED — JS syntax errors in staged files:"
+    printf "$syntax_errors"
+    echo ""
+    echo "Fix the syntax issues above. To bypass (rare): git commit --no-verify"
+    exit 2
+  fi
 fi
 
 exit 0

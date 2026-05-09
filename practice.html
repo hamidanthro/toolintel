@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; media-src 'self' blob: data: https:; connect-src 'self' https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com https://api.gradeearn.com https://api.openai.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; media-src 'self' blob: data: https:; connect-src 'self' https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com https://api.gradeearn.com https://api.openai.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#060d1f" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -22,7 +22,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=20260509e" />
+  <link rel="stylesheet" href="css/styles.css?v=20260509f" />
 </head>
 <body class="practice-page practice-mode">
   <header class="site-header">
@@ -160,14 +160,13 @@
   <script src="js/quick-search.js?v=20260509b" defer></script>
   <script src="js/fun-facts.js?v=20260506c"></script>
   <script src="js/speech.js?v=20260509a"></script>
-  <!-- §74 Reading Phase 3 — markdown + sanitization libs (CDN with SRI).
-       Loaded only on practice.html (the only page that renders passages). -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/15.0.7/marked.min.js"
-          integrity="sha384-H+hy9ULve6xfxRkWIh/YOtvDdpXgV2fmAGQkIDTxIgZwNoaoBal14Di2YTMR6MzR"
-          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.2.4/purify.min.js"
-          integrity="sha384-eEu5CTj3qGvu9PdJuS+YlkNi7d2XxQROAFYOr59zgObtlcux1ae1Il3u7jvdCSWu"
-          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <!-- Reading Phase 3 — markdown + sanitization libs.
+       SELF-HOSTED 2026-05-09 from cdnjs (originally
+       marked@15.0.7 + DOMPurify@3.2.4). Now served from same-origin
+       so the CSP can drop cdnjs.cloudflare.com from script-src.
+       Sha256 checksums recorded in commit message at upload time. -->
+  <script src="js/vendor/marked-15.0.7.min.js?v=20260509a"></script>
+  <script src="js/vendor/purify-3.2.4.min.js?v=20260509a"></script>
   <script src="js/reading-render.js?v=20260507a"></script>
   <script src="js/stopwords.js?v=20260507a"></script>
   <script src="js/auth.js?v=20260507a"></script>
@@ -179,7 +178,7 @@
   <script src="js/grade-card.js?v=20260427r"></script>
   <script>window.STAAR_TUTOR_ENDPOINT = 'https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com/';</script>
   <script src="js/spaced-rep.js?v=20260509a"></script>
-  <script src="js/practice.js?v=20260509i"></script>
+  <script src="js/practice.js?v=20260509j"></script>
   <script src="js/scratchpad.js?v=20260506f"></script>
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>

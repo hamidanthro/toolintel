@@ -467,7 +467,11 @@
   // initialization", caught by the surrounding try/catch as a fetch failure.
   // Review-mode: ?review=1 pulls the kid's recent wrong answers from
   // the lambda and re-runs them as a quiz. Auth required.
-  if (params.get('review') === '1') {
+  // Mock-STAAR-mode: ?mock=1 serves a full-length timed test with no
+  // AI tutor (matches real test conditions). See startMockStaar().
+  if (params.get('mock') === '1') {
+    startMockStaar();
+  } else if (params.get('review') === '1') {
     startReview();
   } else if (params.get('print') === '1') {
     startPrintWorksheet();
@@ -2085,7 +2089,287 @@
   }
 
   // ============================================================
-  // Print-friendly worksheet mode — ?print=1[&n=N]
+  // Mock STAAR test mode (?mock=1).
+  //
+  // Full-length, timed test that mimics the real STAAR experience:
+  //   - 40 questions (configurable via ?n=20|40|60)
+  //   - Timer counting down (default 50 min for 40q, ~75s/question)
+  //   - NO AI tutor on wrong answers (real test = no help)
+  //   - NO scratchpad pull-out, NO fun-fact interrupts
+  //   - NO auto-advance — kid clicks Next manually
+  //   - Cents earning capped at 50¢ flat (test-completion reward)
+  //   - End-of-test: scaled-score estimate + per-topic breakdown
+  //
+  // Predicted STAAR scaled-score formula (rough; calibrate later from
+  // real released-test conversion tables):
+  //   raw = correct / total
+  //   scaled ≈ 1300 + raw * 1300   → range ~1300-2600 (matches STAAR)
+  // The real conversion is non-linear and grade-specific; this is a
+  // "you'd pass / you wouldn't" gut-check, not a guarantee. UI labels
+  // it as "estimate" to set expectations.
+  // ============================================================
+  async function startMockStaar() {
+    document.body.classList.add('mock-staar-mode');
+    const grTitle = ({
+      'grade-k':'Kindergarten','grade-1':'Grade 1','grade-2':'Grade 2','grade-3':'Grade 3',
+      'grade-4':'Grade 4','grade-5':'Grade 5','grade-6':'Grade 6','grade-7':'Grade 7',
+      'grade-8':'Grade 8','algebra-1':'Algebra 1'
+    })[slug] || slug;
+    const subjLabel = SUBJECT_SLUG.charAt(0).toUpperCase() + SUBJECT_SLUG.slice(1).replace('-', ' ');
+    const stateName = STATE_INFO ? (STATE_INFO.name || STATE_INFO.nameAbbr) : '';
+    const reqN = parseInt(params.get('n'), 10);
+    const N = [20, 40, 60].includes(reqN) ? reqN : 40;
+    // 75 sec per question, in minutes, rounded up
+    const TEST_MINUTES = Math.ceil((N * 75) / 60);
+
+    // Intro screen — kid clicks "Begin test" to start the timer.
+    root.innerHTML = `
+      <div class="mock-intro card" style="text-align:center;padding:36px;max-width:560px;margin:0 auto;">
+        <div style="font-size:3rem;margin-bottom:8px;" aria-hidden="true">📝</div>
+        <h2 style="margin-top:0;">Mock ${escapeHtml(STATE_INFO?.testName || 'STAAR')} test</h2>
+        <p style="font-size:1.05rem;color:rgba(255,255,255,0.85);margin-bottom:6px;">${escapeHtml(stateName)} ${escapeHtml(grTitle)} ${escapeHtml(subjLabel)}</p>
+        <p style="color:var(--muted);max-width:440px;margin:8px auto 24px;">${N} questions · ${TEST_MINUTES} min · No AI tutor · No skipping back. Mimics real test conditions.</p>
+        <p><button type="button" id="mock-begin" class="btn btn-primary btn-primary--large">Begin test</button></p>
+        <p style="margin-top:18px;color:rgba(255,255,255,0.5);font-size:0.85rem;">Real STAAR doesn't show your score until later. We'll show yours immediately when you finish.</p>
+      </div>`;
+
+    document.getElementById('mock-begin').onclick = async () => {
+      await loadAndRunMockTest(N, TEST_MINUTES, grTitle, subjLabel, stateName);
+    };
+  }
+
+  async function loadAndRunMockTest(N, minutes, grTitle, subjLabel, stateName) {
+    // Loading skeleton while we fetch a full pool.
+    root.innerHTML = `
+      <div class="ge-skel-card" aria-busy="true" aria-label="Building mock test">
+        <h2 style="margin-top:0;">Building your mock test…</h2>
+        <p style="color:var(--muted);margin-bottom:18px;">${N} questions for ${escapeHtml(grTitle)} ${escapeHtml(subjLabel)}.</p>
+        <div class="ge-skel-stack">
+          <div class="ge-skel ge-skel-block"></div>
+          <div class="ge-skel ge-skel-block"></div>
+          <div class="ge-skel ge-skel-block"></div>
+        </div>
+      </div>`;
+
+    let items = [];
+    try {
+      if (SUBJECT_SLUG === 'reading' || SUBJECT_SLUG === 'science') {
+        // Reading + science cluster sizes (~5q/passage). Need to pull
+        // multiple clusters to reach N. Loop with a small concurrency.
+        const action = SUBJECT_SLUG === 'reading' ? 'getReadingItem' : 'getScienceItem';
+        let attempts = 0;
+        const seenPassageIds = new Set();
+        while (items.length < N && attempts < 12) {
+          attempts++;
+          const res = await fetch(TUTOR_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action, state: STATE_SLUG_RESOLVED, grade: slug,
+              token: (window.STAARAuth && window.STAARAuth.token && window.STAARAuth.token()) || null
+            })
+          });
+          if (!res.ok) break;
+          const data = await res.json();
+          const passage = data.passage || data.scenario;
+          const rawQ = data.questions || [];
+          if (!passage || seenPassageIds.has(passage.passageId) || rawQ.length === 0) continue;
+          seenPassageIds.add(passage.passageId);
+          for (const g of rawQ) {
+            items.push({
+              id: g.contentId || g.id,
+              contentId: g.contentId || null,
+              poolKey: g.poolKey || null,
+              type: 'multiple_choice',
+              prompt: g.stem || g.prompt || '',
+              choices: g.choices || [],
+              answer: (Number.isFinite(g.correctIndex) && Array.isArray(g.choices)) ? g.choices[g.correctIndex] : (g.answer || ''),
+              correctIndex: g.correctIndex,
+              explanation: g.explanation || '',
+              passage,
+              _unit: { title: passage.title || subjLabel, id: passage.passageId },
+              _lesson: { teks: g.claimedTeks || g.teks || '', title: passage.title || '' }
+            });
+            if (items.length >= N) break;
+          }
+        }
+      } else {
+        // Math: load curriculum JSON, shuffle, take N.
+        const r = await fetch(`data/${slug}-curriculum.json?v=20260426m`);
+        if (!r.ok) throw new Error('curr_load_failed');
+        const curr = await r.json();
+        const pool = curr.units.flatMap(u => u.lessons.flatMap(l => l.questions.map(q => ({ ...q, _unit: u, _lesson: l }))));
+        items = shuffle(pool.slice()).slice(0, N);
+      }
+    } catch (err) {
+      root.innerHTML = `<div class="card" style="text-align:center;padding:32px;"><div style="font-size:2.4rem;" aria-hidden="true">📝</div><p>Couldn't build your mock test right now.</p><p><button type="button" class="btn btn-primary" onclick="location.reload()">Retry</button></p></div>`;
+      return;
+    }
+
+    if (items.length < Math.min(10, N)) {
+      root.innerHTML = `<div class="card" style="text-align:center;padding:36px;"><div style="font-size:3rem;" aria-hidden="true">📚</div><h2>Not enough content yet</h2><p style="color:var(--muted);">${escapeHtml(grTitle)} ${escapeHtml(subjLabel)} doesn't have enough questions for a mock test yet (${items.length} found, need ${N}). Try a different grade or subject.</p><p><a class="btn btn-primary" href="grade.html?s=${encodeURIComponent(STATE_SLUG_RESOLVED)}&g=${encodeURIComponent(slug)}">Back</a></p></div>`;
+      return;
+    }
+    items = items.slice(0, N);
+
+    // Hand off to a stripped-down quiz runner. We don't reuse runQuiz
+    // because it has the AI tutor / fun-fact / cents-per-question logic
+    // we explicitly want to skip in test mode.
+    runMockQuiz(items, minutes, { grTitle, subjLabel, stateName });
+  }
+
+  function runMockQuiz(items, minutes, ctx) {
+    const startedAt = Date.now();
+    const endsAt = startedAt + minutes * 60 * 1000;
+    let i = 0;
+    let correct = 0;
+    const perQ = []; // {idx, qId, prompt, picked, isCorrect, teks}
+    let timerHandle = null;
+
+    function timeLeft() { return Math.max(0, endsAt - Date.now()); }
+    function fmtMMSS(ms) {
+      const s = Math.ceil(ms / 1000);
+      const m = Math.floor(s / 60);
+      const r = s % 60;
+      return `${m}:${String(r).padStart(2, '0')}`;
+    }
+
+    function renderHeader() {
+      const el = document.getElementById('mock-timer');
+      if (el) el.textContent = fmtMMSS(timeLeft());
+      if (timeLeft() <= 0) finishTest();
+    }
+
+    function renderShell() {
+      root.innerHTML = `
+        <div class="mock-staar-shell">
+          <div class="mock-header">
+            <div class="mock-header-left">
+              <span class="mock-eyebrow">Mock test · ${escapeHtml(ctx.subjLabel)}</span>
+              <span class="mock-progress">Question <strong id="mock-qnum">1</strong> of ${items.length}</span>
+            </div>
+            <div class="mock-header-right">
+              <span class="mock-timer-label">Time left</span>
+              <span class="mock-timer" id="mock-timer">${fmtMMSS(timeLeft())}</span>
+            </div>
+          </div>
+          <div id="mock-qbox" class="mock-qbox"></div>
+        </div>`;
+    }
+
+    function renderQuestion() {
+      const q = items[i];
+      const qnum = document.getElementById('mock-qnum');
+      if (qnum) qnum.textContent = String(i + 1);
+      const qbox = document.getElementById('mock-qbox');
+      const passageHtml = (q.passage && q.passage.body)
+        ? `<div class="mock-passage"><h3>${escapeHtml(q.passage.title || '')}</h3><div class="mock-passage-body">${q.passage.body.split(/\n+/).map(p => `<p>${escapeHtml(p)}</p>`).join('')}</div></div>`
+        : '';
+      const choices = (q.choices || []).map((c, j) => `
+        <label class="mock-choice">
+          <input type="radio" name="m${i}" value="${escapeAttr(c)}" required>
+          <span class="mock-choice-letter">${'ABCD'[j] || ''}</span>
+          <span class="mock-choice-text">${escapeHtml(c)}</span>
+        </label>`).join('');
+      qbox.innerHTML = `
+        ${passageHtml}
+        <div class="mock-question">
+          <div class="mock-prompt">${escapeHtml(q.prompt)}</div>
+          <form class="mock-form" id="mock-form">
+            <div class="mock-choices">${choices}</div>
+            <div class="mock-cta-row">
+              <button type="submit" class="btn btn-primary mock-next-btn">${i === items.length - 1 ? 'Finish test' : 'Next →'}</button>
+            </div>
+          </form>
+        </div>`;
+      const form = document.getElementById('mock-form');
+      form.onsubmit = (e) => {
+        e.preventDefault();
+        const sel = form.querySelector('input[name="m' + i + '"]:checked');
+        if (!sel) return;
+        const picked = sel.value;
+        const isCorrect = picked === q.answer;
+        if (isCorrect) correct++;
+        // Record SR + lake event (low-key — no UI noise)
+        try {
+          if (window.GradeEarnSpacedRep && q.id) window.GradeEarnSpacedRep.record(q.id, isCorrect);
+          if (window.GradeEarnLake && q.contentId) {
+            window.GradeEarnLake.recordEvent({
+              eventType: isCorrect ? 'answered-correct' : 'answered-incorrect',
+              contentId: q.contentId, poolKey: q.poolKey,
+              state: STATE_SLUG_RESOLVED, grade: slug, subject: SUBJECT_SLUG_RESOLVED,
+              pickedChoice: picked, meta: { mockTest: true }
+            });
+          }
+        } catch (_) {}
+        perQ.push({
+          idx: i, qId: q.id, prompt: q.prompt.slice(0, 80),
+          picked, isCorrect, teks: q.teks || (q._lesson && q._lesson.teks) || null,
+          unitTitle: q._unit && q._unit.title
+        });
+        i++;
+        if (i >= items.length) finishTest();
+        else renderQuestion();
+      };
+    }
+
+    function finishTest() {
+      if (timerHandle) clearInterval(timerHandle);
+      const total = items.length;
+      const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
+      const elapsedMs = Date.now() - startedAt;
+      const elapsedMin = Math.floor(elapsedMs / 60000);
+      const elapsedSec = Math.floor((elapsedMs % 60000) / 1000);
+      // Rough scaled-score estimate (linear; not real STAAR conversion).
+      const scaledEst = Math.round(1300 + (correct / Math.max(total, 1)) * 1300);
+      // Approximate-passing band: ~1500-1700 across STAAR grade levels
+      const verdict = scaledEst >= 1900 ? 'Likely pass — strong'
+                    : scaledEst >= 1700 ? 'Likely pass'
+                    : scaledEst >= 1500 ? 'Borderline'
+                    : 'More practice recommended';
+      // Per-unit breakdown
+      const byUnit = {};
+      for (const r of perQ) {
+        const k = r.unitTitle || 'Other';
+        if (!byUnit[k]) byUnit[k] = { c: 0, t: 0 };
+        byUnit[k].t++;
+        if (r.isCorrect) byUnit[k].c++;
+      }
+      const unitRows = Object.entries(byUnit)
+        .sort((a, b) => b[1].t - a[1].t)
+        .slice(0, 8)
+        .map(([k, v]) => {
+          const p = Math.round((v.c / v.t) * 100);
+          return `<li><span class="mock-unit-name">${escapeHtml(k)}</span><span class="mock-unit-score">${v.c}/${v.t} (${p}%)</span></li>`;
+        }).join('');
+
+      root.innerHTML = `
+        <div class="mock-staar-shell mock-result">
+          <div class="card" style="text-align:center;padding:36px;">
+            <div class="mock-result-eyebrow">Mock test complete</div>
+            <h2 style="margin:6px 0 4px;">${pct}% correct</h2>
+            <p class="mock-result-sub">${correct} of ${total} questions · finished in ${elapsedMin}m ${elapsedSec}s</p>
+            <div class="mock-scaled">
+              <div class="mock-scaled-num">${scaledEst}</div>
+              <div class="mock-scaled-label">Estimated scaled score · <strong>${verdict}</strong></div>
+              <div class="mock-scaled-disc">Estimate, not real STAAR. Calibrated to a linear approximation; the actual STAAR conversion is grade-specific and non-linear.</div>
+            </div>
+            ${unitRows ? `<div class="mock-by-unit"><h3>By topic</h3><ul>${unitRows}</ul></div>` : ''}
+            <div class="mock-result-actions">
+              <a class="btn btn-primary" href="practice.html?s=${encodeURIComponent(STATE_SLUG_RESOLVED)}&g=${encodeURIComponent(slug)}&subj=${encodeURIComponent(SUBJECT_SLUG_RESOLVED)}">Practice mode</a>
+              <a class="btn btn-secondary" href="practice.html?mock=1&s=${encodeURIComponent(STATE_SLUG_RESOLVED)}&g=${encodeURIComponent(slug)}&subj=${encodeURIComponent(SUBJECT_SLUG_RESOLVED)}" style="margin-left:8px;">Take another mock test</a>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    renderShell();
+    renderQuestion();
+    timerHandle = setInterval(renderHeader, 1000);
+  }
+
+  // ============================================================
+  // Print-friendly worksheet mode (?print=1).
   //
   // Loads a question set the same way the regular quiz path does,
   // then renders a clean printable HTML (numbered questions, A/B/C/D
