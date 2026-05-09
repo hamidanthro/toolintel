@@ -12100,6 +12100,82 @@ body.grade-page > * {
 @media (max-width: 380px) { .practice-pill--countdown { display: none; } }
 
 /* ============================================================
+   Quick Search palette (Cmd+K). IDE-style command bar.
+   ============================================================ */
+.qs-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(6, 13, 31, 0.78);
+  backdrop-filter: blur(6px);
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 12vh 16px 16px;
+  animation: qs-fade-in 160ms ease-out;
+}
+@keyframes qs-fade-in { from { opacity: 0; } to { opacity: 1; } }
+.qs-modal {
+  width: 100%; max-width: 600px;
+  background: linear-gradient(180deg, #0d2249 0%, #061230 100%);
+  border: 1px solid rgba(251, 191, 36, 0.18);
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.6),
+              0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+              0 0 60px -20px rgba(251, 191, 36, 0.2);
+  border-radius: 14px;
+  overflow: hidden;
+  color: #fff;
+}
+.qs-input-wrap {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.qs-input-icon { color: rgba(255, 255, 255, 0.5); flex-shrink: 0; }
+.qs-input {
+  flex: 1; background: transparent; border: none; outline: none;
+  color: #fff; font-size: 1rem; font-family: inherit;
+}
+.qs-input::placeholder { color: rgba(255, 255, 255, 0.4); }
+.qs-kbd {
+  display: inline-block; min-width: 22px; padding: 1px 6px;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+  text-align: center; line-height: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.7);
+}
+.qs-kbd--esc { font-size: 0.65rem; }
+.qs-results { max-height: 50vh; overflow-y: auto; padding: 6px; }
+.qs-empty { padding: 28px 16px; color: rgba(255, 255, 255, 0.55); text-align: center; }
+.qs-item {
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center;
+  gap: 10px; padding: 10px 12px;
+  text-decoration: none; color: rgba(255, 255, 255, 0.92);
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+.qs-item--focus { background: rgba(251, 191, 36, 0.08); }
+.qs-item-kind {
+  font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em;
+  font-weight: 700; padding: 3px 7px; border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.55);
+}
+.qs-item-kind--state { color: #fbbf24; background: rgba(251, 191, 36, 0.08); }
+.qs-item-kind--grade { color: #60a5fa; background: rgba(96, 165, 250, 0.08); }
+.qs-item-kind--shortcut { color: rgba(255, 255, 255, 0.6); }
+.qs-item-title { font-weight: 500; }
+.qs-item-sub { color: rgba(255, 255, 255, 0.45); font-size: 0.82rem; text-align: right; }
+.qs-footer {
+  display: flex; gap: 14px; flex-wrap: wrap; padding: 10px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.78rem; color: rgba(255, 255, 255, 0.45);
+}
+@media (max-width: 480px) {
+  .qs-overlay { padding-top: 4vh; }
+  .qs-item-sub { display: none; }
+}
+
+/* ============================================================
    Loading button state. Add `data-loading="1"` (or .btn--loading)
    to any .btn during submit. Shows a spinner, disables clicks.
    ============================================================ */

@@ -288,6 +288,17 @@
         </${tag}>
       `;
     }).join('');
+
+    // H6: tap haptic on mobile when a kid presses a live subject card.
+    // 10ms is the lightest possible — feels like a button click, not
+    // a notification buzz. Touchstart fires before navigation so the
+    // kid feels the response right when their finger lands.
+    const cards = document.querySelectorAll('.subject-card--live');
+    cards.forEach(c => {
+      c.addEventListener('touchstart', () => {
+        try { navigator.vibrate && navigator.vibrate(10); } catch (_) {}
+      }, { passive: true });
+    });
   }
 
   function getSubjectIcon(name) {
