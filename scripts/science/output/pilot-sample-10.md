@@ -1,233 +1,255 @@
-# Pilot sample-10 review
+# Phase J — pilot sample-10 review
 
-Sampled 10 questions from 21 persisted across 5 scenarios.
+Sampled 10 questions from 41 now-active across 9 scenarios.
 
-## Question 1 — 5.6A — Matter & Energy
+Pipeline that produced these: Opus 4.7 generator → Sonnet 4.5 verifier → Sonnet 4.5 judge. Each question independently verified for TEK alignment + science accuracy + answer-pick agreement, then judged against 9 reason codes (TEK_MISMATCH, ANSWER_FOUND_IN_PROMPT, SCIENCE_FACTUAL_ERROR, DIAGRAM_REQUIRED, LAB_SAFETY_VIOLATION, etc.). Survivors below.
+
+## Question 1 — 5.6B — Matter & Energy
 *pick reason: strand: Matter & Energy*
 
-**Stem:** In Ms. Rodriguez's experiment, the wooden block and the cork both floated in the water. Which property do these two objects most likely have in common?
+**Stem:** After the students in Ms. Rodriguez's class stirred the rice and beans together for 30 seconds, what did they most likely observe about the rice grains and the beans?
 
 **Choices:**
-  - A. They both have lower density than water
-  - B. They both have the same mass
-  - C. They both have the same volume
-  - D. They both are made of natural materials
+  - A. The rice grains were still white and small, and the beans were still black and larger.
+  - B. The rice grains turned black and the beans turned white after stirring.
+  - C. The rice and beans combined to form one new type of grain.
+  - D. The rice grains disappeared into the beans and could no longer be seen.
 
 **Correct:** A
 
-**Explanation:** Objects float when their density is lower than the density of water. Both the wooden block and cork floated because they are less dense than water, even though they may have different masses, volumes, and compositions.
+**Explanation:** When two materials are mixed physically, each one keeps its own physical properties. The rice stayed white and small, and the beans stayed black and larger.
 
 **Region:** none
 
-**Judge:** pass (confidence 0.95) reasons=[]
+**Verifier:** pass (conf 1) · agreed=true · tek=aligned · science=true
 
-**Scenario context (truncated):** Ms. Rodriguez asked her fifth-grade students to investigate which objects sink or float in water. Each group received a clear container filled with 500 milliliters of tap water at room temperature. Th…
+**Judge:** pass (conf 0.95) reasons=[]
+
+**Scenario context (truncated):** Ms. Rodriguez asked her class to investigate what happens when two different materials are combined. Each student received one cup of white rice and one cup of black beans. The students poured both cu…
 
 ---
 
 ## Question 2 — 5.7A — Force, Motion & Energy
 *pick reason: strand: Force, Motion & Energy*
 
-**Stem:** During the magnet activity, students observed that the bar magnet pulled the iron nail toward it without touching the nail first. Which force was acting on the nail to cause this motion?
+**Stem:** In the first round of Ms. Rodriguez's tug-of-war, Team A pulled east with 300 newtons and Team B pulled west with 300 newtons, and the rope did not move. What does this result show about the forces on the rope?
 
 **Choices:**
-  - A. Magnetism
-  - B. Gravity
-  - C. Friction
-  - D. The nail moved on its own
+  - A. The forces were balanced, so the rope did not change position.
+  - B. There were no forces acting on the rope because it stayed still.
+  - C. Team A's force was stronger but cancelled out by friction.
+  - D. The rope was too heavy for the students to move.
 
 **Correct:** A
 
-**Explanation:** Magnetism is the force that caused the iron nail to move toward the bar magnet. Magnetic force can act on objects even without touching them, which is why the nail moved before contact.
+**Explanation:** When two equal forces pull in opposite directions, they balance each other and the object's motion does not change. The rope stayed still because 300 N east and 300 N west cancelled out.
 
 **Region:** none
 
-**Judge:** pass (confidence 0.95) reasons=[]
+**Verifier:** pass (conf 0.98) · agreed=true · tek=aligned · science=true
 
-**Scenario context (truncated):** Ms. Rodriguez gave her students a tray with five objects to test. The objects were a steel paperclip, a copper penny, a plastic button, a piece of aluminum foil, and an iron nail. Each student used a …
+**Judge:** pass (conf 0.95) reasons=[]
+
+**Scenario context (truncated):** Ms. Rodriguez's fifth grade class conducted a tug-of-war investigation on the playground to study forces. In the first round, Team A had three students pulling the rope east with a combined force of 3…
 
 ---
 
-## Question 3 — 5.10A — Earth & Space
+## Question 3 — 5.9A — Earth & Space
 *pick reason: strand: Earth & Space*
 
-**Stem:** In Ms. Rodriguez's experiment, what is the primary source of energy causing water to evaporate from Pan A and Pan B?
+**Stem:** The students wondered why the flagpole's shadow changed direction from west in the morning to east in the afternoon, even though the flagpole did not move. What is the best explanation for this change?
 
 **Choices:**
-  - A. The Sun
-  - B. The aluminum pans
-  - C. The air temperature
-  - D. The graduated cylinder
+  - A. Earth rotates on its axis, which makes the Sun appear to move across the sky from east to west.
+  - B. The Sun actually travels around Earth once each day, moving from east to west.
+  - C. The flagpole leans slightly in different directions as the day goes on.
+  - D. Shadows always point toward the north no matter where the Sun is.
 
 **Correct:** A
 
-**Explanation:** The Sun is the primary energy source that drives the water cycle, including evaporation. Even though air temperature was similar in both locations, Pan A received direct sunlight which provided more solar energy for evaporation.
+**Explanation:** Earth spins on its axis once about every 24 hours. As Earth rotates, the Sun appears to move across the sky, so shadows shift direction throughout the day.
 
 **Region:** none
 
-**Judge:** pass (confidence 0.95) reasons=[]
+**Verifier:** pass (conf 1) · agreed=true · tek=aligned · science=true
 
-**Scenario context (truncated):** Ms. Rodriguez's fifth grade class investigated how location affects water evaporation. Students placed two identical aluminum pans outside. Each pan started with exactly 500 milliliters of water. Pan …
+**Judge:** pass (conf 0.95) reasons=[]
+
+**Scenario context (truncated):** Ms. Rodriguez's fifth-grade class measured the shadow of their school flagpole at three different times on a sunny day in March. At 8:00 in the morning, the flagpole's shadow was 4 meters long and poi…
 
 ---
 
 ## Question 4 — 5.12A — Organisms & Environments
 *pick reason: strand: Organisms & Environments*
 
-**Stem:** In the pond ecosystem described, which of the following is an example of a biotic factor?
+**Stem:** Ms. Rodriguez's class noticed that frogs interact with both living and nonliving things at the pond. Which observation BEST shows frogs depending on a nonliving (abiotic) factor in their ecosystem?
 
 **Choices:**
-  - A. The green frogs that hunt insects
-  - B. The water temperature of 22 degrees Celsius
-  - C. The sunlight shining through the water
-  - D. The dissolved oxygen at 8 milligrams per liter
+  - A. More frogs were seen when the air temperature was warmer
+  - B. More insects were seen when frog numbers were high
+  - C. Frogs were observed near the water's edge in September
+  - D. Only 1 frog was counted during the December visit
 
 **Correct:** A
 
-**Explanation:** Biotic factors are the living parts of an ecosystem. Green frogs are living organisms, while water temperature, sunlight, and dissolved oxygen are all nonliving abiotic factors.
+**Explanation:** Temperature is an abiotic (nonliving) factor. The data shows frog activity rises with warmer air temperatures, which means frogs depend on this nonliving part of their ecosystem.
 
 **Region:** none
 
-**Judge:** pass (confidence 0.95) reasons=[]
+**Verifier:** pass (conf 0.5) · agreed=null · tek=unsure · science=null
 
-**Scenario context (truncated):** A healthy pond ecosystem contains many different parts that work together. The living parts are called biotic factors. In this pond, biotic factors include green frogs that sit on the banks and hunt i…
+**Judge:** pass (conf 0.5) reasons=[]
+
+**Scenario context (truncated):** Ms. Rodriguez's fifth grade class visits a local pond four times during the school year to observe frog activity. In September, they count 8 frogs near the water's edge and measure the air temperature…
 
 ---
 
-## Question 5 — 5.10A — Earth & Space
-*pick reason: lowest-confidence: 0.5*
+## Question 5 — 5.6A — Matter & Energy
+*pick reason: readiness: 5.6A*
 
-**Stem:** What happened to the water molecules that evaporated from Pan A and Pan B during the experiment?
+**Stem:** After mixing, Ms. Rodriguez asked, 'Could you separate the rice from the beans again?' Which property of the materials would be MOST useful for separating them by hand?
 
 **Choices:**
-  - A. They changed from liquid water to water vapor in the air
-  - B. They disappeared and no longer exist
-  - C. They soaked into the aluminum pans
-  - D. They turned into a different substance
+  - A. The mass of the bowl holding the mixture.
+  - B. The size and color of the rice grains and beans.
+  - C. The temperature of the room where the experiment took place.
+  - D. The amount of time the students stirred the mixture.
 
-**Correct:** A
+**Correct:** B
 
-**Explanation:** During evaporation, liquid water absorbs energy from the Sun and changes state to become water vapor (gas) in the atmosphere. This is a key part of the water cycle, and the water molecules are conserved—they don't disappear.
+**Explanation:** Because rice grains are small and white while beans are larger and black, students can use size and color to sort them apart. These properties did not change during mixing.
 
 **Region:** none
 
-**Judge:** pass (confidence 0.5) reasons=[]
+**Verifier:** pass (conf 0.95) · agreed=true · tek=aligned · science=true
 
-**Scenario context (truncated):** Ms. Rodriguez's fifth grade class investigated how location affects water evaporation. Students placed two identical aluminum pans outside. Each pan started with exactly 500 milliliters of water. Pan …
+**Judge:** pass (conf 0.95) reasons=[]
+
+**Scenario context (truncated):** Ms. Rodriguez asked her class to investigate what happens when two different materials are combined. Each student received one cup of white rice and one cup of black beans. The students poured both cu…
 
 ---
 
-## Question 6 — 5.6A — Matter & Energy
-*pick reason: backfill*
+## Question 6 — 5.8C — Force, Motion & Energy
+*pick reason: readiness: 5.8C*
 
-**Stem:** The metal washer and the marble both sank immediately in Ms. Rodriguez's container of water. What can students conclude about the density of these two objects compared to water?
+**Stem:** The students saw the flagpole's shadow because light from the Sun was blocked by the pole. Which statement best describes how light behaves to create the shadow?
 
 **Choices:**
-  - A. Both objects have higher density than water
-  - B. Both objects have lower density than water
-  - C. Both objects have the same density as water
-  - D. Both objects have no density because they are solid
+  - A. Light travels in straight lines from the Sun and is blocked by the flagpole.
+  - B. Light bends around the flagpole and lands behind it.
+  - C. Light is just there in the air; it does not actually travel.
+  - D. The flagpole pulls darkness toward the ground.
 
 **Correct:** A
 
-**Explanation:** Objects sink when their density is higher than the density of the liquid. Since both the metal washer and marble sank, they must be denser than water.
+**Explanation:** Light from the Sun travels in straight lines. When the flagpole blocks those rays, the area behind the pole does not get light, which forms a shadow.
 
 **Region:** none
 
-**Judge:** pass (confidence 0.95) reasons=[]
+**Verifier:** pass (conf 1) · agreed=true · tek=aligned · science=true
 
-**Scenario context (truncated):** Ms. Rodriguez asked her fifth-grade students to investigate which objects sink or float in water. Each group received a clear container filled with 500 milliliters of tap water at room temperature. Th…
+**Judge:** pass (conf 0.95) reasons=[]
+
+**Scenario context (truncated):** Ms. Rodriguez's fifth-grade class measured the shadow of their school flagpole at three different times on a sunny day in March. At 8:00 in the morning, the flagpole's shadow was 4 meters long and poi…
 
 ---
 
-## Question 7 — 5.6A — Matter & Energy
-*pick reason: backfill*
+## Question 7 — 5.10C — Earth & Space
+*pick reason: readiness: 5.10C*
 
-**Stem:** Students observed that the plastic bottle cap floated on the surface of the 500 milliliters of tap water. If students added 500 more milliliters of water to the container, what would most likely happen to the bottle cap?
+**Stem:** During the drought, the prairie soil dries out and becomes loose. If a strong North Texas thunderstorm finally arrives with heavy rain and wind, which Earth surface change is MOST likely to happen to the dry prairie?
 
 **Choices:**
-  - A. It would continue to float because its density relative to water has not changed
-  - B. It would sink because there is more water pushing down on it
-  - C. It would float higher because there is more water to support it
-  - D. It would dissolve because it is in contact with water longer
+  - A. Wind and water will erode the loose, dry soil and carry it away.
+  - B. The soil will instantly turn back into thick green grass overnight.
+  - C. The soil will become heavier and sink deep into the ground.
+  - D. The rain will wash the soil so it gains more mass than before.
 
 **Correct:** A
 
-**Explanation:** Whether an object floats or sinks depends on its density compared to water, not on the amount of water present. Adding more water does not change the density of either the cap or the water, so the cap continues to float.
+**Explanation:** When soil is dry and loose, wind and heavy rain can easily erode it and carry it away. This is one way wind and water shape the land over time.
 
-**Region:** none
+**Region:** dfw
 
-**Judge:** pass (confidence 0.95) reasons=[]
+**Verifier:** pass (conf 0.5) · agreed=null · tek=unsure · science=null
 
-**Scenario context (truncated):** Ms. Rodriguez asked her fifth-grade students to investigate which objects sink or float in water. Each group received a clear container filled with 500 milliliters of tap water at room temperature. Th…
+**Judge:** pass (conf 0.5) reasons=[]
+
+**Scenario context (truncated):** Ms. Rodriguez's fifth grade class in Fort Worth is studying how organisms depend on their environment. The students observe a prairie ecosystem near their school where grasshoppers are common. The cla…
 
 ---
 
-## Question 8 — 5.6A — Matter & Energy
-*pick reason: backfill*
+## Question 8 — 5.12A — Organisms & Environments
+*pick reason: regionTag: hill_country*
 
-**Stem:** After the experiment, Ms. Rodriguez asked students to explain why the cork floated at the top of the water. Which explanation is most accurate?
+**Stem:** Based on the scenario, which statement BEST describes how the Bracken Cave bats interact with biotic and abiotic factors in the Hill Country ecosystem?
 
 **Choices:**
-  - A. The cork has lower density than water, so water pushes it upward
-  - B. The cork is lighter than water, so it cannot sink
-  - C. The cork has air inside it, and air always floats
-  - D. The cork is small, and small objects always float
+  - A. The bats depend on insects (biotic) for food and the cave (abiotic) for shelter.
+  - B. The bats depend only on the cave walls and do not need other living things.
+  - C. The bats make their own food inside the cave using sunlight.
+  - D. The bats only interact with farmers and crops, not with other parts of nature.
 
 **Correct:** A
 
-**Explanation:** Cork floats because its density is lower than the density of water. The upward buoyant force from the water is greater than the downward force of the cork's weight, causing it to float.
+**Explanation:** Bats are part of a healthy ecosystem because they depend on living things like insects (biotic) and nonliving things like the cave (abiotic) for survival.
 
-**Region:** none
+**Region:** hill_country
 
-**Judge:** pass (confidence 0.95) reasons=[]
+**Verifier:** pass (conf 1) · agreed=true · tek=aligned · science=true
 
-**Scenario context (truncated):** Ms. Rodriguez asked her fifth-grade students to investigate which objects sink or float in water. Each group received a clear container filled with 500 milliliters of tap water at room temperature. Th…
+**Judge:** pass (conf 0.95) reasons=[]
+
+**Scenario context (truncated):** Ms. Rodriguez's fifth grade class in Fredericksburg visited Bracken Cave in the Texas Hill Country. They learned that over 15 million Mexican free-tailed bats live in the cave during summer months. Ea…
 
 ---
 
-## Question 9 — 5.6A — Matter & Energy
-*pick reason: backfill*
+## Question 9 — 5.12A — Organisms & Environments
+*pick reason: regionTag: hill_country*
 
-**Stem:** Based on Ms. Rodriguez's magnet activity, which physical property was being tested when students used the bar magnet on the five objects?
+**Stem:** Ms. Rodriguez asked her students to predict what would MOST likely happen to mosquito populations near Fredericksburg if the Bracken Cave bat colony disappeared completely.
 
 **Choices:**
-  - A. Magnetism
-  - B. Mass
-  - C. Volume
-  - D. Solubility
+  - A. Mosquito populations would increase because a major predator was removed.
+  - B. Mosquito populations would decrease because mosquitoes need bats to survive.
+  - C. Mosquito populations would stay exactly the same with no change.
+  - D. Mosquitoes would disappear because only big animals are predators.
 
 **Correct:** A
 
-**Explanation:** The students were testing magnetism by seeing which objects were attracted to the bar magnet. Magnetism is one of the physical properties used to compare and contrast matter.
+**Explanation:** Removing the bats removes a major predator of mosquitoes, so mosquito numbers would rise. The scenario notes one bat can eat up to 600 mosquitoes per hour.
 
-**Region:** none
+**Region:** hill_country
 
-**Judge:** pass (confidence 0.95) reasons=[]
+**Verifier:** pass (conf 0.95) · agreed=true · tek=aligned · science=true
 
-**Scenario context (truncated):** Ms. Rodriguez gave her students a tray with five objects to test. The objects were a steel paperclip, a copper penny, a plastic button, a piece of aluminum foil, and an iron nail. Each student used a …
+**Judge:** pass (conf 0.95) reasons=[]
+
+**Scenario context (truncated):** Ms. Rodriguez's fifth grade class in Fredericksburg visited Bracken Cave in the Texas Hill Country. They learned that over 15 million Mexican free-tailed bats live in the cave during summer months. Ea…
 
 ---
 
-## Question 10 — 5.6A — Matter & Energy
-*pick reason: backfill*
+## Question 10 — 5.12A — Organisms & Environments
+*pick reason: lowest-verifier-confidence: 0.5*
 
-**Stem:** In Ms. Rodriguez's experiment, the steel paperclip and iron nail were both attracted to the magnet, but the copper penny and aluminum foil were not. What can students conclude about magnetism as a physical property?
+**Stem:** Based on the class's data, what happens to frog activity at the pond as the seasons change from September to December?
 
 **Choices:**
-  - A. Only certain metals have the property of magnetism
-  - B. All metals are attracted to magnets
-  - C. Heavier objects are always magnetic
-  - D. Only shiny objects are attracted to magnets
+  - A. Frog activity decreases as the air temperature drops
+  - B. Frog activity increases because frogs prefer cold water
+  - C. Frog activity stays the same all year long
+  - D. Frog activity decreases because the days get longer
 
 **Correct:** A
 
-**Explanation:** The data shows that some metals like iron and steel are magnetic, while other metals like copper and aluminum are not. Magnetism is a property that only certain materials have.
+**Explanation:** From September (28°C, 8 frogs) to December (6°C, 1 frog), temperature dropped and frog activity dropped too. Many frogs become inactive in cold weather to survive.
 
 **Region:** none
 
-**Judge:** pass (confidence 0.95) reasons=[]
+**Verifier:** pass (conf 0.5) · agreed=null · tek=unsure · science=null
 
-**Scenario context (truncated):** Ms. Rodriguez gave her students a tray with five objects to test. The objects were a steel paperclip, a copper penny, a plastic button, a piece of aluminum foil, and an iron nail. Each student used a …
+**Judge:** pass (conf 0.5) reasons=[]
+
+**Scenario context (truncated):** Ms. Rodriguez's fifth grade class visits a local pond four times during the school year to observe frog activity. In September, they count 8 frogs near the water's edge and measure the air temperature…
 
 ---
