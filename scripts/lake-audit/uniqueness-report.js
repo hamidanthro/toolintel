@@ -39,7 +39,7 @@
 const fs = require('fs');
 const path = require('path');
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
-const { DynamoDBDocumentClient, ScanCommand } = require('@aws-sdk/lib-dynamodb');
+const { DynamoDBDocumentClient, ScanCommand, QueryCommand } = require('@aws-sdk/lib-dynamodb');
 
 const TABLE = 'staar-content-pool';
 const REGION = process.env.AWS_REGION || 'us-east-1';
@@ -72,13 +72,16 @@ function cosine(a, b) {
   const startedAt = new Date().toISOString();
   console.log(`[uniqueness] scanning active rows in ${TABLE}…`);
 
+  // Use status-generatedAt-index GSI: O(active) instead of O(total).
+  // Direct Query on status='active' replaces full-table Scan + filter.
   const items = [];
   let last;
   let pages = 0;
   do {
-    const r = await ddb.send(new ScanCommand({
+    const r = await ddb.send(new QueryCommand({
       TableName: TABLE,
-      FilterExpression: '#s = :a',
+      IndexName: 'status-generatedAt-index',
+      KeyConditionExpression: '#s = :a',
       ExpressionAttributeNames: { '#s': 'status' },
       ExpressionAttributeValues: { ':a': 'active' },
       ProjectionExpression: 'contentId, poolKey, question, embedding',
@@ -87,9 +90,9 @@ function cosine(a, b) {
     for (const it of (r.Items || [])) items.push(it);
     last = r.LastEvaluatedKey;
     pages++;
-    if (pages % 5 === 0) console.log(`[uniqueness] scan progress: ${items.length} rows so far (page ${pages})`);
+    if (pages % 5 === 0) console.log(`[uniqueness] query progress: ${items.length} rows so far (page ${pages})`);
   } while (last);
-  console.log(`[uniqueness] scan complete: ${items.length} active rows`);
+  console.log(`[uniqueness] query complete: ${items.length} active rows`);
 
   // ---- (a) EXACT_TEXT duplicate groups ----
   const byText = new Map();
