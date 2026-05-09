@@ -1,0 +1,360 @@
+{
+  "runId": "2026-05-09T02-10-59-246Z",
+  "startedAt": "2026-05-09T02:10:59.246Z",
+  "mode": "dry-run",
+  "fromStatus": "tombstoned-needs-tek-revalidation",
+  "toStatus": "active",
+  "untombstoneReason": "phase-i-opus-shipped-2026-05-09",
+  "pilotPayload": "pilot-2026-05-09T01-32-38-699Z.json",
+  "poolTargets": [
+    {
+      "poolKey": "texas#5#science#sci_tx_5_9d5d27a1",
+      "contentId": "q_9ee6c0d81885",
+      "claimedTeks": "5.6B",
+      "strand": "Matter & Energy",
+      "regionTag": null
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_9d5d27a1",
+      "contentId": "q_3344fd791a1a",
+      "claimedTeks": "5.6B",
+      "strand": "Matter & Energy",
+      "regionTag": null
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_9d5d27a1",
+      "contentId": "q_28b0a7b2675c",
+      "claimedTeks": "5.6A",
+      "strand": "Matter & Energy",
+      "regionTag": null
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_9d5d27a1",
+      "contentId": "q_408934c43000",
+      "claimedTeks": "5.6C",
+      "strand": "Matter & Energy",
+      "regionTag": null
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_ec56942d",
+      "contentId": "q_223987560608",
+      "claimedTeks": "5.6B",
+      "strand": "Matter & Energy",
+      "regionTag": null
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_ec56942d",
+      "contentId": "q_7ce53df9d428",
+      "claimedTeks": "5.6B",
+      "strand": "Matter & Energy",
+      "regionTag": null
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_ec56942d",
+      "contentId": "q_d9e867047726",
+      "claimedTeks": "5.6B",
+      "strand": "Matter & Energy",
+      "regionTag": null
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_ec56942d",
+      "contentId": "q_8d59a16a699a",
+      "claimedTeks": "5.6A",
+      "strand": "Matter & Energy",
+      "regionTag": null
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_56e33459",
+      "contentId": "q_e3ea64e96bc5",
+      "claimedTeks": "5.7A",
+      "strand": "Force, Motion & Energy",
+      "regionTag": null
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_56e33459",
+      "contentId": "q_16bd13b48666",
+      "claimedTeks": "5.7A",
+      "strand": "Force, Motion & Energy",
+      "regionTag": null
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_56e33459",
+      "contentId": "q_e5b87270d6c3",
+      "claimedTeks": "5.7A",
+      "strand": "Force, Motion & Energy",
+      "regionTag": null
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_56e33459",
+      "contentId": "q_d85cf277b405",
+      "claimedTeks": "5.7B",
+      "strand": "Force, Motion & Energy",
+      "regionTag": null
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_d68a9335",
+      "contentId": "q_f3c9e250cab0",
+      "claimedTeks": "5.7B",
+      "strand": "Force, Motion & Energy",
+      "regionTag": null
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_d68a9335",
+      "contentId": "q_fe37d14b88a5",
+      "claimedTeks": "5.7A",
+      "strand": "Force, Motion & Energy",
+      "regionTag": null
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_d68a9335",
+      "contentId": "q_0765b8df38fd",
+      "claimedTeks": "5.7A",
+      "strand": "Force, Motion & Energy",
+      "regionTag": null
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_d68a9335",
+      "contentId": "q_1eb37d296a4d",
+      "claimedTeks": "5.7B",
+      "strand": "Force, Motion & Energy",
+      "regionTag": null
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_fdc99e75",
+      "contentId": "q_0e0ce27f2284",
+      "claimedTeks": "5.9A",
+      "strand": "Earth & Space",
+      "regionTag": null
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_fdc99e75",
+      "contentId": "q_67e1a5635983",
+      "claimedTeks": "5.9A",
+      "strand": "Earth & Space",
+      "regionTag": null
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_fdc99e75",
+      "contentId": "q_416570e40f7d",
+      "claimedTeks": "5.9A",
+      "strand": "Earth & Space",
+      "regionTag": null
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_fdc99e75",
+      "contentId": "q_35f45749da83",
+      "claimedTeks": "5.8C",
+      "strand": "Force, Motion & Energy",
+      "regionTag": null
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_fdc99e75",
+      "contentId": "q_9f82a087e0ab",
+      "claimedTeks": "5.9A",
+      "strand": "Earth & Space",
+      "regionTag": null
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_4229fb7d",
+      "contentId": "q_47a8f9786371",
+      "claimedTeks": "5.12A",
+      "strand": "Organisms & Environments",
+      "regionTag": null
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_4229fb7d",
+      "contentId": "q_f793af4e0a97",
+      "claimedTeks": "5.12A",
+      "strand": "Organisms & Environments",
+      "regionTag": null
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_4229fb7d",
+      "contentId": "q_1f0b08d655e3",
+      "claimedTeks": "5.12A",
+      "strand": "Organisms & Environments",
+      "regionTag": null
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_4229fb7d",
+      "contentId": "q_6b0b7c56b746",
+      "claimedTeks": "4.10C",
+      "strand": "Earth & Space",
+      "regionTag": null
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_4229fb7d",
+      "contentId": "q_a13c917bd14f",
+      "claimedTeks": "5.6A",
+      "strand": "Matter & Energy",
+      "regionTag": null
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_7a4f934b",
+      "contentId": "q_d5e1bad67d45",
+      "claimedTeks": "5.12A",
+      "strand": "Organisms & Environments",
+      "regionTag": "hill_country"
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_7a4f934b",
+      "contentId": "q_30ddf9dd2d00",
+      "claimedTeks": "5.12A",
+      "strand": "Organisms & Environments",
+      "regionTag": "hill_country"
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_7a4f934b",
+      "contentId": "q_3aa2b6709d46",
+      "claimedTeks": "5.13A",
+      "strand": "Organisms & Environments",
+      "regionTag": "hill_country"
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_7a4f934b",
+      "contentId": "q_16cf20a32058",
+      "claimedTeks": "5.9A",
+      "strand": "Earth & Space",
+      "regionTag": "hill_country"
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_7a4f934b",
+      "contentId": "q_01ec3d91be30",
+      "claimedTeks": "5.12A",
+      "strand": "Organisms & Environments",
+      "regionTag": "hill_country"
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_a7318427",
+      "contentId": "q_51d1ad86f0d6",
+      "claimedTeks": "5.12A",
+      "strand": "Organisms & Environments",
+      "regionTag": "dfw"
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_a7318427",
+      "contentId": "q_9c3b44b2ec12",
+      "claimedTeks": "5.12A",
+      "strand": "Organisms & Environments",
+      "regionTag": "dfw"
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_a7318427",
+      "contentId": "q_974e38062235",
+      "claimedTeks": "5.12A",
+      "strand": "Organisms & Environments",
+      "regionTag": "dfw"
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_a7318427",
+      "contentId": "q_3564c34347f9",
+      "claimedTeks": "5.12A",
+      "strand": "Organisms & Environments",
+      "regionTag": "dfw"
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_a7318427",
+      "contentId": "q_35b7907d8669",
+      "claimedTeks": "5.10C",
+      "strand": "Earth & Space",
+      "regionTag": "dfw"
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_d4d53a82",
+      "contentId": "q_11fb0650e5e3",
+      "claimedTeks": "5.13A",
+      "strand": "Organisms & Environments",
+      "regionTag": null
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_d4d53a82",
+      "contentId": "q_2b574f2d4e5b",
+      "claimedTeks": "5.13A",
+      "strand": "Organisms & Environments",
+      "regionTag": null
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_d4d53a82",
+      "contentId": "q_7da39a894449",
+      "claimedTeks": "5.12A",
+      "strand": "Organisms & Environments",
+      "regionTag": null
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_d4d53a82",
+      "contentId": "q_6c03907671f8",
+      "claimedTeks": "5.12A",
+      "strand": "Organisms & Environments",
+      "regionTag": null
+    },
+    {
+      "poolKey": "texas#5#science#sci_tx_5_d4d53a82",
+      "contentId": "q_bc9970895c39",
+      "claimedTeks": "5.6A",
+      "strand": "Matter & Energy",
+      "regionTag": null
+    }
+  ],
+  "passageTargets": [
+    {
+      "passageId": "sci_tx_5_9d5d27a1",
+      "title": "Mixing Rice and Beans",
+      "scenarioType": "experiment",
+      "regionTag": null
+    },
+    {
+      "passageId": "sci_tx_5_ec56942d",
+      "title": "Iron Filings and Sand Mixture",
+      "scenarioType": "described_diagram",
+      "regionTag": null
+    },
+    {
+      "passageId": "sci_tx_5_56e33459",
+      "title": "Tug-of-War Force Investigation",
+      "scenarioType": "experiment",
+      "regionTag": null
+    },
+    {
+      "passageId": "sci_tx_5_d68a9335",
+      "title": "Rolling Cars Down a Ramp",
+      "scenarioType": "experiment",
+      "regionTag": null
+    },
+    {
+      "passageId": "sci_tx_5_fdc99e75",
+      "title": "Flagpole Shadow Changes Throughout the Day",
+      "scenarioType": "data_analysis",
+      "regionTag": null
+    },
+    {
+      "passageId": "sci_tx_5_4229fb7d",
+      "title": "Frog Activity Throughout the Year",
+      "scenarioType": "experiment",
+      "regionTag": null
+    },
+    {
+      "passageId": "sci_tx_5_7a4f934b",
+      "title": "Bat Colony and Insect Populations",
+      "scenarioType": "experiment",
+      "regionTag": "hill_country"
+    },
+    {
+      "passageId": "sci_tx_5_a7318427",
+      "title": "Grasshoppers and Drought in North Texas",
+      "scenarioType": "experiment",
+      "regionTag": "dfw"
+    },
+    {
+      "passageId": "sci_tx_5_d4d53a82",
+      "title": "Bird Beak Shapes and Food",
+      "scenarioType": "experiment",
+      "regionTag": null
+    }
+  ],
+  "updates": {
+    "poolUpdated": 0,
+    "poolFailed": 0,
+    "passageUpdated": 0,
+    "passageFailed": 0
+  }
+}
