@@ -299,6 +299,32 @@
         try { navigator.vibrate && navigator.vibrate(10); } catch (_) {}
       }, { passive: true });
     });
+
+    // J1: surface F10 print worksheets + F5 wrong-answer review.
+    // Render a small "Practice extras" row below the subject grid.
+    // Only shows live (offered) subjects so we don't print a
+    // worksheet for content that doesn't exist for the kid's grade.
+    const liveSubjects = SUBJECTS.filter(subj => offeredFor(subj.slug)).filter(subj => {
+      const isLive = (typeof subj.liveForGrade === 'function')
+        ? subj.liveForGrade(state.slug, gradeSlug)
+        : subj.live;
+      return isLive;
+    });
+    if (liveSubjects.length > 0) {
+      const extras = document.createElement('div');
+      extras.className = 'subject-extras';
+      const printChips = liveSubjects.map(subj => {
+        const url = `practice.html?print=1&s=${encodeURIComponent(state.slug)}&g=${encodeURIComponent(gradeSlug)}&subj=${encodeURIComponent(subj.slug)}&n=10`;
+        return `<a class="subject-extra-chip" href="${url}">🖨 Print ${escapeHtml(subj.name)} worksheet</a>`;
+      }).join('');
+      const reviewUrl = `practice.html?review=1&s=${encodeURIComponent(state.slug)}&g=${encodeURIComponent(gradeSlug)}&subj=math`;
+      const reviewChip = `<a class="subject-extra-chip subject-extra-chip--review" href="${reviewUrl}">↻ Review your wrong answers</a>`;
+      extras.innerHTML = `
+        <div class="subject-extras-label">More ways to practice</div>
+        <div class="subject-extras-row">${printChips}${reviewChip}</div>
+      `;
+      grid.parentNode.insertBefore(extras, grid.nextSibling);
+    }
   }
 
   function getSubjectIcon(name) {

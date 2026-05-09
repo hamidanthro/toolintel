@@ -581,6 +581,9 @@
   // Build a curriculum-only set immediately, preferring unseen.
   // ?n=<N> URL param overrides session length (10/25/50/100). Default 25.
   // Quick-mode buttons on grade.html pass &n=… in the practice URL.
+  // J3: when spaced-rep has overdue items, mix ~25% of them into the
+  // session ahead of fresh unseen content. Kids see their weak topics
+  // on the SM-2-flavored schedule (1d -> 3d -> 7d -> 14d -> 30d -> 60d).
   function buildInitialSet(pool) {
     const reqN = parseInt(params.get('n'), 10);
     const TARGET = [10, 25, 50, 100].includes(reqN) ? reqN : 25;
@@ -589,18 +592,30 @@
     const seenPool = pool.filter(q => q.id && seen.has(q.id));
     const noId = pool.filter(q => !q.id);
 
-    let merged = shuffle(unseen.slice()).slice(0, TARGET);
+    // Spaced-rep prepull: take overdue items first.
+    const SR = window.GradeEarnSpacedRep;
+    const dueIds = SR ? new Set(SR.getDueIds({ sort: 'most-overdue' })) : new Set();
+    const due = pool.filter(q => q.id && dueIds.has(q.id));
+    const dueSlots = Math.min(due.length, Math.floor(TARGET * 0.25));
+    let merged = dueSlots > 0 ? due.slice(0, dueSlots) : [];
 
-    // If unseen is fully exhausted, recycle from the seen pool and tell the kid.
+    // Fill remaining with unseen.
+    const usedIds0 = new Set(merged.map(m => m.id));
+    const unseenFreshLeft = unseen.filter(q => !usedIds0.has(q.id));
+    const unseenSlots = TARGET - merged.length;
+    merged = merged.concat(shuffle(unseenFreshLeft.slice()).slice(0, unseenSlots));
+
+    // If everything's exhausted, recycle from the seen pool.
     if (merged.length === 0 && (seenPool.length || noId.length)) {
       try { localStorage.removeItem(seenKey()); } catch (_) {}
       showToast('Nice — you\u2019ve answered every question we have here! Recycling for review.');
       return shuffle(pool.slice()).slice(0, TARGET);
     }
 
-    // Top up if we don't have enough unseen questions yet.
+    // Top up from seen if we still don't have enough.
     if (merged.length < TARGET) {
-      const filler = shuffle(seenPool.concat(noId));
+      const usedIds = new Set(merged.map(m => m.id));
+      const filler = shuffle(seenPool.concat(noId).filter(q => !usedIds.has(q.id)));
       for (const q of filler) {
         if (merged.length >= TARGET) break;
         merged.push(q);
@@ -1166,6 +1181,14 @@
           window._stCorrectStreak = 0;
         }
         Stats.record(slug, stats, { unitId: q._unit?.id, unitTitle: q._unit?.title, isCorrect });
+        // J3 spaced-rep: schedule per-question review. Wrong → re-due in
+        // 24h. Correct after a prior wrong → bump interval (3d → 7d → ...).
+        // Correct without prior wrong → no entry, no scheduling needed.
+        try {
+          if (window.GradeEarnSpacedRep && q.id) {
+            window.GradeEarnSpacedRep.record(q.id, isCorrect);
+          }
+        } catch (_) {}
         const milestones = recordJourney(isCorrect);
         if (window.STAARFx) {
           if (isCorrect) { window.STAARFx.playCorrect(); window.STAARFx.vibrate(20); }

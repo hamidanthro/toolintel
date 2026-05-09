@@ -11770,6 +11770,85 @@ body.grade-page > * {
 
 .subject-card--live:active { transform: scale(0.98); }
 
+/* J2: dashboard review-wrong-answers secondary CTA. Sits under the
+   primary "Practice now" button. Only renders when count > 0. */
+.dash-secondary-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 8px 14px;
+  font-size: 0.88rem;
+  border-radius: 999px;
+  border: 1px solid rgba(96, 165, 250, 0.30);
+  background: rgba(96, 165, 250, 0.06);
+  color: #93c5fd;
+  text-decoration: none;
+  transition: all 140ms ease;
+}
+.dash-secondary-cta:hover {
+  border-color: #60a5fa;
+  color: #fff;
+  background: rgba(96, 165, 250, 0.14);
+}
+.dash-review-icon { font-size: 1.05rem; line-height: 1; }
+.dash-review-count {
+  display: inline-block;
+  min-width: 22px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: rgba(96, 165, 250, 0.22);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.4;
+}
+
+/* J1: practice extras (print worksheet + review wrong) below the
+   subject grid. Quiet styling — secondary actions, not primary CTAs. */
+.subject-extras {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.08);
+}
+.subject-extras-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+.subject-extras-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.subject-extra-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.02);
+  color: rgba(255, 255, 255, 0.78);
+  text-decoration: none;
+  transition: all 140ms ease;
+}
+.subject-extra-chip:hover {
+  border-color: var(--gold, #fbbf24);
+  color: var(--gold, #fbbf24);
+  background: rgba(251, 191, 36, 0.06);
+}
+.subject-extra-chip--review:hover {
+  border-color: #60a5fa;
+  color: #60a5fa;
+  background: rgba(96, 165, 250, 0.06);
+}
+
 /* G5: arrow slides right on hover, icon micro-tilts. The subject-card
    already has translateY+glow on hover — these add momentum to the
    "tap me" affordance without overdoing it. */

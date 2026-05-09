@@ -31,7 +31,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260509c" />
+  <link rel="stylesheet" href="css/styles.css?v=20260509d" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -178,6 +178,11 @@
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path d="M3 7H11M11 7L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
+          </a>
+          <a href="grades.html?review=1" id="dash-review-cta" class="dash-secondary-cta" data-review-cta hidden>
+            <span class="dash-review-icon" aria-hidden="true">↻</span>
+            <span class="dash-review-label">Review wrong answers</span>
+            <span class="dash-review-count" id="dash-review-count" hidden></span>
           </a>
         </div>
       </div>
@@ -996,7 +1001,53 @@
         document.querySelectorAll('a[data-practice-cta], a.floating-practice-cta').forEach(a => {
           a.setAttribute('href', `practice.html${qs}`);
         });
+        // J2: review-mode CTA. Same scope, plus &review=1. Hidden until
+        // the lambda confirms there's at least 1 wrong answer to review.
+        const reviewQs = stateSlug
+          ? `?review=1&s=${encodeURIComponent(stateSlug)}&g=${encodeURIComponent(slug)}&subj=${subj}`
+          : `?review=1&g=${encodeURIComponent(slug)}&subj=${subj}`;
+        document.querySelectorAll('a[data-review-cta]').forEach(a => {
+          a.setAttribute('href', `practice.html${reviewQs}`);
+        });
+        refreshReviewCTA(stateSlug, slug, subj);
       } catch (_) {}
+    }
+
+    // J2 — surface the wrong-answer count on the dashboard. Quiet probe
+    // (limit=1 keeps the round trip cheap); show the CTA only if there
+    // are misses to fix.
+    async function refreshReviewCTA(stateSlug, gradeSlug, subj) {
+      try {
+        const auth = window.STAARAuth;
+        if (!auth || !auth.token || !auth.token()) return;
+        const cta = document.getElementById('dash-review-cta');
+        if (!cta) return;
+        const res = await fetch(window.STAAR_TUTOR_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'getWrongAnswers',
+            token: auth.token(),
+            state: stateSlug,
+            grade: gradeSlug,
+            subject: subj,
+            limit: 25
+          })
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        const n = (data && Array.isArray(data.items)) ? data.items.length : 0;
+        if (n > 0) {
+          cta.hidden = false;
+          const cnt = document.getElementById('dash-review-count');
+          if (cnt) {
+            cnt.textContent = n >= 25 ? '25+' : String(n);
+            cnt.hidden = false;
+          }
+        } else {
+          cta.hidden = true;
+        }
+      } catch (_) { /* dashboard never blocks on review CTA */ }
     }
 
     // Periodic leaderboard refresh: every 30s while tab is visible, and on focus.
