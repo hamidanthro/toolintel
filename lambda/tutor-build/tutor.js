@@ -1845,6 +1845,95 @@ async function handleGetStats(payload) {
   return ok({ stats: out });
 }
 
+// ===== NO-REPEAT helpers (CLAUDE.md §39) =====
+//
+// Server-side enforcement of the NO-REPEAT rule for reading passages and
+// science scenarios. Per-user seen-state lives on the staar-users row
+// under `seenPassagesByScope` (a Map<scopeKey, Array<id>>). Scope key is
+// `${state}_${grade}_${kind}` where kind is the genre (reading) or
+// 'science' (science scenarios).
+//
+// Cycle behavior: when every passage in a scope has been seen, the seen
+// set silently resets and the kid cycles back through the pool. No UI
+// transition; the kid just sees a "first repeat" item with no jolt.
+//
+// Best-effort writes — never block the response on a markSeenAsync.
+//
+// Guests (no username) are NOT filtered: they don't have a server-side
+// row to track against. Still randomized so back-to-back hits vary.
+const PASSAGE_SEEN_CAP = 500;
+
+async function loadSeenSet(username, scopeKey) {
+  if (!username || username === 'guest') return new Set();
+  try {
+    const r = await ddb.send(new GetCommand({
+      TableName: USERS_TABLE,
+      Key: { username },
+      ProjectionExpression: 'seenPassagesByScope'
+    }));
+    const map = (r.Item && r.Item.seenPassagesByScope) || {};
+    const arr = Array.isArray(map[scopeKey]) ? map[scopeKey] : [];
+    return new Set(arr);
+  } catch (_) {
+    return new Set();
+  }
+}
+
+function markSeenAsync(username, scopeKey, id) {
+  if (!username || username === 'guest' || !id) return;
+  // Read-modify-write to FIFO-cap. Cheap because it's the same row we
+  // touched on the read side a moment ago — DDB will serve from
+  // request-router cache more often than not.
+  (async () => {
+    try {
+      const r = await ddb.send(new GetCommand({
+        TableName: USERS_TABLE,
+        Key: { username },
+        ProjectionExpression: 'seenPassagesByScope'
+      }));
+      const map = (r.Item && r.Item.seenPassagesByScope) || {};
+      const arr = Array.isArray(map[scopeKey]) ? map[scopeKey].slice() : [];
+      if (arr.indexOf(id) !== -1) return;
+      arr.push(id);
+      if (arr.length > PASSAGE_SEEN_CAP) {
+        arr.splice(0, arr.length - PASSAGE_SEEN_CAP);
+      }
+      await ddb.send(new UpdateCommand({
+        TableName: USERS_TABLE,
+        Key: { username },
+        UpdateExpression: 'SET seenPassagesByScope = if_not_exists(seenPassagesByScope, :empty)',
+        ExpressionAttributeValues: { ':empty': {} }
+      }));
+      await ddb.send(new UpdateCommand({
+        TableName: USERS_TABLE,
+        Key: { username },
+        UpdateExpression: 'SET seenPassagesByScope.#sk = :arr',
+        ExpressionAttributeNames: { '#sk': scopeKey },
+        ExpressionAttributeValues: { ':arr': arr }
+      }));
+    } catch (err) {
+      console.warn('[noRepeat] markSeenAsync failed:', err.message || err);
+    }
+  })();
+}
+
+function clearSeenAsync(username, scopeKey) {
+  if (!username || username === 'guest') return;
+  (async () => {
+    try {
+      await ddb.send(new UpdateCommand({
+        TableName: USERS_TABLE,
+        Key: { username },
+        UpdateExpression: 'SET seenPassagesByScope.#sk = :empty',
+        ExpressionAttributeNames: { '#sk': scopeKey },
+        ExpressionAttributeValues: { ':empty': [] }
+      }));
+    } catch (err) {
+      console.warn('[noRepeat] clearSeenAsync failed:', err.message || err);
+    }
+  })();
+}
+
 // ===== Fun Facts state (Phase 2) =====
 
 const FUN_FACTS_VALID_FREQS = [1, 5, 10, 25, 'paused'];
@@ -2057,7 +2146,20 @@ async function handleGetReadingItem(payload) {
     return ok({ passage: null, questions: [] });
   }
 
-  const passage = passages[Math.floor(Math.random() * passages.length)];
+  // CLAUDE.md §39 NO-REPEAT — exclude passages this kid has already seen
+  // in this (state, grade, genre) scope. Cycle silently when exhausted.
+  const scopeKey = `${state}_${grade}_${genreToUse}`;
+  const seen = await loadSeenSet(username, scopeKey);
+  let pool = passages.filter(p => !seen.has(p.passageId));
+  let cycled = false;
+  if (pool.length === 0) {
+    pool = passages;
+    cycled = true;
+    clearSeenAsync(username, scopeKey);
+  }
+  console.log('[reading] noRepeat scope=' + scopeKey + ' total=' + passages.length + ' seen=' + seen.size + ' pool=' + pool.length + ' cycled=' + cycled);
+  const passage = pool[Math.floor(Math.random() * pool.length)];
+  markSeenAsync(username, scopeKey, passage.passageId);
 
   // Fetch question pool for this passage from staar-content-pool
   // (poolKey scheme: '<state>#<grade>#reading#<passageId>').
@@ -2130,9 +2232,20 @@ async function handleGetScienceItem(payload) {
     return ok({ scenario: null, questions: [] });
   }
 
-  // Pick a random scenario for variety (NO-REPEAT enforcement is a
-  // future server-side seen-filter — see CLAUDE.md §39).
-  const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
+  // CLAUDE.md §39 NO-REPEAT — exclude scenarios this kid has already
+  // seen in this (state, grade) scope. Cycle silently when exhausted.
+  const scopeKey = `${state}_${grade}_science`;
+  const seen = await loadSeenSet(username, scopeKey);
+  let pool = scenarios.filter(s => !seen.has(s.passageId));
+  let cycled = false;
+  if (pool.length === 0) {
+    pool = scenarios;
+    cycled = true;
+    clearSeenAsync(username, scopeKey);
+  }
+  console.log('[science] noRepeat scope=' + scopeKey + ' total=' + scenarios.length + ' seen=' + seen.size + ' pool=' + pool.length + ' cycled=' + cycled);
+  const scenario = pool[Math.floor(Math.random() * pool.length)];
+  markSeenAsync(username, scopeKey, scenario.passageId);
 
   // Fetch the question pool for this scenario.
   // poolKey = '<state>#<grade>#science#<scenarioId>' per schema lock.
