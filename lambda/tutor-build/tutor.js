@@ -36,6 +36,7 @@ const TOYS_TABLE = process.env.TOYS_TABLE || 'staar-toys';
 const ORDERS_TABLE = process.env.ORDERS_TABLE || 'staar-orders';
 const PASSAGES_TABLE = process.env.PASSAGES_TABLE || 'staar-passages';   // §B2 Reading Phase 1
 const CONTENT_POOL_TABLE = process.env.CONTENT_POOL_TABLE || 'staar-content-pool';   // already exists; named here for reading-MC items
+const EVENTS_TABLE = process.env.EVENTS_TABLE || 'staar-content-events';
 const WORD_DEFINITIONS_TABLE = process.env.WORD_DEFINITIONS_TABLE || 'staar-word-definitions';   // §77 Phase C tap-any-word
 const FRIENDS_TABLE = process.env.FRIENDS_TABLE || 'staar-friends';
 const MESSAGES_TABLE = process.env.MESSAGES_TABLE || 'staar-messages';
@@ -406,6 +407,7 @@ exports.handler = async (event) => {
   if (action === 'resendVerification')   return await handleResendVerification(payload, event);
   if (action === 'getStats') return await handleGetStats(payload);
   if (action === 'putStats') return await handlePutStats(payload);
+  if (action === 'getWrongAnswers')     return await handleGetWrongAnswers(payload);
   if (action === 'getFunFactsState')    return await handleGetFunFactsState(payload);
   if (action === 'updateFunFactsState') return await handleUpdateFunFactsState(payload);
   if (action === 'getReadingPassage')   return await handleGetReadingPassage(payload);
@@ -1932,6 +1934,114 @@ function clearSeenAsync(username, scopeKey) {
       console.warn('[noRepeat] clearSeenAsync failed:', err.message || err);
     }
   })();
+}
+
+// ===== Wrong-answer review queue =====
+//
+// POST { action: 'getWrongAnswers', state?, grade?, subject?, limit? }
+// Auth required. Pulls last N answered-incorrect events for this user
+// from staar-content-events (userId-timestamp-index GSI), de-dupes by
+// contentId (most-recent wins), fetches the matching question rows from
+// staar-content-pool. Returns clean question shape kids can re-do.
+//
+// limit defaults to 25, capped at 50.
+async function handleGetWrongAnswers(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+
+  const requestedLimit = parseInt(payload.limit, 10);
+  const limit = Math.min(50, Math.max(5, Number.isFinite(requestedLimit) ? requestedLimit : 25));
+  const stateFilter = payload.state ? String(payload.state).toLowerCase() : null;
+  const gradeFilter = payload.grade != null ? String(payload.grade).toLowerCase().replace(/^grade-/, '') : null;
+  const subjectFilter = payload.subject ? String(payload.subject).toLowerCase() : null;
+
+  // Pull a wider window of recent events than `limit` because we filter
+  // by eventType client-side. 200 is a safe ceiling — at typical wrong
+  // rate of ~30%, that yields ~60 raw wrong events, more than enough.
+  let events = [];
+  try {
+    const r = await ddb.send(new QueryCommand({
+      TableName: EVENTS_TABLE,
+      IndexName: 'userId-timestamp-index',
+      KeyConditionExpression: 'userId = :u',
+      ExpressionAttributeValues: { ':u': auth.username },
+      ScanIndexForward: false,
+      Limit: 200
+    }));
+    events = r.Items || [];
+  } catch (err) {
+    console.warn('[wrongAnswers] event query failed:', err.message || err);
+    return ok({ items: [] });
+  }
+
+  // Filter to wrong-answer events with optional state/grade/subject scope.
+  const wrong = events.filter(e =>
+    e.eventType === 'answered-incorrect' &&
+    e.contentId &&
+    e.poolKey &&
+    (stateFilter == null || e.state === stateFilter) &&
+    (gradeFilter == null || String(e.grade) === gradeFilter) &&
+    (subjectFilter == null || e.subject === subjectFilter)
+  );
+
+  // De-dupe by contentId — keep most-recent wrong attempt per question
+  const byCid = new Map();
+  for (const e of wrong) {
+    if (!byCid.has(e.contentId)) byCid.set(e.contentId, e);
+  }
+  const dedupedEvents = Array.from(byCid.values()).slice(0, limit);
+  if (dedupedEvents.length === 0) return ok({ items: [] });
+
+  // Batch fetch question rows from staar-content-pool. BatchGetItem caps
+  // at 100 items, fits our limit=50 ceiling easily.
+  const keys = dedupedEvents.map(e => ({ poolKey: e.poolKey, contentId: e.contentId }));
+  let questions = [];
+  try {
+    const r = await ddb.send(new (require('@aws-sdk/lib-dynamodb').BatchGetCommand)({
+      RequestItems: {
+        [CONTENT_POOL_TABLE]: {
+          Keys: keys,
+          ProjectionExpression: 'poolKey, contentId, question, choices, correctIndex, answer, explanation, #st, #t, grade, subject, teks, unitTitle, lessonTitle',
+          ExpressionAttributeNames: { '#st': 'status', '#t': 'type' }
+        }
+      }
+    }));
+    questions = (r.Responses && r.Responses[CONTENT_POOL_TABLE]) || [];
+  } catch (err) {
+    console.warn('[wrongAnswers] BatchGet failed:', err.message || err);
+    return ok({ items: [] });
+  }
+
+  // Filter to active rows only — kid shouldn't re-do tombstoned/broken content.
+  const activeById = new Map();
+  for (const q of questions) {
+    if (q.status === 'active') activeById.set(q.contentId, q);
+  }
+
+  // Preserve chronological order from dedupedEvents.
+  const items = dedupedEvents.map(e => {
+    const q = activeById.get(e.contentId);
+    if (!q) return null;
+    return {
+      contentId: q.contentId,
+      poolKey: q.poolKey,
+      type: q.type || 'multiple_choice',
+      prompt: q.question,
+      choices: q.choices || [],
+      correctIndex: q.correctIndex,
+      answer: q.answer,
+      explanation: q.explanation,
+      teks: q.teks || null,
+      unitTitle: q.unitTitle || null,
+      lessonTitle: q.lessonTitle || null,
+      grade: q.grade,
+      subject: q.subject,
+      lastWrongAt: e.timestamp,
+      pickedChoice: e.pickedChoice
+    };
+  }).filter(Boolean);
+
+  return ok({ items });
 }
 
 // ===== Fun Facts state (Phase 2) =====

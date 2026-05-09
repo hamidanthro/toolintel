@@ -107,7 +107,7 @@
       }
       const looksBroken = t.imageUrl && /placehold\.co|placeholder/i.test(t.imageUrl);
       const img = (t.imageUrl && !looksBroken)
-        ? `<img class="toy-image" src="${escapeHtml(t.imageUrl)}" alt="${escapeHtml(t.name)}" loading="lazy" onerror="this.outerHTML='<div class=\\'toy-image-placeholder\\'>\u{1F381}</div>'" />`
+        ? `<img class="toy-image" src="${escapeHtml(t.imageUrl)}" alt="${escapeHtml(t.name)}" loading="lazy" decoding="async" onerror="this.outerHTML='<div class=\\'toy-image-placeholder\\'>\u{1F381}</div>'" />`
         : `<div class="toy-image-placeholder">\u{1F381}</div>`;
       const desc = (t.description || '').trim();
       const priceLabel = formatPoints(t.priceCents);
@@ -178,7 +178,7 @@
         <tbody>
           ${orders.map(o => `
             <tr>
-              <td>${o.toyImageUrl ? `<img src="${escapeHtml(o.toyImageUrl)}" alt="" />` : ''}</td>
+              <td>${o.toyImageUrl ? `<img src="${escapeHtml(o.toyImageUrl)}" alt="" loading="lazy" decoding="async" />` : ''}</td>
               <td>${escapeHtml(o.toyName)}</td>
               <td>${Auth.formatCents(o.priceCents)}</td>
               <td><span class="status-pill status-${escapeHtml(o.status)}">${escapeHtml(o.status)}</span></td>

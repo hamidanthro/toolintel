@@ -12068,6 +12068,41 @@ body.grade-page > * {
   background: rgba(255, 255, 255, 0.02);
 }
 
+/* Countdown-to-test pill — gold tint, calm not alarming. */
+.practice-pill--countdown {
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.08);
+  border-color: rgba(251, 191, 36, 0.25);
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 380px) { .practice-pill--countdown { display: none; } }
+
+/* End-of-set quick-mode chip row. Lets kids change session size for the
+   next round without going back to the grade page. */
+.practice-mode-row {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+.practice-mode-chip {
+  display: inline-block;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.02);
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: none;
+  transition: all 120ms ease;
+}
+.practice-mode-chip:hover {
+  border-color: var(--gold, #fbbf24);
+  color: var(--gold, #fbbf24);
+  background: rgba(251, 191, 36, 0.08);
+}
+
 @media (max-width: 768px) {
   .practice-breadcrumb { padding: 12px 0; gap: 10px; }
   .practice-breadcrumb-back { width: 32px; height: 32px; }

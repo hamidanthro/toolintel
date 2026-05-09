@@ -161,6 +161,21 @@
     const gradeName = gradeNames[slug] || slug;
     const subjLabel = SUBJECT_SLUG.charAt(0).toUpperCase() + SUBJECT_SLUG.slice(1).replace('-', ' ');
     const backHref = `grade.html?s=${encodeURIComponent(STATE_SLUG)}&g=${encodeURIComponent(slug)}`;
+    // Days-to-test pill — uses state's testWindowMonth (1=Jan..12=Dec).
+    // Roll forward to NEXT year if test month already passed. Hidden if
+    // state lacks testWindowMonth or if test is more than 365 days out.
+    let countdownPill = '';
+    if (STATE_INFO.testWindowMonth) {
+      const now = new Date();
+      const tm = parseInt(STATE_INFO.testWindowMonth, 10);
+      let nextTest = new Date(now.getFullYear(), tm - 1, 1);
+      if (nextTest <= now) nextTest = new Date(now.getFullYear() + 1, tm - 1, 1);
+      const daysOut = Math.ceil((nextTest - now) / (1000 * 60 * 60 * 24));
+      if (daysOut > 0 && daysOut <= 365) {
+        const label = daysOut === 1 ? '1 day' : `${daysOut} days`;
+        countdownPill = `<span class="practice-pill practice-pill--countdown" title="Days until ${escapePcb(STATE_INFO.testName)} testing window opens">${label} to ${escapePcb(STATE_INFO.testName || 'test')}</span>`;
+      }
+    }
     bar.innerHTML = `
       <nav class="practice-breadcrumb" aria-label="Practice context">
         <a class="practice-breadcrumb-back" href="${backHref}" aria-label="Back to grade">
@@ -173,6 +188,7 @@
           </span>
           <span class="practice-pill practice-pill--grade">${escapePcb(gradeName)}</span>
           <span class="practice-pill practice-pill--subject">${escapePcb(subjLabel)}</span>
+          ${countdownPill}
         </div>
         <!-- §44: overflow menu trigger. On mobile (<768px), the
              original .btn-restart inside .practice-title-row is hidden
@@ -254,6 +270,18 @@
     const d = new Date(); d.setDate(d.getDate() - 1);
     return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
   }
+  function twoDaysAgoKeyJ() {
+    const d = new Date(); d.setDate(d.getDate() - 2);
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+  // ISO week key (YYYY-Www) for tracking 1-freeze-per-week budget.
+  function isoWeekKey(date) {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    const week = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+    return `${d.getUTCFullYear()}-W${String(week).padStart(2, '0')}`;
+  }
   function recordJourney(isCorrect) {
     try {
       const u = window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser();
@@ -265,14 +293,33 @@
       j.daily[tk] = j.daily[tk] || { correct: 0, answered: 0 };
       j.daily[tk].answered += 1;
       if (isCorrect) j.daily[tk].correct += 1;
-      // Streak: bump if first activity today; reset if last activity wasn't today/yesterday.
+      // Streak: bump if first activity today.
+      // Streak freeze: 1 per ISO week. If kid returns after exactly ONE
+      // missed day AND has not used this week's freeze, auto-burn the
+      // freeze and keep the streak intact (still bump for today). If 2+
+      // days missed, or freeze already used this week, reset to 1.
       const last = j.lastActiveDay;
+      let usedFreeze = false;
       if (last !== tk) {
-        if (last === yesterdayKeyJ()) j.streak = (parseInt(j.streak, 10) || 0) + 1;
-        else j.streak = 1;
+        const wkKey = isoWeekKey(new Date());
+        j.freezesUsedByWeek = (j.freezesUsedByWeek && typeof j.freezesUsedByWeek === 'object') ? j.freezesUsedByWeek : {};
+        const usedThisWeek = !!j.freezesUsedByWeek[wkKey];
+        if (last === yesterdayKeyJ()) {
+          j.streak = (parseInt(j.streak, 10) || 0) + 1;
+        } else if (last === twoDaysAgoKeyJ() && !usedThisWeek && parseInt(j.streak, 10) > 0) {
+          // Used a freeze: bridge the missed day, keep prior streak, +1 for today.
+          j.streak = (parseInt(j.streak, 10) || 0) + 1;
+          j.freezesUsedByWeek[wkKey] = (j.freezesUsedByWeek[wkKey] || 0) + 1;
+          usedFreeze = true;
+        } else {
+          j.streak = 1;
+        }
         j.lastActiveDay = tk;
         const best = parseInt(j.bestStreak, 10) || 0;
         if (j.streak > best) j.bestStreak = j.streak;
+        // Trim freezesUsedByWeek to last 8 entries to stay tiny.
+        const wkKeys = Object.keys(j.freezesUsedByWeek).sort();
+        if (wkKeys.length > 8) for (const k of wkKeys.slice(0, wkKeys.length - 8)) delete j.freezesUsedByWeek[k];
       }
       // Best run in a row of correct answers.
       if (isCorrect) {
@@ -305,6 +352,8 @@
         out.streakDayMilestone = j.streak;
         try { localStorage.setItem(streakKey, '1'); } catch (_) {}
       }
+      // Streak freeze used today — only fires once.
+      if (usedFreeze) out.streakFreezeUsed = j.streak;
       return out;
     } catch (_) { /* localStorage unavailable */ }
     return null;
@@ -416,7 +465,11 @@
   // early leaves Stats in TDZ; when startReading's fetch resolves and calls
   // runQuiz → Stats.load(), it throws "Cannot access 'Stats' before
   // initialization", caught by the surrounding try/catch as a fetch failure.
-  if (SUBJECT_SLUG === 'reading') {
+  // Review-mode: ?review=1 pulls the kid's recent wrong answers from
+  // the lambda and re-runs them as a quiz. Auth required.
+  if (params.get('review') === '1') {
+    startReview();
+  } else if (SUBJECT_SLUG === 'reading') {
     startReading();
   } else if (SUBJECT_SLUG === 'science') {
     startScience();
@@ -523,9 +576,12 @@
     }
   }
 
-  // Build a 25-question curriculum-only set immediately, preferring unseen.
+  // Build a curriculum-only set immediately, preferring unseen.
+  // ?n=<N> URL param overrides session length (10/25/50/100). Default 25.
+  // Quick-mode buttons on grade.html pass &n=… in the practice URL.
   function buildInitialSet(pool) {
-    const TARGET = 25;
+    const reqN = parseInt(params.get('n'), 10);
+    const TARGET = [10, 25, 50, 100].includes(reqN) ? reqN : 25;
     const seen = loadSeen();
     const unseen = pool.filter(q => q.id && !seen.has(q.id));
     const seenPool = pool.filter(q => q.id && seen.has(q.id));
@@ -553,7 +609,11 @@
 
   // Background fetch of AI-generated questions. Calls back with the list.
   async function fetchGeneratedAsync(curr, pool, meta, onReady) {
-    const GENERATE = 20;
+    // Match generated count to session size so deep/marathon modes have
+    // enough fresh content. Cap at 30 (lambda's per-call max).
+    const reqN = parseInt(params.get('n'), 10);
+    const targetSession = [10, 25, 50, 100].includes(reqN) ? reqN : 25;
+    const GENERATE = Math.min(30, Math.max(10, Math.ceil(targetSession * 0.8)));
     const topics = buildTopicSpec(pool, meta);
     try {
       const seed = `${slug}-${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
@@ -1109,6 +1169,8 @@
             window.STAARFx.confetti({ count: 70, duration: 1600 });
             window.STAARFx.playMilestone();
             window.STAARFx.toast(pickRandom(STREAK_DAY_TEMPLATES)(milestones.streakDayMilestone), { kind: 'win' });
+          } else if (milestones && milestones.streakFreezeUsed) {
+            window.STAARFx.toast(`Streak freeze used 🛡 — ${milestones.streakFreezeUsed}-day streak saved`, { kind: 'win' });
           }
         }
         if (isGuest()) {
@@ -1192,7 +1254,7 @@
             <div class="q-inline-fb-head">✗ ${pickRandom(WRONG_HEADERS)} <span class="q-inline-fb-correct">The answer is <strong>${escapeHtml(q.answer)}</strong>.</span></div>
             ${briefExplanationHtml}
             <div class="tutor-box" id="tutor-box">
-              <div class="tutor-output" id="tutor-out"></div>
+              <div class="tutor-output" id="tutor-out" aria-live="polite" aria-atomic="false"></div>
             </div>`;
           fbSlot.classList.remove('q-inline-fb--tutor');
         }
@@ -1482,9 +1544,27 @@
         <div class="card">
           <h3>${pickEndHeader(correct, questions.length)}</h3>
           <p style="font-size:1.4rem;"><strong>${correct} / ${questions.length}</strong> correct (${pct}%)</p>
-          <div id="session-summary" class="session-summary tutor-output" style="margin:14px 0;padding:10px 14px;font-size:0.95rem;color:var(--text,#374151);background:var(--bg-soft,#f9fafb);border-left:3px solid var(--border,#e5e7eb);border-radius:6px;font-style:italic;">${thinkingHTML()}</div>
+          <div id="session-summary" class="session-summary tutor-output" aria-live="polite" aria-atomic="true" style="margin:14px 0;padding:10px 14px;font-size:0.95rem;color:var(--text,#374151);background:var(--bg-soft,#f9fafb);border-left:3px solid var(--border,#e5e7eb);border-radius:6px;font-style:italic;">${thinkingHTML()}</div>
           <a class="btn btn-primary" id="end-try-again" href="practice.html?${new URLSearchParams(Object.fromEntries([...params])).toString()}">Try again</a>
           <a class="btn btn-secondary" id="end-back" href="grade.html?g=${slug}" style="margin-left:8px;color:var(--blue);border-color:var(--blue);">Back to ${curr.title}</a>
+          ${(() => {
+            const cur = parseInt(params.get('n'), 10) || 25;
+            const choices = [10, 25, 50, 100].filter(n => n !== cur);
+            const baseParams = new URLSearchParams(Object.fromEntries([...params]));
+            const chips = choices.map(n => {
+              const p = new URLSearchParams(baseParams.toString());
+              p.set('n', String(n));
+              const label = n === 10 ? 'Quick (10)' : n === 25 ? 'Standard (25)' : n === 50 ? 'Deep (50)' : 'Marathon (100)';
+              return `<a class="practice-mode-chip" href="practice.html?${p.toString()}">${label}</a>`;
+            }).join('');
+            // "Review wrong answers" CTA — only shown to authed users with
+            // a known scope. Guests get an upsell via startReview()'s gate.
+            const reviewParams = new URLSearchParams(baseParams.toString());
+            reviewParams.set('review', '1');
+            reviewParams.delete('n');
+            const reviewChip = `<a class="practice-mode-chip" href="practice.html?${reviewParams.toString()}" style="border-color:rgba(251,191,36,0.35);">Review wrong answers ↻</a>`;
+            return `<div class="practice-mode-row" aria-label="Try a different session length">${reviewChip}${chips}</div>`;
+          })()}
         </div>`;
 
       // Fire the AI session summary in the background. The score is already
@@ -1759,6 +1839,82 @@
         <h2>Science practice</h2>
         <div class="card">
           <p style="color:var(--muted);">We couldn’t load science questions right now. Try again in a moment.</p>
+          <p><a class="btn btn-primary" href="grade.html?s=${encodeURIComponent(STATE_SLUG_RESOLVED)}&g=${encodeURIComponent(slug)}">Back</a></p>
+        </div>`;
+    }
+  }
+
+  // ============================================================
+  // Review-mode practice — re-do recent wrong answers.
+  // CLAUDE.md §39 + this commit's lambda action getWrongAnswers.
+  // Pulls last ~50 wrong-answer events, fetches the questions, and
+  // runs them through the same runQuiz pipeline. If kid gets it right
+  // this time, it doesn't disappear from the wrong list (kid might
+  // want to re-do again later); the lambda only logs incorrect events,
+  // so a correct retry just doesn't add to the queue.
+  // ============================================================
+  async function startReview() {
+    if (!(window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser())) {
+      root.innerHTML = `
+        <h2>Review your wrong answers</h2>
+        <div class="card">
+          <p style="color:var(--muted);">Sign up to save your progress and review the questions you missed.</p>
+          <p><button type="button" class="btn btn-primary" id="rev-signup">Create your free account</button></p>
+        </div>`;
+      const sup = document.getElementById('rev-signup');
+      if (sup) sup.onclick = () => { if (window.STAARAuth && window.STAARAuth.showLogin) window.STAARAuth.showLogin(); };
+      return;
+    }
+    root.innerHTML = `
+      <h2>Loading your review set…</h2>
+      <div class="card"><p style="color:var(--muted);">Pulling your most-recent wrong answers.</p></div>`;
+    try {
+      const res = await fetch(TUTOR_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'getWrongAnswers',
+          token: (window.STAARAuth && window.STAARAuth.token && window.STAARAuth.token()) || null,
+          state: STATE_SLUG_RESOLVED,
+          grade: slug,
+          subject: SUBJECT_SLUG_RESOLVED,
+          limit: 25
+        })
+      });
+      if (!res.ok) throw new Error('review_failed_' + res.status);
+      const data = await res.json();
+      const items = (data.items || []).map(q => ({
+        id: q.contentId,
+        contentId: q.contentId,
+        poolKey: q.poolKey,
+        type: q.type || 'multiple_choice',
+        prompt: q.prompt,
+        choices: q.choices || [],
+        answer: q.answer || ((Number.isFinite(q.correctIndex) && Array.isArray(q.choices)) ? q.choices[q.correctIndex] : ''),
+        correctIndex: q.correctIndex,
+        explanation: q.explanation || '',
+        teks: q.teks,
+        _unit: { title: q.unitTitle || 'Review', id: 'review' },
+        _lesson: { title: q.lessonTitle || 'Wrong answers', teks: q.teks || '' }
+      }));
+      if (items.length === 0) {
+        root.innerHTML = `
+          <h2>Review your wrong answers</h2>
+          <div class="card" style="text-align:center;padding:36px;">
+            <p style="font-size:1.05rem;">Nothing to review. 👏</p>
+            <p style="color:var(--muted);">You haven't missed any questions in this scope yet — keep practicing and we'll surface anything you miss here.</p>
+            <p><a class="btn btn-primary" href="practice.html?s=${encodeURIComponent(STATE_SLUG_RESOLVED)}&g=${encodeURIComponent(slug)}&subj=${encodeURIComponent(SUBJECT_SLUG_RESOLVED)}">Practice ${escapeHtml(SUBJECT_SLUG_RESOLVED)}</a></p>
+          </div>`;
+        return;
+      }
+      const fakeCurr = { grade: slug, title: 'Review · wrong answers', units: [] };
+      runQuiz(fakeCurr, items, null, { enhance: null });
+    } catch (err) {
+      console.warn('[review] fetch failed:', err.message);
+      root.innerHTML = `
+        <h2>Review your wrong answers</h2>
+        <div class="card">
+          <p style="color:var(--muted);">Couldn't load your review set right now. Try again in a moment.</p>
           <p><a class="btn btn-primary" href="grade.html?s=${encodeURIComponent(STATE_SLUG_RESOLVED)}&g=${encodeURIComponent(slug)}">Back</a></p>
         </div>`;
     }
