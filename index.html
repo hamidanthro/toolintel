@@ -81,6 +81,9 @@
         <p class="hero-tagline-mobile">Math · Reading · Science. TEKS-aligned. Real toys for correct answers.</p>
         <p>Math, reading, and science aligned to Texas TEKS — with a built-in AI tutor on every wrong answer and real toys earned for correct ones.</p>
         <div class="hero-cta hero-cta-grades" aria-label="Pick a grade">
+          <a href="grade.html?s=texas&amp;g=grade-k" class="hero-grade-pill" data-grade="grade-k">Kindergarten</a>
+          <a href="grade.html?s=texas&amp;g=grade-1" class="hero-grade-pill" data-grade="grade-1">Grade 1</a>
+          <a href="grade.html?s=texas&amp;g=grade-2" class="hero-grade-pill" data-grade="grade-2">Grade 2</a>
           <a href="grade.html?s=texas&amp;g=grade-3" class="hero-grade-pill" data-grade="grade-3">Grade 3</a>
           <a href="grade.html?s=texas&amp;g=grade-4" class="hero-grade-pill" data-grade="grade-4">Grade 4</a>
           <a href="grade.html?s=texas&amp;g=grade-5" class="hero-grade-pill" data-grade="grade-5">Grade 5</a>
@@ -682,11 +685,11 @@
           'grade-6':   'Middle School',
           'algebra-1': 'High School'
         };
-        // §78 — Texas-only pivot: guests on the landing page see ONLY
-        // the grades Texas STAAR actually tests. K/1/2 don't have STAAR
-        // content and would dead-end the kid on grade.html. The original
-        // chip row hardcoded this set; the card grid needs to match.
+        // Texas-only pivot: guests on the landing page see ONLY the
+        // grades Texas STAAR + practice supports. K/1/2 are now live
+        // (math curriculum + reading library) so they're included.
         const TEXAS_STAAR_GRADES = new Set([
+          'grade-k','grade-1','grade-2',
           'grade-3','grade-4','grade-5','grade-6','grade-7','grade-8','algebra-1'
         ]);
         visible.forEach(g => {
