@@ -677,6 +677,21 @@
     const topics = buildTopicSpec(pool, meta);
     try {
       const seed = `${slug}-${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
+      // Adaptive difficulty hint (rolling-30 accuracy). Sent as a soft
+      // signal — lambda may use it to bias generated questions easier
+      // or harder. Backwards-compatible: legacy lambda ignores unknown
+      // fields. Hint values: 'easier' (< 60%), 'on-level' (60-85%),
+      // 'harder' (> 85%). Pulls from per-user staar.stats.<grade>
+      // recent-30 if available.
+      let difficultyHint = 'on-level';
+      try {
+        const recent = computeRollingAccuracy(slug);
+        if (recent && recent.n >= 10) {
+          if (recent.pct < 60) difficultyHint = 'easier';
+          else if (recent.pct > 85) difficultyHint = 'harder';
+        }
+      } catch (_) {}
+
       const res = await fetch(TUTOR_ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -689,6 +704,7 @@
           count: GENERATE,
           seed,
           topics,
+          difficultyHint,
           sessionId: (window.GradeEarnLake && window.GradeEarnLake.startSession()) || null,
           recentContentIds: (window.GradeEarnLake && window.GradeEarnLake.getRecent()) || []
         })
@@ -749,6 +765,33 @@
 
   function pickRandom(arr, n) {
     return shuffle(arr.slice()).slice(0, n);
+  }
+
+  // Rolling-N accuracy from the kid's per-grade stats. Reads
+  // staar.stats.<who>.<gradeSlug>.recent if available — the existing
+  // Stats.record() writer keeps a rolling-30 trail of {ts, isCorrect}.
+  // If trail is missing or short, returns null and the lambda treats
+  // it as 'on-level'. This is a SOFT signal — it nudges generation
+  // difficulty without blocking content.
+  function computeRollingAccuracy(gradeSlug) {
+    try {
+      const u = window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser();
+      const who = (u && u.username) ? u.username : 'anon';
+      const raw = localStorage.getItem(`staar.stats.${who}.${gradeSlug}`);
+      if (!raw) return null;
+      const stats = JSON.parse(raw);
+      // Existing rolling trail (Stats.record at line ~3455) stores
+      // 0/1 as integers, capped at 20. Use it as-is.
+      const trail = Array.isArray(stats.recent) ? stats.recent : [];
+      if (trail.length < 5) {
+        const total = stats.totalAnswered || 0;
+        const correct = stats.totalCorrect || 0;
+        if (total < 5) return null;
+        return { n: total, correct, pct: Math.round((correct / total) * 100) };
+      }
+      const correct = trail.filter(x => x === 1 || x === true || (x && x.isCorrect)).length;
+      return { n: trail.length, correct, pct: Math.round((correct / trail.length) * 100) };
+    } catch (_) { return null; }
   }
 
   // Build the topic spec the LLM uses to target TEKS.
