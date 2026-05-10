@@ -17977,3 +17977,74 @@ body.placement-page {
   .parent-subject-row { grid-template-columns: 70px 1fr 80px; gap: 8px; }
   .parent-card { padding: 16px 18px; }
 }
+
+/* ============================================================
+   FAMILY PROFILES — Tier 6 AC (May 10)
+   ============================================================ */
+.family-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+.family-row {
+  display: grid;
+  grid-template-columns: 44px 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.family-row.is-active {
+  background: rgba(251, 191, 36, 0.08);
+  border-color: rgba(251, 191, 36, 0.32);
+}
+.family-avatar {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(251, 191, 36, 0.15);
+  border-radius: 50%;
+  font-size: 1.1rem;
+  color: #fde68a;
+  font-weight: 600;
+}
+.family-name {
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.92);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.family-switch-btn {
+  padding: 6px 14px;
+  min-height: 36px;
+  font-size: 0.85rem;
+}
+.family-remove-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.family-remove-btn:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+}
+@media (max-width: 480px) {
+  .family-row { grid-template-columns: 36px 1fr auto auto; gap: 8px; padding: 8px 10px; }
+}

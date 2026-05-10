@@ -161,6 +161,13 @@
           <a class="btn btn-primary" href="placement.html" style="margin-top:10px;">Take placement test</a>
         </article>
 
+        <article class="settings-card" id="family-card">
+          <h3>Family profiles</h3>
+          <p class="settings-card-subtitle">Sharing a device with siblings? Save each kid's profile here and switch between them in two taps.</p>
+          <div id="family-list" class="family-list"></div>
+          <p class="parent-email-note" style="margin-top:10px;">Tap any profile to switch to it. Each profile keeps its own progress and trophies.</p>
+        </article>
+
         <article class="settings-card" id="push-card" hidden>
           <h3>Daily reminders</h3>
           <p class="settings-card-subtitle">Get a gentle push notification when your daily mission is ready.</p>
@@ -208,6 +215,54 @@
   <script src="js/pwa-install.js?v=20260427a" defer></script>
   <script src="js/friends.js?v=20260426b"></script>
   <script src="js/push-subscribe.js?v=20260510a"></script>
+  <script src="js/family-switcher.js?v=20260510a"></script>
+  <script>
+    // Family profile card wiring.
+    (function () {
+      const root = document.getElementById('family-list');
+      if (!root || !window.GEFamily) return;
+      function render() {
+        const profiles = window.GEFamily.list();
+        if (!profiles.length) {
+          root.innerHTML = '<p class="parent-empty" style="margin:0;padding:14px 0;color:rgba(255,255,255,0.5);">No saved profiles yet — sign in as another kid on this device to save their profile.</p>';
+          return;
+        }
+        const me = window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser();
+        const meName = me && me.username;
+        root.innerHTML = profiles.map(p => {
+          const isMe = p.username === meName;
+          const avatar = p.avatarEmoji || ((p.displayName || '?').charAt(0).toUpperCase());
+          return `
+            <div class="family-row${isMe ? ' is-active' : ''}" data-user="${p.username.replace(/"/g, '&quot;')}">
+              <div class="family-avatar">${avatar}</div>
+              <div class="family-name">
+                ${(p.displayName || p.username).replace(/[<>]/g, '')}
+                ${isMe ? '<span class="league-you-chip">active</span>' : ''}
+              </div>
+              ${isMe ? '' : '<button type="button" class="btn btn-secondary family-switch-btn">Switch</button>'}
+              ${isMe ? '' : `<button type="button" class="family-remove-btn" aria-label="Remove this profile" data-user="${p.username.replace(/"/g, '&quot;')}">×</button>`}
+            </div>`;
+        }).join('');
+        root.querySelectorAll('.family-switch-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const username = btn.closest('.family-row').getAttribute('data-user');
+            if (username) window.GEFamily.switchTo(username);
+          });
+        });
+        root.querySelectorAll('.family-remove-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const username = btn.getAttribute('data-user');
+            if (!username) return;
+            if (!confirm('Remove this profile from this device?')) return;
+            window.GEFamily.remove(username);
+            render();
+          });
+        });
+      }
+      render();
+      document.addEventListener('gradeearn:auth-changed', () => setTimeout(render, 100));
+    })();
+  </script>
   <script>
     // Push notifications card wiring. The card is hidden by default;
     // we reveal it only when the browser actually supports push.
