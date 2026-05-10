@@ -46,6 +46,108 @@ const OUTPUT_DIR = path.resolve(__dirname, 'output');
 // and isn't expanded here.
 const BRIEFS = [
   // ===========================================================
+  // ----- Kindergarten — practice-only -----
+  // ===========================================================
+  { id: 'gks-water-ice-melt', grade: 'k', strand: 'Matter & Energy', se: 'K-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid puts an ice cube in a cup on the kitchen counter; after a while the ice is gone and there is water in the cup; the question asks the kid what happened to the ice' },
+  { id: 'gks-magnet-fridge', grade: 'k', strand: 'Matter & Energy', se: 'K-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid sticks a magnet on the fridge and on a wood door; the magnet sticks to the fridge but not the door; the question asks the kid which the magnet sticks to' },
+  { id: 'gks-shadow-sun', grade: 'k', strand: 'Earth & Space', se: 'K-observe',
+    scenarioType: 'described_diagram',
+    topic: "on a sunny day a kid sees their own shadow on the sidewalk; in the shade there is no shadow; the question asks the kid what they need to make a shadow" },
+  { id: 'gks-day-night-sky', grade: 'k', strand: 'Earth & Space', se: 'K-observe',
+    scenarioType: 'described_diagram',
+    topic: 'a picture of a daytime sky with the Sun and a nighttime sky with the Moon and stars; the question asks the kid what we see in the sky during the day' },
+  { id: 'gks-living-vs-not-living', grade: 'k', strand: 'Organisms & Environments', se: 'K-observe',
+    scenarioType: 'described_diagram',
+    topic: 'a list of four things — a dog, a rock, a tree, a toy car; the question asks the kid which two are living things' },
+  { id: 'gks-baby-animal-grown', grade: 'k', strand: 'Organisms & Environments', se: 'K-observe',
+    scenarioType: 'described_diagram',
+    topic: 'a picture of a kitten and a grown cat side by side; the question asks the kid which one is the baby and what it will grow up to be' },
+  { id: 'gks-plant-needs-water', grade: 'k', strand: 'Organisms & Environments', se: 'K-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid waters one plant every day and forgets to water another; the watered plant is green and tall; the not-watered plant is brown; the question asks what plants need to grow' },
+  { id: 'gks-windy-day-leaves', grade: 'k', strand: 'Earth & Space', se: 'K-observe',
+    scenarioType: 'described_diagram',
+    topic: 'a kid watches leaves blow across the yard on a very windy day; nothing else moves the leaves; the question asks the kid what is moving the leaves' },
+  { id: 'gks-bird-feeder-watch', grade: 'k', strand: 'Organisms & Environments', se: 'K-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid puts seeds in a bird feeder; in the morning birds are eating the seeds; the question asks the kid why the birds came to the feeder' },
+  { id: 'gks-loud-vs-quiet-sound', grade: 'k', strand: 'Force, Motion & Energy', se: 'K-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid taps a drum softly and then taps it hard; the soft tap makes a quiet sound, the hard tap makes a loud sound; the question asks why the drum sounded different' },
+
+  // ===========================================================
+  // ----- Grade 1 — practice-only -----
+  // ===========================================================
+  { id: 'g1s-five-senses', grade: '1', strand: 'Organisms & Environments', se: 'G1-observe',
+    scenarioType: 'described_diagram',
+    topic: 'a kid examines an apple — they look at it, smell it, touch it, hear the crunch, taste it; the question asks the kid which sense they use to find out an apple is red' },
+  { id: 'g1s-ramp-roll-faster', grade: '1', strand: 'Force, Motion & Energy', se: 'G1-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid lets a ball roll down a low ramp and then a steep ramp; the ball rolls faster on the steep ramp; the question asks what made the ball roll faster' },
+  { id: 'g1s-bug-rock-find', grade: '1', strand: 'Organisms & Environments', se: 'G1-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid lifts a small rock in the yard and finds bugs underneath; the question asks why the bugs live under the rock' },
+  { id: 'g1s-rain-puddle-evaporate', grade: '1', strand: 'Earth & Space', se: 'G1-observe',
+    scenarioType: 'experiment',
+    topic: 'after a Texas rainstorm a kid sees puddles on the sidewalk; by afternoon the sun has dried the puddles up; the question asks the kid where the puddle water went' },
+  { id: 'g1s-flashlight-dark', grade: '1', strand: 'Force, Motion & Energy', se: 'G1-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid turns on a flashlight in a dark room and shines it on the wall; a bright spot appears; the question asks what the flashlight makes' },
+  { id: 'g1s-seed-to-plant', grade: '1', strand: 'Organisms & Environments', se: 'G1-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid plants a bean seed in a cup of soil and waters it; after a week a small green sprout appears; the question asks what the seed grew into' },
+  { id: 'g1s-soft-vs-hard', grade: '1', strand: 'Matter & Energy', se: 'G1-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid sorts four objects — a pillow, a brick, a sponge, a wood block — into soft and hard piles; the question asks which property they used to sort' },
+  { id: 'g1s-frog-pond-tadpole', grade: '1', strand: 'Organisms & Environments', se: 'G1-observe',
+    scenarioType: 'described_diagram',
+    topic: 'a picture series shows a tadpole, then a tadpole with back legs, then a tiny frog with a tail, then a grown frog; the question asks the kid what the tadpole grows into' },
+  { id: 'g1s-pull-vs-push', grade: '1', strand: 'Force, Motion & Energy', se: 'G1-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid pulls a wagon and then pushes it; both ways move the wagon; the question asks what kind of force a pull and a push are' },
+  { id: 'g1s-day-night-routine', grade: '1', strand: 'Earth & Space', se: 'G1-observe',
+    scenarioType: 'described_diagram',
+    topic: "a kid's day shows breakfast in the morning, lunch in the day, and bedtime when it is dark; the question asks the kid what part of the day comes after the Sun goes down" },
+
+  // ===========================================================
+  // ----- Grade 2 — practice-only -----
+  // ===========================================================
+  { id: 'g2s-states-water-three', grade: '2', strand: 'Matter & Energy', se: 'G2-observe',
+    scenarioType: 'described_diagram',
+    topic: 'a kid sees water in three forms in one day — ice in the freezer, water from the tap, steam from the kettle; the question asks the kid the three states of matter water can be in' },
+  { id: 'g2s-pull-stronger-team', grade: '2', strand: 'Force, Motion & Energy', se: 'G2-observe',
+    scenarioType: 'experiment',
+    topic: 'two kids play tug-of-war; the stronger kid pulls harder and the rope moves their way; the question asks the kid why the rope moves toward the stronger puller' },
+  { id: 'g2s-shadow-time-of-day', grade: '2', strand: 'Earth & Space', se: 'G2-observe',
+    scenarioType: 'data_analysis',
+    topic: 'a kid measures their shadow at three times — short at noon, long in the morning and afternoon; the question asks why the shadow is shorter at noon' },
+  { id: 'g2s-bird-beak-shape', grade: '2', strand: 'Organisms & Environments', se: 'G2-observe',
+    scenarioType: 'described_diagram',
+    topic: 'a picture shows three Texas birds — hummingbird (long thin beak), hawk (sharp curved beak), duck (wide flat beak); the question asks the kid which beak is best for catching small fish' },
+  { id: 'g2s-magnet-pulls-pushes', grade: '2', strand: 'Force, Motion & Energy', se: 'G2-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid holds two magnets together — one way they snap together, the other way they push apart; the question asks the kid what magnets can do besides stick to metal' },
+  { id: 'g2s-rocks-small-pieces', grade: '2', strand: 'Earth & Space', se: 'G2-observe',
+    scenarioType: 'described_diagram',
+    topic: 'a kid sees a big rock by a creek that has small bits of sand and pebbles around it; over time the rock got smaller; the question asks what makes a big rock turn into small bits' },
+  { id: 'g2s-life-cycle-butterfly', grade: '2', strand: 'Organisms & Environments', se: 'G2-observe',
+    scenarioType: 'described_diagram',
+    topic: 'a picture series shows the four stages of a butterfly: egg, caterpillar, chrysalis, butterfly; the question asks the kid which stage comes after the caterpillar' },
+  { id: 'g2s-mixture-rice-beans', grade: '2', strand: 'Matter & Energy', se: 'G2-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid pours rice and dried beans together in a bowl and stirs; then they pick out the beans; the question asks the kid whether the rice and beans changed when mixed' },
+  { id: 'g2s-pet-fish-needs', grade: '2', strand: 'Organisms & Environments', se: 'G2-observe',
+    scenarioType: 'described_diagram',
+    topic: 'a class fish in a tank needs three things — water, food, and a clean tank; the question asks the kid what would happen if the fish ran out of food' },
+  { id: 'g2s-sun-warms-things', grade: '2', strand: 'Earth & Space', se: 'G2-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid leaves two cups of water — one in the sunny window, one in the shade — for an hour; the cup in the sun feels warmer; the question asks why the sunny cup is warmer' },
+
+  // ===========================================================
   // ----- Grade 8 (TEKS §112.28) — STAAR-tested -----
   // (Original Phase R briefs, now tagged with grade field)
   // ===========================================================
@@ -250,11 +352,28 @@ async function callOpenAI(systemPrompt, userMessage, apiKey, opts) {
   } finally { clearTimeout(timer); }
 }
 
-function buildScenarioSystem() {
-  return `You write science-stimulus scenarios for a Texas STAAR Grade 8 science practice app. Texas STAAR Grade 8 science is tested under TEKS §112.28, covering Matter & Energy, Force/Motion/Energy, Earth & Space, and Organisms & Environments.
+function buildScenarioSystem(grade) {
+  const earlyReader = ['k', '1', '2'].includes(String(grade).toLowerCase());
+  const earlyReaderRules = earlyReader ? `
+
+== EARLY-READER RULES (HARD — applies to grades K/1/2) ==
+- Sentences are SHORT. Average 5-9 words per sentence. Never more than 14 words.
+- Vocabulary is concrete and common. No abstract or technical terms ("ecosystem" → "the place where animals live").
+- Use simple subject-verb-object structure. Avoid subordinate clauses.
+- Scenario length: 50-130 words total (NOT the 80-180 of older grades).
+- Frame everything as something a 5-7yo could observe with their own eyes — a backyard, a kitchen sink, a class pet.
+- Numbers are small whole numbers (3 ducks, 2 cups, 5 days).
+` : '';
+  const audience = earlyReader
+    ? `5-7-year-old students (Kindergarten through Grade 2). Vocabulary at early-reader level (Tier 1 only — common everyday words).`
+    : `13-14-year-old students. Vocabulary at grade-${grade} science level. Real STAAR Grade ${grade} stimulus passages cluster around 80-180 words plus a labeled visual (we generate text only — no images, but you can verbally describe the setup as if a kid were reading the passage and then looking at a photo or diagram).`;
+  const scope = earlyReader
+    ? 'practice-only science for Kindergarten/Grade 1/Grade 2 — concrete observations of nature, simple cause-and-effect a young kid can see.'
+    : `Texas TEKS science for Grade ${grade}, covering Matter & Energy, Force/Motion/Energy, Earth & Space, and Organisms & Environments.`;
+  return `You write science-stimulus scenarios for a Texas Grade ${grade} science practice app. Scope: ${scope}${earlyReaderRules}
 
 == Audience ==
-13-14-year-old students. Vocabulary at grade-8 science level. Real STAAR Grade 8 stimulus passages cluster around 80-180 words plus a labeled visual (we generate text only — no images, but you can verbally describe the setup as if a kid were reading the passage and then looking at a photo or diagram).
+${audience}
 
 == Output format (STRICT JSON) ==
 
@@ -282,18 +401,25 @@ ONLY output valid JSON. No markdown fences, no preamble.`;
 }
 
 function buildScenarioUser(brief) {
-  return `Generate ONE science scenario for Texas STAAR Grade 8.
+  const earlyReader = ['k', '1', '2'].includes(String(brief.grade).toLowerCase());
+  const wordTarget = earlyReader ? '50-130' : '80-180';
+  return `Generate ONE science scenario for Texas Grade ${brief.grade}.
 
 TEKS SE: ${brief.se}
 Strand: ${brief.strand}
 Scenario type: ${brief.scenarioType}
 Topic: ${brief.topic}
 
-Match the 80-180 word target. Apply ALL rules. Return strict JSON.`;
+Match the ${wordTarget} word target. Apply ALL rules. Return strict JSON.`;
 }
 
-function buildQuestionsSystem() {
-  return `You write multiple-choice science questions for a Texas STAAR Grade 8 practice app, given a scenario stimulus. Questions test:
+function buildQuestionsSystem(grade) {
+  const earlyReader = ['k', '1', '2'].includes(String(grade).toLowerCase());
+  const earlyReaderRules = earlyReader ? `
+
+For grades K/1/2: stick to OBSERVATION ('what did the kid see?') and SIMPLE CAUSE ('why did the rock sink?'). Skip data-interpretation tables and prediction-of-variables — too abstract. Question stems and answer choices use ≤8 words each. Vocabulary is early-reader level.
+` : '';
+  return `You write multiple-choice science questions for a Texas Grade ${grade} practice app, given a scenario stimulus. Questions test:${earlyReaderRules}
 - Direct application of the SE concept
 - Data interpretation from the scenario
 - Cause-effect within the scientific phenomenon
@@ -346,7 +472,7 @@ async function processBrief(brief, opts, apiKey) {
 
   // Stage 1: scenario
   console.log('  ⏳ generating scenario…');
-  const sSys = buildScenarioSystem();
+  const sSys = buildScenarioSystem(brief.grade);
   const sUser = buildScenarioUser(brief);
   let scenarioRaw;
   try {
@@ -376,7 +502,7 @@ async function processBrief(brief, opts, apiKey) {
 
   // Stage 2: questions
   console.log('  ⏳ generating 5 questions…');
-  const qSys = buildQuestionsSystem();
+  const qSys = buildQuestionsSystem(brief.grade);
   const qUser = buildQuestionsUser({ title, body });
   let questionsRaw;
   try {
