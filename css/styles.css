@@ -15230,16 +15230,48 @@ body.practice-page .card a:not(.btn) { color: #fde68a; }
   body.practice-page.mobile-stats-open .performance-panel .perf-section-title { display: block; }
   body.practice-page.mobile-stats-open .performance-panel .perf-ring-wrap { display: flex; justify-content: center; }
 
-  /* Floating stats trigger — small pill in the breadcrumb area. */
-  /* Bug H from master audit: the floating "Stats" trigger pill was
-     intrusive on mobile (Saad's screenshot showed it half-clipped at
-     bottom-left). Hidden until we build a proper top-drawer per
-     CLAUDE.md §14 deferred TODO. Kid sees their stats on grade.html
-     and achievements.html — they don't need them mid-session. */
+  /* Tier 7 AP — top-anchored stats pill. The earlier hotfix hid this
+     entirely because the original bottom-left fixed position overlapped
+     the question card on Saad's screenshot. Re-introduced as a small
+     top pill that sits above the practice context bar so it never
+     covers question content. Kid taps to slide the full perf-panel
+     down from the top of the viewport. */
   .mobile-stats-trigger {
-    display: none !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 51;
+    padding: 7px 12px;
+    background: rgba(13, 34, 73, 0.92);
+    border: 1px solid rgba(251, 191, 36, 0.28);
+    border-radius: 999px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .mobile-stats-trigger:hover,
+  .mobile-stats-trigger:focus-visible {
+    background: rgba(13, 34, 73, 1);
+    border-color: rgba(251, 191, 36, 0.5);
   }
   body.practice-page.mobile-stats-open .mobile-stats-trigger { display: none; }
+
+  /* Drawer slides DOWN from the top instead of up from the bottom —
+     keeps the active question on screen below the drawer when open. */
+  body.practice-page.mobile-stats-open .performance-panel {
+    bottom: auto;
+    top: 8px;
+    animation: stats-drawer-in-top 220ms ease-out;
+  }
 
   /* Backdrop tap-to-close. */
   body.practice-page.mobile-stats-open::after {
@@ -15269,6 +15301,7 @@ body.practice-page .card a:not(.btn) { color: #fde68a; }
   body.practice-page { padding-bottom: 0; }
 }
 @keyframes stats-drawer-in { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes stats-drawer-in-top { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes stats-drawer-fade { from { opacity: 0; } to { opacity: 1; } }
 @media (min-width: 769px) {
   /* Trigger only exists on phones. */

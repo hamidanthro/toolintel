@@ -930,17 +930,35 @@
     const perfPanel = document.getElementById('perf-panel');
     const restartBtn = document.getElementById('restart-btn');
 
-    // K1: mobile stats drawer. On phones the perf-panel is hidden by
-    // default; a floating "Stats" pill toggles a fixed-bottom drawer.
+    // Tier 7 AP: top-anchored stats pill. On phones the perf-panel is
+    // hidden by default; a small top-right pill shows a live correct/total
+    // summary, taps to slide the full panel down from the top.
     // Tap-outside or X button dismisses. Inserted once per session.
     if (!document.getElementById('mobile-stats-trigger')) {
       const trigger = document.createElement('button');
       trigger.id = 'mobile-stats-trigger';
       trigger.type = 'button';
       trigger.className = 'mobile-stats-trigger';
-      trigger.innerHTML = '<span aria-hidden="true">📊</span> Stats';
+      trigger.innerHTML = '<span aria-hidden="true">📊</span><span class="mst-label">Stats</span>';
       trigger.setAttribute('aria-label', 'Show your stats');
       document.body.appendChild(trigger);
+      // Refresh the pill label whenever perf-panel renders. Called from
+      // inside renderPerf below — `s` is the per-session stats object
+      // built by that function. Falls back to "Stats" pre-first-answer.
+      window._refreshStatsPill = function (s) {
+        try {
+          if (!s) return;
+          const total = s.total || 0;
+          const correct = s.correct || 0;
+          const streak = s.streak || 0;
+          const label = trigger.querySelector('.mst-label');
+          if (label) {
+            label.textContent = total > 0
+              ? `${correct}/${total}${streak > 1 ? ' · 🔥' + streak : ''}`
+              : 'Stats';
+          }
+        } catch (_) {}
+      };
       const close = document.createElement('button');
       close.type = 'button';
       close.className = 'mobile-stats-close';
@@ -3597,6 +3615,8 @@
         <div class="unit-rows">${unitRows}</div>
       </div>
     `;
+    // Tier 7 AP — refresh the top stats pill with the same numbers.
+    try { if (typeof window._refreshStatsPill === 'function') window._refreshStatsPill(s); } catch (_) {}
   }
 
   // Track time-on-task while the practice page is open & visible.
