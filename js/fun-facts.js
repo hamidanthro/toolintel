@@ -21,7 +21,7 @@
   // so clients with cached JSON refetch. Without this, force-cache
   // keeps stale catalogs around (and K-2 kids would never see the
   // K-2-tagged facts).
-  const CATALOG_URL       = '/data/fun-facts.json?v=20260510j';
+  const CATALOG_URL       = '/data/fun-facts.json?v=20260510k';
 
   // -------- in-memory state (mirror) --------
   let _catalog = null;        // null = not loaded yet; array once fetched
