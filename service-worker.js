@@ -7,7 +7,7 @@
  * Critical: never cache API responses (Lambda calls). They must always be fresh.
  */
 
-const CACHE_VERSION = 'gradeearn-v30';
+const CACHE_VERSION = 'gradeearn-v31';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
@@ -48,6 +48,7 @@ const SHELL_FILES = [
   '/js/text-utils.js',
   '/js/voice-recorder.js',
   '/js/placement.js',
+  '/js/push-subscribe.js',
   '/placement.html',
   '/data/i18n/en.json',
   '/data/i18n/es.json',
@@ -172,4 +173,54 @@ self.addEventListener('message', (event) => {
   if (event.data === 'SKIP_WAITING') {
     self.skipWaiting();
   }
+});
+
+// Tier 6 AD — Web Push handlers.
+//
+// 'push' fires when the server delivers a push message (VAPID-signed via
+// the web-push npm package; not wired on the server yet — that's the
+// next-step in CLAUDE.md). Payload shape: {title, body, url, tag}.
+// Falls back to a kid-friendly default if the payload is missing.
+self.addEventListener('push', (event) => {
+  let data = {};
+  try {
+    if (event.data) data = event.data.json();
+  } catch (_) {
+    // Plain-text payload; tolerate it.
+    try { data = { body: event.data && event.data.text() }; } catch (_) {}
+  }
+  const title = data.title || 'GradeEarn';
+  const body  = data.body  || 'Your daily mission is ready.';
+  const url   = data.url   || '/';
+  const tag   = data.tag   || 'gradeearn-default';
+  const options = {
+    body: body,
+    icon: '/icons/icon-192.png',
+    badge: '/icons/icon-192.png',
+    tag: tag,
+    data: { url: url },
+    vibrate: [80, 40, 80]
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+// 'notificationclick' — bring the app to focus on the requested URL.
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const url = (event.notification.data && event.notification.data.url) || '/';
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      // Focus an existing tab on the same origin if one exists.
+      for (const client of clientList) {
+        try {
+          if ('focus' in client) {
+            client.navigate(url);
+            return client.focus();
+          }
+        } catch (_) {}
+      }
+      // Otherwise open a new tab.
+      if (self.clients.openWindow) return self.clients.openWindow(url);
+    })
+  );
 });

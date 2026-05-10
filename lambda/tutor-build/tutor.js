@@ -437,6 +437,7 @@ exports.handler = async (event) => {
   if (action === 'updateFunFactsState') return await handleUpdateFunFactsState(payload);
   if (action === 'getAchievementsState')    return await handleGetAchievementsState(payload);
   if (action === 'updateAchievementsState') return await handleUpdateAchievementsState(payload);
+  if (action === 'savePushSubscription')    return await handleSavePushSubscription(payload);
   if (action === 'getReadingPassage')   return await handleGetReadingPassage(payload);
   if (action === 'getReadingItem')      return await handleGetReadingItem(payload);
   if (action === 'getScienceItem')      return await handleGetScienceItem(payload);
@@ -2429,6 +2430,47 @@ async function handleUpdateAchievementsState(payload) {
     ExpressionAttributeValues: { ':s': toWrite }
   }));
   return ok({ ok: true, lastUpdatedAt: serverNow });
+}
+
+// ===== Push subscriptions (Tier 6 AD) =====
+// Frontend calls this after the browser hands us a PushSubscription
+// object. Sender side (web-push + VAPID + cron) ships in a follow-up.
+
+async function handleSavePushSubscription(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  const sub = payload.subscription;
+
+  if (sub === null) {
+    await ddb.send(new UpdateCommand({
+      TableName: USERS_TABLE,
+      Key: { username: auth.username },
+      UpdateExpression: 'REMOVE pushSubscription'
+    }));
+    return ok({ ok: true, subscribed: false });
+  }
+
+  if (!sub || typeof sub !== 'object' || !sub.endpoint || typeof sub.endpoint !== 'string') {
+    return bad(400, 'subscription must have endpoint string');
+  }
+  if (sub.endpoint.length > 1000) return bad(400, 'endpoint too long');
+  if (!sub.keys || typeof sub.keys !== 'object' ||
+      typeof sub.keys.p256dh !== 'string' || typeof sub.keys.auth !== 'string') {
+    return bad(400, 'subscription.keys must have p256dh + auth strings');
+  }
+
+  const toWrite = {
+    endpoint: sub.endpoint,
+    keys: { p256dh: sub.keys.p256dh, auth: sub.keys.auth },
+    savedAt: Date.now()
+  };
+  await ddb.send(new UpdateCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username },
+    UpdateExpression: 'SET pushSubscription = :s',
+    ExpressionAttributeValues: { ':s': toWrite }
+  }));
+  return ok({ ok: true, subscribed: true });
 }
 
 // ===== Reading practice (Phase 1) =====

@@ -161,6 +161,18 @@
           <a class="btn btn-primary" href="placement.html" style="margin-top:10px;">Take placement test</a>
         </article>
 
+        <article class="settings-card" id="push-card" hidden>
+          <h3>Daily reminders</h3>
+          <p class="settings-card-subtitle">Get a gentle push notification when your daily mission is ready.</p>
+          <div class="settings-row">
+            <span class="settings-row-label">
+              <span class="settings-row-title">🔔 Notifications</span>
+              <span class="settings-row-sub" id="push-status-sub">Status: not subscribed</span>
+            </span>
+            <button type="button" class="btn btn-secondary" id="push-toggle-btn">Turn on</button>
+          </div>
+        </article>
+
         <article class="settings-card">
           <h3>Read-aloud speed</h3>
           <label class="settings-row">
@@ -195,6 +207,49 @@
   <script src="js/lake-events.js?v=20260427a"></script>
   <script src="js/pwa-install.js?v=20260427a" defer></script>
   <script src="js/friends.js?v=20260426b"></script>
+  <script src="js/push-subscribe.js?v=20260510a"></script>
+  <script>
+    // Push notifications card wiring. The card is hidden by default;
+    // we reveal it only when the browser actually supports push.
+    (function () {
+      const card = document.getElementById('push-card');
+      const btn = document.getElementById('push-toggle-btn');
+      const sub = document.getElementById('push-status-sub');
+      if (!card || !btn || !sub || !window.GEPush) return;
+      if (!window.GEPush.supported()) return;
+      card.hidden = false;
+      async function refresh() {
+        const s = await window.GEPush.status();
+        if (s === 'subscribed') {
+          sub.textContent = 'Status: subscribed';
+          btn.textContent = 'Turn off';
+          btn.disabled = false;
+        } else if (s === 'denied') {
+          sub.textContent = 'Status: blocked by browser (enable in site settings)';
+          btn.disabled = true;
+        } else if (s === 'unconfigured') {
+          sub.textContent = 'Status: server not ready yet — try again soon';
+          btn.disabled = true;
+        } else {
+          sub.textContent = 'Status: not subscribed';
+          btn.textContent = 'Turn on';
+          btn.disabled = false;
+        }
+      }
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        const s = await window.GEPush.status();
+        try {
+          if (s === 'subscribed') await window.GEPush.unsubscribe();
+          else await window.GEPush.subscribe();
+        } catch (e) {
+          sub.textContent = 'Error: ' + (e.message || 'unknown');
+        }
+        await refresh();
+      });
+      refresh();
+    })();
+  </script>
   <script>
     // Language toggle — wires the EN/ES buttons to window.I18n.
     (function () {
