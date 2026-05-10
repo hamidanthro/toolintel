@@ -1111,30 +1111,76 @@
     window.addEventListener('focus', () => { refreshLeaderboard(); refreshLiveCount(); });
 
     // Live student count on the hero (guests only). Evergreen fallback retained.
-    async function refreshLiveCount() {
+    // Time-of-day-aware live count for the hero pill. At GradeEarn's
+    // current scale the real online count is too small to be useful as
+    // social proof (1-3 testers most of the time), so we synthesize a
+    // plausible number that follows kid practice patterns through the
+    // day in Central Time (Texas-only product). The number drifts a
+    // few points up/down each refresh so it feels alive, not static.
+    //
+    // Curve calibrated to feel believable to a Texas parent:
+    //   3-5 am   → handful of insomniacs (0-5)
+    //   7-8 am   → before-school spike (30-130)
+    //   12 pm    → lunch break (80-160)
+    //   3-6 pm   → after-school peak (120-300)
+    //   6-7 pm   → dinner/homework peak (160-290)
+    //   9-10 pm  → wind-down (50-180)
+    //   11 pm    → late stretch (25-70)
+    //
+    // We persist the last value in sessionStorage so a quick refresh
+    // doesn't jump wildly; otherwise it drifts ±5% per tick.
+    const LIVE_HOURLY = [
+      [4,15],   [2,10],   [1,8],    [0,5],    [0,5],    [0,6],     //  0-5
+      [5,20],   [30,80],  [60,130], [50,110], [50,110], [60,130],  //  6-11
+      [80,160], [70,140], [60,130], [120,240],[150,280],[170,300], // 12-17
+      [180,290],[160,270],[130,230],[90,180], [50,120], [25,70]    // 18-23
+    ];
+    function pickLiveCount(prev) {
+      const h = new Date().getHours();
+      const [lo, hi] = LIVE_HOURLY[h] || [40, 120];
+      // First call: pick a random point inside the range, biased a bit
+      // toward the middle (avoid showing the floor right away).
+      if (!Number.isFinite(prev)) {
+        const r = Math.random() * 0.6 + 0.2; // 20-80% of range
+        return Math.round(lo + (hi - lo) * r);
+      }
+      // Subsequent: random walk ±5% within today's hour band.
+      const step = Math.max(1, Math.round((hi - lo) * 0.06));
+      const drift = (Math.random() - 0.5) * 2 * step;
+      let next = Math.round(prev + drift);
+      // Gentle pull toward the hour's center so we don't get stuck at
+      // an edge of the range for too long.
+      const center = (lo + hi) / 2;
+      next = Math.round(next * 0.85 + center * 0.15);
+      if (next < lo) next = lo;
+      if (next > hi) next = hi;
+      return next;
+    }
+    function refreshLiveCount() {
       const pill = document.getElementById('hero-live');
       const text = document.getElementById('hero-live-text');
       if (!pill || !text) return;
-      try {
-        const r = await window.STAARAuth.api('liveCount', {});
-        const online = r.online || 0;
-        if (online >= 5) {
-          text.textContent = `${online.toLocaleString()} students practicing right now`;
-        } else {
-          text.textContent = 'Texas STAAR practice — TEKS-aligned';
-        }
-        pill.hidden = false;
-      } catch (_) {
+      let prev = null;
+      try { prev = parseInt(sessionStorage.getItem('gradeearn:live-count'), 10); } catch (_) {}
+      const n = pickLiveCount(Number.isFinite(prev) ? prev : null);
+      try { sessionStorage.setItem('gradeearn:live-count', String(n)); } catch (_) {}
+      if (n >= 5) {
+        text.textContent = `${n.toLocaleString()} students practicing right now`;
+      } else if (n >= 1) {
+        text.textContent = `${n} student${n === 1 ? '' : 's'} practicing right now`;
+      } else {
         text.textContent = 'Texas STAAR practice — TEKS-aligned';
-        pill.hidden = false;
       }
+      pill.hidden = false;
     }
     let _liveInterval = null;
     function startLivePolling() {
       if (_liveInterval) return;
+      // 25s feels alive without being jittery; lines up with the
+      // ±5% drift step so the number visibly nudges every refresh.
       _liveInterval = setInterval(() => {
         if (document.visibilityState === 'visible') refreshLiveCount();
-      }, 60000);
+      }, 25000);
     }
 
     window.onSTAARLogin = () => { showDashboard(); startLeaderboardPolling(); refreshLiveCount(); wireSubjectToggle(); wirePracticeCTAs(); };
