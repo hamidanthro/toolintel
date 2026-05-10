@@ -204,7 +204,7 @@
   <script src="js/pwa-install.js?v=20260427a" defer></script>
   <script src="js/friends.js?v=20260426b"></script>
   <script src="js/staar-data.js"></script>
-  <script src="js/grade-card.js?v=20260427r"></script>
+  <script src="js/grade-card.js?v=20260510s"></script>
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
     const Auth = window.STAARAuth || {};
@@ -225,7 +225,11 @@
           document.getElementById('recommendation-text').innerHTML =
             `Based on your progress, <strong>${g.title}</strong> is your sweet spot today.`;
           const cta = document.getElementById('recommendation-cta');
-          cta.setAttribute('href', `practice.html?g=${encodeURIComponent(g.slug)}`);
+          // Math has a unit-structured curriculum — route through the
+          // topic picker (subject.html) so the kid can pick Addition,
+          // Fractions, etc. (or Mixed practice). Default subject for
+          // the recommendation card is math.
+          cta.setAttribute('href', `subject.html?g=${encodeURIComponent(g.slug)}&subj=math`);
           cta.innerHTML = `Start ${g.title}` +
             `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7H11M11 7L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
           rec.hidden = false;

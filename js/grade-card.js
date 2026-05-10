@@ -70,7 +70,7 @@
   //                  practice = full card on the practice-select page
   //   isCurrent:   bool  -> adds .grade-card--current and "Your grade" badge
   //   isLocked:    bool  -> renders as <div>, adds .grade-card--locked, "Below your grade" badge
-  //   href:        string override (defaults: practice→practice.html?g=, default→grade.html?g=)
+  //   href:        string override (defaults: practice→subject.html?g=&subj=math, default→grade.html?g=)
   //   progress:    { pct, answered, target } for compact variant
   function html(grade, opts) {
     opts = opts || {};
@@ -137,8 +137,12 @@
     const el = document.createElement(tag);
 
     if (!isLocked) {
+      // 'practice' variant defaults to Math + routes through the
+      // topic picker (subject.html) so kids can pick Addition,
+      // Fractions, etc. before they start. Reading / science can
+      // override via opts.href.
       const defaultHref = variant === 'practice'
-        ? `practice.html?g=${encodeURIComponent(grade.slug)}`
+        ? `subject.html?g=${encodeURIComponent(grade.slug)}&subj=math`
         : `grade.html?g=${encodeURIComponent(grade.slug)}`;
       el.href = opts.href || defaultHref;
     }
