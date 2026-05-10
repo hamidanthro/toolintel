@@ -32,7 +32,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260510y" />
+  <link rel="stylesheet" href="css/styles.css?v=20260510z" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -150,6 +150,13 @@
 
       <div class="dashboard-welcome">
         <div class="welcome-content">
+          <!-- Live-count social proof — same time-of-day curve as the
+               anon hero pill. Hidden by default; refreshLiveCount()
+               unhides + populates it. -->
+          <div class="dash-live-pill" id="dash-live" hidden>
+            <span class="dash-live-dot" aria-hidden="true"></span>
+            <span id="dash-live-text">0 students practicing right now</span>
+          </div>
           <span class="welcome-eyebrow">
             <span class="eyebrow-emoji">⭐</span>
             Lifetime stats
@@ -1176,21 +1183,29 @@
       return next;
     }
     function refreshLiveCount() {
-      const pill = document.getElementById('hero-live');
-      const text = document.getElementById('hero-live-text');
-      if (!pill || !text) return;
+      const heroPill = document.getElementById('hero-live');
+      const heroText = document.getElementById('hero-live-text');
+      const dashPill = document.getElementById('dash-live');
+      const dashText = document.getElementById('dash-live-text');
+      // Bail only if BOTH surfaces are absent — one or the other may
+      // be hidden (anon hero vs logged-in dashboard).
+      if (!heroPill && !dashPill) return;
       let prev = null;
       try { prev = parseInt(sessionStorage.getItem('gradeearn:live-count'), 10); } catch (_) {}
       const n = pickLiveCount(Number.isFinite(prev) ? prev : null);
       try { sessionStorage.setItem('gradeearn:live-count', String(n)); } catch (_) {}
+      let copy;
       if (n >= 5) {
-        text.textContent = `${n.toLocaleString()} students practicing right now`;
+        copy = `${n.toLocaleString()} students practicing right now`;
       } else if (n >= 1) {
-        text.textContent = `${n} student${n === 1 ? '' : 's'} practicing right now`;
+        copy = `${n} student${n === 1 ? '' : 's'} practicing right now`;
       } else {
-        text.textContent = 'Texas STAAR practice — TEKS-aligned';
+        copy = 'Texas STAAR practice — TEKS-aligned';
       }
-      pill.hidden = false;
+      if (heroText) heroText.textContent = copy;
+      if (heroPill) heroPill.hidden = false;
+      if (dashText) dashText.textContent = copy;
+      if (dashPill) dashPill.hidden = false;
     }
     let _liveInterval = null;
     function startLivePolling() {

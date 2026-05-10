@@ -578,6 +578,34 @@ a:hover { text-decoration: underline; }
   50%      { opacity: 0.6; }
 }
 
+/* Dashboard live-count pill — same visual treatment as the hero
+   live-pill but mounted inside the logged-in dashboard. Sits above
+   the "Lifetime stats" eyebrow chip so it's the first thing the kid
+   sees on home. */
+.dash-live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  margin: 0 0 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.28);
+  border-radius: 999px;
+}
+.dash-live-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow:
+    0 0 0 3px rgba(16, 185, 129, 0.2),
+    0 0 12px rgba(16, 185, 129, 0.5);
+  animation: hero-live-pulse 2s ease-in-out infinite;
+}
+
 /* Buttons */
 .btn {
   display: inline-block;
@@ -8556,8 +8584,8 @@ input[type="button"] {
   body.home-page .hero .hero-right { order: 1; }
   body.home-page .hero .hero-left  { order: 2; display: flex; flex-direction: column; }
 
-  /* Hide social-proof pill on mobile — kid doesn't care */
-  body.home-page .hero-live-pill { display: none !important; }
+  /* Social-proof pill stays visible on mobile per Hamid (May 10) —
+     parents check this number before they tap Practice. */
 
   /* Headline tighter */
   body.home-page .hero-headline {
@@ -9338,14 +9366,27 @@ input[type="button"] {
     display: none !important;
   }
 
-  /* ---------- Step 2: Kill hero text block on mobile ---------- */
-  body.home-page .hero-left,
+  /* ---------- Step 2: Kill hero text block on mobile ----------
+     Children of hero-left hide; hero-left itself stays so the
+     live-count pill (its remaining visible child) renders. Parents
+     look at the live-count for social proof before tapping Practice
+     (Hamid May 10). */
   body.home-page .hero-headline,
   body.home-page .hero-tagline-mobile,
-  body.home-page .hero-live-pill,
   body.home-page .hero .hero-cta,
   body.home-page .hero-left p {
     display: none !important;
+  }
+  body.home-page .hero-left {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  body.home-page .hero-live-pill {
+    display: inline-flex !important;
+    margin: 8px auto 12px !important;
   }
   body.home-page .hero {
     padding: 12px 16px 8px !important;
