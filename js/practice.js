@@ -287,12 +287,22 @@
     return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  // ---- Guest free-trial: 5 questions across all grades, no login required.
-  // Enough to demo the full experience (question card, streak, wrong-answer
-  // AI tutor, end-of-set summary) without giving away the content library.
-  // Was 100 pre-2026-05-09 — that was effectively unlimited for typical use.
-  const GUEST_LIMIT = 5;
-  const GUEST_KEY = 'staar.guest.answered';
+  // ---- Guest free-trial (May 10): 30 questions per (subject, grade)
+  // so a visitor can poke around different areas and actually get a
+  // feel for the product before being asked to sign up. Stored
+  // per-bucket in localStorage so K-math and 3-reading have separate
+  // counters — a parent evaluating the app shouldn't get locked out
+  // of math after demoing reading.
+  const GUEST_LIMIT = 30;
+  const GUEST_KEY_PREFIX = 'staar.guest.answered';
+  function guestBucketKey() {
+    // Read the active subject + grade from the same params the page
+    // already uses. Falls back to 'math' / 'unknown' so an unscoped
+    // session still has a single counter.
+    const g = (typeof slug === 'string' && slug) ? slug : (params.get('g') || 'unknown');
+    const s = (typeof SUBJECT_SLUG === 'string' && SUBJECT_SLUG) ? SUBJECT_SLUG : (params.get('subj') || 'math');
+    return `${GUEST_KEY_PREFIX}:${s}:${g}`;
+  }
   function isGuest() {
     return !(window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser());
   }
@@ -396,10 +406,10 @@
     return null;
   }
   function guestCount() {
-    try { return parseInt(localStorage.getItem(GUEST_KEY), 10) || 0; } catch (_) { return 0; }
+    try { return parseInt(localStorage.getItem(guestBucketKey()), 10) || 0; } catch (_) { return 0; }
   }
   function guestIncrement() {
-    try { localStorage.setItem(GUEST_KEY, String(guestCount() + 1)); } catch (_) {}
+    try { localStorage.setItem(guestBucketKey(), String(guestCount() + 1)); } catch (_) {}
   }
   function guestRemaining() { return Math.max(0, GUEST_LIMIT - guestCount()); }
   function renderGuestBanner() {
@@ -426,8 +436,8 @@
       }
     }
     const remaining = guestRemaining();
-    bar.innerHTML = `<span>Preview · ${remaining} of ${GUEST_LIMIT} free questions left.</span>
-      <a href="#" id="guest-signup-btn" style="color:#fbbf24;font-weight:600;text-decoration:none;">Sign up to unlock the full content library →</a>`;
+    bar.innerHTML = `<span>Free preview · <strong style="color:#fde68a;">${remaining} of ${GUEST_LIMIT}</strong> questions left in this area.</span>
+      <a href="#" id="guest-signup-btn" style="color:#fbbf24;font-weight:600;text-decoration:none;">Sign up free to unlock 100,000+ questions →</a>`;
     const btn = document.getElementById('guest-signup-btn');
     if (btn) btn.onclick = (e) => { e.preventDefault(); if (window.STAARAuth && window.STAARAuth.showLogin) window.STAARAuth.showLogin(); };
   }
@@ -438,15 +448,44 @@
     const root = document.getElementById('practice-root');
     if (root) {
       root.innerHTML = `
-        <div class="card" style="text-align:center;padding:36px;">
-          <h2 style="margin-top:0;">You finished your free preview! 🎉</h2>
-          <p style="color:var(--muted);max-width:520px;margin:8px auto 20px;">
-            Sign up free to unlock the full content library &mdash; thousands of TEKS-aligned
-            questions across every subject and grade, the AI tutor on every wrong answer, points
-            you can spend on real toys in the marketplace, and your streak saved on every device.
+        <div class="card guest-cap-card" style="text-align:center;padding:32px 24px;max-width:560px;margin:24px auto;">
+          <h2 style="margin:0 0 6px;font-size:1.55rem;">You used your 30 free questions 🎉</h2>
+          <p style="color:rgba(255,255,255,0.65);margin:0 0 22px;font-size:0.95rem;">
+            That was just one slice. Sign up free to unlock everything.
           </p>
-          <p><button type="button" class="btn btn-primary" id="guest-cap-signup">Create your free account</button></p>
-          <p style="font-size:0.88rem;margin-top:14px;"><a href="#" id="guest-cap-signin">Already have an account? Sign in</a></p>
+
+          <ul class="guest-cap-bullets" style="text-align:left;display:inline-block;padding:0;margin:0 0 24px;list-style:none;max-width:420px;">
+            <li style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;color:rgba(255,255,255,0.88);">
+              <span style="color:#fbbf24;flex-shrink:0;font-size:1.05rem;line-height:1.3;">✓</span>
+              <span><strong>100,000+ TEKS-aligned questions</strong> across K-8 + Algebra 1, Math &amp; Reading</span>
+            </li>
+            <li style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;color:rgba(255,255,255,0.88);">
+              <span style="color:#fbbf24;flex-shrink:0;font-size:1.05rem;line-height:1.3;">✓</span>
+              <span><strong>Built-in AI tutor</strong> on every wrong answer &mdash; explains, asks Socratic questions, never gives up</span>
+            </li>
+            <li style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;color:rgba(255,255,255,0.88);">
+              <span style="color:#fbbf24;flex-shrink:0;font-size:1.05rem;line-height:1.3;">✓</span>
+              <span><strong>Reading passages + comprehension</strong>, voice-record-yourself, vocabulary tap-to-define</span>
+            </li>
+            <li style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;color:rgba(255,255,255,0.88);">
+              <span style="color:#fbbf24;flex-shrink:0;font-size:1.05rem;line-height:1.3;">✓</span>
+              <span><strong>Real toys</strong> shipped to your door &mdash; kids earn points for correct answers and spend them in the marketplace</span>
+            </li>
+            <li style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;color:rgba(255,255,255,0.88);">
+              <span style="color:#fbbf24;flex-shrink:0;font-size:1.05rem;line-height:1.3;">✓</span>
+              <span><strong>Daily missions, streak shields, 66 trophies</strong> &mdash; progress saved on every device</span>
+            </li>
+          </ul>
+
+          <p style="margin:0 0 18px;">
+            <button type="button" class="btn btn-primary btn-primary--large" id="guest-cap-signup" style="min-width:240px;">Create your free account</button>
+          </p>
+          <p style="font-size:0.9rem;margin:0 0 6px;color:rgba(255,255,255,0.55);">
+            <a href="#" id="guest-cap-signin" style="color:#fde68a;">Already have an account? Sign in</a>
+          </p>
+          <p style="font-size:0.78rem;color:rgba(255,255,255,0.45);margin:14px 0 0;">
+            Free during beta · Texas families · No credit card · COPPA-aware parent consent
+          </p>
         </div>`;
       const sup = document.getElementById('guest-cap-signup');
       const sin = document.getElementById('guest-cap-signin');
