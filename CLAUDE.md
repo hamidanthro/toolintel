@@ -4054,6 +4054,95 @@ filtering work. Each is its own focused commit when the time comes.
 
 ---
 
+## 40. Master audit fixes — Tier 1-5 + Tier 7 quick wins shipped (May 10)
+
+Eight-tier consolidated audit (Tesla × Google × Apple committee
+treatment) of 43+ items surfaced by four user-supplied screenshots
+(Saad's rounding bug, Aaima's cat-counting, Yellow Rose reading,
+Rylee's "1 pencils"). Tiers 1-5 + Tier 7 small wins now shipped;
+Tier 5 Z + Tier 6 AA-AG + Tier 7 AP deferred with reasoning below.
+
+### Shipped (commits 1a87f80 → a3c8b51)
+
+| Tier | Items | Commit |
+|---|---|---|
+| 1 | logic bugs (rounding, cat counting, reading prompt, pluralization) | `1a87f80` |
+| 2 | rendering (emoji TTS, mid-question UI, tutor doubt trigger) | `ae76e45` |
+| 3 | UX redesign (TEKS hidden, Lumen visible, chip stack, 48px tap targets) | `1ba9bcc` |
+| 4 | a11y (plain explanations, serif→sans, warmer wrong-contrast) | `ebb5a55` |
+| 5 Y | runtime grammar helper for lambda content | `f50f07d` |
+| 7 AO+AN | sticky-bottom submit + scratchpad small-phone polish | `a3c8b51` |
+
+### Deferred — needs own focused session
+
+**Tier 5 Z (server-side achievement sync).** Cross-device sync of XP
+/ shields / earned trophies / daily mission state. Needs:
+- New `getAchievementsState` + `updateAchievementsState` actions on
+  the lambda mirroring the §39 fun-facts pattern (read-modify-write
+  on `staar-users` with FIFO-cap on earned-id list)
+- Conflict resolution: last-write-wins by `lastUpdatedAt` server
+  timestamp, OR merge (union of earned-ids, max of xp/level, latest
+  dailyMission snapshot by `date` field)
+- Migration: existing testers have localStorage state that needs to
+  flow to server on first authenticated load
+- Debounce + retry: every state mutation through `js/achievements.js`
+  schedules a 3-5s debounced push; failures retry with exponential
+  backoff
+- Parity check extension if the new actions touch the high-risk
+  function list
+
+Realistically a 2-3 commit feature with non-trivial test surface.
+Shipping it half-baked could lose kid progress, which is worse than
+the current "single-device only" limitation. K-3 kids mostly share
+one device so the gap is low-impact today.
+
+**Tier 6 AA (parent dashboard + weekly email).** Requires lambda +
+SES + cron + parent-auth flow. SES is currently wired from the
+WealthDeskPro era (`hamid.ali87@gmail.com` target) but needs a
+gradeearn.com sender identity, parent-consent flow on signup,
+preference toggle. Lambda has `handleParentWeekly` (line 2077)
+reading from staar-content-events already; the missing pieces are
+email delivery + parent-auth + a weekly cron.
+
+**Tier 6 AB (diagnostic placement test).** Adaptive 12-question test
+that fast-tracks kids to their actual level. Frontend flow + lambda
+classifier action + state persistence. Substantial.
+
+**Tier 6 AC (multi-kid family profiles).** Currently one auth = one
+kid. Needs a parent-account + child-profile data model split on
+`staar-users`, child-switcher UI, settings page changes. Major
+auth refactor.
+
+**Tier 6 AD (web push notifications).** PWA + lambda + VAPID keys
++ notification preference flow + COPPA-aware kid-vs-parent gating.
+
+**Tier 6 AE (audio recording for reading).** Browser MediaRecorder
+API to capture kid reading the passage aloud. Audio upload to S3.
+Could either be parent-only listen-back or LLM-judge for fluency.
+Real feature for the reading-fluency angle of STAAR; needs an audio
+storage decision.
+
+**Tier 6 AF (friend leagues G3+).** Multi-kid social ranking.
+Server-scored, needs leaderboard tables, anti-cheat, age-gating
+(G3+ only). Complex.
+
+**Tier 6 AG (kidSAFE+COPPA certification).** Paperwork — Hamid handles
+external; not a code change.
+
+**Tier 7 AP (collapsible top stats drawer).** Per §14: rebuild the
+hidden mobile stats panel as a top-anchor tappable pill that
+expands to show accuracy / correct / answered / streak / recent
+dots when tapped. Medium HTML restructure on the practice page,
+needs a Hamid UX call on the drawer's resting visual.
+
+### Updated TODOs in §14
+
+All deferred items above mirror existing §14 entries; this section
+groups them together with the audit-tier label so future sessions
+can see what was scoped together and what remains.
+
+---
+
 ## TOP 3 THINGS YOU SHOULD KNOW
 
 1. **The deploy story is held together by tape and is the single biggest
