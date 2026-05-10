@@ -1711,12 +1711,70 @@
              </div>
            </div>`
         : '';
+      // Mastery badge + next-topic recommendation. Only shown when the
+      // kid was scoped to a specific unit (?u=...), the math subject,
+      // and Mastery module loaded — out-of-scope cases (Mixed practice,
+      // reading/science/SS, mock tests) skip silently.
+      let masteryHtml = '';
+      let nextSuggestionHtml = '';
+      try {
+        if (window.Mastery && unitId && SUBJECT_SLUG === 'math' && curr && Array.isArray(curr.units)) {
+          const allStats = window.Mastery.loadStatsFor(slug);
+          const scopedUnit = curr.units.find(u => u.id === unitId);
+          if (scopedUnit && allStats) {
+            const unitStats = (allStats.units && allStats.units[unitId]) || null;
+            const lev = window.Mastery.levelFor(unitStats);
+            masteryHtml = `
+              <div class="mastery-badge mastery-badge--${lev.key}">
+                <span class="mastery-badge-emoji" aria-hidden="true">${lev.emoji}</span>
+                <span class="mastery-badge-text">
+                  <strong>${escapeHtml(scopedUnit.title)} — ${lev.label}</strong>
+                  <span class="mastery-badge-blurb">${escapeHtml(lev.blurb)}</span>
+                </span>
+              </div>
+            `;
+            // Suggest next topic only if the kid is doing well here
+            // (Strong or Mastered). Don't pull a kid OUT of a topic
+            // they're still building — that would feel discouraging.
+            if (lev.key === 'strong' || lev.key === 'mastered') {
+              const rec = window.Mastery.recommendNext(allStats, curr, unitId);
+              if (rec && rec.unit) {
+                const opener = window.Mastery.pickOpener(rec.reason);
+                const nextUrl = `practice.html?s=${encodeURIComponent(STATE_SLUG_RESOLVED || '')}&g=${encodeURIComponent(slug)}&subj=math&u=${encodeURIComponent(rec.unit.id)}`;
+                const reasonBlurb = rec.reason === 'never_practiced'
+                  ? 'You haven\'t practiced this one yet.'
+                  : rec.reason === 'undertested'
+                    ? `Only ${rec.level.blurb.toLowerCase().includes('answered') ? rec.level.blurb : '0 questions answered there'}.`
+                    : `${rec.level.blurb} · let\'s build this up.`;
+                nextSuggestionHtml = `
+                  <a class="next-topic-card" href="${escapeHtml(nextUrl)}">
+                    <div class="next-topic-card-eyebrow">${escapeHtml(opener)}</div>
+                    <div class="next-topic-card-title">${escapeHtml(rec.unit.title)}</div>
+                    <div class="next-topic-card-sub">${escapeHtml(reasonBlurb)}</div>
+                    <div class="next-topic-card-cta">
+                      <span>Try it</span>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </div>
+                  </a>
+                `;
+              }
+            }
+          }
+        }
+      } catch (err) {
+        // Mastery is purely additive UI; failure here must not break
+        // the end-of-set screen for the kid.
+        console.warn('[mastery] render failed:', err && err.message || err);
+      }
+
       qbox.innerHTML = `
         ${banner}
         <div class="card">
           <h3>${pickEndHeader(correct, questions.length)}</h3>
           <p style="font-size:1.4rem;"><strong>${correct} / ${questions.length}</strong> correct (${pct}%)</p>
+          ${masteryHtml}
           <div id="session-summary" class="session-summary tutor-output" aria-live="polite" aria-atomic="true" style="margin:14px 0;padding:10px 14px;font-size:0.95rem;color:var(--text,#374151);background:var(--bg-soft,#f9fafb);border-left:3px solid var(--border,#e5e7eb);border-radius:6px;font-style:italic;">${thinkingHTML()}</div>
+          ${nextSuggestionHtml}
           <a class="btn btn-primary" id="end-try-again" href="practice.html?${new URLSearchParams(Object.fromEntries([...params])).toString()}">Try again</a>
           <a class="btn btn-secondary" id="end-back" href="grade.html?g=${slug}" style="margin-left:8px;color:var(--blue);border-color:var(--blue);">Back to ${curr.title}</a>
           ${(() => {

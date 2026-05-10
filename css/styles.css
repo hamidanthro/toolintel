@@ -12048,6 +12048,111 @@ body.grade-page > * {
   .subject-section-sub { font-size: 13px; }
 }
 
+/* ==========================================================================
+   Mastery — per-topic level badges (used on subject.html topic cards
+   AND on the practice end-of-session screen). Level keys: starter,
+   building, strong, mastered.
+   ========================================================================== */
+.topic-card-mastery {
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.topic-card-mastery-emoji { font-size: 14px; line-height: 1; }
+.topic-card-mastery-label { color: rgba(255, 255, 255, 0.92); }
+.topic-card-mastery-blurb { color: rgba(255, 255, 255, 0.45); font-weight: 500; }
+.topic-card-mastery--starter  { border-color: rgba(148, 163, 184, 0.30); }
+.topic-card-mastery--building { border-color: rgba(96, 165, 250, 0.35); }
+.topic-card-mastery--building .topic-card-mastery-label { color: #93c5fd; }
+.topic-card-mastery--strong   { border-color: rgba(52, 211, 153, 0.40); }
+.topic-card-mastery--strong .topic-card-mastery-label { color: #6ee7b7; }
+.topic-card-mastery--mastered { border-color: rgba(251, 191, 36, 0.45); background: rgba(251, 191, 36, 0.06); }
+.topic-card-mastery--mastered .topic-card-mastery-label { color: #fcd34d; }
+
+/* End-of-session mastery badge — bigger, more prominent than the
+   topic-card variant since it's the kid's headline result. */
+.mastery-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  margin: 10px 0 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-left-width: 4px;
+}
+.mastery-badge-emoji { font-size: 28px; line-height: 1; flex-shrink: 0; }
+.mastery-badge-text { display: flex; flex-direction: column; gap: 2px; line-height: 1.35; }
+.mastery-badge-text strong { font-size: 15px; color: rgba(255, 255, 255, 0.95); }
+.mastery-badge-blurb { font-size: 12px; color: rgba(255, 255, 255, 0.55); font-weight: 500; }
+.mastery-badge--starter  { border-left-color: #94a3b8; }
+.mastery-badge--building { border-left-color: #60a5fa; }
+.mastery-badge--building .mastery-badge-text strong { color: #93c5fd; }
+.mastery-badge--strong   { border-left-color: #34d399; }
+.mastery-badge--strong .mastery-badge-text strong { color: #6ee7b7; }
+.mastery-badge--mastered {
+  border-left-color: #fbbf24;
+  background: linear-gradient(90deg, rgba(251, 191, 36, 0.08) 0%, rgba(255, 255, 255, 0.04) 60%);
+}
+.mastery-badge--mastered .mastery-badge-text strong { color: #fcd34d; }
+
+/* Next-topic suggestion card — appears under the AI session summary
+   when the kid finishes Strong/Mastered in a topic and there's a
+   sibling topic that needs attention. Big tap target, kid-readable
+   copy ("Ready for a new topic?" / "Try it →"), single CTA. */
+.next-topic-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 18px;
+  margin: 10px 0 14px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.06) 0%, rgba(168, 85, 247, 0.05) 100%);
+  border: 1px solid rgba(96, 165, 250, 0.22);
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  transition: transform 160ms ease, border-color 160ms ease;
+}
+.next-topic-card:hover  { transform: translateY(-1px); border-color: rgba(96, 165, 250, 0.5); }
+.next-topic-card:active { transform: scale(0.99); }
+.next-topic-card-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(147, 197, 253, 0.85);
+}
+.next-topic-card-title { font-size: 17px; font-weight: 700; color: rgba(255, 255, 255, 0.96); letter-spacing: -0.01em; }
+.next-topic-card-sub { font-size: 13px; color: rgba(255, 255, 255, 0.55); line-height: 1.45; margin-top: 2px; }
+.next-topic-card-cta {
+  margin-top: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fbbf24;
+}
+@media (max-width: 480px) {
+  .mastery-badge { padding: 10px 12px; gap: 10px; }
+  .mastery-badge-emoji { font-size: 24px; }
+  .mastery-badge-text strong { font-size: 14px; }
+  .next-topic-card { padding: 12px 14px; }
+  .next-topic-card-title { font-size: 15px; }
+  .next-topic-card-sub { font-size: 12px; }
+}
+
 .what-to-expect {
   padding: 48px 32px;
   border-top: 1px solid rgba(255, 255, 255, 0.04);

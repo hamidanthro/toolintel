@@ -95,20 +95,21 @@
     return unit.lessons.reduce((s, l) => s + ((l.questions && l.questions.length) || 0), 0);
   }
 
-  // Per-user mastery — read from STAARStats if available so kids see
-  // a tiny progress badge per topic. Falls back gracefully if absent.
+  // Per-user mastery using shared js/mastery.js. Returns the level
+  // object (or null if no stats yet for that unit). Read from
+  // localStorage. Mastery module gracefully handles missing stats.
   function masteryForUnit(unitId) {
     try {
-      const u = window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser();
-      const who = (u && u.username) ? u.username : 'anon';
-      const key = `staar.stats.${who}.${GRADE_SLUG}`;
-      const raw = localStorage.getItem(key);
-      if (!raw) return null;
-      const stats = JSON.parse(raw);
-      if (!stats || !stats.units || !stats.units[unitId]) return null;
-      const r = stats.units[unitId];
-      if (!r.total) return null;
-      return { total: r.total, correct: r.correct || 0, pct: Math.round((r.correct || 0) / r.total * 100) };
+      if (!window.Mastery) return null;
+      const allStats = window.Mastery.loadStatsFor(GRADE_SLUG);
+      if (!allStats || !allStats.units) return null;
+      const unitStats = allStats.units[unitId];
+      if (!unitStats || !unitStats.total) return null;
+      return {
+        ...window.Mastery.levelFor(unitStats),
+        total: unitStats.total,
+        correct: unitStats.correct || 0
+      };
     } catch (_) { return null; }
   }
 
@@ -138,8 +139,12 @@
     const qCount = unitQuestionCount(unit);
     const mastery = masteryForUnit(unit.id);
     const masteryHtml = mastery
-      ? `<div class="topic-card-stat">${mastery.correct}/${mastery.total} correct · ${mastery.pct}%</div>`
-      : `<div class="topic-card-stat topic-card-stat--ghost">${qCount} questions</div>`;
+      ? `<div class="topic-card-mastery topic-card-mastery--${mastery.key}">
+           <span class="topic-card-mastery-emoji" aria-hidden="true">${mastery.emoji}</span>
+           <span class="topic-card-mastery-label">${escapeHtml(mastery.label)}</span>
+           <span class="topic-card-mastery-blurb">${escapeHtml(mastery.blurb)}</span>
+         </div>`
+      : `<div class="topic-card-stat topic-card-stat--ghost">${qCount} questions in pool</div>`;
     const targetUrl = `practice.html?s=${encodeURIComponent(STATE_SLUG)}&g=${encodeURIComponent(GRADE_SLUG)}&subj=${encodeURIComponent(SUBJ_SLUG)}&u=${encodeURIComponent(unit.id)}`;
     const glyph = topicGlyph(unit.title);
     return `
