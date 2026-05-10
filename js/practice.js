@@ -1151,6 +1151,18 @@
       if (headerEl) headerEl.setAttribute('data-q', String(i + 1));
       const q = questions[i];
       markSeen(q.id);
+      // Tier 5 Y — runtime grammar fix for lambda-generated content.
+      // Static curriculum was scrubbed in Bug A but on-demand generation
+      // can still emit "1 pencils". GETextUtils corrects it at render.
+      if (window.GETextUtils && q.contentId) {
+        if (q.prompt) q.prompt = window.GETextUtils.fixCountAgreement(q.prompt);
+        if (q.explanation) q.explanation = window.GETextUtils.fixCountAgreement(q.explanation);
+        if (Array.isArray(q.choices)) {
+          q.choices = q.choices.map(function (c) {
+            return typeof c === 'string' ? window.GETextUtils.fixCountAgreement(c) : c;
+          });
+        }
+      }
       qbox.innerHTML = renderQuestion(q, isLocked, i, questions.length);
       // I6 smooth scroll-to-top for the question card so kids on phones
       // don't end up reading the next question with the previous answer
