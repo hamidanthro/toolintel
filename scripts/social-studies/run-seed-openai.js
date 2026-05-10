@@ -92,7 +92,49 @@ const BRIEFS = [
 
   // Reconstruction
   { id: 'g8ss-reconstruction-amendments', strand: 'government',
-    topic: 'the three Reconstruction Amendments (13th, 14th, 15th) — what each one did, the order they passed, and why they are sometimes called "the second founding"' }
+    topic: 'the three Reconstruction Amendments (13th, 14th, 15th) — what each one did, the order they passed, and why they are sometimes called "the second founding"' },
+
+  // ---- Round 2 (Q phase): Texas-history depth + missing US strands ----
+
+  // More Texas history (5)
+  { id: 'g8ss-tx-republic-years', strand: 'texas-history',
+    topic: 'the Republic of Texas (1836-1845) — its currency, two capitals (Houston then Austin), the diplomatic recognition challenge, and why it eventually pursued statehood' },
+  { id: 'g8ss-tx-san-jacinto', strand: 'texas-history',
+    topic: "the Battle of San Jacinto (April 21, 1836) — the surprise attack, Houston's strategy, the 18-minute fight, and the Treaty of Velasco that followed" },
+  { id: 'g8ss-tx-annexation-1845', strand: 'texas-history',
+    topic: 'the annexation of Texas in 1845 — why the U.S. hesitated for nine years, the slavery balance argument, and how the Joint Resolution finally brought Texas into the Union' },
+  { id: 'g8ss-tx-civil-war-secession', strand: 'texas-history',
+    topic: "Texas in the Civil War — Sam Houston's stand against secession, Texas's role as a Confederate state, and the late conflict at Palmito Ranch (May 1865) after Lee's surrender" },
+  { id: 'g8ss-tx-reconstruction-state', strand: 'texas-history',
+    topic: 'Texas during Reconstruction (1865-1873) — the new 1869 state constitution, the role of Freedmen, and why federal occupation ended in 1870' },
+
+  // More US history (6)
+  { id: 'g8ss-french-indian-war', strand: 'us-history',
+    topic: "the French and Indian War (1754-1763) — the global Seven Years' War context, why Britain won North America, and how the war's costs led to colonial taxation" },
+  { id: 'g8ss-boston-tea-party', strand: 'us-history',
+    topic: 'the Boston Tea Party (December 1773) — the Tea Act dispute, the actual event, and the Coercive (Intolerable) Acts that followed' },
+  { id: 'g8ss-articles-of-confederation-weaknesses', strand: 'us-history',
+    topic: "the Articles of Confederation — what powers they gave the federal government, three concrete weaknesses (no taxing power, no commerce regulation, unanimity required for amendment), and how Shays' Rebellion exposed the limits" },
+  { id: 'g8ss-manifest-destiny', strand: 'us-history',
+    topic: 'Manifest Destiny in the 1840s — the phrase, the cultural assumptions behind it, and how it justified U.S. westward expansion through war, treaty, and purchase' },
+  { id: 'g8ss-mexican-american-war', strand: 'us-history',
+    topic: 'the Mexican-American War (1846-1848) — the disputed border, the Treaty of Guadalupe Hidalgo, the Mexican Cession (CA, NV, UT, AZ, NM, parts of CO and WY), and how the Wilmot Proviso reignited the slavery debate' },
+  { id: 'g8ss-civil-war-antietam-turning', strand: 'us-history',
+    topic: 'the Battle of Antietam (September 17, 1862) — the bloodiest single day in U.S. history at the time, why Lincoln treated it as a Union victory, and how it cleared the political path for the Emancipation Proclamation' },
+
+  // More government (3)
+  { id: 'g8ss-federalist-anti-federalist', strand: 'government',
+    topic: 'the ratification debate of 1787-88 — the Federalist position (Hamilton, Madison, Jay), the Anti-Federalist position (Henry, George Mason), and how the promise of a Bill of Rights closed the deal' },
+  { id: 'g8ss-federalist-no-10', strand: 'government',
+    topic: "Federalist No. 10 — Madison's argument that a large republic is the best defense against the dangers of factions, and how that idea shows up in U.S. government today" },
+  { id: 'g8ss-northwest-ordinance', strand: 'government',
+    topic: 'the Northwest Ordinance of 1787 — how new states join the Union, why it banned slavery in the Northwest Territory, and what it set as a precedent for later state admissions' },
+
+  // More economics (2)
+  { id: 'g8ss-cotton-gin-economy', strand: 'economics',
+    topic: "Eli Whitney's cotton gin (1793) — how it sped up cotton processing, why it expanded enslaved labor instead of reducing it, and how it tied the South's economy to plantation cotton" },
+  { id: 'g8ss-northern-industrial-revolution', strand: 'economics',
+    topic: 'industrialization in the North (1820s-1860s) — the Lowell mill system, the wave of immigration that fed the factories, the rise of cities, and how this economy contrasted with the agricultural South' }
 ];
 
 let _ddbClient = null, _PutCommand = null, _ScanCommand = null;
