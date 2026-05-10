@@ -6776,6 +6776,11 @@ body.practice-page .unit-row-fill {
 @media (max-width: 640px) {
   .scratchpad-canvas-area { height: 220px; }
 }
+@media (max-width: 480px) {
+  .scratchpad-canvas-area { height: 180px; padding: 10px; }
+  .scratchpad-toolbar { padding: 8px 10px; gap: 4px; flex-wrap: wrap; }
+  .scratchpad-tool { width: 36px; height: 36px; }
+}
 
 /* Question clone — populated only in fullscreen mode (mobile).
    Hidden by default so desktop expanded mode is unchanged. */
@@ -15114,14 +15119,28 @@ body.is-standalone .mobile-tab-bar { border-top-width: 1.5px; }
   body.practice-page .performance-panel .stat-label { font-size: 0.75rem; }
   body.practice-page { padding-bottom: 64px; }
 
-  /* Submit button (Check answer) gets full-width on phone for thumb reach.
-     Stays in the document flow; sticky-bottom-of-viewport pattern needs
-     an HTML restructure and is logged as a deferred TODO. */
+  /* Submit button (Check answer) gets full-width on phone for thumb reach
+     AND sticky to the bottom of the viewport so the kid can always tap
+     it without scrolling down through long questions / choice lists.
+     The question-card is in body flow so sticky's containing block is
+     body; pinning the button to bottom:12px keeps it visible while the
+     form body is on-screen and lets it scroll off naturally with the
+     form when the next question loads. (Tier 7 AO from master audit.) */
   body.practice-page .question-card .btn,
   body.practice-page .question-card form .btn {
     width: 100%;
     min-height: 48px;
   }
+  body.practice-page .question-card > button.q-cta[data-role="check"],
+  body.practice-page .question-card form > button.q-cta[data-role="check"] {
+    position: sticky;
+    bottom: 12px;
+    z-index: 6;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+  }
+  /* Reserve a little space at the bottom of body so the sticky button
+     never crowds the very last bit of content. */
+  body.practice-page:not(.q-answered) { padding-bottom: 80px; }
 }
 
 /* ============================================================
