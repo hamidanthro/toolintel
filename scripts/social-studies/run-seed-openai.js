@@ -342,6 +342,20 @@ const BRIEFS = [
   { id: 'g3ss-tx-austin-as-capital', grade: '3', strand: 'civics',
     topic: 'Austin became the capital of Texas in 1839 when it was a small frontier town named after Stephen F. Austin; the Texas legislature meets there to pass laws, the Governor lives in the Governor\'s Mansion, and the pink-granite Texas Capitol stands at the heart of downtown' },
 
+  // ----- G3 v4 — six more briefs -----
+  { id: 'g3ss-tx-rangers-history', grade: '3', strand: 'texas-history',
+    topic: 'the Texas Rangers are a famous police force founded in 1823 by Stephen F. Austin; over the years they have fought outlaws, chased criminals across borders, and become a symbol of Texas law and order — they still exist today as part of the Texas Department of Public Safety' },
+  { id: 'g3ss-tx-six-flags-detail', grade: '3', strand: 'texas-history',
+    topic: 'six flags have flown over Texas since the 1500s — Spain (1519-1685, 1690-1821), France (1685-1690), Mexico (1821-1836), Republic of Texas (1836-1845), Confederate States of America (1861-1865), and the United States (1845-1861, 1865-present) — each represents a period when a different government ruled the area' },
+  { id: 'g3ss-tx-houston-naming', grade: '3', strand: 'texas-history',
+    topic: 'Houston, Texas is named after Sam Houston who led Texas to independence at San Jacinto in 1836; the city was founded that same year by two brothers as a port town along Buffalo Bayou; today it is the largest city in Texas with more than 2 million people' },
+  { id: 'g3ss-tx-three-rivers-importance', grade: '3', strand: 'geography',
+    topic: 'three Texas rivers shaped where Texans live and what they do — the Rio Grande forms the border with Mexico (used for farming the Rio Grande Valley), the Trinity flows past Dallas-Fort Worth (drinking water for those cities), and the Brazos crosses Central Texas (key for early cotton farms)' },
+  { id: 'g3ss-tx-dust-bowl-1930s', grade: '3', strand: 'texas-history',
+    topic: 'in the 1930s a long drought and over-farming created the Dust Bowl in the Texas Panhandle and Great Plains; black dust storms covered houses and ruined crops, forcing many Texas families to leave their farms; new farming methods and the Soil Conservation Service later helped the land recover' },
+  { id: 'g3ss-tx-ww2-rosie-shipyards', grade: '3', strand: 'texas-history',
+    topic: 'during World War II (1941-1945) Texas factories built ships, planes, and tanks; many Texas women — sometimes called Texas Rosies — worked in the Houston and Orange shipyards while soldiers fought overseas; the war changed Texas from a mostly farming state to one with big cities and factories' },
+
   // ===========================================================
   // ----- Grade 4 (TEKS §113.15) — Texas regions, history, government -----
   // ===========================================================

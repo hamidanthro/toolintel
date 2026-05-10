@@ -429,6 +429,20 @@ const BRIEFS = [
   { id: 'g3s-tx-gulf-coast-erosion', grade: '3', strand: 'Earth & Space', se: '3.10B', scenarioType: 'described_diagram',
     topic: "a description of waves crashing on the Texas Gulf Coast year after year; the sand on the beach moves and the cliffs slowly get smaller; the question asks the student to identify the natural process that wears the land down over time" },
 
+  // ----- G3 v4 — six more briefs -----
+  { id: 'g3s-air-pressure-balloon', grade: '3', strand: 'Matter & Energy', se: '3.6A', scenarioType: 'experiment',
+    topic: 'a student blows air into a balloon and ties it; the inflated balloon stays the same size when held still; the student is asked to identify what is inside the balloon and what is keeping the balloon stretched' },
+  { id: 'g3s-tx-water-cycle-evapotranspiration', grade: '3', strand: 'Earth & Space', se: '3.10A', scenarioType: 'described_diagram',
+    topic: 'a description of a Texas Hill Country morning where dew on the grass is gone by lunchtime and a tree releases water vapor through tiny leaf pores; the student is asked to identify both natural processes (evaporation from the dew, transpiration from the tree) that put water into the air' },
+  { id: 'g3s-tx-pollinator-mason-bee', grade: '3', strand: 'Organisms & Environments', se: '3.13A', scenarioType: 'described_diagram',
+    topic: 'a Texas mason bee crawls into a tube-shaped nest in a backyard hotel; while collecting pollen for its young, the bee carries pollen from flower to flower; the question asks the student to identify how this insect helps Texas plants reproduce' },
+  { id: 'g3s-tx-storm-lightning-thunder', grade: '3', strand: 'Earth & Space', se: '3.10C', scenarioType: 'experiment',
+    topic: 'during a Texas thunderstorm a student sees a flash of lightning and three seconds later hears thunder; on the next flash the wait is shorter; the question asks the student why we see the lightning before we hear the thunder' },
+  { id: 'g3s-friction-shoes-floor', grade: '3', strand: 'Force, Motion & Energy', se: '3.7A', scenarioType: 'experiment',
+    topic: 'a student wearing socks on a smooth wood floor slides easily; wearing rubber shoes on the same floor they cannot slide; the question asks the student to identify what makes the rubber shoe stop and the sock slide' },
+  { id: 'g3s-tx-prairie-fire-recovery', grade: '3', strand: 'Organisms & Environments', se: '3.12A', scenarioType: 'data_analysis',
+    topic: 'a Texas prairie three months after a small wildfire — first green grass shoots come up through the burned soil, then small wildflowers, then bushes after a year; the question asks the student to identify the order of recovery and why grass returns first' },
+
   // ===========================================================
   // ----- Grade 4 (TEKS §112.6) — practice-only -----
   // ===========================================================
