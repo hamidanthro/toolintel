@@ -17631,3 +17631,95 @@ body.practice-page .practice-eyebrow .btn-restart:hover {
   color: rgba(255, 255, 255, 0.55);
   font-style: italic;
 }
+
+/* ============================================================
+   PLACEMENT TEST — Tier 6 AB (May 10)
+   ============================================================ */
+body.placement-page {
+  background: var(--bg, #060d1f);
+  color: var(--text, #fff);
+}
+.placement-card { background: rgba(13, 34, 73, 0.45); }
+.choices-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.choices-vertical .choice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  cursor: pointer;
+  min-height: 48px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.choices-vertical .choice:hover {
+  border-color: rgba(251, 191, 36, 0.35);
+  background: rgba(255, 255, 255, 0.05);
+}
+.choices-vertical .choice input[type="radio"]:checked + .choice-symbol {
+  background: rgba(251, 191, 36, 0.2);
+  border-color: rgba(251, 191, 36, 0.6);
+  color: #fde68a;
+}
+.choices-vertical .choice input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.choices-vertical .choice .choice-symbol {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  flex-shrink: 0;
+}
+.placement-grades {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.placement-grade-row {
+  display: grid;
+  grid-template-columns: 120px 1fr 60px;
+  align-items: center;
+  gap: 12px;
+}
+.placement-grade-label {
+  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+.placement-grade-bar {
+  height: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.placement-grade-fill {
+  height: 100%;
+  transition: width 0.35s ease;
+  border-radius: 999px;
+}
+.placement-grade-score {
+  text-align: right;
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: 'JetBrains Mono', monospace;
+}
+@media (max-width: 480px) {
+  .placement-grade-row {
+    grid-template-columns: 80px 1fr 50px;
+    gap: 8px;
+  }
+  .placement-grade-label { font-size: 0.85rem; }
+}
