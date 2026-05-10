@@ -17542,10 +17542,20 @@ body.practice-page .practice-eyebrow .btn-restart:hover {
    memory only — never leaves the device. The slot mounts inside
    .reading-passage-card so it sits with the passage content.
    ============================================================ */
+/* May 10 — voice slot now sits ABOVE the passage body so the kid
+   doesn't have to scroll past every paragraph to find the record
+   button on mobile. The previous positioning (below body, divider
+   above) is preserved as a fallback selector for any consumers that
+   still mount the slot at the bottom. */
+.reading-passage-card > .voice-recorder-slot {
+  margin: 12px 0 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+}
+/* Legacy below-body position fallback. */
 .voice-recorder-slot {
   margin-top: 14px;
   padding-top: 12px;
-  border-top: 1px dashed rgba(255, 255, 255, 0.08);
 }
 .voice-rec-btn {
   display: inline-flex;
@@ -17630,6 +17640,81 @@ body.practice-page .practice-eyebrow .btn-restart:hover {
   font-size: 0.85rem;
   color: rgba(255, 255, 255, 0.55);
   font-style: italic;
+}
+
+/* Inline "recording" indicator shown in the original slot at the top
+   of the passage. Lightweight so the kid's eyes go to the bigger
+   fixed-bottom bar instead. */
+.voice-rec-inline-recording {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.22);
+  border-radius: 999px;
+  font-size: 0.85rem;
+  color: rgba(254, 202, 202, 0.85);
+}
+
+/* Fixed-bottom recording bar — appended to <body> when recording
+   starts so the timer + Stop button are reachable from any scroll
+   position on the page. The kid reads the full passage uninterrupted
+   while this floats at the bottom of the viewport. */
+.voice-rec-fixed {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: 16px;
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: linear-gradient(180deg, #0d2249, #0a1a3a);
+  border: 1px solid rgba(239, 68, 68, 0.45);
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  animation: voice-rec-fixed-in 220ms ease-out;
+}
+@keyframes voice-rec-fixed-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.voice-rec-fixed-label {
+  flex: 1;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.95rem;
+}
+.voice-rec-fixed .voice-rec-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: #fde68a;
+  min-width: 44px;
+  text-align: right;
+}
+.voice-rec-fixed .voice-rec-stop {
+  background: linear-gradient(180deg, #ef4444, #b91c1c);
+  border: 1px solid rgba(255, 200, 200, 0.18);
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 40px;
+  font-size: 0.95rem;
+}
+.voice-rec-fixed .voice-rec-stop:hover { filter: brightness(1.08); }
+
+/* Reserve clearance at the bottom of the page so the fixed bar doesn't
+   cover the last bit of content. The class is toggled on <body> by the
+   recorder; removed when recording stops. */
+body.voice-recording-active { padding-bottom: 84px; }
+@media (max-width: 480px) {
+  .voice-rec-fixed { left: 8px; right: 8px; padding: 12px 14px; }
+  .voice-rec-fixed-label { font-size: 0.9rem; }
 }
 
 /* ============================================================

@@ -3016,6 +3016,11 @@
     const voiceMount = (window.GEVoice && window.GEVoice.supported && window.GEVoice.supported())
       ? '<div class="voice-recorder-slot" data-role="voice-mount"></div>'
       : '';
+    // Voice slot sits ABOVE the passage body so a kid on a phone
+    // doesn't have to scroll past every paragraph to find the record
+    // button. While recording, the slot promotes itself to a
+    // fixed-bottom bar (see voice-recorder.js + CSS) so the timer +
+    // stop control are always reachable while the kid reads.
     return `
       <article class="reading-passage-card" data-state="default" data-passage-id="${escapeAttr(p.passageId || '')}">
         <header class="reading-passage-card-header">
@@ -3023,8 +3028,8 @@
           ${speakerHtml}
           <button type="button" class="reading-passage-expand" data-role="expand-passage" aria-label="Expand passage" aria-pressed="false" title="Expand">⤢</button>
         </header>
-        <div class="reading-passage-card-body">${innerHtml}</div>
         ${voiceMount}
+        <div class="reading-passage-card-body">${innerHtml}</div>
       </article>`;
   }
 

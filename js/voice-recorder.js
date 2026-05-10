@@ -130,8 +130,38 @@
       setState('idle');
     }
 
+    // While 'recording' we also paint a fixed-bottom bar attached to
+    // <body> so the timer + Stop button are reachable no matter how
+    // far the kid has scrolled into the passage. This is the same
+    // pattern that audio recording apps + Voice Memos use.
+    function paintFixedBar() {
+      removeFixedBar();
+      const bar = document.createElement('div');
+      bar.className = 'voice-rec-fixed';
+      bar.setAttribute('role', 'status');
+      bar.setAttribute('aria-live', 'polite');
+      bar.innerHTML =
+        '<span class="voice-rec-pulse" aria-hidden="true"></span>' +
+        '<span class="voice-rec-fixed-label">Recording</span>' +
+        '<span class="voice-rec-time" data-role="vr-time">' + fmtTime(durationSec) + '</span>' +
+        '<button type="button" class="voice-rec-btn voice-rec-stop" aria-label="Stop recording">Stop</button>';
+      bar.querySelector('.voice-rec-stop').addEventListener('click', stopRecording);
+      document.body.appendChild(bar);
+      document.body.classList.add('voice-recording-active');
+    }
+    function updateFixedBarTime() {
+      const t = document.querySelector('.voice-rec-fixed .voice-rec-time');
+      if (t) t.textContent = fmtTime(durationSec);
+    }
+    function removeFixedBar() {
+      const existing = document.querySelector('.voice-rec-fixed');
+      if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
+      document.body.classList.remove('voice-recording-active');
+    }
+
     function render() {
       if (state === 'idle') {
+        removeFixedBar();
         container.innerHTML =
           '<button type="button" class="voice-rec-btn voice-rec-start" aria-label="Start recording">' +
             '<span class="voice-rec-icon" aria-hidden="true">🎙️</span>' +
@@ -141,16 +171,24 @@
         return;
       }
       if (state === 'recording') {
+        // Inline: subtle "recording" indicator so the kid sees that
+        // the slot did something; live UI is in the fixed-bottom bar.
         container.innerHTML =
-          '<div class="voice-rec-recording">' +
-            '<span class="voice-rec-pulse" aria-hidden="true"></span>' +
-            '<span class="voice-rec-time">' + fmtTime(durationSec) + '</span>' +
-            '<button type="button" class="voice-rec-btn voice-rec-stop" aria-label="Stop recording">Stop</button>' +
+          '<div class="voice-rec-inline-recording" aria-hidden="true">' +
+            '<span class="voice-rec-pulse"></span>' +
+            '<span>Recording — tap Stop below when you\'re done</span>' +
           '</div>';
-        container.querySelector('.voice-rec-stop').addEventListener('click', stopRecording);
+        // Only paint the bar once; subsequent renders just update the
+        // existing bar's time so we don't lose the event listener.
+        if (!document.querySelector('.voice-rec-fixed')) {
+          paintFixedBar();
+        } else {
+          updateFixedBarTime();
+        }
         return;
       }
       if (state === 'recorded') {
+        removeFixedBar();
         container.innerHTML =
           '<div class="voice-rec-recorded">' +
             '<audio class="voice-rec-audio" controls preload="metadata" src="' + (blobUrl || '') + '"></audio>' +
@@ -173,6 +211,7 @@
         if (tickTimer) { clearInterval(tickTimer); tickTimer = null; }
         cleanupStream();
         revokeBlob();
+        removeFixedBar();
         container.innerHTML = '';
       }
     };
