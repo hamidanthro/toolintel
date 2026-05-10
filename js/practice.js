@@ -1306,6 +1306,18 @@
         // §77 Phase C — tap-any-word definitions
         wrapPassageWordsForTap(passageCard);
         attachWordTapHandler(passageCard);
+        // Tier 6 AE — mount voice recorder slot (kid records reading aloud).
+        const voiceSlot = passageCard.querySelector('[data-role="voice-mount"]');
+        if (voiceSlot && window.GEVoice && window.GEVoice.supported()) {
+          try {
+            // Destroy any prior mount to release mic + revoke blob URLs
+            // when the kid moves to the next question.
+            if (window._voiceMountController && typeof window._voiceMountController.destroy === 'function') {
+              window._voiceMountController.destroy();
+            }
+            window._voiceMountController = window.GEVoice.mount(voiceSlot, { maxDurationSec: 90 });
+          } catch (e) { console.warn('[voice-recorder]', e); }
+        }
       }
       // Lake: track radio choice changes for rapid-flip detection (Prompt I1)
       if (window.GradeEarnLake) {
@@ -2997,6 +3009,13 @@
           ${SPEECH_ICON_HTML}
         </button>`
       : '';
+    // Tier 6 AE — record-yourself slot (kid taps to record reading the
+    // passage aloud, then plays back). Mount handled in
+    // attachQuestionHandlers via [data-role="voice-mount"]; local-only,
+    // no upload.
+    const voiceMount = (window.GEVoice && window.GEVoice.supported && window.GEVoice.supported())
+      ? '<div class="voice-recorder-slot" data-role="voice-mount"></div>'
+      : '';
     return `
       <article class="reading-passage-card" data-state="default" data-passage-id="${escapeAttr(p.passageId || '')}">
         <header class="reading-passage-card-header">
@@ -3005,6 +3024,7 @@
           <button type="button" class="reading-passage-expand" data-role="expand-passage" aria-label="Expand passage" aria-pressed="false" title="Expand">⤢</button>
         </header>
         <div class="reading-passage-card-body">${innerHtml}</div>
+        ${voiceMount}
       </article>`;
   }
 

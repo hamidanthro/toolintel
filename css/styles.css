@@ -17534,3 +17534,100 @@ body.practice-page .practice-eyebrow .btn-restart:hover {
     scroll-behavior: auto !important;
   }
 }
+
+/* ============================================================
+   VOICE RECORDER — Tier 6 AE (May 10)
+
+   Kid records themselves reading the passage aloud. Local Blob in
+   memory only — never leaves the device. The slot mounts inside
+   .reading-passage-card so it sits with the passage content.
+   ============================================================ */
+.voice-recorder-slot {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.08);
+}
+.voice-rec-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(13, 34, 73, 0.6);
+  border: 1px solid rgba(251, 191, 36, 0.32);
+  border-radius: 999px;
+  color: #fde68a;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  min-height: 44px;
+}
+.voice-rec-btn:hover,
+.voice-rec-btn:focus-visible {
+  background: rgba(13, 34, 73, 0.85);
+  border-color: rgba(251, 191, 36, 0.55);
+}
+.voice-rec-icon { font-size: 1.1rem; }
+.voice-rec-recording {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.32);
+  border-radius: 999px;
+}
+.voice-rec-pulse {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ef4444;
+  animation: voice-rec-pulse 1s ease-in-out infinite;
+}
+@keyframes voice-rec-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.3); }
+}
+.voice-rec-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.95rem;
+  min-width: 38px;
+  text-align: center;
+}
+.voice-rec-stop {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #fecaca;
+  padding: 6px 12px;
+  min-height: 36px;
+}
+.voice-rec-recorded {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.voice-rec-audio {
+  width: 100%;
+  max-width: 360px;
+  height: 36px;
+}
+.voice-rec-actions {
+  display: flex;
+  gap: 8px;
+}
+.voice-rec-redo {
+  padding: 6px 14px;
+  min-height: 36px;
+  font-size: 0.88rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.75);
+}
+.voice-recorder-unavail {
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.55);
+  font-style: italic;
+}
