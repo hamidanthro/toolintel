@@ -907,7 +907,7 @@
             <div class="practice-eyebrow">
               <span class="practice-eyebrow-title">${titleBits.join(' · ')}</span>
               <span class="practice-eyebrow-sep">·</span>
-              <span class="practice-eyebrow-progress">Question <span id="progress-num">1</span> of ${questions.length}</span>
+              <span class="practice-eyebrow-progress" aria-label="Question progress"><span id="progress-num">1</span>/${questions.length}</span>
               <span id="restart-wrap" class="practice-eyebrow-restart">
                 <button type="button" class="btn-restart" id="restart-btn" title="Start this practice over">
                   <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
@@ -1506,10 +1506,28 @@
           const briefExplanationHtml = explanation
             ? `<div class="q-inline-fb-body">${escapeHtml(explanation)}</div>`
             : '';
+          // Bug L from master audit: Lumen visible above tutor reply.
+          // Lumen is the gold-star mascot already in the system prompt
+          // — give the kid a visual anchor so the AI feels like a
+          // character, not "AI."
+          // Bug R from master audit: kid's typed answer was redundantly
+          // displayed in a beveled box; inline it into the feedback so
+          // there's only ONE place showing it. Keep it short.
+          const userAnswerStr = userAnswer != null ? String(userAnswer) : '';
+          const youWroteHtml = userAnswerStr
+            ? `<span class="q-inline-fb-userwrote">You wrote ${escapeHtml(userAnswerStr.slice(0, 60))}.</span> `
+            : '';
           fbSlot.innerHTML = `
-            <div class="q-inline-fb-head">✗ ${pickRandom(WRONG_HEADERS)} <span class="q-inline-fb-correct">The answer is <strong>${escapeHtml(q.answer)}</strong>.</span></div>
+            <div class="q-inline-fb-head">✗ ${pickRandom(WRONG_HEADERS)} ${youWroteHtml}<span class="q-inline-fb-correct">The answer is <strong>${escapeHtml(q.answer)}</strong>.</span></div>
             ${briefExplanationHtml}
             <div class="tutor-box" id="tutor-box">
+              <div class="lumen-avatar" aria-hidden="true">
+                <svg viewBox="0 0 32 32" width="28" height="28">
+                  <defs><linearGradient id="lumenGrad${i}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fde047"/><stop offset="55%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient></defs>
+                  <path d="M16 2.6 19.6 11.5 29.2 12.2 21.8 18.4 24.2 27.6 16 22.4 7.8 27.6 10.2 18.4 2.8 12.2 12.4 11.5 Z" fill="url(#lumenGrad${i})" stroke="rgba(255,255,255,0.20)" stroke-width="0.6" stroke-linejoin="round"/>
+                </svg>
+                <span class="lumen-name">Lumen</span>
+              </div>
               <div class="tutor-output" id="tutor-out" aria-live="polite" aria-atomic="false"></div>
             </div>
             ${q.contentId && q.poolKey ? `<button type="button" class="q-report-link" data-act="report" data-cid="${escapeHtml(q.contentId)}" data-pk="${escapeHtml(q.poolKey)}" aria-label="Report this question">Question seems wrong? Report it.</button>` : ''}`;
@@ -2912,11 +2930,14 @@
     // line. Reward text is the only stake-info shown; topic/TEKS
     // moves into the same line, lowercase + separated by middots.
     const topic = q._unit?.title ? escapeHtml(q._unit.title) : '';
-    const teks = q._lesson?.teks ? escapeHtml(q._lesson.teks) : '';
     const stake = locked
       ? '⭐ Mastered'
       : `±${cents} pts`;
-    const metaParts = [topic, teks ? `TEKS ${teks}` : '', stake].filter(Boolean);
+    // Bug M from master audit: TEKS code (e.g. "TEKS 3.4B") is
+    // cognitive noise for kids. Hidden from the meta line. Still
+    // available in q._lesson.teks for the parent dashboard / future
+    // teacher view.
+    const metaParts = [topic, stake].filter(Boolean);
 
     // §56 — inline feedback slot. Sits between input and primary
     // button so the kid sees outcome → explanation → next-action in

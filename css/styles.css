@@ -14984,27 +14984,27 @@ body.is-standalone .mobile-tab-bar { border-top-width: 1.5px; }
   body.practice-page .question-card { padding: 20px; }
   body.practice-page .feedback { padding: 16px; }
   body.practice-page .tutor-output { padding: 12px 14px; }
-  body.practice-page .choice { padding: 13px 14px; min-height: 44px; }
+  body.practice-page .choice { padding: 13px 14px; min-height: 48px; }
 }
 
 @media (max-width: 768px) {
   body.practice-page .question-card { padding: 18px; border-radius: 8px; }
   body.practice-page .q-prompt { font-size: 1.15rem; line-height: 1.45; }
 
-  body.practice-page .choice { padding: 14px; min-height: 44px; gap: 12px; }
+  body.practice-page .choice { padding: 14px; min-height: 48px; gap: 12px; }
   body.practice-page .choice .choice-symbol { font-size: 1.4rem; }
 
   body.practice-page .feedback { padding: 14px; margin-top: 12px; }
   body.practice-page .feedback-actions { display: flex; flex-wrap: wrap; gap: 8px; }
-  body.practice-page .feedback-actions .btn { flex: 1 1 auto; min-height: 44px; }
+  body.practice-page .feedback-actions .btn { flex: 1 1 auto; min-height: 48px; }
 
   body.practice-page .tutor-box { margin-top: 10px; padding-top: 10px; }
   body.practice-page .tutor-output { padding: 12px 14px; line-height: 1.5; }
   body.practice-page .tutor-followup { gap: 6px; }
-  body.practice-page .tutor-followup input { padding: 11px 12px; font-size: 1rem; min-height: 44px; }
+  body.practice-page .tutor-followup input { padding: 11px 12px; font-size: 1rem; min-height: 48px; }
   body.practice-page .tutor-send { width: 44px; height: 44px; }
   body.practice-page .tutor-suggestions { display: flex; flex-wrap: wrap; gap: 6px; }
-  body.practice-page .tutor-chip { min-height: 44px; }
+  body.practice-page .tutor-chip { min-height: 48px; }
 
   body.practice-page .session-summary {
     padding: 10px 12px !important;
@@ -15081,14 +15081,21 @@ body.is-standalone .mobile-tab-bar { border-top-width: 1.5px; }
   body.practice-page .tutor-msg { padding: 6px 0; }
   body.practice-page .tutor-followup input { padding: 12px; font-size: 1rem; }
 
-  /* Chips wrap to roughly 2 per row on phone. */
-  body.practice-page .tutor-suggestions { gap: 6px; }
+  /* Bug O from master audit: chips on phone now FULL-WIDTH stack
+     instead of 2-on-top-1-on-bottom asymmetry. P: tap targets ≥48px
+     (WCAG AAA, K-2 fingers). */
+  body.practice-page .tutor-suggestions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
   body.practice-page .tutor-chip {
-    flex: 1 1 calc(50% - 6px);
-    min-height: 44px;
-    padding: 10px 12px;
+    flex: 1 1 100%;
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 14px;
     text-align: center;
-    font-size: 0.9rem;
+    font-size: 0.92rem;
   }
 
   body.practice-page .session-summary {
@@ -15869,8 +15876,15 @@ body.practice-page .question-card[data-state="correct"] .q-inline-fb {
   border-color: rgba(16, 185, 129, 0.35);
 }
 body.practice-page .question-card[data-state="wrong"] .q-inline-fb {
-  background: rgba(239, 68, 68, 0.08);
-  border-color: rgba(239, 68, 68, 0.30);
+  /* Bug K from master audit: soften wrong-state. Was a loud red box
+     dominating the viewport. Now: subtle red border-left, no red
+     background fill, smaller padding. The TUTOR reply (which renders
+     inside this same card) should be the dominant module — wrong is
+     a soft pause, not a tribunal. */
+  background: rgba(239, 68, 68, 0.04);
+  border-color: rgba(239, 68, 68, 0.18);
+  border-left-width: 3px;
+  border-left-color: rgba(239, 68, 68, 0.55);
 }
 body.practice-page .q-inline-fb-head {
   font-weight: 700;
@@ -15894,6 +15908,45 @@ body.practice-page .q-inline-fb-correct {
   margin-left: 6px;
 }
 body.practice-page .q-inline-fb-correct strong { color: #fde68a; font-weight: 700; }
+/* Bug R from master audit: kid's typed answer inline in wrong-state. */
+body.practice-page .q-inline-fb-userwrote {
+  color: rgba(255,255,255,0.55);
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+/* Bug R + Q: visually de-emphasize the input box AFTER submit so the
+   kid's eye lands on FEEDBACK + tutor, not on their already-known
+   typed answer. Same input, lighter weight. */
+body.practice-page .question-card[data-state="wrong"] input[type="text"],
+body.practice-page .question-card[data-state="wrong"] input[type="number"],
+body.practice-page .question-card[data-state="correct"] input[type="text"],
+body.practice-page .question-card[data-state="correct"] input[type="number"] {
+  border-color: rgba(255,255,255,0.10) !important;
+  background: rgba(255,255,255,0.02) !important;
+  color: rgba(255,255,255,0.55) !important;
+  font-weight: 500;
+}
+
+/* Lumen — gold-star mascot avatar above every tutor reply (Bug L). */
+body.practice-page .lumen-avatar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  padding: 4px 10px 4px 4px;
+  background: rgba(251,191,36,0.06);
+  border: 1px solid rgba(251,191,36,0.20);
+  border-radius: 999px;
+}
+body.practice-page .lumen-avatar svg {
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
+}
+body.practice-page .lumen-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fbbf24;
+  letter-spacing: 0.02em;
+}
 body.practice-page .q-inline-fb-body {
   color: rgba(255, 255, 255, 0.82);
   font-size: 0.9rem;
