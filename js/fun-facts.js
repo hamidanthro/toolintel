@@ -21,7 +21,7 @@
   // so clients with cached JSON refetch. Without this, force-cache
   // keeps stale catalogs around (and K-2 kids would never see the
   // K-2-tagged facts).
-  const CATALOG_URL       = '/data/fun-facts.json?v=20260510i';
+  const CATALOG_URL       = '/data/fun-facts.json?v=20260510j';
 
   // -------- in-memory state (mirror) --------
   let _catalog = null;        // null = not loaded yet; array once fetched
@@ -126,6 +126,40 @@
   // grades use the full catalog as before. Unknown grade = full catalog.
   const K2_GRADES = ['grade-k', 'grade-1', 'grade-2'];
 
+  // Per-grade category preferences. A K kid lights up at concrete,
+  // sensory, silly facts (animals, body, food, weird-funny). A G4
+  // kid is identity-forming and likes inventions, history, mythology.
+  // A middle-schooler skews toward space, robots-tech, geography.
+  // The selector applies these as a 60% bias on top of the wow-level
+  // and Texas filters — a K kid still occasionally sees a space fact
+  // (40% of the time) so we don't over-narrow.
+  //
+  // Categories not in a grade's list are still reachable through the
+  // 40% off-pref roll. This is a *bias*, not a hard filter.
+  //
+  // Gender / individual-interest axis (e.g. 9yo boy vs 9yo girl) is
+  // a real signal but auto-detecting from a child's name is unreliable
+  // and culturally tone-deaf. Future: parent-controlled `interests`
+  // array in settings, layered over these grade defaults.
+  const GRADE_CATEGORY_PREFS = {
+    'grade-k':   ['animals', 'body',     'food',           'weird-funny', 'texas'],
+    'grade-1':   ['animals', 'body',     'food',           'weird-funny', 'texas', 'sports'],
+    'grade-2':   ['animals', 'body',     'food',           'weird-funny', 'texas', 'sports', 'dinosaurs'],
+    'grade-3':   ['animals', 'dinosaurs','space',          'mythology',   'weird-funny', 'sports', 'texas'],
+    'grade-4':   ['animals', 'space',    'mythology',      'inventions',  'history', 'sports', 'weird-funny', 'texas'],
+    'grade-5':   ['space',   'history',  'math-numbers',   'mythology',   'inventions', 'music', 'sports'],
+    'grade-6':   ['space',   'history',  'inventions',     'robots-tech', 'music', 'geography', 'math-numbers'],
+    'grade-7':   ['space',   'history',  'inventions',     'robots-tech', 'music', 'geography', 'math-numbers'],
+    'grade-8':   ['space',   'history',  'robots-tech',    'inventions',  'math-numbers', 'music', 'geography'],
+    'algebra-1': ['space',   'history',  'robots-tech',    'inventions',  'math-numbers', 'music']
+  };
+
+  // 60% of the time, restrict to the grade's preferred categories.
+  // 40% of the time, leave the pool wide open so kids still get
+  // serendipity (a K kid hearing about Saturn one in five facts is
+  // delightful; if the bias were 100% they'd never broaden).
+  const GRADE_PREF_BIAS = 0.6;
+
   function _isK2(userGrade) {
     return typeof userGrade === 'string' && K2_GRADES.indexOf(userGrade) >= 0;
   }
@@ -191,14 +225,26 @@
     let levelPool = pool.filter(f => f.wowLevel === targetLevel);
     if (levelPool.length === 0) levelPool = pool;
 
+    // Grade-specific category bias. 60% of the time, restrict to the
+    // grade's preferred categories. 40% of the time leave the pool
+    // wide open so a K kid still sometimes sees space facts and a G7
+    // kid still sometimes sees animals — serendipity matters.
+    const gradePrefs = GRADE_CATEGORY_PREFS[userGrade] || null;
+    let workingPool = levelPool;
+    if (gradePrefs && Math.random() < GRADE_PREF_BIAS) {
+      const prefSet = new Set(gradePrefs);
+      const prefPool = levelPool.filter(f => f && prefSet.has(f.category));
+      if (prefPool.length > 0) workingPool = prefPool;
+    }
+
     // §74 — 15% Texas-relevance bias (was 40%; produced ~46% effective
     // hit rate against a 10% Texas catalog — felt Texas-only). 15% gives
     // a state-pride bump above the 10% baseline without takeover. After
     // Phase 5 expands the catalog to ~5% Texas, this lands at ~17%
     // effective — healthy pride boost on a deep global catalog.
     const wantTexas = Math.random() < 0.15;
-    const texasPool = levelPool.filter(f => f.isTexasRelevant === true);
-    const finalPool = (wantTexas && texasPool.length > 0) ? texasPool : levelPool;
+    const texasPool = workingPool.filter(f => f.isTexasRelevant === true);
+    const finalPool = (wantTexas && texasPool.length > 0) ? texasPool : workingPool;
 
     return _pickRandom(finalPool);
   }
