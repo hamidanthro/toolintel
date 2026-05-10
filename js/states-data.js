@@ -1317,7 +1317,7 @@
   // but skip reading at high-school math (Algebra 1, Geometry).
   // Texas overrides below; everyone else uses the default policy.
   var TEXAS_SUBJECT_GRADES = {
-    math: ['grade-3','grade-4','grade-5','grade-6','grade-7','grade-8','algebra-1'],
+    math: ['grade-k','grade-1','grade-2','grade-3','grade-4','grade-5','grade-6','grade-7','grade-8','algebra-1'],
     reading: ['grade-k','grade-1','grade-2','grade-3','grade-4','grade-5','grade-6','grade-7','grade-8'],
     science: ['grade-3','grade-4','grade-5','grade-6','grade-7','grade-8'],
     'social-studies': ['grade-8']
