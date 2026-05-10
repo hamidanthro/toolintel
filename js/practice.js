@@ -1449,7 +1449,8 @@
               const fact = window.FunFacts.pickFactForCorrect({
                 isFirstTry: true,                  // No retry mechanism in this codebase — every check is first try.
                 lifetimeCorrect,
-                sessionCorrectCount: correct       // already incremented before showFeedback
+                sessionCorrectCount: correct,      // already incremented before showFeedback
+                userGrade: slug                    // K-2 kids prefer K-2-tagged facts.
               });
               if (fact && i === seqAtCall) {
                 if (window._stAutoAdvance) {

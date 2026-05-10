@@ -118,29 +118,56 @@
     return sessionCorrectCount > 0 && (sessionCorrectCount % effectiveFreq === 0);
   }
 
+  // K-2 grade slugs. A K-2 kid prefers gradeLevel:'k-2' facts; older
+  // grades use the full catalog as before. Unknown grade = full catalog.
+  const K2_GRADES = ['grade-k', 'grade-1', 'grade-2'];
+
+  function _isK2(userGrade) {
+    return typeof userGrade === 'string' && K2_GRADES.indexOf(userGrade) >= 0;
+  }
+
   // Pure selection. Returns a fact object from catalog, OR null.
   function _selectNext(args) {
     const catalog = (args && Array.isArray(args.catalog)) ? args.catalog : [];
     const seenIds = (args && Array.isArray(args.seenIds)) ? args.seenIds : [];
     const isFirstFactEver = !!(args && args.isFirstFactEver);
+    const userGrade = (args && typeof args.userGrade === 'string') ? args.userGrade : null;
+    const isK2 = _isK2(userGrade);
 
     if (catalog.length === 0) return null;
     const seen = new Set(seenIds);
 
-    // First fact ever: Texas L1, unseen. State-pride hook.
+    // First fact ever: Texas L1, unseen. State-pride hook. For K-2 kids,
+    // prefer K-2-tagged Texas L1 first; fall back to any Texas L1.
     if (isFirstFactEver) {
-      const candidates = catalog.filter(f =>
+      let candidates = catalog.filter(f =>
         f && f.category === 'texas' && f.wowLevel === 1 && !seen.has(f.id)
       );
+      if (isK2) {
+        const k2Cands = candidates.filter(f => f.gradeLevel === 'k-2');
+        if (k2Cands.length) return _pickRandom(k2Cands);
+      }
       if (candidates.length) return _pickRandom(candidates);
       // Fall through if Texas L1 exhausted (shouldn't happen w/ 17 L1 + 200 cap).
     }
 
     let pool = catalog.filter(f => f && !seen.has(f.id));
     if (pool.length === 0) {
-      // Defensive — all 352 seen. Shouldn't happen with 200-cap, but pick any L1.
+      // Defensive — all seen. Shouldn't happen with 200-cap, but pick any L1.
       pool = catalog.filter(f => f && f.wowLevel === 1);
       return _pickRandom(pool);
+    }
+
+    // K-2 preference: if the kid is K-2 AND there are still unseen K-2
+    // facts in the pool, restrict to those. The general 3-4 catalog uses
+    // 6-12-word vocab and concepts (estivation, photosynthesis, "Pledge
+    // of Allegiance") that's above a kindergartener's reading level.
+    // Once a K-2 kid has seen every k-2 fact, the pool naturally widens
+    // to the full catalog — by then they've seen 30+ facts and have
+    // grown into the wider vocabulary.
+    if (isK2) {
+      const k2Pool = pool.filter(f => f.gradeLevel === 'k-2');
+      if (k2Pool.length > 0) pool = k2Pool;
     }
 
     // Wow-level distribution: 60% L1, 30% L2, 10% L3.
@@ -208,7 +235,8 @@
     return _selectNext({
       catalog: _catalog,
       seenIds: _state.seen,
-      isFirstFactEver: !_state.firstShownAt
+      isFirstFactEver: !_state.firstShownAt,
+      userGrade: args.userGrade || null
     });
   }
 
