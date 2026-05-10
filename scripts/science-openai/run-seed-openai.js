@@ -133,6 +133,26 @@ const BRIEFS = [
     scenarioType: 'described_diagram',
     topic: "a Texas backyard has green leaves on trees in summer and orange and red leaves on the ground in fall; the question asks the kid what season makes the leaves change color" },
 
+  // ----- K v3 — six more briefs -----
+  { id: 'gks-magnet-paperclips', grade: 'k', strand: 'Force, Motion & Energy', se: 'K-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid waves a magnet over a pile of paper clips and rubber bands; the paper clips jump up and stick to the magnet, the rubber bands do not move; the question asks the kid which one stuck and why' },
+  { id: 'gks-rolling-vs-sliding', grade: 'k', strand: 'Force, Motion & Energy', se: 'K-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid pushes a round ball and a flat block across the same floor with the same push; the ball rolls far, the block slides only a little; the question asks the kid why the ball went farther' },
+  { id: 'gks-dry-vs-wet', grade: 'k', strand: 'Matter & Energy', se: 'K-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid drops water on a paper towel and on a plastic plate; the paper towel soaks up the water, the plastic does not; the question asks the kid which one took the water in' },
+  { id: 'gks-tx-fireflies-night', grade: 'k', strand: 'Organisms & Environments', se: 'K-observe',
+    scenarioType: 'described_diagram',
+    topic: "a Texas summer evening backyard has fireflies blinking yellow lights as it gets dark; the question asks the kid what part of the day fireflies show their lights" },
+  { id: 'gks-water-running-tap', grade: 'k', strand: 'Earth & Space', se: 'K-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid turns on the tap and water flows out; they turn the tap off and the water stops; the question asks the kid what they need to do to make the water flow' },
+  { id: 'gks-bird-needs-water-too', grade: 'k', strand: 'Organisms & Environments', se: 'K-observe',
+    scenarioType: 'described_diagram',
+    topic: 'a kid sees a robin in the yard drinking from a small bird bath after a hot Texas afternoon; the question asks the kid what living things need every day' },
+
   // ----- G1 v2 — six more briefs -----
   { id: 'g1s-water-states-ice-cube', grade: '1', strand: 'Matter & Energy', se: 'G1-observe',
     scenarioType: 'experiment',
@@ -152,6 +172,26 @@ const BRIEFS = [
   { id: 'g1s-rocks-sort-by-color', grade: '1', strand: 'Earth & Space', se: 'G1-observe',
     scenarioType: 'experiment',
     topic: 'a kid finds five rocks on a Texas creek bank — gray, white, red, brown, and black — and sorts them by color; the question asks the kid which property they used to sort the rocks' },
+
+  // ----- G1 v3 — six more briefs -----
+  { id: 'g1s-rubber-band-stretch', grade: '1', strand: 'Force, Motion & Energy', se: 'G1-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid stretches a rubber band between two fingers and lets it go; the rubber band snaps back to its starting size; the question asks the kid what happens when something elastic is stretched and released' },
+  { id: 'g1s-tx-pecan-tree-seasons', grade: '1', strand: 'Organisms & Environments', se: 'G1-observe',
+    scenarioType: 'described_diagram',
+    topic: "a Texas pecan tree shows green leaves in summer, brown leaves in fall, bare branches in winter, and tiny new leaves in spring; the question asks the kid what season the leaves come back" },
+  { id: 'g1s-mixing-colors-paint', grade: '1', strand: 'Matter & Energy', se: 'G1-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid mixes red paint and blue paint together on a paper plate; the new color is purple; the question asks the kid what happens to two colors of paint when they are mixed' },
+  { id: 'g1s-tx-cricket-night-sound', grade: '1', strand: 'Organisms & Environments', se: 'G1-observe',
+    scenarioType: 'described_diagram',
+    topic: 'on a warm Texas summer night a kid hears chirping crickets in the grass; in the morning the crickets are quiet; the question asks the kid when crickets make their chirp sound' },
+  { id: 'g1s-soil-rocks-leaves', grade: '1', strand: 'Earth & Space', se: 'G1-observe',
+    scenarioType: 'experiment',
+    topic: "a kid digs a small hole in a Texas backyard and finds soil mixed with little rocks, dead leaves, and a tiny worm; the question asks the kid what kinds of things the soil is made of" },
+  { id: 'g1s-tx-summer-thunderstorm', grade: '1', strand: 'Earth & Space', se: 'G1-observe',
+    scenarioType: 'described_diagram',
+    topic: 'a hot Texas summer afternoon turns into a thunderstorm — big dark clouds gather, lightning flashes, thunder booms, then heavy rain falls and cools the air; the question asks the kid what often comes after lightning' },
 
   // ===========================================================
   // ----- Grade 2 — practice-only -----

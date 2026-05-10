@@ -192,6 +192,24 @@ const BRIEFS = [
   { id: 'gkss-helpers-doctors-nurses', grade: 'k', strand: 'community',
     topic: 'doctors and nurses help us when we are sick — they listen to our hearts, give us medicine, and tell us how to get better — three things they do' },
 
+  // ----- K v3 — eight more briefs -----
+  { id: 'gkss-birthday-celebration', grade: 'k', strand: 'community',
+    topic: 'how a family celebrates a birthday in Texas — making a cake, singing happy birthday, lighting candles, opening cards from grandparents — three special things that happen on a birthday' },
+  { id: 'gkss-school-flag-routine', grade: 'k', strand: 'civics',
+    topic: 'every school morning, kids stand and put their hand on their heart while saying the Pledge of Allegiance to the flag at the front of the room — explaining what we promise and why we say it' },
+  { id: 'gkss-mail-carrier', grade: 'k', strand: 'community',
+    topic: 'a mail carrier brings letters and packages to our house every day; they wear a special uniform and drive a small truck with mailboxes inside — explaining what they do and why mail still matters' },
+  { id: 'gkss-stop-signs-safety', grade: 'k', strand: 'civics',
+    topic: 'stop signs are red and have eight sides; they tell drivers to stop so kids and other cars can cross the street safely — three places where we see stop signs and why everyone obeys them' },
+  { id: 'gkss-helping-at-home', grade: 'k', strand: 'community',
+    topic: 'three jobs kids can do at home — making the bed, putting toys away, helping set the table — and why everyone in a family helps so the home stays nice' },
+  { id: 'gkss-tx-cities-vs-ranch', grade: 'k', strand: 'geography',
+    topic: 'in Texas some kids live in big cities like Houston with tall buildings and lots of people, and some kids live in the country with cows and big open land — telling apart a city and a country place' },
+  { id: 'gkss-family-dinner', grade: 'k', strand: 'community',
+    topic: 'why families in Texas often eat dinner together — to share their day, to eat home-cooked food like beans and rice or tacos, and to spend time together before bedtime' },
+  { id: 'gkss-tx-state-seal', grade: 'k', strand: 'texas-symbols',
+    topic: 'the Texas state seal is a round picture with a big white star, an oak branch on one side, and an olive branch on the other; it goes on important Texas papers' },
+
   // Grade 1 v2 (8) — US flag, leaders, maps directions, holidays, voting
   { id: 'g1ss-us-flag', grade: '1', strand: 'civics',
     topic: 'the United States flag has 13 stripes (one for each first colony) and 50 stars (one for each state) — the colors are red, white, and blue, and we say the Pledge of Allegiance to it' },
@@ -209,6 +227,24 @@ const BRIEFS = [
     topic: 'Texas has its own state song called "Texas, Our Texas" — it talks about how big and beautiful Texas is, and Texas kids learn to sing it in school' },
   { id: 'g1ss-school-then-now', grade: '1', strand: 'history',
     topic: 'school long ago vs school today — kids used chalk and slates instead of pencils and paper, sat in one-room schools with all grades together, and walked to school instead of taking a bus' },
+
+  // ----- G1 v3 — eight more briefs -----
+  { id: 'g1ss-tx-independence-day', grade: '1', strand: 'texas-history',
+    topic: 'March 2 is Texas Independence Day — the day in 1836 when Texas signed a paper saying it was free from Mexico; some Texas schools have special activities to celebrate' },
+  { id: 'g1ss-volunteers-community', grade: '1', strand: 'civics',
+    topic: 'volunteers are people who help others without getting paid — examples include reading to younger kids at the library, sorting cans at a Texas food pantry, or picking up trash at a park; how volunteering helps a community' },
+  { id: 'g1ss-recycling-earth', grade: '1', strand: 'community',
+    topic: 'recycling means putting cans, bottles, and paper into special bins so they can be made into new things instead of going in the trash; how Texas towns pick up recycling and why it helps the earth' },
+  { id: 'g1ss-rules-consequences', grade: '1', strand: 'civics',
+    topic: 'rules tell us what to do and what not to do; when people break rules there are consequences — examples in a classroom (no recess if you push), at home (no dessert if you do not eat dinner), and in the city (police give tickets for speeding)' },
+  { id: 'g1ss-city-hall', grade: '1', strand: 'civics',
+    topic: 'city hall is the building where the mayor and city workers do their jobs — they pay for parks, fix roads, and run the fire department; many Texas city halls are old brick buildings in the middle of downtown' },
+  { id: 'g1ss-public-school-free', grade: '1', strand: 'civics',
+    topic: 'in Texas every kid can go to public school for free — taxes that grown-ups pay to the state cover teachers, books, and buses, so families do not have to pay to send their kids to school' },
+  { id: 'g1ss-tx-mockingbird-songs', grade: '1', strand: 'texas-symbols',
+    topic: 'the mockingbird is the Texas state bird; it can copy songs from other birds and even from car alarms and phone rings; it sings most loudly in spring when it is looking for a partner' },
+  { id: 'g1ss-tx-traditional-foods', grade: '1', strand: 'community',
+    topic: 'three traditional Texas foods that come from different cultures — barbecue (English and German settlers), tamales (Mexican heritage), and kolaches (Czech immigrants in Central Texas) — and how each is a part of Texas today' },
 
   // Grade 2 v2 (8) — Texas heroes, products, immigration, weather, taxes basic
   { id: 'g2ss-davy-crockett', grade: '2', strand: 'texas-history',
@@ -245,6 +281,24 @@ const BRIEFS = [
     topic: 'Galveston is a port city on the Gulf of Mexico — for most of the 1800s it was the biggest city in Texas because ships could load and unload there, until a giant hurricane in 1900 changed everything' },
   { id: 'g3ss-tx-juneteenth-history', grade: '3', strand: 'texas-history',
     topic: 'Juneteenth started in Galveston, Texas on June 19, 1865 — the day enslaved Texans learned they were free; Texas was the first state to make Juneteenth a holiday, and now it is a U.S. national holiday' },
+
+  // ----- G3 v3 — eight more briefs -----
+  { id: 'g3ss-tx-spindletop-oil', grade: '3', strand: 'texas-history',
+    topic: 'Spindletop was an oil discovery near Beaumont, Texas on January 10, 1901 — a giant geyser of oil shot up nine days, changed Texas forever, and started the Texas oil industry that still exists today' },
+  { id: 'g3ss-tx-1876-constitution', grade: '3', strand: 'civics',
+    topic: 'the Texas Constitution of 1876 is the rule book for the state — it sets up how Texas is run, lists the rights of Texans, and limits how the state government can spend money; it is one of the longest state constitutions in the country' },
+  { id: 'g3ss-tx-cattle-drives-chisholm', grade: '3', strand: 'texas-history',
+    topic: 'after the Civil War, cowboys drove millions of Texas longhorn cattle north along the Chisholm Trail to Kansas, where the cows were loaded onto trains for cities back east; the trail drives lasted from about 1867 to 1885' },
+  { id: 'g3ss-tx-civil-war-period', grade: '3', strand: 'texas-history',
+    topic: 'Texas was part of the Confederate States during the Civil War (1861-1865); after the war, Texas had to rejoin the United States, and the Reconstruction period brought big changes like the end of slavery and new rights for freed Black Texans' },
+  { id: 'g3ss-lbj-tx-president', grade: '3', strand: 'texas-history',
+    topic: 'Lyndon B. Johnson was born in Stonewall, Texas in 1908; he became the 36th President of the United States in 1963; he signed important laws about civil rights and started programs to help schools and elderly people' },
+  { id: 'g3ss-tx-modern-tech-economy', grade: '3', strand: 'economics',
+    topic: 'modern Texas has a big technology industry — companies like Dell (started by a UT student in his Austin dorm room), Texas Instruments, and many others build computers, phones, and software; tech companies bring lots of jobs to Austin and Dallas' },
+  { id: 'g3ss-tx-immigration-stories', grade: '3', strand: 'community',
+    topic: 'people from many countries came to Texas over the years — Mexican families crossed the Rio Grande, German families settled in the Hill Country (Fredericksburg, New Braunfels), Czech families settled in Central Texas, and Vietnamese families came after the Vietnam War; each group brought new food, language, and traditions' },
+  { id: 'g3ss-tx-austin-as-capital', grade: '3', strand: 'civics',
+    topic: 'Austin became the capital of Texas in 1839 when it was a small frontier town named after Stephen F. Austin; the Texas legislature meets there to pass laws, the Governor lives in the Governor\'s Mansion, and the pink-granite Texas Capitol stands at the heart of downtown' },
 
   // ===========================================================
   // ----- Grade 4 (TEKS §113.15) — Texas regions, history, government -----
