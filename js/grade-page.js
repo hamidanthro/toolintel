@@ -33,14 +33,15 @@
       tagline: 'Earth, life, physical, engineering.',
       icon: 'science',
       color: '#34d399',
-      // Phase K — science is live for the (state, grade) combos that have
-      // content seeded in DDB today. Texas Grade 5 only at launch (41
-      // questions across 9 scenarios, all verifier+judge passed).
-      // Other grades stay 'Coming soon' until their pool is seeded.
+      // Science is live for (state, grade) combos with seeded content:
+      //   Texas Grade 5 (Phase J Claude pipeline, 9 scenarios)
+      //   Texas Grade 8 (Phase R OpenAI pipeline, 14 scenarios)
+      // Other grades stay 'Coming soon'.
       live: false,
       eta: 'Coming soon',
       liveForGrade: function (stateSlug, gradeSlug) {
-        return stateSlug === 'texas' && gradeSlug === 'grade-5';
+        if (stateSlug !== 'texas') return false;
+        return gradeSlug === 'grade-5' || gradeSlug === 'grade-8';
       }
     },
     {
