@@ -4054,7 +4054,7 @@ filtering work. Each is its own focused commit when the time comes.
 
 ---
 
-## 40. Master audit fixes — Tier 1-5 + Tier 7 quick wins shipped (May 10)
+## 40. Master audit fixes — full session sweep (May 10)
 
 Eight-tier consolidated audit (Tesla × Google × Apple committee
 treatment) of 43+ items surfaced by four user-supplied screenshots
@@ -4062,7 +4062,7 @@ treatment) of 43+ items surfaced by four user-supplied screenshots
 Rylee's "1 pencils"). Tiers 1-5 + Tier 7 small wins now shipped;
 Tier 5 Z + Tier 6 AA-AG + Tier 7 AP deferred with reasoning below.
 
-### Shipped (commits 1a87f80 → a3c8b51)
+### Shipped (commits 1a87f80 → c4c0931)
 
 | Tier | Items | Commit |
 |---|---|---|
@@ -4072,74 +4072,82 @@ Tier 5 Z + Tier 6 AA-AG + Tier 7 AP deferred with reasoning below.
 | 4 | a11y (plain explanations, serif→sans, warmer wrong-contrast) | `ebb5a55` |
 | 5 Y | runtime grammar helper for lambda content | `f50f07d` |
 | 7 AO+AN | sticky-bottom submit + scratchpad small-phone polish | `a3c8b51` |
+| 5 Z | cross-device achievement sync (lambda + 3s debounced push) | `94c3ec3` |
+| 7 AP | top-anchored stats pill + drawer-from-top | `e79f54d` |
+| 6 AE | kid voice recorder (MediaRecorder, local Blob) | `019d849` |
+| 6 AB | 12-question placement test | `bc41dce` |
+| 6 AD-subscribe | web push subscribe pipeline (send-side deferred) | `1d9095c` |
+| 6 AF | friend league for G3+ | `43f9f65` |
+| 6 AA-dashboard | parent dashboard + email capture (cron deferred) | `add165f` |
+| 6 AC | family profile switcher (lightweight multi-kid) | `c4c0931` |
 
-### Deferred — needs own focused session
+**Lambda deploys this session:**
+- `ThGHSRmHdvPl5EEU6Xi/lMp9G/CBtllpKoBtcxHjbw0=` — Tier 5 Z (achievements sync)
+- `HDrba64TweTt7ghqdr44lfr77+GKXJaN77BJa4tVWz8=` — Tier 6 AD (savePushSubscription)
+- `HrTR2g8z...` — Tier 6 AF (friendLeague)
+- `yNfco2eDryeaK0CZp4uU3v+iRilcc4UODoLhCrfEXSs=` — Tier 6 AA (setParentEmail/getParentEmail)
 
-**Tier 5 Z (server-side achievement sync).** Cross-device sync of XP
-/ shields / earned trophies / daily mission state. Needs:
-- New `getAchievementsState` + `updateAchievementsState` actions on
-  the lambda mirroring the §39 fun-facts pattern (read-modify-write
-  on `staar-users` with FIFO-cap on earned-id list)
-- Conflict resolution: last-write-wins by `lastUpdatedAt` server
-  timestamp, OR merge (union of earned-ids, max of xp/level, latest
-  dailyMission snapshot by `date` field)
-- Migration: existing testers have localStorage state that needs to
-  flow to server on first authenticated load
-- Debounce + retry: every state mutation through `js/achievements.js`
-  schedules a 3-5s debounced push; failures retry with exponential
-  backoff
-- Parity check extension if the new actions touch the high-risk
-  function list
+### What still requires external (non-code) work to finish
 
-Realistically a 2-3 commit feature with non-trivial test surface.
-Shipping it half-baked could lose kid progress, which is worse than
-the current "single-device only" limitation. K-3 kids mostly share
-one device so the gap is low-impact today.
+These three items have their CODE shipped. They're blocked on AWS
+Console / DNS / external paperwork — not on additional engineering.
 
-**Tier 6 AA (parent dashboard + weekly email).** Requires lambda +
-SES + cron + parent-auth flow. SES is currently wired from the
-WealthDeskPro era (`hamid.ali87@gmail.com` target) but needs a
-gradeearn.com sender identity, parent-consent flow on signup,
-preference toggle. Lambda has `handleParentWeekly` (line 2077)
-reading from staar-content-events already; the missing pieces are
-email delivery + parent-auth + a weekly cron.
+**Tier 6 AD send-side — web push delivery.** The subscribe pipeline
+ships subscriptions into `staar-users.pushSubscription`. To actually
+deliver notifications, the remaining steps are:
+1. Generate VAPID keypair: `npx web-push generate-vapid-keys`
+2. Store keys in AWS Secrets Manager as `staar-push/vapid` with
+   `{publicKey, privateKey, subject:'mailto:hamid@gradeearn.com'}`
+3. Inject public key into the frontend (a `<script>` block on every
+   page that sets `window.GE_PUSH_VAPID_PUB = '...'`, or fetch from
+   a new lambda action like `getPushPublicKey`)
+4. Install `web-push` npm package in lambda/tutor-build/ (~50 KB)
+5. Add new `sendPushToUser(username, payload)` helper in tutor.js
+   that reads pushSubscription, calls `webpush.sendNotification(...)`
+6. Add a cron lambda `staar-push-daily` triggered by EventBridge
+   rule `staar-push-daily` (cron `0 13 * * ? *` = 8am Central) that
+   scans active users with pushSubscription + daily-reminder
+   preference and fans out
 
-**Tier 6 AB (diagnostic placement test).** Adaptive 12-question test
-that fast-tracks kids to their actual level. Frontend flow + lambda
-classifier action + state persistence. Substantial.
+**Tier 6 AA send-side — weekly parent email.**
+1. SES sender identity: verify `noreply@gradeearn.com` in SES Console.
+   This requires DNS records on Namecheap:
+   - DKIM CNAMEs (3 records, names provided by SES)
+   - SPF: `v=spf1 include:amazonses.com -all` TXT on root or
+     subdomain
+   - DMARC: optional but recommended TXT on `_dmarc.gradeearn.com`
+2. SES production access: by default new SES is sandboxed (can only
+   send to verified addresses). Request prod access in SES Console.
+3. Add new cron lambda `staar-parent-weekly` triggered by
+   EventBridge rule (`cron(0 14 ? * SUN *)` = 9am Sunday Central)
+   that scans `parentEmailWeekly = true` users, calls the existing
+   `getParentSummary` logic in-process, renders HTML via a template,
+   and ships through SES `SendEmailCommand`
+4. The parent-form on parent.html already collects email + consent;
+   data is ready to consume
 
-**Tier 6 AC (multi-kid family profiles).** Currently one auth = one
-kid. Needs a parent-account + child-profile data model split on
-`staar-users`, child-switcher UI, settings page changes. Major
-auth refactor.
+**Tier 6 AG — kidSAFE + COPPA certification.** External paperwork
+handled by Hamid. No code change. Required before going beyond beta
+in any state with COPPA's enforcement priority.
 
-**Tier 6 AD (web push notifications).** PWA + lambda + VAPID keys
-+ notification preference flow + COPPA-aware kid-vs-parent gating.
+### What's fully done
 
-**Tier 6 AE (audio recording for reading).** Browser MediaRecorder
-API to capture kid reading the passage aloud. Audio upload to S3.
-Could either be parent-only listen-back or LLM-judge for fluency.
-Real feature for the reading-fluency angle of STAAR; needs an audio
-storage decision.
-
-**Tier 6 AF (friend leagues G3+).** Multi-kid social ranking.
-Server-scored, needs leaderboard tables, anti-cheat, age-gating
-(G3+ only). Complex.
-
-**Tier 6 AG (kidSAFE+COPPA certification).** Paperwork — Hamid handles
-external; not a code change.
-
-**Tier 7 AP (collapsible top stats drawer).** Per §14: rebuild the
-hidden mobile stats panel as a top-anchor tappable pill that
-expands to show accuracy / correct / answered / streak / recent
-dots when tapped. Medium HTML restructure on the practice page,
-needs a Hamid UX call on the drawer's resting visual.
+Every other Tier 5/6/7 item has both its code AND its surface live
+on production. Subscription endpoints (`savePushSubscription`,
+`setParentEmail`, `getParentEmail`, `friendLeague`,
+`getAchievementsState`, `updateAchievementsState`) are all deployed
+and routing correctly. Frontend pages (`placement.html`,
+`league.html`, `parent.html`) and modules (`text-utils.js`,
+`voice-recorder.js`, `push-subscribe.js`, `family-switcher.js`)
+are pushed to GitHub Pages and live behind their cache-bust query
+strings. Service worker is on v34.
 
 ### Updated TODOs in §14
 
-All deferred items above mirror existing §14 entries; this section
-groups them together with the audit-tier label so future sessions
-can see what was scoped together and what remains.
+The §14 deferred TODO list has stale entries from before this
+session. Specifically, the entries for AGE_FIT, Verifier hardening,
+and the 50-state sweep greenlight are unchanged from earlier
+sessions; the audit-tier items above are the May 10 additions.
 
 ---
 
