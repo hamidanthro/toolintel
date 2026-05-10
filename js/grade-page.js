@@ -49,15 +49,15 @@
       tagline: 'History, geography, civics, economics.',
       icon: 'globe',
       color: '#f472b6',
-      // Texas social studies live grades:
-      //   K, 1, 2, 3 — practice-only (Texas symbols, heroes, geography)
-      //   8 — STAAR-tested (US history 1763-1877, Constitution, etc.)
-      // Grades 4-7 still 'Coming soon'.
+      // Texas social studies live for K-8: K-3 practice (Texas symbols,
+      // heroes, geography), G4-G7 middle-grade (US history overview,
+      // world cultures, detailed Texas history), G8 STAAR-tested
+      // (US history 1763-1877, Constitution).
       live: false,
       eta: 'Coming soon',
       liveForGrade: function (stateSlug, gradeSlug) {
         if (stateSlug !== 'texas') return false;
-        return ['grade-k','grade-1','grade-2','grade-3','grade-8'].includes(gradeSlug);
+        return ['grade-k','grade-1','grade-2','grade-3','grade-4','grade-5','grade-6','grade-7','grade-8'].includes(gradeSlug);
       }
     }
   ];

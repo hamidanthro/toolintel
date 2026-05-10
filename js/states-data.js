@@ -1320,7 +1320,7 @@
     math: ['grade-k','grade-1','grade-2','grade-3','grade-4','grade-5','grade-6','grade-7','grade-8','algebra-1'],
     reading: ['grade-k','grade-1','grade-2','grade-3','grade-4','grade-5','grade-6','grade-7','grade-8'],
     science: ['grade-k','grade-1','grade-2','grade-3','grade-4','grade-5','grade-6','grade-7','grade-8'],
-    'social-studies': ['grade-k','grade-1','grade-2','grade-3','grade-8']
+    'social-studies': ['grade-k','grade-1','grade-2','grade-3','grade-4','grade-5','grade-6','grade-7','grade-8']
   };
   window.STATES.forEach(function (s) {
     if (s.gradesTestedBySubject) return;

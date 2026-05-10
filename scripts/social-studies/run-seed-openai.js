@@ -169,6 +169,86 @@ const BRIEFS = [
   { id: 'g3ss-tx-mexican-heritage', grade: '3', strand: 'community',
     topic: "Texas's Mexican heritage — many Texans speak both Spanish and English; food (tacos, fajitas, enchiladas) and music (Tejano, mariachi) come from Mexican traditions; this heritage is part of what makes Texas Texas" },
 
+  // ===========================================================
+  // ----- Grade 4 (TEKS §113.15) — Texas regions, history, government -----
+  // ===========================================================
+  { id: 'g4ss-tx-four-regions', grade: '4', strand: 'geography',
+    topic: 'the four major regions of Texas — Coastal Plains (east), North Central Plains (central), Great Plains (north), Mountains and Basins (west) — landforms, climate, and one major city in each' },
+  { id: 'g4ss-tx-native-detail', grade: '4', strand: 'texas-history',
+    topic: 'three Native American groups of Texas in detail — Caddo (East Texas farmers, mound-builders), Comanche (Plains horsemen, lords of the southern plains), and Karankawa (Gulf Coast, fishermen) — and how each used their region' },
+  { id: 'g4ss-tx-spanish-exploration', grade: '4', strand: 'texas-history',
+    topic: 'Spanish exploration of Texas — Cabeza de Vaca (1528 shipwreck and journey across Texas), Coronado (search for cities of gold), and the Spanish missions later established to teach Native peoples and claim the land' },
+  { id: 'g4ss-tx-mexican-period', grade: '4', strand: 'texas-history',
+    topic: 'Texas under Mexican rule (1821-1836) — why Mexico invited American settlers, the empresario system, Stephen F. Austin and the "Old Three Hundred" colonists, and the tensions that grew with Mexican government' },
+  { id: 'g4ss-tx-revolution-events', grade: '4', strand: 'texas-history',
+    topic: 'four key events of the Texas Revolution (1835-1836) — the Battle of Gonzales ("Come and Take It"), the Alamo, the Goliad massacre, and the Battle of San Jacinto where Texas won independence' },
+  { id: 'g4ss-tx-statehood-1845', grade: '4', strand: 'texas-history',
+    topic: 'Texas joining the United States in 1845 — why the Republic of Texas wanted statehood, the slavery debate that delayed it, and how annexation led to the Mexican-American War' },
+  { id: 'g4ss-tx-three-branches', grade: '4', strand: 'civics',
+    topic: 'the three branches of Texas state government — Legislative (state legislature, makes laws), Executive (Governor, runs the state), Judicial (Texas Supreme Court, interprets state laws) — and where each meets in Austin' },
+  { id: 'g4ss-tx-economy-modern', grade: '4', strand: 'economics',
+    topic: "Texas's modern economy — the major industries (oil and gas, technology, agriculture, healthcare, aerospace) and why Texas has the second-largest state economy in the country" },
+
+  // ===========================================================
+  // ----- Grade 5 (TEKS §113.16) — US history overview -----
+  // ===========================================================
+  { id: 'g5ss-pre-columbian', grade: '5', strand: 'us-history',
+    topic: 'Native American civilizations before European contact — three examples (the Aztec/Mexica empire in Mexico, the Mississippian mound-builders in the southeast, the Pueblo peoples in the southwest) and the diversity of peoples already in the Americas' },
+  { id: 'g5ss-13-colonies-three-regions', grade: '5', strand: 'us-history',
+    topic: 'the 13 American colonies in three regions — New England (subsistence farming, fishing, shipbuilding), Middle (grain, religious tolerance), Southern (plantation agriculture, slavery) — and how each region developed differently' },
+  { id: 'g5ss-revolutionary-war-causes', grade: '5', strand: 'us-history',
+    topic: "the causes of the American Revolution — British taxation without representation (Stamp Act, Tea Act), the Boston Massacre, the Boston Tea Party, and the colonists' decision to declare independence in 1776" },
+  { id: 'g5ss-constitution-bill-of-rights', grade: '5', strand: 'civics',
+    topic: 'the U.S. Constitution and Bill of Rights — why the founders replaced the Articles of Confederation with the Constitution, the three branches of government, and the first ten amendments protecting individual rights' },
+  { id: 'g5ss-civil-war-overview', grade: '5', strand: 'us-history',
+    topic: "the Civil War (1861-1865) — the slavery question, North vs South, key figures (Lincoln, Lee, Grant), the Emancipation Proclamation, and how the war ended at Appomattox" },
+  { id: 'g5ss-industrial-revolution-us', grade: '5', strand: 'economics',
+    topic: 'the Industrial Revolution in the United States (1800s) — railroads, steel, factories, immigration, urbanization, and how these changes transformed daily life' },
+  { id: 'g5ss-civil-rights-movement', grade: '5', strand: 'us-history',
+    topic: "the Civil Rights movement (1950s-1960s) — Rosa Parks and the Montgomery Bus Boycott, Dr. Martin Luther King Jr.'s leadership, the Civil Rights Act of 1964, and the long struggle for equality" },
+  { id: 'g5ss-fifty-states-regions', grade: '5', strand: 'geography',
+    topic: 'the five regions of the United States — Northeast, Southeast, Midwest, Southwest, West — and a defining geographic feature of each (Appalachian Mountains, Mississippi River, Great Plains, Rocky Mountains, Pacific coast)' },
+
+  // ===========================================================
+  // ----- Grade 6 (TEKS §113.18) — World cultures + geography -----
+  // ===========================================================
+  { id: 'g6ss-mesopotamia-civilization', grade: '6', strand: 'world-history',
+    topic: 'ancient Mesopotamia — between the Tigris and Euphrates rivers, the rise of city-states (Ur, Babylon), the invention of cuneiform writing, and why Mesopotamia is called the "cradle of civilization"' },
+  { id: 'g6ss-ancient-egypt', grade: '6', strand: 'world-history',
+    topic: 'ancient Egypt — the Nile River as the source of life, pharaohs and pyramids, hieroglyphics, and the trade and innovation that made Egypt one of the longest-lasting civilizations in history' },
+  { id: 'g6ss-ancient-greece-democracy', grade: '6', strand: 'world-history',
+    topic: 'ancient Greece — Athens and Sparta, the birth of democracy in Athens, philosophy (Socrates, Plato, Aristotle), and how Greek ideas still shape modern government and thought' },
+  { id: 'g6ss-rome-republic-empire', grade: '6', strand: 'world-history',
+    topic: 'the Roman Republic and Empire — the shift from republic to empire under Caesar, Roman engineering (aqueducts, roads), Roman law as a foundation of modern legal systems' },
+  { id: 'g6ss-cultural-regions-latin-america', grade: '6', strand: 'world-cultures',
+    topic: 'Latin America today — Spanish and Portuguese colonial heritage, indigenous influences (Maya, Inca, Aztec descendants), shared languages, and the geographic range from Mexico through South America' },
+  { id: 'g6ss-cultural-regions-africa', grade: '6', strand: 'world-cultures',
+    topic: 'Sub-Saharan Africa today — major regions (Sahel, East Africa, West Africa, Southern Africa), a few key facts (most populous country: Nigeria; longest river: Nile flows north; second-largest desert: Sahara just north), and how colonial borders still shape modern countries' },
+  { id: 'g6ss-government-types-three', grade: '6', strand: 'civics',
+    topic: 'three types of government — democracy (people elect leaders, like the US), monarchy (one ruler, like the UK constitutional monarchy), and dictatorship (one ruler with no checks) — and how each structures power' },
+  { id: 'g6ss-trade-economic-systems', grade: '6', strand: 'economics',
+    topic: 'three economic systems — market (free enterprise, like the US), command (government-controlled, like North Korea), and mixed (most modern democracies) — and how each balances government and individual choice' },
+
+  // ===========================================================
+  // ----- Grade 7 (TEKS §113.19) — Texas history detail -----
+  // ===========================================================
+  { id: 'g7ss-tx-spanish-colonial-era', grade: '7', strand: 'texas-history',
+    topic: "the Spanish colonial era in Texas (1690-1821) — the founding of Spanish missions (San Antonio, Goliad, Nacogdoches), the role of presidios (military forts), and the slow Spanish settlement of the territory they called Tejas" },
+  { id: 'g7ss-tx-empresario-system', grade: '7', strand: 'texas-history',
+    topic: 'the empresario system in Mexican Texas — Mexico granted land to American settlers in exchange for population and loyalty, Stephen F. Austin and the "Old Three Hundred", the cultural mixing that resulted, and the tensions that built into revolution' },
+  { id: 'g7ss-tx-runaway-scrape', grade: '7', strand: 'texas-history',
+    topic: 'the Runaway Scrape of 1836 — the panicked retreat of Texas families east as Santa Anna advanced after the Alamo and Goliad, the hardships of the journey, and how Sam Houston used the time to train his army for San Jacinto' },
+  { id: 'g7ss-tx-republic-challenges', grade: '7', strand: 'texas-history',
+    topic: "the Republic of Texas (1836-1845) — its severe debt problem, two presidencies (Houston twice, Lamar between), conflicts with Comanche raiders, the unsuccessful Santa Fe Expedition, and why most Texans wanted statehood" },
+  { id: 'g7ss-tx-after-civil-war', grade: '7', strand: 'texas-history',
+    topic: "Texas after the Civil War (1865-1876) — the abolition of slavery (Juneteenth, June 19, 1865), Reconstruction politics, the Constitution of 1876 (which still governs Texas), and the rebuilding of the state's economy" },
+  { id: 'g7ss-tx-cattle-kingdom', grade: '7', strand: 'texas-history',
+    topic: 'the Cattle Kingdom era (1866-1890) — the longhorn cattle drives north along the Chisholm and Goodnight-Loving trails, the rise of cowboy culture, and how barbed wire and the railroad eventually ended the open range' },
+  { id: 'g7ss-tx-spindletop-oil', grade: '7', strand: 'texas-history',
+    topic: 'Spindletop and the start of the Texas oil boom (1901) — the Lucas Gusher near Beaumont, the boom towns that followed, the founding of major oil companies (Texaco, Gulf, Humble) that grew from this discovery, and how oil reshaped Texas' },
+  { id: 'g7ss-tx-modern-economy', grade: '7', strand: 'economics',
+    topic: "Texas's transition from oil-and-cattle to a diversified modern economy — the rise of technology (Dell, Silicon Hills in Austin), aerospace (NASA Johnson Space Center, military bases), healthcare (Texas Medical Center in Houston), and renewable energy (the largest wind power capacity of any state)" },
+
   // ---- Round 2 (Q phase): Texas-history depth + missing US strands ----
 
   // More Texas history (5)
@@ -265,7 +345,44 @@ async function callOpenAI(systemPrompt, userMessage, apiKey, opts) {
 }
 
 function buildPassageSystem(grade) {
-  const earlyReader = ['k', '1', '2', '3'].includes(String(grade).toLowerCase());
+  const g = String(grade).toLowerCase();
+  const earlyReader = ['k', '1', '2', '3'].includes(g);
+  const middleGrade = ['4', '5', '6', '7'].includes(g);
+
+  if (middleGrade) {
+    const wordTarget = g === '4' ? '200-380' : g === '5' ? '240-440' : g === '6' ? '280-500' : '320-540';
+    const scope = g === '4' ? 'Texas regions, Texas history through Republic + statehood, Texas government basics, Texas economy (TEKS §113.15)'
+                : g === '5' ? 'US history overview — pre-Columbian through modern era, US geography (TEKS §113.16)'
+                : g === '6' ? 'world cultures + world geography — ancient civilizations, regional cultures (Latin America, Africa, Asia, Europe), comparative government (TEKS §113.18)'
+                : 'Texas history in detail — exploration, colonization, revolution, Republic, statehood, Civil War, cattle kingdom, oil era, modern Texas (TEKS §113.19)';
+    return `You write social-studies passages for a Texas Grade ${grade} practice app, scoped to: ${scope}.
+
+== Audience ==
+${g === '4' ? '9-10' : g === '5' ? '10-11' : g === '6' ? '11-12' : '12-13'}-year-old students. Vocabulary at grade-${grade} level. Tier 2 academic vocabulary OK; selected Tier 3 with brief explanation.
+
+== Sensitive-topic discipline (LOCKED) ==
+- Religion: factual mentions OK (founders' beliefs, religious freedom, world religions as cultural fact). NEVER theology, prayer, "what believers believe", proselytizing.
+- Slavery: factual coverage required where on-topic. Frame enslaved people as people. NO graphic violence.
+- Wars/battles: factual; focus on causes, outcomes, human cost in civil-tone language.
+- Indigenous peoples: name specific groups (Comanche, Caddo, Apache, Cherokee, Choctaw) with specific events and land.
+- Politics: present multiple historical perspectives factually. No modern-political-party editorializing.
+
+== Output format (STRICT JSON) ==
+{
+  "title": "Short topic-direct title",
+  "body": "## Title\\n\\nFirst paragraph...\\n\\nSecond paragraph...",
+  "topicNotes": "1-line internal note"
+}
+
+== Body format ==
+- Markdown. Open with "## " + title. Each paragraph separated by single blank line.
+- ${wordTarget} words. ${g === '4' ? '3-5' : g === '5' || g === '6' ? '4-6' : '5-7'} paragraphs.
+- May use **bold** sparingly for Tier-3 vocabulary or named events / treaties.
+- DO NOT include images, HTML tags, or inline paragraph numbers.
+
+ONLY output valid JSON. No markdown fences, no preamble.`;
+  }
+
   if (earlyReader) {
     return `You write social-studies passages for a Texas Grade ${grade} practice app. K-3 is practice-only (STAAR doesn't test SS until Grade 8). Topics: Texas state symbols, Texas heroes, Texas geography basics, communities, family, helpers, simple state history.
 
@@ -329,9 +446,13 @@ ONLY output valid JSON. No markdown fences, no preamble.`;
 }
 
 function buildPassageUser(brief) {
-  const earlyReader = ['k', '1', '2', '3'].includes(String(brief.grade).toLowerCase());
-  const wordTarget = brief.grade === 'k' ? '50-130' : brief.grade === '1' ? '80-180' : brief.grade === '2' ? '120-260' : brief.grade === '3' ? '180-320' : '450-700';
-  const para = earlyReader ? '2-3 paragraphs' : '4-7 paragraphs';
+  const g = String(brief.grade).toLowerCase();
+  const earlyReader = ['k', '1', '2', '3'].includes(g);
+  const middleGrade = ['4', '5', '6', '7'].includes(g);
+  const wordTarget = g === 'k' ? '50-130' : g === '1' ? '80-180' : g === '2' ? '120-260' : g === '3' ? '180-320'
+                   : g === '4' ? '200-380' : g === '5' ? '240-440' : g === '6' ? '280-500' : g === '7' ? '320-540'
+                   : '450-700';
+  const para = earlyReader ? '2-3 paragraphs' : middleGrade ? '4-6 paragraphs' : '4-7 paragraphs';
   return `Generate ONE social-studies passage for Texas Grade ${brief.grade}.
 
 Strand: ${brief.strand}
@@ -341,7 +462,36 @@ Match the ${wordTarget} word target. ${para}. Apply ALL sensitive-topic rules. R
 }
 
 function buildQuestionsSystem(grade) {
-  const earlyReader = ['k', '1', '2', '3'].includes(String(grade).toLowerCase());
+  const g = String(grade).toLowerCase();
+  const earlyReader = ['k', '1', '2', '3'].includes(g);
+  const middleGrade = ['4', '5', '6', '7'].includes(g);
+
+  if (middleGrade) {
+    return `You write multiple-choice social-studies questions for a Texas Grade ${grade} practice app, given a passage. Question types tested:
+- Main idea / key argument
+- Specific factual recall (dates, names, events, places)
+- Cause and effect
+- Compare and contrast
+- Sequence / chronology
+
+Output STRICT JSON:
+{
+  "questions": [
+    {"stem":"","choices":["","","",""],"correctIndex":0,"explanation":"","questionType":"main-idea|key-detail|cause-effect|compare-contrast|sequence"}
+  ]
+}
+
+Rules (LOCKED):
+- Exactly 5 questions per passage.
+- Mix question types — at least 3 distinct types across the 5.
+- Vocabulary appropriate for ${g === '4' ? '9-10' : g === '5' ? '10-11' : g === '6' ? '11-12' : '12-13'}-year-old.
+- Question must be answerable from the passage alone.
+- Distractors plausible — common misconceptions or partial-truths.
+- Explanation cites specific paragraph evidence. 1-2 sentences.
+
+ONLY output valid JSON. No markdown fences, no preamble.`;
+  }
+
   if (earlyReader) {
     return `You write multiple-choice social-studies questions for a Texas Grade ${grade} practice app, given a passage.
 
