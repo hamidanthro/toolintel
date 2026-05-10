@@ -49,8 +49,14 @@
       tagline: 'History, geography, civics, economics.',
       icon: 'globe',
       color: '#f472b6',
+      // Texas Grade 8 has 14 STAAR-aligned passages live (US history
+      // 1763-1877, Constitution, Civil War + Reconstruction). Other
+      // grades stay 'Coming soon'. STAAR only tests SS at Grade 8.
       live: false,
-      eta: 'Coming soon'
+      eta: 'Coming soon',
+      liveForGrade: function (stateSlug, gradeSlug) {
+        return stateSlug === 'texas' && gradeSlug === 'grade-8';
+      }
     }
   ];
 

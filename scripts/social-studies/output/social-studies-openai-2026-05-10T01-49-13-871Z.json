@@ -1,0 +1,172 @@
+{
+  "runId": "2026-05-10T01-49-13-871Z",
+  "startedAt": "2026-05-10T01:49:13.871Z",
+  "mode": "dry-run",
+  "briefsAttempted": 1,
+  "passed": 1,
+  "failed": 0,
+  "results": [
+    {
+      "ok": true,
+      "brief": {
+        "id": "g8ss-bill-of-rights-five",
+        "strand": "government",
+        "topic": "five amendments in the Bill of Rights every Texas 8th grader should recognize — 1st (speech, religion, press, assembly), 2nd (arms), 4th (search and seizure), 5th (self-incrimination), 10th (powers reserved to the states)"
+      },
+      "passageRow": {
+        "passageId": "p_tx_8_ss_df2ecf03b71e",
+        "state": "texas",
+        "grade": "8",
+        "subject": "social-studies",
+        "genre": "social-studies",
+        "stateGradeGenre": "texas_8_social-studies",
+        "title": "Key Amendments in the Bill of Rights",
+        "body": "## Key Amendments in the Bill of Rights\n\nThe **Bill of Rights** is the first ten amendments to the United States Constitution. Ratified in 1791, these amendments were created to protect individual liberties and limit the power of the federal government. While all ten amendments are important, there are five that every Texas 8th grader should recognize for their significant impact on American life: the First, Second, Fourth, Fifth, and Tenth Amendments.\n\nThe **First Amendment** is one of the most well-known parts of the Bill of Rights. It guarantees several essential freedoms: the freedom of speech, the freedom of religion, the freedom of the press, the right to assemble peacefully, and the right to petition the government. These rights allow people to express their opinions, practice their religion freely, and gather in groups to discuss issues or protest. For example, the freedom of the press ensures that journalists can report on government activities without fear of censorship, which is crucial for maintaining an informed public.\n\nThe **Second Amendment** addresses the right to keep and bear arms. This amendment has been the subject of much debate over its exact meaning and scope. Originally, it was intended to ensure that citizens could form militias to defend their communities. Today, discussions often focus on individual gun ownership and regulations. While interpretations vary, the Second Amendment remains a pivotal part of American discourse about rights and responsibilities surrounding firearms.\n\nThe **Fourth Amendment** protects citizens from unreasonable searches and seizures. This means that the government must have a warrant, supported by probable cause, to search someone's property or seize their belongings. This amendment is crucial for maintaining privacy and ensuring that the government respects individuals' rights. It was a reaction to colonial experiences under British rule, where searches were often conducted without proper justification.\n\nThe **Fifth Amendment** provides several protections for people accused of crimes. One of its most famous clauses is the protection against self-incrimination, often summarized as the right to remain silent. This means that individuals cannot be forced to testify against themselves in criminal cases. The Fifth Amendment also includes the due process clause, ensuring fair procedures when someone is accused of a crime, and the protection against double jeopardy, which prevents individuals from being tried for the same crime twice.\n\nFinally, the **Tenth Amendment** emphasizes the principle of federalism by stating that any powers not granted to the federal government by the Constitution, nor prohibited to the states, are reserved to the states or the people. This amendment was designed to limit the power of the federal government and preserve the authority of state governments. It highlights the balance of power between national and state governments, which remains a central issue in American politics.\n\nThese five amendments are foundational to understanding the rights and freedoms enjoyed by American citizens. They reflect the framers' intent to create a government that protects individual liberties while maintaining order. Recognizing and understanding these amendments helps students appreciate the complexities of the U.S. Constitution and the ongoing dialogue about rights and responsibilities in American society.",
+        "topic": "five amendments in the Bill of Rights every Texas 8th grader should recognize — 1st (speech, religion, press, assembly), 2nd (arms), 4th (search and seizure), 5th (self-incrimination), 10th (powers reserved to the states)",
+        "topicNotes": "Overview of five key amendments in the Bill of Rights relevant to Texas 8th graders.",
+        "strand": "government",
+        "wordCount": 510,
+        "paragraphCount": 7,
+        "fkGrade": 13.2,
+        "lexileEstimate": 2440,
+        "status": "active",
+        "_generatedBy": "gpt-4o",
+        "_generatedAt": "2026-05-10T01:49:24.225Z",
+        "_pipelineVersion": "social-studies-openai-v1",
+        "_briefId": "g8ss-bill-of-rights-five"
+      },
+      "questionRows": [
+        {
+          "poolKey": "texas#8#social-studies#p_tx_8_ss_df2ecf03b71e",
+          "contentId": "q_7659f02fe7bf_0",
+          "state": "texas",
+          "grade": "8",
+          "subject": "social-studies",
+          "type": "multiple_choice",
+          "questionType": "main-idea",
+          "question": "What is the main purpose of the Bill of Rights as described in the passage?",
+          "choices": [
+            "To establish the federal government",
+            "To outline the responsibilities of citizens",
+            "To protect individual liberties and limit government power",
+            "To detail the structure of state governments"
+          ],
+          "correctIndex": 2,
+          "answer": "To protect individual liberties and limit government power",
+          "explanation": "Paragraph 1 explains that the Bill of Rights was created to protect individual liberties and limit the power of the federal government.",
+          "passageId": "p_tx_8_ss_df2ecf03b71e",
+          "strand": "government",
+          "status": "active",
+          "_generatedBy": "gpt-4o",
+          "_generatedAt": "2026-05-10T01:49:24.225Z",
+          "_pipelineVersion": "social-studies-openai-v1",
+          "_briefId": "g8ss-bill-of-rights-five"
+        },
+        {
+          "poolKey": "texas#8#social-studies#p_tx_8_ss_df2ecf03b71e",
+          "contentId": "q_ad6be820d463_1",
+          "state": "texas",
+          "grade": "8",
+          "subject": "social-studies",
+          "type": "multiple_choice",
+          "questionType": "key-detail",
+          "question": "Which amendment guarantees the freedom of the press?",
+          "choices": [
+            "Second Amendment",
+            "Fourth Amendment",
+            "First Amendment",
+            "Tenth Amendment"
+          ],
+          "correctIndex": 2,
+          "answer": "First Amendment",
+          "explanation": "Paragraph 2 states that the First Amendment guarantees the freedom of the press.",
+          "passageId": "p_tx_8_ss_df2ecf03b71e",
+          "strand": "government",
+          "status": "active",
+          "_generatedBy": "gpt-4o",
+          "_generatedAt": "2026-05-10T01:49:24.225Z",
+          "_pipelineVersion": "social-studies-openai-v1",
+          "_briefId": "g8ss-bill-of-rights-five"
+        },
+        {
+          "poolKey": "texas#8#social-studies#p_tx_8_ss_df2ecf03b71e",
+          "contentId": "q_155f3b1e99c5_2",
+          "state": "texas",
+          "grade": "8",
+          "subject": "social-studies",
+          "type": "multiple_choice",
+          "questionType": "historical-context",
+          "question": "What historical context influenced the creation of the Fourth Amendment?",
+          "choices": [
+            "The need for a militia",
+            "Colonial experiences under British rule",
+            "The desire for free speech",
+            "The balance of power between state and federal governments"
+          ],
+          "correctIndex": 1,
+          "answer": "Colonial experiences under British rule",
+          "explanation": "Paragraph 4 explains that the Fourth Amendment was a reaction to colonial experiences under British rule, where searches were often conducted without proper justification.",
+          "passageId": "p_tx_8_ss_df2ecf03b71e",
+          "strand": "government",
+          "status": "active",
+          "_generatedBy": "gpt-4o",
+          "_generatedAt": "2026-05-10T01:49:24.225Z",
+          "_pipelineVersion": "social-studies-openai-v1",
+          "_briefId": "g8ss-bill-of-rights-five"
+        },
+        {
+          "poolKey": "texas#8#social-studies#p_tx_8_ss_df2ecf03b71e",
+          "contentId": "q_ea947f43188b_3",
+          "state": "texas",
+          "grade": "8",
+          "subject": "social-studies",
+          "type": "multiple_choice",
+          "questionType": "cause-effect",
+          "question": "How does the Tenth Amendment relate to the principle of federalism?",
+          "choices": [
+            "It grants all powers to the federal government.",
+            "It reserves powers to the states or the people.",
+            "It allows for free speech and assembly.",
+            "It protects against unreasonable searches."
+          ],
+          "correctIndex": 1,
+          "answer": "It reserves powers to the states or the people.",
+          "explanation": "Paragraph 6 explains that the Tenth Amendment emphasizes federalism by reserving powers not granted to the federal government to the states or the people.",
+          "passageId": "p_tx_8_ss_df2ecf03b71e",
+          "strand": "government",
+          "status": "active",
+          "_generatedBy": "gpt-4o",
+          "_generatedAt": "2026-05-10T01:49:24.225Z",
+          "_pipelineVersion": "social-studies-openai-v1",
+          "_briefId": "g8ss-bill-of-rights-five"
+        },
+        {
+          "poolKey": "texas#8#social-studies#p_tx_8_ss_df2ecf03b71e",
+          "contentId": "q_fd3edb130b6b_4",
+          "state": "texas",
+          "grade": "8",
+          "subject": "social-studies",
+          "type": "multiple_choice",
+          "questionType": "key-detail",
+          "question": "Which amendment includes the protection against self-incrimination?",
+          "choices": [
+            "First Amendment",
+            "Second Amendment",
+            "Fourth Amendment",
+            "Fifth Amendment"
+          ],
+          "correctIndex": 3,
+          "answer": "Fifth Amendment",
+          "explanation": "Paragraph 5 mentions that the Fifth Amendment includes the protection against self-incrimination.",
+          "passageId": "p_tx_8_ss_df2ecf03b71e",
+          "strand": "government",
+          "status": "active",
+          "_generatedBy": "gpt-4o",
+          "_generatedAt": "2026-05-10T01:49:24.225Z",
+          "_pipelineVersion": "social-studies-openai-v1",
+          "_briefId": "g8ss-bill-of-rights-five"
+        }
+      ]
+    }
+  ]
+}

@@ -93,7 +93,7 @@
   // Subject — math + reading are live; science / social-studies bounce back.
   let SUBJECT_SLUG = (params.get('subj') || 'math').toLowerCase();
   const _VALID_SUBJECTS = ['math', 'reading', 'science', 'social-studies'];
-  const _LIVE_SUBJECTS = ['math', 'reading', 'science'];
+  const _LIVE_SUBJECTS = ['math', 'reading', 'science', 'social-studies'];
   if (!_VALID_SUBJECTS.includes(SUBJECT_SLUG)) SUBJECT_SLUG = 'math';
   if (!_LIVE_SUBJECTS.includes(SUBJECT_SLUG)) {
     if (params.get('s') && params.get('g')) {
@@ -479,6 +479,8 @@
     startReading();
   } else if (SUBJECT_SLUG === 'science') {
     startScience();
+  } else if (SUBJECT_SLUG === 'social-studies') {
+    startSocialStudies();
   } else {
     fetch(`data/${slug}-curriculum.json?v=20260426m`)
       .then(r => r.ok ? r.json() : Promise.reject('not-found'))
@@ -1993,6 +1995,76 @@
         <div class="card" style="text-align:center;padding:32px;">
           <div style="font-size:2.4rem;margin-bottom:8px;" aria-hidden="true">🔬</div>
           <p style="font-size:1.05rem;margin-bottom:6px;">We couldn’t load science questions right now.</p>
+          <p style="color:var(--muted);margin-bottom:18px;">This usually clears up in a few seconds.</p>
+          <p><button type="button" class="btn btn-primary" onclick="location.reload()">Retry</button>
+            <a class="btn btn-secondary" href="grade.html?s=${encodeURIComponent(STATE_SLUG_RESOLVED)}&g=${encodeURIComponent(slug)}" style="margin-left:8px;">Back</a></p>
+        </div>`;
+    }
+  }
+
+  // ============================================================
+  // Texas Grade 8 social studies serving path. Mirrors startScience
+  // byte-faithfully; just hits getSocialStudiesItem and renders the
+  // SS passage as the reading-style stimulus.
+  // ============================================================
+  async function startSocialStudies() {
+    const grTitle = ({
+      'grade-k':'Kindergarten','grade-1':'Grade 1','grade-2':'Grade 2','grade-3':'Grade 3',
+      'grade-4':'Grade 4','grade-5':'Grade 5','grade-6':'Grade 6','grade-7':'Grade 7',
+      'grade-8':'Grade 8'
+    })[slug] || slug;
+    const fakeCurr = { grade: slug, title: `${grTitle} Social Studies`, units: [] };
+    try {
+      const res = await fetch(TUTOR_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'getSocialStudiesItem',
+          token: (window.STAARAuth && window.STAARAuth.token && window.STAARAuth.token()) || null,
+          state: STATE_SLUG_RESOLVED,
+          grade: slug
+        })
+      });
+      if (!res.ok) throw new Error('ss_item_failed_' + res.status);
+      const data = await res.json();
+      const passage = data.passage || null;
+      const rawQuestions = data.questions || [];
+      if (!passage || rawQuestions.length === 0) {
+        root.innerHTML = `
+          <h2>Social Studies practice</h2>
+          <div class="card" style="text-align:center;padding:36px;">
+            <div style="font-size:3rem;margin-bottom:12px;" aria-hidden="true">🌎</div>
+            <p style="font-size:1.05rem;margin-bottom:6px;"><strong>${escapeHtml(grTitle)} Social Studies is coming soon.</strong></p>
+            <p style="color:var(--muted);max-width:480px;margin:0 auto 18px;">We're building the Social Studies library one grade at a time. STAAR tests it at Grade 8; that's where we ship first.</p>
+            <p>
+              <a class="btn btn-primary" href="practice.html?s=${encodeURIComponent(STATE_SLUG_RESOLVED)}&g=${encodeURIComponent(slug)}&subj=math">Practice Math</a>
+              <a class="btn btn-secondary" href="practice.html?s=${encodeURIComponent(STATE_SLUG_RESOLVED)}&g=${encodeURIComponent(slug)}&subj=reading" style="margin-left:8px;">Practice Reading</a>
+            </p>
+          </div>`;
+        return;
+      }
+      const items = rawQuestions.map(g => ({
+        id: g.contentId || g.id,
+        contentId: g.contentId || null,
+        poolKey: g.poolKey || null,
+        type: 'multiple_choice',
+        prompt: g.question || g.stem || g.prompt || '',
+        choices: g.choices || [],
+        answer: (Number.isFinite(g.correctIndex) && Array.isArray(g.choices)) ? g.choices[g.correctIndex] : (g.answer || ''),
+        correctIndex: g.correctIndex,
+        explanation: g.explanation || '',
+        passage,
+        _unit: { title: passage.title || 'Social Studies', id: passage.passageId },
+        _lesson: { teks: g.strand || '', title: passage.title || '' }
+      }));
+      runQuiz(fakeCurr, items, null, { enhance: null });
+    } catch (err) {
+      console.warn('[social-studies] fetch failed:', err.message);
+      root.innerHTML = `
+        <h2>Social Studies practice</h2>
+        <div class="card" style="text-align:center;padding:32px;">
+          <div style="font-size:2.4rem;margin-bottom:8px;" aria-hidden="true">🌎</div>
+          <p style="font-size:1.05rem;margin-bottom:6px;">We couldn't load Social Studies right now.</p>
           <p style="color:var(--muted);margin-bottom:18px;">This usually clears up in a few seconds.</p>
           <p><button type="button" class="btn btn-primary" onclick="location.reload()">Retry</button>
             <a class="btn btn-secondary" href="grade.html?s=${encodeURIComponent(STATE_SLUG_RESOLVED)}&g=${encodeURIComponent(slug)}" style="margin-left:8px;">Back</a></p>
