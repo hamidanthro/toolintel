@@ -7,7 +7,7 @@
  * Critical: never cache API responses (Lambda calls). They must always be fresh.
  */
 
-const CACHE_VERSION = 'gradeearn-v45';
+const CACHE_VERSION = 'gradeearn-v46';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 

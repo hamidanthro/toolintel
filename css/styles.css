@@ -7830,7 +7830,11 @@ input[type="button"] {
      show-rule, leaving signed-in users with no avatar (Hamid screenshot
      12:50pm). Keep nav/chat/admin hidden — those route via the
      dropdown's links. */
-  .site-header .nav,
+  /* Hide chat-bell / admin-badge on mobile but KEEP the nav visible
+     (May 11 audit): there's no hamburger menu in any HTML page —
+     hiding the nav meant Trophies / League / Toys were unreachable
+     from the header on mobile. Nav now stays visible with compact
+     spacing + horizontal-scroll fallback (rules below). */
   .site-header .chat-bell,
   .site-header #user-slot .chat-bell,
   .site-header #user-slot .admin-badge {
@@ -7841,8 +7845,26 @@ input[type="button"] {
   .site-header .brand { font-size: 16px; }
   .site-header .brand svg { width: 28px; height: 28px; }
 
-  /* Hamburger appears */
-  .mobile-menu-toggle { display: inline-flex; }
+  /* Compact nav for mobile — fits Home / Trophies / League / Toys /
+     How it works on phones. Items wrap-free + horizontal-scroll
+     if a wider language pushes them past the viewport. */
+  .site-header .nav {
+    padding: 3px;
+    gap: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    max-width: 100%;
+    flex-shrink: 1;
+  }
+  .site-header .nav::-webkit-scrollbar { display: none; }
+  .site-header .nav a {
+    font-size: 12px;
+    padding: 6px 10px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
 
   /* Wallet/points pill stays — kid dopamine */
   .site-header .wallet-pill,
@@ -8493,12 +8515,16 @@ input[type="button"] {
     padding-top: calc(6px + env(safe-area-inset-top, 0px));
   }
   .site-header .container { height: 44px; }
-  .site-header .nav,
+  /* Same May 11 fix as above — keep nav visible, hide just the bells. */
   .site-header .chat-bell,
   .site-header #user-slot .chat-bell,
   .site-header #user-slot .admin-badge {
     display: none !important;
   }
+  /* On the tightest mobile breakpoint, hide 'How it works' first
+     since it's the lowest-value tab. Trophies / League / Toys are
+     core surfaces and stay. */
+  .site-header .nav a[href="about.html"] { display: none; }
   .site-header #user-slot {
     margin-left: auto;
   }
