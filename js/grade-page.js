@@ -239,6 +239,49 @@
 
     document.getElementById('hero-sub').textContent =
       `Practice questions aligned to the ${state.testName}, the test administered by the ${state.testAuthorityShort}.`;
+
+    // STAAR countdown pill (IXL pattern: visible test-day motivator).
+    // Skip for K-2 since they don't take STAAR — for those grades we
+    // show a friendlier "X days of practice" cumulative milestone
+    // instead of test-day countdown.
+    try {
+      const heroInner = document.querySelector('.grade-hero-inner');
+      if (!heroInner) return;
+      let pill = document.getElementById('grade-hero-countdown');
+      if (!pill) {
+        pill = document.createElement('div');
+        pill.id = 'grade-hero-countdown';
+        pill.className = 'grade-hero-countdown-pill';
+        heroInner.appendChild(pill);
+      }
+      const isK2 = gradeSlug === 'grade-k' || gradeSlug === 'grade-1' || gradeSlug === 'grade-2';
+      if (isK2) {
+        // Friendly milestone: days since first session (encouragement, not pressure)
+        const stats = window.Achievements && window.Achievements.getStats && window.Achievements.getStats();
+        const firstDate = stats && stats.firstSessionDate;
+        if (firstDate) {
+          const days = Math.max(1, Math.floor((Date.now() - new Date(firstDate + 'T00:00:00').getTime()) / 86400000) + 1);
+          pill.innerHTML = `<span aria-hidden="true">📅</span> Day ${days} of practice`;
+        } else {
+          pill.innerHTML = `<span aria-hidden="true">🎯</span> Today is day 1 — let's go`;
+        }
+      } else if (state && state.testWindowMonth) {
+        const now = new Date();
+        const yr = now.getFullYear();
+        let target = new Date(yr, state.testWindowMonth - 1, 15);
+        if (target < now) target = new Date(yr + 1, state.testWindowMonth - 1, 15);
+        const days = Math.ceil((target - now) / 86400000);
+        if (days >= 1 && days <= 365) {
+          pill.innerHTML = `<span aria-hidden="true">⏳</span> ${days} day${days === 1 ? '' : 's'} until ${escapeHtml(state.testName)}`;
+        } else {
+          pill.style.display = 'none';
+        }
+      } else {
+        pill.style.display = 'none';
+      }
+    } catch (err) {
+      console.warn('[hero countdown] failed:', err);
+    }
   }
 
   // ============================================================
@@ -317,15 +360,21 @@
     }).join('');
 
     // H6: tap haptic on mobile when a kid presses a live subject card.
-    // 10ms is the lightest possible — feels like a button click, not
-    // a notification buzz. Touchstart fires before navigation so the
-    // kid feels the response right when their finger lands.
     const cards = document.querySelectorAll('.subject-card--live');
     cards.forEach(c => {
       c.addEventListener('touchstart', () => {
         try { navigator.vibrate && navigator.vibrate(10); } catch (_) {}
       }, { passive: true });
     });
+
+    // ===== Reward strip + daily quest + review CTA on grade.html =====
+    // Renders directly above the subject picker so kids see their
+    // status (level, streak, shields) and today's quest before they
+    // pick a subject. Level/streak/shield strip is tiny; daily quest
+    // is a card; review CTA shows only when there are due items.
+    try { renderRewardStrip(state, gradeSlug); } catch (e) { console.warn('[reward strip]', e); }
+    try { renderDailyQuest(state, gradeSlug); } catch (e) { console.warn('[daily quest]', e); }
+    try { renderReviewCta(state, gradeSlug); } catch (e) { console.warn('[review cta]', e); }
 
     // J1: surface F10 print worksheets + F5 wrong-answer review.
     // Render a small "Practice extras" row below the subject grid.
@@ -358,6 +407,133 @@
       `;
       grid.parentNode.insertBefore(extras, grid.nextSibling);
     }
+  }
+
+  // ============================================================
+  // REWARD STRIP — level + streak + shields above subject grid
+  // ============================================================
+  function renderRewardStrip(state, gradeSlug) {
+    if (!window.Achievements) return;
+    const stats = window.Achievements.getStats();
+    const lev = window.Achievements.levelFromXp(stats.xp || 0);
+    const grid = document.getElementById('subject-grid');
+    if (!grid) return;
+    const section = grid.closest('.subject-section') || grid.parentNode;
+    if (!section || section.previousElementSibling && section.previousElementSibling.classList && section.previousElementSibling.classList.contains('reward-strip')) {
+      // Already rendered — refresh contents
+      const old = section.previousElementSibling;
+      old.innerHTML = buildRewardStripHtml(stats, lev);
+      return;
+    }
+    const strip = document.createElement('section');
+    strip.className = 'reward-strip';
+    strip.innerHTML = buildRewardStripHtml(stats, lev);
+    section.parentNode.insertBefore(strip, section);
+  }
+  function buildRewardStripHtml(stats, lev) {
+    const shields = stats.streakShields || 0;
+    const streak = stats.loginStreak || 0;
+    const shieldRow = shields > 0
+      ? Array.from({length: shields}).map(()=>'🛡').join('')
+      : '<span class="reward-strip-shield-empty">no shields yet</span>';
+    return `
+      <a class="reward-strip-tile reward-strip-level" href="achievements.html" aria-label="Level ${lev.level}, ${lev.inLevelXp} of ${lev.levelSpan} XP toward next level">
+        <div class="reward-strip-icon">⚡</div>
+        <div class="reward-strip-body">
+          <div class="reward-strip-label">Level ${lev.level}</div>
+          <div class="reward-strip-progress"><div class="reward-strip-progress-bar" style="width:${lev.pct}%"></div></div>
+          <div class="reward-strip-sub">${lev.inLevelXp} / ${lev.levelSpan} XP</div>
+        </div>
+      </a>
+      <a class="reward-strip-tile reward-strip-streak" href="achievements.html" aria-label="${streak} day streak">
+        <div class="reward-strip-icon">🔥</div>
+        <div class="reward-strip-body">
+          <div class="reward-strip-label">${streak} day${streak === 1 ? '' : 's'}</div>
+          <div class="reward-strip-sub">streak</div>
+        </div>
+      </a>
+      <a class="reward-strip-tile reward-strip-shields" href="achievements.html" aria-label="${shields} streak shields held">
+        <div class="reward-strip-icon">🛡</div>
+        <div class="reward-strip-body">
+          <div class="reward-strip-label">${shields} shield${shields === 1 ? '' : 's'}</div>
+          <div class="reward-strip-sub">${shieldRow}</div>
+        </div>
+      </a>
+    `;
+  }
+
+  // ============================================================
+  // DAILY QUEST CARD — 3 sub-tasks above subject grid
+  // ============================================================
+  function renderDailyQuest(state, gradeSlug) {
+    if (!window.Achievements) return;
+    const m = window.Achievements.getDailyMissionState();
+    const grid = document.getElementById('subject-grid');
+    if (!grid) return;
+    const section = grid.closest('.subject-section') || grid.parentNode;
+    // Insert AFTER reward strip but BEFORE subject section
+    let card = document.querySelector('.daily-quest-card-grade');
+    if (!card) {
+      card = document.createElement('section');
+      card.className = 'daily-quest-card-grade';
+      // Insert it just before the subject section
+      section.parentNode.insertBefore(card, section);
+    }
+    const tasksHtml = m.tasks.map(t => {
+      const pct = t.target > 0 ? Math.min(100, Math.round((t.current / t.target) * 100)) : 0;
+      return `
+        <div class="dq-task ${t.done ? 'dq-task--done' : ''}" data-task-id="${escapeHtml(t.id)}">
+          <div class="dq-task-emoji" aria-hidden="true">${t.done ? '✅' : escapeHtml(t.emoji || '🎯')}</div>
+          <div class="dq-task-body">
+            <div class="dq-task-label">${escapeHtml(t.label)}</div>
+            <div class="dq-task-progress"><div class="dq-task-progress-bar" style="width:${pct}%"></div></div>
+            <div class="dq-task-sub">${t.current} / ${t.target}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+    const completedHtml = m.completed
+      ? `<div class="dq-completed">✨ Today's quest complete · +${m.rewardCents}¢ earned</div>`
+      : '';
+    card.innerHTML = `
+      <div class="dq-head">
+        <div class="dq-head-title">Today's quest</div>
+        <div class="dq-head-reward">+${m.rewardCents}¢ all done</div>
+      </div>
+      <div class="dq-tasks">${tasksHtml}</div>
+      ${completedHtml}
+    `;
+  }
+
+  // ============================================================
+  // REVIEW CTA — surfaces spaced-rep due-list as a first-class call
+  // ============================================================
+  function renderReviewCta(state, gradeSlug) {
+    if (!window.GradeEarnSpacedRep) return;
+    let stats;
+    try { stats = window.GradeEarnSpacedRep.getStats(); } catch (_) { return; }
+    if (!stats || !stats.due) return; // nothing due, hide
+    const grid = document.getElementById('subject-grid');
+    if (!grid) return;
+    const section = grid.closest('.subject-section') || grid.parentNode;
+    let card = document.querySelector('.review-cta-card');
+    if (!card) {
+      card = document.createElement('a');
+      card.className = 'review-cta-card';
+      card.href = `practice.html?s=${encodeURIComponent(state.slug)}&g=${encodeURIComponent(gradeSlug)}&subj=math&review=1`;
+      section.parentNode.insertBefore(card, section);
+    }
+    card.innerHTML = `
+      <div class="review-cta-emoji" aria-hidden="true">↻</div>
+      <div class="review-cta-body">
+        <div class="review-cta-eyebrow">Spaced repetition</div>
+        <div class="review-cta-title">Review your wrong answers</div>
+        <div class="review-cta-sub">${stats.due} question${stats.due === 1 ? '' : 's'} ready for another shot · best way to lock in mastery</div>
+      </div>
+      <div class="review-cta-arrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </div>
+    `;
   }
 
   function getSubjectIcon(name) {

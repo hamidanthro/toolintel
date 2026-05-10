@@ -100,6 +100,25 @@ if ('serviceWorker' in navigator) {
 
   function avatar(name) { return (name || '?').trim().charAt(0).toUpperCase() || '?'; }
 
+  // Avatar emoji — if the kid picked one in settings, render it instead
+  // of the initials letter. Stored per-user in localStorage so it
+  // persists across sessions on the same device. Server sync can be
+  // added later via a profile update API. Falls back to letter on miss.
+  function getAvatarEmoji(username) {
+    if (!username) return null;
+    try {
+      const raw = localStorage.getItem('gradeearn:avatarEmoji:' + username);
+      return raw || null;
+    } catch (_) { return null; }
+  }
+  function setAvatarEmoji(username, emoji) {
+    if (!username) return;
+    try {
+      if (emoji) localStorage.setItem('gradeearn:avatarEmoji:' + username, emoji);
+      else localStorage.removeItem('gradeearn:avatarEmoji:' + username);
+    } catch (_) {}
+  }
+
   // §70 — Stable per-user avatar color. djb2 hash → palette of 6
   // brand-friendly colors. Each user gets a consistent color across
   // sessions/devices (small dopamine hit, kid-friendly identity).
@@ -1004,7 +1023,7 @@ if ('serviceWorker' in navigator) {
         <span class="chat-bell-dot" id="chat-bell-dot" hidden></span>
       </button>
       <button type="button" class="user-pill" id="user-pill" aria-haspopup="true" aria-expanded="false" aria-label="Account menu">
-        <span class="profile-avatar small" style="background:${avatarColor}">${escapeHtml(avatar(u.displayName || u.username))}</span>
+        <span class="profile-avatar small ${getAvatarEmoji(u.username) ? 'profile-avatar--emoji' : ''}" style="background:${getAvatarEmoji(u.username) ? 'rgba(255,255,255,0.06)' : avatarColor}">${getAvatarEmoji(u.username) || escapeHtml(avatar(u.displayName || u.username))}</span>
         <span class="user-pill-name">${escapeHtml(u.displayName || u.username)}</span>
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
       </button>
@@ -1530,6 +1549,29 @@ if ('serviceWorker' in navigator) {
     showCentsToast,
     showToast,
     gradeLevel,
+    getAvatarEmoji,
+    setAvatarEmoji,
+    awardCents: function (amount, source) {
+      // Public alias for earn() so achievements + level-ups can grant
+      // bonus cents without depending on a sectionKey. Bypasses
+      // mastery-lock check since these are non-content rewards.
+      try {
+        const u = currentUser();
+        if (!u) return;
+        u.balanceCents = (u.balanceCents || 0) + Math.max(0, parseInt(amount, 10) || 0);
+        u.lifetimeCents = (u.lifetimeCents || 0) + Math.max(0, parseInt(amount, 10) || 0);
+        // Persist to localStorage user record
+        try {
+          const stored = JSON.parse(localStorage.getItem('staar.user') || '{}');
+          stored.balanceCents = u.balanceCents;
+          stored.lifetimeCents = u.lifetimeCents;
+          localStorage.setItem('staar.user', JSON.stringify(stored));
+        } catch (_) {}
+        if (typeof refreshWallet === 'function') refreshWallet();
+        // Optional toast
+        if (amount > 0) showCentsToast(`+${amount}¢`, source || 'bonus');
+      } catch (e) { console.warn('[awardCents]', e); }
+    },
     userGradeLevel,
     setGrade,
     requireLoginOnLoad: window.STAARAuth ? !!window.STAARAuth.requireLoginOnLoad : false,

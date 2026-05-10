@@ -19,7 +19,7 @@
   <link rel="shortcut icon" href="/favicon.ico">
   <meta name="format-detection" content="telephone=no" />
   <title>Settings — GradeEarn</title>
-  <link rel="stylesheet" href="css/styles.css?v=20260510n" />
+  <link rel="stylesheet" href="css/styles.css?v=20260510o" />
 </head>
 <body>
   <header class="site-header">
@@ -41,6 +41,17 @@
       <p style="color:var(--muted);max-width:680px;margin:0 0 28px;">Make GradeEarn feel just right for you. These settings are saved on this device.</p>
 
       <div class="settings-grid">
+
+        <article class="settings-card avatar-settings-card">
+          <h3>Pick your avatar</h3>
+          <p class="settings-card-subtitle">Tap an emoji to set it as your profile picture.</p>
+          <div class="avatar-current">
+            <span class="avatar-current-label">Current:</span>
+            <span class="avatar-current-emoji" id="avatar-current-emoji">—</span>
+          </div>
+          <div class="avatar-grid" id="avatar-grid"></div>
+          <button type="button" class="btn-link" id="avatar-clear">Use my initial instead</button>
+        </article>
 
         <article class="settings-card ff-settings-section" data-section="fun-facts">
           <h3 class="ff-settings-title">Fun Facts</h3>
@@ -164,10 +175,78 @@
   <script src="js/fun-facts.js?v=20260510k"></script>
   <script src="js/speech.js?v=20260509a"></script>
   <script src="js/fun-facts-settings.js?v=20260506a"></script>
-  <script src="js/auth.js?v=20260507a"></script>
+  <script src="js/auth.js?v=20260510a"></script>
   <script src="js/lake-events.js?v=20260427a"></script>
   <script src="js/pwa-install.js?v=20260427a" defer></script>
   <script src="js/friends.js?v=20260426b"></script>
+  <script>
+    // Avatar emoji picker — kid-friendly, gender-neutral, varied themes.
+    (function () {
+      const EMOJIS = [
+        '🦊','🐯','🐻','🐼','🐨','🐰','🦁','🐶','🐱','🐹',
+        '🐭','🐮','🐷','🐸','🐵','🐧','🦄','🐲','🦖','🦋',
+        '🐢','🦔','🦦','🦘','🐬','🐙','🦒','🐝','🐞','🐳',
+        '🍎','🍊','🍋','🍌','🍉','🍇','🍓','🍒','🥭','🍍',
+        '🌟','⭐','🚀','🛸','🌈','⚽','🏀','🎯','🎲','🎮',
+        '🎨','🎭','🎪','🤖','👾','🦸','🦹','🧙','🧚','🧞'
+      ];
+      const grid = document.getElementById('avatar-grid');
+      const cur = document.getElementById('avatar-current-emoji');
+      const clearBtn = document.getElementById('avatar-clear');
+      if (!grid) return;
+
+      function getActiveEmoji() {
+        const u = window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser();
+        if (!u || !u.username) return null;
+        return (window.STAARAuth.getAvatarEmoji && window.STAARAuth.getAvatarEmoji(u.username)) || null;
+      }
+      function refreshCurrent() {
+        const e = getActiveEmoji();
+        const u = window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser();
+        const name = u ? (u.displayName || u.username) : '';
+        cur.textContent = e || (name ? name.charAt(0).toUpperCase() : '—');
+        // Refresh nav avatar
+        if (window.STAARAuth && window.STAARAuth.refreshHeader) window.STAARAuth.refreshHeader();
+      }
+      function render() {
+        const active = getActiveEmoji();
+        grid.innerHTML = EMOJIS.map(e => {
+          const isActive = e === active;
+          return `<button type="button" class="avatar-cell ${isActive ? 'avatar-cell--active' : ''}" data-emoji="${e}" aria-label="Pick ${e}">${e}</button>`;
+        }).join('');
+        grid.querySelectorAll('.avatar-cell').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const u = window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser();
+            if (!u || !u.username) {
+              if (window.STAARAuth && window.STAARAuth.showLogin) window.STAARAuth.showLogin();
+              return;
+            }
+            window.STAARAuth.setAvatarEmoji(u.username, btn.getAttribute('data-emoji'));
+            render();
+            refreshCurrent();
+          });
+        });
+      }
+      if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+          const u = window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser();
+          if (!u || !u.username) return;
+          window.STAARAuth.setAvatarEmoji(u.username, null);
+          render();
+          refreshCurrent();
+        });
+      }
+      // Wait for auth.js to load currentUser
+      const waitForAuth = setInterval(() => {
+        if (window.STAARAuth && window.STAARAuth.currentUser) {
+          clearInterval(waitForAuth);
+          render();
+          refreshCurrent();
+        }
+      }, 50);
+      setTimeout(() => clearInterval(waitForAuth), 5000);
+    })();
+  </script>
   <script>
     (function () {
       const P = window.STAARPrefs;

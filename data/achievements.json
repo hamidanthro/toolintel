@@ -582,5 +582,98 @@
     "category": "endurance",
     "trigger": { "type": "longestSession", "threshold": 10 },
     "reward": { "cents": 10, "stickerId": "stretch" }
+  },
+
+  {
+    "id": "first-shield",
+    "name": "First Shield",
+    "description": "Earn your first streak shield (5-day streak).",
+    "emoji": "🛡",
+    "tier": "bronze",
+    "category": "shields",
+    "trigger": { "type": "shieldsEarned", "threshold": 1 },
+    "reward": { "cents": 10, "stickerId": "shield-1" }
+  },
+  {
+    "id": "shield-stack",
+    "name": "Shield Stack",
+    "description": "Earn 5 streak shields total.",
+    "emoji": "🛡🛡🛡",
+    "tier": "silver",
+    "category": "shields",
+    "trigger": { "type": "shieldsEarned", "threshold": 5 },
+    "reward": { "cents": 50, "stickerId": "shield-stack" }
+  },
+  {
+    "id": "shield-saved",
+    "name": "Saved by a Shield",
+    "description": "Use a shield to keep your streak alive.",
+    "emoji": "💪",
+    "tier": "silver",
+    "category": "shields",
+    "trigger": { "type": "shieldsConsumed", "threshold": 1 },
+    "reward": { "cents": 25, "stickerId": "shield-save" }
+  },
+
+  {
+    "id": "level-3",
+    "name": "Level 3",
+    "description": "Earn 250 XP and reach Level 3.",
+    "emoji": "🆙",
+    "tier": "bronze",
+    "category": "level",
+    "trigger": { "type": "levelReached", "threshold": 3 },
+    "reward": { "cents": 15, "stickerId": "level-up-3" }
+  },
+  {
+    "id": "level-5",
+    "name": "Level 5",
+    "description": "Earn 1,000 XP and reach Level 5.",
+    "emoji": "⭐",
+    "tier": "silver",
+    "category": "level",
+    "trigger": { "type": "levelReached", "threshold": 5 },
+    "reward": { "cents": 35, "stickerId": "level-up-5" }
+  },
+  {
+    "id": "level-10",
+    "name": "Level 10",
+    "description": "Earn 7,500 XP and reach Level 10.",
+    "emoji": "🌠",
+    "tier": "gold",
+    "category": "level",
+    "trigger": { "type": "levelReached", "threshold": 10 },
+    "reward": { "cents": 100, "stickerId": "level-up-10" }
+  },
+  {
+    "id": "level-20",
+    "name": "Level 20",
+    "description": "Earn 60,000 XP and reach Level 20.",
+    "emoji": "💎",
+    "tier": "diamond",
+    "category": "level",
+    "trigger": { "type": "levelReached", "threshold": 20 },
+    "reward": { "cents": 500, "stickerId": "level-up-20" }
+  },
+
+  {
+    "id": "first-quest-complete",
+    "name": "Quest Crusher",
+    "description": "Complete your first daily quest (all 3 tasks).",
+    "emoji": "🎯",
+    "tier": "bronze",
+    "category": "daily",
+    "trigger": { "type": "dailyMissionsCompleted", "threshold": 1 },
+    "reward": { "cents": 15, "stickerId": "quest-1" }
+  },
+  {
+    "id": "ten-quests",
+    "name": "Ten Quests Down",
+    "description": "Complete 10 daily quests.",
+    "emoji": "📜",
+    "tier": "silver",
+    "category": "daily",
+    "trigger": { "type": "dailyMissionsCompleted", "threshold": 10 },
+    "reward": { "cents": 50, "stickerId": "scroll" }
   }
 ]

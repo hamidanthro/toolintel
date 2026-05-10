@@ -1050,6 +1050,7 @@
           try {
             if (window.Achievements && typeof window.Achievements.track === 'function') {
               window.Achievements.track('fact-seen', { factId: fact.id });
+              window.Achievements.bumpDailyMission('fact', 1);
             }
           } catch (_) {}
         } catch (_) {}
@@ -1326,7 +1327,7 @@
           window._stCorrectStreak = 0;
         }
         Stats.record(slug, stats, { unitId: q._unit?.id, unitTitle: q._unit?.title, isCorrect });
-        // Achievements: track every answer + bump daily mission on correct
+        // Achievements: track every answer + bump multi-task daily quest.
         try {
           if (window.Achievements && typeof window.Achievements.track === 'function') {
             window.Achievements.track('answer', {
@@ -1335,7 +1336,20 @@
               unitId: q._unit?.id || null
             });
             if (isCorrect) {
-              window.Achievements.bumpDailyMission(1);
+              // Counts toward the "answer N correctly" task
+              window.Achievements.bumpDailyMission('correct', 1);
+              // In-session streak counts toward "get N in a row" task
+              const streak = window._stCorrectStreak || 0;
+              if (streak >= 2) {
+                // bump to current streak value — task tracks max-in-a-row
+                window.Achievements.bumpDailyMission('streak', 1);
+              }
+            }
+            // Trying any topic counts toward the "try a topic" task once
+            // per session (idempotent because the task has target=1).
+            if (q._unit?.id && !window._stTopicTriedTracked) {
+              window._stTopicTriedTracked = true;
+              window.Achievements.bumpDailyMission('topic', 1);
             }
           }
         } catch (_) {}
@@ -1758,7 +1772,7 @@
       const pct = Math.round((correct / questions.length) * 100);
       const perfect = correct === questions.length && questions.length > 0;
       // Achievements: track session-end (perfect runs, longest session,
-      // login-streak update, best in-session correct streak).
+      // login-streak update, best in-session correct streak, XP).
       try {
         if (window.Achievements && typeof window.Achievements.track === 'function') {
           window.Achievements.track('session-end', {
@@ -1768,6 +1782,9 @@
             unitId: meta && meta.unit ? meta.unit.id : null,
             sessionStreak: window._stMaxCorrectStreak || 0
           });
+          // Finishing a session counts toward the "finish a session"
+          // and "practice for 2+ min" daily-quest tasks.
+          window.Achievements.bumpDailyMission('session', 1);
         }
       } catch (_) {}
       const justMastered = perfect && sKey && !isLocked;

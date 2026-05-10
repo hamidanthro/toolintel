@@ -12305,6 +12305,139 @@ body.grade-page > * {
 }
 
 /* ==========================================================================
+   Reward strip + daily-quest card + review CTA on grade.html
+   ========================================================================== */
+.reward-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 0 32px 18px;
+  margin-top: 12px;
+}
+.reward-strip-tile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+.reward-strip-tile:hover { transform: translateY(-1px); border-color: rgba(251,191,36,0.35); background: rgba(255,255,255,0.06); }
+.reward-strip-icon { font-size: 26px; line-height: 1; flex-shrink: 0; }
+.reward-strip-body { flex: 1; min-width: 0; }
+.reward-strip-label { font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.95); }
+.reward-strip-sub { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px; line-height: 1.4; word-break: break-word; }
+.reward-strip-shield-empty { font-style: italic; }
+.reward-strip-progress {
+  margin-top: 4px;
+  height: 4px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.reward-strip-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+  transition: width 240ms ease;
+}
+.reward-strip-streak .reward-strip-icon,
+.reward-strip-shields .reward-strip-icon { font-size: 22px; }
+
+.daily-quest-card-grade {
+  margin: 0 32px 16px;
+  padding: 16px 18px;
+  background: linear-gradient(135deg, rgba(96,165,250,0.06) 0%, rgba(168,85,247,0.05) 100%);
+  border: 1px solid rgba(96,165,250,0.22);
+  border-radius: 14px;
+}
+.dq-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+.dq-head-title { font-size: 16px; font-weight: 700; color: rgba(255,255,255,0.95); }
+.dq-head-reward { font-size: 12px; font-weight: 700; color: #fbbf24; }
+.dq-tasks { display: flex; flex-direction: column; gap: 8px; }
+.dq-task {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+  transition: opacity 200ms ease;
+}
+.dq-task--done { opacity: 0.6; border-color: rgba(52,211,153,0.3); }
+.dq-task-emoji { font-size: 22px; line-height: 1; flex-shrink: 0; }
+.dq-task-body { flex: 1; min-width: 0; }
+.dq-task-label { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.92); }
+.dq-task-progress { margin-top: 4px; height: 4px; background: rgba(255,255,255,0.06); border-radius: 999px; overflow: hidden; }
+.dq-task-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #60a5fa 0%, #a855f7 100%);
+  transition: width 240ms ease;
+}
+.dq-task--done .dq-task-progress-bar { background: linear-gradient(90deg, #34d399 0%, #10b981 100%); }
+.dq-task-sub { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 3px; }
+.dq-completed {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: rgba(52,211,153,0.1);
+  border: 1px solid rgba(52,211,153,0.3);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #6ee7b7;
+  text-align: center;
+}
+
+.review-cta-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 32px 16px;
+  padding: 14px 18px;
+  background: linear-gradient(135deg, rgba(251,191,36,0.06) 0%, rgba(245,158,11,0.04) 100%);
+  border: 1px solid rgba(251,191,36,0.25);
+  border-radius: 14px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 160ms ease, border-color 160ms ease;
+}
+.review-cta-card:hover { transform: translateY(-1px); border-color: rgba(251,191,36,0.5); }
+.review-cta-emoji { font-size: 28px; line-height: 1; flex-shrink: 0; }
+.review-cta-body { flex: 1; min-width: 0; }
+.review-cta-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(251,191,36,0.85); }
+.review-cta-title { font-size: 15px; font-weight: 700; color: rgba(255,255,255,0.96); margin-top: 2px; }
+.review-cta-sub { font-size: 12px; color: rgba(255,255,255,0.55); line-height: 1.45; margin-top: 2px; }
+.review-cta-arrow { color: #fbbf24; flex-shrink: 0; }
+
+.grade-hero-countdown-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 6px 14px;
+  background: rgba(96,165,250,0.10);
+  border: 1px solid rgba(96,165,250,0.30);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(147,197,253,0.95);
+  letter-spacing: -0.005em;
+}
+
+@media (max-width: 768px) {
+  .reward-strip { grid-template-columns: 1fr; padding: 0 18px 14px; gap: 8px; }
+  .daily-quest-card-grade { margin: 0 18px 14px; padding: 14px 16px; }
+  .review-cta-card { margin: 0 18px 14px; padding: 12px 14px; gap: 10px; }
+  .review-cta-emoji { font-size: 24px; }
+  .review-cta-title { font-size: 14px; }
+  .grade-hero-countdown-pill { font-size: 12px; padding: 5px 12px; }
+}
+
+/* ==========================================================================
    Achievement-unlock toast — fires when a kid earns a trophy mid-session.
    Slides in from top-right, auto-dismisses after 4s.
    ========================================================================== */
@@ -12351,6 +12484,78 @@ body.grade-page > * {
   .achievement-toast-emoji { font-size: 30px; }
   .achievement-toast-name { font-size: 15px; }
 }
+
+/* ==========================================================================
+   Avatar picker (settings.html) — Roblox/Pokemon-style emoji avatars
+   ========================================================================== */
+.avatar-settings-card { padding: 18px; }
+.avatar-settings-card h3 { margin: 0 0 4px 0; }
+.avatar-settings-card .settings-card-subtitle {
+  font-size: 13px;
+  color: rgba(255,255,255,0.55);
+  margin: 0 0 12px;
+}
+.avatar-current {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+}
+.avatar-current-label { font-size: 12px; color: rgba(255,255,255,0.55); }
+.avatar-current-emoji { font-size: 28px; line-height: 1; }
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.avatar-cell {
+  width: 100%;
+  aspect-ratio: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  line-height: 1;
+  background: rgba(255,255,255,0.04);
+  border: 1.5px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+  color: inherit;
+  padding: 0;
+}
+.avatar-cell:hover { transform: scale(1.06); border-color: rgba(251,191,36,0.4); background: rgba(251,191,36,0.08); }
+.avatar-cell:active { transform: scale(0.98); }
+.avatar-cell--active {
+  border-color: #fbbf24 !important;
+  background: rgba(251,191,36,0.15) !important;
+  box-shadow: 0 0 0 2px rgba(251,191,36,0.4);
+}
+.btn-link {
+  background: none;
+  border: none;
+  color: #93c5fd;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 0;
+  text-decoration: underline;
+}
+.btn-link:hover { color: #bfdbfe; }
+
+/* Profile-avatar emoji mode — render large emoji rather than initial */
+.profile-avatar.profile-avatar--emoji {
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+  font-size: 18px;
+  font-weight: normal;
+  letter-spacing: 0;
+}
+.profile-avatar.small.profile-avatar--emoji { font-size: 16px; }
 
 .what-to-expect {
   padding: 48px 32px;
