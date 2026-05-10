@@ -12002,6 +12002,52 @@ body.grade-page > * {
   border-radius: 999px;
 }
 
+/* ==========================================================================
+   Topic picker (subject.html) — list of math units inside a subject.
+   Reuses .subject-card / .subject-card--live styling for layout & hover;
+   adds glyph-emoji icon + per-topic mastery badge.
+   ========================================================================== */
+.topic-card .topic-card-icon {
+  font-size: 28px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  background: rgba(251, 191, 36, 0.06);
+  border: 1px solid rgba(251, 191, 36, 0.18);
+  border-radius: 14px;
+  flex-shrink: 0;
+}
+.topic-card--mixed .topic-card-icon {
+  background: rgba(96, 165, 250, 0.08);
+  border-color: rgba(96, 165, 250, 0.24);
+}
+.topic-card-stat {
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(96, 165, 250, 0.95);
+  letter-spacing: -0.005em;
+}
+.topic-card-stat--ghost {
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 500;
+}
+.subject-section-sub {
+  margin: 4px 0 0 0;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 14px;
+  line-height: 1.55;
+  max-width: 56ch;
+}
+@media (max-width: 480px) {
+  .topic-card .topic-card-icon { width: 48px; height: 48px; font-size: 24px; }
+  .topic-card-stat { font-size: 11px; }
+  .subject-section-sub { font-size: 13px; }
+}
+
 .what-to-expect {
   padding: 48px 32px;
   border-top: 1px solid rgba(255, 255, 255, 0.04);

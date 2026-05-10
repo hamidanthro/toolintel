@@ -269,8 +269,15 @@
         ? subj.liveForGrade(state.slug, gradeSlug)
         : subj.live;
 
+      // Math has a unit-structured curriculum, so we route through the
+      // topic picker (subject.html) where the kid can choose Addition,
+      // Fractions, etc. — or "Mixed practice" for the old behavior.
+      // Reading / science / social-studies are pooled-passage delivery
+      // with no internal units, so they go straight to practice.html.
       const targetUrl = isLive
-        ? `practice.html?s=${encodeURIComponent(state.slug)}&g=${encodeURIComponent(gradeSlug)}&subj=${encodeURIComponent(subj.slug)}`
+        ? (subj.slug === 'math'
+            ? `subject.html?s=${encodeURIComponent(state.slug)}&g=${encodeURIComponent(gradeSlug)}&subj=${encodeURIComponent(subj.slug)}`
+            : `practice.html?s=${encodeURIComponent(state.slug)}&g=${encodeURIComponent(gradeSlug)}&subj=${encodeURIComponent(subj.slug)}`)
         : null;
 
       const tag = isLive ? 'a' : 'div';

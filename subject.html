@@ -10,8 +10,6 @@
   <meta name="apple-mobile-web-app-title" content="GradeEarn">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="application-name" content="GradeEarn">
-  <meta name="msapplication-TileColor" content="#060d1f">
-  <meta name="msapplication-config" content="/browserconfig.xml">
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
@@ -19,35 +17,15 @@
   <link rel="shortcut icon" href="/favicon.ico">
   <meta name="format-detection" content="telephone=no">
 
-  <title id="page-title">STAAR Math Practice — Pick a Grade — GradeEarn</title>
-  <meta id="page-description" name="description" content="AI-powered STAAR Math practice for Texas families. TEKS-aligned. Real toys for correct answers.">
-  <link id="page-canonical" rel="canonical" href="https://gradeearn.com/grade.html">
-
-  <meta property="og:type" content="website">
-  <meta id="og-title" property="og:title" content="STAAR Math Practice — GradeEarn">
-  <meta id="og-description" property="og:description" content="AI-powered STAAR Math practice for Texas families. TEKS-aligned.">
-  <meta id="og-url" property="og:url" content="https://gradeearn.com/grade.html">
-  <meta property="og:image" content="https://gradeearn.com/og-image.png">
-
-  <meta name="twitter:card" content="summary_large_image">
-  <meta id="twitter-title" name="twitter:title" content="STAAR Math Practice — GradeEarn">
-  <meta id="twitter-description" name="twitter:description" content="AI-powered STAAR Math practice for Texas families.">
-
-  <script type="application/ld+json" id="page-jsonld">
-  {
-    "@context": "https://schema.org",
-    "@type": "Course",
-    "name": "GradeEarn Grade Practice",
-    "provider": { "@type": "Organization", "name": "GradeEarn" }
-  }
-  </script>
+  <title id="page-title">Pick a topic — GradeEarn</title>
+  <meta id="page-description" name="description" content="Pick a math topic to practice — addition, subtraction, place value, fractions, and more. Or try mixed practice for variety.">
+  <link id="page-canonical" rel="canonical" href="https://gradeearn.com/subject.html">
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&family=JetBrains+Mono:wght@400;500&display=swap">
   <link rel="stylesheet" href="css/styles.css?v=20260510l">
 
   <script src="js/migrate-storage.js?v=20260427a"></script>
   <script src="js/states-data.js?v=20260510d"></script>
-  <script src="js/quick-search.js?v=20260509b" defer></script>
 </head>
 <body class="grade-page practice-mode">
 
@@ -78,18 +56,21 @@
       <li class="breadcrumb-item">
         <a id="breadcrumb-state" href="states/?s=">—</a>
       </li>
-      <li class="breadcrumb-item breadcrumb-item--current" id="breadcrumb-grade">—</li>
+      <li class="breadcrumb-item">
+        <a id="breadcrumb-grade" href="grade.html">—</a>
+      </li>
+      <li class="breadcrumb-item breadcrumb-item--current" id="breadcrumb-subject">—</li>
     </ol>
   </nav>
 
   <!-- Loading -->
-  <div class="state-page-loading" id="grade-loading">
+  <div class="state-page-loading" id="subject-loading">
     <span class="state-loading-spinner" aria-hidden="true"></span>
-    <span>Loading…</span>
+    <span>Loading topics…</span>
   </div>
 
-  <!-- Error: invalid state or grade -->
-  <section class="state-page-error" id="grade-error" hidden>
+  <!-- Error -->
+  <section class="state-page-error" id="subject-error" hidden>
     <div class="state-error-icon" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="48" height="48">
         <circle cx="12" cy="12" r="10"/>
@@ -97,16 +78,16 @@
         <line x1="12" y1="16" x2="12.01" y2="16"/>
       </svg>
     </div>
-    <h2 class="state-error-title" id="grade-error-title">We couldn't find that grade</h2>
-    <p class="state-error-text" id="grade-error-text">Pick a grade to get started with STAAR Math practice.</p>
+    <h2 class="state-error-title">We couldn't find that subject</h2>
+    <p class="state-error-text">Pick a grade to start practicing.</p>
     <a class="state-error-cta" href="index.html#state-picker">
-      <span>Pick a grade </span>
+      <span>Back to start </span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
     </a>
   </section>
 
   <!-- Main content -->
-  <article class="grade-content" id="grade-content" hidden>
+  <article class="grade-content" id="subject-content" hidden>
 
     <!-- HERO -->
     <header class="grade-hero">
@@ -127,51 +108,15 @@
       </div>
     </header>
 
-    <!-- SUBJECT PICKER -->
-    <section class="subject-section" id="subject-section">
+    <!-- TOPIC PICKER -->
+    <section class="subject-section">
       <header class="subject-section-head">
-        <!-- §42: removed "Step 3 of 3" eyebrow + "Math is live"
-             subhead. Cards themselves show what's live vs greyed;
-             arrival on the page IS the step. -->
-        <h2 class="subject-section-title">Pick a subject</h2>
+        <h2 class="subject-section-title">Pick what you want to practice</h2>
+        <p class="subject-section-sub" id="subject-section-sub">Tap a topic to focus your practice — or pick mixed practice to see questions from every topic.</p>
       </header>
 
-      <div class="subject-grid" id="subject-grid">
+      <div class="subject-grid" id="topic-grid">
         <!-- Filled by JS -->
-      </div>
-    </section>
-
-    <!-- WHAT TO EXPECT -->
-    <section class="what-to-expect">
-      <header class="what-to-expect-head">
-        <span class="what-to-expect-eyebrow">What to expect</span>
-        <h2 class="what-to-expect-title">A few minutes a day.<br>Real progress.</h2>
-      </header>
-
-      <div class="what-to-expect-grid">
-        <div class="expect-card">
-          <div class="expect-card-num">15</div>
-          <div class="expect-card-body">
-            <h3 class="expect-card-title">Minutes a day</h3>
-            <p class="expect-card-text">Most kids practice 10–20 questions in a session. The AI adapts as they go.</p>
-          </div>
-        </div>
-
-        <div class="expect-card">
-          <div class="expect-card-num">∞</div>
-          <div class="expect-card-body">
-            <h3 class="expect-card-title">Questions available</h3>
-            <p class="expect-card-text">Our AI generates fresh, grade-aligned questions every session. No two days the same.</p>
-          </div>
-        </div>
-
-        <div class="expect-card">
-          <div class="expect-card-num">15¢</div>
-          <div class="expect-card-body">
-            <h3 class="expect-card-title">Per correct answer</h3>
-            <p class="expect-card-text">Cents add up. When the balance hits a toy's price, your kid picks one. We ship it.</p>
-          </div>
-        </div>
       </div>
     </section>
   </article>
@@ -190,11 +135,8 @@
 
 <!-- JS -->
 <script src="js/fun-facts.js?v=20260510i"></script>
-  <script src="js/speech.js?v=20260509a"></script>
-  <script src="js/auth.js?v=20260507a"></script>
-  <script src="js/lake-events.js?v=20260427a"></script>
-  <script src="js/pwa-install.js?v=20260427a" defer></script>
-<script src="js/grade-page.js?v=20260510m"></script>
+<script src="js/auth.js?v=20260507a"></script>
+<script src="js/subject-page.js?v=20260510a"></script>
 
 </body>
 </html>

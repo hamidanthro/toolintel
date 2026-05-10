@@ -681,7 +681,31 @@
       }
       if (!res.ok) return;
       const data = await res.json();
-      const generated = (data.questions || []).map(g => normalizeGenerated(g, curr));
+      let generated = (data.questions || []).map(g => normalizeGenerated(g, curr));
+      // Unit-scope guardrail: when the kid picked a specific topic
+      // (?u=<unitId>), drop any AI-generated question whose unit (by
+      // title or by lesson TEKS) doesn't match the scoped unit. The
+      // lambda is given a narrow topic-spec so it usually returns
+      // matching items, but this is the belt-and-suspenders pass that
+      // ensures "addition shows addition" — never a fraction question
+      // sneaking into the addition queue.
+      if (unitId && Array.isArray(curr.units)) {
+        const scopedUnit = curr.units.find(u => u.id === unitId);
+        if (scopedUnit) {
+          const allowedTeks = new Set();
+          (scopedUnit.lessons || []).forEach(l => { if (l.teks) allowedTeks.add(l.teks); });
+          const allowedTitle = scopedUnit.title;
+          const filtered = generated.filter(q => {
+            const unitTitleMatch = q._unit && q._unit.title === allowedTitle;
+            const teksMatch = q._lesson && q._lesson.teks && allowedTeks.has(q._lesson.teks);
+            return unitTitleMatch || teksMatch;
+          });
+          if (filtered.length < generated.length) {
+            console.info(`[unit-scope] dropped ${generated.length - filtered.length} of ${generated.length} generated questions outside scoped unit ${scopedUnit.title}`);
+          }
+          generated = filtered;
+        }
+      }
       if (generated.length) onReady(generated);
     } catch (_) { /* silently keep curriculum-only */ }
   }
