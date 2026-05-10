@@ -631,6 +631,158 @@
     return { current, threshold, pct };
   }
 
+  // ----- Cross-device sync (Tier 5 Z) -----
+  // Server is authoritative for `lastUpdatedAt`. Local writes schedule a
+  // debounced push; on first-load we pull, and if the server is newer we
+  // merge (union of earned, max of cumulative stats, latest dailyMission
+  // by date). Anonymous sessions skip sync entirely.
+
+  let _syncTimer = null;
+  let _syncLastUpdatedAt = 0;
+
+  function _localBlob() {
+    return {
+      earned: getEarned(),
+      stats: getStats(),
+      firstSession: lsGet(k(LS_FIRST_SESSION), null),
+      dailyMission: lsGet(k(LS_DAILY_MISSION), null),
+      lastUpdatedAt: _syncLastUpdatedAt || Date.now()
+    };
+  }
+
+  function _applyServerBlob(blob) {
+    if (!blob || typeof blob !== 'object') return;
+    if (Array.isArray(blob.earned)) setEarned(blob.earned);
+    if (blob.stats && typeof blob.stats === 'object') setStats(blob.stats);
+    if (blob.firstSession) lsSet(k(LS_FIRST_SESSION), blob.firstSession);
+    if (blob.dailyMission && typeof blob.dailyMission === 'object') {
+      lsSet(k(LS_DAILY_MISSION), blob.dailyMission);
+    }
+    _syncLastUpdatedAt = Number.isFinite(blob.lastUpdatedAt) ? blob.lastUpdatedAt : Date.now();
+  }
+
+  function _mergeWith(server) {
+    if (!server) return;
+    const local = _localBlob();
+    // Earned: union (trophies once earned stay earned).
+    const earnedSet = new Set([...(local.earned || []), ...(server.earned || [])]);
+    setEarned(Array.from(earnedSet));
+    // Stats: max of cumulative counters; preserve server's loginStreak if newer date.
+    const lStats = local.stats || {};
+    const sStats = server.stats || {};
+    const merged = {};
+    const keys = new Set([...Object.keys(lStats), ...Object.keys(sStats)]);
+    for (const key of keys) {
+      const a = lStats[key], b = sStats[key];
+      if (typeof a === 'number' && typeof b === 'number') {
+        merged[key] = Math.max(a, b);
+      } else if (Array.isArray(a) && Array.isArray(b)) {
+        merged[key] = Array.from(new Set([...a, ...b]));
+      } else if (a !== undefined && b !== undefined) {
+        // Last-write-wins by server timestamp
+        merged[key] = (server.lastUpdatedAt > (local.lastUpdatedAt || 0)) ? b : a;
+      } else {
+        merged[key] = a !== undefined ? a : b;
+      }
+    }
+    setStats(merged);
+    // firstSession: earlier date wins.
+    if (server.firstSession && (!local.firstSession || server.firstSession < local.firstSession)) {
+      lsSet(k(LS_FIRST_SESSION), server.firstSession);
+    }
+    // dailyMission: keep whichever matches today; prefer the more-progressed one.
+    const today = todayIso();
+    const lDM = local.dailyMission, sDM = server.dailyMission;
+    if (sDM && sDM.date === today && (!lDM || lDM.date !== today)) {
+      lsSet(k(LS_DAILY_MISSION), sDM);
+    } else if (sDM && lDM && sDM.date === today && lDM.date === today) {
+      // Pick the one with more tasks done.
+      const lDone = (lDM.tasks || []).filter(t => t.done).length;
+      const sDone = (sDM.tasks || []).filter(t => t.done).length;
+      if (sDone > lDone) lsSet(k(LS_DAILY_MISSION), sDM);
+    }
+    _syncLastUpdatedAt = Math.max(local.lastUpdatedAt || 0, server.lastUpdatedAt || 0);
+  }
+
+  function _canSync() {
+    try {
+      return !!(window.STAARAuth && window.STAARAuth.api && window.STAARAuth.currentUser && window.STAARAuth.currentUser());
+    } catch (_) { return false; }
+  }
+
+  async function pullState() {
+    if (!_canSync()) return;
+    try {
+      const token = window.STAARAuth.token && window.STAARAuth.token();
+      const r = await window.STAARAuth.api('getAchievementsState', { token });
+      if (r && r.achievementsState) {
+        const server = r.achievementsState;
+        const local = _localBlob();
+        const hasLocal = (local.earned && local.earned.length) || (local.stats && local.stats.xp);
+        if (!hasLocal) {
+          // Fresh device — just apply server state.
+          _applyServerBlob(server);
+        } else if ((server.lastUpdatedAt || 0) > (local.lastUpdatedAt || 0)) {
+          // Server is newer — merge.
+          _mergeWith(server);
+        }
+      }
+    } catch (e) {
+      // Silent fail — sync is best-effort, never blocks UX.
+      console.warn('[achievements sync pull]', e && e.message);
+    }
+  }
+
+  function schedulePush() {
+    if (!_canSync()) return;
+    if (_syncTimer) clearTimeout(_syncTimer);
+    _syncTimer = setTimeout(_pushNow, 3000);
+  }
+
+  async function _pushNow() {
+    _syncTimer = null;
+    if (!_canSync()) return;
+    try {
+      const token = window.STAARAuth.token && window.STAARAuth.token();
+      const blob = _localBlob();
+      const r = await window.STAARAuth.api('updateAchievementsState', {
+        token,
+        achievementsState: blob
+      });
+      if (r && r.conflict && r.serverState) {
+        _mergeWith(r.serverState);
+        // After merge, push again so server has the merged result.
+        if (_syncTimer) clearTimeout(_syncTimer);
+        _syncTimer = setTimeout(_pushNow, 2000);
+      } else if (r && r.lastUpdatedAt) {
+        _syncLastUpdatedAt = r.lastUpdatedAt;
+      }
+    } catch (e) {
+      console.warn('[achievements sync push]', e && e.message);
+    }
+  }
+
+  // Wrap setters to schedule sync after every mutation.
+  const _origSetEarned = setEarned;
+  setEarned = function (arr) { _origSetEarned(arr); schedulePush(); };
+  const _origSetStats = setStats;
+  setStats = function (s) { _origSetStats(s); schedulePush(); };
+
+  // Pull on load if authed; auth.js fires a 'staar:auth-ready' event on login.
+  if (typeof window !== 'undefined') {
+    if (document.readyState !== 'loading') {
+      setTimeout(pullState, 100);
+    } else {
+      document.addEventListener('DOMContentLoaded', () => setTimeout(pullState, 100));
+    }
+    // Re-pull when auth flips (login / logout).
+    document.addEventListener('gradeearn:auth-changed', () => setTimeout(pullState, 100));
+    // Flush pending push before page unload.
+    window.addEventListener('beforeunload', () => {
+      if (_syncTimer) { clearTimeout(_syncTimer); _pushNow(); }
+    });
+  }
+
   // ----- Public surface -----
   window.Achievements = {
     init: loadCatalog,
@@ -647,6 +799,10 @@
     levelFromXp,
     LEVEL_THRESHOLDS,
     SHIELD_AWARD_INTERVAL,
-    SHIELD_HOLD_CAP
+    SHIELD_HOLD_CAP,
+    // Tier 5 Z — cross-device sync
+    pullState,
+    _pushNow,
+    schedulePush
   };
 })();

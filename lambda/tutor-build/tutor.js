@@ -435,6 +435,8 @@ exports.handler = async (event) => {
   if (action === 'getParentSummary')    return await handleGetParentSummary(payload);
   if (action === 'getFunFactsState')    return await handleGetFunFactsState(payload);
   if (action === 'updateFunFactsState') return await handleUpdateFunFactsState(payload);
+  if (action === 'getAchievementsState')    return await handleGetAchievementsState(payload);
+  if (action === 'updateAchievementsState') return await handleUpdateAchievementsState(payload);
   if (action === 'getReadingPassage')   return await handleGetReadingPassage(payload);
   if (action === 'getReadingItem')      return await handleGetReadingItem(payload);
   if (action === 'getScienceItem')      return await handleGetScienceItem(payload);
@@ -2343,6 +2345,90 @@ async function handleUpdateFunFactsState(payload) {
 
   await ddb.send(new UpdateCommand(params));
   return ok({ ok: true });
+}
+
+// ===== Achievements state (cross-device sync) =====
+// §40 Tier 5 Z — read/write a single achievementsState blob on the user
+// record so XP, trophies, daily mission, and shields follow the kid
+// across devices. Pattern mirrors the fun-facts handlers above.
+//
+// Blob shape (capped at ~50 KB to fit in a single DDB attribute):
+//   {
+//     earned: string[],              // earned achievement IDs
+//     stats: { ... },                // xp, level, lifetimeCorrect, shields, etc.
+//     firstSession: 'YYYY-MM-DD' | null,
+//     dailyMission: { ... } | null,
+//     lastUpdatedAt: number          // server-stamped epoch ms on write
+//   }
+//
+// Conflict policy: last-write-wins by `lastUpdatedAt`. If the server's
+// stored value is meaningfully newer, the write is rejected with
+// `{ok:false, conflict:true, serverState:...}` and the client can merge.
+
+const ACHIEVEMENTS_BLOB_MAX_BYTES = 50_000;
+
+async function handleGetAchievementsState(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  const r = await ddb.send(new GetCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username },
+    ProjectionExpression: 'achievementsState'
+  }));
+  const blob = (r.Item && r.Item.achievementsState) || null;
+  return ok({ achievementsState: blob });
+}
+
+async function handleUpdateAchievementsState(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+
+  const blob = payload.achievementsState;
+  if (!blob || typeof blob !== 'object' || Array.isArray(blob)) {
+    return bad(400, 'achievementsState must be an object');
+  }
+
+  if (!Array.isArray(blob.earned)) return bad(400, 'earned must be an array');
+  if (blob.stats !== null && (typeof blob.stats !== 'object' || Array.isArray(blob.stats))) {
+    return bad(400, 'stats must be an object');
+  }
+  if (blob.firstSession !== null && blob.firstSession !== undefined &&
+      typeof blob.firstSession !== 'string') {
+    return bad(400, 'firstSession must be a string or null');
+  }
+  if (blob.dailyMission !== null && blob.dailyMission !== undefined &&
+      (typeof blob.dailyMission !== 'object' || Array.isArray(blob.dailyMission))) {
+    return bad(400, 'dailyMission must be an object or null');
+  }
+
+  const json = JSON.stringify(blob);
+  if (json.length > ACHIEVEMENTS_BLOB_MAX_BYTES) {
+    return bad(413, `achievementsState exceeds ${ACHIEVEMENTS_BLOB_MAX_BYTES} bytes`);
+  }
+
+  const serverNow = Date.now();
+  const clientLastUpdatedAt = Number.isFinite(blob.lastUpdatedAt) ? blob.lastUpdatedAt : 0;
+
+  const cur = await ddb.send(new GetCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username },
+    ProjectionExpression: 'achievementsState'
+  }));
+  const curBlob = (cur.Item && cur.Item.achievementsState) || null;
+  const curLastUpdatedAt = (curBlob && Number.isFinite(curBlob.lastUpdatedAt)) ? curBlob.lastUpdatedAt : 0;
+
+  if (curLastUpdatedAt > clientLastUpdatedAt + 5_000) {
+    return ok({ ok: false, conflict: true, serverState: curBlob });
+  }
+
+  const toWrite = Object.assign({}, blob, { lastUpdatedAt: serverNow });
+  await ddb.send(new UpdateCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username },
+    UpdateExpression: 'SET achievementsState = :s',
+    ExpressionAttributeValues: { ':s': toWrite }
+  }));
+  return ok({ ok: true, lastUpdatedAt: serverNow });
 }
 
 // ===== Reading practice (Phase 1) =====
