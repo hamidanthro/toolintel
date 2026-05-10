@@ -352,6 +352,20 @@ const BRIEFS = [
   { id: 'g2ss-tx-houston-livestock-show', grade: '2', strand: 'community',
     topic: 'the Houston Livestock Show and Rodeo runs for three weeks every March; kids show animals they raised (cattle, pigs, lambs, chickens), cowboys compete in roping and bull riding, and country music stars perform — it is the biggest livestock show in the world' },
 
+  // ----- G2 v5 — six more briefs — push to 36 floor -----
+  { id: 'g2ss-tx-state-amphibian', grade: '2', strand: 'texas-symbols',
+    topic: 'the Texas toad is the official Texas state amphibian; it has light brown skin with darker spots, lives in dry parts of Texas, and digs underground when the weather gets too hot' },
+  { id: 'g2ss-tx-state-dinosaur', grade: '2', strand: 'texas-symbols',
+    topic: 'the Paluxysaurus jonesi is the Texas state dinosaur; its giant footprints can still be seen in the bed of the Paluxy River near Glen Rose, Texas, where the dinosaur walked over 110 million years ago' },
+  { id: 'g2ss-tx-cinco-de-mayo', grade: '2', strand: 'community',
+    topic: 'Cinco de Mayo (May 5) is a Mexican holiday celebrating the day Mexico won a battle over France in 1862; many Texas families with Mexican heritage celebrate with food, music, and parades — it is more popular in Texas and the U.S. than in most of Mexico' },
+  { id: 'g2ss-tx-juneteenth-2nd', grade: '2', strand: 'texas-history',
+    topic: 'Juneteenth, June 19, is a Texas holiday that started in Galveston in 1865 — the day enslaved people in Texas first heard they were free; today many Texas families celebrate Juneteenth with picnics and parades, and it is now a national holiday' },
+  { id: 'g2ss-tx-state-musical-jazz', grade: '2', strand: 'community',
+    topic: 'jazz is a kind of music that came from African-American musicians; many famous jazz musicians grew up in Texas, including Scott Joplin and Ornette Coleman; jazz uses brass instruments, drums, and piano to make energetic music with surprise rhythms' },
+  { id: 'g2ss-tx-mom-and-pop-shop', grade: '2', strand: 'economics',
+    topic: 'a small business — sometimes called a mom-and-pop shop — is a store run by one family; in Texas towns there are many small bakeries, repair shops, and corner stores owned by local families who know their customers by name' },
+
   // Grade 3 v2 (8) — more tribes, San Jacinto, Texas Rangers, railroads, Tejano detail
   { id: 'g3ss-tx-tribes-tonkawa-wichita', grade: '3', strand: 'texas-history',
     topic: 'two more Native American groups of Texas — the Tonkawa (Central Texas, hunters and gatherers) and the Wichita (North Texas, farmers who built grass houses called grass lodges) — and how each used the land' },

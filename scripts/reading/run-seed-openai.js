@@ -438,6 +438,26 @@ const G2_BRIEFS = [
     setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
   { id: 'g2-info-tx-state-grass', grade: '2', genre: 'informational',
     topic: 'sideoats grama is the official Texas state grass; it grows naturally on Texas prairies and is named for the way its small seed clusters all hang on one side of the stem',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+
+  // ----- G2 v5 — six more briefs (3 RF + 3 INFO) — push to 36 floor -----
+  { id: 'g2-rf-grandparents-domino', grade: '2', genre: 'realistic-fiction',
+    topic: 'a kid plays dominoes for the first time with their grandparents at a kitchen table and learns to match dots on the tiles',
+    setting: 'a Mexican-American family kitchen in Brownsville', protagonistName: 'Camila', protagonistDemographic: 'hispanic-latino' },
+  { id: 'g2-rf-uncle-music-stage', grade: '2', genre: 'realistic-fiction',
+    topic: 'a kid watches their uncle play guitar at a Texas country music stage; the kid claps and stomps along with the song',
+    setting: 'a small-town outdoor music stage in Lubbock', protagonistName: 'Jaxon', protagonistDemographic: 'unmarked' },
+  { id: 'g2-rf-helping-baby-sibling', grade: '2', genre: 'realistic-fiction',
+    topic: 'a kid helps their parents bring home a new baby brother from the hospital; they learn to be very gentle when they hold him',
+    setting: 'a Texas family home in Plano', protagonistName: 'Aanya', protagonistDemographic: 'south-asian' },
+  { id: 'g2-info-tx-state-flower-detail', grade: '2', genre: 'informational',
+    topic: 'the bluebonnet is the official Texas state flower; it grows wild on roadsides every spring across most of Texas; the flower has five blue petals shaped like a cluster on a tall green stem',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'g2-info-tx-state-snack-detail', grade: '2', genre: 'informational',
+    topic: 'tortilla chips and salsa are the Texas state snack; tortilla chips are made by frying corn tortillas, and salsa is a fresh sauce of tomatoes, onions, peppers, and spices that Texans dip the chips into',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'g2-info-tx-state-tartan', grade: '2', genre: 'informational',
+    topic: 'Texas has its own state tartan — a special pattern of red, white, blue, and yellow lines that comes from the Scottish tradition of family plaids; the Texas tartan was made in honor of Scottish-Texan heritage',
     setting: null, protagonistName: null, protagonistDemographic: 'unmarked' }
 ];
 

@@ -385,6 +385,26 @@ const BRIEFS = [
     scenarioType: 'described_diagram',
     topic: 'in a Texas pond a kid sees tiny black tadpoles wiggling in the water in spring; by summer the tadpoles have grown back legs and look more like frogs; the question asks the kid what the tadpoles are growing into' },
 
+  // ----- G2 v5 — six more briefs -----
+  { id: 'g2s-tx-honeybee-hive', grade: '2', strand: 'Organisms & Environments', se: 'G2-observe',
+    scenarioType: 'described_diagram',
+    topic: 'a Texas honeybee hive on a farm has thousands of bees; bees fly out to find flowers, bring pollen back, and make honey inside the hive; the question asks the kid what bees do inside the hive' },
+  { id: 'g2s-magnet-through-paper', grade: '2', strand: 'Force, Motion & Energy', se: 'G2-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid puts a paper clip on a piece of paper and holds a magnet under the paper; the paper clip moves when they move the magnet; the question asks the kid how the magnet can pull the clip through the paper' },
+  { id: 'g2s-tx-cardinal-call', grade: '2', strand: 'Organisms & Environments', se: 'G2-observe',
+    scenarioType: 'described_diagram',
+    topic: 'a Texas backyard has a male cardinal singing a clear "cheer-cheer-cheer" from the top of a tree; another cardinal sings back from across the yard; the question asks the kid why birds sing songs to each other' },
+  { id: 'g2s-ice-cube-melts-fast', grade: '2', strand: 'Matter & Energy', se: 'G2-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid puts one ice cube on a sunny windowsill and one in a shady cabinet; the windowsill cube melts in 10 minutes, the cabinet cube takes much longer; the question asks the kid what made the windowsill ice cube melt faster' },
+  { id: 'g2s-tx-spring-flowers-bloom', grade: '2', strand: 'Organisms & Environments', se: 'G2-observe',
+    scenarioType: 'data_analysis',
+    topic: 'a Texas roadside in March has a few green leaves; in April thousands of bluebonnets bloom; in May Indian paintbrush flowers bloom red beside the bluebonnets; the question asks the kid what season makes flowers bloom in Texas' },
+  { id: 'g2s-balloon-rub-static-detail', grade: '2', strand: 'Force, Motion & Energy', se: 'G2-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid rubs a balloon on their head ten times and then sticks it to a wall — the balloon stays up without tape; after a few minutes the balloon falls; the question asks the kid what kind of force kept the balloon stuck to the wall' },
+
   // ===========================================================
   // ----- Grade 8 (TEKS §112.28) — STAAR-tested -----
   // (Original Phase R briefs, now tagged with grade field)
