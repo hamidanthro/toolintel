@@ -21,7 +21,7 @@
   // so clients with cached JSON refetch. Without this, force-cache
   // keeps stale catalogs around (and K-2 kids would never see the
   // K-2-tagged facts).
-  const CATALOG_URL       = '/data/fun-facts.json?v=20260510h';
+  const CATALOG_URL       = '/data/fun-facts.json?v=20260510i';
 
   // -------- in-memory state (mirror) --------
   let _catalog = null;        // null = not loaded yet; array once fetched
@@ -130,6 +130,17 @@
     return typeof userGrade === 'string' && K2_GRADES.indexOf(userGrade) >= 0;
   }
 
+  // Fact is K-2-suitable if its primary gradeLevel is 'k-2' OR its
+  // gradeLevels array (newer multi-tag schema) includes 'k-2'. The
+  // multi-tag schema lets us promote simple-vocab existing 3-4 facts
+  // into the K-2 preferred pool without losing their 3-4 tag.
+  function _isK2Fact(f) {
+    if (!f) return false;
+    if (f.gradeLevel === 'k-2') return true;
+    if (Array.isArray(f.gradeLevels) && f.gradeLevels.indexOf('k-2') >= 0) return true;
+    return false;
+  }
+
   // Pure selection. Returns a fact object from catalog, OR null.
   function _selectNext(args) {
     const catalog = (args && Array.isArray(args.catalog)) ? args.catalog : [];
@@ -148,7 +159,7 @@
         f && f.category === 'texas' && f.wowLevel === 1 && !seen.has(f.id)
       );
       if (isK2) {
-        const k2Cands = candidates.filter(f => f.gradeLevel === 'k-2');
+        const k2Cands = candidates.filter(_isK2Fact);
         if (k2Cands.length) return _pickRandom(k2Cands);
       }
       if (candidates.length) return _pickRandom(candidates);
@@ -170,7 +181,7 @@
     // to the full catalog — by then they've seen 30+ facts and have
     // grown into the wider vocabulary.
     if (isK2) {
-      const k2Pool = pool.filter(f => f.gradeLevel === 'k-2');
+      const k2Pool = pool.filter(_isK2Fact);
       if (k2Pool.length > 0) pool = k2Pool;
     }
 
