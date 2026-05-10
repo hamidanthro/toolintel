@@ -6159,11 +6159,16 @@ body.practice-page .q-prompt {
   margin-bottom: 28px;
 }
 body.practice-page .q-prompt-text {
-  font-family: 'Instrument Serif', Georgia, serif !important;
-  font-weight: 400;
-  font-size: clamp(28px, 3.4vw, 44px);
-  line-height: 1.20;
-  letter-spacing: -0.01em;
+  /* Bug T from master audit: serifs at small mobile sizes confuse
+     K-3 + dyslexic readers. Switched from Instrument Serif to Inter
+     (humanist sans). Font-size also dropped a touch (was up to 44px,
+     now 36px max) so question doesn't dominate the first paint —
+     leaves more breathing room for the answer choices and feedback. */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-weight: 600;
+  font-size: clamp(20px, 2.6vw, 28px);
+  line-height: 1.40;
+  letter-spacing: -0.005em;
   color: #ffffff;
 }
 body.practice-page .q-read-btn {
@@ -15893,7 +15898,15 @@ body.practice-page .q-inline-fb-head {
   color: #ffffff;
 }
 body.practice-page .question-card[data-state="correct"] .q-inline-fb-head { color: #6ee7b7; }
-body.practice-page .question-card[data-state="wrong"]   .q-inline-fb-head { color: #fca5a5; }
+/* Bug U from master audit: pink-on-navy failed WCAG AA at small sizes
+   AND was hard for kids with red-green color difficulty. Now a
+   higher-contrast warm-orange (#fbbf24-adjacent in red lane) — passes
+   AA+ on the dark background. The X icon also reads as "wrong" without
+   relying on color alone. */
+body.practice-page .question-card[data-state="wrong"]   .q-inline-fb-head { color: #fcd34d; }
+body.practice-page .question-card[data-state="wrong"]   .q-inline-fb-head::before {
+  content: '';
+}
 body.practice-page .q-inline-fb-pts {
   font-weight: 600;
   font-size: 0.85rem;

@@ -519,7 +519,7 @@
   } else if (SUBJECT_SLUG === 'social-studies') {
     startSocialStudies();
   } else {
-    fetch(`data/${slug}-curriculum.json?v=20260510j`)
+    fetch(`data/${slug}-curriculum.json?v=20260510k`)
       .then(r => r.ok ? r.json() : Promise.reject('not-found'))
       .then(curr => start(curr))
       .catch(() => {
@@ -2589,7 +2589,7 @@
         }
       } else {
         // Math: load curriculum JSON, shuffle, take N.
-        const r = await fetch(`data/${slug}-curriculum.json?v=20260510j`);
+        const r = await fetch(`data/${slug}-curriculum.json?v=20260510k`);
         if (!r.ok) throw new Error('curr_load_failed');
         const curr = await r.json();
         const pool = curr.units.flatMap(u => u.lessons.flatMap(l => l.questions.map(q => ({ ...q, _unit: u, _lesson: l }))));
@@ -2817,7 +2817,7 @@
           passage: data.passage || data.scenario || null
         })).slice(0, N);
       } else {
-        const r = await fetch(`data/${slug}-curriculum.json?v=20260510j`);
+        const r = await fetch(`data/${slug}-curriculum.json?v=20260510k`);
         if (!r.ok) throw new Error('curr_load_failed');
         const curr = await r.json();
         const pool = curr.units.flatMap(u => u.lessons.flatMap(l => l.questions));
