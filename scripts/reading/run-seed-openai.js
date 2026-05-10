@@ -186,6 +186,26 @@ const GK_BRIEFS = [
     setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
   { id: 'gk-info-tx-blue-crab', grade: 'k', genre: 'informational',
     topic: 'blue crabs live in the salty water of Texas bays; they have eight legs, two big claws, and a hard shell that turns bright red when they are cooked',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+
+  // ----- K v6 — six more briefs (3 RF + 3 INFO) — pushing K depth ahead -----
+  { id: 'gk-rf-grandpa-fishing', grade: 'k', genre: 'realistic-fiction',
+    topic: 'a kid goes fishing with grandpa at a small Texas pond; they catch one tiny fish, look at its silver scales, and put it back in the water',
+    setting: 'a small pond near grandpa\'s house outside Tyler', protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'gk-rf-painting-bluebonnet', grade: 'k', genre: 'realistic-fiction',
+    topic: 'a kid paints a bluebonnet picture at school using blue and green paint; they hang the picture on the fridge when they get home',
+    setting: 'a Texas kindergarten art table', protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'gk-rf-piggyback-ride', grade: 'k', genre: 'realistic-fiction',
+    topic: 'a kid gets a piggyback ride home from a Texas farmer\'s market when they are too tired to walk; they hold tight and giggle when their parent jogs',
+    setting: 'a Texas farmer\'s market sidewalk in Austin', protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'gk-info-tx-state-bread', grade: 'k', genre: 'informational',
+    topic: 'pan dulce — Mexican sweet bread — is part of every-day life in Texas; bakers shape it like shells or hearts and many Texas families have it for breakfast or with afternoon coffee',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'gk-info-tx-canyon-vista', grade: 'k', genre: 'informational',
+    topic: 'Palo Duro Canyon in the Texas Panhandle is a giant canyon with red and orange rock walls; people call it the Grand Canyon of Texas',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'gk-info-yellow-school-bus', grade: 'k', genre: 'informational',
+    topic: 'school buses in Texas are bright yellow with flashing red lights and a stop arm; the yellow color helps drivers see the bus from far away so kids can get on and off safely',
     setting: null, protagonistName: null, protagonistDemographic: 'unmarked' }
 ];
 

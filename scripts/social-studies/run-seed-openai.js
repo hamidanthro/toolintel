@@ -224,6 +224,20 @@ const BRIEFS = [
   { id: 'gkss-yes-and-no-words', grade: 'k', strand: 'community',
     topic: 'how kindergarteners use polite words to talk to other people — saying "please" when asking, "thank you" when receiving, "sorry" when bumping someone, and "excuse me" when needing to walk past' },
 
+  // ----- K v5 — six more briefs (deepening K daughter floor) -----
+  { id: 'gkss-grocery-store', grade: 'k', strand: 'economics',
+    topic: 'how a family goes to the grocery store — they push a cart through the aisles, pick the food they need (bread, milk, fruit, vegetables), pay the cashier with money or a card, and bring the food home to eat' },
+  { id: 'gkss-tx-state-bread', grade: 'k', strand: 'texas-symbols',
+    topic: 'pan dulce — sweet bread shaped like shells or hearts — is one of the most popular treats in Texas bakeries; many families eat pan dulce for breakfast or with afternoon coffee' },
+  { id: 'gkss-mom-and-dad-jobs', grade: 'k', strand: 'community',
+    topic: 'three different jobs grown-ups in Texas families do — some work in offices using computers, some work outside on construction or farms, and some take care of children at home; every job helps the family in some way' },
+  { id: 'gkss-doctor-checkup', grade: 'k', strand: 'community',
+    topic: 'when a kid goes to the doctor for a checkup, the doctor checks their height, weight, ears, eyes, and heartbeat; this helps make sure the kid is growing in a healthy way' },
+  { id: 'gkss-tx-state-large-mammal', grade: 'k', strand: 'texas-symbols',
+    topic: 'the longhorn is the official Texas state large mammal; longhorns have very long, wide horns that helped them protect themselves on the Texas plains long ago — many Texans still raise them today' },
+  { id: 'gkss-helping-pick-up-toys', grade: 'k', strand: 'community',
+    topic: 'why families ask kids to pick up their toys — it keeps the floor safe so no one trips, helps the toys last longer, and makes the home look nice; three reasons cleaning up matters' },
+
   // Grade 1 v2 (8) — US flag, leaders, maps directions, holidays, voting
   { id: 'g1ss-us-flag', grade: '1', strand: 'civics',
     topic: 'the United States flag has 13 stripes (one for each first colony) and 50 stars (one for each state) — the colors are red, white, and blue, and we say the Pledge of Allegiance to it' },

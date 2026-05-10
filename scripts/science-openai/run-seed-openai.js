@@ -179,6 +179,26 @@ const BRIEFS = [
     scenarioType: 'described_diagram',
     topic: 'a kid lays in the grass and watches white fluffy clouds float across the blue Texas sky; one cloud looks like a bunny, another like a heart; the question asks the kid where clouds are' },
 
+  // ----- K v5 — six more briefs (deepening K daughter floor) -----
+  { id: 'gks-tx-prickly-pear-fruit', grade: 'k', strand: 'Organisms & Environments', se: 'K-observe',
+    scenarioType: 'described_diagram',
+    topic: "a Texas prickly pear cactus has sharp spines all over its flat green pads, plus bright red fruit on top; the question asks the kid why the cactus has the sharp spines" },
+  { id: 'gks-fan-blows-wind', grade: 'k', strand: 'Force, Motion & Energy', se: 'K-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid points a small fan at a paper kite and the kite flies up; when the fan turns off, the kite drops; the question asks the kid what the fan is making that lifts the kite' },
+  { id: 'gks-snowflake-pattern', grade: 'k', strand: 'Earth & Space', se: 'K-observe',
+    scenarioType: 'described_diagram',
+    topic: "after a rare snowy day in North Texas, a kid catches a snowflake on their dark coat and sees it has six points like a tiny star; the question asks the kid what shape every snowflake has" },
+  { id: 'gks-tx-bluebonnet-spring', grade: 'k', strand: 'Organisms & Environments', se: 'K-observe',
+    scenarioType: 'described_diagram',
+    topic: "a Texas roadside in spring has thousands of bluebonnets bringing the field to life; in winter the same field had only brown grass; the question asks the kid what season the bluebonnets bloom" },
+  { id: 'gks-fish-need-water', grade: 'k', strand: 'Organisms & Environments', se: 'K-observe',
+    scenarioType: 'experiment',
+    topic: 'a class fish swims happily in a tank of water; the question asks the kid what the fish needs to keep living' },
+  { id: 'gks-light-switch-on-off', grade: 'k', strand: 'Force, Motion & Energy', se: 'K-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid flips a light switch up and the room becomes bright; flips it down and the room becomes dark; the question asks the kid what the switch is doing to the light' },
+
   // ----- G1 v2 — six more briefs -----
   { id: 'g1s-water-states-ice-cube', grade: '1', strand: 'Matter & Energy', se: 'G1-observe',
     scenarioType: 'experiment',
