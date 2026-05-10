@@ -651,7 +651,6 @@
   <script src="js/friends.js?v=20260426b"></script>
   <script src="js/staar-data.js"></script>
   <script src="js/grade-card.js?v=20260427r"></script>
-  <script src="js/achievements.js?v=20260510c"></script>
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -887,41 +886,35 @@
         const subBoard = document.getElementById('dash-board-sub');
         if (subBoard) subBoard.textContent = todayCorrect > 0 ? `${todayCorrect} today` : 'Start fresh today';
 
-        // Level / XP — use the canonical Achievements ladder so the home
-        // pill matches the trophy room exactly. Falls back to the old
-        // correct/25 math if Achievements isn't loaded yet (shouldn't
-        // happen now that achievements.js is in the page).
-        let level, xpInLevel, xpPct, xpToNext;
-        const lvlTitles = [
-          'Math Rookie',     'Math Apprentice', 'Math Explorer',   'Math Trailblazer',
-          'Math Champion',   'Math Master',     'Math Wizard',     'Math Sage',
-          'Math Virtuoso',   'Math Legend',     'Math Mythic',     'Math Prodigy',
-          'Math Oracle',     'Math Polymath',   'Math Grandmaster','Math Luminary',
-          'Math Titan',      'Math Visionary',  'Math Sovereign',  'Math Eternal'
+        // Level — derived from total correct: 25 correct = 1 level.
+        // Kept the simple correct-based math (instead of XP-ladder)
+        // because every existing tester has a correct count but their
+        // XP is 0 (XP tracker was added later). Switching to XP would
+        // downgrade everyone's level on next refresh. The trophy room
+        // (achievements.html) is the place to see XP-based progression.
+        // Fixed the previously-hardcoded "/25 XP to Level N+1" display
+        // language: now shows "N correct to Level X+1" — accurate and
+        // matches the underlying math.
+        const totalCorrect = parseInt(d.correct, 10) || 0;
+        const PER_LEVEL = 25;
+        const level = Math.floor(totalCorrect / PER_LEVEL) + 1;
+        const inLevel = totalCorrect % PER_LEVEL;
+        const xpPct = Math.round((inLevel / PER_LEVEL) * 100);
+        const toNext = PER_LEVEL - inLevel;
+        const titles = [
+          'Math Rookie', 'Math Apprentice', 'Math Explorer', 'Math Trailblazer',
+          'Math Champion', 'Math Master', 'Math Wizard', 'Math Sage',
+          'Math Virtuoso', 'Math Legend'
         ];
-        if (window.Achievements && typeof window.Achievements.levelFromXp === 'function') {
-          const stats = window.Achievements.getStats ? window.Achievements.getStats() : { xp: 0 };
-          const lv = window.Achievements.levelFromXp(stats.xp || 0);
-          level = lv.level;
-          xpInLevel = lv.inLevelXp;
-          xpPct = lv.pct;
-          xpToNext = Math.max(0, lv.levelSpan - lv.inLevelXp);
-        } else {
-          // Defensive fallback (script load race)
-          const totalCorrect = parseInt(d.correct, 10) || 0;
-          level = Math.floor(totalCorrect / 25) + 1;
-          xpInLevel = totalCorrect % 25;
-          xpPct = Math.round((xpInLevel / 25) * 100);
-          xpToNext = 25 - xpInLevel;
-        }
-        const title = lvlTitles[Math.min(level - 1, lvlTitles.length - 1)];
+        const title = titles[Math.min(level - 1, titles.length - 1)];
         const lp = document.getElementById('dash-level-pill');
         if (lp) {
           lp.hidden = false;
           document.getElementById('dash-level-num').textContent = level;
           document.getElementById('dash-level-label').textContent = `Level ${level} · ${title}`;
           document.getElementById('dash-level-fill').style.width = xpPct + '%';
-          document.getElementById('dash-level-xp').textContent = `${xpToNext} XP to Level ${level + 1}`;
+          document.getElementById('dash-level-xp').textContent =
+            `${toNext} correct to Level ${level + 1}`;
         }
 
         // Daily challenge — 10 correct today.
