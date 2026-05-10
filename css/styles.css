@@ -8584,8 +8584,9 @@ input[type="button"] {
   body.home-page .hero .hero-right { order: 1; }
   body.home-page .hero .hero-left  { order: 2; display: flex; flex-direction: column; }
 
-  /* Social-proof pill stays visible on mobile per Hamid (May 10) —
-     parents check this number before they tap Practice. */
+  /* Live pill is mirrored to .mobile-hero (#mhero-live) for mobile;
+     the desktop hero version inside .hero stays hidden because
+     .hero itself is killed at line 16306. */
 
   /* Headline tighter */
   body.home-page .hero-headline {
@@ -9367,26 +9368,16 @@ input[type="button"] {
   }
 
   /* ---------- Step 2: Kill hero text block on mobile ----------
-     Children of hero-left hide; hero-left itself stays so the
-     live-count pill (its remaining visible child) renders. Parents
-     look at the live-count for social proof before tapping Practice
-     (Hamid May 10). */
+     Desktop .hero is fully hidden at line 16306 (visual-noise
+     starfield + glows). Live-count + placement link are now
+     mirrored into .mobile-hero so they're visible on mobile.
+     Children-of-hero-left rules below are harmless no-ops while
+     16306 nukes the parent, but kept so desktop intent is clear. */
   body.home-page .hero-headline,
   body.home-page .hero-tagline-mobile,
   body.home-page .hero .hero-cta,
   body.home-page .hero-left p {
     display: none !important;
-  }
-  body.home-page .hero-left {
-    display: flex !important;
-    flex-direction: column;
-    align-items: center;
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-  body.home-page .hero-live-pill {
-    display: inline-flex !important;
-    margin: 8px auto 12px !important;
   }
   body.home-page .hero {
     padding: 12px 16px 8px !important;
@@ -16175,6 +16166,27 @@ body.practice-page .question-card .q-inline-fb.q-inline-fb--tutor {
     color: rgba(255, 255, 255, 0.5);
     margin: 0;
     letter-spacing: 0.01em;
+  }
+  /* Live-count pill mirrored to mobile-hero (Hamid May 10). The
+     desktop .hero version is killed by line 16306; this is its
+     mobile twin. Sits ABOVE the headline so parents see it first. */
+  body.home-page .mobile-hero-live {
+    display: inline-flex;
+    margin: 0 0 14px;
+    padding: 7px 14px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  /* Placement-test link under the headline. Quiet by default; the
+     gold link stands out without being noisy. */
+  body.home-page .mobile-hero-placement {
+    margin: 14px 0 0;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.58);
+  }
+  body.home-page .mobile-hero-placement a {
+    color: #fde68a;
+    text-decoration: underline;
   }
 
   /* §63 Grade picker — muted section label, tactile buttons. */

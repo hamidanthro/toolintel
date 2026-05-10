@@ -32,7 +32,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260510z" />
+  <link rel="stylesheet" href="css/styles.css?v=20260511a" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -406,12 +406,22 @@
   <!-- §39: removed duplicate .mobile-hero-star — top-left wordmark
        is the brand mark; one logo per screen. Hero copy preserved. -->
   <header class="mobile-hero" aria-hidden="false">
+    <!-- Live-count pill — same time-of-day curve as the desktop hero
+         pill. The desktop .hero is fully hidden on mobile (visual
+         noise) so we need a parallel pill mounted here. -->
+    <div class="hero-live-pill mobile-hero-live" id="mhero-live" hidden>
+      <span class="hero-live-dot" aria-hidden="true"></span>
+      <span id="mhero-live-text">Texas STAAR practice</span>
+    </div>
     <h1 class="mobile-hero-headline">
       <span class="mobile-hero-line1">STAAR Math practice</span>
       <span class="mobile-hero-line2">built for Texas kids.</span>
     </h1>
     <p class="mobile-hero-tagline">Real toys.<br>Real progress.</p>
     <p class="mobile-hero-trust">20,000+ TEKS-aligned questions &nbsp;&mdash;&nbsp; built by parents</p>
+    <p class="mobile-hero-placement">
+      Not sure which grade fits? <a href="placement.html">Take the placement test →</a>
+    </p>
   </header>
 
   <!-- §78 (Owners' Room landing fix) — chip row replaced by responsive
@@ -1183,13 +1193,16 @@
       return next;
     }
     function refreshLiveCount() {
-      const heroPill = document.getElementById('hero-live');
-      const heroText = document.getElementById('hero-live-text');
-      const dashPill = document.getElementById('dash-live');
-      const dashText = document.getElementById('dash-live-text');
-      // Bail only if BOTH surfaces are absent — one or the other may
-      // be hidden (anon hero vs logged-in dashboard).
-      if (!heroPill && !dashPill) return;
+      // Three pill mounts: desktop hero (#hero-live, anon-only),
+      // mobile-hero (#mhero-live, anon-mobile), dashboard (#dash-live,
+      // logged-in). All driven by the same time-of-day curve so they
+      // stay in sync if the kid signs in mid-session.
+      const targets = [
+        { pill: document.getElementById('hero-live'),  text: document.getElementById('hero-live-text')  },
+        { pill: document.getElementById('mhero-live'), text: document.getElementById('mhero-live-text') },
+        { pill: document.getElementById('dash-live'),  text: document.getElementById('dash-live-text')  }
+      ].filter(t => t.pill && t.text);
+      if (targets.length === 0) return;
       let prev = null;
       try { prev = parseInt(sessionStorage.getItem('gradeearn:live-count'), 10); } catch (_) {}
       const n = pickLiveCount(Number.isFinite(prev) ? prev : null);
@@ -1202,10 +1215,10 @@
       } else {
         copy = 'Texas STAAR practice — TEKS-aligned';
       }
-      if (heroText) heroText.textContent = copy;
-      if (heroPill) heroPill.hidden = false;
-      if (dashText) dashText.textContent = copy;
-      if (dashPill) dashPill.hidden = false;
+      for (const t of targets) {
+        t.text.textContent = copy;
+        t.pill.hidden = false;
+      }
     }
     let _liveInterval = null;
     function startLivePolling() {
