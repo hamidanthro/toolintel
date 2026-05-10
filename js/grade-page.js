@@ -33,15 +33,14 @@
       tagline: 'Earth, life, physical, engineering.',
       icon: 'science',
       color: '#34d399',
-      // Science is live for (state, grade) combos with seeded content:
-      //   Texas Grade 5 (Phase J Claude pipeline, 9 scenarios)
-      //   Texas Grade 8 (Phase R OpenAI pipeline, 14 scenarios)
-      // Other grades stay 'Coming soon'.
+      // Science is live for Texas grades 3-8 (Phase R+ OpenAI fork +
+      // Phase J Claude pipeline for G5). All STAAR-tested + practice
+      // grades have content.
       live: false,
       eta: 'Coming soon',
       liveForGrade: function (stateSlug, gradeSlug) {
         if (stateSlug !== 'texas') return false;
-        return gradeSlug === 'grade-5' || gradeSlug === 'grade-8';
+        return ['grade-3','grade-4','grade-5','grade-6','grade-7','grade-8'].includes(gradeSlug);
       }
     },
     {
