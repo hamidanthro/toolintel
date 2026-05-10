@@ -749,10 +749,10 @@ OUTPUT FORMAT (STRICT JSON, no prose around it)
   "questions": [
     {
       "id": "gen-<unique>",
-      "type": "multiple_choice" | "numeric",
+      "type": "multiple_choice",
       "prompt": "string",
-      "choices": ["A","B","C","D"],   // omit for numeric
-      "answer": "string",
+      "choices": ["A","B","C","D"],   // always 4 choices
+      "answer": "string",             // must match exactly one of the choices
       "explanation": "string",
       "teks": "3.2A",
       "unitTitle": "Place Value & Whole Numbers",
@@ -772,7 +772,7 @@ function buildGeneratorUser({ count, seed, topics }) {
 Distribute the questions across these TEKS topics (roughly even, but you may shift one or two):
 ${topicLines}
 
-Mix question types: about 70% multiple_choice, about 30% numeric.
+Every question must be type "multiple_choice" with exactly 4 choices. Do NOT produce numeric/free-response questions. (We standardized the whole lake on multiple-choice in May 2026 \u2014 kids tap one of four choices instead of typing.)
 Use seed "${seed}" to make this set DIFFERENT from any previous run \u2014 vary scenarios, names, numbers, and contexts.
 Return ONLY valid JSON matching the schema. No markdown, no commentary.`;
 }
@@ -782,7 +782,9 @@ function sanitizeQuestions(arr, max) {
   const out = [];
   for (const q of arr) {
     if (!q || typeof q !== 'object') continue;
-    const type = q.type === 'numeric' ? 'numeric' : 'multiple_choice';
+    // May 10 — lake is 100% multiple_choice. Reject any numeric output.
+    if (q.type === 'numeric') continue;
+    const type = 'multiple_choice';
     const prompt = clip(String(q.prompt || '').trim(), 600);
     const answer = clip(String(q.answer ?? '').trim(), 200);
     const explanation = clip(String(q.explanation || '').trim(), 500);
