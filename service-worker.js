@@ -7,11 +7,13 @@
  * Critical: never cache API responses (Lambda calls). They must always be fresh.
  */
 
-const CACHE_VERSION = 'gradeearn-v22';
+const CACHE_VERSION = 'gradeearn-v23';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
-// Files to pre-cache on install (the "app shell")
+// Files to pre-cache on install (the "app shell"). Updated 2026-05-10
+// for the rewards-v2 + i18n + topic-picker rounds (achievements,
+// subject, i18n, mastery, achievements-page modules).
 const SHELL_FILES = [
   '/',
   '/index.html',
@@ -19,6 +21,9 @@ const SHELL_FILES = [
   '/marketplace.html',
   '/practice.html',
   '/grade.html',
+  '/achievements.html',
+  '/subject.html',
+  '/settings.html',
   '/states/index.html',
   '/css/styles.css',
   '/js/states-data.js',
@@ -34,6 +39,15 @@ const SHELL_FILES = [
   '/js/about-page.js',
   '/js/practice.js',
   '/js/pwa-install.js',
+  '/js/i18n.js',
+  '/js/achievements.js',
+  '/js/achievements-page.js',
+  '/js/mastery.js',
+  '/js/subject-page.js',
+  '/js/spaced-rep.js',
+  '/data/i18n/en.json',
+  '/data/i18n/es.json',
+  '/data/achievements.json',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
   '/icons/apple-touch-icon.png'
