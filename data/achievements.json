@@ -618,7 +618,7 @@
   {
     "id": "level-3",
     "name": "Level 3",
-    "description": "Earn 250 XP and reach Level 3.",
+    "description": "Reach Level 3 — Math Explorer. ~75 correct answers.",
     "emoji": "🆙",
     "tier": "bronze",
     "category": "level",
@@ -628,7 +628,7 @@
   {
     "id": "level-5",
     "name": "Level 5",
-    "description": "Earn 1,000 XP and reach Level 5.",
+    "description": "Reach Level 5 — Math Champion. ~350 correct answers.",
     "emoji": "⭐",
     "tier": "silver",
     "category": "level",
@@ -637,8 +637,8 @@
   },
   {
     "id": "level-10",
-    "name": "Level 10",
-    "description": "Earn 7,500 XP and reach Level 10.",
+    "name": "Math Legend",
+    "description": "Reach Level 10 — Math Legend. The top of the ladder.",
     "emoji": "🌠",
     "tier": "gold",
     "category": "level",
@@ -646,14 +646,14 @@
     "reward": { "cents": 100, "stickerId": "level-up-10" }
   },
   {
-    "id": "level-20",
-    "name": "Level 20",
-    "description": "Earn 60,000 XP and reach Level 20.",
+    "id": "five-thousand-correct",
+    "name": "5,000 Correct",
+    "description": "Answer 5,000 questions correctly — multi-year grind.",
     "emoji": "💎",
     "tier": "diamond",
-    "category": "level",
-    "trigger": { "type": "levelReached", "threshold": 20 },
-    "reward": { "cents": 500, "stickerId": "level-up-20" }
+    "category": "milestone",
+    "trigger": { "type": "lifetimeCorrect", "threshold": 5000 },
+    "reward": { "cents": 500, "stickerId": "five-thousand-correct" }
   },
 
   {

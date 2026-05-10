@@ -886,26 +886,41 @@
         const subBoard = document.getElementById('dash-board-sub');
         if (subBoard) subBoard.textContent = todayCorrect > 0 ? `${todayCorrect} today` : 'Start fresh today';
 
-        // Level — derived from total correct: 25 correct = 1 level.
-        // Kept the simple correct-based math (instead of XP-ladder)
-        // because every existing tester has a correct count but their
-        // XP is 0 (XP tracker was added later). Switching to XP would
-        // downgrade everyone's level on next refresh. The trophy room
-        // (achievements.html) is the place to see XP-based progression.
-        // Fixed the previously-hardcoded "/25 XP to Level N+1" display
-        // language: now shows "N correct to Level X+1" — accurate and
-        // matches the underlying math.
-        const totalCorrect = parseInt(d.correct, 10) || 0;
-        const PER_LEVEL = 25;
-        const level = Math.floor(totalCorrect / PER_LEVEL) + 1;
-        const inLevel = totalCorrect % PER_LEVEL;
-        const xpPct = Math.round((inLevel / PER_LEVEL) * 100);
-        const toNext = PER_LEVEL - inLevel;
+        // Level ladder — re-tuned May 10 so titles feel earned.
+        // Previously a kid hit "Math Master" at ~125 correct (2 hours
+        // of practice). New curve targets:
+        //   L1 Rookie:      0 correct        (just signed up)
+        //   L2 Apprentice:  25 correct       (couple sessions, ~1 day)
+        //   L3 Explorer:    75 correct       (~3-5 days of practice)
+        //   L4 Trailblazer: 175 correct      (~2 weeks)
+        //   L5 Champion:    350 correct      (~3-4 weeks)
+        //   L6 Master:      600 correct      (~1-2 months of regular practice)
+        //   L7 Wizard:      950 correct      (~2-3 months)
+        //   L8 Sage:        1400 correct     (~4-5 months)
+        //   L9 Virtuoso:    2000 correct     (~6+ months)
+        //   L10 Legend:     3000 correct     (multi-year commitment)
+        // Math Master now means a kid has practiced consistently for
+        // a month or two — a real achievement, not a participation
+        // ribbon. The trophy room (achievements.html) mirrors this.
+        const LEVEL_CORRECT_THRESHOLDS = [
+          0, 25, 75, 175, 350, 600, 950, 1400, 2000, 3000
+        ];
         const titles = [
           'Math Rookie', 'Math Apprentice', 'Math Explorer', 'Math Trailblazer',
           'Math Champion', 'Math Master', 'Math Wizard', 'Math Sage',
           'Math Virtuoso', 'Math Legend'
         ];
+        const totalCorrect = parseInt(d.correct, 10) || 0;
+        let level = 1;
+        for (let i = LEVEL_CORRECT_THRESHOLDS.length - 1; i >= 0; i--) {
+          if (totalCorrect >= LEVEL_CORRECT_THRESHOLDS[i]) { level = i + 1; break; }
+        }
+        const levelMin = LEVEL_CORRECT_THRESHOLDS[level - 1];
+        const levelMax = LEVEL_CORRECT_THRESHOLDS[level] || (levelMin + 1500);
+        const inLevel = totalCorrect - levelMin;
+        const span = levelMax - levelMin;
+        const xpPct = Math.min(100, Math.round((inLevel / span) * 100));
+        const toNext = Math.max(0, levelMax - totalCorrect);
         const title = titles[Math.min(level - 1, titles.length - 1)];
         const lp = document.getElementById('dash-level-pill');
         if (lp) {
@@ -913,8 +928,12 @@
           document.getElementById('dash-level-num').textContent = level;
           document.getElementById('dash-level-label').textContent = `Level ${level} · ${title}`;
           document.getElementById('dash-level-fill').style.width = xpPct + '%';
-          document.getElementById('dash-level-xp').textContent =
-            `${toNext} correct to Level ${level + 1}`;
+          if (level >= titles.length) {
+            document.getElementById('dash-level-xp').textContent = 'Max level reached';
+          } else {
+            document.getElementById('dash-level-xp').textContent =
+              `${toNext} correct to Level ${level + 1}`;
+          }
         }
 
         // Daily challenge — 10 correct today.

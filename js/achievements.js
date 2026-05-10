@@ -33,7 +33,7 @@
   const LS_STATS  = 'gradeearn:achievements:stats';
   const LS_FIRST_SESSION = 'gradeearn:achievements:firstSession';
   const LS_DAILY_MISSION = 'gradeearn:achievements:dailyMission';
-  const CATALOG_URL = '/data/achievements.json?v=20260510b';
+  const CATALOG_URL = '/data/achievements.json?v=20260510c';
 
   let _catalog = null;
   let _catalogLoading = null;
@@ -94,43 +94,41 @@
   }
   function setStats(s) { lsSet(k(LS_STATS), s); }
 
-  // ----- Level math -----
-  // Thresholds tuned so a kid practicing ~15 questions/day hits level 2-3
-  // in week 1, levels 5-7 in month 1, etc. Mirrors Khan's energy-point
-  // ladder (always-up; never decreases).
+  // ----- Level math (May 10, re-tuned) -----
+  // Levels are now based on lifetimeCorrect (not XP) so the kid's
+  // level matches the home-dashboard pill exactly. Titles should feel
+  // earned — under the old XP ladder a kid hit "Math Master" at ~125
+  // correct (couple hours of practice). Under this curve Master is
+  // ~600 correct (a month-plus of regular practice).
+  //   L1 Rookie:      0    (just signed up)
+  //   L2 Apprentice:  25   (couple sessions, ~1 day)
+  //   L3 Explorer:    75   (~3-5 days)
+  //   L4 Trailblazer: 175  (~2 weeks)
+  //   L5 Champion:    350  (~3-4 weeks)
+  //   L6 Master:      600  (~1-2 months)
+  //   L7 Wizard:      950  (~2-3 months)
+  //   L8 Sage:        1400 (~4-5 months)
+  //   L9 Virtuoso:    2000 (~6+ months)
+  //   L10 Legend:     3000 (multi-year commitment)
+  // Kept as LEVEL_THRESHOLDS for back-compat with any callers that
+  // referenced the constant; values are now correct counts, not XP.
   const LEVEL_THRESHOLDS = [
-    0,       // L1 starts here
-    100,     // L2
-    250,     // L3
-    500,     // L4
-    1000,    // L5
-    1750,    // L6
-    2750,    // L7
-    4000,    // L8
-    5500,    // L9
-    7500,    // L10
-    10000,   // L11
-    13000,   // L12
-    16500,   // L13
-    20500,   // L14
-    25000,   // L15
-    30000,   // L16
-    36000,   // L17
-    43000,   // L18
-    51000,   // L19
-    60000    // L20
+    0, 25, 75, 175, 350, 600, 950, 1400, 2000, 3000
   ];
-  function levelFromXp(xp) {
+  // levelFromXp kept for back-compat but now operates on correct count.
+  // The XP system still drives shields, daily-quest, etc.; only the
+  // top-line "Level N" title is correct-based.
+  function levelFromXp(correctCount) {
     let level = 1;
     for (let i = LEVEL_THRESHOLDS.length - 1; i >= 0; i--) {
-      if (xp >= LEVEL_THRESHOLDS[i]) { level = i + 1; break; }
+      if (correctCount >= LEVEL_THRESHOLDS[i]) { level = i + 1; break; }
     }
     const cur = LEVEL_THRESHOLDS[level - 1] || 0;
-    const next = LEVEL_THRESHOLDS[level] || (cur * 1.5 + 1000);
-    const inLevelXp = xp - cur;
+    const next = LEVEL_THRESHOLDS[level] || (cur + 1500);
+    const inLevelXp = correctCount - cur;
     const levelSpan = next - cur;
     const pct = levelSpan > 0 ? Math.min(100, Math.round((inLevelXp / levelSpan) * 100)) : 100;
-    return { level, current: xp, levelMin: cur, levelMax: next, inLevelXp, levelSpan, pct };
+    return { level, current: correctCount, levelMin: cur, levelMax: next, inLevelXp, levelSpan, pct };
   }
 
   // XP awarded per event. Wrong answers still earn a tiny bit so kids
@@ -365,33 +363,17 @@
     // Initialize first-session date on first track call
     if (!stats.firstSessionDate) stats.firstSessionDate = today;
 
-    // XP — every tracked event awards XP. Level updates auto-recompute.
+    // XP — kept for shield logic, daily-quest momentum, etc. The
+    // top-line "Level N" is now correct-based (see below), so the
+    // XP value itself no longer drives level-up. Wrong answers still
+    // earn a tiny bit of XP so trying isn't punished.
     const earnedXp = xpFor(event, payload);
     if (earnedXp > 0) {
       stats.xp = (stats.xp || 0) + earnedXp;
-      const lev = levelFromXp(stats.xp);
-      if (lev.level !== stats.level) {
-        stats.level = lev.level;
-        // Fire level-up event (caller can listen). Use unlockCallbacks
-        // for now since they're already wired into the toast system.
-        const levelUpAch = {
-          id: `level-up-${lev.level}`,
-          name: `Level ${lev.level}!`,
-          description: `You hit Level ${lev.level}.`,
-          emoji: lev.level >= 10 ? '⭐' : '🆙',
-          tier: lev.level >= 15 ? 'diamond' : lev.level >= 10 ? 'gold' : lev.level >= 5 ? 'silver' : 'bronze',
-          reward: { cents: Math.min(100, lev.level * 5) }
-        };
-        // Fire the level-up toast via the same channel as achievements.
-        for (const cb of _unlockCallbacks) {
-          try { cb(levelUpAch); } catch (e) { console.warn('[level-up cb]', e); }
-        }
-        // Award the cents
-        if (window.STAARAuth && window.STAARAuth.awardCents) {
-          try { window.STAARAuth.awardCents(levelUpAch.reward.cents, 'level-up'); } catch (_) {}
-        }
-      }
     }
+    // Level is computed from lifetimeCorrect (set below in the switch
+    // statement for 'answer' events). We re-evaluate level AFTER the
+    // event-specific logic runs so any new correct answers are counted.
 
     switch (event) {
       case 'answer': {
@@ -478,6 +460,30 @@
         break;
       }
     }
+
+    // Level check — based on lifetimeCorrect so the toast and the
+    // home-dashboard pill agree. Fires once per threshold crossing;
+    // stats.level holds the last-fired level so a refresh doesn't
+    // re-fire the same toast.
+    const lev = levelFromXp(stats.lifetimeCorrect || 0);
+    if (lev.level > (stats.level || 1)) {
+      stats.level = lev.level;
+      const levelUpAch = {
+        id: `level-up-${lev.level}`,
+        name: `Level ${lev.level}!`,
+        description: `You hit Level ${lev.level}.`,
+        emoji: lev.level >= 9 ? '⭐' : '🆙',
+        tier: lev.level >= 9 ? 'diamond' : lev.level >= 6 ? 'gold' : lev.level >= 3 ? 'silver' : 'bronze',
+        reward: { cents: Math.min(100, lev.level * 10) }
+      };
+      for (const cb of _unlockCallbacks) {
+        try { cb(levelUpAch); } catch (e) { console.warn('[level-up cb]', e); }
+      }
+      if (window.STAARAuth && window.STAARAuth.awardCents) {
+        try { window.STAARAuth.awardCents(levelUpAch.reward.cents, 'level-up'); } catch (_) {}
+      }
+    }
+
     setStats(stats);
     checkUnlocks();
   }
