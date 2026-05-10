@@ -3749,6 +3749,116 @@
                 "six"
               ],
               "id": "gen-u1l1-0339"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Maria sees 4 bluebonnets in a Texas field. How many bluebonnets does she see?",
+              "answer": "4",
+              "explanation": "4 bluebonnets means the number 4.",
+              "acceptable": [
+                "4",
+                "four"
+              ],
+              "id": "gen-u1l1-tx-001"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Diego counts 6 longhorn cows in a pen. How many longhorns does he count?",
+              "answer": "6",
+              "explanation": "6 cows means the number 6.",
+              "acceptable": [
+                "6",
+                "six"
+              ],
+              "id": "gen-u1l1-tx-002"
+            },
+            {
+              "type": "numeric",
+              "prompt": "A Texas armadillo has 4 legs and 1 tail. How many legs are there?",
+              "answer": "4",
+              "explanation": "An armadillo has 4 legs.",
+              "acceptable": [
+                "4",
+                "four"
+              ],
+              "id": "gen-u1l1-tx-003"
+            },
+            {
+              "type": "numeric",
+              "prompt": "A mockingbird sings 3 songs in the morning. How many songs?",
+              "answer": "3",
+              "explanation": "3 songs is the number 3.",
+              "acceptable": [
+                "3",
+                "three"
+              ],
+              "id": "gen-u1l1-tx-004"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Sofia counts 7 pecans on a Texas tree. How many pecans?",
+              "answer": "7",
+              "explanation": "7 pecans is the number 7.",
+              "acceptable": [
+                "7",
+                "seven"
+              ],
+              "id": "gen-u1l1-tx-005"
+            },
+            {
+              "type": "numeric",
+              "prompt": "A Texas pond has 5 frogs sitting on a log. How many frogs?",
+              "answer": "5",
+              "explanation": "5 frogs is the number 5.",
+              "acceptable": [
+                "5",
+                "five"
+              ],
+              "id": "gen-u1l1-tx-006"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Aaliyah buys 8 tortillas at the Texas store. How many tortillas?",
+              "answer": "8",
+              "explanation": "8 tortillas is the number 8.",
+              "acceptable": [
+                "8",
+                "eight"
+              ],
+              "id": "gen-u1l1-tx-007"
+            },
+            {
+              "type": "numeric",
+              "prompt": "A Texas state flag has 1 white star. How many stars on the flag?",
+              "answer": "1",
+              "explanation": "1 star is the number 1.",
+              "acceptable": [
+                "1",
+                "one"
+              ],
+              "id": "gen-u1l1-tx-008"
+            },
+            {
+              "type": "numeric",
+              "prompt": "A horned lizard has 2 eyes. How many eyes?",
+              "answer": "2",
+              "explanation": "2 eyes is the number 2.",
+              "acceptable": [
+                "2",
+                "two"
+              ],
+              "id": "gen-u1l1-tx-009"
+            },
+            {
+              "type": "numeric",
+              "prompt": "A Texas pickup truck has 4 wheels. How many wheels?",
+              "answer": "4",
+              "explanation": "4 wheels is the number 4.",
+              "acceptable": [
+                "4",
+                "four"
+              ],
+              "id": "gen-u1l1-tx-010"
             }
           ]
         },
@@ -10756,6 +10866,61 @@
               "answer": "3",
               "explanation": "3 is greater than 0.",
               "id": "gen-u2l1-0514"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Imani has 3 Texas peaches. Diego has 5 peaches. How many peaches does Diego have?",
+              "answer": "5",
+              "explanation": "Diego has 5 peaches, which is more than Imani.",
+              "acceptable": [
+                "5",
+                "five"
+              ],
+              "id": "gen-u2l1-tx-001"
+            },
+            {
+              "type": "numeric",
+              "prompt": "A Texas farm has 6 pigs and 4 cows. Which is bigger? Type the bigger number.",
+              "answer": "6",
+              "explanation": "6 pigs is more than 4 cows.",
+              "acceptable": [
+                "6",
+                "six"
+              ],
+              "id": "gen-u2l1-tx-002"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Sofia counts 7 bluebonnets. Mateo counts 7 bluebonnets too. Equal numbers — what number is it?",
+              "answer": "7",
+              "explanation": "Both kids counted the same — 7.",
+              "acceptable": [
+                "7",
+                "seven"
+              ],
+              "id": "gen-u2l1-tx-003"
+            },
+            {
+              "type": "numeric",
+              "prompt": "A Texas backyard has 8 bluebirds and 5 cardinals. How many bluebirds?",
+              "answer": "8",
+              "explanation": "8 bluebirds is more than 5 cardinals.",
+              "acceptable": [
+                "8",
+                "eight"
+              ],
+              "id": "gen-u2l1-tx-004"
+            },
+            {
+              "type": "numeric",
+              "prompt": "A Texas market has 9 watermelons and 6 cantaloupes. Which is more — type the count of watermelons.",
+              "answer": "9",
+              "explanation": "There are 9 watermelons; that is more than 6 cantaloupes.",
+              "acceptable": [
+                "9",
+                "nine"
+              ],
+              "id": "gen-u2l1-tx-005"
             }
           ]
         },
@@ -16747,6 +16912,61 @@
                 "three"
               ],
               "id": "gen-u3l1-0428"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Maria has 3 bluebonnets. She picks 2 more. How many bluebonnets in all?",
+              "answer": "5",
+              "explanation": "3 + 2 = 5.",
+              "acceptable": [
+                "5",
+                "five"
+              ],
+              "id": "gen-u3l1-tx-001"
+            },
+            {
+              "type": "numeric",
+              "prompt": "A pen has 4 longhorns. The farmer brings 3 more. How many longhorns now?",
+              "answer": "7",
+              "explanation": "4 + 3 = 7.",
+              "acceptable": [
+                "7",
+                "seven"
+              ],
+              "id": "gen-u3l1-tx-002"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Imani sees 2 mockingbirds. Then 5 more land in the tree. How many mockingbirds?",
+              "answer": "7",
+              "explanation": "2 + 5 = 7.",
+              "acceptable": [
+                "7",
+                "seven"
+              ],
+              "id": "gen-u3l1-tx-003"
+            },
+            {
+              "type": "numeric",
+              "prompt": "A Texas plate has 4 tacos. Mom adds 4 more. How many tacos in all?",
+              "answer": "8",
+              "explanation": "4 + 4 = 8.",
+              "acceptable": [
+                "8",
+                "eight"
+              ],
+              "id": "gen-u3l1-tx-004"
+            },
+            {
+              "type": "numeric",
+              "prompt": "Sofia finds 6 pecans. Diego finds 3 more. How many pecans together?",
+              "answer": "9",
+              "explanation": "6 + 3 = 9.",
+              "acceptable": [
+                "9",
+                "nine"
+              ],
+              "id": "gen-u3l1-tx-005"
             }
           ]
         },
@@ -21562,6 +21782,61 @@
                 "two"
               ],
               "id": "gen-u3l2-0437"
+            },
+            {
+              "type": "numeric",
+              "prompt": "A Texas tree has 8 pecans. A squirrel takes 3 of them. How many pecans are left?",
+              "answer": "5",
+              "explanation": "8 − 3 = 5.",
+              "acceptable": [
+                "5",
+                "five"
+              ],
+              "id": "gen-u3l2-tx-001"
+            },
+            {
+              "type": "numeric",
+              "prompt": "A Texas pond had 9 frogs. 4 hopped away. How many frogs are left?",
+              "answer": "5",
+              "explanation": "9 − 4 = 5.",
+              "acceptable": [
+                "5",
+                "five"
+              ],
+              "id": "gen-u3l2-tx-002"
+            },
+            {
+              "type": "numeric",
+              "prompt": "A plate has 7 tortillas. The family eats 2. How many tortillas are left?",
+              "answer": "5",
+              "explanation": "7 − 2 = 5.",
+              "acceptable": [
+                "5",
+                "five"
+              ],
+              "id": "gen-u3l2-tx-003"
+            },
+            {
+              "type": "numeric",
+              "prompt": "A Texas yard has 10 bluebonnets. Maria picks 4. How many bluebonnets are left?",
+              "answer": "6",
+              "explanation": "10 − 4 = 6.",
+              "acceptable": [
+                "6",
+                "six"
+              ],
+              "id": "gen-u3l2-tx-004"
+            },
+            {
+              "type": "numeric",
+              "prompt": "A nest has 6 birds. 1 flies away. How many birds are left?",
+              "answer": "5",
+              "explanation": "6 − 1 = 5.",
+              "acceptable": [
+                "5",
+                "five"
+              ],
+              "id": "gen-u3l2-tx-005"
             }
           ]
         }
@@ -21752,6 +22027,62 @@
               "answer": "triangle",
               "explanation": "A triangle has 3 sides.",
               "id": "gen-u4l1-0013"
+            },
+            {
+              "type": "numeric",
+              "prompt": "A Texas state flag has 3 stripes (red, white, blue). How many stripes?",
+              "answer": "3",
+              "explanation": "The Texas flag has 3 stripes — red, white, and blue.",
+              "acceptable": [
+                "3",
+                "three"
+              ],
+              "id": "gen-u4l1-tx-001"
+            },
+            {
+              "type": "numeric",
+              "prompt": "A stop sign has 8 sides. How many sides on a stop sign?",
+              "answer": "8",
+              "explanation": "A stop sign is an octagon — 8 sides.",
+              "acceptable": [
+                "8",
+                "eight"
+              ],
+              "id": "gen-u4l1-tx-002"
+            },
+            {
+              "type": "numeric",
+              "prompt": "A square Texas tortilla has 4 sides. How many sides?",
+              "answer": "4",
+              "explanation": "A square has 4 equal sides.",
+              "acceptable": [
+                "4",
+                "four"
+              ],
+              "id": "gen-u4l1-tx-003"
+            },
+            {
+              "type": "numeric",
+              "prompt": "A Texas state-flag star has 5 points. How many points?",
+              "answer": "5",
+              "explanation": "The Texas Lone Star has 5 points.",
+              "acceptable": [
+                "5",
+                "five"
+              ],
+              "id": "gen-u4l1-tx-004"
+            },
+            {
+              "type": "numeric",
+              "prompt": "A round Texas tortilla is shaped like a circle. How many sides does a circle have?",
+              "answer": "0",
+              "explanation": "A circle has 0 straight sides — it is round.",
+              "acceptable": [
+                "0",
+                "zero",
+                "none"
+              ],
+              "id": "gen-u4l1-tx-005"
             }
           ]
         },
