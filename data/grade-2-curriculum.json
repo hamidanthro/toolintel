@@ -9360,6 +9360,49 @@
                 "700"
               ],
               "id": "gen-u1l1-0849"
+            },
+            {
+              "id": "gen-u1l1-tx-001",
+              "type": "numeric",
+              "prompt": "A Texas pecan farm picked 234 pecans. Write that number in words is two hundred thirty-four. What digit is in the hundreds place?",
+              "answer": "2",
+              "explanation": "In 234, the digit in the hundreds place is 2.",
+              "acceptable": [
+                "2",
+                "two"
+              ]
+            },
+            {
+              "id": "gen-u1l1-tx-002",
+              "type": "numeric",
+              "prompt": "A Texas State Fair sold 580 tickets. What digit is in the tens place?",
+              "answer": "8",
+              "explanation": "In 580, the digit in the tens place is 8.",
+              "acceptable": [
+                "8",
+                "eight"
+              ]
+            },
+            {
+              "id": "gen-u1l1-tx-003",
+              "type": "numeric",
+              "prompt": "A Texas longhorn ranch counted 1,150 cows. How many hundreds does that have?",
+              "answer": "11",
+              "explanation": "1,150 has 11 hundreds (1 thousand = 10 hundreds + 1 more = 11).",
+              "acceptable": [
+                "11",
+                "eleven"
+              ]
+            },
+            {
+              "id": "gen-u1l1-tx-004",
+              "type": "numeric",
+              "prompt": "Maria counted 6 hundreds, 3 tens, and 5 ones of bluebonnets. What is the total?",
+              "answer": "635",
+              "explanation": "6 hundreds + 3 tens + 5 ones = 600 + 30 + 5 = 635.",
+              "acceptable": [
+                "635"
+              ]
             }
           ]
         },
@@ -36841,6 +36884,46 @@
                 "63"
               ],
               "id": "gen-u2l1-0981"
+            },
+            {
+              "id": "gen-u2l1-tx-001",
+              "type": "numeric",
+              "prompt": "A Texas school has 256 first-graders and 178 second-graders. How many students total?",
+              "answer": "434",
+              "explanation": "256 + 178 = 434.",
+              "acceptable": [
+                "434"
+              ]
+            },
+            {
+              "id": "gen-u2l1-tx-002",
+              "type": "numeric",
+              "prompt": "A Texas BBQ feeds 245 people on Saturday and 312 on Sunday. How many people total?",
+              "answer": "557",
+              "explanation": "245 + 312 = 557.",
+              "acceptable": [
+                "557"
+              ]
+            },
+            {
+              "id": "gen-u2l1-tx-003",
+              "type": "numeric",
+              "prompt": "Diego picked 187 bluebonnets and Sofia picked 264. How many bluebonnets?",
+              "answer": "451",
+              "explanation": "187 + 264 = 451.",
+              "acceptable": [
+                "451"
+              ]
+            },
+            {
+              "id": "gen-u2l1-tx-004",
+              "type": "numeric",
+              "prompt": "Galveston had 425 visitors and Padre Island had 392. How many visitors at both?",
+              "answer": "817",
+              "explanation": "425 + 392 = 817.",
+              "acceptable": [
+                "817"
+              ]
             }
           ]
         },
@@ -58639,6 +58722,46 @@
                 "16"
               ],
               "id": "gen-u3l1-0979"
+            },
+            {
+              "id": "gen-u3l1-tx-001",
+              "type": "numeric",
+              "prompt": "A Texas pecan tree had 540 pecans. The squirrels took 187. How many are left?",
+              "answer": "353",
+              "explanation": "540 − 187 = 353.",
+              "acceptable": [
+                "353"
+              ]
+            },
+            {
+              "id": "gen-u3l1-tx-002",
+              "type": "numeric",
+              "prompt": "The Houston Livestock Show had 678 horses. Then 234 horses left after their show. How many horses are still there?",
+              "answer": "444",
+              "explanation": "678 − 234 = 444.",
+              "acceptable": [
+                "444"
+              ]
+            },
+            {
+              "id": "gen-u3l1-tx-003",
+              "type": "numeric",
+              "prompt": "A Texas State Fair had 825 funnel cakes. They sold 367. How many funnel cakes are left?",
+              "answer": "458",
+              "explanation": "825 − 367 = 458.",
+              "acceptable": [
+                "458"
+              ]
+            },
+            {
+              "id": "gen-u3l1-tx-004",
+              "type": "numeric",
+              "prompt": "Big Bend got 456 visitors Saturday. By Sunday morning 198 had left. How many remain?",
+              "answer": "258",
+              "explanation": "456 − 198 = 258.",
+              "acceptable": [
+                "258"
+              ]
             }
           ]
         },
@@ -75179,6 +75302,36 @@
                 "8"
               ],
               "id": "gen-u4l1-0501"
+            },
+            {
+              "id": "gen-u4l1-tx-001",
+              "type": "numeric",
+              "prompt": "A Texas tortilla shop makes 6 tortillas per stack and they have 7 stacks. How many tortillas total?",
+              "answer": "42",
+              "explanation": "6 × 7 = 42.",
+              "acceptable": [
+                "42"
+              ]
+            },
+            {
+              "id": "gen-u4l1-tx-002",
+              "type": "numeric",
+              "prompt": "A bluebonnet field has 8 rows with 5 plants in each row. How many plants?",
+              "answer": "40",
+              "explanation": "8 × 5 = 40.",
+              "acceptable": [
+                "40"
+              ]
+            },
+            {
+              "id": "gen-u4l1-tx-003",
+              "type": "numeric",
+              "prompt": "A Texas BBQ pit smokes 4 racks of ribs each day for 9 days. How many racks total?",
+              "answer": "36",
+              "explanation": "4 × 9 = 36.",
+              "acceptable": [
+                "36"
+              ]
             }
           ]
         },
@@ -76886,6 +77039,27 @@
                 "two"
               ],
               "id": "gen-u5l1-0006"
+            },
+            {
+              "id": "gen-u5l1-tx-001",
+              "type": "numeric",
+              "prompt": "Maria cut a Texas peach into 4 equal slices. What fraction is each slice? (Type as a/b)",
+              "answer": "1/4",
+              "explanation": "Each slice is 1 of 4 equal parts: 1/4."
+            },
+            {
+              "id": "gen-u5l1-tx-002",
+              "type": "numeric",
+              "prompt": "Sofia ate 2 of 8 equal slices of pecan pie. What fraction did she eat?",
+              "answer": "2/8",
+              "explanation": "2 of 8 parts: 2/8."
+            },
+            {
+              "id": "gen-u5l1-tx-003",
+              "type": "numeric",
+              "prompt": "A round Texas tortilla is split into 6 equal triangles. Diego ate 3. What fraction?",
+              "answer": "3/6",
+              "explanation": "3 of 6 parts: 3/6 (also 1/2)."
             }
           ]
         }
@@ -88030,6 +88204,46 @@
                 "29 cents"
               ],
               "id": "gen-u6l1-0927"
+            },
+            {
+              "id": "gen-u6l1-tx-001",
+              "type": "numeric",
+              "prompt": "A Texas BBQ plate costs 8 dollars. Maria pays with a 20-dollar bill. How much change does she get?",
+              "answer": "12",
+              "explanation": "20 − 8 = 12 dollars.",
+              "acceptable": [
+                "12"
+              ]
+            },
+            {
+              "id": "gen-u6l1-tx-002",
+              "type": "numeric",
+              "prompt": "Diego buys a paleta for 2 dollars and a tamale for 4 dollars. He pays with a 10-dollar bill. How much change?",
+              "answer": "4",
+              "explanation": "2 + 4 = 6 spent. 10 − 6 = 4 change.",
+              "acceptable": [
+                "4"
+              ]
+            },
+            {
+              "id": "gen-u6l1-tx-003",
+              "type": "numeric",
+              "prompt": "Sofia has 3 quarters and 2 dimes. How many cents total?",
+              "answer": "95",
+              "explanation": "3 × 25 + 2 × 10 = 75 + 20 = 95 cents.",
+              "acceptable": [
+                "95"
+              ]
+            },
+            {
+              "id": "gen-u6l1-tx-004",
+              "type": "numeric",
+              "prompt": "A Texas State Fair ride costs 6 dollars. Maria rides 4 times. How much money does she spend?",
+              "answer": "24",
+              "explanation": "6 × 4 = 24 dollars.",
+              "acceptable": [
+                "24"
+              ]
             }
           ]
         }
@@ -91810,6 +92024,38 @@
                 "8:15"
               ],
               "id": "gen-u7l1-0376"
+            },
+            {
+              "id": "gen-u7l1-tx-001",
+              "type": "numeric",
+              "prompt": "A Texas football game starts at 7:00 PM and ends at 9:30 PM. How many hours and a half is the game? (Type the hours as a number with a decimal — e.g. 2.5)",
+              "answer": "2.5",
+              "explanation": "9:30 − 7:00 = 2 hours 30 minutes = 2.5 hours.",
+              "acceptable": [
+                "2.5",
+                "2 1/2"
+              ]
+            },
+            {
+              "id": "gen-u7l1-tx-002",
+              "type": "numeric",
+              "prompt": "Maria practices guitar from 4:00 PM to 4:30 PM each day. How many minutes does she practice?",
+              "answer": "30",
+              "explanation": "4:30 − 4:00 = 30 minutes.",
+              "acceptable": [
+                "30",
+                "thirty"
+              ]
+            },
+            {
+              "id": "gen-u7l1-tx-003",
+              "type": "numeric",
+              "prompt": "A Texas school day is 7 hours long. How many minutes is that? (1 hour = 60 minutes)",
+              "answer": "420",
+              "explanation": "7 × 60 = 420 minutes.",
+              "acceptable": [
+                "420"
+              ]
             }
           ]
         }
@@ -92227,6 +92473,36 @@
                 "three"
               ],
               "id": "gen-u8l1-0036"
+            },
+            {
+              "id": "gen-u8l1-tx-001",
+              "type": "numeric",
+              "prompt": "A Texas state-flag star has 5 points. How many points on 4 stars total?",
+              "answer": "20",
+              "explanation": "5 × 4 = 20.",
+              "acceptable": [
+                "20"
+              ]
+            },
+            {
+              "id": "gen-u8l1-tx-002",
+              "type": "numeric",
+              "prompt": "A square Texas tortilla has 4 sides. How many sides do 6 square tortillas have total?",
+              "answer": "24",
+              "explanation": "4 × 6 = 24.",
+              "acceptable": [
+                "24"
+              ]
+            },
+            {
+              "id": "gen-u8l1-tx-003",
+              "type": "numeric",
+              "prompt": "A triangle has 3 sides. A Texas state flag has 1 triangle on it. How many sides on 5 triangles?",
+              "answer": "15",
+              "explanation": "3 × 5 = 15.",
+              "acceptable": [
+                "15"
+              ]
             }
           ]
         }
