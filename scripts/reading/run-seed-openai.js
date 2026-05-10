@@ -120,6 +120,26 @@ const GK_BRIEFS = [
     setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
   { id: 'gk-info-watermelon-summer', grade: 'k', genre: 'informational',
     topic: 'watermelons grow in Texas in the summer; they have green skin and pink inside; they are sweet and full of water',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+
+  // ----- K v3 — six more briefs (3 RF + 3 INFO) -----
+  { id: 'gk-rf-paper-cup-seed', grade: 'k', genre: 'realistic-fiction',
+    topic: 'a kid plants a flower seed in a paper cup at school and waits each day to see if a green sprout will pop up',
+    setting: 'a Texas kindergarten classroom', protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'gk-rf-rolly-polly-yard', grade: 'k', genre: 'realistic-fiction',
+    topic: 'a kid finds a rolly polly bug under a rock in the backyard and watches it curl up into a tiny ball',
+    setting: 'a Texas backyard', protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'gk-rf-cowboy-boots', grade: 'k', genre: 'realistic-fiction',
+    topic: 'a kid puts on their first pair of cowboy boots before going to a Texas country fair and hops to make sure they fit',
+    setting: 'a Texas county-fair gate', protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'gk-info-prickly-pear', grade: 'k', genre: 'informational',
+    topic: 'prickly pear is a Texas cactus with flat green pads, sharp spines, and red fruit you can eat after the spines come off',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'gk-info-bbq-smoker', grade: 'k', genre: 'informational',
+    topic: 'a Texas barbecue smoker is a metal box that uses wood and slow heat to cook meat for a long time and make it smell good',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'gk-info-horned-lizard-simple', grade: 'k', genre: 'informational',
+    topic: 'the horned lizard is a small Texas lizard with little horns on its head; it likes hot rocks and eats ants',
     setting: null, protagonistName: null, protagonistDemographic: 'unmarked' }
 ];
 
@@ -183,6 +203,26 @@ const G1_BRIEFS = [
     setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
   { id: 'g1-info-thunderstorm', grade: '1', genre: 'informational',
     topic: 'thunderstorms in Texas have big clouds; the lightning makes the loud thunder sound; it is best to go inside',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+
+  // ----- G1 v3 — six more briefs (3 RF + 3 INFO) -----
+  { id: 'g1-rf-bluebonnet-window', grade: '1', genre: 'realistic-fiction',
+    topic: 'a kid waits for the bluebonnet bloom outside their classroom window and sees the first blue petal one Monday morning',
+    setting: 'a first-grade classroom in the Texas Hill Country', protagonistName: 'Camila', protagonistDemographic: 'hispanic-latino' },
+  { id: 'g1-rf-bike-driveway', grade: '1', genre: 'realistic-fiction',
+    topic: 'a kid learns to ride a bike in the driveway with mom holding on; mom lets go for a few seconds and the kid keeps going',
+    setting: 'a Texas suburb driveway', protagonistName: 'Jordan', protagonistDemographic: 'unmarked' },
+  { id: 'g1-rf-quinceanera-dance', grade: '1', genre: 'realistic-fiction',
+    topic: 'a kid attends a cousin\'s quinceañera and figures out where to sit at the family table after the first dance',
+    setting: 'a quinceañera at a community hall in San Antonio', protagonistName: 'Mateo', protagonistDemographic: 'hispanic-latino' },
+  { id: 'g1-info-tx-capitol', grade: '1', genre: 'informational',
+    topic: 'the Texas Capitol building in Austin has pink granite walls, a gold star on top of the dome, and is taller than the U.S. Capitol',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'g1-info-horned-lizard-state-reptile', grade: '1', genre: 'informational',
+    topic: 'the horned lizard is the official Texas state reptile; it puffs up its body to look bigger and scare birds away',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'g1-info-chili-state-dish', grade: '1', genre: 'informational',
+    topic: 'chili is the Texas state dish; it is a thick stew made of beef, beans, peppers, and spices, and it warms you up on cold days',
     setting: null, protagonistName: null, protagonistDemographic: 'unmarked' }
 ];
 
@@ -252,6 +292,26 @@ const G2_BRIEFS = [
     setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
   { id: 'g2-info-monarch-butterfly', grade: '2', genre: 'informational',
     topic: 'monarch butterflies fly through Texas every fall on their way to Mexico; they need milkweed plants to lay their eggs; their long trip takes weeks',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+
+  // ----- G2 v3 — six more briefs (3 RF + 3 INFO) -----
+  { id: 'g2-rf-4h-meeting', grade: '2', genre: 'realistic-fiction',
+    topic: 'a kid joins their first 4-H meeting in a small Texas town and learns what each of the four H\'s stand for and why members say a pledge',
+    setting: 'a 4-H club meeting in a small East Texas town', protagonistName: 'Aaliyah', protagonistDemographic: 'black' },
+  { id: 'g2-rf-flat-tire-park', grade: '2', genre: 'realistic-fiction',
+    topic: 'a kid helps dad fix a flat bike tire at a Texas city park; together they find the small thorn that caused the leak',
+    setting: 'a city park in Houston', protagonistName: 'Diego', protagonistDemographic: 'hispanic-latino' },
+  { id: 'g2-rf-backyard-tent', grade: '2', genre: 'realistic-fiction',
+    topic: 'a kid camps out one night in the backyard with a tent and a flashlight; coyotes howl in the distance and the kid feels proud they stayed all night',
+    setting: 'a backyard outside Austin', protagonistName: 'Priya', protagonistDemographic: 'south-asian' },
+  { id: 'g2-info-austin-bats', grade: '2', genre: 'informational',
+    topic: 'every summer evening, around one and a half million bats fly out from under the Congress Avenue Bridge in Austin to hunt for insects; people gather on the bridge to watch',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'g2-info-longhorn-horns', grade: '2', genre: 'informational',
+    topic: 'the Texas longhorn is a kind of cattle whose horns can grow more than nine feet wide — wider than most cars are long; the longhorn is the official Texas state large mammal',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'g2-info-big-bend-region', grade: '2', genre: 'informational',
+    topic: 'Big Bend is a region in far west Texas where the Rio Grande river makes a giant U-shaped turn; the area has tall mountains, deep canyons, and many wild animals',
     setting: null, protagonistName: null, protagonistDemographic: 'unmarked' }
 ];
 
@@ -345,6 +405,26 @@ const G3_BRIEFS = [
     setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
   { id: 'g3-info-texas-coast-shorebirds', grade: 3, genre: 'informational',
     topic: 'four shorebirds you can spot on the Texas coast (great blue heron, brown pelican, sandpiper, snowy egret) and how each one finds food',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+
+  // ----- G3 v2 — six more briefs (3 RF + 3 INFO) -----
+  { id: 'g3-rf-dog-sit-trick', grade: 3, genre: 'realistic-fiction',
+    topic: 'a kid trains their dog to sit before suppertime; after a week of practice the dog sits without a treat for the first time',
+    setting: 'a Houston suburb backyard', protagonistName: 'Marcus', protagonistDemographic: 'black' },
+  { id: 'g3-rf-pico-de-gallo-abuela', grade: 3, genre: 'realistic-fiction',
+    topic: 'a kid learns to make pico de gallo with their abuela in a McAllen kitchen, chopping tomatoes and onions while listening to the older stories of the family ranch',
+    setting: 'an abuela\'s kitchen in McAllen', protagonistName: 'Luna', protagonistDemographic: 'hispanic-latino' },
+  { id: 'g3-rf-field-trip-lunch', grade: 3, genre: 'realistic-fiction',
+    topic: 'a kid forgets their lunch on a school field trip to a Fort Worth museum; a friend offers half a turkey sandwich and the kid learns that asking for help is okay',
+    setting: 'a school field trip in Fort Worth', protagonistName: 'Ahmed', protagonistDemographic: 'middle-eastern' },
+  { id: 'g3-info-state-fair-big-tex', grade: 3, genre: 'informational',
+    topic: 'the State Fair of Texas runs every fall in Dallas; Big Tex, a 55-foot-tall talking cowboy statue, greets visitors at the front gate; the fair is famous for fried foods and prize-winning livestock',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'g3-info-pelicans-gulf-coast', grade: 3, genre: 'informational',
+    topic: 'brown pelicans on the Texas Gulf Coast dive from the air to catch fish in their stretchy throat pouch; they were once nearly gone but came back after pesticides were banned',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'g3-info-trinity-river', grade: 3, genre: 'informational',
+    topic: 'the Trinity River runs more than 700 miles through Texas, flowing past Fort Worth and Dallas before reaching the Gulf of Mexico near Galveston Bay; cities depend on the river for drinking water',
     setting: null, protagonistName: null, protagonistDemographic: 'unmarked' }
 ];
 
