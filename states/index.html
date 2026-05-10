@@ -88,7 +88,10 @@
     <span>Loading state…</span>
   </div>
 
-  <!-- Not-found state — shown if ?s=<slug> is invalid -->
+  <!-- Inactive-state shell — reused by state-page.js#showInactive() to
+       render "Coming soon for {state}" copy when a non-Texas slug
+       resolves. Default copy is Texas-friendly so even if the JS fails
+       before showInactive() runs, no kid ever sees a dead-end. -->
   <section class="state-page-error" id="state-error" hidden>
     <div class="state-error-icon" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="48" height="48">
@@ -97,8 +100,8 @@
         <line x1="12" y1="16" x2="12.01" y2="16"/>
       </svg>
     </div>
-    <h2 class="state-error-title">State not found</h2>
-    <p class="state-error-text">We couldn't find that state. We're focused on Texas STAAR right now.</p>
+    <h2 class="state-error-title">Welcome to GradeEarn</h2>
+    <p class="state-error-text">We're focused on Texas STAAR practice right now. Click below to start.</p>
     <a class="state-error-cta" href="../index.html">
       Try Texas STAAR practice
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -244,7 +247,7 @@
 <script src="../js/auth.js?v=20260506n"></script>
 <script src="../js/lake-events.js?v=20260427a"></script>
   <script src="../js/pwa-install.js?v=20260427a" defer></script>
-<script src="state-page.js?v=20260506a"></script>
+<script src="state-page.js?v=20260510a"></script>
 
 </body>
 </html>

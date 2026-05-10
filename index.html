@@ -721,8 +721,8 @@
             grid.appendChild(tile);
           } else {
             // Always include s=texas in the href so guest taps don't
-            // dead-end at "State not found" on grade.html (the default
-            // grade-card href omits the state param).
+            // dead-end on grade.html (the default grade-card href
+            // omits the state param).
             const stateSlug = (u && u.state) || 'texas';
             const card = window.STAARGradeCard.render(g, {
               variant: 'default',

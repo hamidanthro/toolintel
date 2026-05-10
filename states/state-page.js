@@ -29,8 +29,8 @@
     let slug = params.get('s');
 
     // Texas-only product (per memory_texas_only.md). Missing or
-    // invalid slug → default to texas; do not show a dead-end
-    // "State not found" page. The user is here to practice.
+    // invalid slug → default to texas; do not surface a dead-end
+    // error. The user is here to practice.
     if (!slug || !STATES.getBySlug(slug)) {
       const fixed = new URLSearchParams(location.search);
       fixed.set('s', 'texas');
