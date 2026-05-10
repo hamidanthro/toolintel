@@ -247,6 +247,26 @@ const BRIEFS = [
     scenarioType: 'described_diagram',
     topic: "a Texas field of bluebonnets in spring has bees flying from flower to flower; the bees take pollen with them; the question asks the kid what the bees help the flowers do" },
 
+  // ----- G2 v3 — six more briefs -----
+  { id: 'g2s-warm-cup-cools', grade: '2', strand: 'Matter & Energy', se: 'G2-observe',
+    scenarioType: 'experiment',
+    topic: "a kid sets a hot cup of cocoa on the kitchen table; thirty minutes later the cocoa is only a little warm; the question asks the kid where the heat went" },
+  { id: 'g2s-tx-armadillo-burrow', grade: '2', strand: 'Organisms & Environments', se: 'G2-observe',
+    scenarioType: 'described_diagram',
+    topic: 'a Texas armadillo digs a long tunnel under the ground to make a home and to hide from coyotes; the question asks the kid how the burrow helps the armadillo survive' },
+  { id: 'g2s-balance-scale-rock', grade: '2', strand: 'Matter & Energy', se: 'G2-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid puts a small rock on one side of a balance scale and a big rock on the other; the side with the big rock goes down; the question asks the kid which rock has more mass' },
+  { id: 'g2s-tx-rain-soak-soil', grade: '2', strand: 'Earth & Space', se: 'G2-observe',
+    scenarioType: 'experiment',
+    topic: "a kid pours a cup of water on dry Texas soil; the water soaks in and the dirt turns dark; the question asks the kid what happened to the water" },
+  { id: 'g2s-tx-rabbit-fast-run', grade: '2', strand: 'Force, Motion & Energy', se: 'G2-observe',
+    scenarioType: 'described_diagram',
+    topic: 'a Texas jackrabbit can run very fast in a zigzag pattern; the zigzag helps the rabbit get away when a coyote chases it; the question asks the kid how the zigzag helps the rabbit survive' },
+  { id: 'g2s-melting-ice-cream', grade: '2', strand: 'Matter & Energy', se: 'G2-observe',
+    scenarioType: 'experiment',
+    topic: "a kid leaves an ice-cream cone in the sun and goes to play; when they come back the ice cream is dripping down the cone; the question asks the kid what changed the ice cream" },
+
   // ===========================================================
   // ----- Grade 8 (TEKS §112.28) — STAAR-tested -----
   // (Original Phase R briefs, now tagged with grade field)
@@ -342,6 +362,20 @@ const BRIEFS = [
     topic: "a Texas live oak tree has deep roots in the ground and many wide leaves; the question asks the student to identify what each part does — the job of the roots and the job of the leaves" },
   { id: 'g3s-tx-hill-country-soil', grade: '3', strand: 'Earth & Space', se: '3.10B', scenarioType: 'data_analysis',
     topic: 'a student compares two soil samples from Texas — sandy soil from the coastal plains and dark rich soil from the Hill Country; the question asks the student to identify which soil is better for growing crops and why' },
+
+  // ----- G3 v3 — six more briefs -----
+  { id: 'g3s-mass-vs-weight', grade: '3', strand: 'Matter & Energy', se: '3.6A', scenarioType: 'experiment',
+    topic: 'a student weighs a baseball on a kitchen scale and reads the number; the question asks the student to identify whether the number tells how much matter the ball has or only how heavy it feels in their hand' },
+  { id: 'g3s-flashlight-battery-energy', grade: '3', strand: 'Force, Motion & Energy', se: '3.8A', scenarioType: 'experiment',
+    topic: 'a student turns on a flashlight; the bulb glows; when the batteries are taken out, the bulb does not glow even with the switch flipped; the question asks the student to identify where the energy for the light came from' },
+  { id: 'g3s-tx-sun-rises-east', grade: '3', strand: 'Earth & Space', se: '3.9A', scenarioType: 'data_analysis',
+    topic: "a student watches the sun rise over their Texas backyard for three days; each morning the sun comes up on the same side of the sky; the question asks the student to identify which direction the sun rises in" },
+  { id: 'g3s-tx-coyote-food-chain', grade: '3', strand: 'Organisms & Environments', se: '3.13B', scenarioType: 'described_diagram',
+    topic: 'a Texas Hill Country food chain shows grass eaten by a rabbit, the rabbit eaten by a coyote; the question asks the student to identify which one is the producer and which is the predator at the top' },
+  { id: 'g3s-water-three-states-bottle', grade: '3', strand: 'Matter & Energy', se: '3.6B', scenarioType: 'experiment',
+    topic: 'a student fills a closed plastic bottle halfway with water and puts it in the freezer; the next day the water inside is frozen solid; the question asks the student to identify what kind of change took place and whether mass was lost' },
+  { id: 'g3s-tx-gulf-coast-erosion', grade: '3', strand: 'Earth & Space', se: '3.10B', scenarioType: 'described_diagram',
+    topic: "a description of waves crashing on the Texas Gulf Coast year after year; the sand on the beach moves and the cliffs slowly get smaller; the question asks the student to identify the natural process that wears the land down over time" },
 
   // ===========================================================
   // ----- Grade 4 (TEKS §112.6) — practice-only -----

@@ -264,6 +264,20 @@ const BRIEFS = [
   { id: 'g2ss-tx-state-pledge', grade: '2', strand: 'civics',
     topic: 'the Texas Pledge — Texas kids say it after the Pledge of Allegiance: "Honor the Texas flag; I pledge allegiance to thee, Texas, one state under God, one and indivisible" — and what each part means' },
 
+  // ----- G2 v3 — six more briefs -----
+  { id: 'g2ss-tx-state-symbols-extra', grade: '2', strand: 'texas-symbols',
+    topic: 'three more Texas state symbols a second-grader should know — the state insect (monarch butterfly), the state flying mammal (Mexican free-tailed bat), and the state plant (prickly pear cactus) — and one fact about each' },
+  { id: 'g2ss-tx-three-cultures-shared', grade: '2', strand: 'community',
+    topic: 'three cultures that helped shape today\'s Texas — Native American (Caddo, Comanche, others lived here first), Spanish/Mexican (settlers built missions and brought language and food), and Anglo-American (settlers came in the 1820s) — and one thing each gave to Texas' },
+  { id: 'g2ss-railroads-changed-tx', grade: '2', strand: 'texas-history',
+    topic: "how trains changed Texas in the 1870s and 1880s — before trains, people moved by wagon and cattle by long drives; trains let Texas farms send food and cattle east in days, helped cities like Houston and Dallas grow, and brought new settlers" },
+  { id: 'g2ss-tx-money-history', grade: '2', strand: 'economics',
+    topic: 'how Texans paid for things over time — Native peoples traded with each other (no money), Spanish settlers used silver coins, the Republic of Texas printed paper money called "redbacks", and today Texans use U.S. dollars and cards' },
+  { id: 'g2ss-tx-mission-trail', grade: '2', strand: 'texas-history',
+    topic: 'the San Antonio mission trail has five Spanish missions in a row, including Mission San José and the Alamo; Spanish priests built them in the 1700s as churches and small towns where they tried to teach Native peoples' },
+  { id: 'g2ss-tx-state-government-three', grade: '2', strand: 'civics',
+    topic: 'the three parts of Texas state government — the Governor (lives in Austin and runs the state), the Legislature (group of people who make state laws), and the Texas Supreme Court (decides what the laws mean) — and where each one meets' },
+
   // Grade 3 v2 (8) — more tribes, San Jacinto, Texas Rangers, railroads, Tejano detail
   { id: 'g3ss-tx-tribes-tonkawa-wichita', grade: '3', strand: 'texas-history',
     topic: 'two more Native American groups of Texas — the Tonkawa (Central Texas, hunters and gatherers) and the Wichita (North Texas, farmers who built grass houses called grass lodges) — and how each used the land' },
