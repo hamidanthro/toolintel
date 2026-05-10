@@ -77060,6 +77060,282 @@
               "prompt": "A round Texas tortilla is split into 6 equal triangles. Diego ate 3. What fraction?",
               "answer": "3/6",
               "explanation": "3 of 6 parts: 3/6 (also 1/2)."
+            },
+            {
+              "id": "gen-u5l1-tx-frac-h1",
+              "type": "numeric",
+              "prompt": "A Texas pecan pie is cut into 2 equal pieces. What fraction is each piece? (Type as a/b)",
+              "answer": "1/2",
+              "explanation": "1 of 2 equal parts: 1/2."
+            },
+            {
+              "id": "gen-u5l1-tx-frac-h2",
+              "type": "numeric",
+              "prompt": "Maria splits a tortilla into 2 equal halves. She eats one. What fraction did she eat?",
+              "answer": "1/2",
+              "explanation": "1 of 2 = 1/2."
+            },
+            {
+              "id": "gen-u5l1-tx-frac-h3",
+              "type": "multiple_choice",
+              "prompt": "Diego eats half a Texas BBQ sandwich. The other half is left. Which fraction shows what is left?",
+              "choices": [
+                "1/4",
+                "1/2",
+                "1/3",
+                "2/2"
+              ],
+              "answer": "1/2",
+              "explanation": "1 of 2 = 1/2."
+            },
+            {
+              "id": "gen-u5l1-tx-frac-h4",
+              "type": "numeric",
+              "prompt": "A Texas watermelon is cut into 2 equal halves. Sofia eats one half. How many halves are left?",
+              "answer": "1",
+              "explanation": "2 − 1 = 1 half left."
+            },
+            {
+              "id": "gen-u5l1-tx-frac-h5",
+              "type": "numeric",
+              "prompt": "A pan dulce is split in half. What fraction is one half? (Type as a/b)",
+              "answer": "1/2",
+              "explanation": "1 of 2 = 1/2."
+            },
+            {
+              "id": "gen-u5l1-tx-frac-h6",
+              "type": "multiple_choice",
+              "prompt": "Imani cuts a paleta in half. Each piece is what fraction of the whole?",
+              "choices": [
+                "1/4",
+                "1/2",
+                "1/3",
+                "1/5"
+              ],
+              "answer": "1/2",
+              "explanation": "Each piece = 1/2."
+            },
+            {
+              "id": "gen-u5l1-tx-frac-h7",
+              "type": "numeric",
+              "prompt": "A Texas family eats half a pecan pie. What fraction is left?",
+              "answer": "1/2",
+              "explanation": "A whole minus half = 1/2."
+            },
+            {
+              "id": "gen-u5l1-tx-frac-h8",
+              "type": "numeric",
+              "prompt": "A long brisket is cut into halves. How many equal pieces are there?",
+              "answer": "2",
+              "explanation": "Halves = 2 equal parts."
+            },
+            {
+              "id": "gen-u5l1-tx-frac-h9",
+              "type": "multiple_choice",
+              "prompt": "A Texas bluebonnet bouquet has 10 flowers. Sofia gives away half. How many did she give away?",
+              "choices": [
+                "2",
+                "4",
+                "5",
+                "7"
+              ],
+              "answer": "5",
+              "explanation": "Half of 10 is 5."
+            },
+            {
+              "id": "gen-u5l1-tx-frac-h10",
+              "type": "numeric",
+              "prompt": "A square Texas tortilla is cut from corner to corner. Each piece is what fraction? (Type as a/b)",
+              "answer": "1/2",
+              "explanation": "Cut into 2 equal triangles: 1/2 each."
+            },
+            {
+              "id": "gen-u5l1-tx-frac-t1",
+              "type": "numeric",
+              "prompt": "A Texas pecan pie is cut into 3 equal pieces. What fraction is each piece? (Type as a/b)",
+              "answer": "1/3",
+              "explanation": "1 of 3 = 1/3."
+            },
+            {
+              "id": "gen-u5l1-tx-frac-t2",
+              "type": "multiple_choice",
+              "prompt": "Maria eats one-third of a Texas peach. Which fraction is that?",
+              "choices": [
+                "1/2",
+                "1/3",
+                "1/4",
+                "2/3"
+              ],
+              "answer": "1/3",
+              "explanation": "One third = 1/3."
+            },
+            {
+              "id": "gen-u5l1-tx-frac-t3",
+              "type": "numeric",
+              "prompt": "Diego shares a Texas tortilla equally with 2 friends, so 3 people total. What fraction does each get? (Type as a/b)",
+              "answer": "1/3",
+              "explanation": "1 of 3 = 1/3 each."
+            },
+            {
+              "id": "gen-u5l1-tx-frac-t4",
+              "type": "multiple_choice",
+              "prompt": "A pan dulce is cut into 3 equal pieces. Sofia eats 2. Which fraction did she eat?",
+              "choices": [
+                "1/3",
+                "2/3",
+                "3/3",
+                "1/2"
+              ],
+              "answer": "2/3",
+              "explanation": "2 of 3 = 2/3."
+            },
+            {
+              "id": "gen-u5l1-tx-frac-t5",
+              "type": "numeric",
+              "prompt": "A Texas watermelon is cut into 3 equal pieces. Aaliyah eats 1. What fraction did she eat?",
+              "answer": "1/3",
+              "explanation": "1 of 3 = 1/3."
+            },
+            {
+              "id": "gen-u5l1-tx-frac-t6",
+              "type": "numeric",
+              "prompt": "A pecan pie has 3 equal slices. Imani eats 1, Diego eats 1. How many slices are left?",
+              "answer": "1",
+              "explanation": "3 − 2 = 1 slice left."
+            },
+            {
+              "id": "gen-u5l1-tx-frac-t7",
+              "type": "multiple_choice",
+              "prompt": "A round Texas tortilla is cut into 3 equal pieces. Each piece is what?",
+              "choices": [
+                "half",
+                "third",
+                "fourth",
+                "fifth"
+              ],
+              "answer": "third",
+              "explanation": "3 equal parts = thirds."
+            },
+            {
+              "id": "gen-u5l1-tx-frac-t8",
+              "type": "numeric",
+              "prompt": "Sofia divides 9 pecans into 3 equal groups. How many pecans in each group?",
+              "answer": "3",
+              "explanation": "9 ÷ 3 = 3 pecans per group, each group is 1/3 of the total."
+            },
+            {
+              "id": "gen-u5l1-tx-frac-t9",
+              "type": "numeric",
+              "prompt": "A Texas BBQ plate has 3 equal sections. Each section is what fraction? (Type as a/b)",
+              "answer": "1/3",
+              "explanation": "Each section = 1/3."
+            },
+            {
+              "id": "gen-u5l1-tx-frac-t10",
+              "type": "multiple_choice",
+              "prompt": "A bluebonnet bouquet has 6 flowers split into 3 equal groups for 3 friends. How many flowers each?",
+              "choices": [
+                "1",
+                "2",
+                "3",
+                "6"
+              ],
+              "answer": "2",
+              "explanation": "6 ÷ 3 = 2 flowers each."
+            },
+            {
+              "id": "gen-u5l1-tx-frac-f1",
+              "type": "numeric",
+              "prompt": "A Texas pecan pie is cut into 4 equal pieces. What fraction is each piece? (Type as a/b)",
+              "answer": "1/4",
+              "explanation": "1 of 4 = 1/4."
+            },
+            {
+              "id": "gen-u5l1-tx-frac-f2",
+              "type": "multiple_choice",
+              "prompt": "Maria cuts a peach into 4 equal slices. Each slice is one ___?",
+              "choices": [
+                "half",
+                "third",
+                "fourth",
+                "fifth"
+              ],
+              "answer": "fourth",
+              "explanation": "4 equal parts = fourths."
+            },
+            {
+              "id": "gen-u5l1-tx-frac-f3",
+              "type": "numeric",
+              "prompt": "Diego eats 1 of 4 equal slices of Texas BBQ pie. What fraction did he eat? (Type as a/b)",
+              "answer": "1/4",
+              "explanation": "1 of 4 = 1/4."
+            },
+            {
+              "id": "gen-u5l1-tx-frac-f4",
+              "type": "multiple_choice",
+              "prompt": "Sofia ate 3 of 4 equal slices of pan dulce. Which fraction is that?",
+              "choices": [
+                "1/4",
+                "2/4",
+                "3/4",
+                "4/4"
+              ],
+              "answer": "3/4",
+              "explanation": "3 of 4 = 3/4."
+            },
+            {
+              "id": "gen-u5l1-tx-frac-f5",
+              "type": "numeric",
+              "prompt": "A Texas watermelon is cut into 4 equal pieces. Imani eats 2. What fraction did she eat? (Type as a/b)",
+              "answer": "2/4",
+              "explanation": "2 of 4 = 2/4 (also 1/2)."
+            },
+            {
+              "id": "gen-u5l1-tx-frac-f6",
+              "type": "numeric",
+              "prompt": "A round Texas tortilla is cut into 4 equal triangles. How many triangles are there? (Just the count)",
+              "answer": "4",
+              "explanation": "4 equal parts = 4 triangles."
+            },
+            {
+              "id": "gen-u5l1-tx-frac-f7",
+              "type": "multiple_choice",
+              "prompt": "A Texas peach is cut into 4 equal slices. Diego ate one. How many slices are left?",
+              "choices": [
+                "1",
+                "2",
+                "3",
+                "4"
+              ],
+              "answer": "3",
+              "explanation": "4 − 1 = 3 slices."
+            },
+            {
+              "id": "gen-u5l1-tx-frac-f8",
+              "type": "numeric",
+              "prompt": "Sofia divides 8 pecans into 4 equal groups. How many in each group?",
+              "answer": "2",
+              "explanation": "8 ÷ 4 = 2 each."
+            },
+            {
+              "id": "gen-u5l1-tx-frac-f9",
+              "type": "multiple_choice",
+              "prompt": "A square Texas tortilla is cut into 4 equal squares. What fraction is one small square?",
+              "choices": [
+                "1/2",
+                "1/3",
+                "1/4",
+                "1/8"
+              ],
+              "answer": "1/4",
+              "explanation": "1 of 4 = 1/4."
+            },
+            {
+              "id": "gen-u5l1-tx-frac-f10",
+              "type": "numeric",
+              "prompt": "A bluebonnet bouquet has 12 flowers split into 4 equal groups. How many flowers in each group?",
+              "answer": "3",
+              "explanation": "12 ÷ 4 = 3 flowers each."
             }
           ]
         }
