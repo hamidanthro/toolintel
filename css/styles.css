@@ -17723,3 +17723,86 @@ body.placement-page {
   }
   .placement-grade-label { font-size: 0.85rem; }
 }
+
+/* ============================================================
+   FRIEND LEAGUE — Tier 6 AF (May 10)
+   ============================================================ */
+.league-board {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 680px;
+}
+.league-row {
+  display: grid;
+  grid-template-columns: 50px 1fr 90px 60px;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: rgba(13, 34, 73, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.league-row.is-self {
+  background: rgba(251, 191, 36, 0.08);
+  border-color: rgba(251, 191, 36, 0.32);
+}
+.league-rank {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.55);
+  text-align: center;
+}
+.league-rank.is-medal { font-size: 1.4rem; }
+.league-name {
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.92);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.league-you-chip {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 8px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: rgba(251, 191, 36, 0.18);
+  color: #fde68a;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.league-xp {
+  text-align: right;
+  color: rgba(255, 255, 255, 0.78);
+}
+.league-xp-num {
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.95rem;
+}
+.league-xp-label {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.4);
+  margin-left: 3px;
+}
+.league-level {
+  font-size: 0.85rem;
+  color: var(--gold, #fbbf24);
+  font-weight: 600;
+  text-align: center;
+  padding: 4px 8px;
+  background: rgba(251, 191, 36, 0.08);
+  border-radius: 6px;
+}
+@media (max-width: 480px) {
+  .league-row {
+    grid-template-columns: 40px 1fr 80px 48px;
+    gap: 8px;
+    padding: 12px 12px;
+  }
+  .league-name { font-size: 0.9rem; }
+  .league-xp-num { font-size: 0.88rem; }
+}

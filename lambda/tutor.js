@@ -470,6 +470,7 @@ exports.handler = async (event) => {
   if (action === 'friendRespond')  return await handleFriendRespond(payload);
   if (action === 'friendList')     return await handleFriendList(payload);
   if (action === 'friendUnfriend') return await handleFriendUnfriend(payload);
+  if (action === 'friendLeague')   return await handleFriendLeague(payload);
   if (action === 'chatSend')       return await handleChatSend(payload);
   if (action === 'chatHistory')    return await handleChatHistory(payload);
   if (action === 'chatInbox')      return await handleChatInbox(payload);
@@ -3744,6 +3745,61 @@ async function handleFriendList(payload) {
     incoming:   rows.filter(r => r.status === 'pending_in').sort((a, b) => b.updatedAt - a.updatedAt),
     outgoing:   rows.filter(r => r.status === 'pending_out').sort((a, b) => b.updatedAt - a.updatedAt)
   });
+}
+
+// POST { token } — friend leaderboard (Tier 6 AF). Returns the auth
+// user + all accepted friends sorted by stats.xp descending. Per
+// CLAUDE.md §40 AF, age-gated to grade-3+ on the frontend (server
+// returns the data regardless; the kid never sees it on K-2 pages).
+async function handleFriendLeague(payload) {
+  const auth = await authedUser(payload);
+  if (!auth || !auth.username) return bad(401, 'Not signed in');
+
+  // 1. Fetch friend list.
+  const fr = await ddb.send(new QueryCommand({
+    TableName: FRIENDS_TABLE,
+    KeyConditionExpression: 'username = :u',
+    ExpressionAttributeValues: { ':u': auth.username }
+  }));
+  const friends = (fr.Items || [])
+    .filter(r => r.status === 'accepted')
+    .map(r => ({ peer: r.peer, displayName: r.peerDisplayName || r.peer }));
+
+  // 2. Always include self.
+  const usernames = [auth.username, ...friends.map(f => f.peer)];
+
+  // 3. Pull each user's achievementsState.stats.xp + displayName.
+  const rows = await Promise.all(usernames.map(async (u) => {
+    try {
+      const r = await ddb.send(new GetCommand({
+        TableName: USERS_TABLE,
+        Key: { username: u },
+        ProjectionExpression: 'achievementsState, displayName, grade'
+      }));
+      const item = r.Item || {};
+      const ach = item.achievementsState || {};
+      const stats = ach.stats || {};
+      return {
+        username:    u,
+        displayName: item.displayName || (u === auth.username ? 'You' : u),
+        grade:       item.grade || null,
+        xp:          Number.isFinite(stats.xp) ? stats.xp : 0,
+        level:       Number.isFinite(stats.level) ? stats.level : 1,
+        streak:      Number.isFinite(stats.loginStreak) ? stats.loginStreak : 0,
+        isSelf:      u === auth.username
+      };
+    } catch (_) {
+      return { username: u, displayName: u, xp: 0, level: 1, streak: 0, isSelf: u === auth.username };
+    }
+  }));
+
+  // 4. Sort by xp desc, then level desc, then displayName asc.
+  rows.sort((a, b) => (b.xp - a.xp) || (b.level - a.level) || a.displayName.localeCompare(b.displayName));
+
+  // 5. Assign ranks (1-indexed).
+  rows.forEach((r, i) => r.rank = i + 1);
+
+  return ok({ league: rows, count: rows.length });
 }
 
 // POST { token, target } — remove friendship from both sides
