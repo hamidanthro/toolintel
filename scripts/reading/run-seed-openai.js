@@ -41,6 +41,14 @@ const OUTPUT_DIR = path.resolve(__dirname, 'output');
 // the kid's grade level on FK; that's normal. Bands are warnings, not
 // blockers (the script logs and proceeds).
 const GRADE_BANDS = {
+  // K-2 are practice-only (STAAR doesn't test reading until grade 3).
+  // Targets are calibrated for OpenAI text-only output, which lands
+  // 1-2 FK grades higher than real classroom-K text (real K is
+  // picture-supported; we have no pictures). Word counts match a
+  // typical early-reader page set.
+  'k': { fk: [0.5, 3.0], words: { 'realistic-fiction': [50, 160], informational: [60, 180] } },
+  '1': { fk: [1.0, 3.5], words: { 'realistic-fiction': [80, 200], informational: [90, 220] } },
+  '2': { fk: [1.5, 4.0], words: { 'realistic-fiction': [120, 280], informational: [140, 300] } },
   '3': { fk: [2.8, 5.0], words: { 'realistic-fiction': [200, 380], informational: [260, 450] } },
   '4': { fk: [3.5, 6.0], words: { 'realistic-fiction': [260, 460], informational: [320, 520] } },
   '5': { fk: [4.5, 7.0], words: { 'realistic-fiction': [320, 540], informational: [380, 600] } },
@@ -48,6 +56,126 @@ const GRADE_BANDS = {
   '7': { fk: [6.5, 9.0], words: { 'realistic-fiction': [440, 700], informational: [500, 760] } },
   '8': { fk: [7.5, 10.0], words: { 'realistic-fiction': [500, 780], informational: [560, 840] } }
 };
+
+// Texas Kindergarten reading briefs — practice-only (STAAR doesn't
+// test K reading). Very short passages, very simple sentences,
+// concrete topics a 5-6yo can talk about. No inference questions —
+// stick to main idea + key detail + simple "what happened" sequence.
+const GK_BRIEFS = [
+  // Realistic fiction (5)
+  { id: 'gk-rf-bluebonnet-walk', grade: 'k', genre: 'realistic-fiction',
+    topic: 'a small kid takes a walk with a parent and points at the first bluebonnet they see all spring',
+    setting: 'a Texas neighborhood', protagonistName: 'Mia', protagonistDemographic: 'unmarked' },
+  { id: 'gk-rf-pet-the-armadillo', grade: 'k', genre: 'realistic-fiction',
+    topic: 'a kid sees an armadillo in the yard and learns to stay still and watch quietly so it does not run',
+    setting: 'a Texas backyard', protagonistName: 'Sam', protagonistDemographic: 'unmarked' },
+  { id: 'gk-rf-galveston-shells', grade: 'k', genre: 'realistic-fiction',
+    topic: 'a kid finds three different shells on a beach trip and lines them up biggest to smallest',
+    setting: 'Galveston beach', protagonistName: 'Ava', protagonistDemographic: 'unmarked' },
+  { id: 'gk-rf-rodeo-pony', grade: 'k', genre: 'realistic-fiction',
+    topic: 'a kid pets a pony at a small petting zoo at the rodeo and decides that ponies feel softer than they look',
+    setting: 'a small fair near Houston', protagonistName: 'Luca', protagonistDemographic: 'unmarked' },
+  { id: 'gk-rf-bluebird-feeder', grade: 'k', genre: 'realistic-fiction',
+    topic: 'a kid helps fill a bird feeder and watches a blue bird come visit',
+    setting: 'a backyard in Texas', protagonistName: 'Lily', protagonistDemographic: 'unmarked' },
+
+  // Informational (5)
+  { id: 'gk-info-armadillo-simple', grade: 'k', genre: 'informational',
+    topic: 'simple facts about armadillos: they have a hard shell, they sleep in the day, they roll up if they are scared',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'gk-info-bluebonnet-flower', grade: 'k', genre: 'informational',
+    topic: 'the bluebonnet is the Texas state flower; it blooms in spring; bees like it',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'gk-info-cowboy-horse', grade: 'k', genre: 'informational',
+    topic: 'a cowboy works on a ranch with a horse; cowboys help take care of cows',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'gk-info-rio-grande-river', grade: 'k', genre: 'informational',
+    topic: 'the Rio Grande is a long river in Texas; fish swim in it; people fish from the bank',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'gk-info-mockingbird', grade: 'k', genre: 'informational',
+    topic: 'the mockingbird is the Texas state bird; it can copy other bird songs',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' }
+];
+
+// Texas Grade 1 reading briefs — early reader, slightly longer.
+const G1_BRIEFS = [
+  // Realistic fiction (5)
+  { id: 'g1-rf-first-rodeo', grade: '1', genre: 'realistic-fiction',
+    topic: 'a kid goes to their first small-town rodeo and learns the names of three rodeo events',
+    setting: 'a small-town rodeo in Central Texas', protagonistName: 'Rosa', protagonistDemographic: 'hispanic-latino' },
+  { id: 'g1-rf-fishing-with-grandpa', grade: '1', genre: 'realistic-fiction',
+    topic: 'a kid goes fishing at a small Texas lake with grandpa and catches a tiny perch they have to throw back',
+    setting: 'a small lake near Tyler', protagonistName: 'Theo', protagonistDemographic: 'unmarked' },
+  { id: 'g1-rf-bus-to-school', grade: '1', genre: 'realistic-fiction',
+    topic: 'a kid rides the bus to first grade for the first time and figures out which seat is theirs',
+    setting: 'a Texas elementary school bus stop', protagonistName: 'Kai', protagonistDemographic: 'asian' },
+  { id: 'g1-rf-tomato-garden', grade: '1', genre: 'realistic-fiction',
+    topic: "a kid waters their tomato plants every day and the day comes when the first red one is ready to pick",
+    setting: 'a Texas backyard garden', protagonistName: 'Jada', protagonistDemographic: 'black' },
+  { id: 'g1-rf-hill-country-deer', grade: '1', genre: 'realistic-fiction',
+    topic: 'a kid sees a deer in the front yard and stays very still until the deer walks back into the trees',
+    setting: 'a house in the Hill Country', protagonistName: 'Henry', protagonistDemographic: 'unmarked' },
+
+  // Informational (5)
+  { id: 'g1-info-bluebonnet-explain', grade: '1', genre: 'informational',
+    topic: 'why the bluebonnet is the Texas state flower; when it blooms; why people drive out to see fields of them',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'g1-info-longhorns-state-animal', grade: '1', genre: 'informational',
+    topic: 'the Texas longhorn is the state large mammal; what its horns look like; why ranchers raised them long ago',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'g1-info-bats-austin', grade: '1', genre: 'informational',
+    topic: 'bats sleep under a bridge in Austin all day, then fly out at night to eat bugs',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'g1-info-pecan-tree', grade: '1', genre: 'informational',
+    topic: 'pecan trees grow in Texas; their nuts are good to eat; squirrels like them too',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'g1-info-gulf-of-mexico', grade: '1', genre: 'informational',
+    topic: 'the Gulf of Mexico touches the Texas coast; people swim there; sea turtles live there',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' }
+];
+
+// Texas Grade 2 reading briefs — full sentences, clear paragraphs.
+const G2_BRIEFS = [
+  // Realistic fiction (6)
+  { id: 'g2-rf-houston-zoo', grade: '2', genre: 'realistic-fiction',
+    topic: 'a kid visits the Houston Zoo with their class and notices that the elephants seem to know their keepers',
+    setting: 'Houston Zoo', protagonistName: 'Marcus', protagonistDemographic: 'black' },
+  { id: 'g2-rf-bluebonnet-photo', grade: '2', genre: 'realistic-fiction',
+    topic: "a kid takes a parent's phone and tries to take a photo of a bluebonnet field, learning to hold the camera steady",
+    setting: 'a roadside in the Hill Country', protagonistName: 'Aanya', protagonistDemographic: 'asian' },
+  { id: 'g2-rf-rio-grande-walk', grade: '2', genre: 'realistic-fiction',
+    topic: "a kid takes a slow walk with grandma along the Rio Grande and counts the kinds of birds they see",
+    setting: 'a riverside trail near McAllen', protagonistName: 'Camila', protagonistDemographic: 'hispanic-latino' },
+  { id: 'g2-rf-state-fair-funnel', grade: '2', genre: 'realistic-fiction',
+    topic: 'a kid eats their first funnel cake at the State Fair of Texas and decides next year they want to try the corny dog',
+    setting: 'State Fair of Texas in Dallas', protagonistName: 'Ethan', protagonistDemographic: 'unmarked' },
+  { id: 'g2-rf-school-pet-frog', grade: '2', genre: 'realistic-fiction',
+    topic: "a kid gets to take care of the class pet frog over a long weekend and writes notes about everything the frog does",
+    setting: 'a Texas elementary school classroom', protagonistName: 'Imani', protagonistDemographic: 'black' },
+  { id: 'g2-rf-bracken-bats-watch', grade: '2', genre: 'realistic-fiction',
+    topic: "a kid waits with grandparents at sunset to watch bats fly out from a Texas cave",
+    setting: 'a bat cave near San Antonio', protagonistName: 'Diego', protagonistDemographic: 'hispanic-latino' },
+
+  // Informational (6)
+  { id: 'g2-info-armadillo-facts', grade: '2', genre: 'informational',
+    topic: 'three things about Texas armadillos: their hard shell, what they eat (insects), and why they jump straight up when scared',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'g2-info-state-symbols-trio', grade: '2', genre: 'informational',
+    topic: 'three Texas state symbols a second-grader should know: bluebonnet (flower), mockingbird (bird), and pecan (tree). What each one is and why it was chosen',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'g2-info-cowboy-job', grade: '2', genre: 'informational',
+    topic: "what a real Texas cowboy's job looks like today: riding a horse, moving cattle between pastures, fixing fences",
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'g2-info-summer-storms-simple', grade: '2', genre: 'informational',
+    topic: 'why thunder rolls so loud in summer Texas storms: hot air rises fast, cool air falls, and lightning makes the loud sound',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'g2-info-coast-shorebird-three', grade: '2', genre: 'informational',
+    topic: 'three Texas coast birds (great blue heron, brown pelican, gull) and one cool thing each one does to find food',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'g2-info-prickly-pear-cactus', grade: '2', genre: 'informational',
+    topic: 'how a prickly pear cactus stores water in its thick paddles and why that helps it live where rain is rare',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' }
+];
 
 // Texas Grade 3 reading briefs. Mix of realistic-fiction + informational;
 // all kid-grounded, Texas-rooted, §9-clean. Diverse settings (5 regions)
@@ -409,7 +537,11 @@ const G8_BRIEFS = [
     setting: null, protagonistName: null, protagonistDemographic: 'unmarked' }
 ];
 
-const ALL_BRIEFS = [...G3_BRIEFS, ...G4_BRIEFS, ...G5_BRIEFS, ...G6_BRIEFS, ...G7_BRIEFS, ...G8_BRIEFS];
+const ALL_BRIEFS = [
+  ...GK_BRIEFS, ...G1_BRIEFS, ...G2_BRIEFS,
+  ...G3_BRIEFS, ...G4_BRIEFS, ...G5_BRIEFS,
+  ...G6_BRIEFS, ...G7_BRIEFS, ...G8_BRIEFS
+];
 
 let _ddbClient = null, _PutCommand = null, _DocClient = null;
 function getDdb() {
@@ -427,9 +559,9 @@ function parseArgs(argv) {
   for (let i = 2; i < argv.length; i++) {
     if (argv[i] === '--write') opts.dryRun = false;
     else if (argv[i] === '--brief-id') opts.briefId = argv[++i];
-    else if (argv[i] === '--grade') opts.grade = parseInt(argv[++i], 10);
+    else if (argv[i] === '--grade') opts.grade = String(argv[++i]).toLowerCase();
     else if (argv[i] === '--help' || argv[i] === '-h') {
-      console.log('Usage: run-seed-openai.js [--brief-id <id>] [--grade <n>] [--write]');
+      console.log('Usage: run-seed-openai.js [--brief-id <id>] [--grade <k|1..8>] [--write]');
       process.exit(0);
     }
   }
@@ -467,7 +599,21 @@ function buildPassageSystem(grade) {
   const kp = loadKP();
   const sec = kp.sections;
   const band = GRADE_BANDS[String(grade)] || GRADE_BANDS['3'];
-  return `You are a children's reading-passage writer for a Texas STAAR grade-${grade} practice app. You write passages that match what a kid would see on the actual STAAR test: kid-readable (target Flesch-Kincaid ${band.fk[0]}-${band.fk[1]}), factually grounded, Texas-rooted often but not always, and free of landmines.
+  // K/1/2 are pre-STAAR, very early readers. Tighter constraints +
+  // explicit sentence-level guidance (the FK target alone isn't enough
+  // signal — gpt-4o tends to overshoot to a 6th-grade reading level
+  // unless the prompt explicitly caps sentence length).
+  const earlyReader = ['k', '1', '2'].includes(String(grade).toLowerCase());
+  const earlyReaderRules = earlyReader ? `
+
+== EARLY-READER RULES (HARD — applies to grades K/1/2) ==
+- Sentences are SHORT. Average 5-8 words per sentence. Never more than 12 words in a single sentence.
+- Vocabulary is concrete and common. No abstract concepts ("preservation", "ecosystem", "recognition"). Use "saving", "the place where animals live", "knowing".
+- Use simple subject-verb-object structures. Avoid subordinate clauses.
+- Use repetition where natural — early readers learn from rereading the same word in a new context.
+- Word count is STRICT (not a suggestion). Stay inside the target range below; OVER-LONG passages are useless for early readers.
+` : '';
+  return `You are a children's reading-passage writer for a Texas STAAR grade-${grade} practice app. You write passages that match what a kid would see on the actual STAAR test: kid-readable (target Flesch-Kincaid ${band.fk[0]}-${band.fk[1]}), factually grounded, Texas-rooted often but not always, and free of landmines.${earlyReaderRules}
 
 == KP §2 — Passage characteristics ==
 ${sec.passageCharacteristics || ''}
@@ -522,7 +668,12 @@ Match KP §2 word-count band for this genre, KP §8 readability target, and obey
 }
 
 function buildQuestionsSystem(grade) {
-  return `You write reading-comprehension multiple-choice questions for a Texas STAAR grade-${grade} practice app, given a passage. STAAR grade-${grade} reading questions test: main idea, key detail, vocabulary-in-context, inference, and author's purpose. Difficulty should match grade-${grade} STAAR released items (more nuance / longer-passage evidence at higher grades).
+  const earlyReader = ['k', '1', '2'].includes(String(grade).toLowerCase());
+  const earlyReaderRules = earlyReader ? `
+
+For grades K/1/2: stick to MAIN IDEA, KEY DETAIL, and SIMPLE SEQUENCE ("what happened first?"). Skip inference and author-purpose — too abstract. Question stems and answer choices use ≤8 words each. Vocabulary stays at early-reader level.
+` : '';
+  return `You write reading-comprehension multiple-choice questions for a Texas STAAR grade-${grade} practice app, given a passage. STAAR grade-${grade} reading questions test: main idea, key detail, vocabulary-in-context, inference, and author's purpose. Difficulty should match grade-${grade} STAAR released items (more nuance / longer-passage evidence at higher grades).${earlyReaderRules}
 
 Output STRICT JSON:
 
@@ -716,7 +867,7 @@ async function main() {
 
   let briefs = ALL_BRIEFS.slice();
   if (opts.briefId) briefs = briefs.filter(b => b.id === opts.briefId);
-  if (opts.grade != null) briefs = briefs.filter(b => Number(b.grade) === opts.grade);
+  if (opts.grade != null) briefs = briefs.filter(b => String(b.grade).toLowerCase() === opts.grade);
   if (!briefs.length) {
     console.error(`No briefs matched --brief-id=${opts.briefId || '(unset)'} --grade=${opts.grade ?? '(unset)'}`);
     process.exit(1);

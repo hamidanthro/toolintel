@@ -1118,7 +1118,7 @@
       testAuthorityShort: 'TEA',
       testAuthorityUrl: 'https://tea.texas.gov/',
       standards: "TEKS",
-      gradesTested: ['grade-3','grade-4','grade-5','grade-6','grade-7','grade-8','algebra-1'],
+      gradesTested: ['grade-k','grade-1','grade-2','grade-3','grade-4','grade-5','grade-6','grade-7','grade-8','algebra-1'],
       testWindow: 'April–May',
       testWindowMonth: 4,
       description: 'STAAR is the Texas state test for grades 3–8 plus high school End-of-Course exams. It measures progress against the Texas Essential Knowledge and Skills (TEKS).',
@@ -1318,7 +1318,7 @@
   // Texas overrides below; everyone else uses the default policy.
   var TEXAS_SUBJECT_GRADES = {
     math: ['grade-3','grade-4','grade-5','grade-6','grade-7','grade-8','algebra-1'],
-    reading: ['grade-3','grade-4','grade-5','grade-6','grade-7','grade-8'],
+    reading: ['grade-k','grade-1','grade-2','grade-3','grade-4','grade-5','grade-6','grade-7','grade-8'],
     science: ['grade-3','grade-4','grade-5','grade-6','grade-7','grade-8'],
     'social-studies': ['grade-8']
   };
