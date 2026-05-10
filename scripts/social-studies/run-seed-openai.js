@@ -170,6 +170,83 @@ const BRIEFS = [
     topic: "Texas's Mexican heritage — many Texans speak both Spanish and English; food (tacos, fajitas, enchiladas) and music (Tejano, mariachi) come from Mexican traditions; this heritage is part of what makes Texas Texas" },
 
   // ===========================================================
+  // ----- K-3 v2 depth — eight more briefs per grade so the NO-REPEAT
+  //       cycle for K-3 social studies extends from ~2 weeks to ~5 weeks.
+  // ===========================================================
+
+  // Kindergarten v2 (8) — calendar, school, helpers, money basics
+  { id: 'gkss-school-day', grade: 'k', strand: 'community',
+    topic: 'what we do at school each day — circle time, learning letters and numbers, snack, recess, art, and going home — naming three things kids do at school' },
+  { id: 'gkss-four-seasons', grade: 'k', strand: 'time',
+    topic: 'the four seasons in Texas — spring (flowers grow), summer (hot days), fall (leaves change), winter (cold mornings) — and one thing kids do in each season' },
+  { id: 'gkss-jobs-at-school', grade: 'k', strand: 'community',
+    topic: 'people who work at school — teacher (helps you learn), principal (leader of the school), nurse (helps you feel better), bus driver (drives the bus), cafeteria helper (serves lunch) — and one thing each one does' },
+  { id: 'gkss-tx-state-tree', grade: 'k', strand: 'texas-symbols',
+    topic: 'the pecan is the Texas state tree — pecans are nuts that grow inside green shells, and many Texas families bake pecan pie' },
+  { id: 'gkss-money-coins', grade: 'k', strand: 'economics',
+    topic: 'money is what we use to buy things — a penny is one cent, a nickel is five cents, a dime is ten cents — coins are small and round' },
+  { id: 'gkss-my-address', grade: 'k', strand: 'community',
+    topic: 'an address tells where you live — a number, the street name, the city, and the state — and why a kindergartener should know their address' },
+  { id: 'gkss-tx-state-mammal', grade: 'k', strand: 'texas-symbols',
+    topic: 'the armadillo is a Texas state animal — it has a hard shell and curls up when scared, and it lives in fields and woods all over Texas' },
+  { id: 'gkss-helpers-doctors-nurses', grade: 'k', strand: 'community',
+    topic: 'doctors and nurses help us when we are sick — they listen to our hearts, give us medicine, and tell us how to get better — three things they do' },
+
+  // Grade 1 v2 (8) — US flag, leaders, maps directions, holidays, voting
+  { id: 'g1ss-us-flag', grade: '1', strand: 'civics',
+    topic: 'the United States flag has 13 stripes (one for each first colony) and 50 stars (one for each state) — the colors are red, white, and blue, and we say the Pledge of Allegiance to it' },
+  { id: 'g1ss-president-leader', grade: '1', strand: 'civics',
+    topic: 'the President is the leader of the United States — the President lives in the White House in Washington, D.C., signs laws, and helps make important decisions for the whole country' },
+  { id: 'g1ss-map-directions', grade: '1', strand: 'geography',
+    topic: 'maps use four main directions — North (up), South (down), East (right), West (left) — using a compass rose, and Texas is south of Oklahoma and east of New Mexico' },
+  { id: 'g1ss-holidays-american', grade: '1', strand: 'history',
+    topic: 'three American holidays first-graders know — Independence Day (July 4, when our country became free), Thanksgiving (November, for being thankful), and Memorial Day (May, for soldiers who served)' },
+  { id: 'g1ss-voting-basics', grade: '1', strand: 'civics',
+    topic: 'voting is how grown-ups choose leaders — each person gets one vote, the person with the most votes wins, and Americans vote for the President every four years' },
+  { id: 'g1ss-tx-rivers-simple', grade: '1', strand: 'geography',
+    topic: 'three Texas rivers a first-grader can name — the Rio Grande (along the border with Mexico), the Brazos (a long river in central Texas), and the Trinity (runs near Dallas) — rivers give us water and let boats travel' },
+  { id: 'g1ss-tx-songs-symbols', grade: '1', strand: 'texas-symbols',
+    topic: 'Texas has its own state song called "Texas, Our Texas" — it talks about how big and beautiful Texas is, and Texas kids learn to sing it in school' },
+  { id: 'g1ss-school-then-now', grade: '1', strand: 'history',
+    topic: 'school long ago vs school today — kids used chalk and slates instead of pencils and paper, sat in one-room schools with all grades together, and walked to school instead of taking a bus' },
+
+  // Grade 2 v2 (8) — Texas heroes, products, immigration, weather, taxes basic
+  { id: 'g2ss-davy-crockett', grade: '2', strand: 'texas-history',
+    topic: 'Davy Crockett was a frontiersman from Tennessee who came to Texas to help fight for independence — he died defending the Alamo in 1836 and is remembered as a hero of Texas' },
+  { id: 'g2ss-juan-seguin', grade: '2', strand: 'texas-history',
+    topic: 'Juan Seguín was a Tejano (a Texan of Mexican heritage) who fought beside Sam Houston for Texas independence — he later became mayor of San Antonio, showing that Texans of many backgrounds helped build Texas' },
+  { id: 'g2ss-tx-products-three', grade: '2', strand: 'economics',
+    topic: 'three things Texas is famous for producing — beef cattle (more than any other state), oil (used for fuel), and cotton (made into clothes) — and why each grew up in Texas' },
+  { id: 'g2ss-tx-weather-climate', grade: '2', strand: 'geography',
+    topic: 'weather across Texas is different in different places — the east is wet and humid, the west is dry, summers are hot statewide, and the north sometimes has snow in winter' },
+  { id: 'g2ss-immigration-tx', grade: '2', strand: 'community',
+    topic: 'people from many countries came to live in Texas — German families settled in Fredericksburg, Czech families in West (yes, that is the town name), Mexican families across South Texas — and each group brought food, music, and stories' },
+  { id: 'g2ss-taxes-simple', grade: '2', strand: 'economics',
+    topic: 'taxes are money people pay to the government — taxes pay for roads, schools, parks, firefighters, and police — when grown-ups buy things, a small extra amount called sales tax goes to Texas' },
+  { id: 'g2ss-tx-state-fair', grade: '2', strand: 'community',
+    topic: 'the State Fair of Texas happens every fall in Dallas — Big Tex (a 55-foot-tall talking cowboy) welcomes everyone, and people come to see animals, ride rides, and try new foods' },
+  { id: 'g2ss-tx-state-pledge', grade: '2', strand: 'civics',
+    topic: 'the Texas Pledge — Texas kids say it after the Pledge of Allegiance: "Honor the Texas flag; I pledge allegiance to thee, Texas, one state under God, one and indivisible" — and what each part means' },
+
+  // Grade 3 v2 (8) — more tribes, San Jacinto, Texas Rangers, railroads, Tejano detail
+  { id: 'g3ss-tx-tribes-tonkawa-wichita', grade: '3', strand: 'texas-history',
+    topic: 'two more Native American groups of Texas — the Tonkawa (Central Texas, hunters and gatherers) and the Wichita (North Texas, farmers who built grass houses called grass lodges) — and how each used the land' },
+  { id: 'g3ss-san-jacinto-battle', grade: '3', strand: 'texas-history',
+    topic: 'the Battle of San Jacinto (April 21, 1836) — Sam Houston led the Texas army to a surprise victory over Mexico in just 18 minutes, capturing Santa Anna and winning Texas independence' },
+  { id: 'g3ss-texas-rangers-history', grade: '3', strand: 'texas-history',
+    topic: 'the Texas Rangers are a famous law-enforcement group started in 1823 by Stephen F. Austin to protect settlers — they still work today, helping solve big crimes across Texas' },
+  { id: 'g3ss-tx-railroads-growth', grade: '3', strand: 'texas-history',
+    topic: 'how railroads changed Texas in the late 1800s — trains let cattle ranchers ship beef to other states, brought new settlers, and helped cities like Houston, Dallas, and Fort Worth grow big' },
+  { id: 'g3ss-tejano-culture-detail', grade: '3', strand: 'community',
+    topic: 'Tejano culture in South Texas — Tejanos are Texans of Mexican heritage who have lived in Texas for generations; their music (accordion-led conjunto), food (carne asada, breakfast tacos), and Spanish language shaped Texas' },
+  { id: 'g3ss-tx-supply-and-demand', grade: '3', strand: 'economics',
+    topic: 'how prices work — supply (how much of something there is) and demand (how much people want it) — when there is little supply but big demand, prices go up; when there is lots of supply but small demand, prices go down (with kid-level examples)' },
+  { id: 'g3ss-tx-galveston-port', grade: '3', strand: 'geography',
+    topic: 'Galveston is a port city on the Gulf of Mexico — for most of the 1800s it was the biggest city in Texas because ships could load and unload there, until a giant hurricane in 1900 changed everything' },
+  { id: 'g3ss-tx-juneteenth-history', grade: '3', strand: 'texas-history',
+    topic: 'Juneteenth started in Galveston, Texas on June 19, 1865 — the day enslaved Texans learned they were free; Texas was the first state to make Juneteenth a holiday, and now it is a U.S. national holiday' },
+
+  // ===========================================================
   // ----- Grade 4 (TEKS §113.15) — Texas regions, history, government -----
   // ===========================================================
   { id: 'g4ss-tx-four-regions', grade: '4', strand: 'geography',

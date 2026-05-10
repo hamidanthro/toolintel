@@ -11,3 +11,6 @@ scripts/fun-facts/output/
 lambda/tts/node_modules/
 lambda/tts/package-lock.json
 scripts/science/output/
+scripts/science-openai/output/
+scripts/social-studies/output/
+scripts/reading/output/

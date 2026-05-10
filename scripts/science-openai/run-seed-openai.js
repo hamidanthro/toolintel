@@ -113,6 +113,46 @@ const BRIEFS = [
     scenarioType: 'described_diagram',
     topic: "a kid's day shows breakfast in the morning, lunch in the day, and bedtime when it is dark; the question asks the kid what part of the day comes after the Sun goes down" },
 
+  // ----- K v2 — six more briefs, doubling K NO-REPEAT cycle -----
+  { id: 'gks-warm-vs-cold', grade: 'k', strand: 'Matter & Energy', se: 'K-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid touches a cup of hot cocoa and a glass of cold water; the question asks the kid which one is warm and which is cold and how their hands tell them' },
+  { id: 'gks-float-sink', grade: 'k', strand: 'Matter & Energy', se: 'K-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid puts a leaf and a small rock in a bowl of water; the leaf floats on top, the rock sinks to the bottom; the question asks the kid which one floated and which sank' },
+  { id: 'gks-fast-vs-slow', grade: 'k', strand: 'Force, Motion & Energy', se: 'K-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid pushes a toy car softly and it goes slow; then pushes it hard and it goes fast; the question asks why the car went faster the second time' },
+  { id: 'gks-rain-clouds', grade: 'k', strand: 'Earth & Space', se: 'K-observe',
+    scenarioType: 'described_diagram',
+    topic: "a picture shows a sunny sky and another picture shows a sky with big gray clouds and rain falling; the question asks the kid which sky brings rain" },
+  { id: 'gks-pet-needs-food', grade: 'k', strand: 'Organisms & Environments', se: 'K-observe',
+    scenarioType: 'described_diagram',
+    topic: 'a kid takes care of a puppy — gives it food, water, and a bed; the question asks the kid which thing the puppy needs to eat to grow' },
+  { id: 'gks-leaves-fall-color', grade: 'k', strand: 'Earth & Space', se: 'K-observe',
+    scenarioType: 'described_diagram',
+    topic: "a Texas backyard has green leaves on trees in summer and orange and red leaves on the ground in fall; the question asks the kid what season makes the leaves change color" },
+
+  // ----- G1 v2 — six more briefs -----
+  { id: 'g1s-water-states-ice-cube', grade: '1', strand: 'Matter & Energy', se: 'G1-observe',
+    scenarioType: 'experiment',
+    topic: "a kid takes an ice cube out of the freezer and lets it sit on a plate; after lunch the ice is gone and there is water on the plate; the question asks the kid what kind of change made the ice into water" },
+  { id: 'g1s-shadow-changes-day', grade: '1', strand: 'Earth & Space', se: 'G1-observe',
+    scenarioType: 'experiment',
+    topic: "a kid traces their shadow on the playground in the morning, at noon, and in the afternoon; each tracing is in a different spot and a different size; the question asks the kid why the shadow moved" },
+  { id: 'g1s-tx-cardinal-color', grade: '1', strand: 'Organisms & Environments', se: 'G1-observe',
+    scenarioType: 'described_diagram',
+    topic: 'a Texas backyard has a bright red cardinal at a bird feeder and a brown female cardinal nearby; the question asks the kid how the bright red feathers help the male cardinal' },
+  { id: 'g1s-cup-stack-knock', grade: '1', strand: 'Force, Motion & Energy', se: 'G1-observe',
+    scenarioType: 'experiment',
+    topic: "a kid stacks ten paper cups in a tower; a soft tap on the bottom cup makes the tower wiggle, a hard push makes the tower fall; the question asks the kid what kind of force made the cups fall" },
+  { id: 'g1s-tx-prairie-grass', grade: '1', strand: 'Organisms & Environments', se: 'G1-observe',
+    scenarioType: 'described_diagram',
+    topic: "a kid walks through a Texas prairie and sees tall grass everywhere — some is green, some is brown and dry; the question asks the kid what plants need to stay green" },
+  { id: 'g1s-rocks-sort-by-color', grade: '1', strand: 'Earth & Space', se: 'G1-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid finds five rocks on a Texas creek bank — gray, white, red, brown, and black — and sorts them by color; the question asks the kid which property they used to sort the rocks' },
+
   // ===========================================================
   // ----- Grade 2 — practice-only -----
   // ===========================================================
@@ -146,6 +186,26 @@ const BRIEFS = [
   { id: 'g2s-sun-warms-things', grade: '2', strand: 'Earth & Space', se: 'G2-observe',
     scenarioType: 'experiment',
     topic: 'a kid leaves two cups of water — one in the sunny window, one in the shade — for an hour; the cup in the sun feels warmer; the question asks why the sunny cup is warmer' },
+
+  // ----- G2 v2 — six more briefs -----
+  { id: 'g2s-melting-chocolate', grade: '2', strand: 'Matter & Energy', se: 'G2-observe',
+    scenarioType: 'experiment',
+    topic: "a kid leaves a chocolate bar in a sunny car for thirty minutes; when they come back the bar is soft and runny; the question asks the kid what made the chocolate change shape" },
+  { id: 'g2s-balloon-rub-static', grade: '2', strand: 'Force, Motion & Energy', se: 'G2-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid rubs a balloon on their hair and then holds it near small bits of paper; the paper jumps up and sticks to the balloon; the question asks the kid what made the paper stick' },
+  { id: 'g2s-tx-armadillo-shell', grade: '2', strand: 'Organisms & Environments', se: 'G2-observe',
+    scenarioType: 'described_diagram',
+    topic: 'a Texas armadillo has a hard shell on its back and soft skin underneath; the question asks the kid how the hard shell helps the armadillo stay safe' },
+  { id: 'g2s-water-cycle-simple', grade: '2', strand: 'Earth & Space', se: 'G2-observe',
+    scenarioType: 'described_diagram',
+    topic: "a picture series shows water in a Texas pond, water rising as steam in the sunshine, clouds forming, and rain falling back down; the question asks the kid the order of what happens to the water" },
+  { id: 'g2s-pulley-bucket-up', grade: '2', strand: 'Force, Motion & Energy', se: 'G2-observe',
+    scenarioType: 'experiment',
+    topic: "a kid uses a rope over a tree branch to pull a bucket up; pulling down on the rope lifts the bucket up; the question asks the kid what kind of simple machine the rope-and-branch is" },
+  { id: 'g2s-tx-bluebonnet-bee', grade: '2', strand: 'Organisms & Environments', se: 'G2-observe',
+    scenarioType: 'described_diagram',
+    topic: "a Texas field of bluebonnets in spring has bees flying from flower to flower; the bees take pollen with them; the question asks the kid what the bees help the flowers do" },
 
   // ===========================================================
   // ----- Grade 8 (TEKS §112.28) — STAAR-tested -----
@@ -228,6 +288,20 @@ const BRIEFS = [
     topic: 'a description of a hiker in Central Texas who finds a spiral shell pressed into limestone far from any ocean; the question asks the student to identify what the fossil tells us about the area long ago' },
   { id: 'g3s-duck-webbed-feet', grade: '3', strand: 'Organisms & Environments', se: '3.13A', scenarioType: 'described_diagram',
     topic: 'a description of a duck swimming with wide webbed feet pushing water like paddles; the question asks the student to identify how the webbed feet help the duck survive' },
+
+  // ----- G3 v2 — six more briefs -----
+  { id: 'g3s-thermometer-temp', grade: '3', strand: 'Matter & Energy', se: '3.6B', scenarioType: 'experiment',
+    topic: 'a student uses a thermometer to measure the temperature of three glasses of water — ice water, room-temperature water, and warm water; the question asks the student to identify which glass has the highest temperature and what the thermometer is measuring' },
+  { id: 'g3s-light-mirror-reflect', grade: '3', strand: 'Force, Motion & Energy', se: '3.8A', scenarioType: 'experiment',
+    topic: 'a student shines a flashlight at a mirror and sees the light bounce off and land on the wall; the question asks the student to identify what is happening when light hits the mirror' },
+  { id: 'g3s-tx-storm-clouds', grade: '3', strand: 'Earth & Space', se: '3.10C', scenarioType: 'described_diagram',
+    topic: 'a description of three Texas weather days — sunny with a few small clouds, mostly cloudy with no rain, dark gray clouds with thunder and rain; the question asks the student to identify which kind of cloud usually brings a thunderstorm' },
+  { id: 'g3s-tx-monarch-migration', grade: '3', strand: 'Organisms & Environments', se: '3.12A', scenarioType: 'described_diagram',
+    topic: 'a description of monarch butterflies that fly through Texas every fall on their way south to Mexico for winter; the question asks the student to identify why monarchs fly south as winter comes' },
+  { id: 'g3s-roots-leaves-jobs', grade: '3', strand: 'Organisms & Environments', se: '3.13A', scenarioType: 'described_diagram',
+    topic: "a Texas live oak tree has deep roots in the ground and many wide leaves; the question asks the student to identify what each part does — the job of the roots and the job of the leaves" },
+  { id: 'g3s-tx-hill-country-soil', grade: '3', strand: 'Earth & Space', se: '3.10B', scenarioType: 'data_analysis',
+    topic: 'a student compares two soil samples from Texas — sandy soil from the coastal plains and dark rich soil from the Hill Country; the question asks the student to identify which soil is better for growing crops and why' },
 
   // ===========================================================
   // ----- Grade 4 (TEKS §112.6) — practice-only -----
