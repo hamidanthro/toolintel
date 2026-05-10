@@ -210,6 +210,20 @@ const BRIEFS = [
   { id: 'gkss-tx-state-seal', grade: 'k', strand: 'texas-symbols',
     topic: 'the Texas state seal is a round picture with a big white star, an oak branch on one side, and an olive branch on the other; it goes on important Texas papers' },
 
+  // ----- K v4 — six more briefs -----
+  { id: 'gkss-pets-and-care', grade: 'k', strand: 'community',
+    topic: 'how kids help take care of family pets — giving water, brushing fur, taking dogs for short walks; three things a kindergartener can do for a pet' },
+  { id: 'gkss-tx-state-vegetable', grade: 'k', strand: 'texas-symbols',
+    topic: 'the sweet onion is the official Texas state vegetable; sweet onions grow big and round in South Texas where the soil and sun help them taste a little less spicy than other onions' },
+  { id: 'gkss-school-bus-rules', grade: 'k', strand: 'civics',
+    topic: 'three rules for riding the school bus — sit down while the bus is moving, use a quiet inside voice, and follow the bus driver\'s directions — to keep all the kids safe' },
+  { id: 'gkss-helping-firefighter', grade: 'k', strand: 'community',
+    topic: 'firefighters in Texas help in many ways — they put out fires, they rescue cats stuck in trees, and they teach kids what to do if there is a fire at home (stay low, get out fast, call 911)' },
+  { id: 'gkss-tx-state-fish-bass', grade: 'k', strand: 'texas-symbols',
+    topic: 'the Guadalupe bass is the Texas state fish; it is a small green-and-black fish that lives in clear Texas Hill Country streams and is found nowhere else in the world' },
+  { id: 'gkss-yes-and-no-words', grade: 'k', strand: 'community',
+    topic: 'how kindergarteners use polite words to talk to other people — saying "please" when asking, "thank you" when receiving, "sorry" when bumping someone, and "excuse me" when needing to walk past' },
+
   // Grade 1 v2 (8) — US flag, leaders, maps directions, holidays, voting
   { id: 'g1ss-us-flag', grade: '1', strand: 'civics',
     topic: 'the United States flag has 13 stripes (one for each first colony) and 50 stars (one for each state) — the colors are red, white, and blue, and we say the Pledge of Allegiance to it' },
@@ -245,6 +259,20 @@ const BRIEFS = [
     topic: 'the mockingbird is the Texas state bird; it can copy songs from other birds and even from car alarms and phone rings; it sings most loudly in spring when it is looking for a partner' },
   { id: 'g1ss-tx-traditional-foods', grade: '1', strand: 'community',
     topic: 'three traditional Texas foods that come from different cultures — barbecue (English and German settlers), tamales (Mexican heritage), and kolaches (Czech immigrants in Central Texas) — and how each is a part of Texas today' },
+
+  // ----- G1 v4 — six more briefs -----
+  { id: 'g1ss-tx-yellow-rose', grade: '1', strand: 'texas-history',
+    topic: 'the Yellow Rose of Texas is a famous Texas folk song from the 1830s that tells the story of a rose-themed sweetheart; it became a Texas anthem and is sung at fairs, schools, and Texas events today' },
+  { id: 'g1ss-tx-flag-history-detail', grade: '1', strand: 'texas-symbols',
+    topic: 'the Lone Star Flag was adopted by the Republic of Texas on January 25, 1839 — the blue stripe on the left has the white star, the white stripe on top means strong, and the red stripe on the bottom means brave' },
+  { id: 'g1ss-paying-for-things', grade: '1', strand: 'economics',
+    topic: 'three ways grown-ups in Texas pay for things — cash (paper bills and coins), credit cards (a small plastic card the bank gives them), and phones (tap-to-pay) — and one way each is different' },
+  { id: 'g1ss-tx-state-flying-mammal', grade: '1', strand: 'texas-symbols',
+    topic: 'the Mexican free-tailed bat is the Texas state flying mammal; about one and a half million of them live under the Congress Avenue Bridge in Austin and fly out at sunset every summer evening' },
+  { id: 'g1ss-helping-elders', grade: '1', strand: 'community',
+    topic: 'how kids can help older people — opening doors, sharing seats on a bus, holding a hand when crossing a street, and listening to grandparents tell stories — three small ways to show kindness' },
+  { id: 'g1ss-flag-of-texas-fold', grade: '1', strand: 'civics',
+    topic: 'how to fold a Texas flag with respect — keep it from touching the ground, fold it in half lengthwise twice, then fold the long strip into triangles until you have a small triangle showing only the white star' },
 
   // Grade 2 v2 (8) — Texas heroes, products, immigration, weather, taxes basic
   { id: 'g2ss-davy-crockett', grade: '2', strand: 'texas-history',
