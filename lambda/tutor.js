@@ -425,6 +425,7 @@ exports.handler = async (event) => {
   if (action === 'getReadingPassage')   return await handleGetReadingPassage(payload);
   if (action === 'getReadingItem')      return await handleGetReadingItem(payload);
   if (action === 'getScienceItem')      return await handleGetScienceItem(payload);
+  if (action === 'getSocialStudiesItem') return await handleGetSocialStudiesItem(payload);
   if (action === 'defineWord')          return await handleDefineWord(payload);
   if (action === 'earn')           return await handleEarn(payload);
   if (action === 'lose')           return await handleLose(payload);
@@ -2519,6 +2520,83 @@ async function handleGetScienceItem(payload) {
   console.log('[science] getScienceItem poolKey=' + poolKey + ' questionsFound=' + questions.length);
 
   return ok({ scenario, questions });
+}
+
+// Texas STAAR Grade 8 social studies serving path. Mirrors
+// handleGetReadingItem byte-faithfully: one passage + 5 cluster
+// questions per call. Texas only at launch (per CLAUDE.md
+// feedback_texas_only.md).
+//
+// Pool key shape:
+//   texas#8#social-studies#<passageId>            (cluster)
+//
+// Passages live in staar-passages with stateGradeGenre =
+// 'texas_8_social-studies'.
+async function handleGetSocialStudiesItem(payload) {
+  const auth = await authedUser(payload).catch(() => null);
+  const username = auth?.username || 'guest';
+  const state = String(payload.state || 'texas').trim().toLowerCase();
+  const rawGrade = String(payload.grade || '8').trim().toLowerCase();
+  const grade = rawGrade.replace(/^grade-/, '');
+
+  console.log('[ss] getSocialStudiesItem REQUEST:', JSON.stringify({
+    user: username, state, rawGrade, grade
+  }));
+
+  const stateGradeGenre = `${state}_${grade}_social-studies`;
+  let passages = [];
+  try {
+    const r = await ddb.send(new QueryCommand({
+      TableName: PASSAGES_TABLE,
+      IndexName: 'stateGradeGenre-index',
+      KeyConditionExpression: 'stateGradeGenre = :sgg',
+      ExpressionAttributeValues: { ':sgg': stateGradeGenre },
+      Limit: 50
+    }));
+    passages = (r.Items || []).filter(p =>
+      !p.tombstoneAt && (p.status === undefined || p.status === 'active')
+    );
+  } catch (err) {
+    console.error('[ss] getSocialStudiesItem GSI query failed:', err.message || err);
+    return bad(500, 'Lookup failed');
+  }
+  console.log('[ss] stateGradeGenre=' + stateGradeGenre + ' passagesFound=' + passages.length);
+  if (passages.length === 0) {
+    return ok({ passage: null, questions: [] });
+  }
+
+  // CLAUDE.md §39 NO-REPEAT
+  const scopeKey = `${state}_${grade}_social-studies`;
+  const seen = await loadSeenSet(username, scopeKey);
+  let pool = passages.filter(p => !seen.has(p.passageId));
+  let cycled = false;
+  if (pool.length === 0) {
+    pool = passages;
+    cycled = true;
+    clearSeenAsync(username, scopeKey);
+  }
+  console.log('[ss] noRepeat scope=' + scopeKey + ' total=' + passages.length + ' seen=' + seen.size + ' pool=' + pool.length + ' cycled=' + cycled);
+  const passage = pool[Math.floor(Math.random() * pool.length)];
+  markSeenAsync(username, scopeKey, passage.passageId);
+
+  const poolKey = `${state}#${grade}#social-studies#${passage.passageId}`;
+  let questions = [];
+  try {
+    const r = await ddb.send(new QueryCommand({
+      TableName: CONTENT_POOL_TABLE,
+      KeyConditionExpression: 'poolKey = :pk',
+      ExpressionAttributeValues: { ':pk': poolKey },
+      Limit: 10
+    }));
+    questions = (r.Items || []).filter(q =>
+      q.status === 'active' && q.status !== 'broken' && q.status !== 'deprecated'
+    );
+  } catch (err) {
+    console.warn('[ss] question fetch failed:', err.message || err);
+  }
+  console.log('[ss] poolKey=' + poolKey + ' questionsFound=' + questions.length);
+
+  return ok({ passage, questions });
 }
 
 // §77 Phase C — Tap-any-word definitions.
