@@ -284,9 +284,16 @@ async function _callGenerator(systemPrompt, regenFeedback, grade, stateSlug, pac
     ? `\nThe question stem should sound like a real ${getStateRecord(stateSlug)?.testName || ''} item. Reference stem patterns: "${packEnrichment.stems.join('"; "')}".`
     : '';
 
+  // Pluralization guard (Bug E from master audit). The pre-fix corpus
+  // had "Rylee has 1 pencils" / "Ava has 1 erasers" patterns from
+  // hardcoded plural literals in templates. Make the model handle
+  // grammar correctly. Three rules cover ~99% of countable nouns
+  // in K-3 word problems.
+  const grammarLine = '\nGrammar: when a count is exactly 1, use the SINGULAR noun form ("1 pencil", "1 apple", "1 cookie"). When the count is 0 or 2 or more, use the PLURAL form ("0 pencils", "5 apples"). Never write "1 pencils" or "1 cookies."';
+
   const userMessage = regenFeedback
-    ? `Generate the question now. ${namesLine}\n${demandLine}${contextsLine}${stemsLine}\n\nPrevious attempt was rejected by quality review for: ${regenFeedback.failedChecks.join(', ')}. Specifically: ${regenFeedback.reasons.join(' ')} Generate a new question that fixes these issues.`
-    : `Generate the question now. ${namesLine}\n${demandLine}${contextsLine}${stemsLine}`;
+    ? `Generate the question now. ${namesLine}\n${demandLine}${contextsLine}${stemsLine}${grammarLine}\n\nPrevious attempt was rejected by quality review for: ${regenFeedback.failedChecks.join(', ')}. Specifically: ${regenFeedback.reasons.join(' ')} Generate a new question that fixes these issues.`
+    : `Generate the question now. ${namesLine}\n${demandLine}${contextsLine}${stemsLine}${grammarLine}`;
   const completion = await getOpenAI().chat.completions.create({
     model: 'gpt-4o-mini',
     messages: [

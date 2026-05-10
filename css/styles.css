@@ -15200,26 +15200,14 @@ body.practice-page .card a:not(.btn) { color: #fde68a; }
   body.practice-page.mobile-stats-open .performance-panel .perf-ring-wrap { display: flex; justify-content: center; }
 
   /* Floating stats trigger — small pill in the breadcrumb area. */
+  /* Bug H from master audit: the floating "Stats" trigger pill was
+     intrusive on mobile (Saad's screenshot showed it half-clipped at
+     bottom-left). Hidden until we build a proper top-drawer per
+     CLAUDE.md §14 deferred TODO. Kid sees their stats on grade.html
+     and achievements.html — they don't need them mid-session. */
   .mobile-stats-trigger {
-    position: fixed;
-    right: 12px;
-    bottom: 14px;
-    z-index: 55;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 14px;
-    border-radius: 999px;
-    border: 1px solid rgba(251, 191, 36, 0.30);
-    background: rgba(13, 34, 73, 0.88);
-    color: #fbbf24;
-    font-size: 0.82rem;
-    font-weight: 600;
-    backdrop-filter: blur(8px);
-    box-shadow: 0 6px 18px -4px rgba(0,0,0,0.5);
-    cursor: pointer;
+    display: none !important;
   }
-  .mobile-stats-trigger:active { transform: scale(0.97); }
   body.practice-page.mobile-stats-open .mobile-stats-trigger { display: none; }
 
   /* Backdrop tap-to-close. */

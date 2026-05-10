@@ -266,10 +266,16 @@
           pill.innerHTML = `<span aria-hidden="true">🎯</span> Today is day 1 — let's go`;
         }
       } else if (state && state.testWindowMonth) {
+        // Bug I from master audit: countdown to start of test window,
+        // not mid-month. Kids and parents read "N days until STAAR"
+        // as "STAAR starts in N days" — anchor to day 1 of the test
+        // window's month. Texas STAAR 2027 is roughly April 6-15;
+        // day 1 is a few days early which is the right side of risk
+        // (parent thinks they have less time, not more).
         const now = new Date();
         const yr = now.getFullYear();
-        let target = new Date(yr, state.testWindowMonth - 1, 15);
-        if (target < now) target = new Date(yr + 1, state.testWindowMonth - 1, 15);
+        let target = new Date(yr, state.testWindowMonth - 1, 1);
+        if (target < now) target = new Date(yr + 1, state.testWindowMonth - 1, 1);
         const days = Math.ceil((target - now) / 86400000);
         if (days >= 1 && days <= 365) {
           pill.innerHTML = `<span aria-hidden="true">⏳</span> ${days} day${days === 1 ? '' : 's'} until ${escapeHtml(state.testName)}`;

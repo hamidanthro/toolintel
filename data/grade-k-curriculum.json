@@ -78,7 +78,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🌸 do you see?  🌸",
+              "prompt": "How many flowers do you see?  🌸",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -122,7 +122,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🍎 do you see?  🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -133,7 +133,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐱 do you see?  🐱🐱🐱🐱🐱🐱🐱🐱🐱",
+              "prompt": "How many cats do you see?  🐱🐱🐱🐱🐱🐱🐱🐱🐱",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -155,7 +155,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🌸 do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -166,7 +166,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🌸 do you see?  🌸🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸🌸",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -188,7 +188,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐟 do you see?  🐟🐟🐟🐟🐟🐟🐟",
+              "prompt": "How many fish do you see?  🐟🐟🐟🐟🐟🐟🐟",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -221,7 +221,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🦋 do you see?  🦋🦋🦋🦋🦋🦋",
+              "prompt": "How many butterflies do you see?  🦋🦋🦋🦋🦋🦋",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -265,7 +265,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🌸 do you see?  🌸🌸🌸🌸🌸🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸🌸🌸🌸🌸🌸",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -309,7 +309,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐰 do you see?  🐰",
+              "prompt": "How many bunnies do you see?  🐰",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -342,7 +342,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🍌 do you see?  🍌🍌🍌🍌🍌🍌🍌",
+              "prompt": "How many bananas do you see?  🍌🍌🍌🍌🍌🍌🍌",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -364,7 +364,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🍌 do you see?  🍌🍌🍌🍌",
+              "prompt": "How many bananas do you see?  🍌🍌🍌🍌",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -386,7 +386,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many ⭐ do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐",
               "answer": "10",
               "explanation": "Count one by one. There are 10.",
               "acceptable": [
@@ -408,7 +408,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐢 do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -419,7 +419,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🍎 do you see?  🍎🍎🍎🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎🍎🍎🍎",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -463,7 +463,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🍎 do you see?  🍎🍎🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎🍎🍎",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -485,7 +485,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🍎 do you see?  🍎",
+              "prompt": "How many apples do you see?  🍎",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -496,7 +496,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐢 do you see?  🐢🐢🐢🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢🐢🐢🐢",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -573,7 +573,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐰 do you see?  🐰🐰🐰",
+              "prompt": "How many bunnies do you see?  🐰🐰🐰",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -617,7 +617,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐰 do you see?  🐰🐰🐰🐰🐰",
+              "prompt": "How many bunnies do you see?  🐰🐰🐰🐰🐰",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -661,7 +661,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🚗 do you see?  🚗🚗🚗🚗🚗🚗🚗🚗🚗",
+              "prompt": "How many cars do you see?  🚗🚗🚗🚗🚗🚗🚗🚗🚗",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -683,7 +683,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🍎 do you see?  🍎🍎🍎🍎🍎🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎🍎🍎🍎🍎🍎",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -694,7 +694,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🍌 do you see?  🍌🍌🍌🍌🍌🍌🍌🍌🍌",
+              "prompt": "How many bananas do you see?  🍌🍌🍌🍌🍌🍌🍌🍌🍌",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -749,7 +749,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐱 do you see?  🐱🐱🐱🐱🐱🐱🐱",
+              "prompt": "How many cats do you see?  🐱🐱🐱🐱🐱🐱🐱",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -760,7 +760,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many ⭐ do you see?  ⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -804,7 +804,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🍌 do you see?  🍌🍌🍌🍌🍌🍌",
+              "prompt": "How many bananas do you see?  🍌🍌🍌🍌🍌🍌",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -903,7 +903,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🚗 do you see?  🚗",
+              "prompt": "How many cars do you see?  🚗",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -914,7 +914,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐢 do you see?  🐢🐢🐢🐢🐢🐢🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢🐢🐢🐢🐢🐢🐢",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -925,7 +925,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🍌 do you see?  🍌🍌🍌🍌🍌🍌🍌🍌🍌🍌",
+              "prompt": "How many bananas do you see?  🍌🍌🍌🍌🍌🍌🍌🍌🍌🍌",
               "answer": "10",
               "explanation": "Count one by one. There are 10.",
               "acceptable": [
@@ -936,7 +936,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🍌 do you see?  🍌🍌",
+              "prompt": "How many bananas do you see?  🍌🍌",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -958,7 +958,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🌸 do you see?  🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -969,7 +969,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐟 do you see?  🐟🐟🐟🐟🐟🐟🐟🐟🐟",
+              "prompt": "How many fish do you see?  🐟🐟🐟🐟🐟🐟🐟🐟🐟",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -1013,7 +1013,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐱 do you see?  🐱🐱🐱",
+              "prompt": "How many cats do you see?  🐱🐱🐱",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -1057,7 +1057,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🍌 do you see?  🍌🍌🍌🍌🍌🍌🍌🍌",
+              "prompt": "How many bananas do you see?  🍌🍌🍌🍌🍌🍌🍌🍌",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -1079,7 +1079,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🦋 do you see?  🦋🦋🦋🦋",
+              "prompt": "How many butterflies do you see?  🦋🦋🦋🦋",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -1090,7 +1090,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🌸 do you see?  🌸🌸🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸🌸🌸",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -1134,7 +1134,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many ⚽ do you see?  ⚽⚽⚽⚽⚽⚽⚽⚽⚽",
+              "prompt": "How many soccer balls do you see?  ⚽⚽⚽⚽⚽⚽⚽⚽⚽",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -1167,7 +1167,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐟 do you see?  🐟🐟🐟🐟",
+              "prompt": "How many fish do you see?  🐟🐟🐟🐟",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -1200,7 +1200,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐱 do you see?  🐱🐱🐱🐱🐱🐱🐱🐱",
+              "prompt": "How many cats do you see?  🐱🐱🐱🐱🐱🐱🐱🐱",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -1222,7 +1222,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many ⭐ do you see?  ⭐⭐⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐⭐⭐",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -1244,7 +1244,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many ⚽ do you see?  ⚽⚽⚽⚽⚽⚽⚽⚽⚽⚽",
+              "prompt": "How many soccer balls do you see?  ⚽⚽⚽⚽⚽⚽⚽⚽⚽⚽",
               "answer": "10",
               "explanation": "Count one by one. There are 10.",
               "acceptable": [
@@ -1277,7 +1277,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐢 do you see?  🐢🐢🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢🐢🐢",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -1299,7 +1299,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many ⭐ do you see?  ⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -1310,7 +1310,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🦋 do you see?  🦋🦋🦋🦋🦋🦋🦋🦋🦋",
+              "prompt": "How many butterflies do you see?  🦋🦋🦋🦋🦋🦋🦋🦋🦋",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -1343,7 +1343,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many ⚽ do you see?  ⚽⚽⚽⚽⚽⚽⚽⚽",
+              "prompt": "How many soccer balls do you see?  ⚽⚽⚽⚽⚽⚽⚽⚽",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -1365,7 +1365,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐢 do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢",
               "answer": "10",
               "explanation": "Count one by one. There are 10.",
               "acceptable": [
@@ -1376,7 +1376,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🚗 do you see?  🚗🚗🚗🚗🚗🚗",
+              "prompt": "How many cars do you see?  🚗🚗🚗🚗🚗🚗",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -1398,7 +1398,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐟 do you see?  🐟🐟🐟🐟🐟",
+              "prompt": "How many fish do you see?  🐟🐟🐟🐟🐟",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -1409,7 +1409,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐶 do you see?  🐶🐶🐶🐶",
+              "prompt": "How many dogs do you see?  🐶🐶🐶🐶",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -1497,7 +1497,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🌸 do you see?  🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -1519,7 +1519,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🍎 do you see?  🍎🍎🍎🍎🍎🍎🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎🍎🍎🍎🍎🍎🍎",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -1541,7 +1541,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many ⭐ do you see?  ⭐",
+              "prompt": "How many stars do you see?  ⭐",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -1552,7 +1552,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐱 do you see?  🐱🐱🐱🐱🐱🐱",
+              "prompt": "How many cats do you see?  🐱🐱🐱🐱🐱🐱",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -1574,7 +1574,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🍌 do you see?  🍌🍌🍌",
+              "prompt": "How many bananas do you see?  🍌🍌🍌",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -1651,7 +1651,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐰 do you see?  🐰🐰🐰🐰🐰🐰",
+              "prompt": "How many bunnies do you see?  🐰🐰🐰🐰🐰🐰",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -1673,7 +1673,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🦋 do you see?  🦋",
+              "prompt": "How many butterflies do you see?  🦋",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -1684,7 +1684,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐰 do you see?  🐰🐰🐰🐰🐰🐰🐰🐰",
+              "prompt": "How many bunnies do you see?  🐰🐰🐰🐰🐰🐰🐰🐰",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -1717,7 +1717,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🍎 do you see?  🍎🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎🍎",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -1805,7 +1805,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🍌 do you see?  🍌",
+              "prompt": "How many bananas do you see?  🍌",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -1816,7 +1816,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🍎 do you see?  🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -1827,7 +1827,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🌸 do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸",
               "answer": "10",
               "explanation": "Count one by one. There are 10.",
               "acceptable": [
@@ -1849,7 +1849,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐱 do you see?  🐱🐱🐱🐱🐱🐱🐱🐱🐱🐱",
+              "prompt": "How many cats do you see?  🐱🐱🐱🐱🐱🐱🐱🐱🐱🐱",
               "answer": "10",
               "explanation": "Count one by one. There are 10.",
               "acceptable": [
@@ -1871,7 +1871,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐶 do you see?  🐶🐶🐶",
+              "prompt": "How many dogs do you see?  🐶🐶🐶",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -1904,7 +1904,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many ⭐ do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -1915,7 +1915,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🍌 do you see?  🍌🍌🍌🍌🍌",
+              "prompt": "How many bananas do you see?  🍌🍌🍌🍌🍌",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -1937,7 +1937,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐱 do you see?  🐱🐱🐱🐱🐱",
+              "prompt": "How many cats do you see?  🐱🐱🐱🐱🐱",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -1981,7 +1981,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐟 do you see?  🐟🐟🐟🐟🐟🐟",
+              "prompt": "How many fish do you see?  🐟🐟🐟🐟🐟🐟",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -1992,7 +1992,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐱 do you see?  🐱🐱🐱🐱",
+              "prompt": "How many cats do you see?  🐱🐱🐱🐱",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -2003,7 +2003,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many ⚽ do you see?  ⚽⚽⚽⚽",
+              "prompt": "How many soccer balls do you see?  ⚽⚽⚽⚽",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -2014,7 +2014,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many ⚽ do you see?  ⚽⚽⚽⚽⚽",
+              "prompt": "How many soccer balls do you see?  ⚽⚽⚽⚽⚽",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -2047,7 +2047,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🚗 do you see?  🚗🚗🚗🚗",
+              "prompt": "How many cars do you see?  🚗🚗🚗🚗",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -2146,7 +2146,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🍎 do you see?  🍎🍎🍎🍎🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎🍎🍎🍎🍎",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -2190,7 +2190,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🌸 do you see?  🌸🌸🌸🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸🌸🌸🌸",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -2201,7 +2201,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many ⚽ do you see?  ⚽",
+              "prompt": "How many soccer balls do you see?  ⚽",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -2289,7 +2289,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many ⭐ do you see?  ⭐⭐⭐⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐⭐⭐⭐",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -2300,7 +2300,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🚗 do you see?  🚗🚗🚗🚗🚗🚗🚗🚗",
+              "prompt": "How many cars do you see?  🚗🚗🚗🚗🚗🚗🚗🚗",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -2333,7 +2333,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐟 do you see?  🐟",
+              "prompt": "How many fish do you see?  🐟",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -2344,7 +2344,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐟 do you see?  🐟🐟",
+              "prompt": "How many fish do you see?  🐟🐟",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -2377,7 +2377,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐢 do you see?  🐢🐢🐢🐢🐢🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢🐢🐢🐢🐢🐢",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -2388,7 +2388,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🌸 do you see?  🌸🌸🌸🌸🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸🌸🌸🌸🌸",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -2454,7 +2454,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many ⭐ do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐⭐",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -2509,7 +2509,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🚗 do you see?  🚗🚗",
+              "prompt": "How many cars do you see?  🚗🚗",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -2608,7 +2608,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐢 do you see?  🐢🐢🐢🐢🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢🐢🐢🐢🐢",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -2630,7 +2630,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐶 do you see?  🐶🐶🐶🐶🐶🐶🐶",
+              "prompt": "How many dogs do you see?  🐶🐶🐶🐶🐶🐶🐶",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -2641,7 +2641,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐶 do you see?  🐶🐶🐶🐶🐶",
+              "prompt": "How many dogs do you see?  🐶🐶🐶🐶🐶",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -2652,7 +2652,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐟 do you see?  🐟🐟🐟",
+              "prompt": "How many fish do you see?  🐟🐟🐟",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -2674,7 +2674,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐰 do you see?  🐰🐰🐰🐰🐰🐰🐰",
+              "prompt": "How many bunnies do you see?  🐰🐰🐰🐰🐰🐰🐰",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -2685,7 +2685,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐰 do you see?  🐰🐰🐰🐰🐰🐰🐰🐰🐰🐰",
+              "prompt": "How many bunnies do you see?  🐰🐰🐰🐰🐰🐰🐰🐰🐰🐰",
               "answer": "10",
               "explanation": "Count one by one. There are 10.",
               "acceptable": [
@@ -2718,7 +2718,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🚗 do you see?  🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗",
+              "prompt": "How many cars do you see?  🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗",
               "answer": "10",
               "explanation": "Count one by one. There are 10.",
               "acceptable": [
@@ -2729,7 +2729,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐱 do you see?  🐱🐱",
+              "prompt": "How many cats do you see?  🐱🐱",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -2740,7 +2740,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🍎 do you see?  🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎",
               "answer": "10",
               "explanation": "Count one by one. There are 10.",
               "acceptable": [
@@ -2762,7 +2762,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐱 do you see?  🐱",
+              "prompt": "How many cats do you see?  🐱",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -2817,7 +2817,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐰 do you see?  🐰🐰🐰🐰🐰🐰🐰🐰🐰",
+              "prompt": "How many bunnies do you see?  🐰🐰🐰🐰🐰🐰🐰🐰🐰",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -2828,7 +2828,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐢 do you see?  🐢🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢🐢",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -2894,7 +2894,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐶 do you see?  🐶🐶",
+              "prompt": "How many dogs do you see?  🐶🐶",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -2949,7 +2949,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🦋 do you see?  🦋🦋🦋🦋🦋",
+              "prompt": "How many butterflies do you see?  🦋🦋🦋🦋🦋",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -2971,7 +2971,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🦋 do you see?  🦋🦋🦋🦋🦋🦋🦋🦋",
+              "prompt": "How many butterflies do you see?  🦋🦋🦋🦋🦋🦋🦋🦋",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -3026,7 +3026,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many ⚽ do you see?  ⚽⚽⚽",
+              "prompt": "How many soccer balls do you see?  ⚽⚽⚽",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -3048,7 +3048,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many ⚽ do you see?  ⚽⚽⚽⚽⚽⚽⚽",
+              "prompt": "How many soccer balls do you see?  ⚽⚽⚽⚽⚽⚽⚽",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -3081,7 +3081,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐢 do you see?  🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -3103,7 +3103,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🚗 do you see?  🚗🚗🚗🚗🚗🚗🚗",
+              "prompt": "How many cars do you see?  🚗🚗🚗🚗🚗🚗🚗",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -3125,7 +3125,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐢 do you see?  🐢",
+              "prompt": "How many turtles do you see?  🐢",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -3191,7 +3191,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐶 do you see?  🐶🐶🐶🐶🐶🐶",
+              "prompt": "How many dogs do you see?  🐶🐶🐶🐶🐶🐶",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -3224,7 +3224,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🦋 do you see?  🦋🦋",
+              "prompt": "How many butterflies do you see?  🦋🦋",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -3257,7 +3257,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many ⭐ do you see?  ⭐⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐⭐",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -3279,7 +3279,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many ⚽ do you see?  ⚽⚽",
+              "prompt": "How many soccer balls do you see?  ⚽⚽",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -3400,7 +3400,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🦋 do you see?  🦋🦋🦋🦋🦋🦋🦋",
+              "prompt": "How many butterflies do you see?  🦋🦋🦋🦋🦋🦋🦋",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -3433,7 +3433,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐶 do you see?  🐶",
+              "prompt": "How many dogs do you see?  🐶",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -3444,7 +3444,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐟 do you see?  🐟🐟🐟🐟🐟🐟🐟🐟",
+              "prompt": "How many fish do you see?  🐟🐟🐟🐟🐟🐟🐟🐟",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -3477,7 +3477,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🦋 do you see?  🦋🦋🦋",
+              "prompt": "How many butterflies do you see?  🦋🦋🦋",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -3565,7 +3565,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🚗 do you see?  🚗🚗🚗🚗🚗",
+              "prompt": "How many cars do you see?  🚗🚗🚗🚗🚗",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -3598,7 +3598,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many ⭐ do you see?  ⭐⭐⭐⭐⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐⭐⭐⭐⭐",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -3609,7 +3609,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐰 do you see?  🐰🐰",
+              "prompt": "How many bunnies do you see?  🐰🐰",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -3642,7 +3642,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🦋 do you see?  🦋🦋🦋🦋🦋🦋🦋🦋🦋🦋",
+              "prompt": "How many butterflies do you see?  🦋🦋🦋🦋🦋🦋🦋🦋🦋🦋",
               "answer": "10",
               "explanation": "Count one by one. There are 10.",
               "acceptable": [
@@ -3708,7 +3708,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "How many 🐟 do you see?  🐟🐟🐟🐟🐟🐟🐟🐟🐟🐟",
+              "prompt": "How many fish do you see?  🐟🐟🐟🐟🐟🐟🐟🐟🐟🐟",
               "answer": "10",
               "explanation": "Count one by one. There are 10.",
               "acceptable": [
@@ -12383,7 +12383,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Ella has 1 erasers. Jackson gives her 2 more. How many in all?",
+              "prompt": "Ella has 1 eraser. Jackson gives her 2 more. How many in all?",
               "answer": "3",
               "explanation": "1 + 2 = 3.",
               "acceptable": [
@@ -13648,7 +13648,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Penelope has 1 pencils. Aisha gives him 0 more. How many in all?",
+              "prompt": "Penelope has 1 pencil. Aisha gives him 0 more. How many in all?",
               "answer": "1",
               "explanation": "1 + 0 = 1.",
               "acceptable": [
@@ -13956,7 +13956,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Ava has 1 pencils. Olivia gives them 1 more. How many in all?",
+              "prompt": "Ava has 1 pencil. Olivia gives them 1 more. How many in all?",
               "answer": "2",
               "explanation": "1 + 1 = 2.",
               "acceptable": [
@@ -14429,7 +14429,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Lucas has 1 marbles. Isabella gives them 6 more. How many in all?",
+              "prompt": "Lucas has 1 marble. Isabella gives them 6 more. How many in all?",
               "answer": "7",
               "explanation": "1 + 6 = 7.",
               "acceptable": [
@@ -14660,7 +14660,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Lily has 1 beads. Carter gives him 1 more. How many in all?",
+              "prompt": "Lily has 1 bead. Carter gives him 1 more. How many in all?",
               "answer": "2",
               "explanation": "1 + 1 = 2.",
               "acceptable": [
@@ -14770,7 +14770,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Aaliyah has 1 pencils. Maya gives them 4 more. How many in all?",
+              "prompt": "Aaliyah has 1 pencil. Maya gives them 4 more. How many in all?",
               "answer": "5",
               "explanation": "1 + 4 = 5.",
               "acceptable": [
@@ -14814,7 +14814,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Aiden has 1 erasers. Aisha gives them 8 more. How many in all?",
+              "prompt": "Aiden has 1 eraser. Aisha gives them 8 more. How many in all?",
               "answer": "9",
               "explanation": "1 + 8 = 9.",
               "acceptable": [
@@ -15221,7 +15221,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Noah has 1 beads. Levi gives her 5 more. How many in all?",
+              "prompt": "Noah has 1 bead. Levi gives her 5 more. How many in all?",
               "answer": "6",
               "explanation": "1 + 5 = 6.",
               "acceptable": [
@@ -15309,7 +15309,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Emma has 1 marbles. Hannah gives them 0 more. How many in all?",
+              "prompt": "Emma has 1 marble. Hannah gives them 0 more. How many in all?",
               "answer": "1",
               "explanation": "1 + 0 = 1.",
               "acceptable": [
@@ -15353,7 +15353,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Riley has 1 pencils. Aisha gives them 9 more. How many in all?",
+              "prompt": "Riley has 1 pencil. Aisha gives them 9 more. How many in all?",
               "answer": "10",
               "explanation": "1 + 9 = 10.",
               "acceptable": [
@@ -15694,7 +15694,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Ava has 1 marbles. Mia gives them 4 more. How many in all?",
+              "prompt": "Ava has 1 marble. Mia gives them 4 more. How many in all?",
               "answer": "5",
               "explanation": "1 + 4 = 5.",
               "acceptable": [
@@ -15738,7 +15738,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Maya has 1 stickers. Sebastian gives her 6 more. How many in all?",
+              "prompt": "Maya has 1 sticker. Sebastian gives her 6 more. How many in all?",
               "answer": "7",
               "explanation": "1 + 6 = 7.",
               "acceptable": [
@@ -16145,7 +16145,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Zoe has 1 erasers. James gives them 8 more. How many in all?",
+              "prompt": "Zoe has 1 eraser. James gives them 8 more. How many in all?",
               "answer": "9",
               "explanation": "1 + 8 = 9.",
               "acceptable": [
@@ -16244,7 +16244,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Harper has 1 beads. Camila gives her 4 more. How many in all?",
+              "prompt": "Harper has 1 bead. Camila gives her 4 more. How many in all?",
               "answer": "5",
               "explanation": "1 + 4 = 5.",
               "acceptable": [
@@ -16266,7 +16266,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Aaliyah has 1 erasers. Yusuf gives him 9 more. How many in all?",
+              "prompt": "Aaliyah has 1 eraser. Yusuf gives him 9 more. How many in all?",
               "answer": "10",
               "explanation": "1 + 9 = 10.",
               "acceptable": [
@@ -16827,7 +16827,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Henry has 1 beads. Emma gives them 3 more. How many in all?",
+              "prompt": "Henry has 1 bead. Emma gives them 3 more. How many in all?",
               "answer": "4",
               "explanation": "1 + 3 = 4.",
               "acceptable": [
@@ -16849,7 +16849,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Fatima has 1 crayons. Mila gives her 3 more. How many in all?",
+              "prompt": "Fatima has 1 crayon. Mila gives her 3 more. How many in all?",
               "answer": "4",
               "explanation": "1 + 3 = 4.",
               "acceptable": [
@@ -17011,7 +17011,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Mia has 1 shells and gives away 0. How many shells are left?",
+              "prompt": "Mia has 1 shell and gives away 0. How many shells are left?",
               "answer": "1",
               "explanation": "1 − 0 = 1.",
               "acceptable": [
@@ -17055,7 +17055,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Henry has 1 erasers and gives away 0. How many erasers are left?",
+              "prompt": "Henry has 1 eraser and gives away 0. How many erasers are left?",
               "answer": "1",
               "explanation": "1 − 0 = 1.",
               "acceptable": [
@@ -17176,7 +17176,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Emma has 1 crayons and gives away 1. How many crayons are left?",
+              "prompt": "Emma has 1 crayon and gives away 1. How many crayons are left?",
               "answer": "0",
               "explanation": "1 − 1 = 0.",
               "acceptable": [
@@ -17539,7 +17539,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Mila has 1 stickers and gives away 0. How many stickers are left?",
+              "prompt": "Mila has 1 sticker and gives away 0. How many stickers are left?",
               "answer": "1",
               "explanation": "1 − 0 = 1.",
               "acceptable": [
@@ -17891,7 +17891,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Lily has 1 beads and gives away 0. How many beads are left?",
+              "prompt": "Lily has 1 bead and gives away 0. How many beads are left?",
               "answer": "1",
               "explanation": "1 − 0 = 1.",
               "acceptable": [
@@ -18067,7 +18067,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Olivia has 1 beads and gives away 1. How many beads are left?",
+              "prompt": "Olivia has 1 bead and gives away 1. How many beads are left?",
               "answer": "0",
               "explanation": "1 − 1 = 0.",
               "acceptable": [
@@ -18166,7 +18166,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Mia has 1 shells and gives away 1. How many shells are left?",
+              "prompt": "Mia has 1 shell and gives away 1. How many shells are left?",
               "answer": "0",
               "explanation": "1 − 1 = 0.",
               "acceptable": [
@@ -18309,7 +18309,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Camila has 1 pencils and gives away 1. How many pencils are left?",
+              "prompt": "Camila has 1 pencil and gives away 1. How many pencils are left?",
               "answer": "0",
               "explanation": "1 − 1 = 0.",
               "acceptable": [
@@ -18441,7 +18441,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Zoe has 1 pencils and gives away 0. How many pencils are left?",
+              "prompt": "Zoe has 1 pencil and gives away 0. How many pencils are left?",
               "answer": "1",
               "explanation": "1 − 0 = 1.",
               "acceptable": [
@@ -18562,7 +18562,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Logan has 1 stickers and gives away 0. How many stickers are left?",
+              "prompt": "Logan has 1 sticker and gives away 0. How many stickers are left?",
               "answer": "1",
               "explanation": "1 − 0 = 1.",
               "acceptable": [
@@ -18914,7 +18914,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Ibrahim has 1 beads and gives away 1. How many beads are left?",
+              "prompt": "Ibrahim has 1 bead and gives away 1. How many beads are left?",
               "answer": "0",
               "explanation": "1 − 1 = 0.",
               "acceptable": [
@@ -19057,7 +19057,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Maya has 1 erasers and gives away 1. How many erasers are left?",
+              "prompt": "Maya has 1 eraser and gives away 1. How many erasers are left?",
               "answer": "0",
               "explanation": "1 − 1 = 0.",
               "acceptable": [
@@ -19266,7 +19266,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Ibrahim has 1 shells and gives away 0. How many shells are left?",
+              "prompt": "Ibrahim has 1 shell and gives away 0. How many shells are left?",
               "answer": "1",
               "explanation": "1 − 0 = 1.",
               "acceptable": [
@@ -19915,7 +19915,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "James has 1 marbles and gives away 0. How many marbles are left?",
+              "prompt": "James has 1 marble and gives away 0. How many marbles are left?",
               "answer": "1",
               "explanation": "1 − 0 = 1.",
               "acceptable": [
@@ -19937,7 +19937,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Harper has 1 crayons and gives away 1. How many crayons are left?",
+              "prompt": "Harper has 1 crayon and gives away 1. How many crayons are left?",
               "answer": "0",
               "explanation": "1 − 1 = 0.",
               "acceptable": [
@@ -20047,7 +20047,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Aiden has 1 crayons and gives away 0. How many crayons are left?",
+              "prompt": "Aiden has 1 crayon and gives away 0. How many crayons are left?",
               "answer": "1",
               "explanation": "1 − 0 = 1.",
               "acceptable": [
@@ -20135,7 +20135,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Carter has 1 stickers and gives away 0. How many stickers are left?",
+              "prompt": "Carter has 1 sticker and gives away 0. How many stickers are left?",
               "answer": "1",
               "explanation": "1 − 0 = 1.",
               "acceptable": [
@@ -20355,7 +20355,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Olivia has 1 marbles and gives away 0. How many marbles are left?",
+              "prompt": "Olivia has 1 marble and gives away 0. How many marbles are left?",
               "answer": "1",
               "explanation": "1 − 0 = 1.",
               "acceptable": [
@@ -20410,7 +20410,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Saad has 1 pencils and gives away 0. How many pencils are left?",
+              "prompt": "Saad has 1 pencil and gives away 0. How many pencils are left?",
               "answer": "1",
               "explanation": "1 − 0 = 1.",
               "acceptable": [
@@ -20608,7 +20608,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Lucas has 1 stickers and gives away 1. How many stickers are left?",
+              "prompt": "Lucas has 1 sticker and gives away 1. How many stickers are left?",
               "answer": "0",
               "explanation": "1 − 1 = 0.",
               "acceptable": [
@@ -20784,7 +20784,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Lucas has 1 marbles and gives away 1. How many marbles are left?",
+              "prompt": "Lucas has 1 marble and gives away 1. How many marbles are left?",
               "answer": "0",
               "explanation": "1 − 1 = 0.",
               "acceptable": [
@@ -20850,7 +20850,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Carter has 1 pencils and gives away 1. How many pencils are left?",
+              "prompt": "Carter has 1 pencil and gives away 1. How many pencils are left?",
               "answer": "0",
               "explanation": "1 − 1 = 0.",
               "acceptable": [
@@ -21004,7 +21004,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Penelope has 1 crayons and gives away 0. How many crayons are left?",
+              "prompt": "Penelope has 1 crayon and gives away 0. How many crayons are left?",
               "answer": "1",
               "explanation": "1 − 0 = 1.",
               "acceptable": [
@@ -21213,7 +21213,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Henry has 1 crayons and gives away 1. How many crayons are left?",
+              "prompt": "Henry has 1 crayon and gives away 1. How many crayons are left?",
               "answer": "0",
               "explanation": "1 − 1 = 0.",
               "acceptable": [
@@ -21279,7 +21279,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Ava has 1 marbles and gives away 1. How many marbles are left?",
+              "prompt": "Ava has 1 marble and gives away 1. How many marbles are left?",
               "answer": "0",
               "explanation": "1 − 1 = 0.",
               "acceptable": [
@@ -21356,7 +21356,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Wyatt has 1 shells and gives away 1. How many shells are left?",
+              "prompt": "Wyatt has 1 shell and gives away 1. How many shells are left?",
               "answer": "0",
               "explanation": "1 − 1 = 0.",
               "acceptable": [
@@ -21400,7 +21400,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Layla has 1 erasers and gives away 1. How many erasers are left?",
+              "prompt": "Layla has 1 eraser and gives away 1. How many erasers are left?",
               "answer": "0",
               "explanation": "1 − 1 = 0.",
               "acceptable": [
@@ -21521,7 +21521,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "Layla has 1 stickers and gives away 1. How many stickers are left?",
+              "prompt": "Layla has 1 sticker and gives away 1. How many stickers are left?",
               "answer": "0",
               "explanation": "1 − 1 = 0.",
               "acceptable": [
@@ -21829,7 +21829,7 @@
             },
             {
               "type": "numeric",
-              "prompt": "A nest has 6 birds. 1 flies away. How many birds are left?",
+              "prompt": "A nest has 6 birds. 1 fly away. How many birds are left?",
               "answer": "5",
               "explanation": "6 − 1 = 5.",
               "acceptable": [

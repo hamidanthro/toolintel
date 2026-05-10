@@ -26,7 +26,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 41 is in the ones place. What is its value?",
               "answer": "1",
-              "explanation": "The 1 sits in the ones place: 1 × 1 = 1.",
+              "explanation": "The 1 sit in the ones place: 1 × 1 = 1.",
               "acceptable": [
                 "1",
                 "1"
@@ -169,7 +169,7 @@
               "type": "numeric",
               "prompt": "In 151, what does the 1 represent?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -422,7 +422,7 @@
               "type": "numeric",
               "prompt": "In 165, what does the 1 represent?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -444,7 +444,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 1,145?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -477,7 +477,7 @@
               "type": "numeric",
               "prompt": "In 163, what does the 1 represent?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -532,7 +532,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 1,141 is in the hundreds place. What is its value?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -543,7 +543,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 219?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -565,7 +565,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 1,151?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -653,7 +653,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 815 is in the tens place. What is its value?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -840,7 +840,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 412?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -873,7 +873,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 61 is in the ones place. What is its value?",
               "answer": "1",
-              "explanation": "The 1 sits in the ones place: 1 × 1 = 1.",
+              "explanation": "The 1 sit in the ones place: 1 × 1 = 1.",
               "acceptable": [
                 "1",
                 "1"
@@ -895,7 +895,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 1,175 is in the hundreds place. What is its value?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -917,7 +917,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 21?",
               "answer": "1",
-              "explanation": "The 1 sits in the ones place: 1 × 1 = 1.",
+              "explanation": "The 1 sit in the ones place: 1 × 1 = 1.",
               "acceptable": [
                 "1",
                 "1"
@@ -939,7 +939,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 1,116?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -1005,7 +1005,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 51 is in the ones place. What is its value?",
               "answer": "1",
-              "explanation": "The 1 sits in the ones place: 1 × 1 = 1.",
+              "explanation": "The 1 sit in the ones place: 1 × 1 = 1.",
               "acceptable": [
                 "1",
                 "1"
@@ -1049,7 +1049,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 118?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -1137,7 +1137,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 816?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -1379,7 +1379,7 @@
               "type": "numeric",
               "prompt": "In 168, what does the 1 represent?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -1709,7 +1709,7 @@
               "type": "numeric",
               "prompt": "In 819, what does the 1 represent?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -1808,7 +1808,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 138 is in the hundreds place. What is its value?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -1907,7 +1907,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 71 is in the ones place. What is its value?",
               "answer": "1",
-              "explanation": "The 1 sits in the ones place: 1 × 1 = 1.",
+              "explanation": "The 1 sit in the ones place: 1 × 1 = 1.",
               "acceptable": [
                 "1",
                 "1"
@@ -1929,7 +1929,7 @@
               "type": "numeric",
               "prompt": "In 146, what does the 1 represent?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -2105,7 +2105,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 81 is in the ones place. What is its value?",
               "answer": "1",
-              "explanation": "The 1 sits in the ones place: 1 × 1 = 1.",
+              "explanation": "The 1 sit in the ones place: 1 × 1 = 1.",
               "acceptable": [
                 "1",
                 "1"
@@ -2149,7 +2149,7 @@
               "type": "numeric",
               "prompt": "In 101, what does the 1 represent?",
               "answer": "1",
-              "explanation": "The 1 sits in the ones place: 1 × 1 = 1.",
+              "explanation": "The 1 sit in the ones place: 1 × 1 = 1.",
               "acceptable": [
                 "1",
                 "1"
@@ -2314,7 +2314,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 123?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -2325,7 +2325,7 @@
               "type": "numeric",
               "prompt": "In 312, what does the 1 represent?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -2413,7 +2413,7 @@
               "type": "numeric",
               "prompt": "In 10, what does the 1 represent?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -2545,7 +2545,7 @@
               "type": "numeric",
               "prompt": "In 1,190, what does the 1 represent?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -2589,7 +2589,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 1,151 is in the hundreds place. What is its value?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -2600,7 +2600,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 614?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -2710,7 +2710,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 31 is in the ones place. What is its value?",
               "answer": "1",
-              "explanation": "The 1 sits in the ones place: 1 × 1 = 1.",
+              "explanation": "The 1 sit in the ones place: 1 × 1 = 1.",
               "acceptable": [
                 "1",
                 "1"
@@ -2985,7 +2985,7 @@
               "type": "numeric",
               "prompt": "In 31, what does the 1 represent?",
               "answer": "1",
-              "explanation": "The 1 sits in the ones place: 1 × 1 = 1.",
+              "explanation": "The 1 sit in the ones place: 1 × 1 = 1.",
               "acceptable": [
                 "1",
                 "1"
@@ -3205,7 +3205,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 1,149 is in the hundreds place. What is its value?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -3271,7 +3271,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 818 is in the tens place. What is its value?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -3293,7 +3293,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 1,183 is in the hundreds place. What is its value?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -3348,7 +3348,7 @@
               "type": "numeric",
               "prompt": "In 818, what does the 1 represent?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -3392,7 +3392,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 117?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -3403,7 +3403,7 @@
               "type": "numeric",
               "prompt": "In 913, what does the 1 represent?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -3447,7 +3447,7 @@
               "type": "numeric",
               "prompt": "In 810, what does the 1 represent?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -3513,7 +3513,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 111?",
               "answer": "1",
-              "explanation": "The 1 sits in the ones place: 1 × 1 = 1.",
+              "explanation": "The 1 sit in the ones place: 1 × 1 = 1.",
               "acceptable": [
                 "1",
                 "1"
@@ -3645,7 +3645,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 111 is in the ones place. What is its value?",
               "answer": "1",
-              "explanation": "The 1 sits in the ones place: 1 × 1 = 1.",
+              "explanation": "The 1 sit in the ones place: 1 × 1 = 1.",
               "acceptable": [
                 "1",
                 "1"
@@ -3711,7 +3711,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 1,130?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -3909,7 +3909,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 411 is in the tens place. What is its value?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -3942,7 +3942,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 515?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -4096,7 +4096,7 @@
               "type": "numeric",
               "prompt": "In 1,102, what does the 1 represent?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -4140,7 +4140,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 11?",
               "answer": "1",
-              "explanation": "The 1 sits in the ones place: 1 × 1 = 1.",
+              "explanation": "The 1 sit in the ones place: 1 × 1 = 1.",
               "acceptable": [
                 "1",
                 "1"
@@ -4184,7 +4184,7 @@
               "type": "numeric",
               "prompt": "In 1,119, what does the 1 represent?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -4294,7 +4294,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 212?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -4492,7 +4492,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 911?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -4503,7 +4503,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 1,135 is in the hundreds place. What is its value?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -4657,7 +4657,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 21 is in the ones place. What is its value?",
               "answer": "1",
-              "explanation": "The 1 sits in the ones place: 1 × 1 = 1.",
+              "explanation": "The 1 sit in the ones place: 1 × 1 = 1.",
               "acceptable": [
                 "1",
                 "1"
@@ -4745,7 +4745,7 @@
               "type": "numeric",
               "prompt": "In 21, what does the 1 represent?",
               "answer": "1",
-              "explanation": "The 1 sits in the ones place: 1 × 1 = 1.",
+              "explanation": "The 1 sit in the ones place: 1 × 1 = 1.",
               "acceptable": [
                 "1",
                 "1"
@@ -4822,7 +4822,7 @@
               "type": "numeric",
               "prompt": "In 41, what does the 1 represent?",
               "answer": "1",
-              "explanation": "The 1 sits in the ones place: 1 × 1 = 1.",
+              "explanation": "The 1 sit in the ones place: 1 × 1 = 1.",
               "acceptable": [
                 "1",
                 "1"
@@ -4833,7 +4833,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 101?",
               "answer": "1",
-              "explanation": "The 1 sits in the ones place: 1 × 1 = 1.",
+              "explanation": "The 1 sit in the ones place: 1 × 1 = 1.",
               "acceptable": [
                 "1",
                 "1"
@@ -4866,7 +4866,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 1,115 is in the tens place. What is its value?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -4921,7 +4921,7 @@
               "type": "numeric",
               "prompt": "In 616, what does the 1 represent?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -4987,7 +4987,7 @@
               "type": "numeric",
               "prompt": "In 103, what does the 1 represent?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -4998,7 +4998,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 81?",
               "answer": "1",
-              "explanation": "The 1 sits in the ones place: 1 × 1 = 1.",
+              "explanation": "The 1 sit in the ones place: 1 × 1 = 1.",
               "acceptable": [
                 "1",
                 "1"
@@ -5097,7 +5097,7 @@
               "type": "numeric",
               "prompt": "In 1,161, what does the 1 represent?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -5141,7 +5141,7 @@
               "type": "numeric",
               "prompt": "In 219, what does the 1 represent?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -5273,7 +5273,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 19?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -5295,7 +5295,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 414 is in the tens place. What is its value?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -5471,7 +5471,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 617 is in the tens place. What is its value?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -5537,7 +5537,7 @@
               "type": "numeric",
               "prompt": "In 1,176, what does the 1 represent?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -5625,7 +5625,7 @@
               "type": "numeric",
               "prompt": "In 133, what does the 1 represent?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -5768,7 +5768,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 12?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -5812,7 +5812,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 51?",
               "answer": "1",
-              "explanation": "The 1 sits in the ones place: 1 × 1 = 1.",
+              "explanation": "The 1 sit in the ones place: 1 × 1 = 1.",
               "acceptable": [
                 "1",
                 "1"
@@ -5878,7 +5878,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 91?",
               "answer": "1",
-              "explanation": "The 1 sits in the ones place: 1 × 1 = 1.",
+              "explanation": "The 1 sit in the ones place: 1 × 1 = 1.",
               "acceptable": [
                 "1",
                 "1"
@@ -5900,7 +5900,7 @@
               "type": "numeric",
               "prompt": "In 1,127, what does the 1 represent?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -5955,7 +5955,7 @@
               "type": "numeric",
               "prompt": "In 1,018, what does the 1 represent?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -5999,7 +5999,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 119 is in the hundreds place. What is its value?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -6142,7 +6142,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 11 is in the ones place. What is its value?",
               "answer": "1",
-              "explanation": "The 1 sits in the ones place: 1 × 1 = 1.",
+              "explanation": "The 1 sit in the ones place: 1 × 1 = 1.",
               "acceptable": [
                 "1",
                 "1"
@@ -6252,7 +6252,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 918 is in the tens place. What is its value?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -6318,7 +6318,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 819 is in the tens place. What is its value?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -6406,7 +6406,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 1,011?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -6428,7 +6428,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 217 is in the tens place. What is its value?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -6956,7 +6956,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 101 is in the ones place. What is its value?",
               "answer": "1",
-              "explanation": "The 1 sits in the ones place: 1 × 1 = 1.",
+              "explanation": "The 1 sit in the ones place: 1 × 1 = 1.",
               "acceptable": [
                 "1",
                 "1"
@@ -6978,7 +6978,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 1,102 is in the hundreds place. What is its value?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -7088,7 +7088,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 179 is in the hundreds place. What is its value?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -7154,7 +7154,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 105 is in the hundreds place. What is its value?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -7176,7 +7176,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 107?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -7341,7 +7341,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 196 is in the hundreds place. What is its value?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -7506,7 +7506,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 178?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -7583,7 +7583,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 197?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -7803,7 +7803,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 1,167?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -7847,7 +7847,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 1,110 is in the hundreds place. What is its value?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -7935,7 +7935,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 1,128 is in the hundreds place. What is its value?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -8144,7 +8144,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 41?",
               "answer": "1",
-              "explanation": "The 1 sits in the ones place: 1 × 1 = 1.",
+              "explanation": "The 1 sit in the ones place: 1 × 1 = 1.",
               "acceptable": [
                 "1",
                 "1"
@@ -8573,7 +8573,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 810?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -8595,7 +8595,7 @@
               "type": "numeric",
               "prompt": "In 417, what does the 1 represent?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -8870,7 +8870,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 614 is in the tens place. What is its value?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -8991,7 +8991,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 165?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -9101,7 +9101,7 @@
               "type": "numeric",
               "prompt": "The digit 1 in 1,119 is in the tens place. What is its value?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"
@@ -9145,7 +9145,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 108?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -9167,7 +9167,7 @@
               "type": "numeric",
               "prompt": "In 161, what does the 1 represent?",
               "answer": "100",
-              "explanation": "The 1 sits in the hundreds place: 1 × 100 = 100.",
+              "explanation": "The 1 sit in the hundreds place: 1 × 100 = 100.",
               "acceptable": [
                 "100",
                 "100"
@@ -9332,7 +9332,7 @@
               "type": "numeric",
               "prompt": "What is the value of the digit 1 in 317?",
               "answer": "10",
-              "explanation": "The 1 sits in the tens place: 1 × 10 = 10.",
+              "explanation": "The 1 sit in the tens place: 1 × 10 = 10.",
               "acceptable": [
                 "10",
                 "10"

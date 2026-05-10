@@ -127,9 +127,76 @@
 
   // Pure normalize. Order matters — numbers BEFORE operators so
   // "53 × 4 = 212" doesn't lose its operands.
+  // Emoji-to-name map for speech. When the kid sees emoji-counting
+  // questions like "How many cats do you see? 🐱🐱🐱🐱🐱" the speech
+  // engine should NOT say "cat-face cat-face cat-face cat-face cat-face."
+  // Replace runs of identical emojis with cardinal counts.
+  const EMOJI_NAMES = {
+    '🐱':'cat','🐶':'dog','🐰':'bunny','🐻':'bear','🦊':'fox','🐼':'panda',
+    '🐨':'koala','🦁':'lion','🐯':'tiger','🐮':'cow','🐷':'pig','🐸':'frog',
+    '🐵':'monkey','🐧':'penguin','🐦':'bird','🐢':'turtle','🐠':'fish','🐟':'fish',
+    '🦋':'butterfly','🐝':'bee','🐞':'ladybug','🐌':'snail','🦄':'unicorn',
+    '🐲':'dragon','🦖':'dinosaur','🍎':'apple','🍊':'orange','🍋':'lemon',
+    '🍌':'banana','🍉':'watermelon','🍇':'grape','🍓':'strawberry','🍒':'cherry',
+    '🍑':'peach','🥭':'mango','🍍':'pineapple','🥥':'coconut','🥝':'kiwi',
+    '🍅':'tomato','🥑':'avocado','🌷':'tulip','🌸':'flower','🌹':'rose',
+    '🌻':'sunflower','🌼':'daisy','🍀':'clover','🌳':'tree','🌲':'pine tree',
+    '🌴':'palm tree','🌵':'cactus','⭐':'star','🌟':'star','🌙':'moon',
+    '❤️':'heart','💜':'heart','💛':'heart','💙':'heart','💚':'heart',
+    '🚗':'car','🚌':'bus','🚂':'train','🚀':'rocket','⚽':'soccer ball',
+    '🏀':'basketball','🏈':'football','⚾':'baseball','🎾':'tennis ball',
+    '🎈':'balloon','🎁':'gift','🎂':'cake'
+  };
+  // Pure decoration emojis the speech engine should silently strip
+  // (don't add audio noise).
+  const EMOJI_DECORATIONS = new Set([
+    '✨','🎉','🌈','💫','🎊','🥳','🤩','😀','😃','😄','😁','😊','😎',
+    '🔥','💪','🏆','🥇','🥈','🥉','🎯','💎','⚡','✅','❌','✔️','✗','✓'
+  ]);
+
+  // Bug D from master audit: TTS reads each emoji literally, so
+  // "🐱🐱🐱🐱🐱" sounded like "cat face cat face cat face cat face cat face".
+  // Convert runs to cardinal counts: "5 cats". Single emoji → name.
+  // Decorations → strip.
+  function _stripEmojis(text) {
+    if (typeof text !== 'string') return text;
+    // Match runs of identical-named emojis. Iterate emoji map:
+    let s = text;
+    // First: replace runs of 2+ same known emoji with cardinal count
+    for (const [emoji, name] of Object.entries(EMOJI_NAMES)) {
+      // Escape special regex chars in emoji (most emoji are safe but ❤️ has variation selector)
+      const esc = emoji.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const runRe = new RegExp(`(?:${esc}\\s*){2,}`, 'g');
+      s = s.replace(runRe, (match) => {
+        // Count occurrences of the emoji in match
+        const count = (match.match(new RegExp(esc, 'g')) || []).length;
+        const plural = count === 1 ? name : (name.endsWith('y') ? name.slice(0, -1) + 'ies' : name + 's');
+        return ` ${count} ${plural} `;
+      });
+      // Then single occurrences → just the name (avoid TTS reading literal emoji)
+      s = s.replace(new RegExp(esc, 'g'), ` ${name} `);
+    }
+    // Strip decorations
+    for (const dec of EMOJI_DECORATIONS) {
+      const esc = dec.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      s = s.replace(new RegExp(esc, 'g'), ' ');
+    }
+    // Catch-all: strip any remaining emoji-looking unicode
+    // (Range covers most pictographic ranges; conservative pass)
+    s = s.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, ' ');
+    s = s.replace(/\s{2,}/g, ' ').trim();
+    return s;
+  }
+
   function _normalize(text) {
     if (text == null) return '';
     let s = String(text);
+
+    // 0. Strip emojis FIRST so subsequent number-replacement passes
+    //    don't trip on emoji-derived counts (e.g. "5 cats" should
+    //    stay as "5 cats", not become "five cats" — actually that's
+    //    fine, it'll get expanded to words by step 3). Bug D fix.
+    s = _stripEmojis(s);
 
     // 1. Decimals (1-3 fractional digits) before plain integers
     //    so "0.5" doesn't become "zero . five".
