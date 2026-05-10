@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com https://api.gradeearn.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#060d1f" />
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+  <title>Parent dashboard — GradeEarn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css?v=20260510w" />
+</head>
+<body class="parent-page">
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="brand"><svg class="brand-logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><defs><linearGradient id="starGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fde047"/><stop offset="55%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient></defs><path d="M16 2.6 19.6 11.5 29.2 12.2 21.8 18.4 24.2 27.6 16 22.4 7.8 27.6 10.2 18.4 2.8 12.2 12.4 11.5 Z" fill="url(#starGrad)" stroke="rgba(255,255,255,0.18)" stroke-width="0.6" stroke-linejoin="round"/><circle cx="25" cy="6" r="1.6" fill="#fde047" opacity="0.95"/><circle cx="25" cy="6" r="3" fill="#fde047" opacity="0.25"/></svg><span class="brand-text">Grade<span class="brand-text-accent">Earn</span></span></a>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="settings.html">Settings</a>
+      </nav>
+      <div id="user-slot" class="user-slot"></div>
+    </div>
+  </header>
+
+  <section>
+    <div class="container">
+      <h1 style="margin:24px 0 8px;">Parent dashboard</h1>
+      <p style="color:var(--muted);margin:0 0 24px;">Weekly snapshot of your kid's practice.</p>
+      <div id="parent-root">
+        <div class="ge-skel-card" aria-busy="true" aria-label="Loading">
+          <div class="ge-skel ge-skel-line short" style="margin-bottom:14px;"></div>
+          <div class="ge-skel ge-skel-line long"></div>
+          <div class="ge-skel ge-skel-line medium"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="js/auth.js?v=20260510a"></script>
+  <script src="js/parent.js?v=20260510a"></script>
+</body>
+</html>

@@ -438,6 +438,8 @@ exports.handler = async (event) => {
   if (action === 'getAchievementsState')    return await handleGetAchievementsState(payload);
   if (action === 'updateAchievementsState') return await handleUpdateAchievementsState(payload);
   if (action === 'savePushSubscription')    return await handleSavePushSubscription(payload);
+  if (action === 'setParentEmail')          return await handleSetParentEmail(payload);
+  if (action === 'getParentEmail')          return await handleGetParentEmail(payload);
   if (action === 'getReadingPassage')   return await handleGetReadingPassage(payload);
   if (action === 'getReadingItem')      return await handleGetReadingItem(payload);
   if (action === 'getScienceItem')      return await handleGetScienceItem(payload);
@@ -2485,6 +2487,62 @@ async function handleSavePushSubscription(payload) {
     ExpressionAttributeValues: { ':s': toWrite }
   }));
   return ok({ ok: true, subscribed: true });
+}
+
+// ===== Parent email + consent (Tier 6 AA, May 10) =====
+// Two endpoints — get + set — for the parent's email address + weekly
+// summary opt-in. Stored on staar-users. Future cron lambda reads
+// from these fields to decide who to email.
+
+function validEmail(s) {
+  return typeof s === 'string' && s.length >= 5 && s.length <= 254 &&
+         /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
+}
+
+async function handleSetParentEmail(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  const email = (payload.email || '').trim().toLowerCase();
+  const weekly = !!payload.weeklyConsent;
+
+  if (email && !validEmail(email)) return bad(400, 'invalid email');
+
+  if (!email) {
+    // Clearing parent email + consent.
+    await ddb.send(new UpdateCommand({
+      TableName: USERS_TABLE,
+      Key: { username: auth.username },
+      UpdateExpression: 'REMOVE parentEmail, parentEmailWeekly, parentEmailSetAt'
+    }));
+    return ok({ ok: true, parentEmail: null, weeklyConsent: false });
+  }
+
+  await ddb.send(new UpdateCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username },
+    UpdateExpression: 'SET parentEmail = :e, parentEmailWeekly = :w, parentEmailSetAt = :t',
+    ExpressionAttributeValues: {
+      ':e': email,
+      ':w': weekly,
+      ':t': Date.now()
+    }
+  }));
+  return ok({ ok: true, parentEmail: email, weeklyConsent: weekly });
+}
+
+async function handleGetParentEmail(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  const r = await ddb.send(new GetCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username },
+    ProjectionExpression: 'parentEmail, parentEmailWeekly'
+  }));
+  const item = r.Item || {};
+  return ok({
+    parentEmail:    item.parentEmail || null,
+    weeklyConsent:  !!item.parentEmailWeekly
+  });
 }
 
 // ===== Reading practice (Phase 1) =====

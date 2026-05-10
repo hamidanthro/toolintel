@@ -17806,3 +17806,174 @@ body.placement-page {
   .league-name { font-size: 0.9rem; }
   .league-xp-num { font-size: 0.88rem; }
 }
+
+/* ============================================================
+   PARENT DASHBOARD — Tier 6 AA (May 10)
+   ============================================================ */
+.parent-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  max-width: 960px;
+}
+.parent-card {
+  padding: 20px 24px;
+  background: rgba(13, 34, 73, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+}
+.parent-card--hero { grid-column: 1 / -1; }
+.parent-card--email { grid-column: 1 / -1; }
+.parent-card-title {
+  margin: 0 0 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.92);
+}
+.parent-card-subtitle {
+  margin: -6px 0 14px;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.88rem;
+}
+.parent-stat-row {
+  display: flex;
+  gap: 28px;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+.parent-stat {
+  text-align: center;
+  min-width: 110px;
+}
+.parent-stat-num {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--gold, #fbbf24);
+  line-height: 1;
+}
+.parent-stat-suffix {
+  font-size: 1.2rem;
+  color: rgba(251, 191, 36, 0.7);
+  margin-left: 2px;
+}
+.parent-stat-label {
+  margin-top: 4px;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.parent-subjects {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.parent-subject-row {
+  display: grid;
+  grid-template-columns: 100px 1fr 100px;
+  align-items: center;
+  gap: 10px;
+}
+.parent-subject-name {
+  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.85);
+  text-transform: capitalize;
+}
+.parent-subject-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.parent-subject-fill {
+  height: 100%;
+  background: var(--gold, #fbbf24);
+  transition: width 0.3s ease;
+  border-radius: 999px;
+}
+.parent-subject-score {
+  text-align: right;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: 'JetBrains Mono', monospace;
+}
+.parent-topic-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.parent-topic-list li {
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  font-size: 0.92rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.parent-topic-list li.parent-empty {
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+}
+.parent-topic-stat {
+  color: rgba(255, 255, 255, 0.55);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+}
+.parent-email-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.parent-email-label {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+.parent-email-input {
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 1rem;
+  max-width: 360px;
+}
+.parent-email-input:focus {
+  outline: none;
+  border-color: rgba(251, 191, 36, 0.5);
+  background: rgba(255, 255, 255, 0.07);
+}
+.parent-consent-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.78);
+  cursor: pointer;
+}
+.parent-email-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.parent-email-status {
+  font-size: 0.85rem;
+  color: var(--gold, #fbbf24);
+}
+.parent-email-note {
+  margin: 4px 0 0;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.45);
+  font-style: italic;
+}
+@media (max-width: 768px) {
+  .parent-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .parent-stat-num { font-size: 1.8rem; }
+  .parent-subject-row { grid-template-columns: 70px 1fr 80px; gap: 8px; }
+  .parent-card { padding: 16px 18px; }
+}
