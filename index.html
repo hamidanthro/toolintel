@@ -1022,8 +1022,16 @@
         const qs = stateSlug
           ? `?s=${encodeURIComponent(stateSlug)}&g=${encodeURIComponent(slug)}&subj=${subj}`
           : `?g=${encodeURIComponent(slug)}&subj=${subj}`;
+        // Math has a unit-structured curriculum, so route through the
+        // topic picker (subject.html) where the kid picks Addition,
+        // Subtraction, Fractions, etc. — or "Mixed practice" for a
+        // shuffled set. Reading / science / SS have no internal units,
+        // so they go straight to practice.html. Mirrors the routing in
+        // js/grade-page.js (the per-grade dashboard) so the home CTA
+        // matches the per-grade CTA behavior.
+        const targetPage = subj === 'math' ? 'subject.html' : 'practice.html';
         document.querySelectorAll('a[data-practice-cta], a.floating-practice-cta').forEach(a => {
-          a.setAttribute('href', `practice.html${qs}`);
+          a.setAttribute('href', `${targetPage}${qs}`);
         });
         // J2: review-mode CTA. Same scope, plus &review=1. Hidden until
         // the lambda confirms there's at least 1 wrong answer to review.
