@@ -70,7 +70,7 @@
 
   // ---------- data load ----------
   async function loadGradeQuestions(slug) {
-    const r = await fetch(`data/${slug}-curriculum.json?v=20260510l`);
+    const r = await fetch(`data/${slug}-curriculum.json?v=20260510m`);
     if (!r.ok) throw new Error(`failed to load ${slug}`);
     const data = await r.json();
     // Flatten all multiple-choice questions across all units / lessons.
