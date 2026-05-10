@@ -265,6 +265,26 @@ const BRIEFS = [
     scenarioType: 'described_diagram',
     topic: 'on a Texas night a kid hears coyotes howling far away in the hills; the kid can hear the sound even though they cannot see the coyotes; the question asks the kid how sound travels from the coyote to their ears' },
 
+  // ----- G1 v5 — six more briefs -----
+  { id: 'g1s-tx-armadillo-roll', grade: '1', strand: 'Organisms & Environments', se: 'G1-observe',
+    scenarioType: 'described_diagram',
+    topic: 'a Texas armadillo curls into a hard ball when a coyote comes near, hiding its soft belly inside its shell; the question asks the kid how the curling helps protect the armadillo' },
+  { id: 'g1s-rolling-marble-incline', grade: '1', strand: 'Force, Motion & Energy', se: 'G1-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid rolls a marble down a flat board and then tilts the board higher and rolls it again; the marble rolls faster and farther on the steeper tilt; the question asks the kid what made the marble move faster' },
+  { id: 'g1s-tx-fall-pumpkin-grows', grade: '1', strand: 'Organisms & Environments', se: 'G1-observe',
+    scenarioType: 'described_diagram',
+    topic: "a Texas pumpkin patch in October has small green pumpkins on vines, plus big orange ones already grown; the question asks the kid what the green pumpkins will become" },
+  { id: 'g1s-cold-room-warm-blanket', grade: '1', strand: 'Matter & Energy', se: 'G1-observe',
+    scenarioType: 'experiment',
+    topic: "a kid feels cold sitting on the couch; their parent drapes a thick blanket over them; in a few minutes the kid feels warm; the question asks the kid what the blanket is doing" },
+  { id: 'g1s-tx-bayou-water', grade: '1', strand: 'Earth & Space', se: 'G1-observe',
+    scenarioType: 'described_diagram',
+    topic: 'in Houston a kid sees a bayou — a slow-moving small river with grass on the banks; ducks swim and frogs sit on the edge; the question asks the kid what kind of land form a bayou is' },
+  { id: 'g1s-balls-fall-same-speed', grade: '1', strand: 'Force, Motion & Energy', se: 'G1-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid drops a small rock and a big rock from the same height at the same time; both rocks hit the ground at the same time; the question asks the kid what makes both rocks fall down' },
+
   // ===========================================================
   // ----- Grade 2 — practice-only -----
   // ===========================================================
@@ -488,6 +508,20 @@ const BRIEFS = [
     topic: 'a student wearing socks on a smooth wood floor slides easily; wearing rubber shoes on the same floor they cannot slide; the question asks the student to identify what makes the rubber shoe stop and the sock slide' },
   { id: 'g3s-tx-prairie-fire-recovery', grade: '3', strand: 'Organisms & Environments', se: '3.12A', scenarioType: 'data_analysis',
     topic: 'a Texas prairie three months after a small wildfire — first green grass shoots come up through the burned soil, then small wildflowers, then bushes after a year; the question asks the student to identify the order of recovery and why grass returns first' },
+
+  // ----- G3 v5 — six more briefs -----
+  { id: 'g3s-tx-mockingbird-bird-call', grade: '3', strand: 'Force, Motion & Energy', se: '3.8A', scenarioType: 'described_diagram',
+    topic: 'a Texas mockingbird sits in a backyard tree and sings, mimicking the calls of three other birds nearby; the student is asked to identify how the bird makes the sounds and how the sound waves reach the listener' },
+  { id: 'g3s-tx-stalactite-cave', grade: '3', strand: 'Earth & Space', se: '3.10B', scenarioType: 'described_diagram',
+    topic: 'inside Natural Bridge Caverns near San Antonio, water drips slowly from the ceiling and leaves tiny mineral deposits over thousands of years, building stalactites that hang down; the student is asked to identify the natural process that builds the cave formations' },
+  { id: 'g3s-shadow-clock-noon', grade: '3', strand: 'Earth & Space', se: '3.9A', scenarioType: 'data_analysis',
+    topic: "a student tracks their shadow on the playground at three times — morning, noon, and afternoon; the shadow is long west, short directly under, and long east; the student is asked to identify how the shadow length and direction relate to the position of the Sun" },
+  { id: 'g3s-tx-cotton-plant-life-cycle', grade: '3', strand: 'Organisms & Environments', se: '3.13A', scenarioType: 'described_diagram',
+    topic: 'a Texas cotton plant goes through stages — seed planted in spring, seedling, flowering plant with white blooms turning pink, then cotton bolls bursting open in fall; the student is asked to identify what stage produces the cotton fibers used for clothing' },
+  { id: 'g3s-magnet-south-north-pole', grade: '3', strand: 'Force, Motion & Energy', se: '3.7A', scenarioType: 'experiment',
+    topic: 'a student holds two bar magnets — when red ends face each other they push apart, when red faces silver they snap together; the question asks the student to identify why magnets sometimes attract and sometimes repel' },
+  { id: 'g3s-tx-river-rocks-smooth', grade: '3', strand: 'Earth & Space', se: '3.10B', scenarioType: 'data_analysis',
+    topic: 'a student finds smooth round rocks in a Texas creek bed and rough sharp rocks on a hill nearby; the student is asked to identify what process made the creek rocks smooth' },
 
   // ===========================================================
   // ----- Grade 4 (TEKS §112.6) — practice-only -----

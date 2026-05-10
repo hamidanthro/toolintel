@@ -288,6 +288,20 @@ const BRIEFS = [
   { id: 'g1ss-flag-of-texas-fold', grade: '1', strand: 'civics',
     topic: 'how to fold a Texas flag with respect — keep it from touching the ground, fold it in half lengthwise twice, then fold the long strip into triangles until you have a small triangle showing only the white star' },
 
+  // ----- G1 v5 — six more briefs -----
+  { id: 'g1ss-tx-state-mottoes', grade: '1', strand: 'texas-symbols',
+    topic: 'the official Texas state motto is "Friendship" — the word comes from the Caddo Native peoples\' word "Tejas" which means friends; the motto is on the state seal' },
+  { id: 'g1ss-saving-money-jar', grade: '1', strand: 'economics',
+    topic: 'kids can save money in a jar or piggy bank — they put coins in over time and watch the savings grow; saving money helps people buy bigger things later' },
+  { id: 'g1ss-tx-hill-country-region', grade: '1', strand: 'geography',
+    topic: 'the Texas Hill Country is a region in the middle of Texas with rolling green hills, rivers, and wildflowers; many bluebonnets bloom there in spring and many German families settled there in the 1840s' },
+  { id: 'g1ss-rules-on-sports-team', grade: '1', strand: 'civics',
+    topic: 'why rules are important on sports teams — they keep games fair, keep players safe, and let everyone have a turn; three example rules from a soccer team or T-ball team' },
+  { id: 'g1ss-tx-state-folk-dance', grade: '1', strand: 'community',
+    topic: 'Texas square dancing is a traditional folk dance with four couples in a square shape; a caller tells the dancers what moves to do, and Texas has named square dancing the state folk dance' },
+  { id: 'g1ss-people-who-grow-food', grade: '1', strand: 'community',
+    topic: 'farmers in Texas grow most of the food we eat — they raise cattle for beef, plant fields of corn and wheat, and grow vegetables in greenhouses; without farmers there would be no food at the grocery store' },
+
   // Grade 2 v2 (8) — Texas heroes, products, immigration, weather, taxes basic
   { id: 'g2ss-davy-crockett', grade: '2', strand: 'texas-history',
     topic: 'Davy Crockett was a frontiersman from Tennessee who came to Texas to help fight for independence — he died defending the Alamo in 1836 and is remembered as a hero of Texas' },
@@ -387,6 +401,20 @@ const BRIEFS = [
     topic: 'in the 1930s a long drought and over-farming created the Dust Bowl in the Texas Panhandle and Great Plains; black dust storms covered houses and ruined crops, forcing many Texas families to leave their farms; new farming methods and the Soil Conservation Service later helped the land recover' },
   { id: 'g3ss-tx-ww2-rosie-shipyards', grade: '3', strand: 'texas-history',
     topic: 'during World War II (1941-1945) Texas factories built ships, planes, and tanks; many Texas women — sometimes called Texas Rosies — worked in the Houston and Orange shipyards while soldiers fought overseas; the war changed Texas from a mostly farming state to one with big cities and factories' },
+
+  // ----- G3 v5 — six more briefs -----
+  { id: 'g3ss-tx-revolution-causes', grade: '3', strand: 'texas-history',
+    topic: 'three reasons Texas went to war with Mexico in 1835 — Mexico stopped allowing new American settlers, Mexico abolished slavery (which most Anglo-Texan settlers practiced), and Mexico tried to take away Texan rights to make their own laws; tensions boiled over at Gonzales' },
+  { id: 'g3ss-tx-empresarios-system', grade: '3', strand: 'texas-history',
+    topic: 'the empresario system — Mexico gave land grants to certain men called empresarios who would bring American settlers to Texas; Stephen F. Austin was the most successful empresario, bringing the "Old Three Hundred" families to settle along the Brazos River starting in 1825' },
+  { id: 'g3ss-tx-hispanic-heritage', grade: '3', strand: 'community',
+    topic: 'Hispanic heritage in Texas — Texas was Spanish (1519-1821), then Mexican (1821-1836), and Mexican families have lived in South Texas for hundreds of years; today Spanish is the second most common language spoken in Texas, and Mexican-American Texans have shaped Texas food, music, language, and traditions' },
+  { id: 'g3ss-tx-hill-country-german', grade: '3', strand: 'community',
+    topic: 'the Texas Hill Country is home to many German-Texan families; in the 1840s thousands of German immigrants settled in Fredericksburg and New Braunfels, building stone houses and bringing German food, music, and the language; many Hill Country towns still celebrate Oktoberfest today' },
+  { id: 'g3ss-tx-civil-rights-johnson', grade: '3', strand: 'texas-history',
+    topic: 'Texas-born President Lyndon B. Johnson signed two important civil rights laws in the 1960s — the Civil Rights Act of 1964 (made it illegal to keep Black people out of public places) and the Voting Rights Act of 1965 (protected the right of all Americans to vote); these laws changed life across the South including Texas' },
+  { id: 'g3ss-tx-ranching-then-now', grade: '3', strand: 'economics',
+    topic: 'how Texas ranching changed over time — cowboys on long cattle drives in the 1860s-1880s, then barbed wire fencing and railroads ended the long drives, then big modern ranches with trucks and helicopters today; Texas still has more cattle ranches than any other state' },
 
   // ===========================================================
   // ----- Grade 4 (TEKS §113.15) — Texas regions, history, government -----
