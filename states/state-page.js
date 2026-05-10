@@ -20,21 +20,30 @@
 
   function init() {
     if (!STATES) {
-      showError();
+      // STATES_API not loaded — likely a script-load problem. Send home.
+      location.replace('../index.html');
       return;
     }
 
     const params = new URLSearchParams(location.search);
-    const slug = params.get('s');
+    let slug = params.get('s');
 
-    if (!slug) {
-      showError();
-      return;
+    // Texas-only product (per memory_texas_only.md). Missing or
+    // invalid slug → default to texas; do not show a dead-end
+    // "State not found" page. The user is here to practice.
+    if (!slug || !STATES.getBySlug(slug)) {
+      const fixed = new URLSearchParams(location.search);
+      fixed.set('s', 'texas');
+      try {
+        history.replaceState(null, '', location.pathname + '?' + fixed.toString() + location.hash);
+      } catch (_) {}
+      slug = 'texas';
     }
 
     const state = STATES.getBySlug(slug);
     if (!state) {
-      showError();
+      // Catastrophic — texas record missing. Send home.
+      location.replace('../index.html');
       return;
     }
 
@@ -118,11 +127,12 @@
   }
 
   function showError() {
+    // Retained for legacy callers but no longer reachable from init().
+    // The init() flow now always defaults to texas if the slug is missing
+    // or invalid (Texas-only product, per memory_texas_only.md).
     const loading = document.getElementById('state-loading');
     if (loading) { loading.hidden = true; loading.style.display = 'none'; }
-    const err = document.getElementById('state-error');
-    if (err) err.hidden = false;
-    document.title = 'State not found — GradeEarn';
+    location.replace('../index.html');
   }
 
   // ============================================================

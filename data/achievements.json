@@ -1,0 +1,586 @@
+[
+  {
+    "id": "first-correct",
+    "name": "First Spark",
+    "description": "Answer your first question correctly.",
+    "emoji": "✨",
+    "tier": "bronze",
+    "category": "milestone",
+    "trigger": { "type": "lifetimeCorrect", "threshold": 1 },
+    "reward": { "cents": 5, "stickerId": "spark" }
+  },
+  {
+    "id": "ten-correct",
+    "name": "Ten in the Bank",
+    "description": "Answer 10 questions correctly.",
+    "emoji": "🔟",
+    "tier": "bronze",
+    "category": "milestone",
+    "trigger": { "type": "lifetimeCorrect", "threshold": 10 },
+    "reward": { "cents": 10, "stickerId": "ten-bank" }
+  },
+  {
+    "id": "fifty-correct",
+    "name": "Half a Hundred",
+    "description": "Answer 50 questions correctly.",
+    "emoji": "🎯",
+    "tier": "bronze",
+    "category": "milestone",
+    "trigger": { "type": "lifetimeCorrect", "threshold": 50 },
+    "reward": { "cents": 25, "stickerId": "target" }
+  },
+  {
+    "id": "hundred-correct",
+    "name": "Century",
+    "description": "Answer 100 questions correctly.",
+    "emoji": "💯",
+    "tier": "silver",
+    "category": "milestone",
+    "trigger": { "type": "lifetimeCorrect", "threshold": 100 },
+    "reward": { "cents": 50, "stickerId": "century" }
+  },
+  {
+    "id": "five-hundred-correct",
+    "name": "Five Hundo",
+    "description": "Answer 500 questions correctly.",
+    "emoji": "🔥",
+    "tier": "silver",
+    "category": "milestone",
+    "trigger": { "type": "lifetimeCorrect", "threshold": 500 },
+    "reward": { "cents": 100, "stickerId": "fire" }
+  },
+  {
+    "id": "thousand-correct",
+    "name": "Quadruple Digit",
+    "description": "Answer 1,000 questions correctly.",
+    "emoji": "🏆",
+    "tier": "gold",
+    "category": "milestone",
+    "trigger": { "type": "lifetimeCorrect", "threshold": 1000 },
+    "reward": { "cents": 200, "stickerId": "trophy" }
+  },
+  {
+    "id": "five-thousand-correct",
+    "name": "Five Thousand Strong",
+    "description": "Answer 5,000 questions correctly.",
+    "emoji": "👑",
+    "tier": "diamond",
+    "category": "milestone",
+    "trigger": { "type": "lifetimeCorrect", "threshold": 5000 },
+    "reward": { "cents": 500, "stickerId": "crown" }
+  },
+
+  {
+    "id": "first-perfect-run",
+    "name": "Clean Sweep",
+    "description": "Get 100% on a practice session.",
+    "emoji": "🌟",
+    "tier": "bronze",
+    "category": "quality",
+    "trigger": { "type": "perfectRuns", "threshold": 1 },
+    "reward": { "cents": 15, "stickerId": "shooting-star" }
+  },
+  {
+    "id": "five-perfect-runs",
+    "name": "Sweep Squad",
+    "description": "Get 100% on 5 practice sessions.",
+    "emoji": "💫",
+    "tier": "silver",
+    "category": "quality",
+    "trigger": { "type": "perfectRuns", "threshold": 5 },
+    "reward": { "cents": 50, "stickerId": "sparkle" }
+  },
+  {
+    "id": "twenty-perfect-runs",
+    "name": "Perfectionist",
+    "description": "Get 100% on 20 practice sessions.",
+    "emoji": "✨",
+    "tier": "gold",
+    "category": "quality",
+    "trigger": { "type": "perfectRuns", "threshold": 20 },
+    "reward": { "cents": 150, "stickerId": "diamond" }
+  },
+
+  {
+    "id": "first-topic-mastered",
+    "name": "Topic Tamer",
+    "description": "Reach Mastered (90%+ on 10+ questions) in a topic.",
+    "emoji": "🎓",
+    "tier": "bronze",
+    "category": "mastery",
+    "trigger": { "type": "topicsMastered", "threshold": 1 },
+    "reward": { "cents": 25, "stickerId": "graduation" }
+  },
+  {
+    "id": "three-topics-mastered",
+    "name": "Three of a Kind",
+    "description": "Master 3 different topics.",
+    "emoji": "🥉",
+    "tier": "silver",
+    "category": "mastery",
+    "trigger": { "type": "topicsMastered", "threshold": 3 },
+    "reward": { "cents": 50, "stickerId": "bronze-medal" }
+  },
+  {
+    "id": "five-topics-mastered",
+    "name": "Topic Collector",
+    "description": "Master 5 different topics.",
+    "emoji": "🥈",
+    "tier": "silver",
+    "category": "mastery",
+    "trigger": { "type": "topicsMastered", "threshold": 5 },
+    "reward": { "cents": 100, "stickerId": "silver-medal" }
+  },
+  {
+    "id": "ten-topics-mastered",
+    "name": "Master of Topics",
+    "description": "Master 10 different topics.",
+    "emoji": "🥇",
+    "tier": "gold",
+    "category": "mastery",
+    "trigger": { "type": "topicsMastered", "threshold": 10 },
+    "reward": { "cents": 200, "stickerId": "gold-medal" }
+  },
+
+  {
+    "id": "two-day-streak",
+    "name": "Two Days Strong",
+    "description": "Practice 2 days in a row.",
+    "emoji": "🔥",
+    "tier": "bronze",
+    "category": "streak",
+    "trigger": { "type": "loginStreak", "threshold": 2 },
+    "reward": { "cents": 5, "stickerId": "small-flame" }
+  },
+  {
+    "id": "three-day-streak",
+    "name": "Three-Peat",
+    "description": "Practice 3 days in a row.",
+    "emoji": "🔥",
+    "tier": "bronze",
+    "category": "streak",
+    "trigger": { "type": "loginStreak", "threshold": 3 },
+    "reward": { "cents": 10, "stickerId": "flame" }
+  },
+  {
+    "id": "week-streak",
+    "name": "Week Warrior",
+    "description": "Practice 7 days in a row.",
+    "emoji": "🗓️",
+    "tier": "silver",
+    "category": "streak",
+    "trigger": { "type": "loginStreak", "threshold": 7 },
+    "reward": { "cents": 35, "stickerId": "calendar" }
+  },
+  {
+    "id": "two-week-streak",
+    "name": "Two-Week Tank",
+    "description": "Practice 14 days in a row.",
+    "emoji": "💪",
+    "tier": "silver",
+    "category": "streak",
+    "trigger": { "type": "loginStreak", "threshold": 14 },
+    "reward": { "cents": 75, "stickerId": "muscle" }
+  },
+  {
+    "id": "month-streak",
+    "name": "Monthly Hero",
+    "description": "Practice 30 days in a row.",
+    "emoji": "🏔️",
+    "tier": "gold",
+    "category": "streak",
+    "trigger": { "type": "loginStreak", "threshold": 30 },
+    "reward": { "cents": 200, "stickerId": "mountain" }
+  },
+  {
+    "id": "hundred-day-streak",
+    "name": "Hundred Day Legend",
+    "description": "Practice 100 days in a row.",
+    "emoji": "🌟",
+    "tier": "diamond",
+    "category": "streak",
+    "trigger": { "type": "loginStreak", "threshold": 100 },
+    "reward": { "cents": 1000, "stickerId": "legend-star" }
+  },
+
+  {
+    "id": "tried-math",
+    "name": "Math Magician",
+    "description": "Answer at least 5 math questions.",
+    "emoji": "➕",
+    "tier": "bronze",
+    "category": "variety",
+    "trigger": { "type": "subjectQuestions", "subject": "math", "threshold": 5 },
+    "reward": { "cents": 5, "stickerId": "plus" }
+  },
+  {
+    "id": "tried-reading",
+    "name": "Word Wizard",
+    "description": "Read your first reading passage.",
+    "emoji": "📖",
+    "tier": "bronze",
+    "category": "variety",
+    "trigger": { "type": "subjectQuestions", "subject": "reading", "threshold": 5 },
+    "reward": { "cents": 5, "stickerId": "book" }
+  },
+  {
+    "id": "tried-science",
+    "name": "Science Spark",
+    "description": "Answer your first science question.",
+    "emoji": "🔬",
+    "tier": "bronze",
+    "category": "variety",
+    "trigger": { "type": "subjectQuestions", "subject": "science", "threshold": 5 },
+    "reward": { "cents": 5, "stickerId": "microscope" }
+  },
+  {
+    "id": "tried-social-studies",
+    "name": "History Hunter",
+    "description": "Answer your first social studies question.",
+    "emoji": "🌎",
+    "tier": "bronze",
+    "category": "variety",
+    "trigger": { "type": "subjectQuestions", "subject": "social-studies", "threshold": 5 },
+    "reward": { "cents": 5, "stickerId": "globe" }
+  },
+  {
+    "id": "all-four-subjects",
+    "name": "Quad Squad",
+    "description": "Try all 4 subjects: math, reading, science, social studies.",
+    "emoji": "🎲",
+    "tier": "silver",
+    "category": "variety",
+    "trigger": { "type": "subjectsTried", "threshold": 4 },
+    "reward": { "cents": 50, "stickerId": "dice" }
+  },
+
+  {
+    "id": "fifty-correct-math",
+    "name": "Math Whiz",
+    "description": "Answer 50 math questions correctly.",
+    "emoji": "🧮",
+    "tier": "silver",
+    "category": "subject",
+    "trigger": { "type": "subjectCorrect", "subject": "math", "threshold": 50 },
+    "reward": { "cents": 30, "stickerId": "abacus" }
+  },
+  {
+    "id": "fifty-correct-reading",
+    "name": "Reading Rocket",
+    "description": "Answer 50 reading questions correctly.",
+    "emoji": "🚀",
+    "tier": "silver",
+    "category": "subject",
+    "trigger": { "type": "subjectCorrect", "subject": "reading", "threshold": 50 },
+    "reward": { "cents": 30, "stickerId": "rocket" }
+  },
+  {
+    "id": "fifty-correct-science",
+    "name": "Lab Legend",
+    "description": "Answer 50 science questions correctly.",
+    "emoji": "⚗️",
+    "tier": "silver",
+    "category": "subject",
+    "trigger": { "type": "subjectCorrect", "subject": "science", "threshold": 50 },
+    "reward": { "cents": 30, "stickerId": "potion" }
+  },
+  {
+    "id": "fifty-correct-ss",
+    "name": "Time Traveler",
+    "description": "Answer 50 social studies questions correctly.",
+    "emoji": "⏳",
+    "tier": "silver",
+    "category": "subject",
+    "trigger": { "type": "subjectCorrect", "subject": "social-studies", "threshold": 50 },
+    "reward": { "cents": 30, "stickerId": "hourglass" }
+  },
+
+  {
+    "id": "first-fact",
+    "name": "Fun Fact Finder",
+    "description": "Discover your first fun fact.",
+    "emoji": "🎉",
+    "tier": "bronze",
+    "category": "discovery",
+    "trigger": { "type": "factsSeen", "threshold": 1 },
+    "reward": { "cents": 5, "stickerId": "party-popper" }
+  },
+  {
+    "id": "ten-facts",
+    "name": "Fact Collector",
+    "description": "Discover 10 fun facts.",
+    "emoji": "🧠",
+    "tier": "bronze",
+    "category": "discovery",
+    "trigger": { "type": "factsSeen", "threshold": 10 },
+    "reward": { "cents": 10, "stickerId": "brain" }
+  },
+  {
+    "id": "fifty-facts",
+    "name": "Brain Banker",
+    "description": "Discover 50 fun facts.",
+    "emoji": "🦉",
+    "tier": "silver",
+    "category": "discovery",
+    "trigger": { "type": "factsSeen", "threshold": 50 },
+    "reward": { "cents": 30, "stickerId": "owl" }
+  },
+  {
+    "id": "hundred-facts",
+    "name": "Walking Encyclopedia",
+    "description": "Discover 100 fun facts.",
+    "emoji": "📚",
+    "tier": "gold",
+    "category": "discovery",
+    "trigger": { "type": "factsSeen", "threshold": 100 },
+    "reward": { "cents": 75, "stickerId": "books" }
+  },
+
+  {
+    "id": "first-five-streak",
+    "name": "Five in a Row",
+    "description": "Get 5 correct in a row in one session.",
+    "emoji": "🎈",
+    "tier": "bronze",
+    "category": "in-session",
+    "trigger": { "type": "sessionStreak", "threshold": 5 },
+    "reward": { "cents": 5, "stickerId": "balloon" }
+  },
+  {
+    "id": "ten-in-a-row",
+    "name": "Ten on Fire",
+    "description": "Get 10 correct in a row in one session.",
+    "emoji": "🎇",
+    "tier": "silver",
+    "category": "in-session",
+    "trigger": { "type": "sessionStreak", "threshold": 10 },
+    "reward": { "cents": 20, "stickerId": "sparklers" }
+  },
+  {
+    "id": "twenty-in-a-row",
+    "name": "Unstoppable",
+    "description": "Get 20 correct in a row in one session.",
+    "emoji": "🚂",
+    "tier": "gold",
+    "category": "in-session",
+    "trigger": { "type": "sessionStreak", "threshold": 20 },
+    "reward": { "cents": 75, "stickerId": "train" }
+  },
+
+  {
+    "id": "first-daily-mission",
+    "name": "Mission Started",
+    "description": "Complete your first daily mission.",
+    "emoji": "🎯",
+    "tier": "bronze",
+    "category": "daily",
+    "trigger": { "type": "dailyMissionsCompleted", "threshold": 1 },
+    "reward": { "cents": 5, "stickerId": "dart" }
+  },
+  {
+    "id": "five-daily-missions",
+    "name": "Mission Maker",
+    "description": "Complete 5 daily missions.",
+    "emoji": "📋",
+    "tier": "silver",
+    "category": "daily",
+    "trigger": { "type": "dailyMissionsCompleted", "threshold": 5 },
+    "reward": { "cents": 25, "stickerId": "clipboard" }
+  },
+  {
+    "id": "twenty-daily-missions",
+    "name": "Mission Master",
+    "description": "Complete 20 daily missions.",
+    "emoji": "🎖️",
+    "tier": "gold",
+    "category": "daily",
+    "trigger": { "type": "dailyMissionsCompleted", "threshold": 20 },
+    "reward": { "cents": 100, "stickerId": "military-medal" }
+  },
+
+  {
+    "id": "early-bird",
+    "name": "Early Bird",
+    "description": "Practice before 8 AM.",
+    "emoji": "🌅",
+    "tier": "bronze",
+    "category": "time",
+    "trigger": { "type": "timeOfDay", "before": "08:00" },
+    "reward": { "cents": 10, "stickerId": "sunrise" }
+  },
+  {
+    "id": "night-owl",
+    "name": "Night Owl",
+    "description": "Practice after 8 PM.",
+    "emoji": "🌙",
+    "tier": "bronze",
+    "category": "time",
+    "trigger": { "type": "timeOfDay", "after": "20:00" },
+    "reward": { "cents": 10, "stickerId": "moon" }
+  },
+  {
+    "id": "weekend-warrior",
+    "name": "Weekend Warrior",
+    "description": "Practice on a Saturday or Sunday.",
+    "emoji": "🛡️",
+    "tier": "bronze",
+    "category": "time",
+    "trigger": { "type": "weekendPractice", "threshold": 1 },
+    "reward": { "cents": 10, "stickerId": "shield" }
+  },
+
+  {
+    "id": "first-cents",
+    "name": "First Cent",
+    "description": "Earn your first cent.",
+    "emoji": "🪙",
+    "tier": "bronze",
+    "category": "earnings",
+    "trigger": { "type": "lifetimeCents", "threshold": 1 },
+    "reward": { "cents": 0, "stickerId": "coin" }
+  },
+  {
+    "id": "hundred-cents",
+    "name": "Hundred Cents",
+    "description": "Earn 100¢ total.",
+    "emoji": "💰",
+    "tier": "bronze",
+    "category": "earnings",
+    "trigger": { "type": "lifetimeCents", "threshold": 100 },
+    "reward": { "cents": 0, "stickerId": "money-bag" }
+  },
+  {
+    "id": "five-hundred-cents",
+    "name": "Halfway There",
+    "description": "Earn 500¢ total.",
+    "emoji": "💸",
+    "tier": "silver",
+    "category": "earnings",
+    "trigger": { "type": "lifetimeCents", "threshold": 500 },
+    "reward": { "cents": 0, "stickerId": "cash" }
+  },
+  {
+    "id": "ten-thousand-cents",
+    "name": "Toy Time",
+    "description": "Earn enough to claim a toy ($10+).",
+    "emoji": "🎁",
+    "tier": "gold",
+    "category": "earnings",
+    "trigger": { "type": "lifetimeCents", "threshold": 1000 },
+    "reward": { "cents": 0, "stickerId": "gift" }
+  },
+
+  {
+    "id": "topic-explorer",
+    "name": "Topic Explorer",
+    "description": "Try 3 different math topics.",
+    "emoji": "🗺️",
+    "tier": "bronze",
+    "category": "exploration",
+    "trigger": { "type": "topicsTried", "threshold": 3 },
+    "reward": { "cents": 15, "stickerId": "map" }
+  },
+  {
+    "id": "topic-traveler",
+    "name": "Topic Traveler",
+    "description": "Try 5 different math topics.",
+    "emoji": "🧭",
+    "tier": "silver",
+    "category": "exploration",
+    "trigger": { "type": "topicsTried", "threshold": 5 },
+    "reward": { "cents": 30, "stickerId": "compass" }
+  },
+
+  {
+    "id": "first-week",
+    "name": "Welcome Aboard",
+    "description": "Practice for one full week.",
+    "emoji": "🚢",
+    "tier": "bronze",
+    "category": "tenure",
+    "trigger": { "type": "daysSinceFirstSession", "threshold": 7 },
+    "reward": { "cents": 20, "stickerId": "ship" }
+  },
+  {
+    "id": "first-month",
+    "name": "Veteran",
+    "description": "Practice for one full month.",
+    "emoji": "🏅",
+    "tier": "silver",
+    "category": "tenure",
+    "trigger": { "type": "daysSinceFirstSession", "threshold": 30 },
+    "reward": { "cents": 50, "stickerId": "medal" }
+  },
+  {
+    "id": "first-quarter",
+    "name": "Three Months In",
+    "description": "Practice for three months.",
+    "emoji": "🎖️",
+    "tier": "gold",
+    "category": "tenure",
+    "trigger": { "type": "daysSinceFirstSession", "threshold": 90 },
+    "reward": { "cents": 100, "stickerId": "ribbon" }
+  },
+  {
+    "id": "school-year",
+    "name": "School Year",
+    "description": "Practice for nine months.",
+    "emoji": "🎓",
+    "tier": "diamond",
+    "category": "tenure",
+    "trigger": { "type": "daysSinceFirstSession", "threshold": 270 },
+    "reward": { "cents": 500, "stickerId": "school-grad" }
+  },
+
+  {
+    "id": "tx-pride",
+    "name": "Lone Star Loyalist",
+    "description": "Answer 100 Texas-flavored questions correctly.",
+    "emoji": "⭐",
+    "tier": "silver",
+    "category": "texas",
+    "trigger": { "type": "lifetimeCorrect", "threshold": 100 },
+    "reward": { "cents": 25, "stickerId": "lone-star" }
+  },
+  {
+    "id": "comeback-kid",
+    "name": "Comeback Kid",
+    "description": "Practice again after missing a day.",
+    "emoji": "🔁",
+    "tier": "bronze",
+    "category": "comeback",
+    "trigger": { "type": "comebackAfterGap", "threshold": 1 },
+    "reward": { "cents": 5, "stickerId": "loop" }
+  },
+
+  {
+    "id": "marathon",
+    "name": "Marathon",
+    "description": "Complete a 100-question session.",
+    "emoji": "🏃",
+    "tier": "gold",
+    "category": "endurance",
+    "trigger": { "type": "longestSession", "threshold": 100 },
+    "reward": { "cents": 100, "stickerId": "runner" }
+  },
+  {
+    "id": "deep-dive",
+    "name": "Deep Dive",
+    "description": "Complete a 50-question session.",
+    "emoji": "🤿",
+    "tier": "silver",
+    "category": "endurance",
+    "trigger": { "type": "longestSession", "threshold": 50 },
+    "reward": { "cents": 50, "stickerId": "diver" }
+  },
+  {
+    "id": "warm-up",
+    "name": "Warm-Up",
+    "description": "Complete a 10-question session.",
+    "emoji": "🏃‍♀️",
+    "tier": "bronze",
+    "category": "endurance",
+    "trigger": { "type": "longestSession", "threshold": 10 },
+    "reward": { "cents": 10, "stickerId": "stretch" }
+  }
+]

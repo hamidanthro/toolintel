@@ -12153,6 +12153,205 @@ body.grade-page > * {
   .next-topic-card-sub { font-size: 12px; }
 }
 
+/* ==========================================================================
+   Trophy room (achievements.html) — kid-readable badge collection.
+   ========================================================================== */
+.trophy-section { padding: 24px 32px; }
+.trophy-section + .trophy-section { padding-top: 8px; }
+.trophy-section-head { margin-bottom: 14px; }
+.trophy-section-title { margin: 0; font-size: 18px; font-weight: 700; color: rgba(255,255,255,0.95); }
+.trophy-section-sub { margin: 4px 0 0; color: rgba(255,255,255,0.5); font-size: 13px; line-height: 1.5; }
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+.stat-tile {
+  padding: 14px 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+}
+.stat-tile-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255,255,255,0.5);
+}
+.stat-tile-num {
+  font-size: 28px;
+  font-weight: 700;
+  color: #fbbf24;
+  margin-top: 4px;
+  letter-spacing: -0.02em;
+}
+
+.trophy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+.trophy-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-left: 4px solid var(--trophy-tier-color, #d4a574);
+  border-radius: 12px;
+  position: relative;
+  transition: transform 160ms ease, border-color 160ms ease;
+}
+.trophy-card--earned {
+  background: linear-gradient(135deg, rgba(251,191,36,0.06) 0%, rgba(255,255,255,0.04) 60%);
+}
+.trophy-card--locked { opacity: 0.55; }
+.trophy-card--locked .trophy-card-emoji { filter: grayscale(80%); }
+.trophy-card-emoji {
+  font-size: 32px;
+  line-height: 1;
+  width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.04);
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+.trophy-card-body { flex: 1; min-width: 0; }
+.trophy-card-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.95);
+  letter-spacing: -0.005em;
+}
+.trophy-card-desc {
+  font-size: 12px;
+  color: rgba(255,255,255,0.55);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+.trophy-card-reward {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fbbf24;
+  flex-shrink: 0;
+}
+.trophy-progress {
+  margin-top: 8px;
+  position: relative;
+  height: 18px;
+}
+.trophy-progress-bar {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(96,165,250,0.4) 0%, rgba(168,85,247,0.4) 100%);
+  border-radius: 999px;
+  max-width: 100%;
+}
+.trophy-progress-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.85);
+  letter-spacing: 0.02em;
+}
+
+.daily-mission-card { /* container for daily-mission inside */ }
+.daily-mission {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  background: linear-gradient(135deg, rgba(96,165,250,0.08) 0%, rgba(168,85,247,0.06) 100%);
+  border: 1px solid rgba(96,165,250,0.25);
+  border-radius: 14px;
+}
+.daily-mission--complete {
+  background: linear-gradient(135deg, rgba(52,211,153,0.10) 0%, rgba(251,191,36,0.06) 100%);
+  border-color: rgba(52,211,153,0.35);
+}
+.daily-mission-emoji { font-size: 32px; line-height: 1; flex-shrink: 0; }
+.daily-mission-title { font-size: 15px; font-weight: 700; color: rgba(255,255,255,0.95); }
+.daily-mission-sub { font-size: 12px; color: rgba(255,255,255,0.55); margin-top: 2px; }
+.daily-mission-progress {
+  margin-top: 6px;
+  height: 6px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.daily-mission-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #60a5fa 0%, #a855f7 100%);
+  transition: width 240ms ease;
+}
+
+@media (max-width: 480px) {
+  .trophy-section { padding: 20px 18px; }
+  .trophy-grid { grid-template-columns: 1fr; }
+  .stat-tile-num { font-size: 22px; }
+  .trophy-card { padding: 12px 14px; }
+  .trophy-card-emoji { width: 44px; height: 44px; font-size: 28px; }
+  .daily-mission { padding: 12px 14px; gap: 10px; }
+  .daily-mission-emoji { font-size: 26px; }
+}
+
+/* ==========================================================================
+   Achievement-unlock toast — fires when a kid earns a trophy mid-session.
+   Slides in from top-right, auto-dismisses after 4s.
+   ========================================================================== */
+.achievement-toast {
+  position: fixed;
+  top: 70px;
+  right: 16px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: linear-gradient(135deg, rgba(251,191,36,0.95) 0%, rgba(245,158,11,0.95) 100%);
+  color: #1f2937;
+  border: 2px solid rgba(255,255,255,0.6);
+  border-radius: 14px;
+  box-shadow: 0 12px 32px rgba(251,191,36,0.4), 0 4px 12px rgba(0,0,0,0.2);
+  font-weight: 600;
+  max-width: 360px;
+  animation: ach-toast-in 360ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+             ach-toast-out 360ms ease 4s forwards;
+  cursor: pointer;
+}
+.achievement-toast-emoji { font-size: 36px; line-height: 1; flex-shrink: 0; }
+.achievement-toast-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(31,41,55,0.65); }
+.achievement-toast-name { font-size: 16px; font-weight: 800; color: #1f2937; line-height: 1.25; }
+.achievement-toast-desc { font-size: 12px; font-weight: 500; color: rgba(31,41,55,0.75); line-height: 1.35; margin-top: 1px; }
+.achievement-toast-cents { font-size: 12px; font-weight: 800; color: #b45309; margin-top: 4px; }
+@keyframes ach-toast-in {
+  0%   { transform: translateX(120%) scale(0.9); opacity: 0; }
+  100% { transform: translateX(0) scale(1); opacity: 1; }
+}
+@keyframes ach-toast-out {
+  0%   { transform: translateX(0) scale(1); opacity: 1; }
+  100% { transform: translateX(120%) scale(0.9); opacity: 0; }
+}
+@media (max-width: 480px) {
+  .achievement-toast {
+    right: 8px; left: 8px;
+    max-width: none;
+    top: 60px;
+    padding: 12px 14px;
+  }
+  .achievement-toast-emoji { font-size: 30px; }
+  .achievement-toast-name { font-size: 15px; }
+}
+
 .what-to-expect {
   padding: 48px 32px;
   border-top: 1px solid rgba(255, 255, 255, 0.04);

@@ -74,6 +74,43 @@
   const root = document.getElementById('practice-root');
   const params = new URLSearchParams(location.search);
 
+  // Wire achievement unlock toast. Fires whenever the kid earns a trophy
+  // mid-session. Toast auto-dismisses after 4s; tap to navigate to the
+  // trophy room.
+  try {
+    if (window.Achievements && typeof window.Achievements.onUnlock === 'function') {
+      window.Achievements.onUnlock(function (ach) {
+        try {
+          const cents = (ach.reward && ach.reward.cents) || 0;
+          const html = `<div class="achievement-toast-emoji" aria-hidden="true">${ach.emoji || '🏆'}</div>` +
+            `<div>` +
+              `<div class="achievement-toast-eyebrow">Trophy unlocked</div>` +
+              `<div class="achievement-toast-name">${(ach.name || '').replace(/[<>]/g, '')}</div>` +
+              `<div class="achievement-toast-desc">${(ach.description || '').replace(/[<>]/g, '')}</div>` +
+              (cents > 0 ? `<div class="achievement-toast-cents">+${cents}¢ bonus</div>` : '') +
+            `</div>`;
+          const toast = document.createElement('div');
+          toast.className = 'achievement-toast';
+          toast.innerHTML = html;
+          toast.addEventListener('click', () => { location.href = 'achievements.html'; });
+          document.body.appendChild(toast);
+          setTimeout(() => { try { toast.remove(); } catch (_) {} }, 4500);
+          // Confetti for higher-tier trophies (gold + diamond)
+          if (window.STAARFx && (ach.tier === 'gold' || ach.tier === 'diamond')) {
+            try {
+              window.STAARFx.confetti({ count: 120, duration: 2200 });
+              window.STAARFx.playMilestone();
+            } catch (_) {}
+          }
+        } catch (e) { console.warn('[ach toast]', e); }
+      });
+      // Initial check on load — catches unlocks that happened on a prior
+      // page (e.g. a fact-seen on grade.html). No-op if everything's
+      // already earned.
+      window.Achievements._checkUnlocks();
+    }
+  } catch (_) {}
+
   // §76 — Dual-icon speaker. CSS toggles which SVG is visible based on
   // the .speech-btn--playing class. When idle the muted icon shows
   // ("this isn't playing"); while playing the active icon shows ("this
@@ -1009,6 +1046,12 @@
           if (window.FunFacts && typeof window.FunFacts.markFactSeen === 'function') {
             window.FunFacts.markFactSeen(fact.id);
           }
+          // Achievements: track each fact viewed for "fact collector" trophies
+          try {
+            if (window.Achievements && typeof window.Achievements.track === 'function') {
+              window.Achievements.track('fact-seen', { factId: fact.id });
+            }
+          } catch (_) {}
         } catch (_) {}
         if (window._stAutoAdvance) {
           try { clearTimeout(window._stAutoAdvance); } catch (_) {}
@@ -1268,6 +1311,9 @@
         if (isCorrect) spawnPointsPop(qbox, difficultyCents(q));
         if (isCorrect) {
           const _streak = (window._stCorrectStreak = (window._stCorrectStreak || 0) + 1);
+          if (_streak > (window._stMaxCorrectStreak || 0)) {
+            window._stMaxCorrectStreak = _streak;
+          }
           if (_streak % 5 === 0 && STATE_INFO && STATE_INFO.testName) {
             showToast(pickRandom(STAAR_STREAK_TEMPLATES)(STATE_INFO.testName, _streak));
           }
@@ -1280,6 +1326,19 @@
           window._stCorrectStreak = 0;
         }
         Stats.record(slug, stats, { unitId: q._unit?.id, unitTitle: q._unit?.title, isCorrect });
+        // Achievements: track every answer + bump daily mission on correct
+        try {
+          if (window.Achievements && typeof window.Achievements.track === 'function') {
+            window.Achievements.track('answer', {
+              isCorrect,
+              subject: SUBJECT_SLUG,
+              unitId: q._unit?.id || null
+            });
+            if (isCorrect) {
+              window.Achievements.bumpDailyMission(1);
+            }
+          }
+        } catch (_) {}
         // J3 spaced-rep: schedule per-question review. Wrong → re-due in
         // 24h. Correct after a prior wrong → bump interval (3d → 7d → ...).
         // Correct without prior wrong → no entry, no scheduling needed.
@@ -1698,6 +1757,19 @@
       if (barPulse) barPulse.style.left = '100%';
       const pct = Math.round((correct / questions.length) * 100);
       const perfect = correct === questions.length && questions.length > 0;
+      // Achievements: track session-end (perfect runs, longest session,
+      // login-streak update, best in-session correct streak).
+      try {
+        if (window.Achievements && typeof window.Achievements.track === 'function') {
+          window.Achievements.track('session-end', {
+            correct,
+            total: questions.length,
+            subject: SUBJECT_SLUG,
+            unitId: meta && meta.unit ? meta.unit.id : null,
+            sessionStreak: window._stMaxCorrectStreak || 0
+          });
+        }
+      } catch (_) {}
       const justMastered = perfect && sKey && !isLocked;
       if (justMastered && window.STAARAuth?.markMastered) {
         window.STAARAuth.markMastered(sKey, sectionLabel(curr, meta));

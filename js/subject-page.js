@@ -197,7 +197,9 @@
   async function init() {
     if (redirectIfNotMath()) return;
     if (!GRADE_SLUG) {
-      showError('Pick a grade first', 'We need to know which grade to load topics for.');
+      // No grade specified — send to grade picker for Texas (Texas-only
+      // product, see memory_texas_only.md). Do not show a dead-end.
+      location.replace(`grade.html?s=${encodeURIComponent(STATE_SLUG || 'texas')}`);
       return;
     }
 

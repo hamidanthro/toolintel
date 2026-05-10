@@ -85,17 +85,29 @@
     }
 
     const params = new URLSearchParams(location.search);
-    const stateSlug = params.get('s');
+    let stateSlug = params.get('s');
     const gradeSlug = params.get('g');
 
-    const state = stateSlug ? STATES.getBySlug(stateSlug) : null;
+    // Texas-only product. If state slug is missing or invalid, default
+    // to texas instead of showing a dead-end "state not found" error.
+    // The user is here to practice; the rule from memory_texas_only.md
+    // says we never serve any state but Texas.
+    let state = stateSlug ? STATES.getBySlug(stateSlug) : null;
     if (!state) {
-      showError(
-        'State not found',
-        "We're focused on Texas STAAR practice right now.",
-        'index.html',
-        'Try Texas STAAR practice'
-      );
+      stateSlug = 'texas';
+      state = STATES.getBySlug('texas');
+      // Update the URL so subsequent links / bookmarks land cleanly,
+      // without forcing a navigation (history.replaceState).
+      try {
+        const fixed = new URLSearchParams(location.search);
+        fixed.set('s', 'texas');
+        const newUrl = location.pathname + '?' + fixed.toString() + location.hash;
+        history.replaceState(null, '', newUrl);
+      } catch (_) {}
+    }
+    if (!state) {
+      // Catastrophic — texas record itself missing. Fall back to home.
+      location.replace('index.html');
       return;
     }
 

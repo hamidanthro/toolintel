@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; media-src 'self' blob: data: https:; connect-src 'self' https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com https://api.gradeearn.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#060d1f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="GradeEarn">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16.png">
+
+  <title>Your Trophies — GradeEarn</title>
+  <meta name="description" content="Your earned trophies, stickers, and rewards from GradeEarn STAAR practice.">
+  <link rel="canonical" href="https://gradeearn.com/achievements.html">
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&display=swap">
+  <link rel="stylesheet" href="css/styles.css?v=20260510n">
+
+  <script src="js/migrate-storage.js?v=20260427a"></script>
+  <script src="js/states-data.js?v=20260510d"></script>
+</head>
+<body class="grade-page practice-mode">
+
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="index.html" aria-label="GradeEarn home">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="#fbbf24" aria-hidden="true">
+        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+      </svg>
+      <span class="brand-text">Grade<span class="brand-accent">Earn</span></span>
+    </a>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="achievements.html">Trophies</a>
+      <a href="marketplace.html">Toys</a>
+      <a href="about.html">How it works</a>
+    </nav>
+    <div id="user-slot" class="user-slot"></div>
+  </div>
+</header>
+
+<main>
+  <article class="grade-content">
+    <header class="grade-hero">
+      <div class="grade-hero-inner">
+        <div class="grade-hero-eyebrow">
+          <span aria-hidden="true">🏆</span>
+          <span>Trophies + stickers</span>
+        </div>
+        <h1 class="grade-hero-title" id="hero-title">Your trophy room</h1>
+        <p class="grade-hero-sub" id="hero-sub">—</p>
+      </div>
+    </header>
+
+    <!-- Daily mission -->
+    <section class="trophy-section" id="daily-mission-section">
+      <div class="trophy-section-head">
+        <h2 class="trophy-section-title">Today's mission</h2>
+      </div>
+      <div class="daily-mission-card" id="daily-mission-card">
+        <span aria-hidden="true">⏳ Loading mission…</span>
+      </div>
+    </section>
+
+    <!-- Stats overview -->
+    <section class="trophy-section">
+      <div class="trophy-section-head">
+        <h2 class="trophy-section-title">Your numbers</h2>
+      </div>
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-tile"><div class="stat-tile-label">Trophies earned</div><div class="stat-tile-num" id="stat-earned">—</div></div>
+        <div class="stat-tile"><div class="stat-tile-label">Correct answers</div><div class="stat-tile-num" id="stat-correct">—</div></div>
+        <div class="stat-tile"><div class="stat-tile-label">Daily streak</div><div class="stat-tile-num" id="stat-streak">—</div></div>
+        <div class="stat-tile"><div class="stat-tile-label">Topics mastered</div><div class="stat-tile-num" id="stat-mastered">—</div></div>
+      </div>
+    </section>
+
+    <!-- Earned trophies -->
+    <section class="trophy-section" id="earned-section">
+      <div class="trophy-section-head">
+        <h2 class="trophy-section-title">Earned trophies</h2>
+        <p class="trophy-section-sub" id="earned-sub">—</p>
+      </div>
+      <div class="trophy-grid" id="earned-grid"></div>
+    </section>
+
+    <!-- Locked trophies (in progress) -->
+    <section class="trophy-section" id="locked-section">
+      <div class="trophy-section-head">
+        <h2 class="trophy-section-title">Coming up next</h2>
+        <p class="trophy-section-sub">The trophies you're closest to earning.</p>
+      </div>
+      <div class="trophy-grid" id="locked-grid"></div>
+    </section>
+
+    <!-- All trophies (rest of catalog) -->
+    <section class="trophy-section" id="catalog-section">
+      <div class="trophy-section-head">
+        <h2 class="trophy-section-title">All trophies</h2>
+        <p class="trophy-section-sub">Every trophy in GradeEarn. Grayed-out ones are still locked.</p>
+      </div>
+      <div class="trophy-grid" id="catalog-grid"></div>
+    </section>
+  </article>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="footer-copyright">© 2026 GradeEarn. All rights reserved.</p>
+    <nav class="footer-mobile-links">
+      <a href="about.html">How it works</a>
+      <a href="#">Privacy</a>
+      <a href="#">Support</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="js/auth.js?v=20260507a"></script>
+<script src="js/mastery.js?v=20260510a"></script>
+<script src="js/fun-facts.js?v=20260510k"></script>
+<script src="js/achievements.js?v=20260510a"></script>
+<script src="js/achievements-page.js?v=20260510a"></script>
+</body>
+</html>
