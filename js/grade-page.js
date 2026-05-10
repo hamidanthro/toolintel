@@ -376,6 +376,33 @@
     try { renderDailyQuest(state, gradeSlug); } catch (e) { console.warn('[daily quest]', e); }
     try { renderReviewCta(state, gradeSlug); } catch (e) { console.warn('[review cta]', e); }
 
+    // Cross-tab + within-page refresh: when localStorage changes
+    // (kid playing in another tab bumps progress), re-render the
+    // reward strip + daily quest so the dashboard reflects current
+    // state. Listening to the storage event covers other-tab edits;
+    // Achievements.onUnlock covers same-tab updates.
+    if (!window._gradePageRefreshBound) {
+      window._gradePageRefreshBound = true;
+      window.addEventListener('storage', (e) => {
+        if (!e || !e.key) return;
+        const interesting = (
+          e.key.indexOf('gradeearn:achievements:') === 0 ||
+          e.key.indexOf('staar.stats.') === 0 ||
+          e.key.indexOf('staar.user') === 0
+        );
+        if (!interesting) return;
+        try { renderRewardStrip(state, gradeSlug); } catch (_) {}
+        try { renderDailyQuest(state, gradeSlug); } catch (_) {}
+        try { renderReviewCta(state, gradeSlug); } catch (_) {}
+      });
+      if (window.Achievements && window.Achievements.onUnlock) {
+        window.Achievements.onUnlock(() => {
+          try { renderRewardStrip(state, gradeSlug); } catch (_) {}
+          try { renderDailyQuest(state, gradeSlug); } catch (_) {}
+        });
+      }
+    }
+
     // J1: surface F10 print worksheets + F5 wrong-answer review.
     // Render a small "Practice extras" row below the subject grid.
     // Only shows live (offered) subjects so we don't print a

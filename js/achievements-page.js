@@ -39,32 +39,58 @@
     `;
   }
 
+  // Updated for the multi-task daily-quest shape introduced in
+  // commit 54f9c31. missionState now has { date, tasks: [{id, label,
+  // emoji, target, current, done}], rewardCents, completed } —
+  // NOT the old {target, current} shape. Renders one row per task
+  // with its own progress bar.
   function renderDailyMission(missionState) {
     const root = document.getElementById('daily-mission-card');
     if (!root) return;
+    if (!missionState || !Array.isArray(missionState.tasks) || missionState.tasks.length === 0) {
+      // Defensive — old or corrupted state. Render a friendly empty message.
+      root.innerHTML = `<div class="daily-mission daily-mission--inprogress">
+        <div class="daily-mission-emoji" aria-hidden="true">🎯</div>
+        <div class="daily-mission-text">
+          <div class="daily-mission-title">Today's quest is loading…</div>
+        </div>
+      </div>`;
+      return;
+    }
+    const reward = Number.isFinite(missionState.rewardCents) ? missionState.rewardCents : 0;
     if (missionState.completed) {
       root.innerHTML = `
         <div class="daily-mission daily-mission--complete">
           <div class="daily-mission-emoji" aria-hidden="true">✅</div>
           <div class="daily-mission-text">
-            <div class="daily-mission-title">Today's mission complete!</div>
-            <div class="daily-mission-sub">You answered ${missionState.target} correctly. +${missionState.rewardCents}¢ bonus earned.</div>
+            <div class="daily-mission-title">Today's quest complete!</div>
+            <div class="daily-mission-sub">All 3 tasks done · +${reward}¢ bonus earned.</div>
           </div>
         </div>
       `;
-    } else {
-      const pct = missionState.target ? Math.round((missionState.current / missionState.target) * 100) : 0;
-      root.innerHTML = `
-        <div class="daily-mission daily-mission--inprogress">
-          <div class="daily-mission-emoji" aria-hidden="true">🎯</div>
-          <div class="daily-mission-text">
-            <div class="daily-mission-title">Answer ${missionState.target} questions correctly</div>
-            <div class="daily-mission-sub">Progress: ${missionState.current} / ${missionState.target} · reward +${missionState.rewardCents}¢</div>
-            <div class="daily-mission-progress"><div class="daily-mission-progress-bar" style="width:${pct}%"></div></div>
-          </div>
-        </div>
-      `;
+      return;
     }
+    const tasksHtml = missionState.tasks.map(t => {
+      const pct = t.target > 0 ? Math.min(100, Math.round((t.current / t.target) * 100)) : 0;
+      const doneCls = t.done ? 'dq-task--done' : '';
+      return `<div class="dq-task ${doneCls}">
+        <div class="dq-task-emoji" aria-hidden="true">${t.done ? '✅' : escapeHtml(t.emoji || '🎯')}</div>
+        <div class="dq-task-body">
+          <div class="dq-task-label">${escapeHtml(t.label || '')}</div>
+          <div class="dq-task-progress"><div class="dq-task-progress-bar" style="width:${pct}%"></div></div>
+          <div class="dq-task-sub">${t.current} / ${t.target}</div>
+        </div>
+      </div>`;
+    }).join('');
+    root.innerHTML = `
+      <div class="daily-mission daily-mission--inprogress" style="display:block;">
+        <div class="dq-head" style="margin-bottom:10px;">
+          <div class="dq-head-title">Today's quest</div>
+          <div class="dq-head-reward">+${reward}¢ all done</div>
+        </div>
+        <div class="dq-tasks">${tasksHtml}</div>
+      </div>
+    `;
   }
 
   async function init() {
@@ -90,8 +116,20 @@
     document.getElementById('stat-streak').textContent = String(stats.loginStreak || 0);
     document.getElementById('stat-mastered').textContent = String(stats.topicsMastered || 0);
 
-    // Daily mission
-    renderDailyMission(window.Achievements.getDailyMissionState());
+    // Daily mission — render now + re-render on cross-tab storage
+    // updates (kid playing in another tab bumps task progress; this
+    // card reflects it within seconds) AND on achievement unlocks.
+    function refreshDailyMission() {
+      try { renderDailyMission(window.Achievements.getDailyMissionState()); } catch (_) {}
+    }
+    refreshDailyMission();
+    window.addEventListener('storage', (e) => {
+      if (!e || !e.key) return;
+      if (e.key.indexOf('gradeearn:achievements:dailyMission') === 0) refreshDailyMission();
+    });
+    if (window.Achievements.onUnlock) {
+      window.Achievements.onUnlock(() => refreshDailyMission());
+    }
 
     // Earned section
     const earnedAchs = cat.filter(a => earnedIds.has(a.id));
