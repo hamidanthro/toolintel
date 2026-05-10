@@ -140,6 +140,26 @@ const GK_BRIEFS = [
     setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
   { id: 'gk-info-horned-lizard-simple', grade: 'k', genre: 'informational',
     topic: 'the horned lizard is a small Texas lizard with little horns on its head; it likes hot rocks and eats ants',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+
+  // ----- K v4 — six more briefs (3 RF + 3 INFO) -----
+  { id: 'gk-rf-shoes-on-self', grade: 'k', genre: 'realistic-fiction',
+    topic: 'a kid puts on their own shoes for the first time without help; they get the right shoe on the right foot after one try with the left',
+    setting: 'a Texas kindergarten classroom door', protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'gk-rf-tortilla-rolling', grade: 'k', genre: 'realistic-fiction',
+    topic: 'a kid helps abuela press tortillas in a quiet kitchen; the kid learns to flip the dough so it does not stick',
+    setting: 'an abuela\'s kitchen in El Paso', protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'gk-rf-found-feather', grade: 'k', genre: 'realistic-fiction',
+    topic: 'a kid finds a soft brown feather on the playground and tucks it behind their ear like a hat band',
+    setting: 'a Texas elementary school playground', protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'gk-info-firetruck-red', grade: 'k', genre: 'informational',
+    topic: 'firetrucks are big red trucks that bring water to put out fires; they have ladders, hoses, and loud sirens that help everyone get out of the way',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'gk-info-honey-bees', grade: 'k', genre: 'informational',
+    topic: 'honey bees fly from flower to flower; they bring pollen back to their hive and turn it into sweet honey we can eat',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'gk-info-tx-state-snack', grade: 'k', genre: 'informational',
+    topic: 'tortilla chips and salsa are the official Texas state snack; people scoop salsa with a chip and crunch — many Texans eat this snack at home and at restaurants',
     setting: null, protagonistName: null, protagonistDemographic: 'unmarked' }
 ];
 
@@ -223,6 +243,26 @@ const G1_BRIEFS = [
     setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
   { id: 'g1-info-chili-state-dish', grade: '1', genre: 'informational',
     topic: 'chili is the Texas state dish; it is a thick stew made of beef, beans, peppers, and spices, and it warms you up on cold days',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+
+  // ----- G1 v4 — six more briefs (3 RF + 3 INFO) -----
+  { id: 'g1-rf-lost-jacket', grade: '1', genre: 'realistic-fiction',
+    topic: 'a kid loses their jacket on the school playground at recess; their teacher walks them through three places to check until they find it on the slide',
+    setting: 'a Texas elementary school playground', protagonistName: 'Sofia', protagonistDemographic: 'hispanic-latino' },
+  { id: 'g1-rf-fishing-piers', grade: '1', genre: 'realistic-fiction',
+    topic: 'a kid goes to a Texas Gulf coast fishing pier with their uncle and learns how to put a worm on the hook without flinching',
+    setting: 'a fishing pier near Corpus Christi', protagonistName: 'Beto', protagonistDemographic: 'hispanic-latino' },
+  { id: 'g1-rf-spelling-bee-letter', grade: '1', genre: 'realistic-fiction',
+    topic: 'a kid practices for the first-grade classroom spelling bee; they trip on the letter "y" in "yellow" but spell it right after a deep breath',
+    setting: 'a first-grade classroom in San Antonio', protagonistName: 'DaShawn', protagonistDemographic: 'black' },
+  { id: 'g1-info-tx-state-fruit', grade: '1', genre: 'informational',
+    topic: 'the red grapefruit is the Texas state fruit; it grows in the Rio Grande Valley where the warm sun and rich soil make the fruit extra sweet',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'g1-info-tx-state-pepper', grade: '1', genre: 'informational',
+    topic: 'the chiltepin is the Texas state native pepper; it is a tiny round pepper that grows wild in South Texas and is one of the spiciest peppers in the world',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'g1-info-cottonwood-tree', grade: '1', genre: 'informational',
+    topic: 'cottonwood trees grow tall along Texas creeks and rivers; in spring their seeds drift through the air on white fluff that looks like cotton, which is how they got their name',
     setting: null, protagonistName: null, protagonistDemographic: 'unmarked' }
 ];
 
@@ -425,6 +465,26 @@ const G3_BRIEFS = [
     setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
   { id: 'g3-info-trinity-river', grade: 3, genre: 'informational',
     topic: 'the Trinity River runs more than 700 miles through Texas, flowing past Fort Worth and Dallas before reaching the Gulf of Mexico near Galveston Bay; cities depend on the river for drinking water',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+
+  // ----- G3 v3 — six more briefs (3 RF + 3 INFO) -----
+  { id: 'g3-rf-soccer-tryout', grade: 3, genre: 'realistic-fiction',
+    topic: 'a kid tries out for the school soccer team in Austin; they miss their first shot but make the second by remembering to keep their eyes on the ball',
+    setting: 'a school soccer field in Austin', protagonistName: 'Andre', protagonistDemographic: 'black' },
+  { id: 'g3-rf-grandmother-photo-album', grade: 3, genre: 'realistic-fiction',
+    topic: 'a kid spends a rainy afternoon looking through their grandmother\'s photo album and learns that grandma grew up on a small West Texas ranch with no running water',
+    setting: 'a grandmother\'s living room in Lubbock', protagonistName: 'Elena', protagonistDemographic: 'hispanic-latino' },
+  { id: 'g3-rf-helping-after-storm', grade: 3, genre: 'realistic-fiction',
+    topic: 'a kid helps neighbors clean up fallen branches and trash after a Texas thunderstorm; they fill four big bags and feel proud when the street looks normal again',
+    setting: 'a suburban street in Houston', protagonistName: 'Min-Jun', protagonistDemographic: 'asian' },
+  { id: 'g3-info-tx-economy-three-industries', grade: 3, genre: 'informational',
+    topic: 'three of the biggest industries in Texas — cattle ranching (raising beef), oil and gas (drilling for fuel), and technology (computer chips and software in cities like Austin) — and how each one provides jobs',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'g3-info-pecan-state-tree-harvest', grade: 3, genre: 'informational',
+    topic: 'the pecan is the official Texas state tree; pecan trees grow nuts inside green hulls that ripen in fall, and Texas farmers harvest millions of pounds of pecans every year for pies and other foods',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'g3-info-juneteenth-history', grade: 3, genre: 'informational',
+    topic: 'Juneteenth, June 19, marks the day in 1865 when enslaved people in Galveston, Texas first heard they were free; it began as a Texas tradition and is now a national holiday celebrating freedom and heritage',
     setting: null, protagonistName: null, protagonistDemographic: 'unmarked' }
 ];
 
