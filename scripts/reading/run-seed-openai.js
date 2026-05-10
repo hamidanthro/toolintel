@@ -404,6 +404,20 @@ const G2_BRIEFS = [
     setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
   { id: 'g2-info-big-bend-region', grade: '2', genre: 'informational',
     topic: 'Big Bend is a region in far west Texas where the Rio Grande river makes a giant U-shaped turn; the area has tall mountains, deep canyons, and many wild animals',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+
+  // ----- G2 v4 — four more briefs (2 RF + 2 INFO) -----
+  { id: 'g2-rf-summer-pool-cousins', grade: '2', genre: 'realistic-fiction',
+    topic: 'a kid spends a hot Texas summer day at the city pool with their cousins; they learn to put their head underwater for a few seconds for the first time',
+    setting: 'a city public pool in San Antonio', protagonistName: 'Mateo', protagonistDemographic: 'hispanic-latino' },
+  { id: 'g2-rf-stargazing-bigbend', grade: '2', genre: 'realistic-fiction',
+    topic: 'a kid camps at Big Bend National Park with family and sees more stars than they thought were possible; their dad shows them the Milky Way for the first time',
+    setting: 'a Big Bend National Park campsite', protagonistName: 'Wren', protagonistDemographic: 'unmarked' },
+  { id: 'g2-info-rio-grande-citrus', grade: '2', genre: 'informational',
+    topic: 'the Rio Grande Valley in South Texas grows millions of pounds of citrus every year — oranges, lemons, and especially red grapefruits; the warm climate and rich soil make these fruits sweet and juicy',
+    setting: null, protagonistName: null, protagonistDemographic: 'unmarked' },
+  { id: 'g2-info-tx-state-grass', grade: '2', genre: 'informational',
+    topic: 'sideoats grama is the official Texas state grass; it grows naturally on Texas prairies and is named for the way its small seed clusters all hang on one side of the stem',
     setting: null, protagonistName: null, protagonistDemographic: 'unmarked' }
 ];
 

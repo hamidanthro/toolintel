@@ -319,6 +319,32 @@ const BRIEFS = [
     scenarioType: 'experiment',
     topic: "a kid leaves an ice-cream cone in the sun and goes to play; when they come back the ice cream is dripping down the cone; the question asks the kid what changed the ice cream" },
 
+  // ----- G2 v4 — eight more briefs -----
+  { id: 'g2s-tx-deer-hide-color', grade: '2', strand: 'Organisms & Environments', se: 'G2-observe',
+    scenarioType: 'described_diagram',
+    topic: 'a Texas white-tailed deer has brown fur that looks just like dry grass and tree bark; when the deer stands still in the woods, it is hard to see; the question asks the kid how the brown fur helps the deer stay safe' },
+  { id: 'g2s-magnet-strength-distance', grade: '2', strand: 'Force, Motion & Energy', se: 'G2-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid moves a magnet close to a paper clip and the paper clip jumps to the magnet; when the magnet is far away nothing happens; the question asks the kid how distance changes the way the magnet pulls' },
+  { id: 'g2s-tx-mockingbird-mimic', grade: '2', strand: 'Organisms & Environments', se: 'G2-observe',
+    scenarioType: 'described_diagram',
+    topic: 'the Texas mockingbird sings songs it heard from cardinals, robins, and even car alarms; the question asks the kid how mockingbirds learn the songs they sing' },
+  { id: 'g2s-thermometer-hot-cold', grade: '2', strand: 'Matter & Energy', se: 'G2-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid puts a thermometer in a glass of hot water and watches the red line go up; in cold water the line goes down; the question asks the kid what the thermometer is measuring' },
+  { id: 'g2s-tx-rain-grass-grows', grade: '2', strand: 'Organisms & Environments', se: 'G2-observe',
+    scenarioType: 'data_analysis',
+    topic: 'after a wet Texas spring with lots of rain, the grass on the front lawn is tall and bright green; after a dry summer with no rain, the grass is short and brown; the question asks the kid what plants need to grow' },
+  { id: 'g2s-bottle-roll-floor', grade: '2', strand: 'Force, Motion & Energy', se: 'G2-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid rolls a closed empty bottle on a smooth floor and watches it roll a long way; on a rug the bottle rolls only a little; the question asks the kid which surface let the bottle keep moving' },
+  { id: 'g2s-water-paper-towel', grade: '2', strand: 'Matter & Energy', se: 'G2-observe',
+    scenarioType: 'experiment',
+    topic: 'a kid drops a paper towel into a small puddle of water on the kitchen counter; the paper towel turns dark and soft as it soaks the water up; the question asks the kid where the water went' },
+  { id: 'g2s-tx-pond-tadpoles', grade: '2', strand: 'Organisms & Environments', se: 'G2-observe',
+    scenarioType: 'described_diagram',
+    topic: 'in a Texas pond a kid sees tiny black tadpoles wiggling in the water in spring; by summer the tadpoles have grown back legs and look more like frogs; the question asks the kid what the tadpoles are growing into' },
+
   // ===========================================================
   // ----- Grade 8 (TEKS §112.28) — STAAR-tested -----
   // (Original Phase R briefs, now tagged with grade field)

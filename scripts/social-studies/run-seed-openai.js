@@ -306,6 +306,24 @@ const BRIEFS = [
   { id: 'g2ss-tx-state-government-three', grade: '2', strand: 'civics',
     topic: 'the three parts of Texas state government — the Governor (lives in Austin and runs the state), the Legislature (group of people who make state laws), and the Texas Supreme Court (decides what the laws mean) — and where each one meets' },
 
+  // ----- G2 v4 — eight more briefs -----
+  { id: 'g2ss-tx-rivers-walk', grade: '2', strand: 'geography',
+    topic: 'the San Antonio River Walk is a path along the river through the heart of downtown San Antonio; restaurants, shops, and bridges line the river; small boats called barges carry visitors past the Alamo' },
+  { id: 'g2ss-tx-natural-resources', grade: '2', strand: 'economics',
+    topic: 'three natural resources Texas has — oil and natural gas (used for fuel), wind (West Texas wind farms), and timber (East Texas pine forests) — and how each one provides jobs to many Texas families' },
+  { id: 'g2ss-tx-galveston-port-history', grade: '2', strand: 'texas-history',
+    topic: 'before the Houston Ship Channel was built, Galveston was the biggest port in Texas — ships from Europe and the Caribbean would unload cotton, beef, and travelers there; in 1900 a giant hurricane changed Galveston forever and other ports grew bigger' },
+  { id: 'g2ss-mexican-american-tx', grade: '2', strand: 'community',
+    topic: 'many Texans have family roots in Mexico; Mexican-American families have lived in Texas for hundreds of years and shaped Texas food (tacos, breakfast tacos, fajitas), music (Tejano, mariachi), and Spanish-language heritage' },
+  { id: 'g2ss-tx-cotton-history', grade: '2', strand: 'texas-history',
+    topic: 'cotton was the most important Texas crop for many years; in the 1800s cotton fields in East Texas needed lots of workers, and after the Civil War cotton kept Texas growing as a state until oil was discovered in 1901' },
+  { id: 'g2ss-tx-fairs-festivals', grade: '2', strand: 'community',
+    topic: 'Texas has many big yearly events — the State Fair of Texas in Dallas (October), Austin City Limits Music Festival (October), Fiesta San Antonio (April), and the Houston Livestock Show and Rodeo (March) — each draws Texans together to celebrate' },
+  { id: 'g2ss-tx-wildflower-trails', grade: '2', strand: 'geography',
+    topic: 'the Texas Hill Country has special spring wildflower trails where bluebonnets, Indian paintbrush, and Mexican hat flowers grow side by side along roads and fields; Lady Bird Johnson started a project to protect them' },
+  { id: 'g2ss-tx-houston-livestock-show', grade: '2', strand: 'community',
+    topic: 'the Houston Livestock Show and Rodeo runs for three weeks every March; kids show animals they raised (cattle, pigs, lambs, chickens), cowboys compete in roping and bull riding, and country music stars perform — it is the biggest livestock show in the world' },
+
   // Grade 3 v2 (8) — more tribes, San Jacinto, Texas Rangers, railroads, Tejano detail
   { id: 'g3ss-tx-tribes-tonkawa-wichita', grade: '3', strand: 'texas-history',
     topic: 'two more Native American groups of Texas — the Tonkawa (Central Texas, hunters and gatherers) and the Wichita (North Texas, farmers who built grass houses called grass lodges) — and how each used the land' },
