@@ -117,6 +117,18 @@ if ('serviceWorker' in navigator) {
       if (emoji) localStorage.setItem('gradeearn:avatarEmoji:' + username, emoji);
       else localStorage.removeItem('gradeearn:avatarEmoji:' + username);
     } catch (_) {}
+    // Server sync — so friend-league + parent dashboard can render
+    // this kid's avatar on other devices. Fire-and-forget; if it
+    // fails the local copy is still authoritative for this device.
+    try {
+      const cur = currentUser();
+      if (cur && cur.username === username) {
+        const tok = token();
+        if (tok && api) {
+          api('setAvatarEmoji', { token: tok, emoji: emoji || null }).catch(() => {});
+        }
+      }
+    } catch (_) {}
   }
 
   // §70 — Stable per-user avatar color. djb2 hash → palette of 6

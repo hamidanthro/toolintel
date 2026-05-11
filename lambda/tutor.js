@@ -440,6 +440,7 @@ exports.handler = async (event) => {
   if (action === 'savePushSubscription')    return await handleSavePushSubscription(payload);
   if (action === 'setParentEmail')          return await handleSetParentEmail(payload);
   if (action === 'getParentEmail')          return await handleGetParentEmail(payload);
+  if (action === 'setAvatarEmoji')          return await handleSetAvatarEmoji(payload);
   if (action === 'getReadingPassage')   return await handleGetReadingPassage(payload);
   if (action === 'getReadingItem')      return await handleGetReadingItem(payload);
   if (action === 'getScienceItem')      return await handleGetScienceItem(payload);
@@ -2548,6 +2549,34 @@ async function handleGetParentEmail(payload) {
     parentEmail:    item.parentEmail || null,
     weeklyConsent:  !!item.parentEmailWeekly
   });
+}
+
+// POST { token, emoji } — store the kid's chosen avatar emoji on
+// staar-users.avatarEmoji so it can render on friend league + parent
+// dashboard + any future cross-user surface. Passing emoji:null
+// clears it (REMOVE). One-codepoint cap (~most emoji) up to 4 chars
+// for ZWJ-joined sequences like 👨‍🚀.
+async function handleSetAvatarEmoji(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  const raw = payload.emoji;
+  if (raw === null || raw === undefined || raw === '') {
+    await ddb.send(new UpdateCommand({
+      TableName: USERS_TABLE,
+      Key: { username: auth.username },
+      UpdateExpression: 'REMOVE avatarEmoji'
+    }));
+    return ok({ ok: true, avatarEmoji: null });
+  }
+  const emoji = String(raw).slice(0, 32); // generous cap for ZWJ sequences
+  if (!emoji) return bad(400, 'emoji must be a non-empty string');
+  await ddb.send(new UpdateCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username },
+    UpdateExpression: 'SET avatarEmoji = :e',
+    ExpressionAttributeValues: { ':e': emoji }
+  }));
+  return ok({ ok: true, avatarEmoji: emoji });
 }
 
 // ===== Reading practice (Phase 1) =====

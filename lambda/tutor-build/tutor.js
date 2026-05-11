@@ -440,6 +440,7 @@ exports.handler = async (event) => {
   if (action === 'savePushSubscription')    return await handleSavePushSubscription(payload);
   if (action === 'setParentEmail')          return await handleSetParentEmail(payload);
   if (action === 'getParentEmail')          return await handleGetParentEmail(payload);
+  if (action === 'setAvatarEmoji')          return await handleSetAvatarEmoji(payload);
   if (action === 'getReadingPassage')   return await handleGetReadingPassage(payload);
   if (action === 'getReadingItem')      return await handleGetReadingItem(payload);
   if (action === 'getScienceItem')      return await handleGetScienceItem(payload);
@@ -2528,6 +2529,31 @@ async function handleGetParentEmail(payload) {
     parentEmail:    item.parentEmail || null,
     weeklyConsent:  !!item.parentEmailWeekly
   });
+}
+
+// POST { token, emoji } — server-side avatar emoji for friend league
+// + parent dashboard rendering. emoji:null clears.
+async function handleSetAvatarEmoji(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  const raw = payload.emoji;
+  if (raw === null || raw === undefined || raw === '') {
+    await ddb.send(new UpdateCommand({
+      TableName: USERS_TABLE,
+      Key: { username: auth.username },
+      UpdateExpression: 'REMOVE avatarEmoji'
+    }));
+    return ok({ ok: true, avatarEmoji: null });
+  }
+  const emoji = String(raw).slice(0, 32);
+  if (!emoji) return bad(400, 'emoji must be a non-empty string');
+  await ddb.send(new UpdateCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username },
+    UpdateExpression: 'SET avatarEmoji = :e',
+    ExpressionAttributeValues: { ':e': emoji }
+  }));
+  return ok({ ok: true, avatarEmoji: emoji });
 }
 
 // ===== Reading practice (Phase 1) =====
