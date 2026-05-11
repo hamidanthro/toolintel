@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com https://api.gradeearn.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#060d1f" />
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+  <title>Math Sprint — GradeEarn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/styles.css?v=20260511t" />
+</head>
+<body class="game-page game-math-sprint">
+  <header class="game-header">
+    <a href="../games.html" class="game-back" aria-label="Back">‹</a>
+    <div class="game-header-title">
+      <div class="game-header-eyebrow"><span class="game-header-dot" aria-hidden="true"></span> MATH SPRINT</div>
+      <div class="game-header-stat" id="gameHeaderStat">60 seconds · most right wins</div>
+    </div>
+    <div class="game-header-score">
+      <div class="game-header-score-num" id="gameYourScore">0</div>
+      <div class="game-header-score-label">your pts</div>
+    </div>
+  </header>
+
+  <div id="gameInviteBanner" class="game-invite-banner" hidden></div>
+
+  <main class="game-main">
+    <div id="gameOpponents" class="game-opponents" hidden></div>
+
+    <div id="gameStatus" class="game-status">Math Sprint · loading…</div>
+
+    <!-- How to play card — always visible until dismissed -->
+    <div id="howToPlay" class="memory-howto">
+      <div class="memory-howto-head">
+        <span class="memory-howto-icon" aria-hidden="true">⚡</span>
+        <strong>How to play</strong>
+        <button type="button" id="howToDismiss" class="memory-howto-dismiss" aria-label="Dismiss instructions">✕</button>
+      </div>
+      <ol class="memory-howto-list">
+        <li><strong>60 seconds</strong> on the clock — go fast!</li>
+        <li><strong>Tap the right answer</strong> to score 10 points.</li>
+        <li><strong>Streak bonus:</strong> consecutive right answers add +1, +2, +3 (caps at +5).</li>
+        <li><strong>Wrong answer?</strong> −3 pts, streak resets — next problem appears.</li>
+        <li><strong>Most problems right</strong> beats your friends today.</li>
+      </ol>
+    </div>
+
+    <!-- Pre-start: big START button. Shown until kid taps Start. -->
+    <div id="msPreStart" class="ms-prestart">
+      <button type="button" id="msStartBtn" class="ms-start-btn">START</button>
+      <p class="ms-prestart-hint">Beat your high score. Beat your friends.</p>
+    </div>
+
+    <!-- Live stats strip: correct / wrong / time / streak -->
+    <div class="memory-stats" id="msStats" hidden>
+      <div class="memory-stat"><div class="memory-stat-num" id="msCorrect">0</div><div class="memory-stat-label">correct</div></div>
+      <div class="memory-stat"><div class="memory-stat-num" id="msWrong">0</div><div class="memory-stat-label">wrong</div></div>
+      <div class="memory-stat" id="msTimerStat"><div class="memory-stat-num" id="msTimer">60</div><div class="memory-stat-label">time</div></div>
+      <div class="memory-stat" id="msStreakStat"><div class="memory-stat-num" id="msStreak">0</div><div class="memory-stat-label">streak</div></div>
+    </div>
+
+    <!-- Question + choices. Hidden until Start. -->
+    <div id="msBoard" class="ms-board" hidden>
+      <!-- Countdown bar reflects time remaining 100% → 0% across 60s -->
+      <div class="ms-progress" aria-hidden="true">
+        <div class="ms-progress-fill" id="msProgressFill"></div>
+      </div>
+      <div id="msQuestion" class="ms-question"></div>
+      <div id="msChoices" class="ms-choices"></div>
+    </div>
+  </main>
+
+  <!-- End-of-round screen -->
+  <div id="gameComplete" class="game-complete" hidden>
+    <div class="game-complete-card">
+      <div class="game-complete-emoji" aria-hidden="true">⚡</div>
+      <h2 id="gameCompleteTitle" class="game-complete-title">Time's up!</h2>
+      <div class="game-complete-stats">
+        <div class="game-complete-stat"><div class="game-complete-stat-num" id="gameCompleteScore">0</div><div class="game-complete-stat-label">points</div></div>
+        <div class="game-complete-stat"><div class="game-complete-stat-num" id="gameCompleteCorrect">0</div><div class="game-complete-stat-label">correct</div></div>
+        <div class="game-complete-stat"><div class="game-complete-stat-num" id="gameCompleteStreak">0</div><div class="game-complete-stat-label">best streak</div></div>
+      </div>
+      <div id="gameCompleteFriends" class="game-complete-friends"></div>
+      <div class="game-complete-actions">
+        <button type="button" class="btn btn-primary" id="msPlayAgain">Play again</button>
+        <a href="../games.html" class="btn btn-secondary">Back to games</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="gameToast" class="game-toast" hidden role="status" aria-live="polite"></div>
+
+  <script src="../js/prefs.js?v=20260426a"></script>
+  <script src="../js/fx.js?v=20260426a"></script>
+  <script src="../js/auth.js?v=20260511c"></script>
+  <script src="../js/games/math-sprint.js?v=20260511a"></script>
+</body>
+</html>
