@@ -62,6 +62,23 @@
     if (slug === 'algebra-1') return 'Alg 1';
     return slug;
   }
+  // Full-word grade label — used in the league specifically so a kid
+  // can't quietly sandbag in a lower grade to look like a champion.
+  // Friends who know each other personally can see at a glance:
+  // "Saad · Kindergarten" → they know Saad is actually in 3rd grade
+  // and is cheating the leaderboard. Social transparency by design.
+  function gradeFullLabel(slug) {
+    if (!slug) return 'Grade not set';
+    if (slug === 'grade-k') return 'Kindergarten';
+    const m = String(slug).match(/grade-(\d+)/);
+    if (m) {
+      const n = m[1];
+      const suffix = n === '1' ? 'st' : n === '2' ? 'nd' : n === '3' ? 'rd' : 'th';
+      return `Grade ${n}`;
+    }
+    if (slug === 'algebra-1') return 'Algebra 1';
+    return slug;
+  }
   function token() {
     try { return window.STAARAuth && window.STAARAuth.token && window.STAARAuth.token(); } catch (_) { return null; }
   }
@@ -178,17 +195,21 @@
     const tier   = slot === 1 ? 'gold' : slot === 2 ? 'silver' : 'bronze';
     const medal  = slot === 1 ? '👑'   : slot === 2 ? '🥈'      : '🥉';
     const name   = esc(row.displayName);
-    const grade  = row.grade ? `<span class="podium-grade">${esc(gradeLabel(row.grade))}</span>` : '';
+    // Grade label is FULL ("Kindergarten" / "Grade 3" / "Algebra 1")
+    // and prominent below the name — transparency feature so a kid
+    // can't sandbag in a lower grade without their friends seeing it.
+    const fullGrade = row.grade ? esc(gradeFullLabel(row.grade)) : 'Grade not set';
     return `
       <div class="podium-card podium-card--${tier}${youCls}" data-slot="${slot}">
         <div class="podium-medal" aria-hidden="true">${medal}</div>
         ${avatarHtml(row, 'lg')}
         <div class="podium-name">${name}${row.isSelf ? '<span class="league-you-chip">you</span>' : ''}</div>
+        <div class="podium-grade-line" title="${fullGrade}">${fullGrade}</div>
         <div class="podium-stat">
           <span class="podium-stat-num">${row.weeklyCorrect}</span>
           <span class="podium-stat-label">this week</span>
         </div>
-        <div class="podium-foot">${grade} · L${row.level}</div>
+        <div class="podium-foot">Level ${row.level}</div>
       </div>`;
   }
 
@@ -209,7 +230,10 @@
     const zoneCls = (total >= 6 && row.rank <= Math.ceil(total * 0.4)) ? ' zone-up'
                   : (total >= 8 && row.rank > total - Math.ceil(total * 0.25)) ? ' zone-down'
                   : '';
-    const grade  = row.grade ? `<span class="league-grade-chip">${esc(gradeLabel(row.grade))}</span>` : '';
+    // Full-word grade label, shown as the row's secondary identity
+    // line. Transparency feature — friends can see what grade their
+    // friend is competing as, preventing quiet sandbag-cheating.
+    const fullGrade = row.grade ? esc(gradeFullLabel(row.grade)) : 'Grade not set';
     const lifetime = (row.lifetimeCorrect || 0).toLocaleString();
     return `
       <div class="league-row${youCls}${zoneCls}" data-username="${esc(row.username)}">
@@ -222,7 +246,7 @@
           <div class="league-row-name">
             <span class="league-name-text">${esc(row.displayName)}</span>
             ${row.isSelf ? '<span class="league-you-chip">you</span>' : ''}
-            ${grade}
+            <span class="league-row-grade">${fullGrade}</span>
           </div>
           <div class="league-row-meta">
             <span class="league-row-week">+${row.weeklyCorrect} this week</span>
@@ -242,6 +266,7 @@
     const climbCopy = above
       ? `<strong>${gap}</strong> correct away from <span class="you-card-target">${esc(above.displayName)}</span>`
       : `<strong>Lead</strong> your league — answer questions to stay on top!`;
+    const myGrade = me.grade ? esc(gradeFullLabel(me.grade)) : 'Grade not set';
     youCardEl.innerHTML = `
       <div class="you-card-rank-block">
         <div class="you-card-rank">#${me.rank}</div>
@@ -249,7 +274,7 @@
       </div>
       ${avatarHtml(me, 'md')}
       <div class="you-card-body">
-        <div class="you-card-name">${esc(me.displayName)} <span class="league-you-chip">you</span></div>
+        <div class="you-card-name">${esc(me.displayName)} <span class="league-you-chip">you</span> <span class="you-card-grade">${myGrade}</span></div>
         <div class="you-card-copy">${climbCopy}</div>
       </div>
       <a class="you-card-cta" href="practice.html">Practice →</a>`;
