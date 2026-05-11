@@ -1771,10 +1771,29 @@
         // Build full tutor context once.
         const tutorCtx = buildTutorContext(q, stats, curr);
 
-        const submitFollowup = (text) => {
-          if (!text || !followup || !tutorQ) return;
-          tutorQ.value = text;
-          followup.dispatchEvent(new Event('submit', { cancelable: true }));
+        // Shared follow-up runner. Used by both chip clicks and the
+        // free-text form submit. Bypasses the previous dispatchEvent
+        // dance — synthetic submit events were unreliable on some
+        // mobile browsers and the chips appeared dead. Direct call
+        // keeps the flow visible (loading dots show immediately) and
+        // testable.
+        const submitFollowup = async (text) => {
+          const t = String(text || '').trim();
+          if (!t) return;
+          if (tutorQ) tutorQ.value = '';
+          // Remove any prior chip group so we don't double up.
+          tutorOut.querySelector('.tutor-suggestions')?.remove();
+          tutorOut.insertAdjacentHTML('beforeend', `<div class="tutor-msg user"><strong>You:</strong> ${escapeHtml(t)}</div>`);
+          tutorOut.insertAdjacentHTML('beforeend', `<div class="tutor-msg loading">${thinkingHTML()}</div>`);
+          const result = await runTutor(t, false);
+          tutorOut.querySelector('.tutor-msg.loading')?.remove();
+          if (result.aborted) return;
+          if (result.error) {
+            tutorOut.insertAdjacentHTML('beforeend', `<div class="tutor-msg assistant error">Try again in a moment.</div>`);
+            return;
+          }
+          tutorOut.insertAdjacentHTML('beforeend', `<div class="tutor-msg assistant">${formatTutor(result.reply)}</div>`);
+          renderChips();
         };
 
         // \u00a769 \u2014 mount the follow-up form + chips only after the
@@ -1891,24 +1910,8 @@
 
         async function onFollowupSubmit(e) {
           e.preventDefault();
-          const text = tutorQ.value.trim();
-          if (!text) return;
-          tutorQ.value = '';
-          // Remove any old chips before adding a new turn.
-          tutorOut.querySelector('.tutor-suggestions')?.remove();
-          tutorOut.insertAdjacentHTML('beforeend', `<div class="tutor-msg user"><strong>You:</strong> ${escapeHtml(text)}</div>`);
-          tutorOut.insertAdjacentHTML('beforeend', `<div class="tutor-msg loading">${thinkingHTML()}</div>`);
-          const result = await runTutor(text, false);
-          tutorOut.querySelector('.tutor-msg.loading')?.remove();
-          if (result.aborted) return;
-          if (result.error) {
-            // §69 — kid is in the conversation now; brief soft-fail
-            // is OK. Keep it short — no apology paragraph.
-            tutorOut.insertAdjacentHTML('beforeend', `<div class="tutor-msg assistant error">Try again in a moment.</div>`);
-            return;
-          }
-          tutorOut.insertAdjacentHTML('beforeend', `<div class="tutor-msg assistant">${formatTutor(result.reply)}</div>`);
-          renderChips();
+          if (!tutorQ) return;
+          await submitFollowup(tutorQ.value);
         }
       }
     }
