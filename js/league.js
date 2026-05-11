@@ -245,6 +245,12 @@
       podiumEl.innerHTML = `<div class="card" style="max-width:680px;padding:20px;color:rgba(255,255,255,0.55);">Loading…</div>`;
       return;
     }
+    // ALWAYS render the requests banner FIRST — even before the empty
+    // state. Standard gaming pattern: incoming requests are the most
+    // urgent thing on the page and must be visible the moment you
+    // land here. Duolingo/Xbox/Discord/Clash Royale all do this.
+    renderRequestsBanner(cache.friendList);
+
     const rows = (r.league || []);
     if (rows.length === 0 || (rows.length === 1 && rows[0].isSelf)) {
       renderEmpty();
@@ -256,25 +262,102 @@
     renderPodium(rows);
     renderYouCard(rows);
     renderList(rows);
-    renderRequestsBanner(cache.friendList);
     renderManageRow(rows);
     renderFoot(rows);
   }
 
   function renderEmpty() {
+    const fl = cache.friendList || {};
+    const incoming = fl.incoming || [];
+    const outgoing = fl.outgoing || [];
+
+    // Duolingo / Clash Royale pattern: big interactive request cards
+    // at the top of the empty state, with full avatar + name + big
+    // Accept/Decline buttons. The kid sees immediately that someone
+    // is waiting on them — no hunting through tabs.
+    const incomingHtml = incoming.length === 0 ? '' : `
+      <div class="empty-pending">
+        <div class="empty-pending-eyebrow">
+          <span class="empty-pending-dot" aria-hidden="true"></span>
+          ${incoming.length === 1 ? '1 friend request' : incoming.length + ' friend requests'}
+        </div>
+        ${incoming.map(row => `
+          <div class="empty-pending-row" data-username="${esc(row.peer)}">
+            ${avatarHtml({ displayName: row.displayName || row.peer, username: row.peer, avatarEmoji: row.avatarEmoji || null }, 'md')}
+            <div class="empty-pending-identity">
+              <div class="empty-pending-name">${esc(row.displayName || row.peer)}</div>
+              <div class="empty-pending-handle">@${esc(row.peer)} wants to be your friend</div>
+            </div>
+            <div class="empty-pending-actions">
+              <button type="button" class="btn btn-primary empty-req-accept" data-target="${esc(row.peer)}">Accept</button>
+              <button type="button" class="btn btn-secondary empty-req-decline" data-target="${esc(row.peer)}">Decline</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>`;
+
+    // Outgoing — Discord pattern: subtle "Pending — waiting for them"
+    // pill with Cancel option. Less prominent than incoming but always
+    // visible so the kid knows they DID send something.
+    const outgoingHtml = outgoing.length === 0 ? '' : `
+      <div class="empty-pending empty-pending--out">
+        <div class="empty-pending-eyebrow empty-pending-eyebrow--out">
+          ${outgoing.length === 1 ? '1 invite waiting' : outgoing.length + ' invites waiting'}
+        </div>
+        ${outgoing.map(row => `
+          <div class="empty-pending-row empty-pending-row--out" data-username="${esc(row.peer)}">
+            ${avatarHtml({ displayName: row.displayName || row.peer, username: row.peer, avatarEmoji: null }, 'md')}
+            <div class="empty-pending-identity">
+              <div class="empty-pending-name">${esc(row.displayName || row.peer)}</div>
+              <div class="empty-pending-handle">Waiting for them to accept</div>
+            </div>
+            <button type="button" class="btn btn-secondary empty-req-cancel" data-target="${esc(row.peer)}">Cancel</button>
+          </div>
+        `).join('')}
+      </div>`;
+
+    const noFriendsCopy = (incoming.length === 0 && outgoing.length === 0)
+      ? `<p class="league-empty-sub">Add a friend to start your league. They'll see your rank and you'll see theirs — friendly competition that keeps everyone practicing.</p>`
+      : `<p class="league-empty-sub">Your league starts the moment one of these gets accepted.</p>`;
+
     podiumEl.innerHTML = `
+      ${incomingHtml}
+      ${outgoingHtml}
       <div class="league-empty">
         <div class="league-empty-emoji" aria-hidden="true">👋</div>
-        <h2 class="league-empty-title">No friends yet</h2>
-        <p class="league-empty-sub">Add a friend to start your league. They'll see your rank and you'll see theirs — friendly competition that keeps everyone practicing.</p>
-        <button type="button" class="btn btn-primary" data-go-add>Add your first friend</button>
+        <h2 class="league-empty-title">${incoming.length || outgoing.length ? 'No accepted friends yet' : 'No friends yet'}</h2>
+        ${noFriendsCopy}
+        <button type="button" class="btn btn-primary" data-go-add>${(incoming.length + outgoing.length) === 0 ? 'Add your first friend' : 'Add another friend'}</button>
       </div>`;
     listEl.innerHTML = '';
     youCardEl.hidden = true;
     if (footEl) footEl.hidden = true;
     if (manageRow) manageRow.hidden = true;
-    const btn = podiumEl.querySelector('[data-go-add]');
-    if (btn) btn.addEventListener('click', () => openSheet('add'));
+
+    // Wire pending action buttons
+    podiumEl.querySelectorAll('[data-go-add]').forEach(b => b.addEventListener('click', () => openSheet('add')));
+    podiumEl.querySelectorAll('.empty-req-accept').forEach(b => {
+      b.addEventListener('click', async () => {
+        const target = b.getAttribute('data-target');
+        b.disabled = true;
+        try { await api('friendRespond', { target, decision: 'accept' }); } catch (_) {}
+        await Promise.all([loadLeague(), loadFriendList()]);
+        render();
+      });
+    });
+    podiumEl.querySelectorAll('.empty-req-decline, .empty-req-cancel').forEach(b => {
+      b.addEventListener('click', async () => {
+        const target = b.getAttribute('data-target');
+        const isCancel = b.classList.contains('empty-req-cancel');
+        b.disabled = true;
+        try {
+          if (isCancel) await api('friendUnfriend', { target });
+          else await api('friendRespond', { target, decision: 'decline' });
+        } catch (_) {}
+        await Promise.all([loadLeague(), loadFriendList()]);
+        render();
+      });
+    });
   }
 
   // ============================================================

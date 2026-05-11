@@ -18094,6 +18094,85 @@ body.league-page .container { max-width: 760px; }
 .league-empty-title { margin: 0 0 8px; font-size: 1.25rem; font-weight: 700; }
 .league-empty-sub { margin: 0 0 18px; color: rgba(255, 255, 255, 0.7); font-size: 0.95rem; line-height: 1.55; }
 
+/* PENDING-REQUEST CARDS in empty state (Duolingo + Clash Royale
+   pattern): big interactive cards at the top so the kid sees
+   immediately who's waiting on them. Incoming = blue glow (urgent,
+   actionable). Outgoing = dashed amber (waiting). */
+.empty-pending {
+  max-width: 580px;
+  margin: 24px auto 12px;
+  padding: 14px 18px 16px;
+  background: linear-gradient(180deg, rgba(96, 165, 250, 0.16), rgba(59, 130, 246, 0.06));
+  border: 1px solid rgba(96, 165, 250, 0.45);
+  border-radius: var(--r-card);
+  box-shadow: 0 6px 22px rgba(59, 130, 246, 0.18);
+}
+.empty-pending--out {
+  background: linear-gradient(180deg, rgba(251, 191, 36, 0.10), rgba(245, 158, 11, 0.04));
+  border-color: rgba(251, 191, 36, 0.36);
+  border-style: dashed;
+  box-shadow: none;
+}
+.empty-pending-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #93c5fd;
+}
+.empty-pending-eyebrow--out { color: #fde68a; }
+.empty-pending-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #60a5fa;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.22), 0 0 10px rgba(96, 165, 250, 0.5);
+  animation: hero-live-pulse 2.4s ease-in-out infinite;
+}
+.empty-pending-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--r-button);
+  margin-bottom: 8px;
+}
+.empty-pending-row:last-child { margin-bottom: 0; }
+.empty-pending-row--out { background: rgba(0, 0, 0, 0.15); border-style: dashed; }
+.empty-pending-identity { min-width: 0; }
+.empty-pending-name {
+  font-weight: 700;
+  font-size: 0.96rem;
+  color: rgba(255, 255, 255, 0.96);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.empty-pending-handle {
+  margin-top: 3px;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+.empty-pending-actions { display: flex; gap: 8px; }
+.empty-pending-actions .btn { padding: 8px 16px; min-height: 38px; font-size: 0.88rem; font-weight: 700; }
+.empty-req-cancel { padding: 8px 14px; min-height: 38px; font-size: 0.86rem; }
+
+@media (max-width: 600px) {
+  .empty-pending-row { grid-template-columns: auto 1fr; }
+  .empty-pending-actions {
+    grid-column: 1 / -1;
+    margin-top: 6px;
+  }
+  .empty-pending-actions .btn { flex: 1; }
+  .empty-req-cancel { width: 100%; }
+}
+
 .league-sheet { position: fixed; inset: 0; z-index: 100; }
 .league-sheet-backdrop { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.55); animation: sheet-fade 200ms ease-out; }
 .league-sheet-panel { position: absolute; left: 0; right: 0; bottom: 0; max-width: 600px; margin: 0 auto; background: linear-gradient(180deg, #0d2249, #061230); border: 1px solid rgba(251, 191, 36, 0.22); border-bottom: 0; border-radius: 20px 20px 0 0; padding: 16px 22px 28px; box-shadow: 0 -16px 50px rgba(0, 0, 0, 0.55); max-height: 86vh; overflow-y: auto; animation: sheet-rise 260ms cubic-bezier(0.34, 1.4, 0.64, 1); }
