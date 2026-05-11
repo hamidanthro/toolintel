@@ -2587,10 +2587,19 @@ async function handleSubmitGameScore(payload) {
     ? payload.wordsFound.filter(w => typeof w === 'string' && w.length <= 20).slice(0, 200)
     : [];
 
+  // Live-state fields for split-screen multiplayer (May 11 v2). Each
+  // tick during a drag, the kid posts currentSpelling so the opponent's
+  // mirror panel can render their in-progress word. latestWord is the
+  // most recent valid completion, animated on the opponent's side.
+  const currentSpelling = String(payload.currentSpelling || '').slice(0, 12).toUpperCase();
+  const latestWord      = String(payload.latestWord || '').slice(0, 12).toUpperCase();
+  const latestWordAt    = Number.isFinite(payload.latestWordAt) ? payload.latestWordAt : 0;
+
   const key = `${gameId}#${date}`;
   const entry = {
     score, wordsFound, totalWords, durationSec,
     puzzleId, prize, foundPrize,
+    currentSpelling, latestWord, latestWordAt,
     completed: totalWords > 0 && wordsFound.length >= totalWords,
     updatedAt: Date.now()
   };
@@ -2660,6 +2669,9 @@ async function handleGetGameScores(payload) {
         completed: !!entry.completed,
         durationSec: entry.durationSec || 0,
         foundPrize: !!entry.foundPrize,
+        currentSpelling: entry.currentSpelling || '',
+        latestWord: entry.latestWord || '',
+        latestWordAt: entry.latestWordAt || 0,
         updatedAt: entry.updatedAt || 0,
         isSelf: u === auth.username
       };
