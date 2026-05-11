@@ -17,7 +17,7 @@
 (function () {
   'use strict';
 
-  const PUZZLES_URL = '../data/games/word-connect-puzzles.json?v=20260511a';
+  const PUZZLES_URL = '../data/games/word-connect-puzzles.json?v=20260511f';
   const GAME_ID = 'word-connect';
 
   // DOM
