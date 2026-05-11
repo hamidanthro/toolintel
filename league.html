@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=20260511g" />
+  <link rel="stylesheet" href="css/styles.css?v=20260511h" />
 </head>
 <body class="league-page">
   <header class="site-header">
@@ -38,23 +38,37 @@
       </div>
 
       <div class="league-shell">
+        <!-- League identity row: Bronze/Silver/Gold/Diamond.
+             TODO(lambda): handleFriendLeague should derive tier from
+             lifetimeCorrect server-side. Hardcoded Bronze for everyone
+             until the cron + tier table land. -->
+        <div class="league-identity-row">
+          <div class="league-tier-name">
+            <span class="league-tier-emoji" aria-hidden="true">🥉</span>
+            <span class="league-tier-label">Bronze League</span>
+          </div>
+        </div>
+
         <div class="league-eyebrow-row">
           <span class="league-eyebrow">
             <span class="league-eyebrow-dot" aria-hidden="true"></span>
-            <span id="league-week-label">This week</span>
-            <span class="league-eyebrow-sub" id="league-week-countdown"></span>
+            <span class="league-eyebrow-text">This week</span>
+            <span class="league-eyebrow-sep" aria-hidden="true">·</span>
+            <span class="league-eyebrow-sub">Resets in</span>
+            <span id="leagueResetCountdown" class="league-eyebrow-countdown">—</span>
           </span>
-          <button type="button" class="btn-add-friend" id="btn-add-friend">
-            <span aria-hidden="true">+</span> Add friend
-          </button>
         </div>
 
-        <div id="league-podium" class="league-podium"></div>
+        <div id="league-podium" class="league-podium" role="region" aria-label="Top three this week"></div>
         <div id="league-you-card" class="league-you-card" hidden></div>
         <div id="league-list" class="league-list"></div>
 
+        <div id="league-manage-row" class="league-manage-row" hidden>
+          <button type="button" class="league-manage-link" id="btn-manage-friends">Manage friends ›</button>
+        </div>
+
         <p id="league-foot" class="league-foot" hidden>
-          Ranked by this week's correct answers. Lifetime correct shown alongside.
+          Ranked by this week. <span id="league-foot-lifetime"></span>
         </p>
       </div>
     </div>
@@ -69,7 +83,9 @@
     </div>
   </div>
 
-  <script src="js/auth.js?v=20260511a"></script>
-  <script src="js/league.js?v=20260511e"></script>
+  <div id="league-toast" class="league-toast" hidden role="status" aria-live="polite"></div>
+
+  <script src="js/auth.js?v=20260511b"></script>
+  <script src="js/league.js?v=20260511f"></script>
 </body>
 </html>

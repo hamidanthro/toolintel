@@ -1044,8 +1044,16 @@ if ('serviceWorker' in navigator) {
           <span class="user-menu-header-name">${escapeHtml(u.displayName || u.username)}</span>
           <span class="user-menu-header-handle">@${escapeHtml(u.username)}</span>
         </div>
+        <div class="user-menu-mobile-nav">
+          <a href="${R('index.html')}" class="user-menu-link" role="menuitem">🏠 Home</a>
+          <a href="${R('achievements.html')}" class="user-menu-link" role="menuitem">🏆 Trophies</a>
+          <a href="${R('league.html')}" class="user-menu-link" role="menuitem">⚔️ League</a>
+          <a href="${R('marketplace.html')}" class="user-menu-link" role="menuitem">🎁 Toys</a>
+          <a href="${R('about.html')}" class="user-menu-link" role="menuitem">ℹ️ How it works</a>
+          <div class="user-menu-divider" aria-hidden="true"></div>
+        </div>
         ${adminLink}
-        <a href="${R('settings.html')}" class="user-menu-link" role="menuitem">Settings</a>
+        <a href="${R('settings.html')}" class="user-menu-link" role="menuitem">⚙️ Settings</a>
         <div class="user-menu-divider" aria-hidden="true"></div>
         <button type="button" class="user-menu-signout" data-act="logout" role="menuitem">Sign out</button>
       </div>`;
