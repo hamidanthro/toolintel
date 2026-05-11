@@ -18004,8 +18004,8 @@ body.league-page .container { max-width: 760px; }
 .podium-card {
   position: relative;
   padding: 18px 12px 16px;
-  background: linear-gradient(180deg, rgba(13, 34, 73, 0.65), rgba(13, 34, 73, 0.4));
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #11264e;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 16px;
   text-align: center;
   display: flex;
@@ -18015,26 +18015,37 @@ body.league-page .container { max-width: 760px; }
   animation: podium-rise 380ms cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
 }
 .podium-card[data-slot="1"] {
-  /* Center, raised, gold */
-  background: linear-gradient(180deg, rgba(251, 191, 36, 0.18), rgba(251, 191, 36, 0.06));
-  border-color: rgba(251, 191, 36, 0.55);
+  /* Center, raised, gold — solid amber-tinted card so it pops, not
+     a translucent overlay that the dark page eats. */
+  background: linear-gradient(180deg, #3b2f10 0%, #1f2547 70%);
+  border-color: rgba(251, 191, 36, 0.65);
   padding-top: 24px;
   padding-bottom: 22px;
-  box-shadow: 0 12px 36px rgba(251, 191, 36, 0.22), 0 0 0 1px rgba(251, 191, 36, 0.18) inset;
+  box-shadow: 0 14px 38px rgba(251, 191, 36, 0.28), 0 0 0 1px rgba(251, 191, 36, 0.22) inset;
   animation-delay: 60ms;
 }
 .podium-card[data-slot="2"] {
-  border-color: rgba(203, 213, 225, 0.32);
+  border-color: rgba(203, 213, 225, 0.45);
   animation-delay: 0ms;
 }
 .podium-card[data-slot="3"] {
-  border-color: rgba(217, 119, 6, 0.32);
+  border-color: rgba(217, 119, 6, 0.5);
   animation-delay: 120ms;
 }
 .podium-card--empty {
-  background: rgba(13, 34, 73, 0.2);
+  background: rgba(255, 255, 255, 0.02);
   border-style: dashed;
-  min-height: 120px;
+  border-color: rgba(255, 255, 255, 0.12);
+  min-height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.podium-card--empty::after {
+  content: '?';
+  font-size: 1.6rem;
+  color: rgba(255, 255, 255, 0.18);
+  font-weight: 700;
 }
 .podium-card.is-self { box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.45); }
 .podium-medal {
@@ -18097,10 +18108,10 @@ body.league-page .container { max-width: 760px; }
   gap: 14px;
   margin: 18px 0 14px;
   padding: 14px 16px;
-  background: linear-gradient(135deg, rgba(96, 165, 250, 0.16), rgba(59, 130, 246, 0.08));
-  border: 1px solid rgba(96, 165, 250, 0.42);
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e293b 100%);
+  border: 1px solid rgba(96, 165, 250, 0.55);
   border-radius: 14px;
-  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.12);
+  box-shadow: 0 6px 22px rgba(59, 130, 246, 0.25);
 }
 .you-card-rank-block {
   text-align: center;
@@ -18159,16 +18170,17 @@ body.league-page .container { max-width: 760px; }
   align-items: center;
   gap: 12px;
   padding: 12px 14px;
-  background: rgba(13, 34, 73, 0.45);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: #11264e;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-left-width: 3px;
   border-radius: 12px;
   transition: border-color 0.15s ease, transform 0.15s ease;
 }
 .league-row.is-self {
-  background: rgba(96, 165, 250, 0.12);
-  border-color: rgba(96, 165, 250, 0.45);
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e293b 100%);
+  border-color: rgba(96, 165, 250, 0.55);
   border-left-color: #60a5fa;
+  box-shadow: 0 4px 18px rgba(59, 130, 246, 0.18);
 }
 .league-row.zone-up {
   border-left-color: rgba(52, 211, 153, 0.85);
@@ -18262,6 +18274,48 @@ body.league-page .container { max-width: 760px; }
   text-align: center;
   font-size: 0.78rem;
   color: rgba(255, 255, 255, 0.4);
+}
+
+/* Grow-CTA shown below the podium when fewer than 4 ranked rows —
+   so the kid doesn't think the page is broken when their league is
+   small. */
+.league-grow-cta {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+  margin: 18px 0;
+  padding: 16px 18px;
+  background: linear-gradient(135deg, #1f2547 0%, #1e293b 100%);
+  border: 1px dashed rgba(251, 191, 36, 0.4);
+  border-radius: 14px;
+}
+.league-grow-icon { font-size: 1.6rem; }
+.league-grow-title {
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 0.98rem;
+}
+.league-grow-sub {
+  margin-top: 2px;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+.league-grow-btn {
+  padding: 9px 16px;
+  min-height: 40px;
+  font-size: 0.88rem;
+  flex-shrink: 0;
+}
+@media (max-width: 480px) {
+  .league-grow-cta {
+    grid-template-columns: auto 1fr;
+    grid-template-areas: "icon body" "btn btn";
+    gap: 10px;
+  }
+  .league-grow-icon { grid-area: icon; font-size: 1.4rem; }
+  .league-grow-body { grid-area: body; }
+  .league-grow-btn  { grid-area: btn; width: 100%; }
 }
 
 /* ----- EMPTY STATE ----- */

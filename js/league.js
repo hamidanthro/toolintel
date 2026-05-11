@@ -268,14 +268,40 @@
     // Persist a snapshot so movement arrows work day-over-day.
     persistSnapshot(rows);
 
-    // Top 3 + remaining
-    if (rows.length >= 3) {
-      renderPodium(rows.slice(0, 3));
-      const rest = rows.slice(3);
-      listEl.innerHTML = rest.map(renderListRow).join('');
-    } else {
-      podiumEl.innerHTML = '';
-      listEl.innerHTML = rows.map(renderListRow).join('');
+    // Top 3 + remaining. We always render a podium with up to 3 cards
+    // (empty slots become ghost cards) — it's the visual anchor of the
+    // page. Then a list of rank 4+ below.
+    renderPodium(rows.slice(0, 3));
+    const rest = rows.slice(3);
+    listEl.innerHTML = rest.map(renderListRow).join('');
+
+    // If the podium isn't full (fewer than 3 rows ranked), show an
+    // explicit CTA so the kid + parent know it's not broken — the
+    // empty podium slots are intentional and waiting for more friends.
+    let cta = document.getElementById('league-grow-cta');
+    if (rows.length < 4) {
+      const need = 4 - rows.length;
+      if (!cta) {
+        cta = document.createElement('div');
+        cta.id = 'league-grow-cta';
+        cta.className = 'league-grow-cta';
+        listEl.parentNode.insertBefore(cta, listEl.nextSibling);
+      }
+      cta.innerHTML = `
+        <div class="league-grow-icon" aria-hidden="true">✨</div>
+        <div class="league-grow-body">
+          <div class="league-grow-title">Your league has room to grow</div>
+          <div class="league-grow-sub">${
+            rows.length === 1 ? "Add a friend so you have someone to race against."
+            : need === 1 ? "Add one more friend to fill out the podium."
+            : `Add ${need} more friends to fill out the podium.`
+          }</div>
+        </div>
+        <button type="button" class="btn btn-primary league-grow-btn" data-grow-add>+ Add friend</button>`;
+      const b = cta.querySelector('[data-grow-add]');
+      if (b) b.addEventListener('click', () => openSheet('add'));
+    } else if (cta) {
+      cta.remove();
     }
 
     renderYouCard(rows);
