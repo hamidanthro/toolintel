@@ -7,7 +7,7 @@
  * Critical: never cache API responses (Lambda calls). They must always be fresh.
  */
 
-const CACHE_VERSION = 'gradeearn-v55';
+const CACHE_VERSION = 'gradeearn-v56';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
@@ -50,6 +50,10 @@ const SHELL_FILES = [
   '/js/placement.js',
   '/js/push-subscribe.js',
   '/js/league.js',
+  '/js/games/word-connect.js',
+  '/games.html',
+  '/games/word-connect.html',
+  '/data/games/word-connect-puzzles.json',
   '/js/parent.js',
   '/js/family-switcher.js',
   '/league.html',

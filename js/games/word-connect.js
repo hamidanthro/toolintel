@@ -1,0 +1,449 @@
+/**
+ * GradeEarn — Word Connect (game #1, May 11).
+ *
+ * Mechanic: 6 letters in a hex layout. Kid drags a finger through them
+ * to spell a word. Valid words fill the discovered-words grid above.
+ * Score: 5/10/20/40 per 3/4/5/6-letter word, +25 bonus for the prize
+ * word. Daily puzzle is the same for kids in the same grade so they
+ * can race; different grades get their own age-appropriate puzzle.
+ *
+ * Multiplayer (async race) — each kid plays on their own screen, but
+ * the header shows live scores of any friend who's playing the same
+ * puzzle today. Polls every 5s via getGameScores.
+ *
+ * Backend: submitGameScore + getGameScores lambda actions persist
+ * per-(gameId, date, username) score on staar-users.gameScores.
+ */
+(function () {
+  'use strict';
+
+  const PUZZLES_URL = '../data/games/word-connect-puzzles.json?v=20260511a';
+  const GAME_ID = 'word-connect';
+
+  // DOM
+  const wheelEl     = document.getElementById('gameWheel');
+  const wheelCanvas = document.getElementById('gameWheelCanvas');
+  const wordsEl     = document.getElementById('gameWords');
+  const spellEl     = document.getElementById('gameSpellPreview');
+  const scoreEl     = document.getElementById('gameYourScore');
+  const headerStat  = document.getElementById('gameHeaderStat');
+  const opponentsEl = document.getElementById('gameOpponents');
+  const statusEl    = document.getElementById('gameStatus');
+  const shuffleBtn  = document.getElementById('gameShuffle');
+  const completeEl  = document.getElementById('gameComplete');
+  const completeTitle = document.getElementById('gameCompleteTitle');
+  const completeScore = document.getElementById('gameCompleteScore');
+  const completeWords = document.getElementById('gameCompleteWords');
+  const completeTime  = document.getElementById('gameCompleteTime');
+  const completeFriends = document.getElementById('gameCompleteFriends');
+  const toastEl     = document.getElementById('gameToast');
+
+  // State
+  let puzzle = null;
+  let letters = [];          // randomized order for rendering
+  let found = new Set();     // uppercase strings of words found
+  let path = [];             // [{idx, letter}] currently drag-selected
+  let pointerDown = false;
+  let score = 0;
+  let startedAt = null;
+  let lastSubmitAt = 0;
+  let opponentsPollTimer = null;
+
+  // ---------- helpers ----------
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c => (
+      { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+    ));
+  }
+  function token() {
+    try { return window.STAARAuth && window.STAARAuth.token && window.STAARAuth.token(); } catch (_) { return null; }
+  }
+  async function api(action, payload) {
+    if (!window.STAARAuth || !window.STAARAuth.api) return null;
+    return await window.STAARAuth.api(action, Object.assign({ token: token() }, payload || {}));
+  }
+  function todayDateKey() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+  function dayOfYear() {
+    const d = new Date();
+    const start = new Date(d.getFullYear(), 0, 0);
+    return Math.floor((d - start) / 86400000);
+  }
+  function toast(msg, ms) {
+    if (!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.hidden = false;
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => { toastEl.hidden = true; }, ms || 1600);
+  }
+  function pointsForWord(w) {
+    const n = w.length;
+    if (n === 3) return 5;
+    if (n === 4) return 10;
+    if (n === 5) return 20;
+    if (n === 6) return 40;
+    return 80; // 7+
+  }
+  function fmtTime(sec) {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${m}:${String(s).padStart(2, '0')}`;
+  }
+
+  // ---------- puzzle selection ----------
+  // Pick today's puzzle. Same-grade kids on the same day get the SAME
+  // puzzle — hash(dayOfYear) % puzzles[gradeBand].length. Different
+  // grades draw from their own bank.
+  async function loadPuzzle() {
+    const me = window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser();
+    if (!me) {
+      statusEl.textContent = 'Please sign in first.';
+      return;
+    }
+    const grade = me.grade || 'grade-3';
+    let bank = null;
+    try {
+      const r = await fetch(PUZZLES_URL);
+      bank = await r.json();
+    } catch (e) {
+      statusEl.textContent = 'Could not load today\'s puzzle.';
+      return;
+    }
+    const byGrade = (bank && bank.byGrade) || {};
+    let bucket = byGrade[grade];
+    // Fallback: if no puzzles for this exact grade, walk up/down nearest.
+    if (!bucket || bucket.length === 0) {
+      const allKeys = Object.keys(byGrade);
+      const fallback = allKeys.find(k => (byGrade[k] || []).length > 0);
+      bucket = byGrade[fallback] || [];
+    }
+    if (!bucket.length) {
+      statusEl.textContent = 'No puzzles available for your grade yet.';
+      return;
+    }
+    const idx = dayOfYear() % bucket.length;
+    puzzle = bucket[idx];
+    // Normalize words to uppercase + dedupe
+    puzzle.words = Array.from(new Set((puzzle.words || []).map(w => w.toUpperCase()))).sort((a, b) => a.length - b.length || a.localeCompare(b));
+    statusEl.hidden = true;
+    headerStat.textContent = `${puzzle.words.length} words hidden · ${grade.replace('grade-', 'Grade ').replace('Grade k', 'Kindergarten')}`;
+    letters = (puzzle.letters || []).slice();
+    shuffleLetters(false);
+    renderWords();
+    renderWheel();
+    startedAt = Date.now();
+    startOpponentsPoll();
+  }
+
+  function shuffleLetters(animate) {
+    // Fisher-Yates
+    for (let i = letters.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [letters[i], letters[j]] = [letters[j], letters[i]];
+    }
+    if (animate) renderWheel();
+  }
+
+  // ---------- discovered-words grid ----------
+  function renderWords() {
+    const html = (puzzle.words || []).map(w => {
+      if (found.has(w)) {
+        const isPrize = w === puzzle.prize;
+        return `<div class="game-word game-word--found${isPrize ? ' game-word--prize' : ''}">${esc(w)}</div>`;
+      }
+      // Blank slot — show one underscore per letter
+      const blanks = Array.from({ length: w.length }, () => '·').join(' ');
+      return `<div class="game-word" data-len="${w.length}">${blanks}</div>`;
+    }).join('');
+    wordsEl.innerHTML = html;
+  }
+
+  // ---------- letter wheel ----------
+  function renderWheel() {
+    if (!wheelEl) return;
+    const n = letters.length;
+    const r = 100; // radius in px (wheel container is ~280px tall)
+    const cx = 140;
+    const cy = 140;
+    wheelEl.innerHTML = '';
+    for (let i = 0; i < n; i++) {
+      const angle = (i / n) * 2 * Math.PI - Math.PI / 2; // start at top
+      const x = cx + Math.cos(angle) * r;
+      const y = cy + Math.sin(angle) * r;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'game-letter';
+      btn.dataset.idx = String(i);
+      btn.dataset.letter = letters[i];
+      btn.style.left = (x - 28) + 'px';
+      btn.style.top  = (y - 28) + 'px';
+      btn.textContent = letters[i];
+      wheelEl.appendChild(btn);
+    }
+    redrawPath();
+  }
+
+  function redrawPath() {
+    if (!wheelCanvas) return;
+    const dpr = window.devicePixelRatio || 1;
+    const W = wheelEl.offsetWidth || 280;
+    const H = wheelEl.offsetHeight || 280;
+    wheelCanvas.width = W * dpr;
+    wheelCanvas.height = H * dpr;
+    wheelCanvas.style.width = W + 'px';
+    wheelCanvas.style.height = H + 'px';
+    const ctx = wheelCanvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, W, H);
+    if (path.length < 1) return;
+    ctx.lineWidth = 10;
+    ctx.strokeStyle = 'rgba(251, 191, 36, 0.75)';
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    path.forEach((step, i) => {
+      const btn = wheelEl.querySelector(`.game-letter[data-idx="${step.idx}"]`);
+      if (!btn) return;
+      const rect = btn.getBoundingClientRect();
+      const wheelRect = wheelEl.getBoundingClientRect();
+      const x = rect.left - wheelRect.left + rect.width / 2;
+      const y = rect.top  - wheelRect.top  + rect.height / 2;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+  }
+
+  function updateSpellPreview() {
+    const word = path.map(p => p.letter).join('');
+    spellEl.textContent = word || ' ';
+    spellEl.className = 'game-spell-preview' + (word.length >= 3 ? ' is-active' : '');
+  }
+
+  function clearPath() {
+    path = [];
+    wheelEl.querySelectorAll('.game-letter').forEach(b => b.classList.remove('is-selected'));
+    redrawPath();
+    updateSpellPreview();
+  }
+
+  // ---------- drag mechanic ----------
+  function hitTestLetter(clientX, clientY) {
+    const btns = wheelEl.querySelectorAll('.game-letter');
+    let best = null;
+    let bestDist = 38; // px — touch tolerance; bigger = easier drag
+    btns.forEach(btn => {
+      const rect = btn.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top  + rect.height / 2;
+      const dx = clientX - cx;
+      const dy = clientY - cy;
+      const d = Math.sqrt(dx * dx + dy * dy);
+      if (d < bestDist) { bestDist = d; best = btn; }
+    });
+    return best;
+  }
+
+  function addLetterToPath(btn) {
+    if (!btn) return;
+    const idx = parseInt(btn.dataset.idx, 10);
+    // Don't re-add the SAME letter index. (Kids can use any letter
+    // any number of times, but the drag selects an index sequence —
+    // adding the same index twice in a row would feel like cheating.
+    // BUT: the path can backtrack: if you hover BACK onto the
+    // second-to-last letter, pop the last one. Wordscapes behavior.)
+    if (path.length > 0 && path[path.length - 1].idx === idx) return;
+    if (path.length >= 2 && path[path.length - 2].idx === idx) {
+      // Backtrack: pop the last
+      const popped = path.pop();
+      const popBtn = wheelEl.querySelector(`.game-letter[data-idx="${popped.idx}"]`);
+      if (popBtn) popBtn.classList.remove('is-selected');
+      redrawPath();
+      updateSpellPreview();
+      return;
+    }
+    if (path.some(p => p.idx === idx)) return; // already in path elsewhere
+    path.push({ idx, letter: btn.dataset.letter });
+    btn.classList.add('is-selected');
+    redrawPath();
+    updateSpellPreview();
+  }
+
+  function onPointerDown(e) {
+    const t = e.touches ? e.touches[0] : e;
+    const btn = hitTestLetter(t.clientX, t.clientY);
+    if (!btn) return;
+    pointerDown = true;
+    clearPath();
+    addLetterToPath(btn);
+    e.preventDefault();
+  }
+  function onPointerMove(e) {
+    if (!pointerDown) return;
+    const t = e.touches ? e.touches[0] : e;
+    const btn = hitTestLetter(t.clientX, t.clientY);
+    if (btn) addLetterToPath(btn);
+    e.preventDefault();
+  }
+  function onPointerUp(e) {
+    if (!pointerDown) return;
+    pointerDown = false;
+    submitWord();
+    e && e.preventDefault && e.preventDefault();
+  }
+
+  // ---------- word submission ----------
+  function submitWord() {
+    const word = path.map(p => p.letter).join('');
+    if (word.length < 3) { clearPath(); return; }
+    if (found.has(word)) {
+      toast(`Already found ${word}`, 1200);
+      clearPath();
+      return;
+    }
+    const allWords = puzzle.words;
+    if (!allWords.includes(word)) {
+      // Quick flash red on the letters then clear
+      wheelEl.querySelectorAll('.game-letter.is-selected').forEach(b => b.classList.add('is-wrong'));
+      setTimeout(() => {
+        wheelEl.querySelectorAll('.game-letter').forEach(b => b.classList.remove('is-wrong'));
+        clearPath();
+      }, 350);
+      return;
+    }
+    // Valid! Score it.
+    found.add(word);
+    let pts = pointsForWord(word);
+    if (word === puzzle.prize) pts += 25;
+    score += pts;
+    scoreEl.textContent = String(score);
+    toast(`+${pts} ${word === puzzle.prize ? '· PRIZE!' : ''}`, 1400);
+    renderWords();
+    clearPath();
+    // Server submit (debounced ~500ms)
+    queueSubmit();
+    // Check completion
+    if (found.size >= allWords.length) {
+      setTimeout(showComplete, 800);
+    }
+  }
+
+  // ---------- server score submission (debounced) ----------
+  let submitTimer = null;
+  function queueSubmit() {
+    clearTimeout(submitTimer);
+    submitTimer = setTimeout(doSubmit, 500);
+  }
+  async function doSubmit() {
+    const payload = {
+      gameId: GAME_ID,
+      date: todayDateKey(),
+      score,
+      wordsFound: Array.from(found),
+      totalWords: puzzle.words.length,
+      durationSec: Math.floor((Date.now() - startedAt) / 1000),
+      puzzleId: puzzle.id,
+      prize: puzzle.prize,
+      foundPrize: found.has(puzzle.prize)
+    };
+    try { await api('submitGameScore', payload); }
+    catch (_) {}
+  }
+
+  // ---------- opponents poll ----------
+  function startOpponentsPoll() {
+    refreshOpponents();
+    if (opponentsPollTimer) clearInterval(opponentsPollTimer);
+    opponentsPollTimer = setInterval(refreshOpponents, 5000);
+  }
+  async function refreshOpponents() {
+    try {
+      const r = await api('getGameScores', { gameId: GAME_ID, date: todayDateKey() });
+      if (!r || !Array.isArray(r.scores)) return;
+      const me = window.STAARAuth.currentUser();
+      const myName = (me && me.username) || '';
+      // Exclude self
+      const friends = r.scores.filter(s => s.username !== myName);
+      if (friends.length === 0) { opponentsEl.hidden = true; return; }
+      // Sort by score desc, show top 3
+      friends.sort((a, b) => (b.score || 0) - (a.score || 0));
+      const top = friends.slice(0, 3);
+      opponentsEl.innerHTML = `
+        <div class="game-opponents-label">Friends today</div>
+        <div class="game-opponents-list">
+          ${top.map(f => `
+            <div class="game-opponent">
+              <span class="game-opp-name">${esc(f.displayName || f.username)}</span>
+              <span class="game-opp-score">${(f.score || 0)}<span class="game-opp-score-label">pts</span></span>
+            </div>
+          `).join('')}
+        </div>`;
+      opponentsEl.hidden = false;
+    } catch (_) { /* silent */ }
+  }
+
+  // ---------- complete screen ----------
+  function showComplete() {
+    if (opponentsPollTimer) clearInterval(opponentsPollTimer);
+    const durationSec = Math.floor((Date.now() - startedAt) / 1000);
+    completeTitle.textContent = found.has(puzzle.prize) ? 'Prize word found!' : 'Nice run!';
+    completeScore.textContent = String(score);
+    completeWords.textContent = `${found.size}/${puzzle.words.length}`;
+    completeTime.textContent = fmtTime(durationSec);
+    // Friend comparison
+    api('getGameScores', { gameId: GAME_ID, date: todayDateKey() })
+      .then(r => {
+        if (!r || !Array.isArray(r.scores)) return;
+        const me = window.STAARAuth.currentUser();
+        const myName = me && me.username;
+        const friends = r.scores.filter(s => s.username !== myName);
+        if (friends.length === 0) {
+          completeFriends.innerHTML = '<p class="game-complete-empty">No friends have played today yet — invite them on the league page!</p>';
+          return;
+        }
+        friends.sort((a, b) => (b.score || 0) - (a.score || 0));
+        const beat = friends.filter(f => (f.score || 0) < score);
+        const lost = friends.filter(f => (f.score || 0) > score);
+        completeFriends.innerHTML = `
+          <div class="game-complete-cmp">
+            ${beat.length > 0 ? `<div class="game-complete-cmp-line game-complete-cmp-line--win">🏆 Beat ${beat.length} ${beat.length === 1 ? 'friend' : 'friends'}: ${beat.slice(0, 3).map(f => esc(f.displayName || f.username)).join(', ')}</div>` : ''}
+            ${lost.length > 0 ? `<div class="game-complete-cmp-line game-complete-cmp-line--lost">Behind: ${lost.slice(0, 3).map(f => `${esc(f.displayName || f.username)} (${f.score || 0})`).join(', ')}</div>` : ''}
+          </div>`;
+      });
+    completeEl.hidden = false;
+    // Final submit
+    doSubmit();
+  }
+
+  // ---------- wiring ----------
+  if (shuffleBtn) shuffleBtn.addEventListener('click', () => shuffleLetters(true));
+  if (wheelEl) {
+    wheelEl.addEventListener('pointerdown', onPointerDown);
+    wheelEl.addEventListener('pointermove', onPointerMove);
+    wheelEl.addEventListener('pointerup', onPointerUp);
+    wheelEl.addEventListener('pointercancel', onPointerUp);
+    wheelEl.addEventListener('pointerleave', (e) => { if (pointerDown) onPointerUp(e); });
+    // Touch fallback for older browsers that don't unify pointer events
+    wheelEl.addEventListener('touchstart', onPointerDown, { passive: false });
+    wheelEl.addEventListener('touchmove', onPointerMove, { passive: false });
+    wheelEl.addEventListener('touchend', onPointerUp);
+  }
+  window.addEventListener('resize', () => { renderWheel(); });
+
+  // ---------- boot ----------
+  function boot() {
+    if (!window.STAARAuth || !window.STAARAuth.currentUser || !window.STAARAuth.currentUser()) {
+      statusEl.textContent = 'Please sign in to play.';
+      return;
+    }
+    loadPuzzle();
+  }
+  if (window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser()) {
+    boot();
+  } else {
+    document.addEventListener('gradeearn:auth-changed', boot, { once: true });
+    setTimeout(boot, 600);
+  }
+})();

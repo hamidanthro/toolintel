@@ -1048,6 +1048,7 @@ if ('serviceWorker' in navigator) {
           <a href="${R('index.html')}" class="user-menu-link" role="menuitem">🏠 Home</a>
           <a href="${R('achievements.html')}" class="user-menu-link" role="menuitem">🏆 Trophies</a>
           <a href="${R('league.html')}" class="user-menu-link" role="menuitem">⚔️ League</a>
+          <a href="${R('games.html')}" class="user-menu-link" role="menuitem">🎮 Games</a>
           <a href="${R('marketplace.html')}" class="user-menu-link" role="menuitem">🎁 Toys</a>
           <a href="${R('about.html')}" class="user-menu-link" role="menuitem">ℹ️ How it works</a>
           <div class="user-menu-divider" aria-hidden="true"></div>

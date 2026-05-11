@@ -18250,6 +18250,398 @@ body.league-sheet-open { overflow: hidden; }
 
 
 /* ============================================================
+   GAMES — launcher + Word Connect (May 11)
+   First multiplayer game. Async race: same-grade friends get the
+   same puzzle, different grades get age-appropriate puzzles.
+   ============================================================ */
+
+/* ----- LAUNCHER ----- */
+body.games-page { background: #060d1f; color: #fff; }
+body.games-page .container { max-width: 880px; }
+.games-hero { max-width: 700px; margin: 18px auto 0; }
+.games-hero h1 { margin: 0 0 6px; font-size: 1.8rem; font-weight: 800; }
+.games-sub { margin: 0 0 22px; color: rgba(255, 255, 255, 0.65); font-size: 0.95rem; }
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin: 0 0 60px;
+}
+.game-card {
+  display: grid;
+  grid-template-rows: 140px auto;
+  background: #11264e;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--r-card);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+.game-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(251, 191, 36, 0.5);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+}
+.game-card-art {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #4a3415 0%, #1f2547 70%);
+  overflow: hidden;
+}
+.game-card-emoji { font-size: 4.4rem; line-height: 1; filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.45)); }
+.game-card-tag {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 4px 10px;
+  background: rgba(251, 191, 36, 0.2);
+  color: #fde68a;
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+.game-card-body { padding: 16px 18px 18px; }
+.game-card-name { margin: 0 0 6px; font-size: 1.1rem; font-weight: 700; }
+.game-card-desc { margin: 0 0 12px; font-size: 0.88rem; color: rgba(255, 255, 255, 0.7); line-height: 1.5; }
+.game-card-meta { display: flex; gap: 6px; flex-wrap: wrap; }
+.game-card-meta-pill {
+  padding: 3px 9px;
+  background: rgba(96, 165, 250, 0.18);
+  color: #93c5fd;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+.game-card--soon { opacity: 0.55; cursor: not-allowed; pointer-events: none; }
+.game-card--soon .game-card-tag { background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.7); border-color: rgba(255, 255, 255, 0.18); }
+
+/* ----- WORD CONNECT GAME ----- */
+body.game-page {
+  background: #060d1f;
+  color: #fff;
+  min-height: 100vh;
+  overflow: hidden; /* prevent rubber-band on drag */
+}
+.game-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(13, 34, 73, 0.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+}
+.game-back {
+  width: 36px; height: 36px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 1.4rem;
+  text-decoration: none;
+  font-weight: 600;
+  line-height: 1;
+}
+.game-back:hover { background: rgba(255, 255, 255, 0.1); text-decoration: none; }
+.game-header-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #fde68a;
+  text-transform: uppercase;
+}
+.game-header-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #fbbf24;
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.2), 0 0 8px rgba(251, 191, 36, 0.5);
+}
+.game-header-stat { font-size: 0.82rem; color: rgba(255, 255, 255, 0.7); margin-top: 2px; }
+.game-header-score { text-align: right; }
+.game-header-score-num {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #fbbf24;
+  line-height: 1;
+}
+.game-header-score-label {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 2px;
+}
+
+.game-opponents {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: rgba(13, 34, 73, 0.35);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.84rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.game-opponents::-webkit-scrollbar { display: none; }
+.game-opponents-label {
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.game-opponents-list { display: flex; gap: 8px; flex-shrink: 0; }
+.game-opponent {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  font-size: 0.82rem;
+}
+.game-opp-name { font-weight: 600; color: rgba(255, 255, 255, 0.92); }
+.game-opp-score { font-weight: 700; color: #fde68a; font-family: 'JetBrains Mono', monospace; }
+.game-opp-score-label { color: rgba(255, 255, 255, 0.45); font-weight: 500; margin-left: 2px; font-size: 0.7em; }
+
+.game-main {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 16px 0;
+  max-width: 520px;
+  margin: 0 auto;
+  flex: 1;
+}
+.game-status { padding: 30px; text-align: center; color: rgba(255, 255, 255, 0.65); }
+
+.game-words {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.game-word {
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--r-button);
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-family: 'JetBrains Mono', monospace;
+}
+.game-word--found {
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.3), rgba(16, 185, 129, 0.15));
+  border-color: rgba(52, 211, 153, 0.55);
+  color: #d1fae5;
+  animation: word-found 380ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.game-word--prize {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.35), rgba(245, 158, 11, 0.18));
+  border-color: rgba(251, 191, 36, 0.7);
+  color: #fde68a;
+}
+@keyframes word-found { from { opacity: 0; transform: scale(0.7); } to { opacity: 1; transform: scale(1); } }
+
+.game-spell-row {
+  text-align: center;
+  min-height: 50px;
+  margin: 10px 0 14px;
+}
+.game-spell-preview {
+  display: inline-block;
+  min-width: 100px;
+  min-height: 44px;
+  padding: 8px 22px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 2px dashed rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: 'JetBrains Mono', monospace;
+  transition: all 0.18s ease;
+}
+.game-spell-preview.is-active {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.22), rgba(245, 158, 11, 0.1));
+  border-color: rgba(251, 191, 36, 0.7);
+  border-style: solid;
+  color: #fde68a;
+  box-shadow: 0 4px 20px rgba(251, 191, 36, 0.3);
+}
+
+.game-wheel-wrap {
+  position: relative;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.game-wheel {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.game-wheel-canvas {
+  position: absolute;
+  top: 0; left: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+.game-letter {
+  position: absolute;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #fef3c7, #fbbf24);
+  border: 3px solid rgba(217, 119, 6, 0.6);
+  color: #1a0f00;
+  font-size: 1.6rem;
+  font-weight: 800;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(251, 191, 36, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.3) inset;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  z-index: 2;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+.game-letter.is-selected {
+  transform: scale(1.1);
+  box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.55), 0 6px 20px rgba(251, 191, 36, 0.5);
+  background: linear-gradient(180deg, #fde68a, #f59e0b);
+}
+.game-letter.is-wrong {
+  background: linear-gradient(180deg, #fecaca, #ef4444) !important;
+  border-color: rgba(127, 29, 29, 0.7) !important;
+  color: #450a0a !important;
+  animation: wrong-shake 0.35s ease;
+}
+@keyframes wrong-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+}
+
+.game-shuffle {
+  margin: 16px auto 24px;
+  padding: 10px 22px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.game-shuffle:hover { background: rgba(255, 255, 255, 0.1); }
+
+/* ----- COMPLETE SCREEN ----- */
+.game-complete {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(6, 13, 31, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: sheet-fade 250ms ease-out;
+}
+.game-complete-card {
+  max-width: 480px;
+  width: 100%;
+  padding: 32px 26px 24px;
+  background: linear-gradient(180deg, #1f2547 0%, #0d1530 100%);
+  border: 2px solid rgba(251, 191, 36, 0.5);
+  border-radius: var(--r-card);
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(251, 191, 36, 0.18) inset;
+  animation: podium-rise 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.game-complete-emoji { font-size: 3.4rem; margin-bottom: 6px; }
+.game-complete-title { margin: 0 0 22px; font-size: 1.5rem; font-weight: 800; color: #fde68a; }
+.game-complete-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 22px;
+}
+.game-complete-stat {
+  padding: 12px 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--r-button);
+}
+.game-complete-stat-num { font-size: 1.8rem; font-weight: 800; color: #fbbf24; line-height: 1; }
+.game-complete-stat-label { font-size: 0.66rem; color: rgba(255, 255, 255, 0.55); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; }
+.game-complete-friends { margin-bottom: 22px; }
+.game-complete-cmp { text-align: left; }
+.game-complete-cmp-line { padding: 8px 12px; margin-bottom: 6px; border-radius: var(--r-button); font-size: 0.88rem; }
+.game-complete-cmp-line--win { background: rgba(52, 211, 153, 0.15); border: 1px solid rgba(52, 211, 153, 0.4); color: #a7f3d0; font-weight: 600; }
+.game-complete-cmp-line--lost { background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.72); font-size: 0.84rem; }
+.game-complete-empty { padding: 12px; font-size: 0.86rem; color: rgba(255, 255, 255, 0.6); font-style: italic; }
+.game-complete-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.game-complete-actions .btn { min-width: 140px; }
+
+.game-toast {
+  position: fixed;
+  bottom: 28px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 110;
+  padding: 12px 24px;
+  background: #fbbf24;
+  color: #1a0f00;
+  border-radius: 999px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  box-shadow: 0 8px 24px rgba(251, 191, 36, 0.5);
+  animation: toast-rise 200ms ease-out;
+  pointer-events: none;
+}
+
+@media (max-width: 480px) {
+  .game-main { padding: 8px 12px 0; max-width: 100%; }
+  .game-wheel { width: 260px; height: 260px; }
+  .game-letter { width: 50px; height: 50px; font-size: 1.4rem; }
+  .game-spell-preview { font-size: 1.2rem; min-height: 40px; padding: 7px 18px; }
+  .game-words { grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); }
+  .game-word { font-size: 0.78rem; padding: 6px 8px; }
+  .game-complete-card { padding: 26px 18px 20px; }
+  .game-complete-stat-num { font-size: 1.5rem; }
+}
+
+
+/* ============================================================
    PARENT DASHBOARD — Tier 6 AA (May 10)
    ============================================================ */
 .parent-grid {

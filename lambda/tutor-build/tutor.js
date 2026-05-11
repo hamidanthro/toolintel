@@ -441,6 +441,8 @@ exports.handler = async (event) => {
   if (action === 'setParentEmail')          return await handleSetParentEmail(payload);
   if (action === 'getParentEmail')          return await handleGetParentEmail(payload);
   if (action === 'setAvatarEmoji')          return await handleSetAvatarEmoji(payload);
+  if (action === 'submitGameScore')         return await handleSubmitGameScore(payload);
+  if (action === 'getGameScores')           return await handleGetGameScores(payload);
   if (action === 'getReadingPassage')   return await handleGetReadingPassage(payload);
   if (action === 'getReadingItem')      return await handleGetReadingItem(payload);
   if (action === 'getScienceItem')      return await handleGetScienceItem(payload);
@@ -2554,6 +2556,119 @@ async function handleSetAvatarEmoji(payload) {
     ExpressionAttributeValues: { ':e': emoji }
   }));
   return ok({ ok: true, avatarEmoji: emoji });
+}
+
+// ===== Games (multiplayer async race, May 11) =====
+function validGameId(s) {
+  return typeof s === 'string' && /^[a-z0-9][a-z0-9-]{2,40}$/.test(s);
+}
+function validDateKey(s) {
+  return typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s);
+}
+
+async function handleSubmitGameScore(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  const gameId = payload.gameId;
+  const date   = payload.date;
+  if (!validGameId(gameId)) return bad(400, 'invalid gameId');
+  if (!validDateKey(date))  return bad(400, 'invalid date');
+
+  const score        = Math.max(0, Math.min(99999, parseInt(payload.score, 10) || 0));
+  const totalWords   = Math.max(0, Math.min(200,  parseInt(payload.totalWords, 10) || 0));
+  const durationSec  = Math.max(0, Math.min(7200, parseInt(payload.durationSec, 10) || 0));
+  const puzzleId     = String(payload.puzzleId || '').slice(0, 40);
+  const prize        = String(payload.prize || '').slice(0, 40);
+  const foundPrize   = !!payload.foundPrize;
+  const wordsFound   = Array.isArray(payload.wordsFound)
+    ? payload.wordsFound.filter(w => typeof w === 'string' && w.length <= 20).slice(0, 200)
+    : [];
+
+  const key = `${gameId}#${date}`;
+  const entry = {
+    score, wordsFound, totalWords, durationSec,
+    puzzleId, prize, foundPrize,
+    completed: totalWords > 0 && wordsFound.length >= totalWords,
+    updatedAt: Date.now()
+  };
+
+  const cur = await ddb.send(new GetCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username },
+    ProjectionExpression: 'gameScores'
+  }));
+  const gs = (cur.Item && cur.Item.gameScores) || {};
+  gs[key] = entry;
+  const keys = Object.keys(gs);
+  if (keys.length > 60) {
+    keys.sort().slice(0, keys.length - 60).forEach(k => delete gs[k]);
+  }
+  await ddb.send(new UpdateCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username },
+    UpdateExpression: 'SET gameScores = :gs',
+    ExpressionAttributeValues: { ':gs': gs }
+  }));
+  return ok({ ok: true, score: entry });
+}
+
+async function handleGetGameScores(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  const gameId = payload.gameId;
+  const date   = payload.date;
+  if (!validGameId(gameId)) return bad(400, 'invalid gameId');
+  if (!validDateKey(date))  return bad(400, 'invalid date');
+
+  const fr = await ddb.send(new QueryCommand({
+    TableName: FRIENDS_TABLE,
+    KeyConditionExpression: 'username = :u',
+    ExpressionAttributeValues: { ':u': auth.username }
+  }));
+  const friends = (fr.Items || []).filter(r => r.status === 'accepted').map(r => r.peer);
+  const usernames = [auth.username, ...friends];
+  const key = `${gameId}#${date}`;
+
+  const scores = await Promise.all(usernames.map(async (u) => {
+    try {
+      const r = await ddb.send(new GetCommand({
+        TableName: USERS_TABLE,
+        Key: { username: u },
+        ProjectionExpression: 'gameScores, displayName, grade, avatarEmoji'
+      }));
+      const item = r.Item || {};
+      const gs = item.gameScores || {};
+      const entry = gs[key];
+      if (!entry) {
+        return {
+          username: u, displayName: item.displayName || u,
+          grade: item.grade || null, avatarEmoji: item.avatarEmoji || null,
+          played: false, score: 0, wordsFound: 0, totalWords: 0, completed: false,
+          isSelf: u === auth.username
+        };
+      }
+      return {
+        username: u, displayName: item.displayName || u,
+        grade: item.grade || null, avatarEmoji: item.avatarEmoji || null,
+        played: true,
+        score: entry.score || 0,
+        wordsFound: (entry.wordsFound || []).length,
+        totalWords: entry.totalWords || 0,
+        completed: !!entry.completed,
+        durationSec: entry.durationSec || 0,
+        foundPrize: !!entry.foundPrize,
+        updatedAt: entry.updatedAt || 0,
+        isSelf: u === auth.username
+      };
+    } catch (_) {
+      return { username: u, displayName: u, played: false, score: 0, isSelf: u === auth.username };
+    }
+  }));
+  scores.sort((a, b) => {
+    if (a.played !== b.played) return a.played ? -1 : 1;
+    return (b.score || 0) - (a.score || 0);
+  });
+  return ok({ scores, count: scores.length });
 }
 
 // ===== Reading practice (Phase 1) =====

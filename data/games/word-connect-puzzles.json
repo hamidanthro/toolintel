@@ -1,0 +1,60 @@
+{
+  "_comment": "GradeEarn — Word Connect puzzle bank, grouped by grade band. Same-grade kids on the same day get the SAME puzzle (deterministic: hash(date) % byGrade[band].length). Different grades get age-appropriate puzzles. K-2 uses 3-letter words; 3-5 uses 4-6-letter words; 6+ uses 5-7. Add new puzzles to the relevant band; bank rotates daily.",
+  "byGrade": {
+    "grade-k": [
+      { "id": "k-cat",   "letters": ["C","A","T","S","R","B"], "prize": "CATS",   "words": ["AT","BAT","CAT","RAT","SAT","TAB","CAB","BATS","CATS","RATS","CAR","BAR"] },
+      { "id": "k-sun",   "letters": ["S","U","N","P","I","T"], "prize": "PUNT",   "words": ["IS","IT","NUT","PIN","PIT","PUN","PUS","SIN","SIT","SUN","TIN","TIP","PINS","PUNS","PUNT","SPIT","SPUN","UNIT"] },
+      { "id": "k-dog",   "letters": ["D","O","G","L","E","R"], "prize": "GOLDER", "words": ["DOG","EGO","GEL","GOD","LED","LEG","LOG","ODE","OLD","ORE","RED","ROD","DOLE","DOER","GOLD","LODGE","OLDER"] },
+      { "id": "k-pig",   "letters": ["P","I","G","M","A","N"], "prize": "PAINT",  "words": ["AIM","AMP","AN","GAP","GIN","IMP","MAP","NAG","NAP","NIP","PAN","PIG","PIN","NAGS","MAIN","NAIL","PAIN","PIGS"] },
+      { "id": "k-hen",   "letters": ["H","E","N","R","O","S"], "prize": "HORSE",  "words": ["HEN","HER","HOE","NOR","ONE","ORE","REN","ROE","SHE","SON","HENS","HERO","HONE","HOSE","HORN","NOSE","SHORE","HORSE"] }
+    ],
+    "grade-1": [
+      { "id": "1-stop",  "letters": ["S","T","O","P","E","R"], "prize": "PORES",  "words": ["OPS","ORE","POT","PRO","REP","ROT","STEP","SPOT","STOP","POSE","PORE","ROSE","ROPE","PRESS","PORES","POSER","SPORT","TOPES"] },
+      { "id": "1-game",  "letters": ["G","A","M","E","S","T"], "prize": "GAMES",  "words": ["GAS","GAT","GEM","GET","MAT","MET","SAG","SAT","SEA","SET","TAG","TEA","GAME","GAMES","GATES","STAGE","MATES","TEAMS","STEAM"] }
+    ],
+    "grade-2": [
+      { "id": "2-jump",  "letters": ["J","U","M","P","E","R"], "prize": "JUMPER",  "words": ["JAM","JAR","MUM","PER","PUR","RUM","UMP","JUMP","PUMP","JUMPS","JUMPER","PUMPER"] },
+      { "id": "2-fish",  "letters": ["F","I","S","H","E","R"], "prize": "FISHER",  "words": ["HER","HIS","HIRE","FIRE","FISH","FRESH","HEIRS","HIRES","FISHER"] }
+    ],
+    "grade-3": [
+      { "id": "3-stream", "letters": ["S","T","R","E","A","M"], "prize": "STREAM",
+        "words": ["ARE","ART","ATE","EAR","EAT","ERA","MAR","MAT","MET","RAM","RAT","SAT","SEA","SET","TEA","MARE","MART","MATE","MEAT","RATE","REAM","SEAM","SEAR","SEAT","STAR","STEM","TAME","TEAM","TEAR","TERM","STEAM","STREAM"] },
+      { "id": "3-planet", "letters": ["P","L","A","N","E","T"], "prize": "PLANET",
+        "words": ["ALE","ANT","APE","APT","ATE","EAT","LAP","LET","NAP","NET","PAL","PAN","PAT","PEA","PEN","PET","TAN","TAP","TEA","TEN","LANE","LEAN","NEAT","PALE","PANE","PANT","PATE","PEAL","PEAT","PLAN","PLEA","TAPE","PLANE","PLATE","PLANET"] },
+      { "id": "3-castle", "letters": ["C","A","S","T","L","E"], "prize": "CASTLE",
+        "words": ["ACE","ALE","ATE","CAT","EAT","LET","SAT","SET","TEA","CASE","CAST","CATS","EATS","LACE","LAST","LATE","LEST","SALE","SEAL","SEAT","TALE","TEAL","CASTLE","CLEATS"] }
+    ],
+    "grade-4": [
+      { "id": "4-garden", "letters": ["G","A","R","D","E","N"], "prize": "GARDEN",
+        "words": ["AGE","AND","ARE","DEN","EAR","END","ERA","GAD","NAG","RAG","RAN","RED","DARE","DEAN","DEAR","EARN","GEAR","GENE","NEAR","RAGE","RANG","READ","ANGER","RANGE","GARDEN"] },
+      { "id": "4-rocket", "letters": ["R","O","C","K","E","T"], "prize": "ROCKET",
+        "words": ["COT","ORE","ROT","TOE","CORE","CORK","COKE","ROCK","ROTE","TORE","ROCKET"] },
+      { "id": "4-forest", "letters": ["F","O","R","E","S","T"], "prize": "FOREST",
+        "words": ["FOE","FOR","ORE","ROT","SET","TOE","FORT","REST","ROSE","ROTE","SORE","SORT","TORE","FOREST"] }
+    ],
+    "grade-5": [
+      { "id": "5-tiger", "letters": ["T","I","G","E","R","S"], "prize": "TIGERS",
+        "words": ["GET","GIT","RIG","SET","SIR","SIT","TIE","GIRT","GIST","GETS","GRIT","REST","RIGS","RISE","SIRE","STIR","TIER","TIES","TIRE","RITES","TIERS","TIGER","TIRES","TIGERS","STRIDE"] },
+      { "id": "5-window", "letters": ["W","I","N","D","O","R"], "prize": "WINDOR",
+        "words": ["DIN","DON","NOD","NOR","ROD","WIN","WON","DOWN","WIND","IRON","RIND","WIRE","WORN","WIRED","WINDS","DOWNWIND"] }
+    ],
+    "grade-6": [
+      { "id": "6-master", "letters": ["M","A","S","T","E","R"], "prize": "MASTERS",
+        "words": ["ART","ATE","EAR","EAT","ERA","MAR","MAT","MET","RAM","RAT","SAT","SEA","SET","TEA","MART","MATE","MEAT","MARE","RATE","SEAM","SEAR","SEAT","STAR","STEM","TAME","TEAM","TEAR","TERM","STEAM","MASTER","STREAM","MASTERS"] },
+      { "id": "6-pirate", "letters": ["P","I","R","A","T","E"], "prize": "PIRATE",
+        "words": ["AIR","APE","APT","ARE","ART","ATE","EAR","EAT","ERA","IRE","PAT","PEA","PER","PET","PIE","PIT","RAP","RAT","RIP","TAP","TAR","TEA","TIE","TIP","PAIR","PART","PEAT","PIER","RATE","RIPE","TAPE","TEAR","TRAP","TRIP","PIRATE"] }
+    ],
+    "grade-7": [
+      { "id": "7-elastic", "letters": ["E","L","A","S","T","C"], "prize": "ELASTIC",
+        "words": ["ACE","ACT","ALE","ATE","CAT","CAST","EATS","LACE","LAST","LATE","LEST","SALE","SEAL","SEAT","TALE","TEAL","CLEAT","SLATE","STALE","STEAL","TALES","TEALS","TESLA","CASTLE","CLEATS","ELASTIC","LATICES"] }
+    ],
+    "grade-8": [
+      { "id": "8-thunder", "letters": ["T","H","U","N","D","R"], "prize": "THUNDER",
+        "words": ["HUT","NUT","RUN","RUT","THE","HUNT","HURT","RUDE","RUNT","TURN","HUNTS","TRUTH","HUNTER","THUNDER","HURDLED"] }
+    ],
+    "algebra-1": [
+      { "id": "a-equation", "letters": ["Q","U","A","T","I","O"], "prize": "QUOTAS",
+        "words": ["AIT","OAT","OUT","TAO","AUTO","QUIT","TOAD","UNTO","QUOTA","QUOTAS","QUOTA"] }
+    ]
+  }
+}
