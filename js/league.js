@@ -275,12 +275,14 @@
     const rest = rows.slice(3);
     listEl.innerHTML = rest.map(renderListRow).join('');
 
-    // If the podium isn't full (fewer than 3 rows ranked), show an
-    // explicit CTA so the kid + parent know it's not broken — the
-    // empty podium slots are intentional and waiting for more friends.
+    // If the podium isn't full (3 slots, not 4), show an explicit CTA
+    // so the kid + parent know it's not broken — empty podium slots
+    // are intentional and waiting for more friends. Podium has 3 slots
+    // total, so 'need' = max(0, 3 - rows.length).
     let cta = document.getElementById('league-grow-cta');
-    if (rows.length < 4) {
-      const need = 4 - rows.length;
+    const podiumSlots = 3;
+    const need = Math.max(0, podiumSlots - rows.length);
+    if (need > 0) {
       if (!cta) {
         cta = document.createElement('div');
         cta.id = 'league-grow-cta';
@@ -293,8 +295,8 @@
           <div class="league-grow-title">Your league has room to grow</div>
           <div class="league-grow-sub">${
             rows.length === 1 ? "Add a friend so you have someone to race against."
-            : need === 1 ? "Add one more friend to fill out the podium."
-            : `Add ${need} more friends to fill out the podium.`
+            : need === 1 ? "Add 1 more friend to fill the podium."
+            : `Add ${need} more friends to fill the podium.`
           }</div>
         </div>
         <button type="button" class="btn btn-primary league-grow-btn" data-grow-add>+ Add friend</button>`;

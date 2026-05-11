@@ -3883,7 +3883,8 @@ async function handleFriendLeague(payload) {
   }));
 
   rows.sort((a, b) =>
-    (b.lifetimeCorrect - a.lifetimeCorrect)
+    (b.weeklyCorrect - a.weeklyCorrect)
+    || (b.lifetimeCorrect - a.lifetimeCorrect)
     || (b.level - a.level)
     || a.displayName.localeCompare(b.displayName)
   );

@@ -3916,11 +3916,13 @@ async function handleFriendLeague(payload) {
     }
   }));
 
-  // 4. Sort by lifetimeCorrect desc (the canonical level-driver, see
-  //    js/achievements.js LEVEL_THRESHOLDS), then level desc, then
-  //    displayName asc.
+  // 4. Sort by weeklyCorrect desc to match the 'THIS WEEK' framing on
+  //    the league page (Hamid May 11: kid who scored 18 this week was
+  //    showing below kid who scored 0 because we sorted by lifetime).
+  //    Tiebreakers: lifetimeCorrect, level, then displayName.
   rows.sort((a, b) =>
-    (b.lifetimeCorrect - a.lifetimeCorrect)
+    (b.weeklyCorrect - a.weeklyCorrect)
+    || (b.lifetimeCorrect - a.lifetimeCorrect)
     || (b.level - a.level)
     || a.displayName.localeCompare(b.displayName)
   );
