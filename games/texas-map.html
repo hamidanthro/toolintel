@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com https://api.gradeearn.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#060d1f" />
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="../css/styles.css?v=20260511w" />
+  <title>Texas Map Quest — GradeEarn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body class="game-page game-texas-map">
+  <header class="game-header">
+    <a href="../games.html" class="game-back" aria-label="Back">‹</a>
+    <div class="game-header-title">
+      <div class="game-header-eyebrow"><span class="game-header-dot" aria-hidden="true"></span> TEXAS MAP QUEST</div>
+      <div class="game-header-stat" id="gameHeaderStat">Tap the right spot on the map</div>
+    </div>
+    <div class="game-header-score">
+      <div class="game-header-score-num" id="gameYourScore">0</div>
+      <div class="game-header-score-label">your pts</div>
+    </div>
+  </header>
+  <div id="gameInviteBanner" class="game-invite-banner" hidden></div>
+  <main class="game-main">
+    <div id="gameOpponents" class="game-opponents" hidden></div>
+    <div id="gameStatus" class="game-status">Texas Map Quest · loading…</div>
+    <div id="howToPlay" class="memory-howto">
+      <div class="memory-howto-head">
+        <span class="memory-howto-icon" aria-hidden="true">🌵</span>
+        <strong>How to play</strong>
+        <button type="button" id="howToDismiss" class="memory-howto-dismiss" aria-label="Dismiss">✕</button>
+      </div>
+      <ol class="memory-howto-list">
+        <li><strong>10 stops</strong> across the Texas map.</li>
+        <li>Each question asks you to <strong>tap a place</strong> on the map.</li>
+        <li><strong>Bullseye</strong> = 30 pts. <strong>Close</strong> = 15 pts. <strong>Near</strong> = 5 pts.</li>
+        <li>Cities, rivers, landmarks, and Texas state symbols.</li>
+        <li>Get to know your state.</li>
+      </ol>
+    </div>
+    <div class="memory-stats" id="txStats" hidden>
+      <div class="memory-stat"><div class="memory-stat-num" id="txCorrect">0</div><div class="memory-stat-label">bullseyes</div></div>
+      <div class="memory-stat"><div class="memory-stat-num" id="txStop">0</div><div class="memory-stat-label">stop</div></div>
+      <div class="memory-stat" id="txTimerStat"><div class="memory-stat-num" id="txTimer">—</div><div class="memory-stat-label">time</div></div>
+      <div class="memory-stat" id="txStreakStat"><div class="memory-stat-num" id="txStreak">0</div><div class="memory-stat-label">streak</div></div>
+    </div>
+    <div id="txPreStart" class="ms-prestart">
+      <button type="button" id="txStartBtn" class="ms-start-btn">START</button>
+      <p class="ms-prestart-hint">Cities, rivers, landmarks. Learn your state.</p>
+    </div>
+    <div id="txBoard" class="tx-board" hidden>
+      <div id="txQuestion" class="tx-question">Tap…</div>
+      <div class="tx-map-wrap">
+        <svg id="txMap" class="tx-map" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" aria-label="Map of Texas">
+          <path id="txOutline" d="M 22 8 L 38 8 L 38 28 L 75 28 L 80 38 L 88 42 L 90 52 L 92 62 L 85 72 L 70 82 L 58 90 L 45 92 L 30 86 L 18 78 L 10 68 L 5 58 L 10 48 L 8 38 L 14 30 L 22 28 Z" />
+          <circle id="txUserMark" class="tx-mark tx-user" r="2" hidden></circle>
+          <circle id="txTargetMark" class="tx-mark tx-target" r="2.5" hidden></circle>
+        </svg>
+      </div>
+    </div>
+  </main>
+  <div id="gameComplete" class="game-complete" hidden>
+    <div class="game-complete-card">
+      <div class="game-complete-emoji" aria-hidden="true">🌵</div>
+      <h2 id="gameCompleteTitle" class="game-complete-title">Lone Star champ!</h2>
+      <div class="game-complete-stats">
+        <div class="game-complete-stat"><div class="game-complete-stat-num" id="gameCompleteScore">0</div><div class="game-complete-stat-label">points</div></div>
+        <div class="game-complete-stat"><div class="game-complete-stat-num" id="gameCompleteCorrect">0</div><div class="game-complete-stat-label">bullseyes</div></div>
+        <div class="game-complete-stat"><div class="game-complete-stat-num" id="gameCompleteStreak">0</div><div class="game-complete-stat-label">best streak</div></div>
+      </div>
+      <div id="gameCompleteFriends" class="game-complete-friends"></div>
+      <div class="game-complete-actions">
+        <button type="button" class="btn btn-primary" id="txPlayAgain">Play again</button>
+        <a href="../games.html" class="btn btn-secondary">Back to games</a>
+      </div>
+    </div>
+  </div>
+  <div id="gameToast" class="game-toast" hidden role="status" aria-live="polite"></div>
+  <script src="../js/prefs.js?v=20260426a"></script>
+  <script src="../js/fx.js?v=20260426a"></script>
+  <script src="../js/auth.js?v=20260511c"></script>
+  <script src="../js/games/texas-map.js?v=20260511a"></script>
+</body>
+</html>

@@ -7,7 +7,7 @@
  * Critical: never cache API responses (Lambda calls). They must always be fresh.
  */
 
-const CACHE_VERSION = 'gradeearn-v63';
+const CACHE_VERSION = 'gradeearn-v64';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
@@ -57,6 +57,12 @@ const SHELL_FILES = [
   '/js/games/number-line.js',
   '/js/games/pattern-builder.js',
   '/js/games/twenty-four.js',
+  '/js/games/math-bingo.js',
+  '/js/games/sudoku-mini.js',
+  '/js/games/spelling-bee.js',
+  '/js/games/word-ladder.js',
+  '/js/games/story-sequence.js',
+  '/js/games/texas-map.js',
   '/games.html',
   '/games/word-connect.html',
   '/games/memory-match.html',
@@ -65,8 +71,17 @@ const SHELL_FILES = [
   '/games/number-line.html',
   '/games/pattern-builder.html',
   '/games/twenty-four.html',
+  '/games/math-bingo.html',
+  '/games/sudoku-mini.html',
+  '/games/spelling-bee.html',
+  '/games/word-ladder.html',
+  '/games/story-sequence.html',
+  '/games/texas-map.html',
   '/data/games/word-connect-puzzles.json',
   '/data/games/memory-match-puzzles.json',
+  '/data/games/spelling-bee-words.json',
+  '/data/games/word-ladder-puzzles.json',
+  '/data/games/story-sequence-stories.json',
   '/js/parent.js',
   '/js/family-switcher.js',
   '/league.html',

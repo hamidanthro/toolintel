@@ -1,0 +1,75 @@
+{
+  "_comment": "GradeEarn — Word Ladder puzzles. Each puzzle: start word, target word, and a curated dictionary of valid intermediate words. Player must type words that (a) differ by exactly one letter from the previous AND (b) appear in the dictionary list.",
+  "byGrade": {
+    "grade-k": [
+      { "start": "CAT", "end": "BAG", "dict": ["CAT","BAT","BAG","CAB","CAR","BAR","BAY","BAD","BAN","RAT","SAT","TAB"] },
+      { "start": "PIG", "end": "BAG", "dict": ["PIG","PIN","BIN","BAN","BAG","BIG","BAD","BAR","BAT","BAY","WIG","WIN"] },
+      { "start": "TOP", "end": "TAP", "dict": ["TOP","TAP","TIP","HOP","POP","COP","MOP","TOE","TOT","TIN","TAN","TAR"] },
+      { "start": "RUN", "end": "FUN", "dict": ["RUN","FUN","BUN","NUN","SUN","GUN","RAN","RUT","RAM","ROOM","ROD","FAN"] },
+      { "start": "DOG", "end": "LOG", "dict": ["DOG","LOG","FOG","HOG","JOG","BOG","COG","DIG","DOT","DAD","DEN","DEW"] }
+    ],
+    "grade-1": [
+      { "start": "MOM", "end": "DAD", "dict": ["MOM","DAD","MAD","MAY","DAM","DIM","DIP","DIN","MAN","MEN","BAD","BAN"] },
+      { "start": "HAT", "end": "BIG", "dict": ["HAT","HIT","BIT","BIG","BAT","BIN","BAY","HAD","HAM","HOT","HIP","HUT"] },
+      { "start": "EAR", "end": "BUS", "dict": ["EAR","BAR","BUR","BUS","BAR","BAT","EAT","ERA","EBB","BAY","BAN","BUG"] },
+      { "start": "FAR", "end": "FIT", "dict": ["FAR","FIR","FIT","FAT","FAN","FED","FEW","FOR","FOG","HIT","KIT","SIT"] },
+      { "start": "CAR", "end": "RUN", "dict": ["CAR","CAT","RAT","RAN","RUN","RAW","RAY","CAN","TAR","BAR","FUN","BUN"] }
+    ],
+    "grade-2": [
+      { "start": "COLD", "end": "WARM", "dict": ["COLD","CORD","WORD","WORM","WARM","BOLD","BOLD","BORE","WORE","CARD","CARE","WARE"] },
+      { "start": "MILK", "end": "BARK", "dict": ["MILK","SILK","SILT","BILT","BARK","BANK","BACK","BACK","MARK","MASK","BANK","DARK"] },
+      { "start": "STAR", "end": "FROG", "dict": ["STAR","STIR","STIR","STOP","SHOP","SLOP","FLOP","FLOG","FROG","STAY","SPAR","STAR"] },
+      { "start": "FROG", "end": "TOAD", "dict": ["FROG","FROM","FORM","FORT","FORD","WORD","WOAD","TOAD","FORG","FOOD","TODD","TOAD"] },
+      { "start": "BIRD", "end": "FISH", "dict": ["BIRD","BARD","HARD","HARP","WARP","FISH","DISH","WISH","WIST","BIRD","BIND","WIND"] }
+    ],
+    "grade-3": [
+      { "start": "HEAD", "end": "TAIL", "dict": ["HEAD","HEAL","HEAT","BEAT","BAIT","TAIL","HEAR","HEED","SAID","WAIT","WAIL","FAIL"] },
+      { "start": "WARM", "end": "COLD", "dict": ["WARM","WORM","WORD","CORD","COLD","WARE","WORE","CORE","CARD","BOLD","HOLD","FOLD"] },
+      { "start": "STAR", "end": "MOON", "dict": ["STAR","STIR","STIR","MOOR","MOON","STAY","SPAR","SOAR","ROAR","ROAR","RAIN","MAIN"] },
+      { "start": "MEAT", "end": "FISH", "dict": ["MEAT","MOAT","MOAT","FIST","FISH","MEET","MOST","COST","COAT","FAST","FIST","WISH"] },
+      { "start": "PINK", "end": "BLUE", "dict": ["PINK","PINS","PIES","BLUE","BLEW","FLEW","FLEX","FLEA","SLIM","TRIM","BRIM","CLUB"] }
+    ],
+    "grade-4": [
+      { "start": "HOUSE", "end": "GREEN", "dict": ["HOUSE","HORSE","HORST","HARSH","HARSH","GREEN","HORSE","NORSE","WORSE","CURSE","TENSE","DENSE"] },
+      { "start": "SMART", "end": "PRIZE", "dict": ["SMART","START","STARE","SCARE","SPARE","PRIZE","SMARM","STARK","STARE","PARSE","PRIZE","BLAZE"] },
+      { "start": "STONE", "end": "WATER", "dict": ["STONE","STORE","STORK","STARK","START","WATER","STAIR","STAIR","TAKER","TASTE","PASTE","HATER"] },
+      { "start": "BRAIN", "end": "TIGER", "dict": ["BRAIN","TRAIN","STAIN","SLAIN","SLAIN","TIGER","TIGER","SLATER","STALE","STELE","STILE","STILT"] },
+      { "start": "PEACH", "end": "GRAPE", "dict": ["PEACH","REACH","BEACH","BEACH","GRAPE","TEACH","BLEACH","BREACH","GRAVE","GRACE","GRADE","GRATE"] }
+    ],
+    "grade-5": [
+      { "start": "RIVER", "end": "OCEAN", "dict": ["RIVER","RIDER","RIDER","RACES","OCEAN","RAGER","REVEL","RANGE","ROCKS","ROCKY","RIVET","OCHER"] },
+      { "start": "PLANT", "end": "FRUIT", "dict": ["PLANT","PLANK","PLINK","BRINK","BRINT","FRUIT","STINT","STILT","STILE","STIFF","FROND","FROST"] },
+      { "start": "MUSIC", "end": "DANCE", "dict": ["MUSIC","DANCE","BUSED","ABUSE","CHASE","TRADE","SPACE","PRICE","SLICE","DRYER","DENSE","FENCE"] },
+      { "start": "SUNNY", "end": "RAINY", "dict": ["SUNNY","FUNNY","BUNNY","BUNNY","RAINY","SUNNY","RUNNY","RUNS","RAINY","PENNY","JENNY","NANNY"] },
+      { "start": "GIANT", "end": "DWARF", "dict": ["GIANT","GRANT","GRAFT","DRAFT","DRAFT","DWARF","GRUNT","GRUNT","DWARF","STAFF","STAFF","DRAFT"] }
+    ],
+    "grade-6": [
+      { "start": "GLOBE", "end": "EARTH", "dict": ["GLOBE","GROVE","GRADE","GRADE","EARTH","GRACE","HEARTS","HEART","EARTH","CRATE","GRATE","HEART"] },
+      { "start": "CIVIC", "end": "STATE", "dict": ["CIVIC","STATE","STAGE","STARS","SLATE","STATE","STAGE","STAID","STARE","STAYS","STAVE","STAYS"] },
+      { "start": "ATOM", "end": "CELL", "dict": ["ATOM","AROM","ALMA","CELL","ATOM","CALM","TALC","TELL","BELL","FELL","SELL","WELL"] },
+      { "start": "QUIET", "end": "LOUD", "dict": ["QUIET","QUILT","BUILT","BUILT","LOUD","QUIRK","STILT","STILE","CLOUT","SHOUT","LOUSY","LOAFY"] },
+      { "start": "HONEY", "end": "BEES", "dict": ["HONEY","HONES","BONES","BEES","HONEY","BONEY","BONEY","BEEFY","BEERY","HONED","HONOR","HONOR"] }
+    ],
+    "grade-7": [
+      { "start": "PROUD", "end": "BRAVE", "dict": ["PROUD","PROVE","BROVE","BRAVE","PROBE","BRAVE","CRAVE","GRAVE","TRAVE","DROVE","PROSE","PRIZE"] },
+      { "start": "TRACE", "end": "VOICE", "dict": ["TRACE","BRACE","SPACE","SLICE","VOICE","SPICE","PRICE","SLICE","VOICE","SLICE","TRADE","TRACT"] },
+      { "start": "FAITH", "end": "TRUST", "dict": ["FAITH","FAULT","FAULT","TRUST","FILTH","FIRST","FIRST","TRUST","FROST","FROND","TRUMP","TRUMP"] },
+      { "start": "STORM", "end": "CLOUD", "dict": ["STORM","STORE","SCORE","CLOUD","SCORE","SHORE","SHARE","STARE","STAVE","STAIR","STAIR","STORE"] },
+      { "start": "DREAM", "end": "WAKE", "dict": ["DREAM","CREAM","CROAM","WAKE","DRAMA","CRAMP","CRAFT","CRANE","CRANE","WAKE","CAKE","BAKE"] }
+    ],
+    "grade-8": [
+      { "start": "POWER", "end": "FORCE", "dict": ["POWER","POSER","TOWER","FORCE","TONER","FOYER","SIDER","SPACE","TOWER","TOTER","FORTE","POSER"] },
+      { "start": "EARTH", "end": "SPACE", "dict": ["EARTH","HEART","START","STARE","SPACE","SHARE","SHAVE","SHADE","SLATE","STAVE","SLAVE","STATE"] },
+      { "start": "STONE", "end": "METAL", "dict": ["STONE","STOLE","STILE","STELE","METAL","SPITE","STOLE","STOLE","METAL","STALE","STAGE","STAID"] },
+      { "start": "BLACK", "end": "WHITE", "dict": ["BLACK","BLANK","BRANK","BRINK","WHITE","BLACK","BLANK","BLINK","SLINK","SLICK","SLICE","WHILE"] },
+      { "start": "SOLID", "end": "FLUID", "dict": ["SOLID","SOLED","SLED","FLUID","SOLO","SOLOS","SLED","SOLAR","FLUID","FOOD","FLED","FLUFF"] }
+    ],
+    "algebra-1": [
+      { "start": "PROOF", "end": "AXIOM", "dict": ["PROOF","PROOF","AXIOM","PROOF","AXIOM","ARROW","ARENA","ARROW","ATTEN","AXIAL","ATOMIC","AVATAR"] },
+      { "start": "ANGLE", "end": "POINT", "dict": ["ANGLE","APPLE","AMPLE","POINT","ANKLE","ANNEX","AISLE","ANGLE","POINT","NOTES","NOISE","NOOSE"] },
+      { "start": "PLOTS", "end": "SOLVE", "dict": ["PLOTS","PROES","PROBE","SOLVE","PLOTS","SOLVE","PROBE","STOVE","STOVE","STOVE","STOLE","SLOPE"] },
+      { "start": "ROOTS", "end": "POWER", "dict": ["ROOTS","ROOST","BOOST","POWER","ROAST","TOAST","BOAST","ROAST","POWER","ROBES","ROVER","DOTER"] },
+      { "start": "CURVE", "end": "LINEAR", "dict": ["CURVE","CARVE","CARVE","LINER","LINEAR","CURVE","SERVE","NERVE","CURVE","LINER","LINEN","SLIME"] }
+    ]
+  }
+}

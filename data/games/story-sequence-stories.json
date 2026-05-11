@@ -1,0 +1,53 @@
+{
+  "_comment": "GradeEarn — Story Sequence stories. Each story: 3-5 panels (sentences) shown shuffled; kid reorders them. Tagged by grade for reading level.",
+  "byGrade": {
+    "grade-k": [
+      { "title": "The Cookie", "panels": ["Mom bakes cookies in the oven.","She puts them on a plate to cool.","Sam smells the warm cookies.","Sam eats one and smiles."] },
+      { "title": "Bedtime", "panels": ["The sun goes down.","Tia brushes her teeth.","She reads a book in bed.","Tia falls asleep."] },
+      { "title": "Tommy's Dog", "panels": ["Tommy fills the dog bowl.","Buddy runs to the bowl.","Buddy eats his food.","Buddy wags his tail."] },
+      { "title": "Rainy Walk", "panels": ["Clouds cover the sky.","Rain starts to fall.","Mia puts on her boots.","She splashes in a puddle."] }
+    ],
+    "grade-1": [
+      { "title": "The Lost Ball", "panels": ["Sam was playing in the yard.","He kicked the ball over the fence.","Sam knocked on the neighbor's door.","The neighbor gave the ball back.","Sam ran home to play again."] },
+      { "title": "Birthday Party", "panels": ["Ana invited her friends over.","Mom baked a tall birthday cake.","Everyone sang Happy Birthday.","Ana blew out the candles.","Friends helped clean up the wrapping paper."] },
+      { "title": "The Garden", "panels": ["Grandpa got out the seeds.","They dug holes in the garden.","Carlos put a seed in each hole.","They watered the garden every day.","Tomatoes grew tall and red."] }
+    ],
+    "grade-2": [
+      { "title": "First Day", "panels": ["Maya was nervous about her new school.","She walked into the classroom with her dad.","Her teacher smiled and pointed to her desk.","A girl named Ava sat down next to Maya.","By lunchtime, Maya and Ava were laughing together."] },
+      { "title": "Lemonade Stand", "panels": ["It was a hot summer day in Austin.","Kai squeezed lemons into a big pitcher.","He added sugar and lots of cold water.","Kai set up a sign in front of his house.","By noon, he had sold every cup."] },
+      { "title": "Lost Then Found", "panels": ["Liam couldn't find his favorite hat.","He looked in the closet and under the bed.","His sister checked the kitchen and the porch.","Mom remembered washing it that morning.","They opened the dryer and there it was."] }
+    ],
+    "grade-3": [
+      { "title": "The Science Fair", "panels": ["Emma chose a project about plants and sunlight.","She kept two pots — one in the window and one in the closet.","Every day she measured how tall each plant grew.","The plant in the window grew almost twice as tall.","Emma's poster won second prize at the school fair."] },
+      { "title": "The Rescue", "panels": ["A kitten was meowing high up in a tree.","Diego ran to get his dad.","His dad brought a tall ladder from the garage.","Diego held the ladder steady while Dad climbed.","The kitten purred when Diego held it close."] },
+      { "title": "Texas Trip", "panels": ["The family loaded the car early in the morning.","They drove from Houston toward the Hill Country.","At Enchanted Rock they hiked up the giant pink dome.","On the way home they ate kolaches in West, Texas.","Mom said it was the best Saturday she could remember."] }
+    ],
+    "grade-4": [
+      { "title": "The Inventor", "panels": ["Asha noticed her grandma had trouble opening jars.","She sketched a design for a special gripper handle.","Her dad helped her build it in the garage workshop.","The first version broke when she twisted it hard.","After three more tries, Asha had a tool that worked perfectly."] },
+      { "title": "Storm Watch", "panels": ["Dark clouds rolled in over Galveston Bay.","The wind picked up and the seagulls flew inland.","A meteorologist on TV warned of a big storm.","Families boarded up windows and gathered supplies.","By morning the storm had passed and the beach was calm again."] },
+      { "title": "The Recipe", "panels": ["Marco's grandfather had a secret salsa recipe.","One Sunday, grandpa invited Marco into the kitchen.","They roasted tomatoes, peppers, and onions on the comal.","Grandpa explained which steps mattered most for the flavor.","Now Marco makes the salsa for every family dinner."] }
+    ],
+    "grade-5": [
+      { "title": "The Trail", "panels": ["The class trip to Palo Duro Canyon was scheduled for Friday.","Sara packed her hiking boots, water, and sketchbook.","On the trail she stopped to draw the red rock layers.","Her teacher explained that each layer was millions of years old.","Back on the bus, Sara couldn't stop thinking about geologic time."] },
+      { "title": "The Article", "panels": ["The school paper needed a story about the new music teacher.","Jaden interviewed Ms. Chen during her lunch break.","He took notes about her time playing cello in Houston.","That night he organized his notes into three main themes.","His article ran on the front page of the next issue."] },
+      { "title": "The Robot", "panels": ["The robotics club had six weeks to build a competition robot.","They divided into teams: drive, arm, programming, and design.","After several failed prototypes, the arm finally lifted a block.","At regionals their robot scored points in every match.","The team qualified for the state championship in Dallas."] }
+    ],
+    "grade-6": [
+      { "title": "The Mystery", "panels": ["The school library books kept going missing from the shelves.","The librarian asked Priya, the student aide, to investigate.","Priya noticed the missing books were all about Texas history.","She checked the borrower logs and found a pattern.","It turned out a class was using them for a hidden research project."] },
+      { "title": "The Election", "panels": ["The seventh grade was electing a new class president.","Tomás had ideas for a school garden and a recycling drive.","He printed posters and gave a short speech in the cafeteria.","Other candidates focused on dress code and longer recess.","Tomás won by a small margin and got to work."] },
+      { "title": "The Match", "panels": ["The soccer playoffs were down to the final game.","The team had been training hard since August.","In the first half the other team scored two quick goals.","During halftime the coach changed the formation.","The team rallied and won 3-2 in the last minutes."] }
+    ],
+    "grade-7": [
+      { "title": "The Experiment", "panels": ["For her science project, Renee tested which paper towel absorbed the most water.","She measured equal strips of three popular brands.","Each strip soaked for exactly thirty seconds in a beaker.","She weighed the wet strips and recorded the difference.","Her data showed that price didn't always predict performance."] },
+      { "title": "The Performance", "panels": ["The drama club was rehearsing a one-act play about Texas history.","Devon was cast as a young soldier at the Alamo.","Opening night he froze for a moment under the bright lights.","His scene partner whispered the first line of his speech.","Devon delivered the rest perfectly and the audience cheered."] }
+    ],
+    "grade-8": [
+      { "title": "The Editorial", "panels": ["A new rule banned phones in the cafeteria.","Many eighth graders thought the rule was too strict.","Imani interviewed students, teachers, and the principal.","She wrote a thoughtful editorial for the school paper.","After a meeting with student council, the rule was revised."] },
+      { "title": "The Code", "panels": ["Hugo wanted his game project to include a leaderboard.","He sketched out the screens before writing any code.","The first version showed scores but in the wrong order.","After tracing through the sort function he found a bug.","His final game ran smoothly and his cousin couldn't beat his high score."] }
+    ],
+    "algebra-1": [
+      { "title": "The Roof", "panels": ["A storm damaged the roof of the high school gym.","The school hired a roofer to estimate the repair.","She measured the slope and area in square feet.","Using the dimensions she calculated materials and cost.","The repair came in just under the school's budget."] },
+      { "title": "The Investment", "panels": ["The financial literacy class simulated a stock-market game.","Each student got virtual money to invest however they wanted.","Lina charted price changes over four simulated weeks.","She moved her money into a fund whose graph showed the steepest positive slope.","At the end of the unit, her portfolio had grown the most."] }
+    ]
+  }
+}

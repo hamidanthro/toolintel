@@ -19952,6 +19952,328 @@ body.game-twenty-four .game-main { padding-top: 12px; }
   }
 }
 
+/* ============================================================
+   MATH BINGO (game #8)
+   ============================================================ */
+body.game-math-bingo .game-main { padding-top: 12px; }
+.mb-board {
+  display: flex; flex-direction: column; gap: 14px;
+  padding: 16px 16px 24px; margin: 0 auto; max-width: 560px; width: 100%;
+}
+.mb-call {
+  font-size: 2.6rem; font-weight: 800; text-align: center; color: #fff;
+  padding: 22px 14px; background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(253, 224, 71, 0.4); border-radius: var(--r-card);
+  min-height: 110px; display: flex; align-items: center; justify-content: center;
+  font-variant-numeric: tabular-nums;
+}
+.mb-card {
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px; padding: 8px; background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12); border-radius: var(--r-card);
+}
+.mb-cell {
+  appearance: none; border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(30, 58, 138, 0.55); color: #fff; font-weight: 800;
+  font-size: 1.1rem; padding: 0; aspect-ratio: 1 / 1; border-radius: var(--r-button);
+  cursor: pointer; font-family: inherit;
+  transition: background 100ms ease, transform 80ms ease;
+  -webkit-tap-highlight-color: transparent;
+  font-variant-numeric: tabular-nums;
+}
+.mb-cell:hover { background: rgba(30, 58, 138, 0.85); }
+.mb-cell:active { transform: scale(0.96); }
+.mb-cell.is-marked { background: linear-gradient(140deg, rgba(52, 211, 153, 0.6) 0%, rgba(16, 185, 129, 0.7) 100%); border-color: rgba(52, 211, 153, 0.7); color: #ecfdf5; }
+.mb-cell.is-free { background: linear-gradient(140deg, #fde68a 0%, #fbbf24 100%); color: #1e293b; font-size: 0.85rem; }
+
+/* ============================================================
+   SUDOKU MINI (game #9)
+   ============================================================ */
+body.game-sudoku-mini .game-main { padding-top: 12px; }
+.sk-board {
+  display: flex; flex-direction: column; gap: 14px;
+  padding: 16px 16px 24px; margin: 0 auto; max-width: 480px; width: 100%;
+}
+.sk-grid {
+  display: grid; grid-template-columns: repeat(var(--sk-size, 4), minmax(0, 1fr));
+  gap: 0;
+  background: rgba(15, 23, 42, 0.85);
+  border: 2px solid rgba(253, 224, 71, 0.5); border-radius: var(--r-card);
+  padding: 4px;
+}
+.sk-cell {
+  appearance: none; border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(30, 58, 138, 0.4); color: #fff; font-weight: 800;
+  font-size: 1.6rem; aspect-ratio: 1 / 1; cursor: pointer; font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+.sk-cell:hover { background: rgba(30, 58, 138, 0.65); }
+.sk-cell.is-locked { background: rgba(15, 23, 42, 0.6); color: #fde68a; cursor: default; }
+.sk-cell.is-sel { background: rgba(251, 191, 36, 0.35); border-color: #fbbf24; outline: 2px solid #fbbf24; }
+.sk-cell.is-rbreak { border-top: 2px solid rgba(253, 224, 71, 0.6); }
+.sk-cell.is-cbreak { border-left: 2px solid rgba(253, 224, 71, 0.6); }
+.sk-palette {
+  display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px;
+}
+.sk-grid[data-size="6"] + .sk-palette { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.sk-num {
+  appearance: none; border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(30, 58, 138, 0.6); color: #fff; font-weight: 800;
+  font-size: 1.3rem; padding: 12px 0; border-radius: var(--r-button);
+  cursor: pointer; min-height: 50px; font-family: inherit;
+}
+.sk-num:hover { background: rgba(30, 58, 138, 0.85); border-color: rgba(253, 224, 71, 0.45); }
+.sk-num--erase { background: rgba(239, 68, 68, 0.3); }
+.sk-num--erase:hover { background: rgba(239, 68, 68, 0.5); }
+
+/* ============================================================
+   SPELLING BEE (game #10) + WORD LADDER (shared sb-* form classes)
+   ============================================================ */
+body.game-spelling-bee .game-main,
+body.game-word-ladder .game-main { padding-top: 12px; }
+.sb-board {
+  display: flex; flex-direction: column; gap: 16px;
+  padding: 18px 16px 24px; margin: 0 auto; max-width: 560px; width: 100%;
+}
+.sb-prompt {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  padding: 24px 16px; background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(253, 224, 71, 0.4); border-radius: var(--r-card);
+}
+.sb-hear-btn {
+  appearance: none; border: 0; cursor: pointer; font-family: inherit;
+  background: linear-gradient(140deg, #fde68a 0%, #fbbf24 100%);
+  color: #1e293b; font-weight: 800; font-size: 1.15rem;
+  padding: 14px 32px; border-radius: 999px;
+  box-shadow: 0 6px 14px rgba(251, 191, 36, 0.3);
+  -webkit-tap-highlight-color: transparent;
+}
+.sb-hear-btn:hover { filter: brightness(1.08); }
+.sb-hint { color: rgba(255, 255, 255, 0.7); font-size: 0.95rem; }
+.sb-form { display: flex; gap: 10px; }
+.sb-input {
+  flex: 1; appearance: none;
+  background: rgba(15, 23, 42, 0.85); color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.16); border-radius: var(--r-button);
+  padding: 14px 16px; font-size: 1.2rem; font-family: inherit;
+  font-weight: 600; letter-spacing: 0.02em;
+}
+.sb-input:focus { outline: 2px solid #fbbf24; border-color: transparent; }
+.sb-submit {
+  appearance: none; border: 0; cursor: pointer; font-family: inherit;
+  background: linear-gradient(140deg, #fde68a 0%, #fbbf24 100%);
+  color: #1e293b; font-weight: 800; font-size: 1rem;
+  padding: 0 22px; border-radius: var(--r-button);
+}
+.sb-feedback {
+  padding: 12px 14px; border-radius: var(--r-button); min-height: 44px;
+  background: rgba(15, 23, 42, 0.6); color: #fff;
+  font-size: 1rem; font-weight: 600; text-align: center;
+}
+.sb-feedback:empty { display: none; }
+.sb-fb { font-weight: 700; }
+.sb-fb--ok { color: #34d399; }
+.sb-fb--bad { color: #fca5a5; }
+.sb-fb strong { color: #fde68a; letter-spacing: 0.05em; text-transform: uppercase; }
+
+/* Word Ladder ladder display */
+.wl-board {
+  display: flex; flex-direction: column; gap: 14px;
+  padding: 16px 16px 24px; margin: 0 auto; max-width: 560px; width: 100%;
+}
+.wl-ladder {
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 16px; background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12); border-radius: var(--r-card);
+}
+.wl-word {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; border-radius: var(--r-button);
+  font-weight: 800; font-size: 1.3rem; letter-spacing: 0.1em;
+}
+.wl-start { background: rgba(52, 211, 153, 0.18); border: 1px solid rgba(52, 211, 153, 0.5); color: #a7f3d0; }
+.wl-end { background: rgba(251, 191, 36, 0.18); border: 1px solid rgba(251, 191, 36, 0.5); color: #fde68a; }
+.wl-label { font-size: 0.7rem; color: rgba(255, 255, 255, 0.5); letter-spacing: 0.12em; font-weight: 700; }
+.wl-steps { display: flex; flex-direction: column; gap: 6px; }
+.wl-step {
+  padding: 10px 16px; border-radius: var(--r-button);
+  background: rgba(30, 58, 138, 0.4); color: #fff;
+  font-weight: 700; font-size: 1.15rem; letter-spacing: 0.08em;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ============================================================
+   STORY SEQUENCE (game #12)
+   ============================================================ */
+body.game-story-sequence .game-main { padding-top: 12px; }
+.ss-board {
+  display: flex; flex-direction: column; gap: 14px;
+  padding: 16px 16px 24px; margin: 0 auto; max-width: 640px; width: 100%;
+}
+.ss-title {
+  text-align: center; font-size: 1.3rem; font-weight: 800;
+  color: #fde68a; margin: 0;
+}
+.ss-panels { display: flex; flex-direction: column; gap: 8px; }
+.ss-panel {
+  appearance: none; cursor: pointer; font-family: inherit; text-align: left;
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px 16px; background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.14); border-radius: var(--r-button);
+  color: #fff; font-size: 1rem; line-height: 1.5;
+  transition: background 100ms ease, border-color 100ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.ss-panel:hover { background: rgba(30, 58, 138, 0.55); }
+.ss-panel.is-sel { background: rgba(251, 191, 36, 0.2); border-color: #fbbf24; outline: 2px solid rgba(251, 191, 36, 0.45); }
+.ss-panel-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: rgba(253, 224, 71, 0.25); color: #fde68a;
+  font-weight: 800; font-size: 0.9rem; flex-shrink: 0;
+}
+.ss-panel-text { flex: 1; }
+
+/* ============================================================
+   TEXAS MAP QUEST (game #13)
+   ============================================================ */
+body.game-texas-map .game-main { padding-top: 12px; }
+.tx-board {
+  display: flex; flex-direction: column; gap: 14px;
+  padding: 16px 16px 24px; margin: 0 auto; max-width: 560px; width: 100%;
+}
+.tx-question {
+  font-size: 1.4rem; font-weight: 800; text-align: center; color: #fde68a;
+  padding: 16px 14px; background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(253, 224, 71, 0.4); border-radius: var(--r-card);
+}
+.tx-map-wrap {
+  padding: 14px; background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12); border-radius: var(--r-card);
+}
+.tx-map { width: 100%; height: auto; max-height: 520px; cursor: crosshair; -webkit-tap-highlight-color: transparent; user-select: none; }
+.tx-map #txOutline {
+  fill: rgba(30, 58, 138, 0.5);
+  stroke: #fde68a; stroke-width: 0.6; stroke-linejoin: round;
+}
+.tx-mark { pointer-events: none; }
+.tx-user { fill: #f97316; stroke: #fff; stroke-width: 0.5; filter: drop-shadow(0 0 4px rgba(249, 115, 22, 0.7)); }
+.tx-target { fill: #34d399; stroke: #fff; stroke-width: 0.5; filter: drop-shadow(0 0 6px rgba(52, 211, 153, 0.8)); }
+
+/* ============================================================
+   Desktop ≥1100px — side rails for all batch-2 games
+   ============================================================ */
+@media (min-width: 1100px) {
+  body.game-math-bingo .game-main,
+  body.game-sudoku-mini .game-main,
+  body.game-spelling-bee .game-main,
+  body.game-word-ladder .game-main,
+  body.game-story-sequence .game-main,
+  body.game-texas-map .game-main {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 640px) 280px;
+    grid-template-rows: auto auto auto 1fr;
+    grid-template-areas:
+      "title  board panel"
+      "howto  board panel"
+      "stats  board panel"
+      ".      board panel";
+    column-gap: 36px; row-gap: 18px;
+    max-width: 1280px; padding: 28px 24px 32px;
+    align-items: start;
+  }
+  body.game-math-bingo #gameStatus,
+  body.game-sudoku-mini #gameStatus,
+  body.game-spelling-bee #gameStatus,
+  body.game-word-ladder #gameStatus,
+  body.game-story-sequence #gameStatus,
+  body.game-texas-map #gameStatus {
+    grid-area: title; align-self: start; text-align: left;
+    padding: 18px 18px 16px; font-size: 1.35rem; font-weight: 800;
+    color: #fde68a; background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(253, 224, 71, 0.4); border-radius: var(--r-card);
+    line-height: 1.3; margin: 0;
+  }
+  body.game-math-bingo .memory-howto,
+  body.game-sudoku-mini .memory-howto,
+  body.game-spelling-bee .memory-howto,
+  body.game-word-ladder .memory-howto,
+  body.game-story-sequence .memory-howto,
+  body.game-texas-map .memory-howto { grid-area: howto; margin: 0; }
+  body.game-math-bingo .memory-stats,
+  body.game-sudoku-mini .memory-stats,
+  body.game-spelling-bee .memory-stats,
+  body.game-word-ladder .memory-stats,
+  body.game-story-sequence .memory-stats,
+  body.game-texas-map .memory-stats {
+    grid-area: stats; grid-template-columns: 1fr 1fr; gap: 10px;
+    margin: 0; padding: 14px 12px;
+  }
+  body.game-math-bingo .ms-prestart,
+  body.game-sudoku-mini .ms-prestart,
+  body.game-spelling-bee .ms-prestart,
+  body.game-word-ladder .ms-prestart,
+  body.game-story-sequence .ms-prestart,
+  body.game-texas-map .ms-prestart {
+    grid-area: board; align-self: center; padding: 60px 16px;
+  }
+  body.game-math-bingo .mb-board,
+  body.game-sudoku-mini .sk-board,
+  body.game-spelling-bee .sb-board,
+  body.game-word-ladder .wl-board,
+  body.game-story-sequence .ss-board,
+  body.game-texas-map .tx-board {
+    grid-area: board; max-width: 640px; margin: 0; padding: 0;
+  }
+  body.game-math-bingo .game-opponents,
+  body.game-sudoku-mini .game-opponents,
+  body.game-spelling-bee .game-opponents,
+  body.game-word-ladder .game-opponents,
+  body.game-story-sequence .game-opponents,
+  body.game-texas-map .game-opponents {
+    grid-area: panel; flex-direction: column; align-items: stretch;
+    padding: 18px; gap: 14px;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.14); border-radius: var(--r-card);
+    margin: 0; overflow: visible; position: sticky; top: 28px;
+  }
+  body.game-math-bingo .game-opponents-list,
+  body.game-sudoku-mini .game-opponents-list,
+  body.game-spelling-bee .game-opponents-list,
+  body.game-word-ladder .game-opponents-list,
+  body.game-story-sequence .game-opponents-list,
+  body.game-texas-map .game-opponents-list {
+    flex-direction: column; align-items: stretch; gap: 8px;
+  }
+  body.game-math-bingo .game-opponent,
+  body.game-sudoku-mini .game-opponent,
+  body.game-spelling-bee .game-opponent,
+  body.game-word-ladder .game-opponent,
+  body.game-story-sequence .game-opponent,
+  body.game-texas-map .game-opponent {
+    width: 100%; justify-content: space-between; padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--r-button);
+  }
+  body.game-math-bingo .game-challenge-btn,
+  body.game-sudoku-mini .game-challenge-btn,
+  body.game-spelling-bee .game-challenge-btn,
+  body.game-word-ladder .game-challenge-btn,
+  body.game-story-sequence .game-challenge-btn,
+  body.game-texas-map .game-challenge-btn {
+    width: 100%; padding: 12px 14px; font-size: 0.95rem;
+  }
+  body.game-math-bingo, body.game-sudoku-mini, body.game-spelling-bee,
+  body.game-word-ladder, body.game-story-sequence, body.game-texas-map {
+    background:
+      radial-gradient(ellipse at 70% 25%, rgba(253, 224, 71, 0.03) 0%, transparent 45%),
+      radial-gradient(ellipse at 25% 85%, rgba(30, 58, 138, 0.1) 0%, transparent 55%),
+      #060d1f;
+    background-attachment: fixed;
+  }
+}
+
 @media (min-width: 1100px) {
   body.game-math-sprint .game-main {
     display: grid;
