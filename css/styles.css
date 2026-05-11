@@ -19480,7 +19480,7 @@ body.game-memory-match .game-main {
     background:
       radial-gradient(ellipse at 70% 25%, rgba(253, 224, 71, 0.03) 0%, transparent 45%),
       radial-gradient(ellipse at 25% 85%, rgba(30, 58, 138, 0.1) 0%, transparent 55%),
-      var(--bg, #060d1f);
+      #060d1f;
     background-attachment: fixed;
   }
 }
@@ -19773,7 +19773,7 @@ body.game-math-sprint #msStreakStat.is-hot .memory-stat-num {
     background:
       radial-gradient(ellipse at 70% 25%, rgba(253, 224, 71, 0.03) 0%, transparent 45%),
       radial-gradient(ellipse at 25% 85%, rgba(30, 58, 138, 0.1) 0%, transparent 55%),
-      var(--bg, #060d1f);
+      #060d1f;
     background-attachment: fixed;
   }
 }
