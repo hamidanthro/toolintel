@@ -1,31 +1,46 @@
 /**
- * GradeEarn — friend league page (Tier 6 AF, full build).
+ * GradeEarn — friend league page (v3, May 11 committee redesign).
  *
- * Three tabs:
- *   Standings — ranked board (kid + accepted friends) by lifetimeCorrect,
- *               with this-week column and level badge
- *   Add friend — search by username, send request, share your code
- *   Requests — incoming (Accept/Decline) + outgoing (Cancel)
+ * Layout:
+ *   - Eyebrow:    "THIS WEEK · Resets in X days" + Add Friend pill
+ *   - Banner:     pending incoming requests (non-blocking)
+ *   - Podium:     top-3 silhouette/avatar cards (when ≥3 ranked rows)
+ *   - You-card:   "You're #N · M correct from next rank" when kid isn't podium
+ *   - List:       remaining ranks 4+ (or all rows if <3) with movement arrows
  *
- * Age-gated to grade-3+ on the client; K-2 see a locked state.
+ * Bottom sheet (opened by Add Friend pill OR Review banner) holds
+ *   - Add friend form + share-code
+ *   - Incoming / outgoing / friends-list with Accept/Decline/Unfriend
  *
- * Lambda actions used:
- *   friendLeague  → ranked board + weeklyCorrect + grade + avatar
- *   friendList    → accepted / incoming / outgoing
- *   friendRequest → send a request by username
- *   friendRespond → accept or decline an incoming request
- *   friendUnfriend → remove a friend
+ * Movement arrows are computed locally from a per-kid snapshot stored
+ * in localStorage. Each successful league load updates today's snapshot;
+ * the previous-day snapshot becomes the comparison base.
+ *
+ * Server returns weeklyCorrect (last 7d) so rank order is by THIS WEEK,
+ * not lifetime. Lifetime correct is shown as secondary stat.
  */
 (function () {
   'use strict';
 
-  const root = document.getElementById('league-root');
-  const tabsEl = document.querySelector('.league-tabs');
-  if (!root) return;
+  const STORE_PREV = 'gradeearn:league:prev-snapshot';
+  const STORE_TODAY = 'gradeearn:league:today-snapshot';
 
-  const TABS = ['standings', 'add', 'requests'];
-  let activeTab = 'standings';
-  let cache = { league: null, friendList: null };
+  const podiumEl   = document.getElementById('league-podium');
+  const youCardEl  = document.getElementById('league-you-card');
+  const listEl     = document.getElementById('league-list');
+  const footEl     = document.getElementById('league-foot');
+  const bannerEl   = document.getElementById('league-requests-banner');
+  const bannerTxt  = document.getElementById('league-requests-banner-text');
+  const bannerBtn  = document.getElementById('league-banner-open');
+  const addBtn     = document.getElementById('btn-add-friend');
+  const sheetEl    = document.getElementById('league-sheet');
+  const sheetBack  = document.getElementById('league-sheet-backdrop');
+  const sheetBody  = document.getElementById('league-sheet-body');
+  const sheetClose = document.getElementById('league-sheet-close');
+  const weekLabel    = document.getElementById('league-week-label');
+  const weekCountdwn = document.getElementById('league-week-countdown');
+
+  if (!podiumEl || !listEl) return;
 
   // ---------- helpers ----------
   function esc(s) {
@@ -47,140 +62,364 @@
     if (slug === 'algebra-1') return 'Alg 1';
     return slug;
   }
-  function rankBadge(rank) {
-    if (rank === 1) return '🥇';
-    if (rank === 2) return '🥈';
-    if (rank === 3) return '🥉';
-    return `${rank}`;
-  }
-  function avatar(row) {
-    if (row.avatarEmoji) return row.avatarEmoji;
-    return (row.displayName || '?').charAt(0).toUpperCase();
-  }
   function token() {
     try { return window.STAARAuth && window.STAARAuth.token && window.STAARAuth.token(); } catch (_) { return null; }
   }
   async function api(action, payload) {
     return await window.STAARAuth.api(action, Object.assign({ token: token() }, payload || {}));
   }
-  function notify(msg, kind) {
+
+  // Color a kid's avatar background from their username hash so the
+  // fallback initial-letter doesn't render as bland gray on every row.
+  const AVATAR_COLORS = [
+    'linear-gradient(135deg, #fbbf24, #f97316)', // amber
+    'linear-gradient(135deg, #60a5fa, #3b82f6)', // blue
+    'linear-gradient(135deg, #34d399, #10b981)', // green
+    'linear-gradient(135deg, #f472b6, #ec4899)', // pink
+    'linear-gradient(135deg, #a78bfa, #8b5cf6)', // purple
+    'linear-gradient(135deg, #fb7185, #ef4444)', // red-rose
+    'linear-gradient(135deg, #fbbf24, #d97706)', // gold
+    'linear-gradient(135deg, #38bdf8, #0ea5e9)'  // sky
+  ];
+  function colorForUsername(u) {
+    if (!u) return AVATAR_COLORS[0];
+    let h = 0;
+    for (let i = 0; i < u.length; i++) h = (h * 31 + u.charCodeAt(i)) >>> 0;
+    return AVATAR_COLORS[h % AVATAR_COLORS.length];
+  }
+  function avatarHtml(row, size) {
+    const has = !!row.avatarEmoji;
+    const content = has ? row.avatarEmoji : ((row.displayName || row.username || '?').charAt(0).toUpperCase());
+    const bg = has ? '' : ` style="background:${colorForUsername(row.username)};"`;
+    const cls = has ? 'league-av league-av--emoji' : 'league-av league-av--letter';
+    const sz = size ? ` league-av--${size}` : '';
+    return `<span class="${cls}${sz}"${bg} aria-hidden="true">${esc(content)}</span>`;
+  }
+
+  // ---------- weekly framing ----------
+  function setWeekCountdown() {
+    // ISO week resets Monday 00:00 in the kid's local time (close enough
+    // to Central for Texas). Show "Resets Monday" or "Resets in N days".
+    const now = new Date();
+    const dow = now.getDay(); // 0=Sun, 1=Mon, ...
+    let daysUntilMon = (8 - dow) % 7;
+    if (daysUntilMon === 0) daysUntilMon = 7;
+    let copy;
+    if (daysUntilMon === 1) copy = 'Resets tomorrow';
+    else if (daysUntilMon === 7) copy = 'Just started';
+    else copy = `Resets in ${daysUntilMon} days`;
+    if (weekCountdwn) weekCountdwn.textContent = '· ' + copy;
+  }
+
+  // ---------- movement arrow ----------
+  function loadPrev() {
     try {
-      if (window.STAARFx && window.STAARFx.toast) {
-        window.STAARFx.toast(msg, { kind: kind || 'info' });
+      const raw = localStorage.getItem(STORE_PREV);
+      return raw ? JSON.parse(raw) : null;
+    } catch (_) { return null; }
+  }
+  function loadToday() {
+    try {
+      const raw = localStorage.getItem(STORE_TODAY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (_) { return null; }
+  }
+  function todayISO() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+  function persistSnapshot(rows) {
+    // If "today" snapshot is from a previous date, roll it into "prev"
+    // first so we have a real day-over-day comparison.
+    try {
+      const today = todayISO();
+      const t = loadToday();
+      if (t && t.date && t.date !== today) {
+        localStorage.setItem(STORE_PREV, JSON.stringify(t));
       }
+      const snap = {
+        date: today,
+        ranks: rows.reduce((acc, r) => { acc[r.username] = r.rank; return acc; }, {})
+      };
+      localStorage.setItem(STORE_TODAY, JSON.stringify(snap));
     } catch (_) {}
   }
-
-  // ---------- tabs ----------
-  function setTab(name) {
-    if (TABS.indexOf(name) < 0) return;
-    activeTab = name;
-    if (tabsEl) {
-      tabsEl.querySelectorAll('.league-tab').forEach(b => {
-        b.classList.toggle('league-tab--active', b.getAttribute('data-tab') === name);
-      });
-    }
-    render();
+  function rankDelta(username, currentRank) {
+    const prev = loadPrev();
+    if (!prev || !prev.ranks || !(username in prev.ranks)) return null;
+    return prev.ranks[username] - currentRank;
   }
-  if (tabsEl) {
-    tabsEl.addEventListener('click', (e) => {
-      const b = e.target.closest('.league-tab');
-      if (!b) return;
-      setTab(b.getAttribute('data-tab'));
-    });
-  }
-  function updateTabCounts() {
-    const lg = cache.league, fl = cache.friendList;
-    const sc = document.getElementById('tab-count-standings');
-    if (sc) sc.textContent = lg && Array.isArray(lg.league) ? lg.league.length : '';
-    const rc = document.getElementById('tab-count-requests');
-    const incoming = fl && Array.isArray(fl.incoming) ? fl.incoming.length : 0;
-    if (rc) {
-      rc.textContent = incoming > 0 ? String(incoming) : '';
-      rc.style.display = incoming > 0 ? '' : 'none';
-    }
+  function movementHtml(username, currentRank) {
+    const d = rankDelta(username, currentRank);
+    if (d === null) return '<span class="league-mv league-mv--new" title="New this period">NEW</span>';
+    if (d > 0)  return `<span class="league-mv league-mv--up"   title="Up ${d}">▲${d}</span>`;
+    if (d < 0)  return `<span class="league-mv league-mv--down" title="Down ${-d}">▼${-d}</span>`;
+    return '<span class="league-mv league-mv--same" title="No change">—</span>';
   }
 
-  // ---------- standings tab ----------
-  function renderStandings() {
-    const r = cache.league;
-    if (!r || !Array.isArray(r.league)) {
-      root.innerHTML = `<div class="card" style="max-width:680px;padding:24px;color:var(--muted);">Loading…</div>`;
-      return;
-    }
-    const rows = r.league;
-    if (rows.length === 0 || (rows.length === 1 && rows[0].isSelf)) {
-      root.innerHTML = `
-        <div class="league-empty">
-          <div class="league-empty-emoji" aria-hidden="true">👋</div>
-          <h2 class="league-empty-title">No friends yet</h2>
-          <p class="league-empty-sub">Add a friend to start a league. They'll see your rank and you'll see theirs — friendly competition that keeps everyone practicing.</p>
-          <button type="button" class="btn btn-primary" data-go-add>Add your first friend</button>
-        </div>`;
-      const btn = root.querySelector('[data-go-add]');
-      if (btn) btn.addEventListener('click', () => setTab('add'));
-      return;
-    }
-    const tableHtml = rows.map(row => {
-      const youCls = row.isSelf ? ' is-self' : '';
-      const medalCls = row.rank <= 3 ? ' is-medal' : '';
-      const grade = row.grade ? `<span class="league-grade-chip">${esc(gradeLabel(row.grade))}</span>` : '';
-      return `
-        <div class="league-row${youCls}" data-username="${esc(row.username)}">
-          <div class="league-rank${medalCls}">${rankBadge(row.rank)}</div>
-          <div class="league-avatar">${esc(avatar(row))}</div>
-          <div class="league-identity">
-            <div class="league-name-row">
-              <span class="league-name">${esc(row.displayName)}</span>
-              ${row.isSelf ? '<span class="league-you-chip">you</span>' : ''}
-              ${grade}
-            </div>
-            <div class="league-meta">
-              <span class="league-meta-week">+${row.weeklyCorrect} this week</span>
-              ${row.streak > 1 ? `<span class="league-meta-streak">🔥 ${row.streak}d</span>` : ''}
-            </div>
-          </div>
-          <div class="league-score">
-            <div class="league-score-num">${(row.lifetimeCorrect || 0).toLocaleString()}</div>
-            <div class="league-score-label">correct</div>
-          </div>
-          <div class="league-level">L${row.level}</div>
-        </div>`;
+  // ---------- standings render ----------
+  function renderEmpty() {
+    podiumEl.innerHTML = `
+      <div class="league-empty">
+        <div class="league-empty-emoji" aria-hidden="true">👋</div>
+        <h2 class="league-empty-title">No friends yet</h2>
+        <p class="league-empty-sub">Add a friend to start your league. They'll see your rank and you'll see theirs — friendly competition that keeps everyone practicing.</p>
+        <button type="button" class="btn btn-primary" data-go-add>Add your first friend</button>
+      </div>`;
+    listEl.innerHTML = '';
+    youCardEl.hidden = true;
+    footEl.hidden = true;
+    const btn = podiumEl.querySelector('[data-go-add]');
+    if (btn) btn.addEventListener('click', openAddFriend);
+  }
+
+  function podiumCard(row, slot /* 1 | 2 | 3 */) {
+    const youCls = row.isSelf ? ' is-self' : '';
+    const tier   = slot === 1 ? 'gold' : slot === 2 ? 'silver' : 'bronze';
+    const medal  = slot === 1 ? '👑'   : slot === 2 ? '🥈'      : '🥉';
+    const name   = esc(row.displayName);
+    const grade  = row.grade ? `<span class="podium-grade">${esc(gradeLabel(row.grade))}</span>` : '';
+    return `
+      <div class="podium-card podium-card--${tier}${youCls}" data-slot="${slot}">
+        <div class="podium-medal" aria-hidden="true">${medal}</div>
+        ${avatarHtml(row, 'lg')}
+        <div class="podium-name">${name}${row.isSelf ? '<span class="league-you-chip">you</span>' : ''}</div>
+        <div class="podium-stat">
+          <span class="podium-stat-num">${row.weeklyCorrect}</span>
+          <span class="podium-stat-label">this week</span>
+        </div>
+        <div class="podium-foot">${grade} · L${row.level}</div>
+      </div>`;
+  }
+
+  function renderPodium(top3) {
+    // Display order: 2nd, 1st, 3rd (so the gold card sits center, raised).
+    const slots = [top3[1], top3[0], top3[2]];
+    const html = slots.map((r, i) => {
+      if (!r) return '<div class="podium-card podium-card--empty" aria-hidden="true"></div>';
+      const slot = (i === 1) ? 1 : (i === 0 ? 2 : 3);
+      return podiumCard(r, slot);
     }).join('');
-    root.innerHTML = `
-      <div class="league-board">${tableHtml}</div>
-      <p class="league-foot">Ranked by lifetime correct answers. Keep practicing to climb!</p>`;
+    podiumEl.innerHTML = `<div class="league-podium-row">${html}</div>`;
   }
 
-  // ---------- add-friend tab ----------
-  function renderAdd() {
-    const me = window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser();
-    const myUsername = (me && me.username) || '';
-    root.innerHTML = `
-      <div class="league-add">
-        <form class="league-add-form" id="league-add-form" autocomplete="off">
-          <label class="league-add-label" for="league-add-input">Add a friend by username</label>
-          <div class="league-add-row">
-            <input type="text" id="league-add-input" class="league-add-input" placeholder="username" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="40" required />
-            <button type="submit" class="btn btn-primary league-add-btn">Send</button>
+  function renderListRow(row) {
+    const youCls = row.isSelf ? ' is-self' : '';
+    const total  = row._totalCount || 0;
+    const zoneCls = (total >= 6 && row.rank <= Math.ceil(total * 0.4)) ? ' zone-up'
+                  : (total >= 8 && row.rank > total - Math.ceil(total * 0.25)) ? ' zone-down'
+                  : '';
+    const grade  = row.grade ? `<span class="league-grade-chip">${esc(gradeLabel(row.grade))}</span>` : '';
+    const lifetime = (row.lifetimeCorrect || 0).toLocaleString();
+    return `
+      <div class="league-row${youCls}${zoneCls}" data-username="${esc(row.username)}">
+        <div class="league-row-rank">
+          <span class="league-rank-num">${row.rank}</span>
+          ${movementHtml(row.username, row.rank)}
+        </div>
+        ${avatarHtml(row, 'md')}
+        <div class="league-row-identity">
+          <div class="league-row-name">
+            <span class="league-name-text">${esc(row.displayName)}</span>
+            ${row.isSelf ? '<span class="league-you-chip">you</span>' : ''}
+            ${grade}
           </div>
-          <p class="league-add-hint">Lowercase letters, numbers, underscores, dots, and dashes. Case-insensitive.</p>
-          <p class="league-add-status" id="league-add-status"></p>
-        </form>
-
-        <div class="league-share">
-          <div class="league-share-label">Your username — share it so friends can add you</div>
-          <div class="league-share-row">
-            <code class="league-share-code">${esc(myUsername || '— sign in —')}</code>
-            <button type="button" class="btn btn-secondary league-share-copy" data-copy="${esc(myUsername)}" ${myUsername ? '' : 'disabled'}>Copy</button>
+          <div class="league-row-meta">
+            <span class="league-row-week">+${row.weeklyCorrect} this week</span>
+            <span class="league-row-life">· ${lifetime} all-time</span>
+            ${row.streak > 1 ? `<span class="league-row-streak">· 🔥 ${row.streak}d</span>` : ''}
           </div>
         </div>
+        <div class="league-row-level">L${row.level}</div>
       </div>`;
+  }
 
-    const form = document.getElementById('league-add-form');
-    const input = document.getElementById('league-add-input');
-    const status = document.getElementById('league-add-status');
+  function renderYouCard(rows) {
+    const me = rows.find(r => r.isSelf);
+    if (!me || me.rank <= 3) { youCardEl.hidden = true; return; }
+    const above = rows.find(r => r.rank === me.rank - 1);
+    const gap = above ? Math.max(0, (above.weeklyCorrect || 0) - (me.weeklyCorrect || 0)) : 0;
+    const climbCopy = above
+      ? `<strong>${gap}</strong> correct away from <span class="you-card-target">${esc(above.displayName)}</span>`
+      : `<strong>Lead</strong> your league — answer questions to stay on top!`;
+    youCardEl.innerHTML = `
+      <div class="you-card-rank-block">
+        <div class="you-card-rank">#${me.rank}</div>
+        <div class="you-card-rank-label">your rank</div>
+      </div>
+      ${avatarHtml(me, 'md')}
+      <div class="you-card-body">
+        <div class="you-card-name">${esc(me.displayName)} <span class="league-you-chip">you</span></div>
+        <div class="you-card-copy">${climbCopy}</div>
+      </div>
+      <a class="you-card-cta" href="practice.html">Practice →</a>`;
+    youCardEl.hidden = false;
+  }
+
+  function renderStandings(payload) {
+    const rows = (payload && payload.league) || [];
+    rows.forEach(r => { r._totalCount = rows.length; });
+
+    if (rows.length === 0 || (rows.length === 1 && rows[0].isSelf)) {
+      renderEmpty();
+      return;
+    }
+
+    // Persist a snapshot so movement arrows work day-over-day.
+    persistSnapshot(rows);
+
+    // Top 3 + remaining
+    if (rows.length >= 3) {
+      renderPodium(rows.slice(0, 3));
+      const rest = rows.slice(3);
+      listEl.innerHTML = rest.map(renderListRow).join('');
+    } else {
+      podiumEl.innerHTML = '';
+      listEl.innerHTML = rows.map(renderListRow).join('');
+    }
+
+    renderYouCard(rows);
+    footEl.hidden = false;
+  }
+
+  // ---------- requests banner ----------
+  function renderRequestsBanner(friendList) {
+    const incoming = (friendList && Array.isArray(friendList.incoming)) ? friendList.incoming : [];
+    if (incoming.length === 0) {
+      bannerEl.hidden = true;
+      return;
+    }
+    bannerEl.hidden = false;
+    const n = incoming.length;
+    const who = incoming.slice(0, 2).map(r => r.displayName || r.peer).join(', ');
+    const more = n > 2 ? ` and ${n - 2} more` : '';
+    bannerTxt.textContent = `${who}${more} ${n === 1 ? 'wants' : 'want'} to be your friend.`;
+  }
+
+  // ---------- bottom sheet (add friend + requests) ----------
+  function openSheet(initialTab) {
+    sheetEl.hidden = false;
+    document.body.classList.add('league-sheet-open');
+    renderSheet(initialTab || 'add');
+  }
+  function closeSheet() {
+    sheetEl.hidden = true;
+    document.body.classList.remove('league-sheet-open');
+  }
+  if (sheetBack)  sheetBack.addEventListener('click', closeSheet);
+  if (sheetClose) sheetClose.addEventListener('click', closeSheet);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !sheetEl.hidden) closeSheet();
+  });
+  if (addBtn)     addBtn.addEventListener('click', () => openSheet('add'));
+  if (bannerBtn)  bannerBtn.addEventListener('click', () => openSheet('requests'));
+  function openAddFriend() { openSheet('add'); }
+
+  function renderSheet(activeTab) {
+    const fl = cache.friendList || { friends: [], incoming: [], outgoing: [] };
+    const me = window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser();
+    const myUsername = (me && me.username) || '';
+
+    sheetBody.innerHTML = `
+      <div class="league-sheet-tabs">
+        <button type="button" class="league-sheet-tab" data-sheet-tab="add">Add friend</button>
+        <button type="button" class="league-sheet-tab" data-sheet-tab="requests">
+          Requests
+          ${fl.incoming.length > 0 ? `<span class="league-sheet-tab-dot">${fl.incoming.length}</span>` : ''}
+        </button>
+        <button type="button" class="league-sheet-tab" data-sheet-tab="friends">Friends (${fl.friends.length})</button>
+      </div>
+      <div id="league-sheet-content"></div>`;
+    sheetBody.querySelectorAll('.league-sheet-tab').forEach(b => {
+      b.classList.toggle('league-sheet-tab--active', b.getAttribute('data-sheet-tab') === activeTab);
+      b.addEventListener('click', () => renderSheet(b.getAttribute('data-sheet-tab')));
+    });
+    const content = document.getElementById('league-sheet-content');
+    if (activeTab === 'add')       content.innerHTML = renderAddTabHtml(myUsername);
+    else if (activeTab === 'requests') content.innerHTML = renderRequestsTabHtml(fl);
+    else                           content.innerHTML = renderFriendsTabHtml(fl);
+    wireSheet(content, activeTab, myUsername);
+  }
+
+  function renderAddTabHtml(myUsername) {
+    return `
+      <form class="league-add-form" id="league-add-form" autocomplete="off">
+        <label class="league-add-label" for="league-add-input">Friend's username</label>
+        <div class="league-add-row">
+          <input type="text" id="league-add-input" class="league-add-input" placeholder="username" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="40" required />
+          <button type="submit" class="btn btn-primary league-add-btn">Send</button>
+        </div>
+        <p class="league-add-hint">Lowercase letters, numbers, underscores, dots, dashes.</p>
+        <p class="league-add-status" id="league-add-status"></p>
+      </form>
+      <div class="league-share">
+        <div class="league-share-label">Your username — share so friends can add you</div>
+        <div class="league-share-row">
+          <code class="league-share-code">${esc(myUsername || '— sign in —')}</code>
+          <button type="button" class="btn btn-secondary league-share-copy" data-copy="${esc(myUsername)}" ${myUsername ? '' : 'disabled'}>Copy</button>
+        </div>
+      </div>`;
+  }
+  function renderRequestsTabHtml(fl) {
+    const incoming = fl.incoming || [];
+    const outgoing = fl.outgoing || [];
+    const incomingHtml = incoming.length === 0
+      ? `<p class="league-section-empty">No incoming requests.</p>`
+      : incoming.map(row => `
+          <div class="league-req-row" data-username="${esc(row.peer)}">
+            ${avatarHtml({ displayName: row.displayName || row.peer, username: row.peer, avatarEmoji: row.avatarEmoji || null }, 'sm')}
+            <div class="league-identity">
+              <div class="league-name">${esc(row.displayName || row.peer)}</div>
+              <div class="league-meta-thin">@${esc(row.peer)}</div>
+            </div>
+            <div class="league-req-actions">
+              <button type="button" class="btn btn-primary league-req-accept" data-target="${esc(row.peer)}">Accept</button>
+              <button type="button" class="btn btn-secondary league-req-decline" data-target="${esc(row.peer)}">Decline</button>
+            </div>
+          </div>`).join('');
+    const outgoingHtml = outgoing.length === 0
+      ? `<p class="league-section-empty">No outgoing requests waiting.</p>`
+      : outgoing.map(row => `
+          <div class="league-req-row league-req-row--out" data-username="${esc(row.peer)}">
+            ${avatarHtml({ displayName: row.displayName || row.peer, username: row.peer, avatarEmoji: null }, 'sm')}
+            <div class="league-identity">
+              <div class="league-name">${esc(row.displayName || row.peer)}</div>
+              <div class="league-meta-thin">Waiting for them to accept</div>
+            </div>
+            <button type="button" class="btn btn-secondary league-req-cancel" data-target="${esc(row.peer)}">Cancel</button>
+          </div>`).join('');
+    return `
+      <section class="league-section">
+        <h3 class="league-section-title">Incoming <span class="league-section-count">${incoming.length}</span></h3>
+        ${incomingHtml}
+      </section>
+      <section class="league-section">
+        <h3 class="league-section-title">Outgoing <span class="league-section-count">${outgoing.length}</span></h3>
+        ${outgoingHtml}
+      </section>`;
+  }
+  function renderFriendsTabHtml(fl) {
+    const accepted = fl.friends || [];
+    if (accepted.length === 0) {
+      return `<p class="league-section-empty">No friends yet. Add some on the Add tab!</p>`;
+    }
+    return accepted.map(row => `
+      <div class="league-friend-row" data-username="${esc(row.peer)}">
+        ${avatarHtml({ displayName: row.displayName || row.peer, username: row.peer, avatarEmoji: null }, 'sm')}
+        <div class="league-identity">
+          <div class="league-name">${esc(row.displayName || row.peer)} ${row.online ? '<span class="league-online-dot" title="Online"></span>' : ''}</div>
+          <div class="league-meta-thin">@${esc(row.peer)}</div>
+        </div>
+        <button type="button" class="league-friend-remove" data-target="${esc(row.peer)}">Unfriend</button>
+      </div>`).join('');
+  }
+
+  function wireSheet(content, activeTab, myUsername) {
+    // Add-friend
+    const form = content.querySelector('#league-add-form');
     if (form) {
+      const input = content.querySelector('#league-add-input');
+      const status = content.querySelector('#league-add-status');
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const target = (input.value || '').trim().toLowerCase();
@@ -198,31 +437,28 @@
             status.textContent = "You're now friends!";
             status.className = 'league-add-status league-add-status--ok';
             input.value = '';
-            // Refresh data
             await Promise.all([loadLeague(), loadFriendList()]);
-            updateTabCounts();
-            notify("Friend added!", 'win');
+            renderRequestsBanner(cache.friendList);
+            renderStandings(cache.league);
           } else if (r && r.status === 'pending_out') {
-            status.textContent = `Request sent to ${target}. They'll see it next time they sign in.`;
+            status.textContent = `Request sent to @${target}.`;
             status.className = 'league-add-status league-add-status--ok';
             input.value = '';
             await loadFriendList();
-            updateTabCounts();
+            renderRequestsBanner(cache.friendList);
+            renderSheet('add');
           } else if (r && r.error) {
             status.textContent = r.error;
             status.className = 'league-add-status league-add-status--err';
-          } else {
-            status.textContent = 'Done.';
-            status.className = 'league-add-status league-add-status--ok';
           }
         } catch (err) {
-          status.textContent = (err && err.message) || 'User not found, or network error.';
+          status.textContent = (err && err.message) || 'User not found.';
           status.className = 'league-add-status league-add-status--err';
         }
       });
     }
-
-    const copyBtn = root.querySelector('.league-share-copy');
+    // Copy username
+    const copyBtn = content.querySelector('.league-share-copy');
     if (copyBtn) {
       copyBtn.addEventListener('click', async () => {
         const val = copyBtn.getAttribute('data-copy') || '';
@@ -231,177 +467,74 @@
           await navigator.clipboard.writeText(val);
           copyBtn.textContent = 'Copied ✓';
           setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1800);
-        } catch (_) {
-          // Fallback: select the code element so the kid can long-press → copy
-          const code = root.querySelector('.league-share-code');
-          if (code && window.getSelection) {
-            const range = document.createRange();
-            range.selectNodeContents(code);
-            const sel = window.getSelection();
-            sel.removeAllRanges();
-            sel.addRange(range);
-          }
-        }
+        } catch (_) {}
       });
     }
-  }
-
-  // ---------- requests tab ----------
-  function renderRequests() {
-    const fl = cache.friendList;
-    if (!fl) {
-      root.innerHTML = `<div class="card" style="max-width:680px;padding:24px;color:var(--muted);">Loading…</div>`;
-      return;
-    }
-    const incoming = Array.isArray(fl.incoming) ? fl.incoming : [];
-    const outgoing = Array.isArray(fl.outgoing) ? fl.outgoing : [];
-    const accepted = Array.isArray(fl.friends) ? fl.friends : [];
-
-    const incomingHtml = incoming.length === 0
-      ? `<p class="league-section-empty">No incoming requests.</p>`
-      : incoming.map(row => `
-          <div class="league-req-row" data-username="${esc(row.peer)}">
-            <div class="league-avatar">${esc((row.displayName || row.peer).charAt(0).toUpperCase())}</div>
-            <div class="league-identity">
-              <div class="league-name">${esc(row.displayName || row.peer)}</div>
-              <div class="league-meta-thin">@${esc(row.peer)}</div>
-            </div>
-            <div class="league-req-actions">
-              <button type="button" class="btn btn-primary league-req-accept" data-target="${esc(row.peer)}">Accept</button>
-              <button type="button" class="btn btn-secondary league-req-decline" data-target="${esc(row.peer)}">Decline</button>
-            </div>
-          </div>`).join('');
-
-    const outgoingHtml = outgoing.length === 0
-      ? `<p class="league-section-empty">No outgoing requests waiting.</p>`
-      : outgoing.map(row => `
-          <div class="league-req-row league-req-row--out" data-username="${esc(row.peer)}">
-            <div class="league-avatar">${esc((row.displayName || row.peer).charAt(0).toUpperCase())}</div>
-            <div class="league-identity">
-              <div class="league-name">${esc(row.displayName || row.peer)}</div>
-              <div class="league-meta-thin">Waiting for them to accept</div>
-            </div>
-            <button type="button" class="btn btn-secondary league-req-cancel" data-target="${esc(row.peer)}">Cancel</button>
-          </div>`).join('');
-
-    const acceptedHtml = accepted.length === 0
-      ? `<p class="league-section-empty">No friends yet.</p>`
-      : accepted.map(row => `
-          <div class="league-friend-row" data-username="${esc(row.peer)}">
-            <div class="league-avatar">${esc((row.displayName || row.peer).charAt(0).toUpperCase())}</div>
-            <div class="league-identity">
-              <div class="league-name">${esc(row.displayName || row.peer)} ${row.online ? '<span class="league-online-dot" title="Online now"></span>' : ''}</div>
-              <div class="league-meta-thin">@${esc(row.peer)}</div>
-            </div>
-            <button type="button" class="btn btn-link league-friend-remove" data-target="${esc(row.peer)}" aria-label="Remove friend">Unfriend</button>
-          </div>`).join('');
-
-    root.innerHTML = `
-      <div class="league-requests">
-        <section class="league-section">
-          <h3 class="league-section-title">Incoming <span class="league-section-count">${incoming.length}</span></h3>
-          ${incomingHtml}
-        </section>
-        <section class="league-section">
-          <h3 class="league-section-title">Outgoing <span class="league-section-count">${outgoing.length}</span></h3>
-          ${outgoingHtml}
-        </section>
-        <section class="league-section">
-          <h3 class="league-section-title">Your friends <span class="league-section-count">${accepted.length}</span></h3>
-          ${acceptedHtml}
-        </section>
-      </div>`;
-
-    // Wire actions.
-    root.querySelectorAll('.league-req-accept').forEach(b => {
+    // Requests
+    content.querySelectorAll('.league-req-accept').forEach(b => {
       b.addEventListener('click', async () => {
         const target = b.getAttribute('data-target');
         b.disabled = true;
-        try {
-          await api('friendRespond', { target, decision: 'accept' });
-          await Promise.all([loadLeague(), loadFriendList()]);
-          updateTabCounts();
-          render();
-          notify(`You and ${target} are now friends!`, 'win');
-        } catch (e) {
-          b.disabled = false;
-          notify('Could not accept — try again.', 'err');
-        }
+        try { await api('friendRespond', { target, decision: 'accept' }); } catch (_) {}
+        await Promise.all([loadLeague(), loadFriendList()]);
+        renderRequestsBanner(cache.friendList);
+        renderStandings(cache.league);
+        renderSheet('requests');
       });
     });
-    root.querySelectorAll('.league-req-decline, .league-req-cancel, .league-friend-remove').forEach(b => {
+    content.querySelectorAll('.league-req-decline, .league-req-cancel, .league-friend-remove').forEach(b => {
       b.addEventListener('click', async () => {
         const target = b.getAttribute('data-target');
         const isUnfriend = b.classList.contains('league-friend-remove');
-        if (isUnfriend && !confirm(`Remove ${target} from your friends?`)) return;
+        if (isUnfriend && !confirm(`Unfriend ${target}?`)) return;
         b.disabled = true;
         try {
-          if (isUnfriend) {
-            await api('friendUnfriend', { target });
-          } else if (b.classList.contains('league-req-decline')) {
+          if (b.classList.contains('league-req-decline')) {
             await api('friendRespond', { target, decision: 'decline' });
           } else {
-            // Cancel outgoing — same backend path as unfriend
             await api('friendUnfriend', { target });
           }
-          await Promise.all([loadLeague(), loadFriendList()]);
-          updateTabCounts();
-          render();
-        } catch (e) {
-          b.disabled = false;
-          notify('Could not complete — try again.', 'err');
-        }
+        } catch (_) {}
+        await Promise.all([loadLeague(), loadFriendList()]);
+        renderRequestsBanner(cache.friendList);
+        renderStandings(cache.league);
+        renderSheet(activeTab === 'friends' ? 'friends' : 'requests');
       });
     });
   }
 
-  // ---------- locked state for K-2 ----------
+  // ---------- locked / error ----------
   function renderLocked() {
-    root.innerHTML = `
+    podiumEl.innerHTML = `
       <div class="league-empty">
         <div class="league-empty-emoji" aria-hidden="true">🔒</div>
         <h2 class="league-empty-title">Friend leagues unlock in Grade 3</h2>
-        <p class="league-empty-sub">Younger kids practice on their own pace. Once your kid is in Grade 3 or above, leagues, friend requests, and weekly rankings unlock automatically.</p>
+        <p class="league-empty-sub">Younger kids practice on their own pace. Once your kid is Grade 3 or above, friend leagues + weekly rankings unlock automatically.</p>
         <a class="btn btn-primary" href="index.html">Back to dashboard</a>
       </div>`;
-    if (tabsEl) tabsEl.style.display = 'none';
+    listEl.innerHTML = '';
+    youCardEl.hidden = true;
+    footEl.hidden = true;
+    if (addBtn) addBtn.style.display = 'none';
   }
-
-  // ---------- error / unauth states ----------
   function renderError(msg) {
-    root.innerHTML = `
-      <div class="card" style="max-width:680px;padding:24px;">
-        <p>${esc(msg)}</p>
-        <p><a class="btn btn-primary" href="index.html">Back to home</a></p>
-      </div>`;
+    podiumEl.innerHTML = `<div class="card" style="max-width:680px;padding:24px;margin:18px auto;color:rgba(255,255,255,0.65);">${esc(msg)}</div>`;
+    listEl.innerHTML = '';
   }
 
-  // ---------- top-level render dispatcher ----------
-  function render() {
-    if (activeTab === 'standings') return renderStandings();
-    if (activeTab === 'add')       return renderAdd();
-    if (activeTab === 'requests')  return renderRequests();
-  }
-
-  // ---------- data loaders ----------
+  // ---------- data ----------
+  const cache = { league: null, friendList: null };
   async function loadLeague() {
-    try {
-      const r = await api('friendLeague', {});
-      cache.league = r;
-    } catch (e) {
-      cache.league = { league: [], count: 0 };
-    }
+    try { cache.league = await api('friendLeague', {}); }
+    catch (e) { cache.league = { league: [], count: 0 }; }
   }
   async function loadFriendList() {
-    try {
-      const r = await api('friendList', {});
-      cache.friendList = r;
-    } catch (e) {
-      cache.friendList = { friends: [], incoming: [], outgoing: [] };
-    }
+    try { cache.friendList = await api('friendList', {}); }
+    catch (e) { cache.friendList = { friends: [], incoming: [], outgoing: [] }; }
   }
 
   // ---------- boot ----------
+  setWeekCountdown();
   async function boot() {
     if (!window.STAARAuth || !window.STAARAuth.currentUser) {
       renderError('Please sign in first.');
@@ -416,20 +549,15 @@
       renderLocked();
       return;
     }
-    // Load both data sets in parallel, then render.
     await Promise.all([loadLeague(), loadFriendList()]);
-    updateTabCounts();
-    render();
-    // Re-pull friend data when the kid returns to the tab (e.g. after
-    // signing in on another device or accepting a request elsewhere).
+    renderRequestsBanner(cache.friendList);
+    renderStandings(cache.league);
+
     document.addEventListener('visibilitychange', async () => {
       if (document.visibilityState === 'visible') {
-        await loadFriendList();
-        if (activeTab === 'requests' || activeTab === 'standings') {
-          await loadLeague();
-        }
-        updateTabCounts();
-        render();
+        await Promise.all([loadLeague(), loadFriendList()]);
+        renderRequestsBanner(cache.friendList);
+        renderStandings(cache.league);
       }
     });
   }
@@ -438,8 +566,6 @@
     boot();
   } else {
     document.addEventListener('gradeearn:auth-changed', boot, { once: true });
-    setTimeout(() => {
-      if (root.innerHTML.indexOf('ge-skel') >= 0) boot();
-    }, 600);
+    setTimeout(() => { if (!cache.league) boot(); }, 600);
   }
 })();

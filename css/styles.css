@@ -17888,229 +17888,493 @@ body.placement-page {
   .placement-grade-label { font-size: 0.85rem; }
 }
 
+
 /* ============================================================
-   FRIEND LEAGUE — Tier 6 AF (full build May 11)
+   FRIEND LEAGUE — v3 redesign (May 11 committee)
+   Podium for top-3, you-card for kid's spot, movement arrows,
+   promotion/demotion zones, bottom-sheet for add+requests.
    ============================================================ */
 body.league-page { background: var(--bg, #060d1f); color: #fff; }
-.league-hero {
-  max-width: 680px;
-  margin: 22px auto 8px;
-}
-.league-hero h1 {
-  margin: 0 0 6px;
-  font-size: 1.7rem;
-  font-weight: 700;
-}
-.league-sub {
-  margin: 0 0 12px;
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.95rem;
-}
-.league-tabs {
+body.league-page .container { max-width: 760px; }
+
+.league-shell { margin: 18px auto 80px; max-width: 700px; }
+.league-eyebrow-row {
   display: flex;
-  gap: 6px;
-  margin: 18px auto 20px;
-  max-width: 680px;
-  padding: 4px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
 }
-.league-tab {
-  flex: 1;
-  padding: 10px 14px;
-  background: transparent;
-  border: 0;
-  border-radius: 8px;
-  color: rgba(255, 255, 255, 0.62);
-  font-weight: 500;
-  font-size: 0.92rem;
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+.league-eyebrow {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-.league-tab:hover { color: rgba(255, 255, 255, 0.9); }
-.league-tab--active {
-  background: rgba(251, 191, 36, 0.14);
-  color: #fde68a;
-}
-.league-tab-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 6px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  background: rgba(255, 255, 255, 0.08);
+  gap: 8px;
+  padding: 7px 14px;
+  background: rgba(251, 191, 36, 0.08);
+  border: 1px solid rgba(251, 191, 36, 0.24);
   border-radius: 999px;
-  color: rgba(255, 255, 255, 0.7);
-}
-.league-tab-count--alert {
-  background: rgba(239, 68, 68, 0.25);
-  color: #fecaca;
-  display: none;
-}
-.league-tab--active .league-tab-count {
-  background: rgba(251, 191, 36, 0.2);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: #fde68a;
+}
+.league-eyebrow-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #fbbf24;
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.18), 0 0 10px rgba(251, 191, 36, 0.45);
+  animation: hero-live-pulse 2.4s ease-in-out infinite;
+}
+.league-eyebrow-sub {
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: rgba(253, 230, 138, 0.7);
 }
 
-.league-board {
+.btn-add-friend {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.btn-add-friend:hover { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.22); }
+
+/* Pending requests banner */
+.league-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 18px auto 0;
+  max-width: 700px;
+  padding: 10px 14px;
+  background: linear-gradient(180deg, rgba(96, 165, 250, 0.12), rgba(59, 130, 246, 0.08));
+  border: 1px solid rgba(96, 165, 250, 0.4);
+  border-radius: 12px;
+  font-size: 0.9rem;
+}
+.league-banner-icon { font-size: 1.2rem; }
+.league-banner-text { flex: 1; color: #dbeafe; }
+.league-banner-btn {
+  padding: 6px 14px;
+  background: #3b82f6;
+  border: 0;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.league-banner-btn:hover { background: #2563eb; }
+
+/* Avatar (replaces flat letter circles) */
+.league-av {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+.league-av--letter { /* gradient bg set inline per username hash */ }
+.league-av--emoji  { background: rgba(255, 255, 255, 0.06); }
+.league-av--sm { width: 36px; height: 36px; font-size: 1rem; }
+.league-av--md { width: 44px; height: 44px; font-size: 1.1rem; }
+.league-av--lg { width: 64px; height: 64px; font-size: 1.7rem; box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3); }
+
+/* ----- PODIUM (top 3) ----- */
+.league-podium { margin: 24px auto 0; }
+.league-podium-row {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr 1fr;
+  gap: 8px;
+  align-items: end;
+  padding: 14px 6px 0;
+}
+.podium-card {
+  position: relative;
+  padding: 18px 12px 16px;
+  background: linear-gradient(180deg, rgba(13, 34, 73, 0.65), rgba(13, 34, 73, 0.4));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  animation: podium-rise 380ms cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+}
+.podium-card[data-slot="1"] {
+  /* Center, raised, gold */
+  background: linear-gradient(180deg, rgba(251, 191, 36, 0.18), rgba(251, 191, 36, 0.06));
+  border-color: rgba(251, 191, 36, 0.55);
+  padding-top: 24px;
+  padding-bottom: 22px;
+  box-shadow: 0 12px 36px rgba(251, 191, 36, 0.22), 0 0 0 1px rgba(251, 191, 36, 0.18) inset;
+  animation-delay: 60ms;
+}
+.podium-card[data-slot="2"] {
+  border-color: rgba(203, 213, 225, 0.32);
+  animation-delay: 0ms;
+}
+.podium-card[data-slot="3"] {
+  border-color: rgba(217, 119, 6, 0.32);
+  animation-delay: 120ms;
+}
+.podium-card--empty {
+  background: rgba(13, 34, 73, 0.2);
+  border-style: dashed;
+  min-height: 120px;
+}
+.podium-card.is-self { box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.45); }
+.podium-medal {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+.podium-card[data-slot="1"] .podium-medal { font-size: 2rem; }
+.podium-card[data-slot="1"] .league-av--lg { width: 72px; height: 72px; }
+.podium-name {
+  font-weight: 600;
+  font-size: 0.94rem;
+  color: rgba(255, 255, 255, 0.95);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.podium-stat-num {
+  display: block;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--gold, #fbbf24);
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.podium-stat-label {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.5);
+}
+.podium-foot {
+  font-size: 0.74rem;
+  color: rgba(255, 255, 255, 0.55);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.podium-grade {
+  padding: 1px 6px;
+  background: rgba(96, 165, 250, 0.16);
+  color: #93c5fd;
+  border-radius: 5px;
+  font-weight: 600;
+  font-size: 0.72rem;
+}
+@keyframes podium-rise {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ----- YOU-CARD (sticky beneath podium when kid isn't in top 3) ----- */
+.league-you-card {
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+  margin: 18px 0 14px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.16), rgba(59, 130, 246, 0.08));
+  border: 1px solid rgba(96, 165, 250, 0.42);
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.12);
+}
+.you-card-rank-block {
+  text-align: center;
+  padding-right: 6px;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+.you-card-rank {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #93c5fd;
+  line-height: 1;
+}
+.you-card-rank-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: rgba(147, 197, 253, 0.7);
+  margin-top: 2px;
+}
+.you-card-body { min-width: 0; }
+.you-card-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.95);
+}
+.you-card-copy {
+  font-size: 0.85rem;
+  color: rgba(219, 234, 254, 0.85);
+  margin-top: 2px;
+}
+.you-card-copy strong { color: #fff; font-weight: 700; }
+.you-card-target { color: #93c5fd; font-weight: 600; }
+.you-card-cta {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  background: #3b82f6;
+  border-radius: 999px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.you-card-cta:hover { background: #2563eb; }
+
+/* ----- LIST ROWS (rank 4+) ----- */
+.league-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  max-width: 680px;
-  margin: 0 auto;
+  margin: 18px 0 0;
 }
 .league-row {
   display: grid;
-  grid-template-columns: 44px 40px 1fr auto 44px;
+  grid-template-columns: 52px 44px 1fr 44px;
   align-items: center;
   gap: 12px;
-  padding: 14px 16px;
+  padding: 12px 14px;
   background: rgba(13, 34, 73, 0.45);
   border: 1px solid rgba(255, 255, 255, 0.06);
+  border-left-width: 3px;
   border-radius: 12px;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition: border-color 0.15s ease, transform 0.15s ease;
 }
 .league-row.is-self {
-  background: rgba(251, 191, 36, 0.08);
-  border-color: rgba(251, 191, 36, 0.32);
+  background: rgba(96, 165, 250, 0.12);
+  border-color: rgba(96, 165, 250, 0.45);
+  border-left-color: #60a5fa;
 }
-.league-rank {
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.55);
-  text-align: center;
+.league-row.zone-up {
+  border-left-color: rgba(52, 211, 153, 0.85);
 }
-.league-rank.is-medal { font-size: 1.4rem; }
-.league-avatar {
-  width: 36px;
-  height: 36px;
-  display: inline-flex;
+.league-row.zone-down {
+  border-left-color: rgba(251, 113, 133, 0.7);
+}
+.league-row-rank {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  background: rgba(251, 191, 36, 0.15);
-  border-radius: 50%;
-  font-size: 1.1rem;
-  color: #fde68a;
-  font-weight: 600;
+  gap: 2px;
 }
-.league-identity {
-  min-width: 0;
+.league-rank-num {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.78);
 }
-.league-name-row {
+.league-mv {
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.02em;
+}
+.league-mv--up   { background: rgba(52, 211, 153, 0.18); color: #6ee7b7; }
+.league-mv--down { background: rgba(251, 113, 133, 0.18); color: #fda4af; }
+.league-mv--new  { background: rgba(96, 165, 250, 0.18); color: #93c5fd; font-size: 0.62rem; }
+.league-mv--same { color: rgba(255, 255, 255, 0.35); }
+.league-row-identity { min-width: 0; }
+.league-row-name {
   display: flex;
   align-items: center;
   gap: 6px;
+  white-space: nowrap;
   overflow: hidden;
 }
-.league-name {
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.92);
+.league-name-text {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+}
+.league-row-meta {
+  margin-top: 3px;
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.5);
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.league-row-week { color: rgba(167, 243, 208, 0.9); }
+.league-row-streak { color: rgba(251, 191, 36, 0.9); }
+.league-row-level {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--gold, #fbbf24);
+  text-align: center;
+  padding: 5px 8px;
+  background: rgba(251, 191, 36, 0.08);
+  border-radius: 6px;
+  letter-spacing: -0.01em;
 }
 .league-you-chip {
   display: inline-block;
   padding: 2px 8px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  background: rgba(251, 191, 36, 0.18);
-  color: #fde68a;
+  font-size: 0.66rem;
+  font-weight: 700;
+  background: rgba(96, 165, 250, 0.25);
+  color: #93c5fd;
   border-radius: 999px;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   flex-shrink: 0;
 }
 .league-grade-chip {
   display: inline-block;
   padding: 2px 7px;
-  font-size: 0.7rem;
+  font-size: 0.66rem;
   font-weight: 600;
-  background: rgba(96, 165, 250, 0.16);
+  background: rgba(96, 165, 250, 0.14);
   color: #93c5fd;
   border-radius: 6px;
   flex-shrink: 0;
 }
-.league-meta {
-  display: flex;
-  gap: 10px;
-  font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.55);
-  margin-top: 3px;
-}
-.league-meta-week { color: rgba(167, 243, 208, 0.85); }
-.league-score {
-  text-align: right;
-  color: rgba(255, 255, 255, 0.85);
-  padding-left: 6px;
-}
-.league-score-num {
-  font-weight: 600;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 1rem;
-  color: #fff;
-}
-.league-score-label {
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.4);
-  margin-top: 1px;
-}
-.league-level {
-  font-size: 0.82rem;
-  color: var(--gold, #fbbf24);
-  font-weight: 600;
-  text-align: center;
-  padding: 6px 8px;
-  background: rgba(251, 191, 36, 0.08);
-  border-radius: 6px;
-  min-width: 36px;
-}
 .league-foot {
-  margin: 18px auto 0;
-  max-width: 680px;
+  margin: 22px 0 0;
   text-align: center;
-  font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.4);
 }
 
+/* ----- EMPTY STATE ----- */
 .league-empty {
   max-width: 520px;
   margin: 24px auto;
-  padding: 32px 26px;
+  padding: 36px 26px;
   background: rgba(13, 34, 73, 0.45);
   border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 14px;
+  border-radius: 16px;
   text-align: center;
 }
-.league-empty-emoji { font-size: 2.4rem; margin-bottom: 10px; }
-.league-empty-title { margin: 0 0 8px; font-size: 1.2rem; font-weight: 600; }
+.league-empty-emoji { font-size: 3rem; margin-bottom: 10px; }
+.league-empty-title { margin: 0 0 8px; font-size: 1.25rem; font-weight: 700; }
 .league-empty-sub { margin: 0 0 18px; color: rgba(255, 255, 255, 0.6); font-size: 0.95rem; line-height: 1.55; }
 
-.league-add {
-  max-width: 520px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
+/* ----- BOTTOM SHEET ----- */
+.league-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
 }
+.league-sheet-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  animation: sheet-fade 200ms ease-out;
+}
+.league-sheet-panel {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  max-width: 600px;
+  margin: 0 auto;
+  background: linear-gradient(180deg, #0d2249, #061230);
+  border: 1px solid rgba(251, 191, 36, 0.22);
+  border-bottom: 0;
+  border-radius: 18px 18px 0 0;
+  padding: 16px 22px 28px;
+  box-shadow: 0 -16px 50px rgba(0, 0, 0, 0.55);
+  max-height: 86vh;
+  overflow-y: auto;
+  animation: sheet-rise 260ms cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+.league-sheet-grab {
+  width: 40px; height: 4px;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  margin: 0 auto 14px;
+}
+.league-sheet-close {
+  position: absolute;
+  top: 12px; right: 16px;
+  width: 32px; height: 32px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+.league-sheet-close:hover { background: rgba(255, 255, 255, 0.12); }
+.league-sheet-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  margin-bottom: 18px;
+}
+.league-sheet-tab {
+  flex: 1;
+  padding: 9px 12px;
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+  font-size: 0.87rem;
+  cursor: pointer;
+  position: relative;
+}
+.league-sheet-tab--active {
+  background: rgba(251, 191, 36, 0.14);
+  color: #fde68a;
+}
+.league-sheet-tab-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px; height: 18px;
+  margin-left: 4px;
+  background: #ef4444;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+@keyframes sheet-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sheet-rise { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+body.league-sheet-open { overflow: hidden; }
+
+/* ----- ADD-FRIEND FORM in sheet ----- */
 .league-add-form {
-  padding: 22px;
-  background: rgba(13, 34, 73, 0.45);
+  padding: 18px;
+  background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 14px;
+  border-radius: 12px;
 }
 .league-add-label {
   display: block;
   margin-bottom: 10px;
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.85);
 }
@@ -18136,26 +18400,26 @@ body.league-page { background: var(--bg, #060d1f); color: #fff; }
 .league-add-btn { min-height: 44px; flex-shrink: 0; }
 .league-add-hint {
   margin: 8px 0 0;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   color: rgba(255, 255, 255, 0.45);
 }
 .league-add-status {
   margin: 12px 0 0;
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   min-height: 1.2em;
 }
 .league-add-status--ok { color: #a7f3d0; }
 .league-add-status--err { color: #fca5a5; }
-
 .league-share {
-  padding: 18px 22px;
-  background: rgba(13, 34, 73, 0.35);
+  margin-top: 16px;
+  padding: 16px 18px;
+  background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 12px;
 }
 .league-share-label {
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.65);
   margin-bottom: 10px;
 }
 .league-share-row {
@@ -18170,7 +18434,7 @@ body.league-page { background: var(--bg, #060d1f); color: #fff; }
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   color: #fde68a;
   user-select: all;
 }
@@ -18180,116 +18444,112 @@ body.league-page { background: var(--bg, #060d1f); color: #fff; }
   padding: 8px 16px;
 }
 
-.league-requests {
-  max-width: 580px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
-}
-.league-section { }
+/* ----- REQUESTS / FRIENDS in sheet ----- */
+.league-section { margin-bottom: 18px; }
 .league-section-title {
-  margin: 0 0 10px;
-  font-size: 0.92rem;
+  margin: 0 0 8px;
+  font-size: 0.9rem;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.85);
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
 }
 .league-section-count {
   display: inline-flex;
-  min-width: 22px;
-  height: 22px;
+  margin-left: 6px;
   padding: 0 7px;
+  height: 18px;
   align-items: center;
-  justify-content: center;
   background: rgba(255, 255, 255, 0.06);
   border-radius: 999px;
   font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.65);
-  font-weight: 600;
+  font-weight: 700;
 }
 .league-section-empty {
   margin: 0;
   padding: 10px 14px;
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   color: rgba(255, 255, 255, 0.45);
   font-style: italic;
 }
 .league-req-row, .league-friend-row {
   display: grid;
-  grid-template-columns: 40px 1fr auto;
-  gap: 12px;
+  grid-template-columns: auto 1fr auto;
+  gap: 10px;
   align-items: center;
-  padding: 12px 14px;
-  background: rgba(13, 34, 73, 0.45);
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 10px;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
-.league-req-row.league-req-row--out {
-  background: rgba(13, 34, 73, 0.25);
+.league-req-row--out {
+  background: rgba(255, 255, 255, 0.015);
   border-style: dashed;
 }
 .league-req-actions {
   display: flex;
   gap: 6px;
 }
-.league-req-actions .btn {
-  padding: 7px 14px;
-  min-height: 36px;
-  font-size: 0.85rem;
+.league-req-actions .btn { padding: 6px 12px; min-height: 32px; font-size: 0.82rem; }
+.league-req-cancel { padding: 6px 12px; min-height: 32px; font-size: 0.82rem; }
+.league-identity { min-width: 0; }
+.league-name {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.92rem;
 }
-.league-req-cancel, .league-friend-remove {
-  padding: 7px 12px;
-  min-height: 36px;
-  font-size: 0.85rem;
+.league-meta-thin {
+  margin-top: 2px;
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.45);
+  font-family: 'JetBrains Mono', monospace;
 }
 .league-friend-remove {
   background: transparent;
   border: 1px solid transparent;
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.78rem;
+  padding: 6px 10px;
   cursor: pointer;
-  border-radius: 999px;
-  font-weight: 500;
+  border-radius: 6px;
 }
 .league-friend-remove:hover {
   color: #fca5a5;
   background: rgba(239, 68, 68, 0.08);
-}
-.league-meta-thin {
-  margin-top: 2px;
-  font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.5);
-  font-family: 'JetBrains Mono', monospace;
 }
 .league-online-dot {
   display: inline-block;
   width: 8px; height: 8px;
   border-radius: 50%;
   background: #10b981;
-  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
   margin-left: 4px;
-  vertical-align: middle;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
 }
 
+/* ----- Mobile tightening ----- */
 @media (max-width: 480px) {
+  .league-eyebrow { font-size: 0.7rem; padding: 6px 12px; }
+  .btn-add-friend { font-size: 0.82rem; padding: 7px 12px; }
+  .league-podium-row { grid-template-columns: 1fr 1.05fr 1fr; gap: 4px; }
+  .podium-card { padding: 14px 6px 12px; }
+  .podium-card[data-slot="1"] { padding-top: 18px; padding-bottom: 18px; }
+  .podium-card .league-av--lg { width: 52px; height: 52px; font-size: 1.4rem; }
+  .podium-card[data-slot="1"] .league-av--lg { width: 60px; height: 60px; }
+  .podium-name { font-size: 0.82rem; }
+  .podium-stat-num { font-size: 1.3rem; }
   .league-row {
-    grid-template-columns: 32px 32px 1fr auto 38px;
+    grid-template-columns: 44px 36px 1fr 38px;
     gap: 8px;
-    padding: 12px 12px;
+    padding: 10px 10px;
   }
-  .league-avatar { width: 30px; height: 30px; font-size: 0.95rem; }
-  .league-name { font-size: 0.9rem; }
-  .league-score-num { font-size: 0.92rem; }
-  .league-meta { font-size: 0.72rem; gap: 8px; }
-  .league-tab { font-size: 0.85rem; padding: 8px 10px; }
-  .league-add-row { flex-direction: column; }
-  .league-add-btn { width: 100%; }
-  .league-share-row { flex-direction: column; align-items: stretch; }
-  .league-share-copy { width: 100%; }
+  .league-rank-num { font-size: 0.95rem; }
+  .league-row-meta { font-size: 0.72rem; gap: 3px; }
+  .league-row-level { font-size: 0.72rem; padding: 4px 6px; }
+  .you-card-rank { font-size: 1.35rem; }
+  .you-card-cta { padding: 7px 12px; font-size: 0.8rem; }
+  .league-sheet-panel { padding: 14px 16px 28px; }
 }
+
 
 /* ============================================================
    PARENT DASHBOARD — Tier 6 AA (May 10)

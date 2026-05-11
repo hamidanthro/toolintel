@@ -11,8 +11,8 @@
   <title>Friend League — GradeEarn</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=20260511c" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css?v=20260511d" />
 </head>
 <body class="league-page">
   <header class="site-header">
@@ -31,28 +31,45 @@
 
   <section>
     <div class="container">
-      <div class="league-hero">
-        <h1>🏆 Friend League</h1>
-        <p class="league-sub">See how you rank against your friends — this week and lifetime.</p>
+      <div id="league-requests-banner" class="league-banner" hidden>
+        <span class="league-banner-icon" aria-hidden="true">👋</span>
+        <span class="league-banner-text" id="league-requests-banner-text"></span>
+        <button type="button" class="league-banner-btn" id="league-banner-open">Review</button>
       </div>
 
-      <div class="league-tabs" role="tablist" aria-label="League sections">
-        <button type="button" class="league-tab league-tab--active" role="tab" data-tab="standings">Standings <span class="league-tab-count" id="tab-count-standings"></span></button>
-        <button type="button" class="league-tab" role="tab" data-tab="add">Add friend</button>
-        <button type="button" class="league-tab" role="tab" data-tab="requests">Requests <span class="league-tab-count league-tab-count--alert" id="tab-count-requests"></span></button>
-      </div>
-
-      <div id="league-root">
-        <div class="ge-skel-card" aria-busy="true" aria-label="Loading">
-          <div class="ge-skel ge-skel-line short" style="margin-bottom:14px;"></div>
-          <div class="ge-skel ge-skel-line long"></div>
-          <div class="ge-skel ge-skel-line medium"></div>
+      <div class="league-shell">
+        <div class="league-eyebrow-row">
+          <span class="league-eyebrow">
+            <span class="league-eyebrow-dot" aria-hidden="true"></span>
+            <span id="league-week-label">This week</span>
+            <span class="league-eyebrow-sub" id="league-week-countdown"></span>
+          </span>
+          <button type="button" class="btn-add-friend" id="btn-add-friend">
+            <span aria-hidden="true">+</span> Add friend
+          </button>
         </div>
+
+        <div id="league-podium" class="league-podium"></div>
+        <div id="league-you-card" class="league-you-card" hidden></div>
+        <div id="league-list" class="league-list"></div>
+
+        <p id="league-foot" class="league-foot" hidden>
+          Ranked by this week's correct answers. Lifetime correct shown alongside.
+        </p>
       </div>
     </div>
   </section>
 
+  <div id="league-sheet" class="league-sheet" hidden>
+    <div class="league-sheet-backdrop" id="league-sheet-backdrop" aria-hidden="true"></div>
+    <div class="league-sheet-panel" role="dialog" aria-modal="true" aria-labelledby="league-sheet-title">
+      <div class="league-sheet-grab" aria-hidden="true"></div>
+      <button type="button" class="league-sheet-close" id="league-sheet-close" aria-label="Close">✕</button>
+      <div id="league-sheet-body"></div>
+    </div>
+  </div>
+
   <script src="js/auth.js?v=20260511a"></script>
-  <script src="js/league.js?v=20260511a"></script>
+  <script src="js/league.js?v=20260511b"></script>
 </body>
 </html>
