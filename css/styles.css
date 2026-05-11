@@ -19113,3 +19113,157 @@ body.game-page {
 @media (max-width: 480px) {
   .family-row { grid-template-columns: 36px 1fr auto auto; gap: 8px; padding: 8px 10px; }
 }
+
+/* ============================================================
+   MEMORY MATCH (game #2)
+   Flippable card grid. Reuses .game-header, .game-opponents,
+   .game-invite-banner, .game-complete from word-connect.
+   ============================================================ */
+
+body.game-memory-match .game-main {
+  padding-top: 12px;
+}
+
+/* Live stats strip */
+.memory-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 0 14px 14px;
+  padding: 10px 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--r-card);
+}
+.memory-stat { text-align: center; }
+.memory-stat-num {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #fde68a;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.memory-stat-label {
+  font-size: 0.62rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+
+/* Card grid — columns set via CSS variable from JS */
+.memory-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--memory-cols, 4), 1fr);
+  gap: 10px;
+  padding: 0 14px;
+  max-width: 560px;
+  margin: 0 auto 14px;
+}
+
+.memory-card {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  aspect-ratio: 1 / 1;
+  perspective: 800px;
+  -webkit-tap-highlight-color: transparent;
+}
+.memory-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: block;
+  transform-style: preserve-3d;
+  transition: transform 360ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.memory-card.is-flipped .memory-card-inner,
+.memory-card.is-matched .memory-card-inner {
+  transform: rotateY(180deg);
+}
+.memory-card-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-button);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  user-select: none;
+  text-align: center;
+  padding: 6px;
+  word-break: break-word;
+  line-height: 1.15;
+}
+.memory-card-back {
+  background: linear-gradient(140deg, #1e3a8a 0%, #1e40af 50%, #1d4ed8 100%);
+  border: 1px solid rgba(253, 224, 71, 0.22);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+.memory-card-back-mark {
+  font-size: 1.6rem;
+  color: rgba(253, 224, 71, 0.55);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+.memory-card-front {
+  background: linear-gradient(140deg, #fde68a 0%, #fbbf24 60%, #f59e0b 100%);
+  color: #1e293b;
+  font-weight: 800;
+  font-size: var(--memory-front-font, 1.5rem);
+  transform: rotateY(180deg);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* Matched state — dim slightly, add a soft glow */
+.memory-card.is-matched {
+  cursor: default;
+  pointer-events: none;
+}
+.memory-card.is-matched .memory-card-front {
+  background: linear-gradient(140deg, rgba(167, 243, 208, 0.85) 0%, rgba(52, 211, 153, 0.95) 100%);
+  color: #064e3b;
+  border-color: rgba(52, 211, 153, 0.6);
+  box-shadow: 0 4px 12px rgba(52, 211, 153, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  opacity: 0.88;
+}
+
+/* Match pulse — fires for ~600ms after a successful pair */
+.memory-card.is-match-pulse .memory-card-inner {
+  animation: memory-match-pulse 600ms ease-out;
+}
+@keyframes memory-match-pulse {
+  0%   { transform: rotateY(180deg) scale(1); }
+  35%  { transform: rotateY(180deg) scale(1.08); }
+  100% { transform: rotateY(180deg) scale(1); }
+}
+
+/* Restart button row */
+.memory-actions {
+  display: flex;
+  justify-content: center;
+  padding: 4px 14px 18px;
+}
+
+/* Responsive sizing — keep cards comfortably tappable on phones */
+@media (max-width: 768px) {
+  .memory-grid { gap: 8px; padding: 0 12px; max-width: 480px; }
+  .memory-card-back-mark { font-size: 1.35rem; }
+}
+@media (max-width: 480px) {
+  .memory-stats { margin: 0 10px 10px; padding: 8px 6px; gap: 6px; }
+  .memory-stat-num { font-size: 1.15rem; }
+  .memory-stat-label { font-size: 0.58rem; }
+  .memory-grid { gap: 6px; padding: 0 10px; }
+  .memory-card-back-mark { font-size: 1.15rem; }
+}
+
+/* Tablet+ — widen and grow type a bit */
+@media (min-width: 769px) {
+  .memory-grid { max-width: 600px; gap: 12px; }
+  .memory-card-front { font-size: calc(var(--memory-front-font, 1.5rem) * 1.15); }
+}
