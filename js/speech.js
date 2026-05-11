@@ -158,31 +158,50 @@
   // "🐱🐱🐱🐱🐱" sounded like "cat face cat face cat face cat face cat face".
   // Convert runs to cardinal counts: "5 cats". Single emoji → name.
   // Decorations → strip.
+  //
+  // **Counting-context override (May 11)**: when the prompt asks the
+  // kid to COUNT the emoji ("How many 🐟 do you see?" / "Count the
+  // pictures..."), reading "3 fishes" out loud gives away the answer.
+  // We detect those prompts and strip emojis SILENTLY instead of
+  // converting to "N nouns". The kid still sees the emojis on screen
+  // and counts them themselves.
+  function _isCountingPrompt(text) {
+    if (typeof text !== 'string') return false;
+    const lower = text.toLowerCase();
+    return /\bhow many\b/.test(lower)
+        || /^\s*count\b/.test(lower)
+        || /\bcount the\b/.test(lower)
+        || /\bcount\s*:/.test(lower);
+  }
   function _stripEmojis(text) {
     if (typeof text !== 'string') return text;
-    // Match runs of identical-named emojis. Iterate emoji map:
+    const silent = _isCountingPrompt(text);
     let s = text;
-    // First: replace runs of 2+ same known emoji with cardinal count
+    // First: replace runs of 2+ same known emoji
+    //   counting context → strip silently (don't reveal count)
+    //   normal context  → "N nouns" (existing behavior)
     for (const [emoji, name] of Object.entries(EMOJI_NAMES)) {
-      // Escape special regex chars in emoji (most emoji are safe but ❤️ has variation selector)
       const esc = emoji.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const runRe = new RegExp(`(?:${esc}\\s*){2,}`, 'g');
       s = s.replace(runRe, (match) => {
-        // Count occurrences of the emoji in match
+        if (silent) return ' ';
         const count = (match.match(new RegExp(esc, 'g')) || []).length;
         const plural = count === 1 ? name : (name.endsWith('y') ? name.slice(0, -1) + 'ies' : name + 's');
         return ` ${count} ${plural} `;
       });
-      // Then single occurrences → just the name (avoid TTS reading literal emoji)
-      s = s.replace(new RegExp(esc, 'g'), ` ${name} `);
+      // Single occurrences:
+      //   counting context → also strip (the kid is asked to count
+      //     the visual, not hear what kind of thing it is)
+      //   normal context  → say the name (so TTS doesn't read the
+      //     literal codepoint)
+      s = s.replace(new RegExp(esc, 'g'), silent ? ' ' : ` ${name} `);
     }
-    // Strip decorations
+    // Strip decorations always
     for (const dec of EMOJI_DECORATIONS) {
       const esc = dec.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       s = s.replace(new RegExp(esc, 'g'), ' ');
     }
     // Catch-all: strip any remaining emoji-looking unicode
-    // (Range covers most pictographic ranges; conservative pass)
     s = s.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, ' ');
     s = s.replace(/\s{2,}/g, ' ').trim();
     return s;
