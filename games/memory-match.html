@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../css/styles.css?v=20260511o" />
+  <link rel="stylesheet" href="../css/styles.css?v=20260511p" />
 </head>
 <body class="game-page game-memory-match">
   <header class="game-header">
@@ -29,9 +29,12 @@
 
   <div id="gameInviteBanner" class="game-invite-banner" hidden></div>
 
-  <div id="gameOpponents" class="game-opponents" hidden></div>
-
   <main class="game-main">
+    <!-- On desktop the opponents panel becomes a sticky right rail.
+         On mobile it's the original horizontal pill strip. Putting
+         it inside .game-main lets CSS grid-areas place it. -->
+    <div id="gameOpponents" class="game-opponents" hidden></div>
+
     <div id="gameStatus" class="game-status">Loading today's puzzle…</div>
 
     <!-- Mode toggle: Solo (default) | Pass & Play (turn-based, same-screen) -->
