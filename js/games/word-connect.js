@@ -146,27 +146,56 @@
     if (animate) renderWheel();
   }
 
-  // ---------- discovered-words grid ----------
+  // ---------- discovered-words display ----------
+  // Compact version (Wordscapes pattern): show progress count + only
+  // the words actually FOUND so the wheel always has room on screen.
+  // Showing 24 blank placeholders ate the whole viewport on phones.
   function renderWords() {
-    const html = (puzzle.words || []).map(w => {
-      if (found.has(w)) {
-        const isPrize = w === puzzle.prize;
-        return `<div class="game-word game-word--found${isPrize ? ' game-word--prize' : ''}">${esc(w)}</div>`;
-      }
-      // Blank slot — show one underscore per letter
-      const blanks = Array.from({ length: w.length }, () => '·').join(' ');
-      return `<div class="game-word" data-len="${w.length}">${blanks}</div>`;
-    }).join('');
-    wordsEl.innerHTML = html;
+    const all = puzzle.words || [];
+    const total = all.length;
+    const foundList = all.filter(w => found.has(w));
+    const pct = total > 0 ? Math.round((found.size / total) * 100) : 0;
+
+    // Group found words by length descending — prize first if found,
+    // then 6-letter, then 5-letter, etc. Limits visual sprawl.
+    const sorted = foundList.slice().sort((a, b) => {
+      if (a === puzzle.prize) return -1;
+      if (b === puzzle.prize) return 1;
+      return b.length - a.length || a.localeCompare(b);
+    });
+
+    const chipsHtml = sorted.length === 0
+      ? `<div class="game-words-empty">Drag through the letters below to spell your first word</div>`
+      : sorted.map(w => {
+          const isPrize = w === puzzle.prize;
+          return `<div class="game-word${isPrize ? ' game-word--prize' : ''}">${esc(w)}</div>`;
+        }).join('');
+
+    wordsEl.innerHTML = `
+      <div class="game-progress">
+        <div class="game-progress-stat">
+          <span class="game-progress-num">${found.size}</span>
+          <span class="game-progress-sep">/</span>
+          <span class="game-progress-total">${total}</span>
+          <span class="game-progress-label">words found</span>
+        </div>
+        <div class="game-progress-bar"><div class="game-progress-fill" style="width:${pct}%"></div></div>
+      </div>
+      <div class="game-words-chips">${chipsHtml}</div>`;
   }
 
   // ---------- letter wheel ----------
   function renderWheel() {
     if (!wheelEl) return;
+    // Read actual wheel dimensions so heights adapt to CSS sizing
+    // (260px on phone, could be 280px on desktop with media query).
+    const W = wheelEl.offsetWidth || 260;
+    const H = wheelEl.offsetHeight || 260;
     const n = letters.length;
-    const r = 100; // radius in px (wheel container is ~280px tall)
-    const cx = 140;
-    const cy = 140;
+    const letterSize = W <= 270 ? 50 : 56;
+    const cx = W / 2;
+    const cy = H / 2;
+    const r = Math.min(W, H) / 2 - letterSize / 2 - 6; // hug edges
     wheelEl.innerHTML = '';
     for (let i = 0; i < n; i++) {
       const angle = (i / n) * 2 * Math.PI - Math.PI / 2; // start at top
@@ -177,8 +206,11 @@
       btn.className = 'game-letter';
       btn.dataset.idx = String(i);
       btn.dataset.letter = letters[i];
-      btn.style.left = (x - 28) + 'px';
-      btn.style.top  = (y - 28) + 'px';
+      btn.style.width  = letterSize + 'px';
+      btn.style.height = letterSize + 'px';
+      btn.style.fontSize = (letterSize * 0.55) + 'px';
+      btn.style.left = (x - letterSize / 2) + 'px';
+      btn.style.top  = (y - letterSize / 2) + 'px';
       btn.textContent = letters[i];
       wheelEl.appendChild(btn);
     }
@@ -298,36 +330,71 @@
   function submitWord() {
     const word = path.map(p => p.letter).join('');
     if (word.length < 3) { clearPath(); return; }
+    const fx = window.STAARFx || {};
     if (found.has(word)) {
       toast(`Already found ${word}`, 1200);
+      try { fx.playClick && fx.playClick(); } catch (_) {}
+      try { fx.vibrate && fx.vibrate(10); } catch (_) {}
       clearPath();
       return;
     }
     const allWords = puzzle.words;
     if (!allWords.includes(word)) {
-      // Quick flash red on the letters then clear
+      // Wrong word — sound + haptic shake + visual flash
+      try { fx.playWrong && fx.playWrong(); } catch (_) {}
+      try { fx.vibrate && fx.vibrate([40, 30, 40]); } catch (_) {}
       wheelEl.querySelectorAll('.game-letter.is-selected').forEach(b => b.classList.add('is-wrong'));
       setTimeout(() => {
         wheelEl.querySelectorAll('.game-letter').forEach(b => b.classList.remove('is-wrong'));
         clearPath();
-      }, 350);
+      }, 380);
       return;
     }
-    // Valid! Score it.
+    // VALID! Score + celebrate.
     found.add(word);
     let pts = pointsForWord(word);
-    if (word === puzzle.prize) pts += 25;
+    const isPrize = word === puzzle.prize;
+    if (isPrize) pts += 25;
     score += pts;
     scoreEl.textContent = String(score);
-    toast(`+${pts} ${word === puzzle.prize ? '· PRIZE!' : ''}`, 1400);
+
+    // Sound + haptic + visual feedback scaled to word importance
+    if (isPrize) {
+      try { fx.playMilestone && fx.playMilestone(); } catch (_) {}
+      try { fx.confetti && fx.confetti({ count: 120, duration: 2200 }); } catch (_) {}
+      try { fx.vibrate && fx.vibrate([30, 40, 30, 40, 60]); } catch (_) {}
+    } else if (word.length >= 5) {
+      try { fx.playCorrect && fx.playCorrect(); } catch (_) {}
+      try { fx.confetti && fx.confetti({ count: 40, duration: 1200 }); } catch (_) {}
+      try { fx.vibrate && fx.vibrate(28); } catch (_) {}
+    } else {
+      try { fx.playCorrect && fx.playCorrect(); } catch (_) {}
+      try { fx.vibrate && fx.vibrate(20); } catch (_) {}
+    }
+
+    showFloatingPoints(pts, isPrize);
+    toast(`+${pts} ${isPrize ? '· PRIZE!' : ''}`, 1400);
     renderWords();
     clearPath();
-    // Server submit (debounced ~500ms)
     queueSubmit();
-    // Check completion
     if (found.size >= allWords.length) {
-      setTimeout(showComplete, 800);
+      // Final flourish — bigger confetti burst before complete modal
+      try { fx.confetti && fx.confetti({ count: 180, duration: 2800 }); } catch (_) {}
+      try { fx.playMilestone && fx.playMilestone(); } catch (_) {}
+      setTimeout(showComplete, 900);
     }
+  }
+
+  // Floating "+N pts" that drifts up from the spell-preview area
+  function showFloatingPoints(pts, isPrize) {
+    const float = document.createElement('div');
+    float.className = 'game-float-pts' + (isPrize ? ' game-float-pts--prize' : '');
+    float.textContent = '+' + pts + (isPrize ? ' 👑' : '');
+    const rect = spellEl.getBoundingClientRect();
+    float.style.left = (rect.left + rect.width / 2) + 'px';
+    float.style.top  = rect.top + 'px';
+    document.body.appendChild(float);
+    setTimeout(() => { try { float.remove(); } catch (_) {} }, 1400);
   }
 
   // ---------- server score submission (debounced) ----------

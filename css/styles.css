@@ -18326,7 +18326,11 @@ body.game-page {
   background: #060d1f;
   color: #fff;
   min-height: 100vh;
-  overflow: hidden; /* prevent rubber-band on drag */
+  display: flex;
+  flex-direction: column;
+  /* allow vertical scroll if content overflows on tight viewports;
+     touch-action: none on the wheel prevents page-scroll during drag */
+  overflow-x: hidden;
 }
 .game-header {
   display: grid;
@@ -18421,59 +18425,123 @@ body.game-page {
 .game-main {
   display: flex;
   flex-direction: column;
-  padding: 12px 16px 0;
+  padding: 8px 16px 12px;
   max-width: 520px;
   margin: 0 auto;
   flex: 1;
+  min-height: 0;
 }
 .game-status { padding: 30px; text-align: center; color: rgba(255, 255, 255, 0.65); }
 
+/* Compact progress display — replaces the 24-blank placeholder grid
+   that overflowed the viewport. Shows progress bar + chip count +
+   only the words actually FOUND. The wheel always has room. */
 .game-words {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
-  gap: 6px;
-  margin-bottom: 14px;
+  flex-shrink: 0;
+  margin-bottom: 10px;
 }
+.game-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.game-progress-stat {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.game-progress-num {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #fbbf24;
+  font-family: 'Inter', sans-serif;
+  line-height: 1;
+}
+.game-progress-sep { color: rgba(255, 255, 255, 0.4); font-weight: 600; }
+.game-progress-total { font-size: 1rem; font-weight: 700; color: rgba(255, 255, 255, 0.7); }
+.game-progress-label {
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.55);
+  font-weight: 700;
+  margin-left: 4px;
+}
+.game-progress-bar {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.game-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #fde68a, #fbbf24);
+  transition: width 0.4s ease;
+  border-radius: 999px;
+}
+
+.game-words-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 96px;  /* cap so chips don't push the wheel off-screen */
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: 2px 0;
+}
+.game-words-chips::-webkit-scrollbar { display: none; }
+.game-words-empty {
+  width: 100%;
+  text-align: center;
+  padding: 14px 12px;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: var(--r-button);
+}
+
 .game-word {
-  padding: 8px 10px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 6px 12px;
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.28), rgba(16, 185, 129, 0.14));
+  border: 1px solid rgba(52, 211, 153, 0.55);
+  color: #d1fae5;
   border-radius: var(--r-button);
   font-size: 0.86rem;
   font-weight: 700;
-  text-align: center;
-  color: rgba(255, 255, 255, 0.35);
   letter-spacing: 0.05em;
   text-transform: uppercase;
   font-family: 'JetBrains Mono', monospace;
-}
-.game-word--found {
-  background: linear-gradient(135deg, rgba(52, 211, 153, 0.3), rgba(16, 185, 129, 0.15));
-  border-color: rgba(52, 211, 153, 0.55);
-  color: #d1fae5;
   animation: word-found 380ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .game-word--prize {
-  background: linear-gradient(135deg, rgba(251, 191, 36, 0.35), rgba(245, 158, 11, 0.18));
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.4), rgba(245, 158, 11, 0.2));
   border-color: rgba(251, 191, 36, 0.7);
   color: #fde68a;
+  font-size: 0.94rem;
+  padding: 7px 14px;
 }
 @keyframes word-found { from { opacity: 0; transform: scale(0.7); } to { opacity: 1; transform: scale(1); } }
 
 .game-spell-row {
   text-align: center;
-  min-height: 50px;
-  margin: 10px 0 14px;
+  min-height: 44px;
+  margin: 6px 0 10px;
+  flex-shrink: 0;
 }
 .game-spell-preview {
   display: inline-block;
   min-width: 100px;
-  min-height: 44px;
-  padding: 8px 22px;
+  min-height: 40px;
+  padding: 7px 22px;
   background: rgba(255, 255, 255, 0.04);
   border: 2px dashed rgba(255, 255, 255, 0.18);
   border-radius: 999px;
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   font-weight: 800;
   letter-spacing: 0.06em;
   color: rgba(255, 255, 255, 0.5);
@@ -18494,11 +18562,12 @@ body.game-page {
   display: flex;
   flex-direction: column;
   align-items: center;
+  flex-shrink: 0;
 }
 .game-wheel {
   position: relative;
-  width: 280px;
-  height: 280px;
+  width: 260px;
+  height: 260px;
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
@@ -18551,13 +18620,13 @@ body.game-page {
 }
 
 .game-shuffle {
-  margin: 16px auto 24px;
-  padding: 10px 22px;
+  margin: 10px auto 18px;
+  padding: 8px 20px;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 999px;
   color: rgba(255, 255, 255, 0.88);
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   font-weight: 700;
   cursor: pointer;
   user-select: none;
@@ -18629,15 +18698,49 @@ body.game-page {
   pointer-events: none;
 }
 
+/* Floating "+N pts" that drifts up from the spell-preview */
+.game-float-pts {
+  position: fixed;
+  z-index: 109;
+  transform: translate(-50%, -100%);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #34d399;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45), 0 0 16px rgba(52, 211, 153, 0.55);
+  pointer-events: none;
+  animation: float-pts 1300ms ease-out forwards;
+  font-family: 'Inter', sans-serif;
+}
+.game-float-pts--prize {
+  color: #fbbf24;
+  font-size: 2.4rem;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5), 0 0 22px rgba(251, 191, 36, 0.7);
+}
+@keyframes float-pts {
+  0%   { opacity: 0; transform: translate(-50%, 0) scale(0.6); }
+  18%  { opacity: 1; transform: translate(-50%, -10px) scale(1.15); }
+  100% { opacity: 0; transform: translate(-50%, -90px) scale(1); }
+}
+
 @media (max-width: 480px) {
-  .game-main { padding: 8px 12px 0; max-width: 100%; }
-  .game-wheel { width: 260px; height: 260px; }
-  .game-letter { width: 50px; height: 50px; font-size: 1.4rem; }
-  .game-spell-preview { font-size: 1.2rem; min-height: 40px; padding: 7px 18px; }
-  .game-words { grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); }
-  .game-word { font-size: 0.78rem; padding: 6px 8px; }
+  .game-header { padding: 8px 12px; }
+  .game-header-eyebrow { font-size: 0.62rem; }
+  .game-header-stat { font-size: 0.74rem; }
+  .game-header-score-num { font-size: 1.3rem; }
+  .game-main { padding: 6px 12px 12px; max-width: 100%; }
+  .game-wheel { width: 240px; height: 240px; }
+  .game-spell-preview { font-size: 1.15rem; min-height: 38px; padding: 6px 16px; }
+  .game-word { font-size: 0.78rem; padding: 5px 10px; }
+  .game-word--prize { font-size: 0.86rem; padding: 6px 12px; }
+  .game-words-chips { max-height: 78px; }
+  .game-progress-num { font-size: 1.2rem; }
+  .game-shuffle { margin: 6px auto 12px; padding: 7px 16px; font-size: 0.82rem; }
   .game-complete-card { padding: 26px 18px 20px; }
   .game-complete-stat-num { font-size: 1.5rem; }
+}
+/* Desktop: bigger wheel for more comfortable drag */
+@media (min-width: 768px) {
+  .game-wheel { width: 320px; height: 320px; }
 }
 
 
