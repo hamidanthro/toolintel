@@ -3790,9 +3790,8 @@ async function handleFriendList(payload) {
   });
 }
 
-// POST { token } — friend leaderboard (Tier 6 AF). Returns auth user
-// + all accepted friends ranked by stats.xp. Age-gated to grade-3+
-// on the frontend.
+// POST { token } — friend leaderboard. Returns auth user + accepted
+// friends, ranked by lifetimeCorrect, with 7-day correct count.
 async function handleFriendLeague(payload) {
   const auth = await authedUser(payload);
   if (!auth || !auth.username) return bad(401, 'Not signed in');
@@ -3807,32 +3806,61 @@ async function handleFriendLeague(payload) {
     .map(r => ({ peer: r.peer, displayName: r.peerDisplayName || r.peer }));
 
   const usernames = [auth.username, ...friends.map(f => f.peer)];
+  const sevenDaysAgo = Date.now() - (7 * 86400000);
 
   const rows = await Promise.all(usernames.map(async (u) => {
     try {
-      const r = await ddb.send(new GetCommand({
+      const userR = await ddb.send(new GetCommand({
         TableName: USERS_TABLE,
         Key: { username: u },
-        ProjectionExpression: 'achievementsState, displayName, grade'
+        ProjectionExpression: 'achievementsState, displayName, grade, avatarEmoji'
       }));
-      const item = r.Item || {};
+      const item = userR.Item || {};
       const ach = item.achievementsState || {};
       const stats = ach.stats || {};
+
+      let weeklyCorrect = 0;
+      try {
+        const evR = await ddb.send(new QueryCommand({
+          TableName: EVENTS_TABLE,
+          IndexName: 'userId-timestamp-index',
+          KeyConditionExpression: 'userId = :u AND #ts >= :cutoff',
+          ExpressionAttributeNames: { '#ts': 'timestamp', '#et': 'eventType' },
+          ExpressionAttributeValues: {
+            ':u': u, ':cutoff': sevenDaysAgo, ':et': 'answered-correct'
+          },
+          FilterExpression: '#et = :et',
+          Limit: 1000
+        }));
+        weeklyCorrect = (evR.Items || []).length;
+      } catch (_) {}
+
       return {
-        username:    u,
-        displayName: item.displayName || (u === auth.username ? 'You' : u),
-        grade:       item.grade || null,
-        xp:          Number.isFinite(stats.xp) ? stats.xp : 0,
-        level:       Number.isFinite(stats.level) ? stats.level : 1,
-        streak:      Number.isFinite(stats.loginStreak) ? stats.loginStreak : 0,
-        isSelf:      u === auth.username
+        username:        u,
+        displayName:     item.displayName || (u === auth.username ? 'You' : u),
+        grade:           item.grade || null,
+        avatarEmoji:     item.avatarEmoji || null,
+        lifetimeCorrect: Number.isFinite(stats.lifetimeCorrect) ? stats.lifetimeCorrect : 0,
+        xp:              Number.isFinite(stats.xp) ? stats.xp : 0,
+        level:           Number.isFinite(stats.level) ? stats.level : 1,
+        streak:          Number.isFinite(stats.loginStreak) ? stats.loginStreak : 0,
+        weeklyCorrect:   weeklyCorrect,
+        isSelf:          u === auth.username
       };
     } catch (_) {
-      return { username: u, displayName: u, xp: 0, level: 1, streak: 0, isSelf: u === auth.username };
+      return {
+        username: u, displayName: u, grade: null, avatarEmoji: null,
+        lifetimeCorrect: 0, xp: 0, level: 1, streak: 0, weeklyCorrect: 0,
+        isSelf: u === auth.username
+      };
     }
   }));
 
-  rows.sort((a, b) => (b.xp - a.xp) || (b.level - a.level) || a.displayName.localeCompare(b.displayName));
+  rows.sort((a, b) =>
+    (b.lifetimeCorrect - a.lifetimeCorrect)
+    || (b.level - a.level)
+    || a.displayName.localeCompare(b.displayName)
+  );
   rows.forEach((r, i) => r.rank = i + 1);
 
   return ok({ league: rows, count: rows.length });

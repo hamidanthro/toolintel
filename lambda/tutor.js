@@ -3810,10 +3810,13 @@ async function handleFriendList(payload) {
   });
 }
 
-// POST { token } — friend leaderboard (Tier 6 AF). Returns the auth
-// user + all accepted friends sorted by stats.xp descending. Per
-// CLAUDE.md §40 AF, age-gated to grade-3+ on the frontend (server
-// returns the data regardless; the kid never sees it on K-2 pages).
+// POST { token } — friend leaderboard. Returns auth user + all accepted
+// friends sorted by lifetime XP, with weekly correct count (last 7
+// days from staar-content-events) so the league can show both
+// 'this week' momentum and lifetime standing.
+//
+// Age-gated to grade-3+ on the frontend; server returns the data
+// regardless so multi-kid accounts can share infrastructure.
 async function handleFriendLeague(payload) {
   const auth = await authedUser(payload);
   if (!auth || !auth.username) return bad(401, 'Not signed in');
@@ -3831,35 +3834,67 @@ async function handleFriendLeague(payload) {
   // 2. Always include self.
   const usernames = [auth.username, ...friends.map(f => f.peer)];
 
-  // 3. Pull each user's achievementsState.stats.xp + displayName.
+  // 3. Pull each user's profile + stats blob in parallel.
+  const sevenDaysAgo = Date.now() - (7 * 86400000);
   const rows = await Promise.all(usernames.map(async (u) => {
     try {
-      const r = await ddb.send(new GetCommand({
+      // a. User record (stats + profile)
+      const userR = await ddb.send(new GetCommand({
         TableName: USERS_TABLE,
         Key: { username: u },
-        ProjectionExpression: 'achievementsState, displayName, grade'
+        ProjectionExpression: 'achievementsState, displayName, grade, avatarEmoji'
       }));
-      const item = r.Item || {};
+      const item = userR.Item || {};
       const ach = item.achievementsState || {};
       const stats = ach.stats || {};
+
+      // b. 7-day correct count via staar-content-events GSI.
+      // Cheap query; one round trip per friend.
+      let weeklyCorrect = 0;
+      try {
+        const evR = await ddb.send(new QueryCommand({
+          TableName: EVENTS_TABLE,
+          IndexName: 'userId-timestamp-index',
+          KeyConditionExpression: 'userId = :u AND #ts >= :cutoff',
+          ExpressionAttributeNames: { '#ts': 'timestamp', '#et': 'eventType' },
+          ExpressionAttributeValues: {
+            ':u': u, ':cutoff': sevenDaysAgo, ':et': 'answered-correct'
+          },
+          FilterExpression: '#et = :et',
+          Limit: 1000
+        }));
+        weeklyCorrect = (evR.Items || []).length;
+      } catch (_) { /* silent — fall back to 0 */ }
+
       return {
-        username:    u,
-        displayName: item.displayName || (u === auth.username ? 'You' : u),
-        grade:       item.grade || null,
-        xp:          Number.isFinite(stats.xp) ? stats.xp : 0,
-        level:       Number.isFinite(stats.level) ? stats.level : 1,
-        streak:      Number.isFinite(stats.loginStreak) ? stats.loginStreak : 0,
-        isSelf:      u === auth.username
+        username:        u,
+        displayName:     item.displayName || (u === auth.username ? 'You' : u),
+        grade:           item.grade || null,
+        avatarEmoji:     item.avatarEmoji || null,
+        lifetimeCorrect: Number.isFinite(stats.lifetimeCorrect) ? stats.lifetimeCorrect : 0,
+        xp:              Number.isFinite(stats.xp) ? stats.xp : 0,
+        level:           Number.isFinite(stats.level) ? stats.level : 1,
+        streak:          Number.isFinite(stats.loginStreak) ? stats.loginStreak : 0,
+        weeklyCorrect:   weeklyCorrect,
+        isSelf:          u === auth.username
       };
     } catch (_) {
-      return { username: u, displayName: u, xp: 0, level: 1, streak: 0, isSelf: u === auth.username };
+      return {
+        username: u, displayName: u, grade: null, avatarEmoji: null,
+        lifetimeCorrect: 0, xp: 0, level: 1, streak: 0, weeklyCorrect: 0,
+        isSelf: u === auth.username
+      };
     }
   }));
 
-  // 4. Sort by xp desc, then level desc, then displayName asc.
-  rows.sort((a, b) => (b.xp - a.xp) || (b.level - a.level) || a.displayName.localeCompare(b.displayName));
-
-  // 5. Assign ranks (1-indexed).
+  // 4. Sort by lifetimeCorrect desc (the canonical level-driver, see
+  //    js/achievements.js LEVEL_THRESHOLDS), then level desc, then
+  //    displayName asc.
+  rows.sort((a, b) =>
+    (b.lifetimeCorrect - a.lifetimeCorrect)
+    || (b.level - a.level)
+    || a.displayName.localeCompare(b.displayName)
+  );
   rows.forEach((r, i) => r.rank = i + 1);
 
   return ok({ league: rows, count: rows.length });

@@ -8,11 +8,11 @@
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
-  <title>League — GradeEarn</title>
+  <title>Friend League — GradeEarn</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=20260511b" />
+  <link rel="stylesheet" href="css/styles.css?v=20260511c" />
 </head>
 <body class="league-page">
   <header class="site-header">
@@ -21,7 +21,9 @@
       <nav class="nav">
         <a href="index.html">Home</a>
         <a href="achievements.html">Trophies</a>
+        <a href="league.html" class="active">League</a>
         <a href="marketplace.html">Toys</a>
+        <a href="about.html">How it works</a>
       </nav>
       <div id="user-slot" class="user-slot"></div>
     </div>
@@ -29,10 +31,19 @@
 
   <section>
     <div class="container">
-      <h1 style="margin:24px 0 8px;">🏆 Friend League</h1>
-      <p style="color:var(--muted);margin:0 0 24px;">See how you rank against your friends by XP earned.</p>
+      <div class="league-hero">
+        <h1>🏆 Friend League</h1>
+        <p class="league-sub">See how you rank against your friends — this week and lifetime.</p>
+      </div>
+
+      <div class="league-tabs" role="tablist" aria-label="League sections">
+        <button type="button" class="league-tab league-tab--active" role="tab" data-tab="standings">Standings <span class="league-tab-count" id="tab-count-standings"></span></button>
+        <button type="button" class="league-tab" role="tab" data-tab="add">Add friend</button>
+        <button type="button" class="league-tab" role="tab" data-tab="requests">Requests <span class="league-tab-count league-tab-count--alert" id="tab-count-requests"></span></button>
+      </div>
+
       <div id="league-root">
-        <div class="ge-skel-card" aria-busy="true" aria-label="Loading league">
+        <div class="ge-skel-card" aria-busy="true" aria-label="Loading">
           <div class="ge-skel ge-skel-line short" style="margin-bottom:14px;"></div>
           <div class="ge-skel ge-skel-line long"></div>
           <div class="ge-skel ge-skel-line medium"></div>
@@ -42,6 +53,6 @@
   </section>
 
   <script src="js/auth.js?v=20260510a"></script>
-  <script src="js/league.js?v=20260510a"></script>
+  <script src="js/league.js?v=20260511a"></script>
 </body>
 </html>
