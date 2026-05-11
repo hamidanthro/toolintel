@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../css/styles.css?v=20260511k" />
+  <link rel="stylesheet" href="../css/styles.css?v=20260511m" />
 </head>
 <body class="game-page game-word-connect">
   <header class="game-header">
@@ -27,9 +27,14 @@
     </div>
   </header>
 
+  <!-- Incoming-invite banner: shows when a friend has pinged this
+       kid to play. Tap "Play" closes the banner; "Dismiss" clears
+       it server-side. -->
+  <div id="gameInviteBanner" class="game-invite-banner" hidden></div>
+
   <!-- Opponent strip — friends playing today's puzzle. Polls every ~5s.
-       If kid has no friends, this hides; if friends haven't played
-       today, shows '— not started —'. -->
+       Includes a "+ Invite a friend" pill that opens the friend-picker
+       sheet so the kid can ping a friend to join. -->
   <div id="gameOpponents" class="game-opponents" hidden></div>
 
   <main class="game-main">
@@ -75,6 +80,6 @@
 
   <script src="../js/fx.js?v=20260426a"></script>
   <script src="../js/auth.js?v=20260511c"></script>
-  <script src="../js/games/word-connect.js?v=20260511c"></script>
+  <script src="../js/games/word-connect.js?v=20260511d"></script>
 </body>
 </html>

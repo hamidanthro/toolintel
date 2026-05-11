@@ -18,11 +18,11 @@
     ],
     "grade-3": [
       { "id": "3-stream", "letters": ["S","T","R","E","A","M"], "prize": "STREAM",
-        "words": ["ARE","ART","ATE","EAR","EAT","ERA","MAR","MAT","MET","RAM","RAT","SAT","SEA","SET","TEA","MARE","MART","MATE","MEAT","RATE","REAM","SEAM","SEAR","SEAT","STAR","STEM","TAME","TEAM","TEAR","TERM","STEAM","STREAM"] },
+        "words": ["ARE","ARM","ART","ATE","EAR","EAT","ERA","MAR","MAS","MAT","MET","RAM","RAT","SAT","SEA","SET","TAR","TEA","ARMS","ARTS","EARS","EAST","EATS","ERAS","MARE","MARS","MART","MATE","MATH","MATS","MEAT","RAMS","RATE","RATS","REAM","SEAM","SEAR","SEAT","STAR","STEM","TAME","TEAM","TEAR","TEAS","TERM","MASTER","SEAMS","STEAM","TASER","TEAMS","TEARS","TERMS","STREAM","TAMER","TAMERS","TASERS"] },
       { "id": "3-planet", "letters": ["P","L","A","N","E","T"], "prize": "PLANET",
-        "words": ["ALE","ANT","APE","APT","ATE","EAT","LAP","LET","NAP","NET","PAL","PAN","PAT","PEA","PEN","PET","TAN","TAP","TEA","TEN","LANE","LEAN","NEAT","PALE","PANE","PANT","PATE","PEAL","PEAT","PLAN","PLEA","TAPE","PLANE","PLATE","PLANET"] },
+        "words": ["ALE","ALP","ANT","APE","APT","ATE","EAT","LAP","LET","NAP","NET","PAL","PAN","PAT","PEA","PEN","PET","TAN","TAP","TEA","TEN","ANTE","APES","APTLY","LANE","LATE","LEAN","LEAP","LENT","NAPE","NEAP","NEAT","PALE","PANE","PANT","PATE","PEAL","PEAT","PETS","PLAN","PLEA","TALE","TAPE","TEAL","LEAPT","PETAL","PLANE","PLATE","PANEL","PASTE","PLANET"] },
       { "id": "3-castle", "letters": ["C","A","S","T","L","E"], "prize": "CASTLE",
-        "words": ["ACE","ALE","ATE","CAT","EAT","LET","SAT","SET","TEA","CASE","CAST","CATS","EATS","LACE","LAST","LATE","LEST","SALE","SEAL","SEAT","TALE","TEAL","CASTLE","CLEATS"] }
+        "words": ["ACE","ACT","ALE","ATE","CAT","EAT","LET","SAT","SEA","SET","TEA","ACES","ACTS","ALES","CASE","CAST","CATS","EAST","EATS","LACE","LAST","LATE","LEST","SALE","SCAT","SEAL","SEAT","SETA","TACE","TACT","TALE","TEAL","TEAS","CASTE","CLEAT","LACES","LASES","LATES","SCALE","SLATE","STALE","STEAL","TALES","TEALS","CASTLE","CLEATS","LOCATES"] }
     ],
     "grade-4": [
       { "id": "4-garden", "letters": ["G","A","R","D","E","N"], "prize": "GARDEN",

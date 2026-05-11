@@ -428,27 +428,35 @@
   async function refreshOpponents() {
     try {
       const r = await api('getGameScores', { gameId: GAME_ID, date: todayDateKey() });
-      if (!r || !Array.isArray(r.scores)) return;
+      if (!r || !Array.isArray(r.scores)) {
+        renderOpponentsStrip([]);
+        return;
+      }
       const me = window.STAARAuth.currentUser();
       const myName = (me && me.username) || '';
-      // Exclude self
       const friends = r.scores.filter(s => s.username !== myName);
-      if (friends.length === 0) { opponentsEl.hidden = true; return; }
-      // Sort by score desc, show top 3
       friends.sort((a, b) => (b.score || 0) - (a.score || 0));
-      const top = friends.slice(0, 3);
-      opponentsEl.innerHTML = `
-        <div class="game-opponents-label">Friends today</div>
-        <div class="game-opponents-list">
-          ${top.map(f => `
-            <div class="game-opponent">
-              <span class="game-opp-name">${esc(f.displayName || f.username)}</span>
-              <span class="game-opp-score">${(f.score || 0)}<span class="game-opp-score-label">pts</span></span>
-            </div>
-          `).join('')}
-        </div>`;
-      opponentsEl.hidden = false;
-    } catch (_) { /* silent */ }
+      renderOpponentsStrip(friends.slice(0, 3));
+    } catch (_) { renderOpponentsStrip([]); }
+  }
+  function renderOpponentsStrip(friends) {
+    // Always show the strip, even with zero friends — it now hosts
+    // the "Challenge a friend" button. Without that we lose the
+    // entry point to the invite flow.
+    const friendsHtml = friends.length === 0
+      ? '<div class="game-opp-empty">— no friends playing yet —</div>'
+      : friends.map(f => `
+          <div class="game-opponent">
+            <span class="game-opp-name">${esc(f.displayName || f.username)}</span>
+            <span class="game-opp-score">${(f.score || 0)}<span class="game-opp-score-label">pts</span></span>
+          </div>`).join('');
+    opponentsEl.innerHTML = `
+      <div class="game-opponents-label">Friends today</div>
+      <div class="game-opponents-list">${friendsHtml}</div>
+      <button type="button" class="game-challenge-btn" id="gameChallengeBtn">+ Challenge friend</button>`;
+    opponentsEl.hidden = false;
+    const cb = document.getElementById('gameChallengeBtn');
+    if (cb) cb.addEventListener('click', openInviteSheet);
   }
 
   // ---------- complete screen ----------
@@ -499,6 +507,103 @@
   }
   window.addEventListener('resize', () => { renderWheel(); });
 
+  // ---------- INVITE FLOW ----------
+  // Kid taps "+ Challenge friend" → bottom sheet lists their accepted
+  // friends → tap a friend → pingGameInvite lambda action → friend
+  // sees a banner at the top of the game page the next time they
+  // open it ("Saad invited you to play! Join").
+  async function openInviteSheet() {
+    // Build a sheet inline (no shared component for v1)
+    const wrap = document.createElement('div');
+    wrap.id = 'gameInviteSheet';
+    wrap.className = 'game-invite-sheet';
+    wrap.innerHTML = `
+      <div class="game-invite-sheet-backdrop"></div>
+      <div class="game-invite-sheet-panel" role="dialog" aria-modal="true">
+        <div class="game-invite-sheet-grab" aria-hidden="true"></div>
+        <button type="button" class="game-invite-sheet-close" aria-label="Close">✕</button>
+        <h3 class="game-invite-sheet-title">Challenge a friend</h3>
+        <p class="game-invite-sheet-sub">They'll get a banner on the game page inviting them to race you.</p>
+        <div id="gameInviteFriends" class="game-invite-friends">Loading…</div>
+      </div>`;
+    document.body.appendChild(wrap);
+    const closeSheet = () => { try { wrap.remove(); } catch (_) {} };
+    wrap.querySelector('.game-invite-sheet-backdrop').addEventListener('click', closeSheet);
+    wrap.querySelector('.game-invite-sheet-close').addEventListener('click', closeSheet);
+    document.addEventListener('keydown', function escClose(e) {
+      if (e.key === 'Escape') { closeSheet(); document.removeEventListener('keydown', escClose); }
+    });
+
+    try {
+      const r = await api('friendList', {});
+      const accepted = (r && Array.isArray(r.friends)) ? r.friends : [];
+      const list = document.getElementById('gameInviteFriends');
+      if (accepted.length === 0) {
+        list.innerHTML = `
+          <div class="game-invite-empty">
+            <div class="game-invite-empty-emoji" aria-hidden="true">👋</div>
+            <p>Add friends first, then come back to challenge them.</p>
+            <a class="btn btn-primary" href="../league.html">Add a friend →</a>
+          </div>`;
+      } else {
+        list.innerHTML = accepted.map(f => `
+          <div class="game-invite-friend" data-username="${esc(f.peer)}">
+            <span class="game-invite-friend-av">${esc((f.displayName || f.peer).charAt(0).toUpperCase())}</span>
+            <span class="game-invite-friend-name">${esc(f.displayName || f.peer)}</span>
+            <button type="button" class="game-invite-ping-btn" data-target="${esc(f.peer)}" data-display="${esc(f.displayName || f.peer)}">Ping</button>
+          </div>
+        `).join('');
+        list.querySelectorAll('.game-invite-ping-btn').forEach(b => {
+          b.addEventListener('click', async () => {
+            const target = b.getAttribute('data-target');
+            const display = b.getAttribute('data-display');
+            b.disabled = true;
+            b.textContent = 'Sending…';
+            try {
+              await api('sendGameInvite', { target, gameId: GAME_ID });
+              b.textContent = 'Sent ✓';
+              b.classList.add('is-sent');
+              toast(`Invited ${display}!`, 1800);
+              try { window.STAARFx && window.STAARFx.playClick && window.STAARFx.playClick(); } catch (_) {}
+            } catch (e) {
+              b.disabled = false;
+              b.textContent = 'Try again';
+            }
+          });
+        });
+      }
+    } catch (e) {
+      document.getElementById('gameInviteFriends').innerHTML =
+        '<p class="game-invite-empty"><span class="game-invite-empty-emoji">⚠️</span>Could not load friends.</p>';
+    }
+  }
+
+  // Incoming invite banner — shown at top when a friend has pinged
+  // the current kid. Auto-clears server-side on dismiss.
+  async function checkIncomingInvites() {
+    const inviteBanner = document.getElementById('gameInviteBanner');
+    if (!inviteBanner) return;
+    try {
+      const r = await api('getGameInvites', { gameId: GAME_ID });
+      const invites = (r && Array.isArray(r.invites)) ? r.invites : [];
+      if (invites.length === 0) { inviteBanner.hidden = true; return; }
+      // Show the most recent invite (deduped by sender server-side)
+      const inv = invites.sort((a, b) => (b.sentAt || 0) - (a.sentAt || 0))[0];
+      inviteBanner.innerHTML = `
+        <span class="game-invite-banner-icon" aria-hidden="true">🔥</span>
+        <span class="game-invite-banner-text">
+          <strong>${esc(inv.fromDisplay || inv.from)}</strong> invited you to race
+        </span>
+        <button type="button" class="game-invite-banner-dismiss" aria-label="Dismiss">✕</button>`;
+      inviteBanner.hidden = false;
+      inviteBanner.querySelector('.game-invite-banner-dismiss').addEventListener('click', async () => {
+        inviteBanner.hidden = true;
+        try { await api('clearGameInvite', { from: inv.from, gameId: GAME_ID }); } catch (_) {}
+      });
+      try { window.STAARFx && window.STAARFx.playClick && window.STAARFx.playClick(); } catch (_) {}
+    } catch (_) {}
+  }
+
   // ---------- boot ----------
   function boot() {
     if (!window.STAARAuth || !window.STAARAuth.currentUser || !window.STAARAuth.currentUser()) {
@@ -506,6 +611,7 @@
       return;
     }
     loadPuzzle();
+    checkIncomingInvites();
   }
   if (window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser()) {
     boot();

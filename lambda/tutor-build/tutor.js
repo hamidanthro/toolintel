@@ -443,6 +443,9 @@ exports.handler = async (event) => {
   if (action === 'setAvatarEmoji')          return await handleSetAvatarEmoji(payload);
   if (action === 'submitGameScore')         return await handleSubmitGameScore(payload);
   if (action === 'getGameScores')           return await handleGetGameScores(payload);
+  if (action === 'sendGameInvite')          return await handleSendGameInvite(payload);
+  if (action === 'getGameInvites')          return await handleGetGameInvites(payload);
+  if (action === 'clearGameInvite')         return await handleClearGameInvite(payload);
   if (action === 'getReadingPassage')   return await handleGetReadingPassage(payload);
   if (action === 'getReadingItem')      return await handleGetReadingItem(payload);
   if (action === 'getScienceItem')      return await handleGetScienceItem(payload);
@@ -2669,6 +2672,104 @@ async function handleGetGameScores(payload) {
     return (b.score || 0) - (a.score || 0);
   });
   return ok({ scores, count: scores.length });
+}
+
+// ===== Game invites (May 11 v2) =====
+const GAME_INVITES_CAP = 10;
+
+async function handleSendGameInvite(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  const target = sanitizeUsername(payload.target);
+  const gameId = payload.gameId;
+  if (!target) return bad(400, 'invalid target');
+  if (target === auth.username) return bad(400, 'can\'t invite yourself');
+  if (!validGameId(gameId)) return bad(400, 'invalid gameId');
+
+  const friendRow = await ddb.send(new GetCommand({
+    TableName: FRIENDS_TABLE,
+    Key: { username: auth.username, peer: target }
+  }));
+  if (!friendRow.Item || friendRow.Item.status !== 'accepted') {
+    return bad(403, 'not friends');
+  }
+
+  const targetRec = await ddb.send(new GetCommand({
+    TableName: USERS_TABLE,
+    Key: { username: target },
+    ProjectionExpression: 'gameInvites, displayName'
+  }));
+  const item = targetRec.Item || {};
+  const me = await ddb.send(new GetCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username },
+    ProjectionExpression: 'displayName'
+  }));
+  const myDisplay = (me.Item && me.Item.displayName) || auth.username;
+
+  let invites = Array.isArray(item.gameInvites) ? item.gameInvites.slice() : [];
+  invites = invites.filter(i => !(i.from === auth.username && i.gameId === gameId));
+  invites.push({
+    from: auth.username,
+    fromDisplay: myDisplay,
+    gameId,
+    sentAt: Date.now()
+  });
+  if (invites.length > GAME_INVITES_CAP) {
+    invites = invites.slice(invites.length - GAME_INVITES_CAP);
+  }
+  await ddb.send(new UpdateCommand({
+    TableName: USERS_TABLE,
+    Key: { username: target },
+    UpdateExpression: 'SET gameInvites = :i',
+    ExpressionAttributeValues: { ':i': invites }
+  }));
+  return ok({ ok: true, sentTo: target });
+}
+
+async function handleGetGameInvites(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  const gameId = payload.gameId;
+  const r = await ddb.send(new GetCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username },
+    ProjectionExpression: 'gameInvites'
+  }));
+  let invites = (r.Item && Array.isArray(r.Item.gameInvites)) ? r.Item.gameInvites : [];
+  const cutoff = Date.now() - (24 * 3600 * 1000);
+  invites = invites.filter(i => i.sentAt > cutoff);
+  if (gameId && validGameId(gameId)) {
+    invites = invites.filter(i => i.gameId === gameId);
+  }
+  return ok({ invites });
+}
+
+async function handleClearGameInvite(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  const fromUser = payload.from ? sanitizeUsername(payload.from) : null;
+  const gameId = payload.gameId;
+  const r = await ddb.send(new GetCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username },
+    ProjectionExpression: 'gameInvites'
+  }));
+  let invites = (r.Item && Array.isArray(r.Item.gameInvites)) ? r.Item.gameInvites : [];
+  if (fromUser && gameId) {
+    invites = invites.filter(i => !(i.from === fromUser && i.gameId === gameId));
+  } else if (gameId) {
+    invites = invites.filter(i => i.gameId !== gameId);
+  } else {
+    invites = [];
+  }
+  await ddb.send(new UpdateCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username },
+    UpdateExpression: 'SET gameInvites = :i',
+    ExpressionAttributeValues: { ':i': invites }
+  }));
+  return ok({ ok: true });
 }
 
 // ===== Reading practice (Phase 1) =====

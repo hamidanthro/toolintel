@@ -443,6 +443,9 @@ exports.handler = async (event) => {
   if (action === 'setAvatarEmoji')          return await handleSetAvatarEmoji(payload);
   if (action === 'submitGameScore')         return await handleSubmitGameScore(payload);
   if (action === 'getGameScores')           return await handleGetGameScores(payload);
+  if (action === 'sendGameInvite')          return await handleSendGameInvite(payload);
+  if (action === 'getGameInvites')          return await handleGetGameInvites(payload);
+  if (action === 'clearGameInvite')         return await handleClearGameInvite(payload);
   if (action === 'getReadingPassage')   return await handleGetReadingPassage(payload);
   if (action === 'getReadingItem')      return await handleGetReadingItem(payload);
   if (action === 'getScienceItem')      return await handleGetScienceItem(payload);
@@ -2687,6 +2690,118 @@ async function handleGetGameScores(payload) {
   });
 
   return ok({ scores, count: scores.length });
+}
+
+// ===== Game invites (May 11 v2) =====
+// Kid A taps 'Challenge a friend' on the game screen, picks B from
+// their friends list, and a row is appended to B's gameInvites array.
+// When B next opens that game, the banner reads 'Saad invited you
+// to play!'. Invite auto-clears when B starts playing or taps
+// 'Dismiss'. Rolling 10-entry FIFO so a spam-clicker can't blow up
+// the record.
+
+const GAME_INVITES_CAP = 10;
+
+async function handleSendGameInvite(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  const target = sanitizeUsername(payload.target);
+  const gameId = payload.gameId;
+  if (!target) return bad(400, 'invalid target');
+  if (target === auth.username) return bad(400, 'can\'t invite yourself');
+  if (!validGameId(gameId)) return bad(400, 'invalid gameId');
+
+  // Must be friends (accepted) to send game invites — prevents
+  // strangers spamming kids.
+  const friendRow = await ddb.send(new GetCommand({
+    TableName: FRIENDS_TABLE,
+    Key: { username: auth.username, peer: target }
+  }));
+  if (!friendRow.Item || friendRow.Item.status !== 'accepted') {
+    return bad(403, 'not friends');
+  }
+
+  // Read target's current invites
+  const targetRec = await ddb.send(new GetCommand({
+    TableName: USERS_TABLE,
+    Key: { username: target },
+    ProjectionExpression: 'gameInvites, displayName'
+  }));
+  const item = targetRec.Item || {};
+  const me = await ddb.send(new GetCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username },
+    ProjectionExpression: 'displayName'
+  }));
+  const myDisplay = (me.Item && me.Item.displayName) || auth.username;
+
+  let invites = Array.isArray(item.gameInvites) ? item.gameInvites.slice() : [];
+  // Dedupe: replace any existing pending invite from same sender +
+  // same game with the new timestamp.
+  invites = invites.filter(i => !(i.from === auth.username && i.gameId === gameId));
+  invites.push({
+    from: auth.username,
+    fromDisplay: myDisplay,
+    gameId,
+    sentAt: Date.now()
+  });
+  // FIFO cap
+  if (invites.length > GAME_INVITES_CAP) {
+    invites = invites.slice(invites.length - GAME_INVITES_CAP);
+  }
+  await ddb.send(new UpdateCommand({
+    TableName: USERS_TABLE,
+    Key: { username: target },
+    UpdateExpression: 'SET gameInvites = :i',
+    ExpressionAttributeValues: { ':i': invites }
+  }));
+  return ok({ ok: true, sentTo: target });
+}
+
+async function handleGetGameInvites(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  const gameId = payload.gameId; // optional — filter to one game if provided
+  const r = await ddb.send(new GetCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username },
+    ProjectionExpression: 'gameInvites'
+  }));
+  let invites = (r.Item && Array.isArray(r.Item.gameInvites)) ? r.Item.gameInvites : [];
+  // Drop expired (older than 24 hours)
+  const cutoff = Date.now() - (24 * 3600 * 1000);
+  invites = invites.filter(i => i.sentAt > cutoff);
+  if (gameId && validGameId(gameId)) {
+    invites = invites.filter(i => i.gameId === gameId);
+  }
+  return ok({ invites });
+}
+
+async function handleClearGameInvite(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  const fromUser = payload.from ? sanitizeUsername(payload.from) : null;
+  const gameId = payload.gameId;
+  const r = await ddb.send(new GetCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username },
+    ProjectionExpression: 'gameInvites'
+  }));
+  let invites = (r.Item && Array.isArray(r.Item.gameInvites)) ? r.Item.gameInvites : [];
+  if (fromUser && gameId) {
+    invites = invites.filter(i => !(i.from === fromUser && i.gameId === gameId));
+  } else if (gameId) {
+    invites = invites.filter(i => i.gameId !== gameId);
+  } else {
+    invites = [];
+  }
+  await ddb.send(new UpdateCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username },
+    UpdateExpression: 'SET gameInvites = :i',
+    ExpressionAttributeValues: { ':i': invites }
+  }));
+  return ok({ ok: true });
 }
 
 // POST { token, emoji } — store the kid's chosen avatar emoji on
