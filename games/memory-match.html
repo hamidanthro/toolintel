@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../css/styles.css?v=20260511n" />
+  <link rel="stylesheet" href="../css/styles.css?v=20260511o" />
 </head>
 <body class="game-page game-memory-match">
   <header class="game-header">
@@ -34,12 +34,22 @@
   <main class="game-main">
     <div id="gameStatus" class="game-status">Loading today's puzzle…</div>
 
-    <!-- Live stats strip: pairs / flips / time -->
+    <!-- Mode toggle: Solo (default) | Pass & Play (turn-based, same-screen) -->
+    <div class="memory-mode-toggle" id="memoryModeToggle" hidden>
+      <button type="button" class="memory-mode-btn is-active" data-mode="solo">Solo race</button>
+      <button type="button" class="memory-mode-btn" data-mode="pnp">Pass &amp; Play</button>
+    </div>
+
+    <!-- Pass & Play scoreboard. Hidden in solo. Shows player chips with
+         pair counts; the active player's chip glows. -->
+    <div id="pnpScoreboard" class="pnp-scoreboard" hidden></div>
+
+    <!-- Live stats strip: pairs / flips / time / streak (heat-glow ≥3) -->
     <div class="memory-stats" id="memoryStats" hidden>
       <div class="memory-stat"><div class="memory-stat-num" id="memoryPairsFound">0</div><div class="memory-stat-label">pairs</div></div>
       <div class="memory-stat"><div class="memory-stat-num" id="memoryFlips">0</div><div class="memory-stat-label">flips</div></div>
       <div class="memory-stat"><div class="memory-stat-num" id="memoryTime">0:00</div><div class="memory-stat-label">time</div></div>
-      <div class="memory-stat"><div class="memory-stat-num" id="memoryStreak">0</div><div class="memory-stat-label">streak</div></div>
+      <div class="memory-stat" id="memoryStreakStat"><div class="memory-stat-num" id="memoryStreak">0</div><div class="memory-stat-label">streak</div></div>
     </div>
 
     <!-- The card grid. Card count + columns set dynamically by the

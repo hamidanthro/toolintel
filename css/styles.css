@@ -19129,11 +19129,13 @@ body.game-memory-match .game-main {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 8px;
-  margin: 0 14px 14px;
+  margin: 0 auto 14px;
   padding: 10px 8px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--r-card);
+  width: 100%;
+  max-width: 560px;
 }
 .memory-stat { text-align: center; }
 .memory-stat-num {
@@ -19152,14 +19154,18 @@ body.game-memory-match .game-main {
   font-weight: 700;
 }
 
-/* Card grid — columns set via CSS variable from JS */
+/* Card grid — columns set via CSS variable from JS. width:100% so
+   the flex parent stretches it; minmax(0, 1fr) prevents the
+   aspect-ratio cards from collapsing to min-content. */
 .memory-grid {
   display: grid;
-  grid-template-columns: repeat(var(--memory-cols, 4), 1fr);
+  grid-template-columns: repeat(var(--memory-cols, 4), minmax(0, 1fr));
   gap: 10px;
-  padding: 0 14px;
+  padding: 0 4px;
   max-width: 560px;
+  width: 100%;
   margin: 0 auto 14px;
+  align-self: center;
 }
 
 .memory-card {
