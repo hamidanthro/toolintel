@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../css/styles.css?v=20260511p" />
+  <link rel="stylesheet" href="../css/styles.css?v=20260511q" />
 </head>
 <body class="game-page game-memory-match">
   <header class="game-header">
@@ -36,6 +36,22 @@
     <div id="gameOpponents" class="game-opponents" hidden></div>
 
     <div id="gameStatus" class="game-status">Loading today's puzzle…</div>
+
+    <!-- How to play card — always visible. Dismissible after first match. -->
+    <div id="howToPlay" class="memory-howto">
+      <div class="memory-howto-head">
+        <span class="memory-howto-icon" aria-hidden="true">🧠</span>
+        <strong>How to play</strong>
+        <button type="button" id="howToDismiss" class="memory-howto-dismiss" aria-label="Dismiss instructions">✕</button>
+      </div>
+      <ol class="memory-howto-list">
+        <li><strong>Tap two cards</strong> to flip them face-up.</li>
+        <li><strong>If they match</strong>, both stay open — you score 10 points.</li>
+        <li><strong>If they don't</strong>, they flip back. Remember where they were!</li>
+        <li><strong>Streak bonus:</strong> consecutive matches add +2, +4, +6 each.</li>
+        <li><strong>Faster &amp; fewer flips</strong> = bigger time bonus at the end.</li>
+      </ol>
+    </div>
 
     <!-- Mode toggle: Solo (default) | Pass & Play (turn-based, same-screen) -->
     <div class="memory-mode-toggle" id="memoryModeToggle" hidden>
@@ -87,6 +103,6 @@
   <script src="../js/prefs.js?v=20260426a"></script>
   <script src="../js/fx.js?v=20260426a"></script>
   <script src="../js/auth.js?v=20260511c"></script>
-  <script src="../js/games/memory-match.js?v=20260511a"></script>
+  <script src="../js/games/memory-match.js?v=20260511b"></script>
 </body>
 </html>

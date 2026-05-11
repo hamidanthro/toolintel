@@ -514,6 +514,25 @@
     } catch (_) {}
   }
 
+  // ---------- How to play card ----------
+  const HOWTO_DISMISSED_KEY = 'mm_howto_dismissed';
+  const howToCard = document.getElementById('howToPlay');
+  const howToDismiss = document.getElementById('howToDismiss');
+  if (howToCard) {
+    // Hide if previously dismissed
+    try {
+      if (localStorage.getItem(HOWTO_DISMISSED_KEY) === '1') {
+        howToCard.hidden = true;
+      }
+    } catch (_) {}
+  }
+  if (howToDismiss) {
+    howToDismiss.addEventListener('click', () => {
+      if (howToCard) howToCard.hidden = true;
+      try { localStorage.setItem(HOWTO_DISMISSED_KEY, '1'); } catch (_) {}
+    });
+  }
+
   // ---------- wiring ----------
   if (reshuffleBtn) {
     reshuffleBtn.addEventListener('click', () => {
