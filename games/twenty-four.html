@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com https://api.gradeearn.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#060d1f" />
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="../css/styles.css?v=20260511v" />
+  <title>24 Game — GradeEarn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body class="game-page game-twenty-four">
+  <header class="game-header">
+    <a href="../games.html" class="game-back" aria-label="Back">‹</a>
+    <div class="game-header-title">
+      <div class="game-header-eyebrow"><span class="game-header-dot" aria-hidden="true"></span> 24 GAME</div>
+      <div class="game-header-stat" id="gameHeaderStat">Make the target using all numbers</div>
+    </div>
+    <div class="game-header-score">
+      <div class="game-header-score-num" id="gameYourScore">0</div>
+      <div class="game-header-score-label">your pts</div>
+    </div>
+  </header>
+  <div id="gameInviteBanner" class="game-invite-banner" hidden></div>
+  <main class="game-main">
+    <div id="gameOpponents" class="game-opponents" hidden></div>
+    <div id="gameStatus" class="game-status">24 Game · loading…</div>
+    <div id="howToPlay" class="memory-howto">
+      <div class="memory-howto-head">
+        <span class="memory-howto-icon" aria-hidden="true">🎰</span>
+        <strong>How to play</strong>
+        <button type="button" id="howToDismiss" class="memory-howto-dismiss" aria-label="Dismiss">✕</button>
+      </div>
+      <ol class="memory-howto-list">
+        <li><strong>90 seconds</strong> on the clock.</li>
+        <li>Tap each <strong>number card exactly once</strong> in order, with operators between them.</li>
+        <li><strong>+ − × ÷</strong> and <strong>( )</strong> are your tools.</li>
+        <li><strong>Submit</strong> when the equation makes the target. +25 pts.</li>
+        <li><strong>Skip</strong> loses 10 seconds — picks a fresh puzzle.</li>
+      </ol>
+    </div>
+    <div class="memory-stats" id="tfStats" hidden>
+      <div class="memory-stat"><div class="memory-stat-num" id="tfSolved">0</div><div class="memory-stat-label">solved</div></div>
+      <div class="memory-stat"><div class="memory-stat-num" id="tfSkipped">0</div><div class="memory-stat-label">skipped</div></div>
+      <div class="memory-stat" id="tfTimerStat"><div class="memory-stat-num" id="tfTimer">90</div><div class="memory-stat-label">time</div></div>
+      <div class="memory-stat" id="tfStreakStat"><div class="memory-stat-num" id="tfStreak">0</div><div class="memory-stat-label">streak</div></div>
+    </div>
+    <div id="tfPreStart" class="ms-prestart">
+      <button type="button" id="tfStartBtn" class="ms-start-btn">START</button>
+      <p class="ms-prestart-hint">The classic math puzzle. 90 seconds.</p>
+    </div>
+    <div id="tfBoard" class="tf-board" hidden>
+      <div class="ms-progress" aria-hidden="true"><div class="ms-progress-fill" id="tfProgress"></div></div>
+      <div class="tf-target-row"><span class="tf-target-label">Target:</span><span id="tfTarget" class="tf-target">24</span></div>
+      <div id="tfNumbers" class="tf-numbers"></div>
+      <div id="tfExpr" class="tf-expr">Build your equation…</div>
+      <div id="tfOps" class="tf-ops"></div>
+      <div class="eb-actions">
+        <button type="button" id="tfBackspace" class="eb-action-btn">← Backspace</button>
+        <button type="button" id="tfSkip" class="eb-action-btn">Skip (−10s)</button>
+        <button type="button" id="tfSubmit" class="eb-action-btn eb-submit">Submit ✓</button>
+      </div>
+    </div>
+  </main>
+  <div id="gameComplete" class="game-complete" hidden>
+    <div class="game-complete-card">
+      <div class="game-complete-emoji" aria-hidden="true">🎰</div>
+      <h2 id="gameCompleteTitle" class="game-complete-title">Time's up!</h2>
+      <div class="game-complete-stats">
+        <div class="game-complete-stat"><div class="game-complete-stat-num" id="gameCompleteScore">0</div><div class="game-complete-stat-label">points</div></div>
+        <div class="game-complete-stat"><div class="game-complete-stat-num" id="gameCompleteCorrect">0</div><div class="game-complete-stat-label">solved</div></div>
+        <div class="game-complete-stat"><div class="game-complete-stat-num" id="gameCompleteStreak">0</div><div class="game-complete-stat-label">best streak</div></div>
+      </div>
+      <div id="gameCompleteFriends" class="game-complete-friends"></div>
+      <div class="game-complete-actions">
+        <button type="button" class="btn btn-primary" id="tfPlayAgain">Play again</button>
+        <a href="../games.html" class="btn btn-secondary">Back to games</a>
+      </div>
+    </div>
+  </div>
+  <div id="gameToast" class="game-toast" hidden role="status" aria-live="polite"></div>
+  <script src="../js/prefs.js?v=20260426a"></script>
+  <script src="../js/fx.js?v=20260426a"></script>
+  <script src="../js/auth.js?v=20260511c"></script>
+  <script src="../js/games/twenty-four.js?v=20260511a"></script>
+</body>
+</html>

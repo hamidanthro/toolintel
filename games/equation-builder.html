@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com https://api.gradeearn.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#060d1f" />
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="../css/styles.css?v=20260511v" />
+  <title>Equation Builder — GradeEarn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body class="game-page game-equation-builder">
+  <header class="game-header">
+    <a href="../games.html" class="game-back" aria-label="Back">‹</a>
+    <div class="game-header-title">
+      <div class="game-header-eyebrow"><span class="game-header-dot" aria-hidden="true"></span> EQUATION BUILDER</div>
+      <div class="game-header-stat" id="gameHeaderStat">Fill the gaps with + − × ÷</div>
+    </div>
+    <div class="game-header-score">
+      <div class="game-header-score-num" id="gameYourScore">0</div>
+      <div class="game-header-score-label">your pts</div>
+    </div>
+  </header>
+  <div id="gameInviteBanner" class="game-invite-banner" hidden></div>
+  <main class="game-main">
+    <div id="gameOpponents" class="game-opponents" hidden></div>
+    <div id="gameStatus" class="game-status">Equation Builder · loading…</div>
+    <div id="howToPlay" class="memory-howto">
+      <div class="memory-howto-head">
+        <span class="memory-howto-icon" aria-hidden="true">🧩</span>
+        <strong>How to play</strong>
+        <button type="button" id="howToDismiss" class="memory-howto-dismiss" aria-label="Dismiss">✕</button>
+      </div>
+      <ol class="memory-howto-list">
+        <li><strong>60 seconds</strong> on the clock.</li>
+        <li><strong>Tap operators</strong> (+ − × ÷) to fill the gaps so the equation is true.</li>
+        <li>Use the <strong>backspace</strong> button if you want to redo a slot.</li>
+        <li><strong>Submit</strong> to check. Right = +15 pts. Wrong = −5 pts.</li>
+        <li><strong>Streak bonus</strong> adds +2 per chain of correct answers.</li>
+      </ol>
+    </div>
+    <div class="memory-stats" id="ebStats" hidden>
+      <div class="memory-stat"><div class="memory-stat-num" id="ebCorrect">0</div><div class="memory-stat-label">solved</div></div>
+      <div class="memory-stat"><div class="memory-stat-num" id="ebWrong">0</div><div class="memory-stat-label">wrong</div></div>
+      <div class="memory-stat" id="ebTimerStat"><div class="memory-stat-num" id="ebTimer">60</div><div class="memory-stat-label">time</div></div>
+      <div class="memory-stat" id="ebStreakStat"><div class="memory-stat-num" id="ebStreak">0</div><div class="memory-stat-label">streak</div></div>
+    </div>
+    <div id="ebPreStart" class="ms-prestart">
+      <button type="button" id="ebStartBtn" class="ms-start-btn">START</button>
+      <p class="ms-prestart-hint">Operators are your toolbox.</p>
+    </div>
+    <div id="ebBoard" class="eb-board" hidden>
+      <div class="ms-progress" aria-hidden="true"><div class="ms-progress-fill" id="ebProgress"></div></div>
+      <div id="ebEquation" class="eb-equation"></div>
+      <div id="ebOps" class="eb-ops"></div>
+      <div class="eb-actions">
+        <button type="button" id="ebBackspace" class="eb-action-btn">← Backspace</button>
+        <button type="button" id="ebSubmit" class="eb-action-btn eb-submit">Submit ✓</button>
+      </div>
+    </div>
+  </main>
+  <div id="gameComplete" class="game-complete" hidden>
+    <div class="game-complete-card">
+      <div class="game-complete-emoji" aria-hidden="true">🧩</div>
+      <h2 id="gameCompleteTitle" class="game-complete-title">Time's up!</h2>
+      <div class="game-complete-stats">
+        <div class="game-complete-stat"><div class="game-complete-stat-num" id="gameCompleteScore">0</div><div class="game-complete-stat-label">points</div></div>
+        <div class="game-complete-stat"><div class="game-complete-stat-num" id="gameCompleteCorrect">0</div><div class="game-complete-stat-label">solved</div></div>
+        <div class="game-complete-stat"><div class="game-complete-stat-num" id="gameCompleteStreak">0</div><div class="game-complete-stat-label">best streak</div></div>
+      </div>
+      <div id="gameCompleteFriends" class="game-complete-friends"></div>
+      <div class="game-complete-actions">
+        <button type="button" class="btn btn-primary" id="ebPlayAgain">Play again</button>
+        <a href="../games.html" class="btn btn-secondary">Back to games</a>
+      </div>
+    </div>
+  </div>
+  <div id="gameToast" class="game-toast" hidden role="status" aria-live="polite"></div>
+  <script src="../js/prefs.js?v=20260426a"></script>
+  <script src="../js/fx.js?v=20260426a"></script>
+  <script src="../js/auth.js?v=20260511c"></script>
+  <script src="../js/games/equation-builder.js?v=20260511a"></script>
+</body>
+</html>
