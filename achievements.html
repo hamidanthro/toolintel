@@ -18,13 +18,13 @@
   <link rel="canonical" href="https://gradeearn.com/achievements.html">
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&display=swap">
-  <link rel="stylesheet" href="css/styles.css?v=20260511m">
+  <link rel="stylesheet" href="css/styles.css?v=20260512v">
 
   <script src="js/migrate-storage.js?v=20260427a"></script>
   <script src="js/i18n.js?v=20260510a"></script>
   <script src="js/states-data.js?v=20260510d"></script>
 </head>
-<body class="grade-page practice-mode">
+<body class="grade-page practice-mode trophy-page">
 
 <header class="site-header">
     <div class="container">
@@ -54,21 +54,21 @@
       </div>
     </header>
 
-    <!-- Daily mission -->
+    <!-- §46 polish: "Today's mission" outer h2 dropped; the inner
+         "Today's quest" title is promoted to the section heading via
+         the rendered card (see js/achievements-page.js). -->
     <section class="trophy-section" id="daily-mission-section">
       <div class="trophy-section-head">
-        <h2 class="trophy-section-title">Today's mission</h2>
+        <h2 class="trophy-section-title">Today's quest</h2>
       </div>
       <div class="daily-mission-card" id="daily-mission-card">
         <span aria-hidden="true">⏳ Loading mission…</span>
       </div>
     </section>
 
-    <!-- Stats overview -->
+    <!-- §46 polish: "Your numbers" heading dropped — the stat row is
+         self-explanatory. -->
     <section class="trophy-section">
-      <div class="trophy-section-head">
-        <h2 class="trophy-section-title">Your numbers</h2>
-      </div>
       <div class="stats-grid" id="stats-grid">
         <div class="stat-tile"><div class="stat-tile-label">Trophies earned</div><div class="stat-tile-num" id="stat-earned">—</div></div>
         <div class="stat-tile"><div class="stat-tile-label">Correct answers</div><div class="stat-tile-num" id="stat-correct">—</div></div>
@@ -121,7 +121,7 @@
 <script src="js/mastery.js?v=20260510a"></script>
 <script src="js/fun-facts.js?v=20260510k"></script>
 <script src="js/achievements.js?v=20260510d"></script>
-<script src="js/achievements-page.js?v=20260510b"></script>
+<script src="js/achievements-page.js?v=20260512a"></script>
   <script src="/js/site-header.js?v=20260512j"></script>
 </body>
 </html>

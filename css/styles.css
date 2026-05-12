@@ -12379,6 +12379,149 @@ body.grade-page > * {
   transition: width 240ms ease;
 }
 
+/* ==========================================================================
+   §46 Trophies page premium polish (May 12) — subtractive paint pass.
+   Mirrors the §45 Home gold dedup: kill quest card border, flatten quest
+   task rows, mute 3 of 4 stat numbers, drop per-trophy borders, demote
+   bare gold reward text to a muted chip with a small gold coin icon.
+   Layout / section order untouched.
+   ========================================================================== */
+
+/* Promoted section heading scale — match §40 + Home polish weights */
+body.trophy-page .trophy-section-title {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+body.trophy-page .trophy-section-sub { font-size: 13px; color: rgba(255, 255, 255, 0.45); }
+
+/* Quest card — drop the blue/purple gradient + bordered chrome; use the
+   same flat panel treatment as Home stat cards (white/2 + white/10). */
+body.trophy-page .daily-mission {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: none;
+  padding: 20px 22px;
+  display: block;
+}
+body.trophy-page .daily-mission--complete {
+  background: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+body.trophy-page .dq-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+body.trophy-page .dq-head-spacer { flex: 1; }
+
+/* Reward chip — shared style for the daily-quest "all done" badge and
+   each trophy's per-card reward. Muted bg, white/80 text, small gold
+   coin icon. */
+.reward-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 12px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.reward-chip .reward-chip-coin { color: rgba(252, 211, 77, 0.8); flex-shrink: 0; }
+
+/* Quest task rows — flat rows with hairline dividers between them.
+   Drops per-row border + bg the previous design rendered as nested
+   sub-cards. */
+body.trophy-page .dq-task {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 0;
+  padding: 12px 0;
+}
+body.trophy-page .dq-tasks > .dq-task:last-child { border-bottom: none; }
+body.trophy-page .dq-task-emoji { color: rgba(255, 255, 255, 0.55); }
+body.trophy-page .dq-task-label { color: #ffffff; font-weight: 500; }
+body.trophy-page .dq-task-sub { color: rgba(255, 255, 255, 0.4); font-size: 11px; }
+body.trophy-page .dq-task-progress {
+  height: 3px;
+  background: rgba(255, 255, 255, 0.06);
+}
+body.trophy-page .dq-task-progress-bar {
+  background: rgba(255, 255, 255, 0.4);
+}
+body.trophy-page .dq-task--done {
+  opacity: 0.5;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+body.trophy-page .dq-task--done .dq-task-progress-bar {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* Stat tiles — only TROPHIES EARNED stays gold; the other 3 go white.
+   Tiles keep their existing panel chrome (the four-up row reads as a
+   group, not as a card row, so the per-tile chrome is fine). */
+body.trophy-page .stat-tile-num {
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  font-family: 'Instrument Serif', serif;
+}
+/* The stat-tile order in the grid is fixed: earned / correct / streak /
+   mastered. Only the first tile (#stat-earned's parent) gets the gold
+   number — trophies are the page's currency. */
+body.trophy-page .stats-grid .stat-tile:first-child .stat-tile-num { color: #fbbf24; }
+
+/* Trophy grid — kill per-card border + bg. Trophies render as
+   icon + title + subtitle + reward chip, with a subtle hover lift on
+   the row area (replaces the border affordance). */
+body.trophy-page .trophy-card {
+  background: transparent;
+  border: 1px solid transparent;
+  border-left: 2px solid transparent;
+  padding: 12px 14px;
+  border-radius: 12px;
+  transition: background 180ms ease;
+}
+body.trophy-page .trophy-card--earned {
+  background: transparent;
+}
+body.trophy-page .trophy-card:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+/* The icon tile remains the anchor — keep its subtle bg square */
+body.trophy-page .trophy-card-emoji {
+  background: rgba(255, 255, 255, 0.04);
+}
+body.trophy-page .trophy-card-reward {
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
+}
+body.trophy-page .trophy-card-reward.reward-chip {
+  align-self: flex-start;
+}
+
+/* Header wallet pill on trophy page — same softening as Home so the
+   gold appears in one place above the fold (per-trophy coin icons +
+   TROPHIES EARNED gold number + reward chip coins) */
+body.trophy-page .wallet-pill {
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.85);
+  border-color: rgba(255, 255, 255, 0.1);
+  font-weight: 500;
+}
+body.trophy-page .wallet-pill:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+body.trophy-page .wallet-pill svg { color: rgba(251, 191, 36, 0.8); }
+
 @media (max-width: 480px) {
   .trophy-section { padding: 20px 18px; }
   .trophy-grid { grid-template-columns: 1fr; }

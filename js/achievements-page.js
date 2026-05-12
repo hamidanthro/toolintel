@@ -16,6 +16,12 @@
          : '#d4a574'; // bronze default
   }
 
+  // §46 polish: shared coin SVG for muted reward chips on both the
+  // daily-quest "all done" badge and per-trophy reward badges. Tiny
+  // gold accent on a neutral chip — keeps reward visible without
+  // adding a second gold flag per row.
+  const COIN_SVG = '<svg class="reward-chip-coin" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9.5h4.5a2 2 0 010 4H9.5a2 2 0 000 4H14"/></svg>';
+
   function buildTrophyCard(ach, earned, progress) {
     const cents = (ach.reward && ach.reward.cents) || 0;
     const tierStyle = `--trophy-tier-color: ${tierColor(ach.tier)};`;
@@ -24,7 +30,7 @@
       : '';
     const earnedClass = earned ? 'trophy-card--earned' : 'trophy-card--locked';
     const rewardLine = cents > 0
-      ? `<div class="trophy-card-reward">+${cents}¢</div>`
+      ? `<div class="trophy-card-reward reward-chip">${COIN_SVG}<span>+${cents}¢</span></div>`
       : '';
     return `
       <div class="trophy-card ${earnedClass} trophy-card--${escapeHtml(ach.tier)}" style="${tierStyle}" data-trophy-id="${escapeHtml(ach.id)}">
@@ -82,11 +88,15 @@
         </div>
       </div>`;
     }).join('');
+    // §46 polish: outer "Today's quest" h2 in achievements.html now
+    // serves as the section heading — the inner dq-head-title is
+    // removed. The "+N¢ all done" reward becomes a muted chip with a
+    // small gold coin icon (same pattern as +50 pts on Home).
     root.innerHTML = `
       <div class="daily-mission daily-mission--inprogress" style="display:block;">
         <div class="dq-head" style="margin-bottom:10px;">
-          <div class="dq-head-title">Today's quest</div>
-          <div class="dq-head-reward">+${reward}¢ all done</div>
+          <div class="dq-head-spacer"></div>
+          <div class="dq-head-reward reward-chip">${COIN_SVG}<span>+${reward}¢ all done</span></div>
         </div>
         <div class="dq-tasks">${tasksHtml}</div>
       </div>
