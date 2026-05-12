@@ -41,13 +41,103 @@
         if (tabStates) tabStates.hidden = tab !== 'states';
         const tabContent = $('tab-content');
         if (tabContent) tabContent.hidden = tab !== 'content';
+        const tabBlog = $('tab-blog');
+        if (tabBlog) tabBlog.hidden = tab !== 'blog';
         if (tab === 'orders') loadOrders();
         if (tab === 'users') { loadLiveUsers(); startLiveUsersPolling(); }
         else { stopLiveUsersPolling(); }
         if (tab === 'states') loadStatesTab();
         if (tab === 'content') loadContentTab();
+        if (tab === 'blog') loadBlogQueue();
       });
     });
+    // Refresh button on the blog tab
+    const refreshBtn = $('blog-refresh');
+    if (refreshBtn) refreshBtn.addEventListener('click', loadBlogQueue);
+  }
+
+  // ---- Blog moderation queue ----
+  async function loadBlogQueue() {
+    const wrap = $('blog-queue-list');
+    if (!wrap) return;
+    wrap.innerHTML = '<p style="color:rgba(255,255,255,0.5); padding:20px;">Loading…</p>';
+    try {
+      const r = await Auth.api('getBlogQueue', { token: Auth.token() });
+      renderBlogQueue(r.posts || []);
+    } catch (e) {
+      console.error('[blog]', e);
+      wrap.innerHTML = '<p style="color:#fca5a5; padding:20px;">Couldn\'t load queue: ' + (e.message || 'error') + '</p>';
+    }
+  }
+
+  function renderBlogQueue(posts) {
+    const wrap = $('blog-queue-list');
+    const badge = $('blog-tab-badge');
+    if (badge) {
+      if (posts.length > 0) { badge.hidden = false; badge.textContent = posts.length; }
+      else { badge.hidden = true; }
+    }
+    if (posts.length === 0) {
+      wrap.innerHTML = '<p style="color:rgba(255,255,255,0.5); padding:20px; text-align:center;">No posts waiting for review.</p>';
+      return;
+    }
+    wrap.innerHTML = '';
+    posts.forEach(p => {
+      const div = document.createElement('div');
+      div.style.cssText = 'padding:18px; background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08); border-radius:12px;';
+      const safeTitle = String(p.title || '').replace(/[<>]/g, '');
+      const safeBody = String(p.body || '').replace(/[<>]/g, '');
+      const safeName = String(p.displayName || '').replace(/[<>]/g, '');
+      const dt = new Date(p.createdAt || 0).toLocaleString();
+      div.innerHTML =
+        '<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:10px;">' +
+          '<div style="flex:1;">' +
+            '<div style="font-size:16px; font-weight:600; color:#fff; margin-bottom:4px;">' + safeTitle + '</div>' +
+            '<div style="font-size:12px; color:rgba(255,255,255,0.5);">By ' + safeName + ' · ' + (p.gradeSlug || '?') + ' · ' + dt + '</div>' +
+          '</div>' +
+          '<code style="font-size:11px; color:rgba(255,255,255,0.4); white-space:nowrap;">' + p.postId + '</code>' +
+        '</div>' +
+        '<div style="white-space:pre-wrap; font-size:14px; line-height:1.5; color:rgba(255,255,255,0.82); padding:12px 14px; background:rgba(0,0,0,0.25); border-radius:8px; max-height:240px; overflow-y:auto; margin-bottom:12px;">' + safeBody + '</div>' +
+        '<div style="display:flex; gap:8px; flex-wrap:wrap;">' +
+          '<button class="btn btn-primary" data-action="approve" style="font-size:13px; padding:8px 16px;">Approve</button>' +
+          '<button class="btn btn-secondary" data-action="reject" style="font-size:13px; padding:8px 16px;">Reject</button>' +
+        '</div>';
+      div.querySelector('[data-action="approve"]').addEventListener('click', () => moderate(p.postId, 'approve', div));
+      div.querySelector('[data-action="reject"]').addEventListener('click', () => moderate(p.postId, 'reject', div));
+      wrap.appendChild(div);
+    });
+  }
+
+  async function moderate(postId, action, cardEl) {
+    let reason = '';
+    if (action === 'reject') {
+      reason = prompt('Reason for rejection (kid will see this — keep it kind):', 'Please remove personal information and re-submit.');
+      if (reason === null) return;
+    } else if (!confirm('Approve this post? It will go live on /blog/ immediately.')) {
+      return;
+    }
+    cardEl.style.opacity = '0.5';
+    cardEl.style.pointerEvents = 'none';
+    try {
+      const actionName = action === 'approve' ? 'approveBlogPost' : 'rejectBlogPost';
+      await Auth.api(actionName, { token: Auth.token(), postId, reason });
+      cardEl.remove();
+      // Refresh badge count
+      const badge = $('blog-tab-badge');
+      const remaining = document.querySelectorAll('#blog-queue-list > div').length;
+      if (badge) {
+        if (remaining > 0) { badge.textContent = remaining; badge.hidden = false; }
+        else { badge.hidden = true; }
+      }
+      if (remaining === 0) {
+        $('blog-queue-list').innerHTML = '<p style="color:rgba(255,255,255,0.5); padding:20px; text-align:center;">All caught up.</p>';
+      }
+    } catch (e) {
+      console.error('[blog moderate]', e);
+      cardEl.style.opacity = '1';
+      cardEl.style.pointerEvents = 'auto';
+      alert('Couldn\'t ' + action + ': ' + (e.message || 'error'));
+    }
   }
 
   function switchTab(name) {

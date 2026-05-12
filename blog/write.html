@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com https://api.gradeearn.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#060d1f">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+
+  <title>Write a Blog Post — GradeEarn</title>
+  <meta name="description" content="Share what you've been learning. Write a blog post for the GradeEarn student blog.">
+  <meta name="robots" content="noindex, follow">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css?v=20260512e">
+</head>
+<body class="fw-page">
+
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="/index.html" aria-label="GradeEarn home">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="#fbbf24" aria-hidden="true">
+        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+      </svg>
+      <span class="brand-text">Grade<span class="brand-text-accent">Earn</span></span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="/index.html">Home</a>
+      <a href="/blog/">Student Blog</a>
+      <a href="/free-worksheets/index.html">Free worksheets</a>
+      <a href="/articles/">Articles</a>
+    </nav>
+    <div id="user-slot" class="user-slot"></div>
+  </div>
+</header>
+
+<main class="fw-main">
+  <nav class="breadcrumb-nav breadcrumb-nav--minimal" aria-label="Breadcrumb">
+    <ol class="breadcrumb breadcrumb--mid-dot">
+      <li class="breadcrumb-item"><a href="/index.html">Home</a></li>
+      <li class="breadcrumb-item"><a href="/blog/">Student Blog</a></li>
+      <li class="breadcrumb-item breadcrumb-item--current">Write a post</li>
+    </ol>
+  </nav>
+
+  <!-- Signed-out view -->
+  <section id="signed-out" class="fw-article fw-prose" hidden>
+    <header class="fw-hero">
+      <p class="fw-eyebrow">Sign in required</p>
+      <h1 class="fw-h1">Sign in to write a post</h1>
+      <p class="fw-lead">You need a GradeEarn account to share a post. It's free and takes 30 seconds.</p>
+      <div class="fw-hero-cta">
+        <button class="fw-btn fw-btn--primary" type="button" id="signin-btn">Sign in / Sign up</button>
+        <a class="fw-btn fw-btn--ghost" href="/blog/">Read other posts instead</a>
+      </div>
+    </header>
+  </section>
+
+  <!-- Signed-in view: the form -->
+  <article class="fw-article fw-prose" id="signed-in" hidden>
+    <header class="fw-hero">
+      <p class="fw-eyebrow">Share what you're learning</p>
+      <h1 class="fw-h1">Write a blog post</h1>
+      <p class="fw-lead">What did you learn this week? What confused you and then clicked? Your post will appear on the blog after a quick review (usually within 24 hours).</p>
+    </header>
+
+    <section class="fw-prose-section">
+      <div style="background:rgba(251,191,36,0.06); border:1px solid rgba(251,191,36,0.28); border-radius:12px; padding:14px 18px; margin-bottom:24px;">
+        <strong style="color:#fde68a; display:block; margin-bottom:6px;">⚠ A few safety rules</strong>
+        <ul style="margin:0; padding-left:22px; font-size:14px; color:rgba(255,255,255,0.78); line-height:1.55;">
+          <li>Don't share your last name, phone number, email, or street address.</li>
+          <li>Don't share where you live or where you go to school.</li>
+          <li>Don't include links to other websites.</li>
+          <li>Be kind. No mean stuff about other people.</li>
+        </ul>
+        <p style="margin:8px 0 0; font-size:13px; color:rgba(255,255,255,0.55);">Your post will show your <strong>first name</strong> and <strong>grade</strong> only — never your username or full name.</p>
+      </div>
+
+      <form id="blog-form">
+        <div style="margin-bottom:18px;">
+          <label for="title" style="display:block; font-size:14px; font-weight:600; margin-bottom:6px; color:rgba(255,255,255,0.85);">
+            Title
+            <span style="color:rgba(255,255,255,0.45); font-weight:400;">(5-100 characters)</span>
+          </label>
+          <input type="text" id="title" name="title" required minlength="5" maxlength="100"
+            placeholder="What clicked for me with fractions"
+            style="width:100%; padding:12px 14px; font-size:15px; font-family:inherit; color:#fff; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.10); border-radius:10px; box-sizing:border-box;">
+          <p id="title-counter" style="margin:4px 0 0; font-size:12px; color:rgba(255,255,255,0.4); text-align:right;">0 / 100</p>
+        </div>
+
+        <div style="margin-bottom:18px;">
+          <label for="body" style="display:block; font-size:14px; font-weight:600; margin-bottom:6px; color:rgba(255,255,255,0.85);">
+            Your post
+            <span style="color:rgba(255,255,255,0.45); font-weight:400;">(100-3000 characters)</span>
+          </label>
+          <textarea id="body" name="body" required minlength="100" maxlength="3000" rows="14"
+            placeholder="I used to think fractions were confusing because..."
+            style="width:100%; padding:12px 14px; font-size:15px; font-family:inherit; color:#fff; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.10); border-radius:10px; box-sizing:border-box; resize:vertical; line-height:1.55;"></textarea>
+          <p id="body-counter" style="margin:4px 0 0; font-size:12px; color:rgba(255,255,255,0.4); text-align:right;">0 / 3000</p>
+        </div>
+
+        <div id="form-error" style="display:none; padding:10px 14px; background:rgba(239,68,68,0.10); border:1px solid rgba(239,68,68,0.35); border-radius:8px; color:#fca5a5; font-size:14px; margin-bottom:14px;"></div>
+        <div id="form-success" style="display:none; padding:10px 14px; background:rgba(52,211,153,0.10); border:1px solid rgba(52,211,153,0.35); border-radius:8px; color:#6ee7b7; font-size:14px; margin-bottom:14px;"></div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button type="submit" id="submit-btn" class="fw-btn fw-btn--primary">Submit for review</button>
+          <a href="/blog/" class="fw-btn fw-btn--ghost">Cancel</a>
+        </div>
+      </form>
+    </section>
+  </article>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="footer-copyright">&copy; 2026 GradeEarn. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="/js/auth.js?v=20260511c"></script>
+<script>
+(function () {
+  const API = 'https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com';
+
+  function showSignedOut() {
+    document.getElementById('signed-out').hidden = false;
+    document.getElementById('signed-in').hidden = true;
+  }
+  function showSignedIn() {
+    document.getElementById('signed-out').hidden = true;
+    document.getElementById('signed-in').hidden = false;
+  }
+
+  // Wait a tick for auth.js to restore session
+  setTimeout(function () {
+    const user = window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser();
+    if (!user) {
+      showSignedOut();
+      const btn = document.getElementById('signin-btn');
+      if (btn) btn.addEventListener('click', function () {
+        if (window.STAARAuth && window.STAARAuth.showLogin) window.STAARAuth.showLogin();
+      });
+      return;
+    }
+    showSignedIn();
+    wireForm();
+  }, 0);
+
+  function wireForm() {
+    const form = document.getElementById('blog-form');
+    const titleEl = document.getElementById('title');
+    const bodyEl = document.getElementById('body');
+    const titleCount = document.getElementById('title-counter');
+    const bodyCount = document.getElementById('body-counter');
+    const errEl = document.getElementById('form-error');
+    const okEl = document.getElementById('form-success');
+    const submitBtn = document.getElementById('submit-btn');
+
+    function updateCounters() {
+      titleCount.textContent = titleEl.value.length + ' / 100';
+      bodyCount.textContent = bodyEl.value.length + ' / 3000';
+    }
+    titleEl.addEventListener('input', updateCounters);
+    bodyEl.addEventListener('input', updateCounters);
+    updateCounters();
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      errEl.style.display = 'none';
+      okEl.style.display = 'none';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting…';
+
+      const token = window.STAARAuth && window.STAARAuth.token && window.STAARAuth.token();
+      try {
+        const r = await fetch(API + '/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'submitBlogPost',
+            token: token,
+            title: titleEl.value.trim(),
+            body: bodyEl.value.trim()
+          })
+        });
+        const data = await r.json();
+        if (!r.ok) {
+          errEl.textContent = data.error || 'Something went wrong. Try again.';
+          errEl.style.display = 'block';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Submit for review';
+          return;
+        }
+        okEl.textContent = data.message || 'Submitted! We\'ll review it soon.';
+        okEl.style.display = 'block';
+        titleEl.value = '';
+        bodyEl.value = '';
+        updateCounters();
+        submitBtn.textContent = 'Submitted ✓';
+        // Stay disabled for 3s so the success message is visible
+        setTimeout(function () {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Submit another post';
+        }, 3000);
+      } catch (err) {
+        console.error('[blog write]', err);
+        errEl.textContent = 'Network problem. Try again.';
+        errEl.style.display = 'block';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit for review';
+      }
+    });
+  }
+})();
+</script>
+
+</body>
+</html>

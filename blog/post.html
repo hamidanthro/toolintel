@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com https://api.gradeearn.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#060d1f">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+
+  <title id="page-title">Student Post — GradeEarn</title>
+  <meta name="description" id="page-description" content="A post written by a GradeEarn student.">
+  <meta name="robots" content="noindex, follow">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css?v=20260512e">
+</head>
+<body class="fw-page">
+
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="/index.html" aria-label="GradeEarn home">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="#fbbf24" aria-hidden="true">
+        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+      </svg>
+      <span class="brand-text">Grade<span class="brand-text-accent">Earn</span></span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="/index.html">Home</a>
+      <a href="/blog/">Student Blog</a>
+      <a href="/free-worksheets/index.html">Free worksheets</a>
+      <a href="/articles/">Articles</a>
+    </nav>
+    <div id="user-slot" class="user-slot"></div>
+  </div>
+</header>
+
+<main class="fw-main">
+  <nav class="breadcrumb-nav breadcrumb-nav--minimal" aria-label="Breadcrumb">
+    <ol class="breadcrumb breadcrumb--mid-dot">
+      <li class="breadcrumb-item"><a href="/index.html">Home</a></li>
+      <li class="breadcrumb-item"><a href="/blog/">Student Blog</a></li>
+      <li class="breadcrumb-item breadcrumb-item--current" id="crumb-title">Post</li>
+    </ol>
+  </nav>
+
+  <article class="fw-article fw-prose" id="post-article" hidden>
+    <header class="fw-hero">
+      <p class="fw-eyebrow" id="post-eyebrow">Student post</p>
+      <h1 class="fw-h1" id="post-title">—</h1>
+      <p class="fw-byline">
+        By <span id="post-author">—</span>
+        <span class="fw-byline-sep" aria-hidden="true">·</span>
+        <time id="post-date">—</time>
+        <span class="fw-byline-sep" aria-hidden="true">·</span>
+        <span id="post-views">0 views</span>
+      </p>
+    </header>
+    <section class="fw-prose-section">
+      <div id="post-body" style="white-space:pre-wrap; font-size:17px; line-height:1.65;"></div>
+    </section>
+    <section class="fw-prose-section" style="border-top:1px solid rgba(255,255,255,0.08); padding-top:24px;">
+      <a class="fw-btn fw-btn--ghost" href="/blog/">← All student posts</a>
+      <a class="fw-btn fw-btn--primary" href="/blog/write.html" style="margin-left:8px;">Write your own</a>
+    </section>
+  </article>
+
+  <div id="post-loading" class="state-page-loading">
+    <span class="state-loading-spinner" aria-hidden="true"></span>
+    <span>Loading post…</span>
+  </div>
+
+  <section id="post-error" class="state-page-error" hidden>
+    <h2 class="state-error-title">Post not found</h2>
+    <p class="state-error-text">This post may have been removed or the link is wrong.</p>
+    <a class="state-error-cta" href="/blog/">
+      <span>Back to all posts </span>
+    </a>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="footer-copyright">&copy; 2026 GradeEarn. All rights reserved.</p>
+    <nav class="footer-mobile-links">
+      <a href="/about.html">How it works</a>
+      <a href="/blog/">Student Blog</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="/js/auth.js?v=20260511c"></script>
+<script>
+(function () {
+  const API = 'https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com';
+  const id = new URLSearchParams(location.search).get('id');
+  if (!id) { showError(); return; }
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+  function gradeLabel(slug) {
+    if (!slug) return '';
+    if (slug === 'grade-k') return 'Kindergarten';
+    if (slug === 'algebra-1') return 'Algebra I';
+    const m = /^grade-(\d+)$/.exec(slug);
+    if (m) return 'Grade ' + m[1];
+    return slug;
+  }
+  function showError() {
+    document.getElementById('post-loading').hidden = true;
+    document.getElementById('post-error').hidden = false;
+  }
+
+  fetch(API + '/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'getBlogPost', postId: id })
+  })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      if (!data.post) { showError(); return; }
+      const p = data.post;
+      document.getElementById('page-title').textContent = p.title + ' — GradeEarn Student Blog';
+      document.getElementById('page-description').setAttribute('content', String(p.body || '').slice(0, 160));
+      document.getElementById('crumb-title').textContent = p.title;
+      document.getElementById('post-title').textContent = p.title;
+      document.getElementById('post-author').textContent = p.displayName + (p.gradeSlug ? ' · ' + gradeLabel(p.gradeSlug) : '');
+      const dateEl = document.getElementById('post-date');
+      const d = new Date(p.approvedAt);
+      dateEl.textContent = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      dateEl.setAttribute('datetime', d.toISOString().slice(0, 10));
+      document.getElementById('post-views').textContent = (p.viewCount || 0) + ' view' + (p.viewCount === 1 ? '' : 's');
+      document.getElementById('post-body').textContent = p.body;
+      document.getElementById('post-loading').hidden = true;
+      document.getElementById('post-article').hidden = false;
+    })
+    .catch(function (e) {
+      console.error('[blog]', e);
+      showError();
+    });
+})();
+</script>
+
+</body>
+</html>

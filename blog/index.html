@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com https://api.gradeearn.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#060d1f">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+
+  <title>Student Blog — GradeEarn</title>
+  <meta name="description" content="Read posts written by students using GradeEarn. Stories, study tips, and reflections on math, reading, and STAAR test prep — written by kids, for kids.">
+  <meta name="keywords" content="student blog, kids blog, STAAR student stories, Texas student writing, math kids blog">
+  <meta name="author" content="GradeEarn students">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+
+  <link rel="canonical" href="https://gradeearn.com/blog/">
+  <link rel="alternate" hreflang="en-US" href="https://gradeearn.com/blog/" />
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="GradeEarn">
+  <meta property="og:title" content="Student Blog — GradeEarn">
+  <meta property="og:description" content="Posts written by GradeEarn students.">
+  <meta property="og:url" content="https://gradeearn.com/blog/">
+  <meta property="og:image" content="https://gradeearn.com/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@gradeearn">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "name": "GradeEarn Student Blog",
+    "url": "https://gradeearn.com/blog/",
+    "description": "Posts written by GradeEarn students.",
+    "publisher": {
+      "@type": "Organization",
+      "name": "GradeEarn",
+      "url": "https://gradeearn.com",
+      "logo": { "@type": "ImageObject", "url": "https://gradeearn.com/og-image.png", "width": 1200, "height": 630 }
+    }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&display=swap">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css?v=20260512e">
+</head>
+<body class="fw-page">
+
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="/index.html" aria-label="GradeEarn home">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="#fbbf24" aria-hidden="true">
+        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+      </svg>
+      <span class="brand-text">Grade<span class="brand-text-accent">Earn</span></span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="/index.html">Home</a>
+      <a href="/blog/" class="active">Student Blog</a>
+      <a href="/free-worksheets/index.html">Free worksheets</a>
+      <a href="/articles/">Articles</a>
+    </nav>
+    <div id="user-slot" class="user-slot"></div>
+  </div>
+</header>
+
+<main class="fw-main">
+  <nav class="breadcrumb-nav breadcrumb-nav--minimal" aria-label="Breadcrumb">
+    <ol class="breadcrumb breadcrumb--mid-dot">
+      <li class="breadcrumb-item"><a href="/index.html">Home</a></li>
+      <li class="breadcrumb-item breadcrumb-item--current">Student Blog</li>
+    </ol>
+  </nav>
+
+  <article class="fw-article">
+
+    <header class="fw-hero">
+      <p class="fw-eyebrow">Written by GradeEarn students</p>
+      <h1 class="fw-h1">Student Blog</h1>
+      <p class="fw-lead">Stories, study tips, and reflections from kids using GradeEarn. Every post is reviewed before it goes public. Want to write one? Sign in and share what you've been learning.</p>
+      <div class="fw-hero-cta">
+        <a class="fw-btn fw-btn--primary" href="/blog/write.html">Write a post</a>
+        <a class="fw-btn fw-btn--ghost" href="/blog/my-posts.html">My posts</a>
+      </div>
+    </header>
+
+    <div id="blog-loading" class="state-page-loading">
+      <span class="state-loading-spinner" aria-hidden="true"></span>
+      <span>Loading posts…</span>
+    </div>
+
+    <div id="blog-empty" class="fw-prose-section" hidden>
+      <p style="text-align:center; color:rgba(255,255,255,0.55); padding:48px 0;">
+        No posts yet. <a href="/blog/write.html" style="color:#fde68a;">Be the first to share something →</a>
+      </p>
+    </div>
+
+    <section id="blog-list" class="topic-list" style="margin-bottom:48px;">
+      <!-- Filled by JS -->
+    </section>
+
+    <div id="blog-more" style="text-align:center; margin-bottom:48px;" hidden>
+      <button id="blog-more-btn" class="fw-btn fw-btn--ghost" type="button">Load more posts</button>
+    </div>
+
+  </article>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="footer-copyright">&copy; 2026 GradeEarn. All rights reserved.</p>
+    <nav class="footer-mobile-links">
+      <a href="/about.html">How it works</a>
+      <a href="/blog/">Student Blog</a>
+      <a href="/free-worksheets/index.html">Free worksheets</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="/js/auth.js?v=20260511c"></script>
+<script>
+(function () {
+  const API = 'https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com';
+  const list = document.getElementById('blog-list');
+  const loading = document.getElementById('blog-loading');
+  const empty = document.getElementById('blog-empty');
+  const moreWrap = document.getElementById('blog-more');
+  const moreBtn = document.getElementById('blog-more-btn');
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+  function gradeLabel(slug) {
+    if (!slug) return '';
+    if (slug === 'grade-k') return 'Kindergarten';
+    if (slug === 'algebra-1') return 'Algebra I';
+    const m = /^grade-(\d+)$/.exec(slug);
+    if (m) return 'Grade ' + m[1];
+    return slug;
+  }
+  function fmtDate(ts) {
+    if (!ts) return '';
+    const d = new Date(ts);
+    return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  function render(posts) {
+    posts.forEach(function (p) {
+      const a = document.createElement('a');
+      a.className = 'list-card';
+      a.href = '/blog/post.html?id=' + encodeURIComponent(p.postId);
+      a.innerHTML =
+        '<span class="list-card-icon" aria-hidden="true">✎</span>' +
+        '<div style="flex:1; min-width:0;">' +
+          '<h3 class="list-card-title">' + esc(p.title) + '</h3>' +
+          '<p style="margin:4px 0 0; font-size:13px; color:rgba(255,255,255,0.55); line-height:1.4;">' +
+            esc(p.excerpt) +
+          '</p>' +
+          '<p style="margin:6px 0 0; font-size:12px; color:rgba(255,255,255,0.42);">' +
+            'By ' + esc(p.displayName) +
+            (p.gradeSlug ? ' · ' + esc(gradeLabel(p.gradeSlug)) : '') +
+            ' · ' + fmtDate(p.approvedAt) +
+          '</p>' +
+        '</div>' +
+        '<span class="list-card-chevron" aria-hidden="true">→</span>';
+      list.appendChild(a);
+    });
+  }
+
+  let cursor = null;
+  async function load() {
+    moreBtn.disabled = true;
+    try {
+      const body = { action: 'getBlogPosts', limit: 12 };
+      if (cursor) body.cursor = cursor;
+      const r = await fetch(API + '/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await r.json();
+      loading.hidden = true;
+      if (!data.posts || data.posts.length === 0) {
+        if (list.children.length === 0) empty.hidden = false;
+        moreWrap.hidden = true;
+        return;
+      }
+      render(data.posts);
+      cursor = data.nextCursor;
+      moreWrap.hidden = !cursor;
+    } catch (e) {
+      console.error('[blog]', e);
+      loading.hidden = true;
+      empty.hidden = false;
+      empty.querySelector('p').textContent = 'Couldn\'t load posts. Refresh to try again.';
+    } finally {
+      moreBtn.disabled = false;
+    }
+  }
+  moreBtn.addEventListener('click', load);
+  load();
+})();
+</script>
+
+</body>
+</html>

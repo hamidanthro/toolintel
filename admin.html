@@ -72,6 +72,7 @@
           <button class="admin-tab" data-tab="users">Users <span class="tab-badge tab-badge--live" id="users-tab-badge" hidden>0</span></button>
           <button class="admin-tab" data-tab="states">States <span class="tab-badge" id="states-tab-badge" hidden>0</span></button>
           <button class="admin-tab" data-tab="content">Content <span class="tab-badge" id="content-tab-badge" hidden>0</span></button>
+          <button class="admin-tab" data-tab="blog">Blog queue <span class="tab-badge" id="blog-tab-badge" hidden>0</span></button>
         </div>
 
         <div id="tab-toys">
@@ -269,6 +270,20 @@
             <p class="admin-empty-text">As kids practice, generated questions are saved here for reuse. Cold-start in I2 will pre-fill Texas math.</p>
           </div>
         </div>
+
+        <!-- §B5 Student-blog moderation queue -->
+        <div id="tab-blog" hidden>
+          <div class="live-users-head">
+            <h2 style="margin:0;">Student blog · pending posts</h2>
+            <button class="btn btn-secondary" type="button" id="blog-refresh" style="font-size:0.85rem;padding:6px 14px;">Refresh</button>
+          </div>
+          <p style="color:rgba(255,255,255,0.55); font-size:13px; margin:6px 0 18px;">
+            Posts wait here until you approve or reject. Approved posts appear on <code>/blog/</code> and are publicly indexable by Google.
+          </p>
+          <div id="blog-queue-list" style="display:flex; flex-direction:column; gap:12px;">
+            <p style="color:rgba(255,255,255,0.5); padding:20px;">Loading…</p>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -305,7 +320,7 @@
   <script src="js/friends.js?v=20260426b"></script>
   <script>window.STAARAuth = window.STAARAuth || {}; window.STAARAuth.requireLoginOnLoad = true;</script>
   <script>window.STAAR_TUTOR_ENDPOINT = 'https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com/';</script>
-  <script src="js/admin.js?v=20260427j"></script>
+  <script src="js/admin.js?v=20260512a"></script>
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>

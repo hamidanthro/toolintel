@@ -911,4 +911,11 @@
     <xhtml:link xmlns:xhtml="http://www.w3.org/1999/xhtml" rel="alternate" hreflang="en-US" href="https://gradeearn.com/articles/staar-scores-explained.html"/>
     <xhtml:link xmlns:xhtml="http://www.w3.org/1999/xhtml" rel="alternate" hreflang="es-MX" href="https://gradeearn.com/articles/es/puntajes-staar-explicados.html"/>
   </url>
+
+  <!-- Student blog index — individual posts are noindex (UGC, kid-written) -->
+  <url>
+    <loc>https://gradeearn.com/blog/</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
 </urlset>
