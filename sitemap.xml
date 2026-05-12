@@ -381,4 +381,34 @@
     <priority>0.9</priority>
     <lastmod>2026-05-12</lastmod>
   </url>
+
+  <!-- Phase-2 article batch (May 12 evening) -->
+  <url>
+    <loc>https://gradeearn.com/articles/staar-test-dates-2026-2027.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.95</priority>
+    <lastmod>2026-05-12</lastmod>
+  </url>
+  <url>
+    <loc>https://gradeearn.com/articles/staar-scores-explained.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <lastmod>2026-05-12</lastmod>
+  </url>
+  <url>
+    <loc>https://gradeearn.com/articles/staar-question-types-explained.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <lastmod>2026-05-12</lastmod>
+  </url>
+
+  <!-- Spanish-language pages (hreflang reciprocal to English originals) -->
+  <url>
+    <loc>https://gradeearn.com/articles/es/guia-staar-para-padres-texas.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <lastmod>2026-05-12</lastmod>
+    <xhtml:link xmlns:xhtml="http://www.w3.org/1999/xhtml" rel="alternate" hreflang="en-US" href="https://gradeearn.com/articles/texas-staar-parent-guide.html"/>
+    <xhtml:link xmlns:xhtml="http://www.w3.org/1999/xhtml" rel="alternate" hreflang="es-MX" href="https://gradeearn.com/articles/es/guia-staar-para-padres-texas.html"/>
+  </url>
 </urlset>
