@@ -35,7 +35,9 @@
   if (document.body.classList.contains('myspace-page')) return;
   if (document.body.classList.contains('admin-page')) return;
 
-  // Canonical nav items. authOnly = hidden for signed-out users.
+  // Canonical nav items.
+  //   authOnly = hidden for signed-out users (signed-in only)
+  //   anonOnly = hidden for signed-in users (signed-out only — sales/marketing)
   // Order matters — this is the left-to-right reading order in the pill.
   const NAV_ITEMS = [
     { href: '/index.html',        label: 'Home',        i18n: 'nav.home' },
@@ -44,7 +46,7 @@
     { href: '/league.html',       label: 'League',                              authOnly: true },
     { href: '/games.html',        label: 'Games' },
     { href: '/marketplace.html',  label: 'Toys',        i18n: 'nav.toys' },
-    { href: '/about.html',        label: 'How it works', i18n: 'nav.howItWorks', authOnly: true },
+    { href: '/about.html',        label: 'How it works', i18n: 'nav.howItWorks', anonOnly: true },
   ];
 
   function isCurrentPath(href) {
@@ -82,7 +84,11 @@
   }
 
   function navHtml(signedIn) {
-    const items = NAV_ITEMS.filter(function (i) { return signedIn || !i.authOnly; });
+    const items = NAV_ITEMS.filter(function (i) {
+      if (i.authOnly && !signedIn) return false;
+      if (i.anonOnly && signedIn) return false;
+      return true;
+    });
     const links = items.map(function (i) {
       const active = isCurrentPath(i.href) ? ' class="active"' : '';
       const i18n = i.i18n ? ' data-i18n="' + i.i18n + '"' : '';
