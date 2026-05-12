@@ -484,7 +484,7 @@
             <a href="#" id="guest-cap-signin" style="color:#fde68a;">Already have an account? Sign in</a>
           </p>
           <p style="font-size:0.78rem;color:rgba(255,255,255,0.45);margin:14px 0 0;">
-            Free during beta · Texas families · No credit card · COPPA-aware parent consent
+            Free during beta · No credit card · Parent consent required
           </p>
         </div>`;
       const sup = document.getElementById('guest-cap-signup');

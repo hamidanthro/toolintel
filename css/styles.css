@@ -3401,22 +3401,25 @@ body.pref-large-text .choice { font-size: 1.1rem; }
   flex-direction: column;
   gap: 12px;
 }
+/* §49 polish: tighter eyebrow column headers + slightly smaller link
+   items so the column hierarchy reads clearly without dominating. */
 .footer-col-title {
   font-family: 'Inter', system-ui, sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.45);
-  margin: 0 0 4px 0;
+  margin: 0 0 14px 0;
 }
 .footer .footer-link {
   font-family: 'Inter', system-ui, sans-serif;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 400;
   color: rgba(255, 255, 255, 0.65);
   text-decoration: none;
   transition: color 0.2s ease;
+  line-height: 1.8;
 }
 .footer .footer-link:hover { color: #ffffff; }
 .footer-divider {
@@ -25795,6 +25798,56 @@ body.legal-page .fw-prose-section table td {
 }
 .compliance-footer .compliance-sep {
   color: rgba(255, 255, 255, 0.2);
+}
+
+/* ==========================================================================
+   §49 Footer two-tier system + subtractive polish (May 12).
+   Marketing footer: cleaned tagline, no reassurance pills, no socials,
+   no location string. Product surfaces (practice, achievements) swap
+   the marketing footer entirely for a slim 5-link compliance row.
+   ========================================================================== */
+
+/* Slim compliance footer for product surfaces — single horizontal row,
+   middot-separated, no logo / columns / tagline. Its job is purely to
+   give a parent landing on a product page a path to Privacy / Parent
+   dashboard / Report without having to navigate back to marketing. */
+.product-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  margin: 48px 0 0;
+  padding: 18px 16px 28px;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.product-footer-link {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 12px;
+  text-decoration: none;
+  transition: color 160ms ease;
+  padding: 4px 2px;
+}
+.product-footer-link:hover { color: rgba(255, 255, 255, 0.75); }
+.product-footer-sep { color: rgba(255, 255, 255, 0.15); font-size: 12px; }
+
+/* Defensive: if any page still has the .footer-trust-row / .footer-social
+   markup from older HTML (we cleaned 4 pages here but the codebase has
+   many more pages), hide these elements globally so they can't re-appear
+   as a regression. Markup will be removed page-by-page as those pages are
+   touched; this CSS guard means an un-touched page also reads as polished. */
+.footer .footer-trust-row,
+.footer .footer-trust-pill,
+.footer .footer-social,
+.footer .footer-social-link,
+.footer .footer-meta-divider {
+  display: none !important;
+}
+.footer .footer-meta-item {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 12px;
+  font-style: italic;
 }
 
 /* ==========================================================================
