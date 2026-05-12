@@ -51,6 +51,8 @@ const EVENTS_TABLE = process.env.EVENTS_TABLE || 'staar-content-events';
 const WORD_DEFINITIONS_TABLE = process.env.WORD_DEFINITIONS_TABLE || 'staar-word-definitions';   // §77 Phase C tap-any-word
 const FRIENDS_TABLE = process.env.FRIENDS_TABLE || 'staar-friends';
 const MESSAGES_TABLE = process.env.MESSAGES_TABLE || 'staar-messages';
+const MATCHES_TABLE = process.env.MATCHES_TABLE || 'staar-matches';
+const MATCH_HISTORY_TABLE = process.env.MATCH_HISTORY_TABLE || 'staar-match-history';
 const S3_TOY_BUCKET = process.env.S3_TOY_BUCKET || '';
 const S3_REGION = process.env.AWS_REGION || 'us-east-1';
 const ADMIN_USERNAMES = (process.env.ADMIN_USERNAMES || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
@@ -442,6 +444,11 @@ exports.handler = async (event) => {
   if (action === 'getParentEmail')          return await handleGetParentEmail(payload);
   if (action === 'setAvatarEmoji')          return await handleSetAvatarEmoji(payload);
   if (action === 'submitGameScore')         return await handleSubmitGameScore(payload);
+  if (action === 'matchmake')               return await handleMatchmake(payload);
+  if (action === 'matchState')              return await handleMatchState(payload);
+  if (action === 'matchAnswer')             return await handleMatchAnswer(payload);
+  if (action === 'matchFinish')             return await handleMatchFinish(payload);
+  if (action === 'matchHistory')            return await handleMatchHistory(payload);
   if (action === 'getGameScores')           return await handleGetGameScores(payload);
   if (action === 'sendGameInvite')          return await handleSendGameInvite(payload);
   if (action === 'getGameInvites')          return await handleGetGameInvites(payload);
@@ -4819,4 +4826,497 @@ Output ONLY valid JSON:
   const raw = result?.choices?.[0]?.message?.content || '{}';
   const parsed = JSON.parse(raw);
   return { ...parsed, _generatedBy: MODEL, _promptVersion: 'reading-v1' };
+}
+
+// ===== Live Match Engine (Showdown + future multiplayer games) =====
+//
+// Two DDB tables (must be created via AWS CLI before this code can run):
+//   staar-matches         (live match state, 1h TTL via expiresAt)
+//   staar-match-history   (per-user log + opponentUserId-finishedAt GSI)
+//
+// Match state schema:
+//   PK matchId, SK kind ('header' | 'player#<userId>' | 'round#<n>')
+//
+// Polling-based realtime: clients call matchState every ~500ms.
+// Server returns serverNowMs so clients can compute drift and render
+// the per-round timer accurately even with mismatched clocks.
+
+const MATCH_TTL_SEC = 60 * 60; // 1 hour
+const SHOWDOWN_ROUNDS = 10;
+const SHOWDOWN_ROUND_MS = 10000;
+
+function _matchId() { return 'm_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10); }
+function _inviteToken() {
+  const c = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let s = ''; for (let i = 0; i < 8; i++) s += c.charAt(Math.floor(Math.random() * c.length));
+  return s;
+}
+function _publicProblem(p) { return { stem: p.stem, choices: p.choices }; }
+
+// Per-grade problem generator (mirrors the math-sprint per-grade schema
+// but constrained to 4 multiple-choice answers, suitable for race play).
+function _showdownProblem(gradeBand) {
+  function ri(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }
+  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+  function shuf(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+  function distractors(ans, count) {
+    const n = Number(ans);
+    if (!Number.isFinite(n)) return [String(ans) + '?', String(ans) + '!', String(ans) + ' '];
+    const set = new Set();
+    while (set.size < count) {
+      const d = ri(-Math.max(2, Math.abs(n) - 1), Math.max(5, Math.abs(n) + 5));
+      if (d === 0) continue;
+      const c = n + d;
+      if (c < 0 && gradeBand !== 'grade-7' && gradeBand !== 'grade-8' && gradeBand !== 'algebra-1') continue;
+      if (c === n) continue;
+      set.add(String(c));
+    }
+    return Array.from(set).slice(0, count);
+  }
+  function build(stem, ans) {
+    const a = String(ans);
+    const distrs = distractors(ans, 3);
+    const choices = shuf([a, ...distrs]);
+    return { stem, choices, correctIndex: choices.indexOf(a) };
+  }
+  const g = gradeBand || 'grade-3';
+  if (g === 'grade-k' || g === 'grade-1') {
+    const a = ri(1, 8), b = ri(1, 10 - a);
+    return build(`${a} + ${b}`, a + b);
+  }
+  if (g === 'grade-2') {
+    if (Math.random() < 0.5) { const a = ri(2, 18), b = ri(2, Math.max(2, 20 - a)); return build(`${a} + ${b}`, a + b); }
+    const a = ri(8, 20), b = ri(2, a - 1); return build(`${a} − ${b}`, a - b);
+  }
+  if (g === 'grade-3') {
+    if (Math.random() < 0.7) { const a = ri(2, 9), b = ri(2, 9); return build(`${a} × ${b}`, a * b); }
+    const b = ri(2, 9), ans = ri(2, 9); return build(`${b * ans} ÷ ${b}`, ans);
+  }
+  if (g === 'grade-4') {
+    const r = Math.random();
+    if (r < 0.45) { const a = ri(6, 12), b = ri(3, 9); return build(`${a} × ${b}`, a * b); }
+    if (r < 0.75) { const b = ri(3, 9), ans = ri(3, 12); return build(`${b * ans} ÷ ${b}`, ans); }
+    const a = ri(20, 80), b = ri(10, 50); return build(`${a} + ${b}`, a + b);
+  }
+  if (g === 'grade-5') {
+    const r = Math.random();
+    if (r < 0.4) { const a = ri(7, 15), b = ri(5, 20); return build(`${a} × ${b}`, a * b); }
+    if (r < 0.7) { const d = pick([2, 3, 4, 5, 10]); const n = ri(2, 12); return build(`1/${d} of ${d * n}`, n); }
+    const p = pick([10, 20, 25, 50, 75]); return build(`${p}% of 100`, p);
+  }
+  if (g === 'grade-6') {
+    const r = Math.random();
+    if (r < 0.4) { const p = pick([10, 20, 25, 50, 75]); const w = pick([20, 40, 60, 80, 100, 200]); return build(`${p}% of ${w}`, Math.round(p * w / 100)); }
+    if (r < 0.7) { const a = ri(2, 9), x = ri(1, 12); return build(`${a}x = ${a * x}\\nx = ?`, x); }
+    const k = ri(2, 8), a = ri(2, 9), b = a * k; return build(`${a} : ${b} = 1 : ?`, k);
+  }
+  if (g === 'grade-7' || g === 'grade-8') {
+    const r = Math.random();
+    if (r < 0.4) { const a = ri(2, 9), x = ri(2, 9), b = ri(-15, 15); return build(`${a}x ${b >= 0 ? '+' : '−'} ${Math.abs(b)} = ${a * x + b}\\nx = ?`, x); }
+    if (r < 0.7) { const a = ri(-12, 12), b = ri(-12, 12); const op = pick(['+', '−', '×']); const ans = op === '+' ? a + b : op === '−' ? a - b : a * b; return build(`${a < 0 ? `(${a})` : a} ${op} ${b < 0 ? `(${b})` : b}`, ans); }
+    const k = ri(2, 6), a = ri(2, 8), b = a * k, c = ri(2, 9); return build(`${a}/${b} = ${c}/?`, c * k);
+  }
+  // algebra-1
+  const a = ri(2, 5), b = ri(1, 8), x = ri(2, 6);
+  return build(`${a}x + ${b}, when x = ${x}`, a * x + b);
+}
+
+async function _readMatchHeader(matchId) {
+  const r = await ddb.send(new GetCommand({ TableName: MATCHES_TABLE, Key: { matchId, kind: 'header' } }));
+  return r.Item || null;
+}
+async function _readPlayers(matchId) {
+  const r = await ddb.send(new QueryCommand({
+    TableName: MATCHES_TABLE,
+    KeyConditionExpression: 'matchId = :m AND begins_with(#k, :p)',
+    ExpressionAttributeNames: { '#k': 'kind' },
+    ExpressionAttributeValues: { ':m': matchId, ':p': 'player#' }
+  }));
+  return r.Items || [];
+}
+async function _readRound(matchId, n) {
+  const r = await ddb.send(new GetCommand({
+    TableName: MATCHES_TABLE,
+    Key: { matchId, kind: `round#${n}` },
+    ConsistentRead: true
+  }));
+  return r.Item || null;
+}
+async function _addPlayer(matchId, userId, displayName, grade, expiresAt) {
+  try {
+    await ddb.send(new PutCommand({
+      TableName: MATCHES_TABLE,
+      Item: { matchId, kind: `player#${userId}`, userId, displayName, grade, joinedAt: Date.now(), ready: true, score: 0, eliminated: false, expiresAt },
+      ConditionExpression: 'attribute_not_exists(matchId)'
+    }));
+  } catch (e) {
+    if (e.name !== 'ConditionalCheckFailedException') throw e;
+    // already a player; idempotent rejoin
+  }
+}
+
+async function _createRound(matchId, n, gradeBand, expiresAt) {
+  const problem = _showdownProblem(gradeBand);
+  const startedAt = Date.now();
+  const deadline = startedAt + SHOWDOWN_ROUND_MS;
+  await ddb.send(new PutCommand({
+    TableName: MATCHES_TABLE,
+    Item: { matchId, kind: `round#${n}`, roundNumber: n, problem, startedAt, deadline, answers: {}, winnerUserId: null, expiresAt },
+    ConditionExpression: 'attribute_not_exists(matchId)'
+  })).catch(e => { if (e.name !== 'ConditionalCheckFailedException') throw e; });
+  return { problem, startedAt, deadline };
+}
+
+function _scrubPlayer(p) { return { userId: p.userId, displayName: p.displayName, grade: p.grade, score: p.score || 0, eliminated: !!p.eliminated }; }
+
+async function handleMatchmake(payload) {
+  const auth = await authedUser(payload);
+  if (!auth || !auth.username) return bad(401, 'Not signed in');
+  const mode = String(payload.mode || 'showdown');
+  const gradeBand = String(payload.gradeBand || auth.grade || 'grade-3');
+  const inviteToken = payload.inviteToken ? String(payload.inviteToken).toUpperCase() : null;
+  const me = auth.username;
+  const myDisplay = auth.displayName || me;
+  const myGrade = auth.grade || gradeBand;
+  const now = Date.now();
+  const expiresAt = Math.floor(now / 1000) + MATCH_TTL_SEC;
+
+  // Join via invite token
+  if (inviteToken) {
+    const scan = await ddb.send(new ScanCommand({
+      TableName: MATCHES_TABLE,
+      FilterExpression: 'inviteToken = :t AND #k = :h AND #s <> :done',
+      ExpressionAttributeNames: { '#k': 'kind', '#s': 'status' },
+      ExpressionAttributeValues: { ':t': inviteToken, ':h': 'header', ':done': 'done' },
+      Limit: 5
+    }));
+    const header = (scan.Items || [])[0];
+    if (!header) return bad(404, 'Invite expired or not found');
+    if (header.creatorUserId === me) {
+      const players = await _readPlayers(header.matchId);
+      const headerR = header;
+      return ok(await _matchSnapshot(headerR.matchId, headerR, players, headerR.currentRound));
+    }
+    const players = await _readPlayers(header.matchId);
+    if (players.length >= 2 && !players.find(p => p.userId === me)) return bad(409, 'Match is full');
+    await _addPlayer(header.matchId, me, myDisplay, myGrade, expiresAt);
+    return await _maybeStartMatch(header.matchId);
+  }
+
+  // Auto-match: find someone else's queued match in same gradeBand
+  const queued = await ddb.send(new ScanCommand({
+    TableName: MATCHES_TABLE,
+    FilterExpression: 'mode = :m AND gradeBand = :g AND #s = :q AND creatorUserId <> :me AND #k = :h',
+    ExpressionAttributeNames: { '#s': 'status', '#k': 'kind' },
+    ExpressionAttributeValues: { ':m': mode, ':g': gradeBand, ':q': 'queued', ':me': me, ':h': 'header' },
+    Limit: 5
+  }));
+  if (queued.Items && queued.Items.length > 0) {
+    const header = queued.Items[0];
+    await _addPlayer(header.matchId, me, myDisplay, myGrade, expiresAt);
+    return await _maybeStartMatch(header.matchId);
+  }
+
+  // Otherwise create a new queued match
+  const matchId = _matchId();
+  const tok = _inviteToken();
+  await ddb.send(new PutCommand({
+    TableName: MATCHES_TABLE,
+    Item: { matchId, kind: 'header', mode, gradeBand, status: 'queued', currentRound: 0, totalRounds: SHOWDOWN_ROUNDS, createdAt: now, inviteToken: tok, creatorUserId: me, expiresAt }
+  }));
+  await _addPlayer(matchId, me, myDisplay, myGrade, expiresAt);
+  return ok({ matchId, status: 'queued', mode, gradeBand, players: [{ userId: me, displayName: myDisplay, grade: myGrade, score: 0, eliminated: false }], inviteToken: tok, serverNowMs: Date.now() });
+}
+
+async function _maybeStartMatch(matchId) {
+  const header = await _readMatchHeader(matchId);
+  if (!header) return bad(404, 'Match not found');
+  const players = await _readPlayers(matchId);
+  if (players.length === 2 && header.status === 'queued') {
+    const round = await _createRound(matchId, 1, header.gradeBand, header.expiresAt);
+    await ddb.send(new UpdateCommand({
+      TableName: MATCHES_TABLE,
+      Key: { matchId, kind: 'header' },
+      UpdateExpression: 'SET #s = :live, currentRound = :cr, lockedAt = :ts',
+      ExpressionAttributeNames: { '#s': 'status' },
+      ExpressionAttributeValues: { ':live': 'live', ':cr': 1, ':ts': Date.now() }
+    }));
+    return ok({
+      matchId, status: 'live', mode: header.mode, gradeBand: header.gradeBand,
+      players: players.map(_scrubPlayer),
+      currentRound: 1, totalRounds: SHOWDOWN_ROUNDS,
+      problem: _publicProblem(round.problem),
+      roundStartedAt: round.startedAt, roundDeadline: round.deadline,
+      inviteToken: header.inviteToken,
+      serverNowMs: Date.now()
+    });
+  }
+  return ok({
+    matchId, status: header.status, mode: header.mode, gradeBand: header.gradeBand,
+    players: players.map(_scrubPlayer),
+    inviteToken: header.inviteToken,
+    serverNowMs: Date.now()
+  });
+}
+
+async function _matchSnapshot(matchId, header, players, currentRound) {
+  const out = {
+    matchId, status: header.status, mode: header.mode, gradeBand: header.gradeBand,
+    players: players.map(_scrubPlayer),
+    currentRound: header.currentRound || 0, totalRounds: header.totalRounds || SHOWDOWN_ROUNDS,
+    inviteToken: header.inviteToken,
+    serverNowMs: Date.now()
+  };
+  if ((header.currentRound || 0) > 0 && header.status === 'live') {
+    const round = await _readRound(matchId, header.currentRound);
+    if (round) {
+      out.problem = _publicProblem(round.problem);
+      out.roundStartedAt = round.startedAt;
+      out.roundDeadline = round.deadline;
+      out.roundNumber = round.roundNumber;
+      out.answeredUserIds = Object.keys(round.answers || {});
+      out.roundWinnerUserId = round.winnerUserId;
+    }
+  }
+  return out;
+}
+
+async function handleMatchState(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  const matchId = String(payload.matchId || '');
+  if (!matchId) return bad(400, 'matchId required');
+  const header = await _readMatchHeader(matchId);
+  if (!header) return bad(404, 'Match not found');
+  const players = await _readPlayers(matchId);
+  if (!players.find(p => p.userId === auth.username)) return bad(403, 'Not a player in this match');
+  return ok(await _matchSnapshot(matchId, header, players, header.currentRound));
+}
+
+async function handleMatchAnswer(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  const matchId = String(payload.matchId || '');
+  const roundNumber = parseInt(payload.roundNumber, 10);
+  const choiceIndex = parseInt(payload.choiceIndex, 10);
+  if (!matchId || !Number.isFinite(roundNumber) || !Number.isFinite(choiceIndex)) return bad(400, 'bad request');
+
+  const round = await _readRound(matchId, roundNumber);
+  if (!round) return bad(404, 'Round not found');
+  if (round.winnerUserId !== null) {
+    return ok({ alreadyResolved: true, winnerUserId: round.winnerUserId });
+  }
+  const now = Date.now();
+  const answers = round.answers || {};
+  if (answers[auth.username]) {
+    return ok({ alreadyAnswered: true });
+  }
+  // Validate choice
+  const correct = choiceIndex === round.problem.correctIndex;
+  const latencyMs = Math.max(0, now - round.startedAt);
+  const answerRecord = { choice: choiceIndex, latencyMs, correct, answeredAt: now };
+
+  try {
+    await ddb.send(new UpdateCommand({
+      TableName: MATCHES_TABLE,
+      Key: { matchId, kind: `round#${roundNumber}` },
+      UpdateExpression: 'SET answers.#u = :a',
+      ExpressionAttributeNames: { '#u': auth.username },
+      ExpressionAttributeValues: { ':a': answerRecord },
+      ConditionExpression: 'attribute_not_exists(answers.#u)'
+    }));
+  } catch (e) {
+    if (e.name !== 'ConditionalCheckFailedException') throw e;
+    // race: another write landed first
+  }
+  return await _maybeResolveRound(matchId, roundNumber);
+}
+
+async function _maybeResolveRound(matchId, roundNumber) {
+  const round = await _readRound(matchId, roundNumber);
+  if (!round) return bad(404, 'Round not found');
+  if (round.winnerUserId !== null) {
+    return ok({ resolved: true, winnerUserId: round.winnerUserId, correctIndex: round.problem.correctIndex, answers: round.answers });
+  }
+  const players = await _readPlayers(matchId);
+  const playerIds = players.map(p => p.userId);
+  const answers = round.answers || {};
+  const answeredIds = Object.keys(answers);
+  const allAnswered = playerIds.every(id => answeredIds.includes(id));
+  const deadlinePassed = Date.now() > round.deadline + 200;
+
+  if (!allAnswered && !deadlinePassed) {
+    return ok({ resolved: false, pendingUserIds: playerIds.filter(id => !answers[id]) });
+  }
+
+  // Determine winner: lowest-latency correct answer
+  let winnerUserId = null;
+  const correctEntries = Object.entries(answers).filter(([_, a]) => a.correct);
+  if (correctEntries.length > 0) {
+    correctEntries.sort((a, b) => (a[1].latencyMs || 0) - (b[1].latencyMs || 0));
+    winnerUserId = correctEntries[0][0];
+  }
+  // Atomically mark winner (so only one writer commits the resolution)
+  try {
+    await ddb.send(new UpdateCommand({
+      TableName: MATCHES_TABLE,
+      Key: { matchId, kind: `round#${roundNumber}` },
+      UpdateExpression: 'SET winnerUserId = :w',
+      ConditionExpression: 'winnerUserId = :n',
+      ExpressionAttributeValues: { ':w': winnerUserId || '__NONE__', ':n': null }
+    }));
+    if (winnerUserId) {
+      await ddb.send(new UpdateCommand({
+        TableName: MATCHES_TABLE,
+        Key: { matchId, kind: `player#${winnerUserId}` },
+        UpdateExpression: 'ADD score :one',
+        ExpressionAttributeValues: { ':one': 1 }
+      }));
+    }
+  } catch (e) {
+    if (e.name !== 'ConditionalCheckFailedException') throw e;
+    // someone else resolved first; that's fine
+  }
+
+  const header = await _readMatchHeader(matchId);
+  if (!header) return bad(404, 'Match disappeared');
+
+  // Done?
+  if (roundNumber >= header.totalRounds) {
+    return await _finalizeMatch(matchId);
+  }
+
+  // Otherwise spawn next round
+  const nextN = roundNumber + 1;
+  const next = await _createRound(matchId, nextN, header.gradeBand, header.expiresAt);
+  await ddb.send(new UpdateCommand({
+    TableName: MATCHES_TABLE,
+    Key: { matchId, kind: 'header' },
+    UpdateExpression: 'SET currentRound = :n',
+    ExpressionAttributeValues: { ':n': nextN }
+  })).catch(() => {});
+
+  // Surface result + next problem in one response
+  return ok({
+    resolved: true,
+    roundNumber, winnerUserId: winnerUserId,
+    correctIndex: round.problem.correctIndex,
+    answers,
+    nextRound: {
+      roundNumber: nextN,
+      problem: _publicProblem(next.problem),
+      startedAt: next.startedAt,
+      deadline: next.deadline
+    },
+    serverNowMs: Date.now()
+  });
+}
+
+async function _finalizeMatch(matchId) {
+  const header = await _readMatchHeader(matchId);
+  if (!header) return bad(404, 'Match not found');
+  if (header.status === 'done') {
+    const players = await _readPlayers(matchId);
+    return ok({ matchFinished: true, players: players.map(_scrubPlayer) });
+  }
+  const players = await _readPlayers(matchId);
+  if (players.length === 0) return bad(404, 'No players');
+  // Mark done first to win the race
+  try {
+    await ddb.send(new UpdateCommand({
+      TableName: MATCHES_TABLE,
+      Key: { matchId, kind: 'header' },
+      UpdateExpression: 'SET #s = :d, finishedAt = :t',
+      ConditionExpression: '#s <> :d',
+      ExpressionAttributeNames: { '#s': 'status' },
+      ExpressionAttributeValues: { ':d': 'done', ':t': Date.now() }
+    }));
+  } catch (e) {
+    if (e.name === 'ConditionalCheckFailedException') {
+      const ps = await _readPlayers(matchId);
+      return ok({ matchFinished: true, players: ps.map(_scrubPlayer) });
+    }
+    throw e;
+  }
+
+  // Compute scores + result per player
+  players.sort((a, b) => (b.score || 0) - (a.score || 0));
+  const topScore = players[0].score || 0;
+  const isTie = players.length > 1 && players[1].score === topScore;
+  const finishedAt = Date.now();
+
+  for (const p of players) {
+    const opp = players.find(o => o.userId !== p.userId);
+    let result = 'loss';
+    let centsAwarded = 1;
+    if (isTie) { result = 'tie'; centsAwarded = 2; }
+    else if ((p.score || 0) === topScore) { result = 'win'; centsAwarded = 5; }
+    // Credit cents directly to balance/lifetime. Server-authoritative
+    // (outcome is already verified by _maybeResolveRound's lowest-
+    // latency-correct logic). Respects $100 lifetime cap.
+    try {
+      const ur = await ddb.send(new GetCommand({ TableName: USERS_TABLE, Key: { username: p.userId } }));
+      if (ur.Item) {
+        const lifetime = ur.Item.lifetimeCents || 0;
+        const room = Math.max(0, LIFETIME_CAP_CENTS - lifetime);
+        const award = Math.min(centsAwarded, room);
+        if (award > 0) {
+          await ddb.send(new UpdateCommand({
+            TableName: USERS_TABLE,
+            Key: { username: p.userId },
+            UpdateExpression: 'SET balanceCents = if_not_exists(balanceCents, :z) + :a, lifetimeCents = if_not_exists(lifetimeCents, :z) + :a',
+            ExpressionAttributeValues: { ':a': award, ':z': 0 }
+          }));
+        }
+      }
+    } catch (_) { /* never block finalize on a credit error */ }
+    // Match history record
+    try {
+      await ddb.send(new PutCommand({
+        TableName: MATCH_HISTORY_TABLE,
+        Item: {
+          userId: p.userId,
+          'finishedAtMatchId': `${finishedAt}#${matchId}`,
+          matchId, mode: header.mode,
+          opponentUserId: opp ? opp.userId : null,
+          opponentDisplayName: opp ? opp.displayName : null,
+          myScore: p.score || 0,
+          opponentScore: opp ? (opp.score || 0) : 0,
+          result, centsEarned: centsAwarded,
+          finishedAt
+        }
+      }));
+    } catch (_) {}
+  }
+  return ok({
+    matchFinished: true,
+    players: players.map(_scrubPlayer),
+    serverNowMs: Date.now()
+  });
+}
+
+async function handleMatchFinish(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  const matchId = String(payload.matchId || '');
+  if (!matchId) return bad(400, 'matchId required');
+  return await _finalizeMatch(matchId);
+}
+
+async function handleMatchHistory(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  const limit = Math.min(50, Math.max(1, parseInt(payload.limit, 10) || 20));
+  try {
+    const r = await ddb.send(new QueryCommand({
+      TableName: MATCH_HISTORY_TABLE,
+      KeyConditionExpression: 'userId = :u',
+      ExpressionAttributeValues: { ':u': auth.username },
+      ScanIndexForward: false,
+      Limit: limit
+    }));
+    return ok({ history: r.Items || [] });
+  } catch (_) {
+    return ok({ history: [] });
+  }
 }
