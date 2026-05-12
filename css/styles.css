@@ -22108,3 +22108,112 @@ body.home-page .user-slot .user-signin.btn:hover {
     transform: none !important;
   }
 }
+
+/* ==========================================================================
+   §13 Homepage craft pass — MOBILE parity (May 11 hotfix)
+   ==========================================================================
+   The §11 focus pass + §12 craft pass shipped a new .hero-focus block
+   inside #hero-anon, but on phones the legacy §31 "Ruthless mobile
+   reduction" rules (line ~9417) still nuke .hero-headline and .hero-cta
+   with !important, AND a separate legacy .mobile-hero block renders
+   alongside #state-picker (card grid). Result: desktop got the new
+   premium hero, phones still showed the old layout.
+   Fix: re-enable the focus-pass block on phones (override §31), hide
+   the legacy .mobile-hero, and hide #state-picker for signed-out
+   users on mobile so the focus-pass hero is the single source of
+   grade picking on every viewport.
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* Show #hero-anon at full breathing room on mobile */
+  body.home-page #hero-anon .hero,
+  body.home-page .hero {
+    display: block !important;
+    padding: 24px 16px 32px !important;
+    min-height: auto !important;
+    overflow: visible !important;
+  }
+  body.home-page .hero-bottom-fade { display: none !important; }
+
+  /* Re-enable the focus-pass hero children (§31 used !important to
+     nuke .hero-headline and .hero-cta; we override with the same) */
+  body.home-page .hero-focus {
+    display: block !important;
+    padding: 6px 4px 12px !important;
+    text-align: center;
+  }
+  body.home-page .hero-focus .hero-teks-badge,
+  body.home-page .hero-focus .hero-live-pill {
+    display: inline-flex !important;
+    margin-bottom: 8px;
+  }
+  body.home-page .hero-focus .hero-headline,
+  body.home-page .hero-focus .hero-headline--focus {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    font-size: 28px !important;
+    line-height: 1.08 !important;
+    margin: 8px 0 32px !important;
+    text-align: center !important;
+  }
+  body.home-page .hero-focus .hero-headline-light,
+  body.home-page .hero-focus .hero-headline-bold {
+    display: inline-block !important;
+  }
+  body.home-page .hero-focus .hero-cta,
+  body.home-page .hero-focus .hero-cta-grades,
+  body.home-page .hero-focus .hero-cta-grades--big {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 10px !important;
+    margin: 0 auto !important;
+    max-width: 100% !important;
+  }
+  body.home-page .hero-focus .hero-cta-grades--big .hero-grade-pill {
+    display: flex !important;
+    min-height: 72px;
+    padding: 12px 8px;
+    font-size: 14px;
+    border-radius: 12px;
+  }
+  body.home-page .hero-focus .hero-placement-line {
+    display: block !important;
+    margin: 28px 0 0 !important;
+    font-size: 0.86rem !important;
+    text-align: center;
+  }
+
+  /* Hide the legacy phone-only header that duplicates the new hero */
+  body.home-page .mobile-hero { display: none !important; }
+
+  /* Hide the secondary card-grid grade picker on phones for signed-out
+     visitors — the focus-pass pill grid IS the picker now. (Dashboard
+     users still see their own grade tiles in #grade-grid, which is a
+     different selector.) The picker stays visible on tablets/desktop
+     as it's outside this media block. */
+  body.home-page #state-picker { display: none !important; }
+
+  /* Tablet (slightly wider phones) gets 4 columns — the 480 breakpoint
+     in §12 already drops to compact phone sizing for the smallest. */
+}
+
+@media (max-width: 480px) {
+  body.home-page .hero-focus .hero-cta-grades--big .hero-grade-pill {
+    min-height: 64px;
+    font-size: 13px;
+    padding: 10px 6px;
+  }
+  body.home-page .hero-focus .hero-headline,
+  body.home-page .hero-focus .hero-headline--focus {
+    font-size: 24px !important;
+    margin-bottom: 28px !important;
+  }
+}
+
+/* Tablet (≤900) — 3-col grid keeps cards from getting too narrow */
+@media (min-width: 769px) and (max-width: 900px) {
+  body.home-page .hero-focus .hero-cta-grades--big {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
