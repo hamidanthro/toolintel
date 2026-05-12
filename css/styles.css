@@ -22218,3 +22218,221 @@ body.home-page .user-slot .user-signin.btn:hover {
     grid-template-columns: repeat(3, 1fr) !important;
   }
 }
+
+/* ==========================================================================
+   §14 Topics-page minimalism pass (May 11)
+   ==========================================================================
+   subject.html now shows: small breadcrumb · "Math topics" H1 · clean list
+   of cards (icon · title · chevron). Pool counts, lesson counts, mastery
+   blurbs, and inline "Practice →" buttons all removed. The card IS the
+   button. Applies the same premium material system as the homepage
+   craft pass.
+   ========================================================================== */
+
+/* Compact / mid-dot breadcrumb on subject.html */
+body.grade-page .breadcrumb-nav--minimal {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 24px 0;
+}
+body.grade-page .breadcrumb--mid-dot {
+  font-size: 12px;
+  letter-spacing: 0.005em;
+  color: rgba(255, 255, 255, 0.55);
+}
+body.grade-page .breadcrumb--mid-dot .breadcrumb-item:not(:last-child)::after {
+  content: '·';
+  margin-left: 10px;
+  margin-right: 0;
+  color: rgba(255, 255, 255, 0.28);
+}
+body.grade-page .breadcrumb--mid-dot .breadcrumb-item a {
+  color: rgba(255, 255, 255, 0.55);
+}
+body.grade-page .breadcrumb--mid-dot .breadcrumb-item--current {
+  color: rgba(255, 255, 255, 0.85);
+}
+body.grade-page .breadcrumb-nav--compact {
+  padding-top: 14px;
+}
+body.grade-page .breadcrumb-nav--compact .breadcrumb--mid-dot {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+/* Minimal subject-section — H1 alone, no instruction paragraph */
+.subject-section--minimal {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 16px 24px 64px;
+}
+.subject-section--minimal .subject-section-head {
+  margin: 0 0 32px;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+.subject-section--minimal .subject-section-title {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  margin: 0;
+}
+@media (max-width: 768px) {
+  .subject-section--minimal { padding: 8px 16px 48px; }
+  .subject-section--minimal .subject-section-title { font-size: 28px; }
+  .subject-section--minimal .subject-section-head { margin-bottom: 24px; }
+}
+
+/* The list container — tight rhythm between cards */
+.topic-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* The card itself — premium material treatment.
+   Selectors below intentionally don't combine with the legacy
+   .subject-card-* selectors; the new HTML uses bare .topic-card
+   with three direct children only. */
+a.topic-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 18px;
+  text-decoration: none;
+  color: #ffffff;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.02) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 4px 16px rgba(0, 0, 0, 0.28);
+  transition:
+    transform 240ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 240ms cubic-bezier(0.16, 1, 0.3, 1),
+    background 240ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+a.topic-card:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.07) 0%,
+    rgba(255, 255, 255, 0.03) 100%);
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    0 10px 28px rgba(0, 0, 0, 0.38);
+  text-decoration: none;
+}
+a.topic-card:active {
+  transform: translateY(-1px);
+  transition-duration: 80ms;
+}
+
+/* Icon — 44px square with mini button-premium treatment.
+   Higher specificity than the legacy .topic-card .topic-card-icon
+   rule at line 12087 (which sized it 56px). */
+a.topic-card > .topic-card-icon {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  font-size: 22px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(255, 255, 255, 0.02) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 2px 6px rgba(0, 0, 0, 0.22);
+}
+a.topic-card.topic-card--mixed > .topic-card-icon {
+  background: linear-gradient(
+    180deg,
+    rgba(251, 191, 36, 0.12) 0%,
+    rgba(251, 191, 36, 0.03) 100%);
+  border-color: rgba(251, 191, 36, 0.32);
+  box-shadow:
+    inset 0 1px 0 rgba(253, 224, 71, 0.22),
+    0 0 18px rgba(251, 191, 36, 0.12);
+}
+
+/* Title — display serif, medium weight, full white */
+a.topic-card > .topic-card-title {
+  flex: 1;
+  margin: 0;
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.22;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+  /* Prevent multi-line wrap from making cards uneven on long names */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Chevron — quiet visual cue that the card is tappable */
+a.topic-card > .topic-card-chevron {
+  flex-shrink: 0;
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.55);
+  transition:
+    color 200ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+a.topic-card:hover > .topic-card-chevron {
+  color: #fde68a;
+  transform: translateX(4px);
+}
+a.topic-card.topic-card--mixed > .topic-card-chevron {
+  color: rgba(253, 224, 71, 0.7);
+}
+
+/* Mobile sizing */
+@media (max-width: 768px) {
+  a.topic-card {
+    padding: 12px 14px;
+    gap: 14px;
+    border-radius: 12px;
+  }
+  a.topic-card > .topic-card-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    border-radius: 10px;
+  }
+  a.topic-card > .topic-card-title {
+    font-size: 18px;
+  }
+  a.topic-card > .topic-card-chevron {
+    font-size: 18px;
+  }
+  .topic-list { gap: 10px; }
+}
+
+/* Reduced-motion guard */
+@media (prefers-reduced-motion: reduce) {
+  a.topic-card,
+  a.topic-card:hover,
+  a.topic-card > .topic-card-chevron,
+  a.topic-card:hover > .topic-card-chevron {
+    transition: none !important;
+    transform: none !important;
+  }
+}

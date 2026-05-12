@@ -22,7 +22,7 @@
   <link id="page-canonical" rel="canonical" href="https://gradeearn.com/subject.html">
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&family=JetBrains+Mono:wght@400;500&display=swap">
-  <link rel="stylesheet" href="css/styles.css?v=20260511m">
+  <link rel="stylesheet" href="css/styles.css?v=20260511s">
 
   <script src="js/migrate-storage.js?v=20260427a"></script>
   <script src="js/i18n.js?v=20260510a"></script>
@@ -49,12 +49,11 @@
 </header>
 
 <main>
-  <!-- Breadcrumb -->
-  <nav class="breadcrumb-nav" aria-label="Breadcrumb">
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item">
-        <a href="index.html">All states</a>
-      </li>
+  <!-- Breadcrumb — mid-dot separator, "All states" dropped (kids
+       don't think in terms of cross-state navigation). Hides
+       compactly when no in-app referrer in the last 5 min. -->
+  <nav class="breadcrumb-nav breadcrumb-nav--minimal" aria-label="Breadcrumb">
+    <ol class="breadcrumb breadcrumb--mid-dot">
       <li class="breadcrumb-item">
         <a id="breadcrumb-state" href="states/?s=">—</a>
       </li>
@@ -88,36 +87,15 @@
     </a>
   </section>
 
-  <!-- Main content -->
-  <article class="grade-content" id="subject-content" hidden>
-
-    <!-- HERO -->
-    <header class="grade-hero">
-      <div class="grade-hero-inner">
-        <div class="grade-hero-eyebrow">
-          <span class="grade-hero-pin" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
-              <circle cx="12" cy="10" r="3"/>
-            </svg>
-          </span>
-          <span id="hero-eyebrow-text">—</span>
-        </div>
-
-        <h1 class="grade-hero-title" id="hero-title">—</h1>
-
-        <p class="grade-hero-sub" id="hero-sub">—</p>
-      </div>
-    </header>
-
-    <!-- TOPIC PICKER -->
-    <section class="subject-section">
+  <!-- Main content. Minimalism pass: hero block deleted; subject-section
+       collapses to a single H1 ("Math topics") plus the topic list. -->
+  <article class="grade-content grade-content--topics" id="subject-content" hidden>
+    <section class="subject-section subject-section--minimal">
       <header class="subject-section-head">
-        <h2 class="subject-section-title">Pick what you want to practice</h2>
-        <p class="subject-section-sub" id="subject-section-sub">Tap a topic to focus your practice — or pick mixed practice to see questions from every topic.</p>
+        <h1 class="subject-section-title" id="hero-title">Math topics</h1>
       </header>
 
-      <div class="subject-grid" id="topic-grid">
+      <div class="subject-grid topic-list" id="topic-grid">
         <!-- Filled by JS -->
       </div>
     </section>
@@ -139,7 +117,7 @@
 <script src="js/fun-facts.js?v=20260510k"></script>
 <script src="js/auth.js?v=20260511c"></script>
 <script src="js/mastery.js?v=20260510a"></script>
-<script src="js/subject-page.js?v=20260510b"></script>
+<script src="js/subject-page.js?v=20260511a"></script>
 
 </body>
 </html>

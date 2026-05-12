@@ -67,17 +67,47 @@
       gradeLink.href = `grade.html?s=${encodeURIComponent(STATE_SLUG)}&g=${encodeURIComponent(GRADE_SLUG)}`;
     }
     if (subjLabel) {
-      subjLabel.textContent = subjectName + ' topics';
+      // Minimalism pass: "Math" alone — the H1 says "Math topics", no
+      // need to repeat "topics" in the breadcrumb tail.
+      subjLabel.textContent = subjectName;
     }
   }
 
+  // Compact-breadcrumb logic mirrors grade-page.js: in-app navigation
+  // within the last 5 min keeps the full crumb visible; direct deep-
+  // links (search results, shared URLs) collapse it to a smaller,
+  // muted line so it reads as a back-anchor, not primary nav.
+  function maybeCompactBreadcrumb() {
+    const nav = document.querySelector('.breadcrumb-nav');
+    if (!nav) return;
+    const FLAG_KEY = 'ge:nav:inflow';
+    const FIVE_MIN = 5 * 60 * 1000;
+    let inFlow = false;
+    try {
+      const raw = sessionStorage.getItem(FLAG_KEY);
+      if (raw) {
+        const ts = parseInt(raw, 10);
+        if (Number.isFinite(ts) && (Date.now() - ts) < FIVE_MIN) inFlow = true;
+      }
+    } catch (_) {}
+    if (!inFlow && document.referrer) {
+      try {
+        const refOrigin = new URL(document.referrer).origin;
+        if (refOrigin === window.location.origin) inFlow = true;
+      } catch (_) {}
+    }
+    if (inFlow) {
+      try { sessionStorage.setItem(FLAG_KEY, String(Date.now())); } catch (_) {}
+      return;
+    }
+    nav.classList.add('breadcrumb-nav--compact');
+  }
+
   function setHero(state, gradeName, subjectName) {
-    const eb = $('hero-eyebrow-text');
+    // Minimalism pass: hero block deleted from subject.html; only the
+    // H1 ("Math topics") and the document.title remain.
     const h1 = $('hero-title');
-    const sub = $('hero-sub');
-    if (eb) eb.textContent = `${state ? state.name : 'Texas'} · ${gradeName} · ${subjectName}`;
-    if (h1) h1.textContent = `Pick a ${subjectName.toLowerCase()} topic`;
-    if (sub) sub.textContent = 'Focused practice on one topic, or mixed practice across every topic. Both pull from the same large question pool.';
+    if (h1) h1.textContent = `${subjectName} topics`;
     document.title = `${subjectName} topics — ${gradeName} — GradeEarn`;
   }
 
@@ -135,48 +165,30 @@
     return '📘';
   }
 
+  // Minimalism pass: a topic card is icon + title + chevron. Nothing
+  // else. Pool counts, lesson counts, mastery blurbs, and the inline
+  // "Practice →" button-within-a-button are all gone — the card IS
+  // the button. (Mastery state still surfaces elsewhere in the app;
+  // we just don't crowd the picker with it.)
   function buildTopicCard(unit, unitIndex) {
-    const qCount = unitQuestionCount(unit);
-    const mastery = masteryForUnit(unit.id);
-    const masteryHtml = mastery
-      ? `<div class="topic-card-mastery topic-card-mastery--${mastery.key}">
-           <span class="topic-card-mastery-emoji" aria-hidden="true">${mastery.emoji}</span>
-           <span class="topic-card-mastery-label">${escapeHtml(mastery.label)}</span>
-           <span class="topic-card-mastery-blurb">${escapeHtml(mastery.blurb)}</span>
-         </div>`
-      : `<div class="topic-card-stat topic-card-stat--ghost">${qCount} questions in pool</div>`;
     const targetUrl = `practice.html?s=${encodeURIComponent(STATE_SLUG)}&g=${encodeURIComponent(GRADE_SLUG)}&subj=${encodeURIComponent(SUBJ_SLUG)}&u=${encodeURIComponent(unit.id)}`;
     const glyph = topicGlyph(unit.title);
     return `
-      <a class="subject-card subject-card--live topic-card" href="${escapeHtml(targetUrl)}" role="button" data-topic="${escapeHtml(unit.id)}">
-        <div class="subject-card-icon topic-card-icon" aria-hidden="true">${escapeHtml(glyph)}</div>
-        <div class="subject-card-body">
-          <h3 class="subject-card-name">${escapeHtml(unit.title)}</h3>
-          <p class="subject-card-tagline">${escapeHtml(unit.lessons.length)} lesson${unit.lessons.length === 1 ? '' : 's'} · pulls from every question in this topic</p>
-          ${masteryHtml}
-        </div>
-        <div class="subject-card-action">
-          <span class="subject-card-cta">Practice</span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-        </div>
+      <a class="topic-card" href="${escapeHtml(targetUrl)}" data-topic="${escapeHtml(unit.id)}" aria-label="Practice ${escapeHtml(unit.title)}">
+        <span class="topic-card-icon" aria-hidden="true">${escapeHtml(glyph)}</span>
+        <h3 class="topic-card-title">${escapeHtml(unit.title)}</h3>
+        <span class="topic-card-chevron" aria-hidden="true">→</span>
       </a>
     `;
   }
 
-  function buildMixedCard(totalQuestions) {
+  function buildMixedCard(_totalQuestions) {
     const targetUrl = `practice.html?s=${encodeURIComponent(STATE_SLUG)}&g=${encodeURIComponent(GRADE_SLUG)}&subj=${encodeURIComponent(SUBJ_SLUG)}`;
     return `
-      <a class="subject-card subject-card--live topic-card topic-card--mixed" href="${escapeHtml(targetUrl)}" role="button" data-topic="mixed">
-        <div class="subject-card-icon topic-card-icon" aria-hidden="true">🎲</div>
-        <div class="subject-card-body">
-          <h3 class="subject-card-name">Mixed practice</h3>
-          <p class="subject-card-tagline">Questions from every topic, mixed together · ${totalQuestions.toLocaleString()} questions in the bank</p>
-          <div class="topic-card-stat topic-card-stat--ghost">Best for review and STAAR-day prep</div>
-        </div>
-        <div class="subject-card-action">
-          <span class="subject-card-cta">Start</span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-        </div>
+      <a class="topic-card topic-card--mixed" href="${escapeHtml(targetUrl)}" data-topic="mixed" aria-label="Start mixed practice">
+        <span class="topic-card-icon" aria-hidden="true">🔀</span>
+        <h3 class="topic-card-title">Mixed practice</h3>
+        <span class="topic-card-chevron" aria-hidden="true">→</span>
       </a>
     `;
   }
@@ -226,11 +238,15 @@
 
     setBreadcrumbs(state, GRADE_SLUG, subjectName);
     setHero(state, gradeName, subjectName);
+    try { maybeCompactBreadcrumb(); } catch (_) {}
 
     const total = curr.units.reduce((s, u) => s + unitQuestionCount(u), 0);
 
+    // Minimalism pass: Mixed practice goes FIRST as the lead card —
+    // it's the "I don't know what to pick" fallback. Specific units
+    // follow.
     const topicCards = curr.units.map((u, i) => buildTopicCard(u, i)).join('');
-    grid.innerHTML = topicCards + buildMixedCard(total);
+    grid.innerHTML = buildMixedCard(total) + topicCards;
 
     if (loading) loading.hidden = true;
     if (content) content.hidden = false;
