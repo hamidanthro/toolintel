@@ -257,7 +257,7 @@
   if (playAgainBtn) playAgainBtn.addEventListener('click', () => { completeEl.hidden = true; startGame(); });
 
   function boot() {
-    if (!window.STAARAuth || !window.STAARAuth.currentUser || !window.STAARAuth.currentUser()) { statusEl.textContent = 'Please sign in to play.'; preStartEl.hidden = true; return; }
+    if (!window.STAARAuth || !window.STAARAuth.currentUser || !window.STAARAuth.currentUser()) { statusEl.innerHTML = 'Please <a href="../index.html" style="color:#fde68a;font-weight:700;text-decoration:underline">sign in</a> to play.'; preStartEl.hidden = true; return; }
     const me = window.STAARAuth.currentUser();
     grade = (me && me.grade) || 'grade-k';
     statusEl.textContent = `Spelling Bee · ${gradeLabel(grade)}`;
@@ -265,5 +265,5 @@
     checkIncomingInvites();
   }
   if (window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser()) boot();
-  else { document.addEventListener('gradeearn:auth-changed', boot, { once: true }); setTimeout(boot, 600); }
+  else { document.addEventListener('gradeearn:auth-changed', boot, { once: true }); (function(){let n=0;const p=()=>{if(window.STAARAuth&&window.STAARAuth.currentUser&&window.STAARAuth.currentUser()){boot();return;}if(++n<25)setTimeout(p,200);else boot();};p();})(); }
 })();

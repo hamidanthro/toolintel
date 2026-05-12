@@ -607,7 +607,7 @@
   // ---------- boot ----------
   function boot() {
     if (!window.STAARAuth || !window.STAARAuth.currentUser || !window.STAARAuth.currentUser()) {
-      statusEl.textContent = 'Please sign in to play.';
+      statusEl.innerHTML = 'Please <a href="../index.html" style="color:#fde68a;font-weight:700;text-decoration:underline">sign in</a> to play.';
       return;
     }
     loadPuzzle();
@@ -617,6 +617,6 @@
     boot();
   } else {
     document.addEventListener('gradeearn:auth-changed', boot, { once: true });
-    setTimeout(boot, 600);
+    (function(){let n=0;const p=()=>{if(window.STAARAuth&&window.STAARAuth.currentUser&&window.STAARAuth.currentUser()){boot();return;}if(++n<25)setTimeout(p,200);else boot();};p();})();
   }
 })();
