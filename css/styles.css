@@ -21499,3 +21499,55 @@ body.game-bear-cub .game-main { padding-top: 12px; }
   font-weight: 800;
 }
 .wc-double-btn:hover { filter: brightness(1.1); }
+
+/* ==========================================================================
+   Grade-page conditional-rendering polish (May 11)
+   ========================================================================== */
+
+/* Compact breadcrumb on direct deep-link visits — trims the top
+   padding and dims the trail so it reads as a back-anchor, not a
+   primary nav. Kids who came from inside the app still see the
+   full breadcrumb (the .--compact class is only added when there
+   was no in-app referrer within the last 5 min). */
+.breadcrumb-nav--compact {
+  padding-top: 18px;
+}
+.breadcrumb-nav--compact .breadcrumb {
+  font-size: 12px;
+  opacity: 0.7;
+}
+@media (max-width: 768px) {
+  .breadcrumb-nav--compact { padding-top: 12px; }
+}
+
+/* Zero-state tagline — one-liner that sets the value prop for a
+   brand-new kid when the reward strip + daily quest are both
+   suppressed. Sits between the hero and the subject picker. */
+.zero-state-tagline {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 32px 18px;
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.65);
+  letter-spacing: -0.005em;
+}
+@media (max-width: 768px) {
+  .zero-state-tagline {
+    padding: 0 18px 14px;
+    font-size: 14px;
+  }
+}
+
+/* When the reward strip + daily quest are both hidden, the subject
+   picker sits much closer to the hero than the rhythm of a populated
+   dashboard. Add air so the picker doesn't feel cramped. */
+body.has-zero-state .subject-section {
+  margin-top: 24px;
+}
+body.has-zero-state.grade-page .subject-section {
+  padding-top: 24px;
+}
+@media (min-width: 1024px) {
+  body.has-zero-state .subject-section { margin-top: 40px; }
+}

@@ -84,6 +84,9 @@
       return;
     }
 
+    try { maybeCompactBreadcrumb(); } catch (_) {}
+    try { simplifyNavForSignedOut(); } catch (_) {}
+
     const params = new URLSearchParams(location.search);
     let stateSlug = params.get('s');
     const gradeSlug = params.get('g');
@@ -452,6 +455,18 @@
     const grid = document.getElementById('subject-grid');
     if (!grid) return;
     const section = grid.closest('.subject-section') || grid.parentNode;
+    // Zero-state: no XP, no streak, no shields → hide the strip entirely.
+    // A returning kid with progress will see it; a brand-new kid won't get
+    // the noisy "Level 1 · 0 XP · no shields yet" preview.
+    const hasAnyValue = (stats.xp || 0) > 0
+      || (stats.loginStreak || 0) > 0
+      || (stats.streakShields || 0) > 0;
+    if (!hasAnyValue) {
+      const existing = document.querySelector('.reward-strip');
+      if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
+      maybeRenderZeroStateTagline();
+      return;
+    }
     if (!section || section.previousElementSibling && section.previousElementSibling.classList && section.previousElementSibling.classList.contains('reward-strip')) {
       // Already rendered — refresh contents
       const old = section.previousElementSibling;
@@ -462,6 +477,7 @@
     strip.className = 'reward-strip';
     strip.innerHTML = buildRewardStripHtml(stats, lev);
     section.parentNode.insertBefore(strip, section);
+    maybeRenderZeroStateTagline();
   }
   function buildRewardStripHtml(stats, lev) {
     const shields = stats.streakShields || 0;
@@ -504,6 +520,17 @@
     const grid = document.getElementById('subject-grid');
     if (!grid) return;
     const section = grid.closest('.subject-section') || grid.parentNode;
+    // Zero-state: no sub-task has progress and not yet completed → hide.
+    // First-time visitors see a clean hero → subject picker, not an empty
+    // "Today's quest 0/3 · 0/5 · 0/2" preview that just looks like a chore.
+    const hasAnyProgress = m.completed
+      || (Array.isArray(m.tasks) && m.tasks.some(t => (t.current || 0) > 0));
+    if (!hasAnyProgress) {
+      const existing = document.querySelector('.daily-quest-card-grade');
+      if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
+      maybeRenderZeroStateTagline();
+      return;
+    }
     // Insert AFTER reward strip but BEFORE subject section
     let card = document.querySelector('.daily-quest-card-grade');
     if (!card) {
@@ -577,6 +604,88 @@
       'globe': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>`
     };
     return icons[name] || icons.math;
+  }
+
+  // ============================================================
+  // NAV SIMPLIFICATION — signed-out kids/parents see only Home,
+  // Games, Toys + the Sign in slot. Trophies / League / How it
+  // works require an account to be meaningful, so they're hidden
+  // for a cleaner first-touch header.
+  // ============================================================
+  function simplifyNavForSignedOut() {
+    const auth = window.STAARAuth;
+    if (auth && typeof auth.currentUser === 'function' && auth.currentUser()) return;
+    const nav = document.querySelector('.site-header .nav');
+    if (!nav) return;
+    const keep = new Set(['index.html', 'games.html', 'marketplace.html']);
+    nav.querySelectorAll('a').forEach((a) => {
+      const href = (a.getAttribute('href') || '').trim();
+      if (!keep.has(href)) a.hidden = true;
+    });
+  }
+
+  // ============================================================
+  // ZERO-STATE TAGLINE — shown only when reward strip + daily quest
+  // are both hidden (brand-new kid). One-liner that sets the value
+  // prop before the kid scans the subject picker.
+  // ============================================================
+  function maybeRenderZeroStateTagline() {
+    const grid = document.getElementById('subject-grid');
+    if (!grid) return;
+    const section = grid.closest('.subject-section');
+    if (!section) return;
+    const rewardVisible = !!document.querySelector('.reward-strip');
+    const questVisible = !!document.querySelector('.daily-quest-card-grade');
+    const existing = document.querySelector('.zero-state-tagline');
+    if (rewardVisible || questVisible) {
+      // Returning kid — drop tagline if it was previously rendered, drop the body
+      // marker too so the subject-picker margin returns to its default rhythm.
+      if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
+      document.body.classList.remove('has-zero-state');
+      return;
+    }
+    document.body.classList.add('has-zero-state');
+    if (existing) return;
+    const tagline = document.createElement('div');
+    tagline.className = 'zero-state-tagline';
+    tagline.textContent = 'Practice. Earn real cents. Redeem toys.';
+    section.parentNode.insertBefore(tagline, section);
+  }
+
+  // ============================================================
+  // BREADCRUMB COMPACTION — on direct deep-link visits (no
+  // in-app referrer within last 5 min), shrink the breadcrumb to
+  // just the current grade. Kids who navigated index → state →
+  // grade see the full trail; kids who landed via search / share
+  // / typed URL don't.
+  // ============================================================
+  function maybeCompactBreadcrumb() {
+    const nav = document.querySelector('.breadcrumb-nav');
+    if (!nav) return;
+    const FLAG_KEY = 'ge:nav:inflow';
+    const FIVE_MIN = 5 * 60 * 1000;
+    let inFlow = false;
+    try {
+      const raw = sessionStorage.getItem(FLAG_KEY);
+      if (raw) {
+        const ts = parseInt(raw, 10);
+        if (Number.isFinite(ts) && (Date.now() - ts) < FIVE_MIN) inFlow = true;
+      }
+    } catch (_) {}
+    // Same-origin referrer is also a valid signal — covers first-visit
+    // navigation before sessionStorage was set.
+    if (!inFlow && document.referrer) {
+      try {
+        const refOrigin = new URL(document.referrer).origin;
+        if (refOrigin === window.location.origin) inFlow = true;
+      } catch (_) {}
+    }
+    if (inFlow) {
+      // Refresh the flag so onward navigation within this session keeps it warm.
+      try { sessionStorage.setItem(FLAG_KEY, String(Date.now())); } catch (_) {}
+      return;
+    }
+    nav.classList.add('breadcrumb-nav--compact');
   }
 
   function escapeHtml(s) {
