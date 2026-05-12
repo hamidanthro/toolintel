@@ -211,28 +211,12 @@
     if (t) { e.preventDefault(); toggle(); }
   });
 
-  // K4: auto-inject a Cmd+K hint chip in the site-header (desktop
-  // only; CSS hides it on phones). Sits before the user-slot. Click
-  // toggles the palette via the data-quick-search-trigger handler.
-  function injectHeaderHint() {
-    if (document.querySelector('.header-cmdk-hint')) return;
-    const userSlot = document.getElementById('user-slot');
-    if (!userSlot) return;
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'header-cmdk-hint';
-    btn.setAttribute('data-quick-search-trigger', '');
-    btn.setAttribute('aria-label', 'Open quick search');
-    btn.innerHTML = `
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      Search <kbd class="header-cmdk-kbd">⌘K</kbd>`;
-    userSlot.parentNode.insertBefore(btn, userSlot);
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', injectHeaderHint);
-  } else {
-    injectHeaderHint();
-  }
+  // K4 → §20: the auto-injected "Search ⌘K" header chip was removed
+  // per Hamid 2026-05-12 — visual clutter on the header. The ⌘K
+  // keyboard shortcut still opens the palette (handled by the keydown
+  // listener earlier in this file). injectHeaderHint kept as a no-op
+  // so site-header.js's call doesn't blow up.
+  function injectHeaderHint() { /* removed */ }
 
   window.GradeEarnQuickSearch = { open, close, toggle, injectHeaderHint };
 })();
