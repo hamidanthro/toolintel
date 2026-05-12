@@ -940,17 +940,22 @@
       const sessionPreview = document.getElementById('session-preview');
       const fwRibbon = document.getElementById('home-fw-ribbon');
       applySignedOutNav(!u);
+      // §18: #state-picker is the legacy card-grid grade picker —
+      // duplicates the hero pill picker we shipped in §11/§12. Hidden
+      // on every viewport now (previously visible to guests on
+      // desktop), since the focus-pass hero IS the single source of
+      // grade picking. The DOM block stays so any future A/B test
+      // can flip it back on without re-shipping HTML.
+      if (gradeSection) gradeSection.hidden = true;
       if (!u) {
         heroAnon.hidden = false;
         dash.hidden = true;
-        if (gradeSection) gradeSection.hidden = false;
         if (sessionPreview) sessionPreview.hidden = false;
         if (fwRibbon) fwRibbon.hidden = false;
         return;
       }
       heroAnon.hidden = true;
       dash.hidden = false;
-      if (gradeSection) gradeSection.hidden = true;
       if (sessionPreview) sessionPreview.hidden = true;
       if (fwRibbon) fwRibbon.hidden = true;
       renderGradeGrid();
