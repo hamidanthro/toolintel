@@ -24218,6 +24218,323 @@ body.myspace-page a { color: #0f172a; text-decoration: none; }
   text-decoration-color: #0f172a;
 }
 
+/* ==========================================================================
+   §40 MySpace premium-polish theme (May 12) — dark navy + gold accent.
+   Overrides the light-theme rules above so MySpace + all its sub-routes
+   (journal/homework/timetable/tasks) match Games / Toys / marketing.
+   Subtractive paint pass; structure / interaction logic untouched.
+   ========================================================================== */
+
+body.myspace-page {
+  background: #060d1f;
+  color: #ffffff;
+}
+body.myspace-page a { color: rgba(255, 255, 255, 0.85); }
+
+/* Sidebar — deep navy, hairline divider, dim inactive items */
+body.myspace-page .ms-sidebar {
+  background: #060d1f;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+body.myspace-page .ms-brand { color: #ffffff; }
+body.myspace-page .ms-brand-text { color: #ffffff; }
+body.myspace-page .ms-nav-item {
+  color: rgba(255, 255, 255, 0.55);
+}
+body.myspace-page .ms-nav-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: #ffffff;
+}
+body.myspace-page .ms-nav-item--active {
+  background: rgba(255, 255, 255, 0.04);
+  color: #ffffff;
+}
+body.myspace-page .ms-nav-item svg { opacity: 0.85; }
+body.myspace-page .ms-nav-item--active svg { opacity: 1; color: #fbbf24; }
+body.myspace-page .ms-popover {
+  background: #0d1d3a;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+body.myspace-page .ms-popover-item { color: rgba(255, 255, 255, 0.7); }
+body.myspace-page .ms-popover-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+}
+
+/* Top header — navy, hairline divider, white wordmark, white title */
+body.myspace-page .ms-top {
+  background: #060d1f;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+body.myspace-page .ms-top-brand,
+body.myspace-page .ms-top-brand svg { color: #ffffff; stroke: #ffffff; }
+body.myspace-page .ms-top-title { color: #ffffff; }
+body.myspace-page .ms-top-btn,
+body.myspace-page .ms-quicknote-btn {
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+body.myspace-page .ms-quicknote-btn:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: #ffffff;
+}
+body.myspace-page .ms-top-icon { color: rgba(255, 255, 255, 0.55); }
+body.myspace-page .ms-top-icon:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: #ffffff;
+}
+body.myspace-page .ms-top-avatar {
+  background: #0d1d3a;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Greeting block — date eyebrow → greeting (anchored, not floating) */
+body.myspace-page .ms-greeting { color: #ffffff; margin: 0 0 4px; }
+body.myspace-page .ms-greeting-block { margin-bottom: 12px; }
+.ms-date-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.35);
+  margin-bottom: 8px;
+}
+
+/* Quick-win as a quiet inline line under greeting (no banner) */
+.ms-quickwin-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 6px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.45);
+}
+.ms-quickwin-line a {
+  color: #fbbf24;
+  text-decoration: none;
+  font-weight: 500;
+}
+.ms-quickwin-line a:hover { color: #fde68a; }
+.ms-quickwin-x {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 18px;
+  line-height: 1;
+  padding: 2px 6px;
+  margin-left: auto;
+  cursor: pointer;
+  font-family: inherit;
+}
+.ms-quickwin-x:hover { color: rgba(255, 255, 255, 0.7); }
+/* Hide the old banner-style quickwin elements in dark theme */
+body.myspace-page .ms-quickwin {
+  background: transparent;
+  padding: 0;
+  margin: 0;
+}
+body.myspace-page .ms-quickwin-actions { display: none; }
+
+/* Briefing as a single inline line, no box, not italic */
+body.myspace-page .ms-briefing {
+  background: transparent;
+  padding: 0;
+  margin: 0 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+body.myspace-page .ms-briefing-head {
+  display: contents; /* flatten so eyebrow + actions sit inline with body */
+}
+body.myspace-page .ms-briefing-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: rgba(252, 211, 77, 0.6);
+  font-weight: 500;
+}
+body.myspace-page .ms-briefing-body {
+  margin: 0;
+  font-size: 15px;
+  font-style: normal; /* italic was reading as "loading state"; kill it */
+  color: rgba(255, 255, 255, 0.7);
+}
+body.myspace-page .ms-briefing-body::before {
+  content: '·';
+  margin-right: 6px;
+  color: rgba(255, 255, 255, 0.2);
+}
+body.myspace-page .ms-briefing-actions { margin-left: auto; }
+body.myspace-page .ms-icon-btn {
+  color: rgba(255, 255, 255, 0.3);
+}
+body.myspace-page .ms-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.7);
+}
+/* Hide the old dismiss icon — briefing has no "x"; refresh stays */
+body.myspace-page #ms-briefing-dismiss { display: none; }
+
+/* AI Buddy card — dark panel, hairline border */
+body.myspace-page .ms-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: none;
+}
+body.myspace-page .ms-card-eyebrow {
+  color: rgba(252, 211, 77, 0.6);
+  letter-spacing: 0.2em;
+  font-weight: 500;
+}
+body.myspace-page .ms-card-eyebrow svg { color: #fbbf24; opacity: 0.9; }
+
+/* AI disclosure: demoted from boxed banner inside card to small footnote
+   beneath the composer (legally required but no longer dominant) */
+body.myspace-page .ms-ai-disclosure {
+  background: transparent;
+  border: none;
+  padding: 8px 4px 0;
+  margin: 10px 0 0;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.35);
+}
+body.myspace-page .ms-ai-disclosure svg { color: rgba(255, 255, 255, 0.25); }
+body.myspace-page .ms-ai-disclosure a {
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, 0.2);
+}
+body.myspace-page .ms-ai-disclosure a:hover { color: rgba(255, 255, 255, 0.85); }
+
+/* Chat thread bubbles — dark surfaces */
+body.myspace-page .ms-msg--user {
+  background: #fbbf24;
+  color: #0a1628;
+}
+body.myspace-page .ms-msg--ai {
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+}
+body.myspace-page .ms-continue { color: rgba(255, 255, 255, 0.45); }
+
+/* Composer pill — dark theme, gold send button when active */
+body.myspace-page .ms-composer {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+body.myspace-page .ms-composer:focus-within {
+  border-color: rgba(251, 191, 36, 0.5);
+}
+body.myspace-page .ms-composer-subject-trigger {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+}
+body.myspace-page .ms-composer-subject-list {
+  background: #0d1d3a;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+body.myspace-page .ms-composer-subject-list li { color: rgba(255, 255, 255, 0.85); }
+body.myspace-page .ms-composer-subject-list li:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+body.myspace-page .ms-composer-input { color: #ffffff; }
+body.myspace-page .ms-composer-input::placeholder { color: rgba(255, 255, 255, 0.3); }
+body.myspace-page .ms-composer-send {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.4);
+}
+body.myspace-page .ms-composer-send:not(:disabled) {
+  background: #fbbf24;
+  color: #0a1628;
+}
+
+/* Stats footer — prominent numbers, small-caps labels, gold streak */
+body.myspace-page .ms-stats-footer {
+  color: rgba(255, 255, 255, 0.55);
+  margin-top: 32px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 18px;
+  align-items: baseline;
+  justify-content: center;
+  font-weight: 400;
+  letter-spacing: 0;
+  font-size: 12px;
+}
+body.myspace-page .ms-stat {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+body.myspace-page .ms-stat-num {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
+}
+body.myspace-page .ms-stat--accent .ms-stat-num { color: #fbbf24; }
+body.myspace-page .ms-stat-label {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.45);
+}
+body.myspace-page .ms-stat-sep { color: rgba(255, 255, 255, 0.15); margin: 0 2px; }
+body.myspace-page .ms-stat-link {
+  color: rgba(255, 255, 255, 0.55);
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+body.myspace-page .ms-stat-link:hover { color: #ffffff; }
+
+/* Sub-routes (journal / homework / timetable / tasks) — inherit dark
+   theme. Empty-state cards become dark panels, gold filled CTA. */
+body.myspace-page .ms-subpage-head h2 { color: #ffffff; }
+body.myspace-page .ms-empty {
+  background: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+}
+body.myspace-page .ms-empty svg { color: rgba(255, 255, 255, 0.15); }
+body.myspace-page .ms-empty h3 { color: #ffffff; }
+body.myspace-page .ms-empty p { color: rgba(255, 255, 255, 0.45); }
+
+/* Overlay (Quick Note) — dark panel */
+body.myspace-page .ms-overlay-card {
+  background: #0d1d3a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+body.myspace-page .ms-overlay-head h3 { color: #ffffff; }
+body.myspace-page .ms-overlay-card input,
+body.myspace-page .ms-overlay-card select,
+body.myspace-page .ms-overlay-card textarea {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+body.myspace-page .ms-overlay-card input::placeholder,
+body.myspace-page .ms-overlay-card textarea::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Task list rows — dark hairlines */
+body.myspace-page .ms-task {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+body.myspace-page .ms-task-text { color: #ffffff; }
+body.myspace-page .ms-task-delete { color: rgba(255, 255, 255, 0.3); }
+body.myspace-page .ms-task-delete:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: #ef4444;
+}
+
 /* Legal-page utility class — drops the OG SEO-page intro padding so
    long-form legal docs read cleanly on /legal/*.html. Inherits .fw-page
    shell otherwise. */

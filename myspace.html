@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/styles.css?v=20260512h">
+  <link rel="stylesheet" href="/css/styles.css?v=20260512p">
 
   <script>window.STAARAuth = window.STAARAuth || {}; window.STAARAuth.requireLoginOnLoad = true;</script>
 </head>
@@ -126,23 +126,44 @@
       </div>
     </header>
 
-    <!-- Quick-win banner -->
-    <div class="ms-quickwin" id="ms-quickwin" hidden>
-      <div class="ms-quickwin-msg">
-        <strong>Quick win:</strong>
-        <span id="ms-quickwin-text">Write your first journal entry to start a streak.</span>
-        <a id="ms-quickwin-link" href="/myspace/journal.html">Journal</a>
-      </div>
-      <div class="ms-quickwin-actions">
-        <a id="ms-quickwin-cta" href="/myspace/journal.html">Go to Journal</a>
-        <button type="button" id="ms-quickwin-dismiss" class="ms-ghost-btn">Dismiss</button>
-      </div>
-    </div>
-
     <div class="ms-content">
 
-      <!-- Greeting -->
-      <h1 class="ms-greeting" id="ms-greeting">Good morning, friend</h1>
+      <!-- Greeting block: date eyebrow → greeting → quick-win → briefing (§40) -->
+      <div class="ms-greeting-block">
+        <div class="ms-date-eyebrow" id="ms-date-eyebrow"></div>
+        <h1 class="ms-greeting" id="ms-greeting">Good morning, friend</h1>
+      </div>
+
+      <!-- Quick-win as a single muted line below greeting. JS keeps the
+           24h dismissal in localStorage; the standalone banner row is gone. -->
+      <p class="ms-quickwin-line ms-quickwin" id="ms-quickwin" hidden>
+        <span id="ms-quickwin-text">Write your first journal entry to start a streak.</span>
+        <a id="ms-quickwin-link" href="/myspace/journal.html">Journal</a>
+        <button type="button" id="ms-quickwin-dismiss" class="ms-quickwin-x" aria-label="Dismiss">×</button>
+      </p>
+
+      <!-- Briefing — unboxed inline line: eyebrow · sentence + refresh icon -->
+      <div class="ms-briefing" id="ms-briefing">
+        <div class="ms-briefing-head">
+          <span class="ms-briefing-eyebrow">THIS WEEK</span>
+          <div class="ms-briefing-actions">
+            <button type="button" class="ms-icon-btn" id="ms-briefing-refresh" aria-label="Refresh briefing">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="23 4 23 10 17 10"/>
+                <polyline points="1 20 1 14 7 14"/>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+              </svg>
+            </button>
+            <button type="button" class="ms-icon-btn" id="ms-briefing-dismiss" aria-label="Dismiss briefing" hidden>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <p class="ms-briefing-body" id="ms-briefing-body">Quiet week so far — add a journal entry or some homework and I'll start tracking.</p>
+      </div>
 
       <!-- AI Buddy card -->
       <section class="ms-card">
@@ -154,42 +175,8 @@
           <span>AI BUDDY</span>
         </div>
 
-        <!-- §21 Persistent AI Disclosure — Character.AI / OpenAI lawsuit defense.
-             Every screen with an AI chat input MUST surface "this is an AI, not
-             a real person" with a link to the full AI Disclosure document. -->
-        <p class="ms-ai-disclosure">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-          </svg>
-          This is an AI — not a real person, not a friend, not a therapist.
-          <a href="/legal/ai-disclosure.html" target="_blank" rel="noopener">Learn more</a>
-        </p>
-
         <!-- Chat thread (above briefing once messages exist) -->
         <div class="ms-chat-thread" id="ms-chat-thread" hidden></div>
-
-        <!-- Briefing block -->
-        <div class="ms-briefing" id="ms-briefing">
-          <div class="ms-briefing-head">
-            <span class="ms-briefing-eyebrow">THIS WEEK</span>
-            <div class="ms-briefing-actions">
-              <button type="button" class="ms-icon-btn" id="ms-briefing-refresh" aria-label="Refresh briefing">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="23 4 23 10 17 10"/>
-                  <polyline points="1 20 1 14 7 14"/>
-                  <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-                </svg>
-              </button>
-              <button type="button" class="ms-icon-btn" id="ms-briefing-dismiss" aria-label="Dismiss briefing">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <line x1="18" y1="6" x2="6" y2="18"/>
-                  <line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-          <p class="ms-briefing-body" id="ms-briefing-body">Quiet week so far. Add a journal entry or some homework and I'll start tracking your progress.</p>
-        </div>
 
         <!-- Continuation copy -->
         <p class="ms-continue">Continue the conversation — ask about today's homework, your schedule, or what to work on next.</p>
@@ -216,17 +203,38 @@
           </button>
         </form>
 
+        <!-- §21 Persistent AI Disclosure — Character.AI / OpenAI lawsuit defense.
+             Demoted from a banner above the briefing to a footnote below the
+             composer per §40 polish. Still permanently visible (legally
+             required), but no longer the page's center of gravity. -->
+        <p class="ms-ai-disclosure">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          AI assistant — not a person. Conversations may be reviewed by your parent.
+          <a href="/legal/ai-disclosure.html" target="_blank" rel="noopener">Learn more</a>
+        </p>
+
       </section>
 
-      <!-- Stats footer -->
+      <!-- Stats footer — prominent numbers, small-caps labels, gold streak (§40) -->
       <footer class="ms-stats-footer" id="ms-stats-footer">
-        <span class="ms-stat"><strong>TODAY:</strong> <span id="ms-stat-tasks">0</span> TASKS DONE</span>
+        <span class="ms-stat">
+          <span class="ms-stat-num" id="ms-stat-tasks">0</span>
+          <span class="ms-stat-label" id="ms-stat-tasks-label">Tasks today</span>
+        </span>
         <span class="ms-stat-sep">·</span>
-        <span class="ms-stat"><span id="ms-stat-journals">0</span> JOURNAL ENTRIES THIS WEEK</span>
+        <span class="ms-stat">
+          <span class="ms-stat-num" id="ms-stat-journals">0</span>
+          <span class="ms-stat-label" id="ms-stat-journals-label">Journal entries this week</span>
+        </span>
         <span class="ms-stat-sep">·</span>
-        <span class="ms-stat">STREAK: <span id="ms-stat-streak">0</span> DAYS</span>
+        <span class="ms-stat ms-stat--accent">
+          <span class="ms-stat-num" id="ms-stat-streak">0</span>
+          <span class="ms-stat-label" id="ms-stat-streak-label">Day streak</span>
+        </span>
         <span class="ms-stat-sep">·</span>
-        <a href="/myspace/journal.html" class="ms-stat-link">VIEW ALL ›</a>
+        <a href="/myspace/journal.html" class="ms-stat-link">View all ›</a>
       </footer>
 
     </div>
@@ -256,6 +264,6 @@
 </div>
 
 <script src="/js/auth.js?v=20260511c"></script>
-<script src="/js/myspace.js?v=20260512b"></script>
+<script src="/js/myspace.js?v=20260512c"></script>
 </body>
 </html>

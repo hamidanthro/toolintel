@@ -193,6 +193,7 @@
     const av = document.getElementById('ms-avatar');
     if (av) av.textContent = getAvatarLetter();
 
+    renderDateEyebrow();
     renderQuickWin();
     renderBriefing();
     renderStats();
@@ -207,34 +208,34 @@
     const banner = document.getElementById('ms-quickwin');
     const text = document.getElementById('ms-quickwin-text');
     const link = document.getElementById('ms-quickwin-link');
-    const cta = document.getElementById('ms-quickwin-cta');
     const dismiss = document.getElementById('ms-quickwin-dismiss');
     if (!banner) return;
 
-    // Pick a quick win in priority order
+    // Pick a quick win in priority order. §40 polish: the message is
+    // prefixed with "Quick win —" inline rather than a bold "Quick win:"
+    // banner. The "Go to X" CTA pill is gone; the inline link does both
+    // jobs (acts as call-to-action + dismiss × at the end).
     let win = null;
     if (data.journal().length === 0) {
-      win = { id: 'first-journal', msg: 'Write your first journal entry to start a streak.', link: '/myspace/journal.html', linkLabel: 'Journal' };
+      win = { id: 'first-journal', msg: 'Quick win — write your first journal entry to start a streak.', link: '/myspace/journal.html', linkLabel: 'Journal' };
     } else if (data.timetable().length === 0) {
-      win = { id: 'first-timetable', msg: 'Add this week\'s classes to your Timetable.', link: '/myspace/timetable.html', linkLabel: 'Timetable' };
+      win = { id: 'first-timetable', msg: 'Quick win — add this week\'s classes to your Timetable.', link: '/myspace/timetable.html', linkLabel: 'Timetable' };
     } else {
       const dueToday = homeworkDueToday();
       if (dueToday.length > 0) {
-        win = { id: 'hw-due-today', msg: 'You have ' + dueToday.length + ' homework due today.', link: '/myspace/homework.html', linkLabel: 'Homework' };
+        win = { id: 'hw-due-today', msg: 'Quick win — you have ' + dueToday.length + ' homework due today.', link: '/myspace/homework.html', linkLabel: 'Homework' };
       }
     }
     if (!win) { banner.hidden = true; return; }
 
-    // Dismissed-recently check (24h)
+    // Dismissed-recently check (24h) — same localStorage key shape as before
     const dismissKey = STORAGE_PREFIX + getUserKey() + ':qw-dismiss:' + win.id;
     const dismissedAt = parseInt(localStorage.getItem(dismissKey) || '0', 10);
     if (Date.now() - dismissedAt < 24 * 60 * 60 * 1000) { banner.hidden = true; return; }
 
-    text.textContent = win.msg;
+    text.textContent = win.msg + ' ';
     link.textContent = win.linkLabel;
     link.href = win.link;
-    cta.textContent = 'Go to ' + win.linkLabel;
-    cta.href = win.link;
     banner.hidden = false;
     dismiss.onclick = function () {
       try { localStorage.setItem(dismissKey, String(Date.now())); } catch (_) {}
@@ -298,13 +299,44 @@
     } catch (_) { return iso; }
   }
 
+  // §40 polish: numbers get visual prominence (.ms-stat-num) and the
+  // following label gets small-caps treatment (.ms-stat-label) with
+  // correct pluralization so we never ship "1 DAYS" / "1 JOURNAL
+  // ENTRIES" again.
+  function pluralize(n, singular, plural) {
+    return n === 1 ? singular : plural;
+  }
   function renderStats() {
     const t = document.getElementById('ms-stat-tasks');
     const j = document.getElementById('ms-stat-journals');
     const s = document.getElementById('ms-stat-streak');
-    if (t) t.textContent = tasksDoneToday();
-    if (j) j.textContent = journalsThisWeek();
-    if (s) s.textContent = streakDays();
+    const tLabel = document.getElementById('ms-stat-tasks-label');
+    const jLabel = document.getElementById('ms-stat-journals-label');
+    const sLabel = document.getElementById('ms-stat-streak-label');
+
+    const td = tasksDoneToday();
+    const je = journalsThisWeek();
+    const st = streakDays();
+
+    if (t) t.textContent = td;
+    if (j) j.textContent = je;
+    if (s) s.textContent = st;
+
+    if (tLabel) tLabel.textContent = pluralize(td, 'Task today', 'Tasks today');
+    if (jLabel) jLabel.textContent = pluralize(je, 'Journal entry this week', 'Journal entries this week');
+    if (sLabel) sLabel.textContent = pluralize(st, 'Day streak', 'Day streak');
+  }
+
+  // §40 polish: anchor the greeting with a small one-line date eyebrow.
+  function renderDateEyebrow() {
+    const el = document.getElementById('ms-date-eyebrow');
+    if (!el) return;
+    try {
+      const fmt = new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+      el.textContent = fmt.format(new Date()).toUpperCase();
+    } catch (_) {
+      el.textContent = '';
+    }
   }
 
   function renderSubjects() {
