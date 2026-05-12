@@ -234,5 +234,5 @@
     injectHeaderHint();
   }
 
-  window.GradeEarnQuickSearch = { open, close, toggle };
+  window.GradeEarnQuickSearch = { open, close, toggle, injectHeaderHint };
 })();
