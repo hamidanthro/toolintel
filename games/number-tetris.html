@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com https://api.gradeearn.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#060d1f" />
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="../css/styles.css?v=20260512a" />
+  <title>Number Tetris — GradeEarn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body class="game-page game-number-tetris">
+  <header class="game-header">
+    <a href="../games.html" class="game-back" aria-label="Back">‹</a>
+    <div class="game-header-title">
+      <div class="game-header-eyebrow"><span class="game-header-dot" aria-hidden="true"></span> NUMBER TETRIS</div>
+      <div class="game-header-stat" id="gameHeaderStat">Make rows sum to your target</div>
+    </div>
+    <div class="game-header-score">
+      <div class="game-header-score-num" id="gameYourScore">0</div>
+      <div class="game-header-score-label">your pts</div>
+    </div>
+  </header>
+
+  <main class="game-main">
+    <div id="gameStatus" class="game-status">Number Tetris · loading…</div>
+
+    <div id="howToPlay" class="memory-howto">
+      <div class="memory-howto-head">
+        <span class="memory-howto-icon" aria-hidden="true">🧱</span>
+        <strong>How to play</strong>
+        <button type="button" id="howToDismiss" class="memory-howto-dismiss" aria-label="Dismiss">✕</button>
+      </div>
+      <ol class="memory-howto-list">
+        <li><strong>Blocks fall</strong> with random digits on every cell.</li>
+        <li>A row <strong>clears when the 10 digits sum to your TARGET</strong> (shown at top).</li>
+        <li><strong>Mobile:</strong> tap to rotate · swipe left/right to move · swipe down to drop fast.</li>
+        <li><strong>Desktop:</strong> ← → move · ↑ rotate · ↓ soft drop · Space hard drop · P pause.</li>
+        <li><strong>Earn cents!</strong> 1 row = 1¢, Tetris (4 rows) = 5¢. Daily cap: 50¢.</li>
+      </ol>
+    </div>
+
+    <div class="memory-stats" id="ntStats" hidden>
+      <div class="memory-stat"><div class="memory-stat-num" id="ntTarget">10</div><div class="memory-stat-label">target</div></div>
+      <div class="memory-stat"><div class="memory-stat-num" id="ntLines">0</div><div class="memory-stat-label">lines</div></div>
+      <div class="memory-stat"><div class="memory-stat-num" id="ntLevel">1</div><div class="memory-stat-label">level</div></div>
+      <div class="memory-stat"><div class="memory-stat-num" id="ntCents">0¢</div><div class="memory-stat-label">earned today</div></div>
+    </div>
+
+    <div id="ntPreStart" class="ms-prestart">
+      <button type="button" id="ntStartBtn" class="ms-start-btn">START</button>
+      <p class="ms-prestart-hint">Block-stacking + math. Earn real cents.</p>
+    </div>
+
+    <div id="ntBoard" class="nt-board" hidden>
+      <div class="nt-canvas-wrap">
+        <canvas id="ntCanvas" class="nt-canvas" aria-label="Tetris board"></canvas>
+        <div id="ntPauseOverlay" class="nt-overlay" hidden>
+          <div class="nt-overlay-text">PAUSED</div>
+          <button type="button" id="ntResumeBtn" class="ms-start-btn nt-overlay-btn">Resume</button>
+        </div>
+      </div>
+
+      <!-- Mobile touch controls -->
+      <div class="nt-mobile-controls">
+        <button type="button" class="nt-ctrl" data-action="left" aria-label="Move left">◀</button>
+        <button type="button" class="nt-ctrl" data-action="rotate" aria-label="Rotate">⟳</button>
+        <button type="button" class="nt-ctrl" data-action="right" aria-label="Move right">▶</button>
+        <button type="button" class="nt-ctrl" data-action="soft" aria-label="Soft drop">▼</button>
+        <button type="button" class="nt-ctrl nt-ctrl--hard" data-action="hard" aria-label="Hard drop">⤓ DROP</button>
+        <button type="button" class="nt-ctrl" data-action="pause" aria-label="Pause">⏸</button>
+      </div>
+
+      <div class="nt-sidebar">
+        <div class="nt-next">
+          <div class="nt-next-label">NEXT</div>
+          <canvas id="ntNextCanvas" class="nt-next-canvas"></canvas>
+        </div>
+        <div class="nt-keys">
+          <div class="nt-keys-label">KEYS</div>
+          <div class="nt-key"><kbd>←</kbd><kbd>→</kbd> move</div>
+          <div class="nt-key"><kbd>↑</kbd> rotate</div>
+          <div class="nt-key"><kbd>↓</kbd> soft drop</div>
+          <div class="nt-key"><kbd>Space</kbd> hard drop</div>
+          <div class="nt-key"><kbd>P</kbd> pause</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="gameComplete" class="game-complete" hidden>
+    <div class="game-complete-card">
+      <div class="game-complete-emoji" aria-hidden="true">🧱</div>
+      <h2 id="gameCompleteTitle" class="game-complete-title">Game over</h2>
+      <div class="game-complete-stats">
+        <div class="game-complete-stat"><div class="game-complete-stat-num" id="gameCompleteScore">0</div><div class="game-complete-stat-label">score</div></div>
+        <div class="game-complete-stat"><div class="game-complete-stat-num" id="gameCompleteLines">0</div><div class="game-complete-stat-label">lines</div></div>
+        <div class="game-complete-stat"><div class="game-complete-stat-num" id="gameCompleteCents">0¢</div><div class="game-complete-stat-label">cents earned</div></div>
+      </div>
+      <div id="gameCompleteBest" class="game-complete-friends"></div>
+      <div class="game-complete-actions">
+        <button type="button" class="btn btn-primary" id="ntPlayAgain">Play again</button>
+        <a href="../games.html" class="btn btn-secondary">Back to games</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="gameToast" class="game-toast" hidden role="status" aria-live="polite"></div>
+
+  <script src="../js/prefs.js?v=20260426a"></script>
+  <script src="../js/fx.js?v=20260426a"></script>
+  <script src="../js/auth.js?v=20260511c"></script>
+  <script src="../js/games/number-tetris.js?v=20260512a"></script>
+</body>
+</html>
