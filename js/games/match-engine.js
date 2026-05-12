@@ -133,6 +133,16 @@
       }
     }
 
+    // Leave a queued match cleanly (notifies server so player slot
+    // frees up immediately instead of waiting for the 1h TTL).
+    async leaveQueue() {
+      if (!this.matchId) return;
+      try {
+        await apiCall('matchFinish', { matchId: this.matchId, leaveQueue: true });
+      } catch (_) {}
+      this.destroy();
+    }
+
     destroy() {
       this.destroyed = true;
       this.stopPolling();

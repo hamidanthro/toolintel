@@ -117,8 +117,8 @@
       try { await navigator.clipboard.writeText(inviteLink); toast('Link copied!', 1400); }
       catch (_) { const inp = document.getElementById('brInviteUrl'); if (inp) { inp.select(); document.execCommand('copy'); toast('Link copied!', 1400); } }
     });
-    document.getElementById('brCancelBtn').addEventListener('click', () => {
-      if (engine) engine.destroy();
+    document.getElementById('brCancelBtn').addEventListener('click', async () => {
+      if (engine) await engine.leaveQueue();
       renderPickerView(state.gradeBand);
     });
   }
@@ -153,8 +153,9 @@
     const problem = state.problem || { stem: '…', choices: [] };
     const eliminatedThisRound = state.eliminatedThisRound || [];
 
+    const tier = round >= 3 ? 3 : round >= 2 ? 2 : 1;
     root.innerHTML = `
-      <div class="sd-card br-live">
+      <div class="sd-card br-live" data-tier="${tier}">
         <div class="br-header">
           <div class="br-round-tag">ROUND ${round} / ~${total}</div>
           <div class="br-alive-count"><strong>${aliveCount}</strong> alive of ${(state.players || []).length}</div>
@@ -244,11 +245,27 @@
 
         <div class="sd-actions">
           <button type="button" id="brPlayAgainBtn" class="sd-btn sd-btn--primary">Play again</button>
+          <button type="button" id="brShareBtn" class="sd-btn sd-btn--secondary">📣 Share</button>
           <a href="../games.html" class="sd-btn sd-btn--secondary">Back to games</a>
         </div>
       </div>
     `;
     document.getElementById('brPlayAgainBtn').addEventListener('click', () => startMatch(state.gradeBand, null));
+    const shareBtn = document.getElementById('brShareBtn');
+    if (shareBtn) shareBtn.addEventListener('click', async () => {
+      const shareUrl = `${location.origin}/games/battle-royale.html`;
+      const text = myRank === 1
+        ? `I just won Math Battle Royale on GradeEarn! 👑 Beat me: ${shareUrl}`
+        : `I just played Math Battle Royale on GradeEarn — finished #${myRank}. You try: ${shareUrl}`;
+      try {
+        if (navigator.share) {
+          await navigator.share({ title: 'Math Battle Royale', text, url: shareUrl });
+        } else {
+          await navigator.clipboard.writeText(text);
+          toast('Copied — paste to a friend!', 1800);
+        }
+      } catch (_) { /* user cancelled share */ }
+    });
     if (rankEl) rankEl.textContent = `#${myRank}`;
   }
 

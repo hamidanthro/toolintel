@@ -5523,6 +5523,37 @@ async function handleMatchFinish(payload) {
   if (!auth) return bad(401, 'Not signed in');
   const matchId = String(payload.matchId || '');
   if (!matchId) return bad(400, 'matchId required');
+  // leaveQueue=true: caller wants to bail from a still-queued lobby.
+  // Removes the caller's player row; if no players remain, marks the
+  // match cancelled. If the match has already gone live, falls through
+  // to normal finalize (caller forfeits if they were alive — same as
+  // disconnect handling).
+  if (payload.leaveQueue) {
+    const header = await _readMatchHeader(matchId);
+    if (header && header.status === 'queued') {
+      try {
+        await ddb.send(new DeleteCommand({
+          TableName: MATCHES_TABLE,
+          Key: { matchId, kind: `player#${auth.username}` }
+        }));
+      } catch (_) {}
+      const remaining = await _readPlayers(matchId);
+      if (remaining.length === 0) {
+        try {
+          await ddb.send(new UpdateCommand({
+            TableName: MATCHES_TABLE,
+            Key: { matchId, kind: 'header' },
+            UpdateExpression: 'SET #s = :c, finishedAt = :t',
+            ConditionExpression: '#s = :q',
+            ExpressionAttributeNames: { '#s': 'status' },
+            ExpressionAttributeValues: { ':c': 'cancelled', ':t': Date.now(), ':q': 'queued' }
+          }));
+        } catch (_) {}
+      }
+      return ok({ left: true, matchId, remainingPlayers: remaining.length });
+    }
+    // else: match is live — fall through to finalize
+  }
   return await _finalizeMatch(matchId);
 }
 

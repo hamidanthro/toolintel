@@ -98,8 +98,8 @@
         if (inp) { inp.select(); document.execCommand('copy'); toast('Link copied!', 1400); }
       }
     });
-    document.getElementById('sdCancelBtn').addEventListener('click', () => {
-      if (engine) engine.destroy();
+    document.getElementById('sdCancelBtn').addEventListener('click', async () => {
+      if (engine) await engine.leaveQueue();
       renderPickerView(state.gradeBand);
     });
   }

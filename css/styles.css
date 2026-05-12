@@ -21200,3 +21200,30 @@ body.game-battle-royale .game-main { padding-top: 12px; }
   .br-podium-1 { padding: 18px 6px; }
   .br-roster { grid-template-columns: repeat(auto-fit, minmax(50px, 1fr)); }
 }
+
+/* Round-tightening visual ramp on Battle Royale live card */
+.sd-card.br-live[data-tier="1"] {
+  border-color: rgba(59, 130, 246, 0.5);
+}
+.sd-card.br-live[data-tier="2"] {
+  border-color: rgba(251, 146, 60, 0.6);
+  box-shadow: 0 0 18px rgba(251, 146, 60, 0.15);
+}
+.sd-card.br-live[data-tier="2"] .sd-timer-fill {
+  background: linear-gradient(90deg, #fb923c 0%, #f97316 60%, #ea580c 100%);
+}
+.sd-card.br-live[data-tier="3"] {
+  border-color: rgba(239, 68, 68, 0.75);
+  box-shadow: 0 0 22px rgba(239, 68, 68, 0.22);
+  animation: br-tier-pulse 1400ms ease-in-out infinite;
+}
+.sd-card.br-live[data-tier="3"] .sd-timer-fill {
+  background: linear-gradient(90deg, #fb7185 0%, #ef4444 50%, #b91c1c 100%);
+}
+.sd-card.br-live[data-tier="3"] .br-round-tag {
+  color: #fca5a5;
+}
+@keyframes br-tier-pulse {
+  0%, 100% { box-shadow: 0 0 22px rgba(239, 68, 68, 0.22); }
+  50%      { box-shadow: 0 0 28px rgba(239, 68, 68, 0.4); }
+}
