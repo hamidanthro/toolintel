@@ -306,6 +306,16 @@
   //            'cloud' (cloud only, no fallback) |
   //            'browser' (legacy: browser only)
   async function play(text, opts) {
+    // §52 iOS Audio unlock — runs SYNCHRONOUSLY inside the user-gesture
+    // context (the click/tap handler that called us). Kicks off a 1ms
+    // silent play that iOS Safari accepts, which then "unlocks" the
+    // page's audio context so subsequent .play() calls — even after
+    // an async fetch — are allowed. Before this fix, every cloud TTS
+    // call rejected on iOS with NotAllowedError because audio.play()
+    // happened after `await fetch(/tts)` returned, by which point the
+    // gesture window had closed. No-op after first successful unlock.
+    primeAudio();
+
     const o = opts || {};
     const requestedMode = (o.mode && (o.mode === 'auto' || o.mode === 'cloud' || o.mode === 'browser'))
       ? o.mode : _mode;
@@ -431,8 +441,38 @@
   let _mode = 'auto';                 // 'auto' | 'cloud' | 'browser'
   let _cloudAudio = null;             // <audio> element in flight
   let _cloudAbort = null;             // AbortController for the fetch
+  let _primedAudio = null;            // §52 iOS user-gesture unlock element
+  let _audioUnlocked = false;
   const CLOUD_FETCH_TIMEOUT_MS = 8000;
   const CLOUD_DEFAULT_VOICE = 'en-US-Neural2-F';
+
+  // §52 — iOS Safari Audio user-gesture fix. iOS requires audio.play()
+  // to be called *during* the user-gesture context. The cloud TTS path
+  // does an async `fetch` BEFORE calling .play() — by the time the
+  // fetch resolves, the gesture window has expired and iOS rejects the
+  // play with NotAllowedError. Calling primeAudio() synchronously at
+  // the start of play() bypasses that: we kick off a 1ms silent audio
+  // play synchronously (still under the gesture), iOS "unlocks" the
+  // audio context, and subsequent plays on any audio element succeed.
+  //
+  // Tiny silent WAV (44 bytes of header + zero data) inlined as data URI.
+  const SILENT_WAV = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+  function primeAudio() {
+    if (_audioUnlocked) return;
+    try {
+      if (!_primedAudio) {
+        _primedAudio = new Audio();
+        _primedAudio.src = SILENT_WAV;
+        _primedAudio.volume = 0;
+      }
+      const p = _primedAudio.play();
+      if (p && typeof p.then === 'function') {
+        p.then(() => { _audioUnlocked = true; }).catch(() => {});
+      } else {
+        _audioUnlocked = true;
+      }
+    } catch (_) {}
+  }
 
   function _ttsEndpoint() {
     // Accept an explicit override; otherwise derive from the existing
@@ -677,6 +717,11 @@
     // §76 cloud TTS additions
     setMode, getMode, _playCloud, _playBrowser, _ttsEndpoint,
     // §76b — call prewarm(text) on passage mount for instant tap-to-sound
-    prewarm
+    prewarm,
+    // §52 — exposed so callers can run a silent unlock during a tap
+    // gesture BEFORE awaiting an async pipeline. play() already calls
+    // this internally; this export lets practice.js prime audio even
+    // earlier in the click handler if needed.
+    primeAudio
   };
 })();

@@ -25927,3 +25927,114 @@ body.home-page .session-preview .mockup-tag {
   padding-top: 64px;
   padding-bottom: 56px;
 }
+
+/* ==========================================================================
+   §52 Mobile landing premium polish (May 12) — header safe-area, demoted
+   Sign in, clean gold headline, tactile grade cards, quiet placement link.
+   Paint + spacing pass; no layout restructure. Scoped to body.home-page so
+   other pages keep their existing header/hero treatments.
+   ========================================================================== */
+
+/* Header — respect the iOS safe area so the Sign-in button doesn't kiss
+   the status bar. Pads the header by the device's safe-area inset PLUS
+   a few extra pixels of breathing room. Desktop is unaffected because
+   safe-area-inset-top is 0 there. */
+body.home-page .site-header {
+  padding-top: env(safe-area-inset-top, 0);
+}
+body.home-page .site-header .container {
+  height: auto;
+  min-height: 64px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+/* Sign-in button — global softening from §48 already handles
+   .user-signin.btn-primary. No extra work needed here. */
+
+/* Headline: gold the WHOLE second clause instead of partial-gold on
+   the word "practicing". Cleaner premium read. */
+body.home-page .hero-headline-bold--gold {
+  background: linear-gradient(135deg, #fde68a 0%, #fbbf24 50%, #f59e0b 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  display: inline-block;
+}
+/* Defensive: kill the shimmer-word treatment on this surface so it
+   doesn't compete with the cleaner full-clause gold. The shimmer
+   keyframe stays defined for any legacy usage. */
+body.home-page .hero-headline-bold--gold .hero-shimmer-word {
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  -webkit-text-fill-color: inherit;
+  color: inherit;
+  animation: none;
+}
+
+/* Grade pills — tactile depth + active-press feedback. Same pill on
+   every grade (no special Algebra 1 outline). */
+body.home-page .hero-grade-pill {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 2px 8px -2px rgba(0, 0, 0, 0.25);
+  transition: background 180ms ease, border-color 180ms ease, transform 100ms ease;
+}
+body.home-page .hero-grade-pill:hover {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.03) 100%);
+  border-color: rgba(255, 255, 255, 0.20);
+}
+body.home-page .hero-grade-pill:active {
+  transform: scale(0.97);
+  background: rgba(255, 255, 255, 0.06);
+}
+/* Drop the Algebra-1 gold accent treatment (was on .hero-grade-pill--accent).
+   The class is removed from the markup as of §52, but defensive in case
+   any cached HTML still has it. */
+body.home-page .hero-grade-pill--accent {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 100%) !important;
+  border-color: rgba(255, 255, 255, 0.10) !important;
+  color: inherit !important;
+}
+
+/* "Take the placement test" line — drop gold inline, render as muted
+   secondary line with underline-on-hover. */
+body.home-page .hero-placement-line {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 14px;
+}
+body.home-page .hero-placement-line a {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 500;
+  text-underline-offset: 2px;
+}
+body.home-page .hero-placement-line a:hover {
+  text-decoration: underline;
+}
+body.home-page .placement-arrow {
+  color: rgba(255, 255, 255, 0.75);
+  margin-left: 2px;
+}
+
+/* Mobile-only spacing tightening — give the hero room to breathe at
+   phone widths now that the teks-badge + check-staar-score CTAs are
+   gone. */
+@media (max-width: 640px) {
+  body.home-page .hero {
+    padding-bottom: 60px;
+    min-height: auto;
+  }
+  body.home-page .hero-headline--focus {
+    font-size: clamp(28px, 7vw, 38px) !important;
+    line-height: 1.1;
+  }
+  body.home-page .hero-headline-light { display: block; }
+  body.home-page .hero-headline-bold--gold { display: block; margin-top: 4px; }
+}
