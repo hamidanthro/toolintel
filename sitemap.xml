@@ -918,4 +918,12 @@
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
+
+  <!-- Glossary — 35 STAAR/TEKS definitions -->
+  <url>
+    <loc>https://gradeearn.com/glossary/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+    <lastmod>2026-05-12</lastmod>
+  </url>
 </urlset>
