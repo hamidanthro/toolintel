@@ -24535,6 +24535,510 @@ body.myspace-page .ms-task-delete:hover {
   color: #ef4444;
 }
 
+/* ==========================================================================
+   §41 MySpace chat surface — Perplexity/ChatGPT/Claude anatomy (May 12)
+   Empty state ↔ active state, thread, streaming reveal, message actions,
+   recent-chats dropdown, scroll-to-bottom, thinking dots. All paint; the
+   server-side safety pipeline (crisis-detector + output moderation +
+   audit logging) is untouched.
+   ========================================================================== */
+
+/* The chat surface owns the AI Buddy region. Two states — empty and
+   active — share the same composer and toggle layout via a body class. */
+body.myspace-page .ms-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 480px;
+  padding: 18px 22px 20px;
+  position: relative;
+}
+body.myspace-page.ms-chat-active .ms-card {
+  min-height: 70vh;
+}
+/* In active chat mode, the briefing + quick-win + footer stats collapse
+   to reduce visual noise; a small back-to-dashboard affordance appears
+   at the top of the thread instead. */
+body.myspace-page.ms-chat-active .ms-quickwin,
+body.myspace-page.ms-chat-active .ms-briefing,
+body.myspace-page.ms-chat-active .ms-stats-footer {
+  display: none;
+}
+body.myspace-page.ms-chat-active .ms-greeting-block {
+  display: none;
+}
+
+/* Empty state — centered greeting + suggested chips + composer.
+   Visible only when there is no active thread / no messages. */
+.ms-chat-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 14px;
+  padding: 24px 12px;
+  text-align: center;
+}
+body.myspace-page.ms-chat-active .ms-chat-empty { display: none; }
+.ms-chat-empty-sparkle {
+  color: #fbbf24;
+  margin-bottom: 4px;
+}
+.ms-chat-empty-greeting {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+.ms-chat-empty-sub {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin: 0 0 8px;
+}
+.ms-chat-empty-composer {
+  width: 100%;
+  max-width: 720px;
+}
+.ms-chat-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 8px;
+}
+.ms-chat-suggest-chip {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+  border-radius: 999px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+.ms-chat-suggest-chip:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Active state — thread takes the body, composer pins to bottom */
+body.myspace-page .ms-chat-thread {
+  display: none;
+  flex-direction: column;
+  gap: 24px;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 8px 4px 18px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+  /* Soft fade at top so messages don't visually collide with the
+     dashboard back-link / thread title row */
+  mask-image: linear-gradient(180deg, transparent 0, #000 32px, #000 calc(100% - 32px), transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 32px, #000 calc(100% - 32px), transparent 100%);
+}
+body.myspace-page.ms-chat-active .ms-chat-thread { display: flex; }
+body.myspace-page .ms-chat-thread::-webkit-scrollbar { width: 6px; }
+body.myspace-page .ms-chat-thread::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+}
+
+/* Back-to-dashboard + thread title sticky row */
+.ms-chat-topbar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 4px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 8px;
+}
+body.myspace-page.ms-chat-active .ms-chat-topbar { display: flex; }
+.ms-chat-back {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: color 160ms ease, background 160ms ease;
+}
+.ms-chat-back:hover { color: rgba(255, 255, 255, 0.85); background: rgba(255, 255, 255, 0.04); }
+.ms-chat-title {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-align: right;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Message bubbles — user filled right, AI naked left + sparkle */
+body.myspace-page .ms-msg {
+  max-width: none;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+  display: flex;
+  position: relative;
+  font-size: 15px;
+  line-height: 1.55;
+}
+body.myspace-page .ms-msg--user {
+  align-self: flex-end;
+  justify-content: flex-end;
+}
+body.myspace-page .ms-msg--user .ms-msg-body {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px 16px 4px 16px;
+  padding: 10px 14px;
+  color: #ffffff;
+  max-width: 75%;
+}
+body.myspace-page .ms-msg--ai {
+  align-self: flex-start;
+}
+body.myspace-page .ms-msg--ai .ms-msg-body {
+  color: rgba(255, 255, 255, 0.85);
+  max-width: 85%;
+  padding: 0 4px;
+}
+.ms-msg-spark {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: #fbbf24;
+  margin: 4px 8px 0 0;
+}
+body.myspace-page .ms-msg-body > p { margin: 0 0 6px; }
+body.myspace-page .ms-msg-body > p:last-child { margin-bottom: 0; }
+body.myspace-page .ms-msg-body code {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.9em;
+  color: #fde68a;
+}
+body.myspace-page .ms-msg-body pre {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 10px 12px;
+  overflow-x: auto;
+  margin: 6px 0;
+}
+body.myspace-page .ms-msg-body pre code {
+  background: transparent;
+  padding: 0;
+  color: #ffffff;
+}
+body.myspace-page .ms-msg-body a {
+  color: #fbbf24;
+  text-decoration: underline;
+  text-decoration-color: rgba(251, 191, 36, 0.4);
+}
+body.myspace-page .ms-msg-body ul,
+body.myspace-page .ms-msg-body ol {
+  margin: 4px 0;
+  padding-left: 22px;
+}
+body.myspace-page .ms-msg-body strong { color: #ffffff; font-weight: 600; }
+
+/* Streaming caret (blinks while AI message is mid-stream) */
+.ms-stream-caret {
+  display: inline-block;
+  width: 8px;
+  height: 1em;
+  background: #fbbf24;
+  vertical-align: text-bottom;
+  margin-left: 2px;
+  animation: ms-caret-blink 1s steps(2) infinite;
+}
+@keyframes ms-caret-blink { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
+
+/* Thinking dots — render in place of the AI message until the first token */
+.ms-thinking-dots {
+  display: inline-flex;
+  gap: 4px;
+  padding: 6px 0 2px;
+}
+.ms-thinking-dots span {
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  animation: ms-think-pulse 1.2s ease-in-out infinite;
+}
+.ms-thinking-dots span:nth-child(2) { animation-delay: 0.18s; }
+.ms-thinking-dots span:nth-child(3) { animation-delay: 0.36s; }
+@keyframes ms-think-pulse {
+  0%, 80%, 100% { opacity: 0.25; transform: scale(0.8); }
+  40%           { opacity: 1;    transform: scale(1.1); }
+}
+
+/* Message actions row — Copy / Regenerate / 👍 / 👎 (AI only, hover only) */
+.ms-msg-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 6px;
+  padding-left: 24px;
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+body.myspace-page .ms-msg--ai:hover .ms-msg-actions,
+body.myspace-page .ms-msg--ai:focus-within .ms-msg-actions { opacity: 1; }
+@media (hover: none) {
+  .ms-msg-actions { opacity: 0.7; } /* touch devices: always-visible */
+}
+.ms-msg-act-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: color 160ms ease, background 160ms ease;
+}
+.ms-msg-act-btn:hover {
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.04);
+}
+.ms-msg-act-btn[aria-pressed="true"] { color: #fbbf24; }
+.ms-msg-aborted {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.35);
+  margin-top: 4px;
+  padding-left: 24px;
+}
+
+/* Composer (active state): pinned to bottom of the card */
+body.myspace-page.ms-chat-active .ms-composer-wrap {
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+/* The composer pill itself becomes a multi-line capable box */
+body.myspace-page .ms-composer {
+  align-items: flex-end;
+  padding: 8px 8px 8px 14px;
+  border-radius: 18px;
+}
+body.myspace-page .ms-composer-input {
+  field-sizing: content;
+  min-height: 24px;
+  max-height: 144px;
+  line-height: 1.5;
+  font-size: 14px;
+  padding: 6px 6px;
+  resize: none;
+  overflow-y: auto;
+  font-family: inherit;
+}
+.ms-composer-char-count {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  font-variant-numeric: tabular-nums;
+  padding: 0 6px 6px;
+  align-self: flex-end;
+  display: none;
+}
+.ms-composer-char-count.show { display: inline; }
+.ms-composer-char-count.over { color: #fca5a5; }
+.ms-composer-attach {
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.35);
+  cursor: not-allowed;
+}
+.ms-composer-attach[disabled] { opacity: 0.6; }
+/* Stop button — replaces send while streaming */
+body.myspace-page .ms-composer-send.ms-composer-stop {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+body.myspace-page .ms-composer-send.ms-composer-stop:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* Scroll-to-bottom floating button */
+.ms-scroll-to-bottom {
+  position: absolute;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(13, 29, 58, 0.85);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: rgba(255, 255, 255, 0.75);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 5;
+  transition: opacity 200ms ease, background 200ms ease;
+}
+.ms-scroll-to-bottom.show { display: inline-flex; }
+.ms-scroll-to-bottom:hover {
+  background: rgba(13, 29, 58, 0.95);
+  color: #ffffff;
+}
+
+/* Recent Chats dropdown in the top header */
+.ms-recent-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.7);
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease;
+}
+.ms-recent-btn:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: #ffffff;
+}
+.ms-recent-panel {
+  position: absolute;
+  top: 52px;
+  right: 16px;
+  width: 320px;
+  max-height: 60vh;
+  background: #0d1d3a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+  padding: 8px;
+  z-index: 20;
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+}
+.ms-recent-panel.show { display: flex; }
+.ms-recent-newchat {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 9px 12px;
+  background: transparent;
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  color: #fbbf24;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  margin-bottom: 4px;
+}
+.ms-recent-newchat:hover {
+  background: rgba(251, 191, 36, 0.08);
+}
+.ms-recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+  max-height: calc(60vh - 64px);
+}
+.ms-recent-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  text-align: left;
+  width: 100%;
+  font-family: inherit;
+  position: relative;
+}
+.ms-recent-item:hover { background: rgba(255, 255, 255, 0.04); }
+.ms-recent-item.active {
+  background: rgba(255, 255, 255, 0.06);
+  border-left: 2px solid #fbbf24;
+  padding-left: 8px;
+}
+.ms-recent-item-title {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 13px;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  flex: 1;
+}
+.ms-recent-item-time {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 11px;
+  margin-top: 2px;
+  white-space: nowrap;
+}
+.ms-recent-item-delete {
+  display: none;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.ms-recent-item:hover .ms-recent-item-delete { display: inline-flex; }
+.ms-recent-item-delete:hover {
+  background: rgba(239, 68, 68, 0.12);
+  color: #fca5a5;
+}
+.ms-recent-empty {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 13px;
+  text-align: center;
+  padding: 18px 8px;
+}
+
+/* Mobile composer + chip wrap */
+@media (max-width: 640px) {
+  .ms-chat-suggest-chip { font-size: 0.8rem; padding: 7px 12px; }
+  .ms-recent-panel { right: 8px; width: calc(100vw - 32px); }
+}
 /* Legal-page utility class — drops the OG SEO-page intro padding so
    long-form legal docs read cleanly on /legal/*.html. Inherits .fw-page
    shell otherwise. */

@@ -434,50 +434,570 @@
   }
 
   // ============================================================
-  // AI BUDDY CHAT
+  // §41 AI BUDDY CHAT — Perplexity / ChatGPT / Claude anatomy
   // ============================================================
+  // State machine: empty (no messages in active thread) ↔ active (≥1 msg).
+  // Threads persist to localStorage keyed per-user. Server-side safety
+  // pipeline (crisis-detector + output moderation + audit logging) is
+  // untouched — every send still flows through it.
+
+  const THREADS_KEY_PREFIX = 'gradeearn:myspace:threads:'; // + userKey
+  const ACTIVE_THREAD_KEY_PREFIX = 'gradeearn:myspace:active-thread:';
+  const MAX_THREADS = 50;
+  const STREAM_WORD_MS = 30; // word-by-word reveal cadence (client-side stub
+                              // until the lambda supports SSE — TODO: switch
+                              // to real backend streaming when available)
+
+  let chatState = {
+    threads: [],            // array of { id, title, createdAt, updatedAt, messages }
+    activeThreadId: null,
+    isStreaming: false,
+    streamAbort: null,      // AbortController for in-flight fetch
+    streamCancelled: false  // user pressed Stop — drop result if it arrives
+  };
+
+  function chatThreadsKey() { return THREADS_KEY_PREFIX + getUserKey(); }
+  function chatActiveKey()  { return ACTIVE_THREAD_KEY_PREFIX + getUserKey(); }
+
+  function loadChatThreads() {
+    try {
+      const raw = localStorage.getItem(chatThreadsKey());
+      chatState.threads = raw ? JSON.parse(raw) : [];
+    } catch (_) { chatState.threads = []; }
+    try {
+      chatState.activeThreadId = localStorage.getItem(chatActiveKey()) || null;
+    } catch (_) { chatState.activeThreadId = null; }
+    // Drop active id if no longer present
+    if (chatState.activeThreadId && !chatState.threads.find(function (t) { return t.id === chatState.activeThreadId; })) {
+      chatState.activeThreadId = null;
+    }
+  }
+  function persistChatThreads() {
+    try { localStorage.setItem(chatThreadsKey(), JSON.stringify(chatState.threads)); } catch (_) {}
+    try {
+      if (chatState.activeThreadId) localStorage.setItem(chatActiveKey(), chatState.activeThreadId);
+      else localStorage.removeItem(chatActiveKey());
+    } catch (_) {}
+  }
+  function getActiveThread() {
+    return chatState.threads.find(function (t) { return t.id === chatState.activeThreadId; }) || null;
+  }
+  function createNewThread() {
+    const id = 't_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+    const thread = { id: id, title: 'New chat', createdAt: Date.now(), updatedAt: Date.now(), messages: [] };
+    chatState.threads.unshift(thread);
+    if (chatState.threads.length > MAX_THREADS) chatState.threads = chatState.threads.slice(0, MAX_THREADS);
+    chatState.activeThreadId = id;
+    persistChatThreads();
+    return thread;
+  }
+  function switchThread(id) {
+    chatState.activeThreadId = id;
+    persistChatThreads();
+    renderChatSurface();
+    renderRecentList();
+  }
+  function deleteThread(id) {
+    chatState.threads = chatState.threads.filter(function (t) { return t.id !== id; });
+    if (chatState.activeThreadId === id) chatState.activeThreadId = null;
+    persistChatThreads();
+    renderChatSurface();
+    renderRecentList();
+  }
+
+  function relativeTime(ts) {
+    const diff = Date.now() - ts;
+    const min = Math.floor(diff / 60000);
+    if (min < 1) return 'just now';
+    if (min < 60) return min + 'm ago';
+    const hr = Math.floor(min / 60);
+    if (hr < 24) return hr + 'h ago';
+    const day = Math.floor(hr / 24);
+    if (day === 1) return 'yesterday';
+    if (day < 7) return day + 'd ago';
+    return new Date(ts).toLocaleDateString();
+  }
+
+  // ---- Minimal markdown renderer (bold, italic, code, lists, links).
+  // Home-rolled to avoid pulling a markdown dep (CLAUDE.md §3 — no bundler).
+  // Escape first, then re-introduce inline + block constructs.
+  function renderMarkdown(src) {
+    let s = String(src || '').replace(/[&<>]/g, function (c) {
+      return c === '&' ? '&amp;' : c === '<' ? '&lt;' : '&gt;';
+    });
+    // Fenced code blocks (```...```)
+    s = s.replace(/```([\s\S]*?)```/g, function (_, code) {
+      return '<pre><code>' + code.replace(/^\n/, '') + '</code></pre>';
+    });
+    // Inline code
+    s = s.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+    // Links [text](url) — only allow http(s) and mailto
+    s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+|mailto:[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+    // Bold + italic
+    s = s.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
+    s = s.replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>');
+    // Bullet lists (single-level)
+    s = s.replace(/(?:^|\n)((?:[-*] [^\n]+\n?)+)/g, function (_, block) {
+      const items = block.trim().split(/\n/).map(function (line) {
+        return '<li>' + line.replace(/^[-*] /, '') + '</li>';
+      }).join('');
+      return '\n<ul>' + items + '</ul>\n';
+    });
+    // Paragraphs: split on blank lines; preserve single newlines as <br>
+    const parts = s.split(/\n{2,}/).map(function (p) {
+      p = p.trim();
+      if (!p) return '';
+      if (/^<(ul|pre|h\d|blockquote)/.test(p)) return p;
+      return '<p>' + p.replace(/\n/g, '<br>') + '</p>';
+    });
+    return parts.join('');
+  }
+
+  // ---- Render the chat surface (toggles empty ↔ active)
+  function renderChatSurface() {
+    const body = document.body;
+    const thread = getActiveThread();
+    const has = thread && thread.messages && thread.messages.length > 0;
+    body.classList.toggle('ms-chat-active', !!has);
+
+    // Empty-state greeting personalization
+    const empty = document.getElementById('ms-chat-empty-greeting');
+    if (empty) {
+      const name = getFirstName();
+      empty.textContent = name && name !== 'friend'
+        ? 'What would you like to work on, ' + name + '?'
+        : 'What would you like to work on?';
+    }
+
+    // Thread title
+    const title = document.getElementById('ms-chat-title');
+    if (title) title.textContent = thread ? thread.title : '';
+
+    // Render thread messages
+    const threadEl = document.getElementById('ms-chat-thread');
+    if (threadEl) {
+      threadEl.innerHTML = '';
+      if (thread) {
+        thread.messages.forEach(function (m, i) {
+          const isLastAi = i === thread.messages.length - 1 && m.role === 'ai';
+          renderMessageInto(threadEl, m, { withActions: m.role === 'ai', isStreaming: false, isLastAi: isLastAi });
+        });
+      }
+      threadEl.scrollTop = threadEl.scrollHeight;
+    }
+  }
+
+  function renderMessageInto(threadEl, msg, opts) {
+    opts = opts || {};
+    const wrap = document.createElement('div');
+    wrap.className = 'ms-msg ms-msg--' + msg.role;
+    wrap.dataset.msgId = msg.id || ('m_' + Math.random().toString(36).slice(2, 8));
+
+    // Sparkle prefix for AI bubbles
+    if (msg.role === 'ai') {
+      const spark = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      spark.setAttribute('class', 'ms-msg-spark');
+      spark.setAttribute('viewBox', '0 0 24 24');
+      spark.setAttribute('fill', 'none');
+      spark.setAttribute('stroke', 'currentColor');
+      spark.setAttribute('stroke-width', '1.8');
+      spark.setAttribute('aria-hidden', 'true');
+      spark.innerHTML = '<polygon points="12 2 15 8 21 9 17 14 18 21 12 18 6 21 7 14 3 9 9 8 12 2"/>';
+      wrap.appendChild(spark);
+    }
+
+    const bodyWrap = document.createElement('div');
+    bodyWrap.style.display = 'flex';
+    bodyWrap.style.flexDirection = 'column';
+    bodyWrap.style.maxWidth = '100%';
+
+    const body = document.createElement('div');
+    body.className = 'ms-msg-body';
+    if (msg.role === 'ai') {
+      body.innerHTML = renderMarkdown(msg.text || '');
+    } else {
+      body.textContent = msg.text || '';
+    }
+    bodyWrap.appendChild(body);
+
+    if (msg.aborted) {
+      const note = document.createElement('div');
+      note.className = 'ms-msg-aborted';
+      note.textContent = 'Stopped.';
+      bodyWrap.appendChild(note);
+    }
+
+    if (opts.withActions) {
+      bodyWrap.appendChild(buildActionsRow(msg, wrap));
+    }
+
+    wrap.appendChild(bodyWrap);
+    threadEl.appendChild(wrap);
+    return { wrap: wrap, body: body };
+  }
+
+  function buildActionsRow(msg, msgWrap) {
+    const row = document.createElement('div');
+    row.className = 'ms-msg-actions';
+    function btn(label, svgPath, onClick, opts) {
+      opts = opts || {};
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'ms-msg-act-btn';
+      b.title = label;
+      b.setAttribute('aria-label', label);
+      b.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + svgPath + '</svg>';
+      b.onclick = function () { onClick(b); };
+      return b;
+    }
+    row.appendChild(btn('Copy', '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>', function (b) {
+      try {
+        navigator.clipboard && navigator.clipboard.writeText(msg.text || '');
+        const original = b.innerHTML;
+        b.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>';
+        setTimeout(function () { b.innerHTML = original; }, 1500);
+      } catch (_) {}
+    }));
+    row.appendChild(btn('Regenerate', '<polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>', function () {
+      regenerateLast();
+    }));
+    row.appendChild(btn('Thumbs up', '<path d="M14 9V5a3 3 0 0 0-6 0v4H2v12h16l4-12z"/>', function (b) {
+      const pressed = b.getAttribute('aria-pressed') === 'true';
+      b.setAttribute('aria-pressed', String(!pressed));
+      // TODO §41: wire to /api/myspace/chat/:messageId/feedback
+      console.log('[chat-feedback] thumbsUp msgId=' + msgWrap.dataset.msgId + ' pressed=' + !pressed);
+    }));
+    row.appendChild(btn('Thumbs down', '<path d="M10 15v4a3 3 0 0 0 6 0v-4h6V3H6L2 15z"/>', function (b) {
+      const pressed = b.getAttribute('aria-pressed') === 'true';
+      b.setAttribute('aria-pressed', String(!pressed));
+      console.log('[chat-feedback] thumbsDown msgId=' + msgWrap.dataset.msgId + ' pressed=' + !pressed);
+    }));
+    return row;
+  }
+
+  function renderRecentList() {
+    const listEl = document.getElementById('ms-recent-list');
+    if (!listEl) return;
+    if (chatState.threads.length === 0) {
+      listEl.innerHTML = '<div class="ms-recent-empty">No previous chats yet.</div>';
+      return;
+    }
+    listEl.innerHTML = '';
+    chatState.threads.forEach(function (t) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'ms-recent-item' + (t.id === chatState.activeThreadId ? ' active' : '');
+      btn.innerHTML =
+        '<div><div class="ms-recent-item-title">' + escHtml(t.title) + '</div>' +
+        '<div class="ms-recent-item-time">' + relativeTime(t.updatedAt) + '</div></div>' +
+        '<span class="ms-recent-item-delete" data-del="' + t.id + '" aria-label="Delete">' +
+          '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+            '<polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/>' +
+          '</svg>' +
+        '</span>';
+      btn.onclick = function (e) {
+        // Click on delete: stop propagation and delete
+        const del = e.target.closest('[data-del]');
+        if (del) {
+          e.stopPropagation();
+          if (confirm('Delete this chat?')) deleteThread(t.id);
+          return;
+        }
+        switchThread(t.id);
+        closeRecentPanel();
+      };
+      listEl.appendChild(btn);
+    });
+  }
+  function escHtml(s) {
+    return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
+      return c === '&' ? '&amp;' : c === '<' ? '&lt;' : c === '>' ? '&gt;' : '&quot;';
+    });
+  }
+
+  function openRecentPanel() {
+    const panel = document.getElementById('ms-recent-panel');
+    const btn = document.getElementById('ms-recent-btn');
+    if (!panel || !btn) return;
+    renderRecentList();
+    panel.classList.add('show');
+    panel.setAttribute('aria-hidden', 'false');
+    btn.setAttribute('aria-expanded', 'true');
+  }
+  function closeRecentPanel() {
+    const panel = document.getElementById('ms-recent-panel');
+    const btn = document.getElementById('ms-recent-btn');
+    if (!panel || !btn) return;
+    panel.classList.remove('show');
+    panel.setAttribute('aria-hidden', 'true');
+    btn.setAttribute('aria-expanded', 'false');
+  }
+
+  // ---- Send + stream a message
+  async function submitMessage(userText) {
+    userText = String(userText || '').trim();
+    if (!userText || chatState.isStreaming) return;
+
+    // Make sure there's an active thread to attach to
+    let thread = getActiveThread();
+    if (!thread) thread = createNewThread();
+
+    const userMsg = { id: 'm_u_' + Date.now(), role: 'user', text: userText, ts: Date.now() };
+    thread.messages.push(userMsg);
+
+    // Auto-title from the first user message
+    if (thread.messages.filter(function (m) { return m.role === 'user'; }).length === 1) {
+      thread.title = userText.slice(0, 40) + (userText.length > 40 ? '…' : '');
+    }
+    thread.updatedAt = Date.now();
+    persistChatThreads();
+
+    // Render user message + placeholder AI message with thinking dots
+    document.body.classList.add('ms-chat-active');
+    const threadEl = document.getElementById('ms-chat-thread');
+    renderMessageInto(threadEl, userMsg, { withActions: false });
+
+    const aiPlaceholder = { id: 'm_a_' + Date.now(), role: 'ai', text: '' };
+    const aiRender = renderMessageInto(threadEl, aiPlaceholder, { withActions: false });
+    aiRender.body.innerHTML = '<span class="ms-thinking-dots"><span></span><span></span><span></span></span>';
+    threadEl.scrollTop = threadEl.scrollHeight;
+    document.getElementById('ms-chat-title').textContent = thread.title;
+
+    // Wire abort + send/stop UI
+    chatState.isStreaming = true;
+    chatState.streamCancelled = false;
+    setComposerStopMode(true);
+
+    const subjectFilter = document.getElementById('ms-subject-trigger').dataset.value || '';
+    let replyText;
+    try {
+      replyText = await sendChat(userText, subjectFilter);
+    } catch (err) {
+      if (chatState.streamCancelled) {
+        aiPlaceholder.aborted = true;
+        thread.messages.push(aiPlaceholder);
+        persistChatThreads();
+        renderChatSurface();
+        setComposerStopMode(false);
+        chatState.isStreaming = false;
+        return;
+      }
+      replyText = localFallbackReply(userText);
+    }
+    if (chatState.streamCancelled) {
+      aiPlaceholder.aborted = true;
+      aiPlaceholder.text = '';
+      thread.messages.push(aiPlaceholder);
+      persistChatThreads();
+      renderChatSurface();
+      setComposerStopMode(false);
+      chatState.isStreaming = false;
+      return;
+    }
+
+    // Client-side word-by-word reveal — keeps the chat-product feel even
+    // though the backend returns a full JSON response. TODO §41: switch
+    // to real SSE when the lambda supports it.
+    await revealStreaming(aiRender.body, replyText);
+
+    aiPlaceholder.text = replyText;
+    thread.messages.push(aiPlaceholder);
+    thread.updatedAt = Date.now();
+    persistChatThreads();
+
+    // Re-render the final AI bubble with markdown + actions (we built it
+    // up with a streaming caret; replace cleanly now)
+    aiRender.body.innerHTML = renderMarkdown(replyText);
+    const parent = aiRender.wrap.children[1] || aiRender.wrap.lastChild;
+    if (parent) parent.appendChild(buildActionsRow(aiPlaceholder, aiRender.wrap));
+
+    setComposerStopMode(false);
+    chatState.isStreaming = false;
+    renderRecentList();
+  }
+
+  function revealStreaming(bodyEl, text) {
+    return new Promise(function (resolve) {
+      const words = String(text).split(/(\s+)/); // keep whitespace
+      bodyEl.innerHTML = '';
+      const span = document.createElement('span');
+      const caret = document.createElement('span');
+      caret.className = 'ms-stream-caret';
+      bodyEl.appendChild(span);
+      bodyEl.appendChild(caret);
+      let i = 0;
+      function step() {
+        if (chatState.streamCancelled || i >= words.length) {
+          caret.remove();
+          resolve();
+          return;
+        }
+        span.textContent += words[i++];
+        const t = document.getElementById('ms-chat-thread');
+        if (t && chatState && (Math.abs(t.scrollHeight - t.scrollTop - t.clientHeight) < 100)) {
+          t.scrollTop = t.scrollHeight;
+        }
+        setTimeout(step, STREAM_WORD_MS);
+      }
+      step();
+    });
+  }
+
+  function regenerateLast() {
+    const thread = getActiveThread();
+    if (!thread || thread.messages.length === 0 || chatState.isStreaming) return;
+    // Find the last user message
+    let lastUserIdx = -1;
+    for (let i = thread.messages.length - 1; i >= 0; i--) {
+      if (thread.messages[i].role === 'user') { lastUserIdx = i; break; }
+    }
+    if (lastUserIdx === -1) return;
+    const lastUserText = thread.messages[lastUserIdx].text;
+    // Drop everything from the last user message onward (we'll re-add it)
+    thread.messages = thread.messages.slice(0, lastUserIdx);
+    persistChatThreads();
+    renderChatSurface();
+    submitMessage(lastUserText);
+  }
+
+  function setComposerStopMode(stopping) {
+    const send = document.getElementById('ms-composer-send');
+    const sendIcon = document.getElementById('ms-send-icon');
+    const stopIcon = document.getElementById('ms-stop-icon');
+    if (!send) return;
+    if (stopping) {
+      send.classList.add('ms-composer-stop');
+      send.disabled = false;
+      send.setAttribute('aria-label', 'Stop generating');
+      if (sendIcon) sendIcon.style.display = 'none';
+      if (stopIcon) stopIcon.style.display = 'block';
+    } else {
+      send.classList.remove('ms-composer-stop');
+      send.setAttribute('aria-label', 'Send');
+      if (sendIcon) sendIcon.style.display = 'block';
+      if (stopIcon) stopIcon.style.display = 'none';
+      const input = document.getElementById('ms-composer-input');
+      send.disabled = !input || input.value.trim().length === 0;
+    }
+  }
+
+  function abortStream() {
+    if (!chatState.isStreaming) return;
+    chatState.streamCancelled = true;
+    if (chatState.streamAbort) { try { chatState.streamAbort.abort(); } catch (_) {} }
+  }
+
+  // ---- Top-level composer wiring (called from setup)
   function wireComposer() {
     const form = document.getElementById('ms-composer');
     const input = document.getElementById('ms-composer-input');
     const send = document.getElementById('ms-composer-send');
-    const thread = document.getElementById('ms-chat-thread');
+    const charCount = document.getElementById('ms-composer-char-count');
     if (!form || !input || !send) return;
 
+    // Load threads + populate UI
+    loadChatThreads();
+    renderChatSurface();
+    renderRecentList();
+
+    // Composer interactions
     input.addEventListener('input', function () {
-      send.disabled = input.value.trim().length === 0;
+      const len = input.value.length;
+      send.disabled = chatState.isStreaming ? false : input.value.trim().length === 0;
+      if (charCount) {
+        if (len > 400) {
+          charCount.classList.add('show');
+          charCount.textContent = len + ' / 1000';
+          charCount.classList.toggle('over', len > 1000);
+        } else {
+          charCount.classList.remove('show');
+        }
+      }
     });
 
-    form.addEventListener('submit', async function (e) {
+    // Enter sends, Shift+Enter newlines, Escape aborts streaming
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        if (chatState.isStreaming) return;
+        form.requestSubmit();
+      }
+      if (e.key === 'Escape' && chatState.isStreaming) {
+        e.preventDefault();
+        abortStream();
+      }
+    });
+
+    // Form submit / Stop button
+    form.addEventListener('submit', function (e) {
       e.preventDefault();
+      if (chatState.isStreaming) { abortStream(); return; }
       const msg = input.value.trim();
       if (!msg) return;
-      const subjectFilter = document.getElementById('ms-subject-trigger').dataset.value || '';
       input.value = '';
       send.disabled = true;
-
-      thread.hidden = false;
-      appendMessage(thread, 'user', msg);
-      const thinking = appendMessage(thread, 'ai', '…');
-      thinking.classList.add('ms-msg--thinking');
-
-      let reply;
-      try {
-        reply = await sendChat(msg, subjectFilter);
-      } catch (_) {
-        reply = localFallbackReply(msg);
-      }
-      thinking.classList.remove('ms-msg--thinking');
-      thinking.textContent = reply;
+      if (charCount) charCount.classList.remove('show');
+      submitMessage(msg);
+      // Refocus the composer for fast follow-ups
+      setTimeout(function () { input.focus(); }, 0);
     });
-  }
 
-  function appendMessage(thread, who, text) {
-    const div = document.createElement('div');
-    div.className = 'ms-msg ms-msg--' + who;
-    div.textContent = text;
-    thread.appendChild(div);
-    thread.scrollTop = thread.scrollHeight;
-    return div;
+    // Suggested prompt chips → fill + send
+    document.querySelectorAll('.ms-chat-suggest-chip').forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        const prompt = chip.dataset.prompt || chip.textContent.trim();
+        submitMessage(prompt);
+      });
+    });
+
+    // Back-to-dashboard collapses to empty view (keeps the thread intact)
+    const back = document.getElementById('ms-chat-back');
+    if (back) back.addEventListener('click', function () {
+      document.body.classList.remove('ms-chat-active');
+    });
+
+    // Recent Chats dropdown
+    const recentBtn = document.getElementById('ms-recent-btn');
+    const recentPanel = document.getElementById('ms-recent-panel');
+    if (recentBtn) {
+      recentBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (recentPanel.classList.contains('show')) closeRecentPanel();
+        else openRecentPanel();
+      });
+    }
+    document.addEventListener('click', function (e) {
+      if (!recentPanel) return;
+      if (!recentPanel.classList.contains('show')) return;
+      if (recentPanel.contains(e.target) || (recentBtn && recentBtn.contains(e.target))) return;
+      closeRecentPanel();
+    });
+    const newChatBtn = document.getElementById('ms-recent-newchat');
+    if (newChatBtn) newChatBtn.addEventListener('click', function () {
+      // New chat: clear active id, drop into empty state
+      chatState.activeThreadId = null;
+      persistChatThreads();
+      renderChatSurface();
+      renderRecentList();
+      closeRecentPanel();
+      setTimeout(function () { input.focus(); }, 0);
+    });
+
+    // Scroll-to-bottom button
+    const threadEl = document.getElementById('ms-chat-thread');
+    const stbBtn = document.getElementById('ms-scroll-to-bottom');
+    if (threadEl && stbBtn) {
+      threadEl.addEventListener('scroll', function () {
+        const dist = threadEl.scrollHeight - threadEl.scrollTop - threadEl.clientHeight;
+        stbBtn.classList.toggle('show', dist > 80);
+      });
+      stbBtn.addEventListener('click', function () {
+        threadEl.scrollTo({ top: threadEl.scrollHeight, behavior: 'smooth' });
+      });
+    }
+
+    // Auto-focus composer on load
+    setTimeout(function () { input.focus(); }, 60);
   }
 
   // ============================================================
