@@ -254,11 +254,37 @@ function renderFaqLd(grade, qCount) {
   return `<script type="application/ld+json">\n${JSON.stringify(faq, null, 2)}\n  </script>`;
 }
 
+// TEKS slugify (matches scripts/build-teks-pages.js#teksSlug): "3.2A" → "3-2a"
+function teksSlug(id) {
+  return String(id).toLowerCase().replace(/\./g, '-').replace(/[^a-z0-9-]/g, '');
+}
+
+// Collect distinct TEKS ids that have at least one curriculum question
+// in this grade. Used to render the "Practice by TEKS standard" pill row
+// linking to the per-TEKS long-tail pages built by build-teks-pages.js.
+function collectGradeTeks(curr) {
+  const seen = new Set();
+  (curr.units || []).forEach((u) => {
+    (u.lessons || []).forEach((l) => {
+      (l.questions || []).forEach((q) => {
+        const t = q.teks || l.teks || u.teks;
+        if (t) seen.add(t);
+      });
+    });
+  });
+  // Sort numerically by (chapter.section + suffix) so the pills read left-to-right
+  return Array.from(seen).sort();
+}
+
 function renderGradePage(grade) {
   const curr = loadCurriculum(grade.file);
   const units = curr.units || [];
   const qCount = countQuestions(curr);
   const unitsHtml = units.map((u) => renderUnitSection(u, grade)).join('\n');
+  const gradeTeks = collectGradeTeks(curr);
+  const teksPillsHtml = gradeTeks.map((id) =>
+    `<a class="fw-related-pill" href="/free-worksheets/${grade.urlSlug}/teks-${teksSlug(id)}.html">TEKS ${esc(id)}</a>`
+  ).join('\n        ');
 
   // SEO meta
   const pageTitle = `Free ${grade.label} STAAR Math Worksheets — ${qCount.toLocaleString()}+ TEKS Practice Questions`;
@@ -353,7 +379,7 @@ function renderGradePage(grade) {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&display=swap">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/styles.css?v=20260512b">
+  <link rel="stylesheet" href="/css/styles.css?v=20260512n">
 </head>
 <body class="fw-page">
 
@@ -449,6 +475,15 @@ ${unitsHtml}
         <p>GradeEarn is a Texas-focused STAAR prep app for K-12 families. Every question goes through an AI quality gate (gpt-4o for content review, Claude Sonnet 4.5 for independent math verification) before it reaches your kid — so you don't run into the typo-riddled "free worksheet PDF" experience that's all over the rest of the internet.</p>
       </div>
     </section>
+
+    ${teksPillsHtml ? `
+    <section class="fw-related" id="practice-by-teks">
+      <h2 class="fw-related-title">Practice by TEKS standard</h2>
+      <p class="fw-related-sub">Jump straight to worksheets for a specific ${esc(grade.label)} math TEKS standard.</p>
+      <div class="fw-related-pills">
+        ${teksPillsHtml}
+      </div>
+    </section>` : ''}
 
     <section class="fw-related">
       <h2 class="fw-related-title">Free math worksheets for other grades</h2>
@@ -648,7 +683,7 @@ ${breadcrumbLd}
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&display=swap">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/styles.css?v=20260512d">
+  <link rel="stylesheet" href="/css/styles.css?v=20260512n">
 </head>
 <body class="fw-page">
 
@@ -880,7 +915,7 @@ ${JSON.stringify(breadcrumbLd, null, 2)}
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&display=swap">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/styles.css?v=20260512b">
+  <link rel="stylesheet" href="/css/styles.css?v=20260512n">
 </head>
 <body class="fw-page fw-page--hub">
 
