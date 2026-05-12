@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com https://api.gradeearn.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#060d1f">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+  <title>Parent Agreement — GradeEarn</title>
+  <meta name="description" content="The agreement a parent acknowledges and accepts at Verifiable Parental Consent for their under-13 child.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://gradeearn.com/legal/parent-agreement.html">
+  <meta name="policy:doc-type" content="parent_agreement">
+  <meta name="policy:version" content="1">
+  <meta name="policy:effective-date" content="2026-05-12">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css?v=20260512h">
+</head>
+<body class="fw-page legal-page">
+
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="/index.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg><span class="brand-text">Grade<span class="brand-text-accent">Earn</span></span></a>
+    <nav class="nav" aria-label="Primary">
+      <a href="/index.html">Home</a>
+      <a href="/legal/privacy.html">Privacy</a>
+      <a href="/legal/terms.html">Terms</a>
+      <a href="/legal/parent-agreement.html" class="active">Parent Agreement</a>
+    </nav>
+    <div id="user-slot" class="user-slot"></div>
+  </div>
+</header>
+
+<main class="fw-main">
+  <article class="fw-article fw-prose">
+
+    <header class="fw-hero">
+      <p class="fw-eyebrow">Parent Agreement · Version 1 · Effective May 12, 2026</p>
+      <h1 class="fw-h1">Parent Agreement</h1>
+      <p class="fw-lead">This is the document a parent acknowledges at Verifiable Parental Consent (VPC). Each consent below is granular — you choose what to allow and what to refuse.</p>
+    </header>
+
+    <!-- LAWYER-REVIEW: The consent checkboxes below must be SEPARATE.
+         COPPA prohibits bundled consent. The frontend renders these as
+         independent toggles (one row per consent in the consents DDB
+         table). Required-vs-optional designations must remain visible. -->
+
+    <section class="fw-prose-section">
+      <h2>1. You are the parent or legal guardian</h2>
+      <p><!-- LAWYER-REVIEW --> By accepting this agreement, you confirm that you are at least 18 years old and the parent or legal guardian of the child being added to the account.</p>
+    </section>
+
+    <section class="fw-prose-section">
+      <h2>2. What you're agreeing to (core service)</h2>
+      <p><!-- LAWYER-REVIEW --> You agree that we may collect the data described in the <a href="/legal/privacy.html">Privacy Policy</a> from your child, store it in encrypted form, and use it to provide the learning service. This is required to use the app.</p>
+      <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.10); border-radius:8px; padding:14px; margin:10px 0;">
+        <label style="display:flex; gap:10px; align-items:flex-start; cursor:not-allowed; opacity:0.8;">
+          <input type="checkbox" checked disabled style="margin-top:4px;">
+          <span><strong>Core service consent</strong> (required) — let GradeEarn collect and process my child's journal, homework, timetable, tasks, practice answers, and AI chat messages to provide the service.</span>
+        </label>
+      </div>
+    </section>
+
+    <section class="fw-prose-section">
+      <h2>3. Optional consents (you can refuse any of these)</h2>
+      <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.10); border-radius:8px; padding:14px; margin:10px 0;">
+        <label style="display:flex; gap:10px; align-items:flex-start; cursor:pointer; margin-bottom:10px;">
+          <input type="checkbox" style="margin-top:4px;">
+          <span><strong>Extended chat retention</strong> — keep AI chat history beyond 30 days. Useful if you want to review longer windows of conversation. <em>Default: refuse.</em></span>
+        </label>
+        <label style="display:flex; gap:10px; align-items:flex-start; cursor:pointer; margin-bottom:10px;">
+          <input type="checkbox" style="margin-top:4px;">
+          <span><strong>Weekly progress emails</strong> — send me a weekly summary of my child's practice and journal activity. <em>Default: refuse.</em></span>
+        </label>
+        <label style="display:flex; gap:10px; align-items:flex-start; cursor:pointer;">
+          <input type="checkbox" style="margin-top:4px;">
+          <span><strong>Anonymized usage analytics</strong> — let GradeEarn use anonymized, aggregated usage data (no identifiers, no content) to improve the product. <em>Default: refuse.</em></span>
+        </label>
+      </div>
+    </section>
+
+    <section class="fw-prose-section">
+      <h2>4. What we will NEVER do</h2>
+      <p><!-- LAWYER-REVIEW --> We do not offer the following options, because we never want to do them:</p>
+      <ul>
+        <li>Show advertisements to your child</li>
+        <li>Share child data with advertising networks, social media, or data brokers</li>
+        <li>Use your child's chat content to train AI models</li>
+        <li>Sell your child's data, ever, to anyone, for any reason</li>
+      </ul>
+    </section>
+
+    <section class="fw-prose-section">
+      <h2>5. Your rights</h2>
+      <p><!-- LAWYER-REVIEW --> You can review, delete, refuse further collection, or revoke any optional consent at any time via the parent dashboard or by emailing <a href="mailto:privacy@gradeearn.com">privacy@gradeearn.com</a>. We respond within 10 business days. See the <a href="/legal/privacy.html">Privacy Policy</a> for the full description of parental rights.</p>
+    </section>
+
+    <section class="fw-prose-section">
+      <h2>6. Acceptance</h2>
+      <p><!-- LAWYER-REVIEW --> Clicking "Accept and continue" in the app records your acceptance of this agreement (version 1, effective May 12, 2026), the Privacy Policy, the Terms of Service, and the AI Disclosure. We store: the documents you accepted, the version of each, a one-way hash of your IP address, a snippet of your browser user-agent, and the timestamp. This record is kept for 7 years as required by COPPA.</p>
+    </section>
+
+    <section class="fw-prose-section" style="border-top:1px solid rgba(255,255,255,0.08); padding-top:18px; margin-top:32px;">
+      <p style="font-size:13px; color:rgba(255,255,255,0.55); margin:0;"><strong>Version:</strong> 1 · <strong>Effective:</strong> May 12, 2026 · <strong>Status:</strong> Pre-launch placeholder pending privacy-lawyer review.</p>
+    </section>
+
+    <section class="fw-prose-section">
+      <h2>Related</h2>
+      <ul>
+        <li><a href="/legal/privacy.html">Privacy Policy</a></li>
+        <li><a href="/legal/terms.html">Terms of Service</a></li>
+        <li><a href="/legal/ai-disclosure.html">AI Disclosure</a></li>
+        <li><a href="/legal/subprocessors.html">Subprocessors</a></li>
+      </ul>
+    </section>
+
+  </article>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="footer-copyright">&copy; 2026 GradeEarn.</p>
+    <nav class="footer-mobile-links">
+      <a href="/legal/privacy.html">Privacy</a>
+      <a href="mailto:privacy@gradeearn.com">Privacy contact</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="/js/auth.js?v=20260511c"></script>
+</body>
+</html>

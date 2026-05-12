@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/styles.css?v=20260512g">
+  <link rel="stylesheet" href="/css/styles.css?v=20260512h">
 
   <script>window.STAARAuth = window.STAARAuth || {}; window.STAARAuth.requireLoginOnLoad = true;</script>
 </head>
@@ -153,6 +153,17 @@
           </svg>
           <span>AI BUDDY</span>
         </div>
+
+        <!-- §21 Persistent AI Disclosure — Character.AI / OpenAI lawsuit defense.
+             Every screen with an AI chat input MUST surface "this is an AI, not
+             a real person" with a link to the full AI Disclosure document. -->
+        <p class="ms-ai-disclosure">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          This is an AI — not a real person, not a friend, not a therapist.
+          <a href="/legal/ai-disclosure.html" target="_blank" rel="noopener">Learn more</a>
+        </p>
 
         <!-- Chat thread (above briefing once messages exist) -->
         <div class="ms-chat-thread" id="ms-chat-thread" hidden></div>

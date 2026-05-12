@@ -24185,3 +24185,72 @@ body.myspace-page a { color: #0f172a; text-decoration: none; }
   .ms-composer-subject-trigger { padding: 5px 8px; font-size: 11px; }
   .ms-composer-input { font-size: 13px; }
 }
+
+/* ==========================================================================
+   §21 Compliance UI — AI disclosure banner + legal-page polish (May 12)
+   ========================================================================== */
+
+/* Persistent AI disclosure inside MySpace chat card */
+.ms-ai-disclosure {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 14px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #64748b;
+  background: rgba(15, 23, 42, 0.04);
+  border-radius: 8px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+.ms-ai-disclosure svg { flex-shrink: 0; color: #94a3b8; }
+.ms-ai-disclosure a {
+  color: #0f172a;
+  text-decoration: underline;
+  text-decoration-color: #cbd5e1;
+  font-weight: 500;
+}
+.ms-ai-disclosure a:hover {
+  text-decoration-color: #0f172a;
+}
+
+/* Legal-page utility class — drops the OG SEO-page intro padding so
+   long-form legal docs read cleanly on /legal/*.html. Inherits .fw-page
+   shell otherwise. */
+body.legal-page .fw-prose-section h2 {
+  font-size: 22px;
+  margin-top: 8px;
+}
+body.legal-page .fw-prose-section table {
+  font-size: 13px;
+}
+body.legal-page .fw-prose-section table th {
+  font-weight: 600;
+  color: #fde68a;
+}
+body.legal-page .fw-prose-section table td {
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+/* Compliance footer ribbon — surfaces privacy / terms / safety on every
+   app page. Kept tiny so it doesn't pull attention from kid-facing UI. */
+.compliance-footer {
+  text-align: center;
+  padding: 18px 16px 14px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.42);
+  letter-spacing: 0.02em;
+}
+.compliance-footer a {
+  color: rgba(255, 255, 255, 0.62);
+  text-decoration: none;
+  margin: 0 6px;
+}
+.compliance-footer a:hover {
+  color: #fde68a;
+  text-decoration: underline;
+}
+.compliance-footer .compliance-sep {
+  color: rgba(255, 255, 255, 0.2);
+}

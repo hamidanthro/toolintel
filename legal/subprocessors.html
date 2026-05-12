@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com https://api.gradeearn.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#060d1f">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+  <title>Subprocessors — GradeEarn</title>
+  <meta name="description" content="The complete list of vendors that process GradeEarn child data, the purpose, the data shared, and their location.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://gradeearn.com/legal/subprocessors.html">
+  <meta name="policy:doc-type" content="subprocessors">
+  <meta name="policy:version" content="1">
+  <meta name="policy:effective-date" content="2026-05-12">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css?v=20260512h">
+</head>
+<body class="fw-page legal-page">
+
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="/index.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg><span class="brand-text">Grade<span class="brand-text-accent">Earn</span></span></a>
+    <nav class="nav" aria-label="Primary">
+      <a href="/index.html">Home</a>
+      <a href="/legal/privacy.html">Privacy</a>
+      <a href="/legal/terms.html">Terms</a>
+      <a href="/legal/subprocessors.html" class="active">Subprocessors</a>
+    </nav>
+    <div id="user-slot" class="user-slot"></div>
+  </div>
+</header>
+
+<main class="fw-main">
+  <article class="fw-article fw-prose">
+
+    <header class="fw-hero">
+      <p class="fw-eyebrow">Subprocessors · Version 1 · Effective May 12, 2026</p>
+      <h1 class="fw-h1">Subprocessors</h1>
+      <p class="fw-lead">Every third-party vendor that touches GradeEarn child data, what they do, what data they see, where they're located, and the status of our Data Processing Agreement with them.</p>
+    </header>
+
+    <!-- LAWYER-REVIEW: every row below must be verified. DPAs must be
+         executed with each vendor before they touch real child data.
+         Required by GDPR-K Article 28 and increasingly expected under
+         COPPA 2025. New vendor → must add a row + bump version. -->
+
+    <section class="fw-prose-section">
+      <h2>Current subprocessors</h2>
+      <div style="overflow-x:auto; margin-top:14px;">
+        <table style="width:100%; border-collapse:collapse; font-size:14px;">
+          <thead>
+            <tr style="background:rgba(255,255,255,0.04); text-align:left;">
+              <th style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.10);">Vendor</th>
+              <th style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.10);">Purpose</th>
+              <th style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.10);">Data shared</th>
+              <th style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.10);">Location</th>
+              <th style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.10);">DPA</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.06);">Amazon Web Services (AWS)</td>
+              <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.06);">Hosting + storage (Lambda compute, DynamoDB storage, S3 for toy images)</td>
+              <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.06);">All app data (encrypted at rest)</td>
+              <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.06);">us-east-1 (Virginia, USA)</td>
+              <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.06;"><!-- LAWYER-REVIEW --> AWS Service Terms (online; covers COPPA via DPA section)</td>
+            </tr>
+            <tr>
+              <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.06);">OpenAI</td>
+              <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.06);">AI model (GPT-4o-mini) for tutor + MySpace buddy + content judge</td>
+              <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.06);">Practice questions (no kid identifiers), AI chat content (no kid identifiers — server passes first name only), and student snapshot text</td>
+              <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.06);">USA</td>
+              <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.06;"><!-- LAWYER-REVIEW --> OpenAI API Data Usage Policy (no training on customer data — verify current terms before launch)</td>
+            </tr>
+            <tr>
+              <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.06);">Anthropic</td>
+              <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.06);">Cold-start question verifier (Claude Sonnet 4.5) for math accuracy review during content generation</td>
+              <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.06);">Generated math questions only — no kid data, no identifiers</td>
+              <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.06);">USA</td>
+              <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.06;"><!-- LAWYER-REVIEW --> Anthropic Commercial Terms of Service (no training on customer data)</td>
+            </tr>
+            <tr>
+              <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.06);">GitHub Pages</td>
+              <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.06);">Static site hosting (frontend HTML/CSS/JS)</td>
+              <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.06);">No personal data — public static files only</td>
+              <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.06);">USA</td>
+              <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.06;"><!-- LAWYER-REVIEW --> GitHub Terms of Service</td>
+            </tr>
+            <tr>
+              <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.06);">Namecheap</td>
+              <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.06);">Domain registrar + DNS</td>
+              <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.06);">No personal data — DNS records only</td>
+              <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.06);">USA</td>
+              <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.06;"><!-- LAWYER-REVIEW --> Namecheap Terms of Service</td>
+            </tr>
+            <tr>
+              <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.06);">Google Fonts</td>
+              <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.06);">Web fonts (Inter, Instrument Serif)</td>
+              <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.06);">IP address only (one-shot font fetch; no cookies)</td>
+              <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.06);">USA / EU CDN</td>
+              <td style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.06;"><!-- LAWYER-REVIEW --> Google Fonts API Terms (low-risk; may self-host before EU launch for GDPR-K)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="fw-prose-section">
+      <h2>What we do NOT use</h2>
+      <p>To make the absence explicit (this is what protects kids):</p>
+      <ul>
+        <li>No Google Analytics, Mixpanel, Amplitude, or other behavioral analytics</li>
+        <li>No Facebook SDK, TikTok SDK, or any social-network pixel</li>
+        <li>No advertising networks of any kind</li>
+        <li>No A/B testing service that uses persistent identifiers</li>
+        <li>No chat support widgets on child-facing screens</li>
+        <li>No biometric vendors (no voice prints, no face templates)</li>
+      </ul>
+    </section>
+
+    <section class="fw-prose-section">
+      <h2>Changes</h2>
+      <p><!-- LAWYER-REVIEW --> Before adding any new subprocessor that touches kid data, we will: (a) execute a DPA, (b) update this page and increment the Privacy Policy version, (c) email parents and require re-acceptance.</p>
+    </section>
+
+    <section class="fw-prose-section" style="border-top:1px solid rgba(255,255,255,0.08); padding-top:18px; margin-top:32px;">
+      <p style="font-size:13px; color:rgba(255,255,255,0.55); margin:0;"><strong>Version:</strong> 1 · <strong>Effective:</strong> May 12, 2026 · <strong>Status:</strong> Pre-launch placeholder pending privacy-lawyer review.</p>
+    </section>
+
+  </article>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="footer-copyright">&copy; 2026 GradeEarn.</p>
+    <nav class="footer-mobile-links">
+      <a href="/legal/privacy.html">Privacy</a>
+      <a href="/legal/terms.html">Terms</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="/js/auth.js?v=20260511c"></script>
+</body>
+</html>
