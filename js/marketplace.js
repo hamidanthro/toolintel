@@ -35,31 +35,12 @@
 
   async function load() {
     if (!Auth.currentUser()) {
-      // Guest mode: show toys + premium dark-glass sign-up callout; hide wallet/orders.
+      // Guest mode: marketplace is product-first. The sign-in CTA already
+      // lives in the top-right nav — no second CTA bar above the grid.
+      // The wallet-summary slot stays empty for guests; no class, no markup.
       if (summaryEl) {
-        summaryEl.className = 'signin-callout';
-        summaryEl.innerHTML = `
-          <div class="signin-callout-icon">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-              <path d="M16 4L19.5 12.5L28 13.5L21.5 19.5L23.5 28L16 23.5L8.5 28L10.5 19.5L4 13.5L12.5 12.5L16 4Z"
-                    fill="url(#signinStarGradient)" stroke="rgba(251, 191, 36, 0.4)" stroke-width="0.5"/>
-              <defs>
-                <linearGradient id="signinStarGradient" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
-                  <stop stop-color="#fde68a"/><stop offset="0.5" stop-color="#fbbf24"/><stop offset="1" stop-color="#f59e0b"/>
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
-          <div class="signin-callout-content">
-            <span class="signin-callout-eyebrow">SIGN IN TO START EARNING</span>
-            <p class="signin-callout-text">Practice questions to earn points, then redeem them for real toys.</p>
-          </div>
-          <button type="button" class="signin-callout-cta" id="market-signup">
-            Sign up free
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7H11M11 7L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>`;
-        const su = document.getElementById('market-signup');
-        if (su) su.onclick = () => Auth.showLogin && Auth.showLogin();
+        summaryEl.className = '';
+        summaryEl.innerHTML = '';
       }
       if (ordersRoot) ordersRoot.innerHTML = '<p class="orders-empty">Sign in to see your orders.</p>';
       try {
