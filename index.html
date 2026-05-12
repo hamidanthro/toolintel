@@ -32,7 +32,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260511o" />
+  <link rel="stylesheet" href="css/styles.css?v=20260511p" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -84,7 +84,10 @@
           <span class="hero-live-dot" aria-hidden="true"></span>
           <span id="hero-live-text">Texas STAAR practice</span>
         </div>
-        <h1 class="hero-headline hero-headline--focus">Pick your grade. Start practicing.</h1>
+        <h1 class="hero-headline hero-headline--focus">
+          <span class="hero-headline-light">Pick your grade.</span>
+          <span class="hero-headline-bold">Start <span class="hero-shimmer-word">practicing</span>.</span>
+        </h1>
         <div class="hero-cta hero-cta-grades hero-cta-grades--big" aria-label="Pick a grade">
           <a href="grade.html?s=texas&amp;g=grade-k" class="hero-grade-pill" data-grade="grade-k">Kindergarten</a>
           <a href="grade.html?s=texas&amp;g=grade-1" class="hero-grade-pill" data-grade="grade-1">Grade 1</a>
@@ -98,7 +101,7 @@
           <a href="grade.html?s=texas&amp;g=algebra-1" class="hero-grade-pill hero-grade-pill--accent" data-grade="algebra-1">Algebra 1</a>
         </div>
         <p class="hero-placement-line">
-          Not sure which grade fits? <a href="placement.html">Take the placement test →</a>
+          Not sure which grade fits? <a href="placement.html">Take the placement test <span class="placement-arrow" aria-hidden="true">→</span></a>
         </p>
       </div>
     </div>
@@ -1268,6 +1271,27 @@
             spotlight.style.setProperty('--mouse-y', `${((e.clientY - r.top) / r.height) * 100}%`);
           });
         }
+      }
+
+      // §12 craft pass — one-time shimmer on the "practicing" word when
+      // it first enters the viewport. CSS holds the gradient; this just
+      // toggles the .has-shimmered class so the animation runs exactly
+      // once per page load. Respects prefers-reduced-motion via CSS.
+      const shimmerEl = document.querySelector('.hero-shimmer-word');
+      if (shimmerEl && 'IntersectionObserver' in window) {
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              // Defer a frame so the gradient is painted before the
+              // animation kicks — avoids a brief unstyled flash.
+              requestAnimationFrame(() => shimmerEl.classList.add('has-shimmered'));
+              io.disconnect();
+            }
+          });
+        }, { threshold: 0.4 });
+        io.observe(shimmerEl);
+      } else if (shimmerEl) {
+        shimmerEl.classList.add('has-shimmered');
       }
     });
   </script>
