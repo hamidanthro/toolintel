@@ -21551,3 +21551,215 @@ body.has-zero-state.grade-page .subject-section {
 @media (min-width: 1024px) {
   body.has-zero-state .subject-section { margin-top: 40px; }
 }
+
+/* ==========================================================================
+   §11 Homepage focus pass (May 11) — grade picker becomes the hero
+   ==========================================================================
+   Problem: 3 competing focal points (headline / floating math mockup /
+   grade picker) in the signed-out hero. Eye couldn't land. Fix: single
+   focal point (grade picker), demote headline + drop hero-right entirely.
+   ========================================================================== */
+
+body.home-page .hero-content--focus {
+  display: block;
+}
+
+body.home-page .hero-focus {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 32px 24px 48px;
+  text-align: center;
+}
+
+/* Tiny TEKS eyebrow — sits above the live pill as the "what is this" line */
+body.home-page .hero-teks-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 10px;
+  padding: 4px 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(251, 191, 36, 0.85);
+  background: rgba(251, 191, 36, 0.06);
+  border: 1px solid rgba(251, 191, 36, 0.22);
+  border-radius: 999px;
+}
+body.home-page .hero-teks-badge .hero-teks-star {
+  color: #fbbf24;
+  font-size: 11px;
+}
+
+/* Headline demotes from 56-72px to 32-40px, single line */
+body.home-page .hero-headline--focus {
+  font-size: clamp(28px, 4vw, 40px);
+  line-height: 1.12;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 6px 0 28px;
+  text-align: center;
+  color: #ffffff;
+  max-width: none;
+  font-family: 'Inter', sans-serif;
+}
+
+/* BIG grade pills — hero-as-grid */
+body.home-page .hero-cta-grades--big {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  max-width: 680px;
+  margin: 0 auto;
+}
+body.home-page .hero-cta-grades--big .hero-grade-pill {
+  min-height: 96px;
+  padding: 18px 14px;
+  font-size: 17px;
+  font-weight: 600;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  transition: transform 0.16s ease, box-shadow 0.16s ease,
+              background 0.16s ease, border-color 0.16s ease;
+}
+body.home-page .hero-cta-grades--big .hero-grade-pill:hover {
+  transform: translateY(-2px);
+  background: rgba(251, 191, 36, 0.10);
+  border-color: rgba(251, 191, 36, 0.45);
+  box-shadow: 0 10px 24px -8px rgba(251, 191, 36, 0.30);
+}
+body.home-page .hero-cta-grades--big .hero-grade-pill--accent {
+  border-color: rgba(251, 191, 36, 0.55);
+  background: linear-gradient(180deg, rgba(251, 191, 36, 0.10) 0%, rgba(251, 191, 36, 0.04) 100%);
+  color: #fde68a;
+  box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.18) inset;
+}
+
+body.home-page .hero-placement-line {
+  margin: 18px 0 0;
+  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.62);
+}
+body.home-page .hero-placement-line a {
+  color: #fde68a;
+  text-decoration: underline;
+}
+
+/* Below-fold "Here's how a session looks" section — the mockup card,
+   now embedded instead of floating in the hero. */
+.session-preview {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 48px 32px 32px;
+}
+.session-preview-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+.session-preview-copy { min-width: 0; }
+.session-preview-eyebrow {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: rgba(251, 191, 36, 0.85);
+  margin-bottom: 12px;
+}
+.session-preview-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(28px, 3.4vw, 40px);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  color: #ffffff;
+  margin: 0 0 16px;
+}
+.session-preview-sub {
+  font-size: 15px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.66);
+  margin: 0;
+  max-width: 480px;
+}
+.session-preview-mockup {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.mockup-card--embedded {
+  position: relative !important;
+  width: 100%;
+  max-width: 400px;
+  transform: none !important;
+  animation: none !important;
+}
+
+/* ---------- Tablet ---------- */
+@media (max-width: 900px) {
+  body.home-page .hero-cta-grades--big {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  body.home-page .hero-cta-grades--big .hero-grade-pill {
+    min-height: 88px;
+    font-size: 16px;
+  }
+  .session-preview {
+    padding: 36px 24px 24px;
+  }
+  .session-preview-inner {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .session-preview-copy { text-align: center; }
+  .session-preview-sub { margin: 0 auto; }
+}
+
+/* ---------- Phone ---------- */
+@media (max-width: 768px) {
+  /* The desktop .hero is hidden on mobile (existing rule at line ~16306
+     hides body.home-page .hero entirely on phones in favor of the
+     mobile-hero element). Focus-pass rules above only apply to viewports
+     where .hero is visible, so no mobile-specific overrides needed here
+     for the hero. The session-preview stays visible on phones — that's
+     where the curious-but-not-signed-in kid scrolls. */
+  body.home-page .hero-focus { padding: 18px 16px 28px; }
+  body.home-page .hero-headline--focus {
+    font-size: 26px;
+    margin: 6px 0 20px;
+  }
+  body.home-page .hero-cta-grades--big {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  body.home-page .hero-cta-grades--big .hero-grade-pill {
+    min-height: 72px;
+    font-size: 14px;
+    padding: 12px 8px;
+    border-radius: 14px;
+  }
+  body.home-page .hero-teks-badge {
+    font-size: 10px;
+    padding: 3px 9px;
+  }
+  body.home-page .hero-placement-line { font-size: 0.86rem; }
+
+  .session-preview { padding: 28px 16px 16px; }
+  .session-preview-title { font-size: 24px; }
+  .session-preview-sub { font-size: 14px; }
+}
+
+/* ---------- Small phone (≤480) ---------- */
+@media (max-width: 480px) {
+  body.home-page .hero-cta-grades--big .hero-grade-pill {
+    min-height: 64px;
+    font-size: 13px;
+    padding: 10px 6px;
+  }
+}

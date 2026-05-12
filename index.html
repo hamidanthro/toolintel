@@ -32,7 +32,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260511m" />
+  <link rel="stylesheet" href="css/styles.css?v=20260511o" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -74,16 +74,18 @@
       <div class="star" style="top:25%;left:96%;--delay:0.4s;--size:1.5px"></div>
     </div>
     <div class="hero-spotlight" aria-hidden="true"></div>
-    <div class="container hero-content">
-      <div class="hero-left">
+    <div class="container hero-content hero-content--focus">
+      <div class="hero-focus">
+        <div class="hero-teks-badge" aria-hidden="true">
+          <span class="hero-teks-star">★</span>
+          <span>Texas STAAR · TEKS-aligned</span>
+        </div>
         <div class="hero-live-pill" id="hero-live">
           <span class="hero-live-dot" aria-hidden="true"></span>
           <span id="hero-live-text">Texas STAAR practice</span>
         </div>
-        <h1 class="hero-headline">STAAR practice,<br>built for <span class="headline-accent">Texas</span> kids.</h1>
-        <p class="hero-tagline-mobile">Math · Reading · Science. TEKS-aligned. Real toys for correct answers.</p>
-        <p>Math, reading, and science aligned to Texas TEKS — with a built-in AI tutor on every wrong answer and real toys earned for correct ones.</p>
-        <div class="hero-cta hero-cta-grades" aria-label="Pick a grade">
+        <h1 class="hero-headline hero-headline--focus">Pick your grade. Start practicing.</h1>
+        <div class="hero-cta hero-cta-grades hero-cta-grades--big" aria-label="Pick a grade">
           <a href="grade.html?s=texas&amp;g=grade-k" class="hero-grade-pill" data-grade="grade-k">Kindergarten</a>
           <a href="grade.html?s=texas&amp;g=grade-1" class="hero-grade-pill" data-grade="grade-1">Grade 1</a>
           <a href="grade.html?s=texas&amp;g=grade-2" class="hero-grade-pill" data-grade="grade-2">Grade 2</a>
@@ -93,57 +95,57 @@
           <a href="grade.html?s=texas&amp;g=grade-6" class="hero-grade-pill" data-grade="grade-6">Grade 6</a>
           <a href="grade.html?s=texas&amp;g=grade-7" class="hero-grade-pill" data-grade="grade-7">Grade 7</a>
           <a href="grade.html?s=texas&amp;g=grade-8" class="hero-grade-pill" data-grade="grade-8">Grade 8</a>
-          <a href="grade.html?s=texas&amp;g=algebra-1" class="hero-grade-pill" data-grade="algebra-1">Algebra 1</a>
+          <a href="grade.html?s=texas&amp;g=algebra-1" class="hero-grade-pill hero-grade-pill--accent" data-grade="algebra-1">Algebra 1</a>
         </div>
-        <p style="margin:14px 0 0;font-size:0.92rem;color:rgba(255,255,255,0.62);">
-          Not sure which grade fits? <a href="placement.html" style="color:#fde68a;text-decoration:underline;">Take the placement test →</a>
+        <p class="hero-placement-line">
+          Not sure which grade fits? <a href="placement.html">Take the placement test →</a>
         </p>
       </div>
-      <div class="hero-right" aria-hidden="true">
-        <div class="hero-visual">
-          <div class="mockup-card mockup-card--main">
-            <div class="mockup-card-header">
-              <span class="mockup-tag">GRADE 3 · MATH</span>
-              <span class="mockup-progress">Question 7 of 20</span>
-            </div>
-            <div class="mockup-question">
-              What is <span class="math-highlight">24 × 6</span>?
-            </div>
-            <div class="mockup-options">
-              <button class="mockup-option" type="button" tabindex="-1" data-value="130">130</button>
-              <button class="mockup-option mockup-option--correct" type="button" tabindex="-1" data-value="144">144 ✓</button>
-              <button class="mockup-option" type="button" tabindex="-1" data-value="154">154</button>
-              <button class="mockup-option" type="button" tabindex="-1" data-value="164">164</button>
-            </div>
-            <div class="mockup-footer">
-              <div class="mockup-streak">
-                <span class="streak-icon">🔥</span>
-                <span>7-day streak</span>
-              </div>
-              <div class="mockup-points">
-                <span class="points-icon">🪙</span>
-                <span>+15 cents</span>
-              </div>
-            </div>
+    </div>
+    <div class="hero-bottom-fade" aria-hidden="true"></div>
+  </section>
+
+  <!-- §11 focus pass: the math-question mockup was previously floating
+       inside the hero, competing with the headline. Moved here as an
+       embedded illustration so the hero stays single-focal (grade picker)
+       and the curious can still see what a session feels like. The two
+       floating accent cards (#3 rank, LEGO Set) were removed entirely —
+       they showed fake stats to first-time visitors with no progress. -->
+  <section class="session-preview" id="session-preview" aria-label="What a practice session looks like" hidden>
+    <div class="session-preview-inner">
+      <div class="session-preview-copy">
+        <span class="session-preview-eyebrow">Here's how it works</span>
+        <h2 class="session-preview-title">One question at a time.<br>Wrong answers get an AI tutor.</h2>
+        <p class="session-preview-sub">Each session is 10–20 grade-aligned questions. Get one right, earn cents. Get one wrong, the built-in tutor walks you through it.</p>
+      </div>
+      <div class="session-preview-mockup" aria-hidden="true">
+        <div class="mockup-card mockup-card--main mockup-card--embedded">
+          <div class="mockup-card-header">
+            <span class="mockup-tag">GRADE 3 · MATH</span>
+            <span class="mockup-progress">Question 7 of 20</span>
           </div>
-          <div class="mockup-card mockup-card--accent-top">
-            <div class="accent-icon">🏆</div>
-            <div class="accent-text">
-              <div class="accent-label">RANK</div>
-              <div class="accent-value">#3</div>
-            </div>
+          <div class="mockup-question">
+            What is <span class="math-highlight">24 × 6</span>?
           </div>
-          <div class="mockup-card mockup-card--accent-bottom">
-            <div class="accent-icon">🎁</div>
-            <div class="accent-text">
-              <div class="accent-label">UNLOCKED</div>
-              <div class="accent-value">LEGO Set</div>
+          <div class="mockup-options">
+            <button class="mockup-option" type="button" tabindex="-1" data-value="130">130</button>
+            <button class="mockup-option mockup-option--correct" type="button" tabindex="-1" data-value="144">144 ✓</button>
+            <button class="mockup-option" type="button" tabindex="-1" data-value="154">154</button>
+            <button class="mockup-option" type="button" tabindex="-1" data-value="164">164</button>
+          </div>
+          <div class="mockup-footer">
+            <div class="mockup-streak">
+              <span class="streak-icon">🔥</span>
+              <span>7-day streak</span>
+            </div>
+            <div class="mockup-points">
+              <span class="points-icon">🪙</span>
+              <span>+15 cents</span>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="hero-bottom-fade" aria-hidden="true"></div>
   </section>
 
   <section id="dashboard" class="dashboard-section" hidden>
@@ -802,20 +804,38 @@
       catch (_) { return {}; }
     }
 
+    // §11 focus pass — signed-out kids/parents see only Home / Games /
+    // Toys + the Sign in slot. Trophies / League / How it works require
+    // an account to be meaningful; surfacing them on the anon hero
+    // dilutes the single focal point (the grade picker).
+    function applySignedOutNav(isSignedOut) {
+      const nav = document.querySelector('.site-header .nav');
+      if (!nav) return;
+      const keep = new Set(['index.html', 'games.html', 'marketplace.html']);
+      nav.querySelectorAll('a').forEach((a) => {
+        const href = (a.getAttribute('href') || '').trim();
+        a.hidden = isSignedOut && !keep.has(href);
+      });
+    }
+
     async function showDashboard() {
       const u = window.STAARAuth?.currentUser?.();
       const heroAnon = document.getElementById('hero-anon');
       const dash = document.getElementById('dashboard');
       const gradeSection = document.getElementById('state-picker');
+      const sessionPreview = document.getElementById('session-preview');
+      applySignedOutNav(!u);
       if (!u) {
         heroAnon.hidden = false;
         dash.hidden = true;
         if (gradeSection) gradeSection.hidden = false;
+        if (sessionPreview) sessionPreview.hidden = false;
         return;
       }
       heroAnon.hidden = true;
       dash.hidden = false;
       if (gradeSection) gradeSection.hidden = true;
+      if (sessionPreview) sessionPreview.hidden = true;
       renderGradeGrid();
 
       // §B2 — admins shouldn't see "Welcome back, admin" or "Welcome back,
