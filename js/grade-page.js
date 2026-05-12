@@ -234,63 +234,12 @@
   // ============================================================
 
   function populateHero(state, gradeSlug, gradeName) {
-    document.getElementById('hero-eyebrow-text').textContent =
-      `${state.name} · ${state.testName} · ${gradeName}`;
-
-    document.getElementById('hero-title').innerHTML =
-      `<span class="grade-hero-grade">${escapeHtml(gradeName)}</span> <span class="grade-hero-test">${escapeHtml(state.testName)}</span> practice`;
-
-    document.getElementById('hero-sub').textContent =
-      `Practice questions aligned to the ${state.testName}, the test administered by the ${state.testAuthorityShort}.`;
-
-    // STAAR countdown pill (IXL pattern: visible test-day motivator).
-    // Skip for K-2 since they don't take STAAR — for those grades we
-    // show a friendlier "X days of practice" cumulative milestone
-    // instead of test-day countdown.
-    try {
-      const heroInner = document.querySelector('.grade-hero-inner');
-      if (!heroInner) return;
-      let pill = document.getElementById('grade-hero-countdown');
-      if (!pill) {
-        pill = document.createElement('div');
-        pill.id = 'grade-hero-countdown';
-        pill.className = 'grade-hero-countdown-pill';
-        heroInner.appendChild(pill);
-      }
-      const isK2 = gradeSlug === 'grade-k' || gradeSlug === 'grade-1' || gradeSlug === 'grade-2';
-      if (isK2) {
-        // Friendly milestone: days since first session (encouragement, not pressure)
-        const stats = window.Achievements && window.Achievements.getStats && window.Achievements.getStats();
-        const firstDate = stats && stats.firstSessionDate;
-        if (firstDate) {
-          const days = Math.max(1, Math.floor((Date.now() - new Date(firstDate + 'T00:00:00').getTime()) / 86400000) + 1);
-          pill.innerHTML = `<span aria-hidden="true">📅</span> Day ${days} of practice`;
-        } else {
-          pill.innerHTML = `<span aria-hidden="true">🎯</span> Today is day 1 — let's go`;
-        }
-      } else if (state && state.testWindowMonth) {
-        // Bug I from master audit: countdown to start of test window,
-        // not mid-month. Kids and parents read "N days until STAAR"
-        // as "STAAR starts in N days" — anchor to day 1 of the test
-        // window's month. Texas STAAR 2027 is roughly April 6-15;
-        // day 1 is a few days early which is the right side of risk
-        // (parent thinks they have less time, not more).
-        const now = new Date();
-        const yr = now.getFullYear();
-        let target = new Date(yr, state.testWindowMonth - 1, 1);
-        if (target < now) target = new Date(yr + 1, state.testWindowMonth - 1, 1);
-        const days = Math.ceil((target - now) / 86400000);
-        if (days >= 1 && days <= 365) {
-          pill.innerHTML = `<span aria-hidden="true">⏳</span> ${days} day${days === 1 ? '' : 's'} until ${escapeHtml(state.testName)}`;
-        } else {
-          pill.style.display = 'none';
-        }
-      } else {
-        pill.style.display = 'none';
-      }
-    } catch (err) {
-      console.warn('[hero countdown] failed:', err);
-    }
+    // §15 minimalism pass — grade-hero block deleted from grade.html.
+    // The H1 "Subjects" lives on .subject-section-title (label, not
+    // instruction). Only document.title remains for SEO/tab labels.
+    // STAAR-countdown pill removed; if a kid wants to see the test-day
+    // countdown they can find it on /about.html.
+    document.title = `${gradeName} ${state.testName} practice — ${state.name} — GradeEarn`;
   }
 
   // ============================================================
@@ -309,35 +258,21 @@
       return subjSlug === 'math';
     };
 
+    // §15 minimalism pass — subject cards become the same .list-card
+    // shape as topic cards on subject.html: [icon] [title] [chevron].
+    // Descriptor taglines and inline "Start →" buttons removed; the
+    // whole card is the button. Unavailable subjects keep a small
+    // muted badge in place of the chevron so kids see they're not
+    // tappable (but at much lower visual weight than before).
     grid.innerHTML = SUBJECTS.map(subj => {
       const offered = offeredFor(subj.slug);
-      if (!offered) {
-        const gradeLabel = (GRADE_NAMES[gradeSlug] || gradeSlug);
-        return `
-          <div class="subject-card subject-card--unavailable" data-subject="${escapeHtml(subj.slug)}" aria-disabled="true">
-            <div class="subject-card-icon" style="--subject-color: ${subj.color}" aria-hidden="true">
-              ${getSubjectIcon(subj.icon)}
-            </div>
-            <div class="subject-card-body">
-              <h3 class="subject-card-name">${escapeHtml(subj.name)}</h3>
-              <p class="subject-card-tagline">Not tested in ${escapeHtml(gradeLabel)} for ${escapeHtml(state.testName)}</p>
-            </div>
-          </div>
-        `;
-      }
-
-      // Phase K — per-(state, grade) liveness override. Defaults to
-      // subj.live for math/reading; science returns true only where
-      // we have content seeded.
-      const isLive = (typeof subj.liveForGrade === 'function')
+      const isLive = offered && ((typeof subj.liveForGrade === 'function')
         ? subj.liveForGrade(state.slug, gradeSlug)
-        : subj.live;
+        : subj.live);
 
       // Math has a unit-structured curriculum, so we route through the
-      // topic picker (subject.html) where the kid can choose Addition,
-      // Fractions, etc. — or "Mixed practice" for the old behavior.
-      // Reading / science / social-studies are pooled-passage delivery
-      // with no internal units, so they go straight to practice.html.
+      // topic picker (subject.html). Reading / science / social-studies
+      // go straight to practice.html.
       const targetUrl = isLive
         ? (subj.slug === 'math'
             ? `subject.html?s=${encodeURIComponent(state.slug)}&g=${encodeURIComponent(gradeSlug)}&subj=${encodeURIComponent(subj.slug)}`
@@ -346,24 +281,26 @@
 
       const tag = isLive ? 'a' : 'div';
       const hrefAttr = isLive ? `href="${targetUrl}"` : '';
-      const liveClass = isLive ? 'subject-card--live' : 'subject-card--soon';
+      let stateClass, trailing;
+      if (!offered) {
+        stateClass = 'list-card--unavailable subject-card--unavailable';
+        trailing = `<span class="list-card-badge">Not tested</span>`;
+      } else if (!isLive) {
+        stateClass = 'list-card--soon subject-card--soon';
+        trailing = `<span class="list-card-badge">${escapeHtml(subj.eta || 'Soon')}</span>`;
+      } else {
+        stateClass = 'list-card--live subject-card--live';
+        trailing = `<span class="list-card-chevron" aria-hidden="true">→</span>`;
+      }
+      const ariaLabel = isLive ? `Practice ${subj.name}` : `${subj.name} — not yet available`;
 
       return `
-        <${tag} class="subject-card ${liveClass}" ${hrefAttr} data-subject="${escapeHtml(subj.slug)}" ${isLive ? 'role="button"' : 'aria-disabled="true"'}>
-          <div class="subject-card-icon" style="--subject-color: ${subj.color}" aria-hidden="true">
+        <${tag} class="list-card subject-card ${stateClass}" ${hrefAttr} data-subject="${escapeHtml(subj.slug)}" ${isLive ? `role="button" aria-label="${escapeHtml(ariaLabel)}"` : 'aria-disabled="true"'}>
+          <span class="list-card-icon" style="--subject-color: ${subj.color}" aria-hidden="true">
             ${getSubjectIcon(subj.icon)}
-          </div>
-          <div class="subject-card-body">
-            <h3 class="subject-card-name">${escapeHtml(subj.name)}</h3>
-            <p class="subject-card-tagline">${escapeHtml(subj.tagline)}</p>
-          </div>
-          ${isLive
-            ? `<div class="subject-card-action">
-                 <span class="subject-card-cta">Start</span>
-                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-               </div>`
-            : `<div class="subject-card-badge">${escapeHtml(subj.eta || 'Coming soon')}</div>`
-          }
+          </span>
+          <h3 class="list-card-title">${escapeHtml(subj.name)}</h3>
+          ${trailing}
         </${tag}>
       `;
     }).join('');
@@ -455,13 +392,20 @@
     const grid = document.getElementById('subject-grid');
     if (!grid) return;
     const section = grid.closest('.subject-section') || grid.parentNode;
-    // Zero-state: no XP, no streak, no shields → hide the strip entirely.
-    // A returning kid with progress will see it; a brand-new kid won't get
-    // the noisy "Level 1 · 0 XP · no shields yet" preview.
+    // §15: Hard gate. Achievements stores per-browser localStorage stats
+    // even for guests (it seeds 1 XP on first page visit), so the earlier
+    // hasAnyValue check still rendered "Level 1 · 1/25 XP" to signed-out
+    // visitors. Root fix: signed-out users NEVER see the stat strip —
+    // they haven't earned anything yet, the cards are pure noise.
+    const auth = window.STAARAuth;
+    const isSignedIn = !!(auth && typeof auth.currentUser === 'function' && auth.currentUser());
+    // For signed-in users, still hide if all three values are zero (a
+    // returning user shouldn't see "0 days · no shields yet" placeholders
+    // either — the existing §10 zero-state rule applies).
     const hasAnyValue = (stats.xp || 0) > 0
       || (stats.loginStreak || 0) > 0
       || (stats.streakShields || 0) > 0;
-    if (!hasAnyValue) {
+    if (!isSignedIn || !hasAnyValue) {
       const existing = document.querySelector('.reward-strip');
       if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
       maybeRenderZeroStateTagline();
@@ -520,12 +464,13 @@
     const grid = document.getElementById('subject-grid');
     if (!grid) return;
     const section = grid.closest('.subject-section') || grid.parentNode;
-    // Zero-state: no sub-task has progress and not yet completed → hide.
-    // First-time visitors see a clean hero → subject picker, not an empty
-    // "Today's quest 0/3 · 0/5 · 0/2" preview that just looks like a chore.
+    // §15: same hard gate as renderRewardStrip — signed-out users never
+    // see the daily quest card.
+    const auth = window.STAARAuth;
+    const isSignedIn = !!(auth && typeof auth.currentUser === 'function' && auth.currentUser());
     const hasAnyProgress = m.completed
       || (Array.isArray(m.tasks) && m.tasks.some(t => (t.current || 0) > 0));
-    if (!hasAnyProgress) {
+    if (!isSignedIn || !hasAnyProgress) {
       const existing = document.querySelector('.daily-quest-card-grade');
       if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
       maybeRenderZeroStateTagline();

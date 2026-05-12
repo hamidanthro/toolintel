@@ -43,7 +43,7 @@
   </script>
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&family=JetBrains+Mono:wght@400;500&display=swap">
-  <link rel="stylesheet" href="css/styles.css?v=20260511s">
+  <link rel="stylesheet" href="css/styles.css?v=20260511t">
 
   <script src="js/migrate-storage.js?v=20260427a"></script>
   <script src="js/i18n.js?v=20260510a"></script>
@@ -73,12 +73,10 @@
 </header>
 
 <main>
-  <!-- Breadcrumb -->
-  <nav class="breadcrumb-nav" aria-label="Breadcrumb">
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item">
-        <a href="index.html">All states</a>
-      </li>
+  <!-- Breadcrumb — §15 minimalism: drop "All states" (kids don't think
+       cross-state; Texas-only product), use mid-dot separator. -->
+  <nav class="breadcrumb-nav breadcrumb-nav--minimal" aria-label="Breadcrumb">
+    <ol class="breadcrumb breadcrumb--mid-dot">
       <li class="breadcrumb-item">
         <a id="breadcrumb-state" href="states/?s=">—</a>
       </li>
@@ -109,39 +107,18 @@
     </a>
   </section>
 
-  <!-- Main content -->
-  <article class="grade-content" id="grade-content" hidden>
-
-    <!-- HERO -->
-    <header class="grade-hero">
-      <div class="grade-hero-inner">
-        <div class="grade-hero-eyebrow">
-          <span class="grade-hero-pin" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
-              <circle cx="12" cy="10" r="3"/>
-            </svg>
-          </span>
-          <span id="hero-eyebrow-text">—</span>
-        </div>
-
-        <h1 class="grade-hero-title" id="hero-title">—</h1>
-
-        <p class="grade-hero-sub" id="hero-sub">—</p>
-      </div>
-    </header>
+  <!-- Main content. §15 minimalism: hero block deleted; subject picker
+       collapses to a single "Subjects" H1 + clean list of cards. -->
+  <article class="grade-content grade-content--minimal" id="grade-content" hidden>
 
     <!-- SUBJECT PICKER -->
-    <section class="subject-section" id="subject-section">
+    <section class="subject-section subject-section--minimal" id="subject-section">
       <header class="subject-section-head">
-        <!-- §42: removed "Step 3 of 3" eyebrow + "Math is live"
-             subhead. Cards themselves show what's live vs greyed;
-             arrival on the page IS the step. -->
-        <h2 class="subject-section-title">Pick a subject</h2>
+        <h1 class="subject-section-title" id="hero-title">Subjects</h1>
       </header>
 
-      <div class="subject-grid" id="subject-grid">
-        <!-- Filled by JS -->
+      <div class="subject-grid topic-list" id="subject-grid">
+        <!-- Filled by JS — list-card markup -->
       </div>
     </section>
 
@@ -201,7 +178,7 @@
 <script src="js/spaced-rep.js?v=20260509a"></script>
 <script src="js/mastery.js?v=20260510a"></script>
 <script src="js/achievements.js?v=20260510d"></script>
-<script src="js/grade-page.js?v=20260511a"></script>
+<script src="js/grade-page.js?v=20260511b"></script>
 
 </body>
 </html>
