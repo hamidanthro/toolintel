@@ -136,8 +136,11 @@ ${qHtml}
   </section>`;
 }
 
-function renderJsonLd(grade, qCount, unitCount) {
-  // LearningResource schema — gives Google rich-result context.
+function renderJsonLd(grade, qCount, unitCount, dateModifiedIso) {
+  // LearningResource + Article hybrid — gives Google rich-result context
+  // for both the educational angle and the article-freshness angle.
+  // datePublished is fixed (first crawl signal); dateModified pulls from
+  // the file's mtime so re-runs of the generator update the freshness.
   const ld = {
     '@context': 'https://schema.org',
     '@type': 'LearningResource',
@@ -150,17 +153,45 @@ function renderJsonLd(grade, qCount, unitCount) {
     audience: { '@type': 'EducationalAudience', educationalRole: 'student' },
     isAccessibleForFree: true,
     inLanguage: 'en-US',
+    datePublished: '2026-05-12',
+    dateModified: dateModifiedIso,
+    author: {
+      '@type': 'Person',
+      name: 'Hamid Ali',
+      url: 'https://gradeearn.com',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'GradeEarn',
+      url: 'https://gradeearn.com',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://gradeearn.com/og-image.png',
+        width: 1200,
+        height: 630,
+      },
+    },
     educationalAlignment: {
       '@type': 'AlignmentObject',
       alignmentType: 'teaches',
       educationalFramework: 'Texas Essential Knowledge and Skills (TEKS)',
       targetName: `${grade.label} Mathematics`,
     },
-    provider: {
-      '@type': 'Organization',
-      name: 'GradeEarn',
-      url: 'https://gradeearn.com',
-    },
+  };
+  return `<script type="application/ld+json">\n${JSON.stringify(ld, null, 2)}\n  </script>`;
+}
+
+function renderBreadcrumbLd(grade) {
+  // BreadcrumbList — Google shows the breadcrumb trail in SERP results
+  // instead of just the URL. Strong CTR signal.
+  const ld = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_ORIGIN}/` },
+      { '@type': 'ListItem', position: 2, name: 'Free worksheets', item: `${SITE_ORIGIN}/free-worksheets/` },
+      { '@type': 'ListItem', position: 3, name: `${grade.label} math` },
+    ],
   };
   return `<script type="application/ld+json">\n${JSON.stringify(ld, null, 2)}\n  </script>`;
 }
@@ -218,6 +249,24 @@ function renderGradePage(grade) {
   const pageDesc = `Free printable ${grade.label} STAAR math worksheets for Texas families. ${qCount.toLocaleString()}+ TEKS-aligned questions across ${units.length} topics. Print, practice online, or use the built-in AI tutor — all free.`;
   const canonicalUrl = `${SITE_ORIGIN}/free-worksheets/${grade.urlSlug}-math.html`;
 
+  // §17 SEO: rel="prev"/rel="next" between sequential grades.
+  // Google uses this to understand the page sequence; helps with
+  // pagination/sequence rich results.
+  const gradeIdx = GRADES.findIndex((g) => g.slug === grade.slug);
+  const prevGrade = gradeIdx > 0 ? GRADES[gradeIdx - 1] : null;
+  const nextGrade = gradeIdx < GRADES.length - 1 ? GRADES[gradeIdx + 1] : null;
+  const relPrev = prevGrade ? `\n  <link rel="prev" href="${SITE_ORIGIN}/free-worksheets/${prevGrade.urlSlug}-math.html" />` : '';
+  const relNext = nextGrade ? `\n  <link rel="next" href="${SITE_ORIGIN}/free-worksheets/${nextGrade.urlSlug}-math.html" />` : '';
+
+  // §17 SEO: dateModified pulled from curriculum-file mtime so
+  // re-running the generator after a curriculum update refreshes the
+  // freshness signal Google sees.
+  let dateModifiedIso = new Date().toISOString().slice(0, 10);
+  try {
+    const stat = fs.statSync(path.join(DATA_DIR, grade.file));
+    dateModifiedIso = stat.mtime.toISOString().slice(0, 10);
+  } catch (_) {}
+
   // Related-grade nav
   const relatedNav = GRADES.filter((g) => g.slug !== grade.slug).map((g) => {
     return `<a class="fw-related-pill" href="/free-worksheets/${g.urlSlug}-math.html">${esc(g.label)} math</a>`;
@@ -232,7 +281,7 @@ function renderGradePage(grade) {
   const introP3 = `Scroll down for a sample of questions in each topic. Click <em>Print 20-question worksheet</em> on any topic to get a clean, printer-friendly PDF (with an answer key). Click <em>Practice online with AI tutor</em> to work through questions in the browser — wrong answers get a friendly walk-through from our built-in tutor.`;
 
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="en-US">
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com https://api.gradeearn.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';" />
@@ -245,26 +294,50 @@ function renderGradePage(grade) {
   <title>${esc(pageTitle)} — GradeEarn</title>
   <meta name="description" content="${esc(pageDesc)}">
   <meta name="keywords" content="free ${grade.label} math worksheets, ${grade.label} STAAR practice, TEKS math, Texas ${grade.label} math, printable math worksheets, ${grade.label} math test prep, free STAAR worksheets">
+  <meta name="author" content="Hamid Ali, GradeEarn">
+
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+
   <link rel="canonical" href="${canonicalUrl}">
+  <link rel="alternate" hreflang="en-US" href="${canonicalUrl}" />
+  <link rel="alternate" hreflang="x-default" href="${canonicalUrl}" />${relPrev}${relNext}
 
   <meta property="og:type" content="article">
+  <meta property="og:site_name" content="GradeEarn">
+  <meta property="og:locale" content="en_US">
   <meta property="og:title" content="${esc(pageTitle)} — GradeEarn">
   <meta property="og:description" content="${esc(pageDesc)}">
   <meta property="og:url" content="${canonicalUrl}">
   <meta property="og:image" content="${SITE_ORIGIN}/og-image.png">
+  <meta property="og:image:secure_url" content="${SITE_ORIGIN}/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Free ${esc(grade.label)} STAAR math worksheets from GradeEarn — TEKS-aligned, no sign-up required.">
+  <meta property="article:author" content="Hamid Ali">
+  <meta property="article:section" content="Education">
+  <meta property="article:published_time" content="2026-05-12">
+  <meta property="article:modified_time" content="${dateModifiedIso}">
 
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@gradeearn">
+  <meta name="twitter:creator" content="@gradeearn">
   <meta name="twitter:title" content="${esc(pageTitle)}">
   <meta name="twitter:description" content="${esc(pageDesc)}">
+  <meta name="twitter:image" content="${SITE_ORIGIN}/og-image.png">
+  <meta name="twitter:image:alt" content="Free ${esc(grade.label)} STAAR math worksheets from GradeEarn.">
 
-  ${renderJsonLd(grade, qCount, units.length)}
+  ${renderJsonLd(grade, qCount, units.length, dateModifiedIso)}
+
+  ${renderBreadcrumbLd(grade)}
 
   ${renderFaqLd(grade, qCount)}
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&display=swap">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/styles.css?v=20260512a">
+  <link rel="stylesheet" href="/css/styles.css?v=20260512b">
 </head>
 <body class="fw-page">
 
@@ -300,6 +373,16 @@ function renderGradePage(grade) {
       <p class="fw-eyebrow">Free · Printable · TEKS-aligned</p>
       <h1 class="fw-h1">Free ${esc(grade.label)} STAAR Math Worksheets</h1>
       <p class="fw-lead">${qCount.toLocaleString()}+ Texas TEKS-aligned practice questions across ${units.length} topics. Print at home or practice online with a built-in AI tutor. No sign-up. No email. No paywall.</p>
+
+      <!-- §17 SEO: visible author byline + last-updated date.
+           Strong E-E-A-T signal for educational content. Google
+           Helpful Content guidelines explicitly reward visible
+           authorship on YMYL/education pages. -->
+      <p class="fw-byline">
+        By <a class="fw-byline-author" href="/about.html" rel="author">Hamid Ali</a>
+        <span class="fw-byline-sep" aria-hidden="true">·</span>
+        Updated <time datetime="${dateModifiedIso}">${new Date(dateModifiedIso).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
+      </p>
 
       <div class="fw-hero-cta">
         <a class="fw-btn fw-btn--primary" href="/practice.html?print=1&amp;s=${STATE_SLUG}&amp;g=${grade.slug}&amp;subj=math&amp;n=20">Print 20-question worksheet (all topics)</a>
@@ -419,8 +502,18 @@ function renderHubPage() {
     })),
   };
 
+  // BreadcrumbList for the hub page
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_ORIGIN}/` },
+      { '@type': 'ListItem', position: 2, name: 'Free worksheets' },
+    ],
+  };
+
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="en-US">
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com https://api.gradeearn.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';" />
@@ -433,22 +526,47 @@ function renderHubPage() {
   <title>${esc(pageTitle)} — GradeEarn</title>
   <meta name="description" content="${esc(pageDesc)}">
   <meta name="keywords" content="free STAAR math worksheets, Texas STAAR practice, TEKS worksheets, printable math worksheets, K-8 math worksheets, Algebra I worksheets, free STAAR prep">
+  <meta name="author" content="Hamid Ali, GradeEarn">
+
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+
   <link rel="canonical" href="${canonicalUrl}">
+  <link rel="alternate" hreflang="en-US" href="${canonicalUrl}" />
+  <link rel="alternate" hreflang="x-default" href="${canonicalUrl}" />
 
   <meta property="og:type" content="website">
+  <meta property="og:site_name" content="GradeEarn">
+  <meta property="og:locale" content="en_US">
   <meta property="og:title" content="${esc(pageTitle)}">
   <meta property="og:description" content="${esc(pageDesc)}">
   <meta property="og:url" content="${canonicalUrl}">
   <meta property="og:image" content="${SITE_ORIGIN}/og-image.png">
+  <meta property="og:image:secure_url" content="${SITE_ORIGIN}/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="GradeEarn — Free Texas STAAR math worksheets, K through Algebra I.">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@gradeearn">
+  <meta name="twitter:creator" content="@gradeearn">
+  <meta name="twitter:title" content="${esc(pageTitle)}">
+  <meta name="twitter:description" content="${esc(pageDesc)}">
+  <meta name="twitter:image" content="${SITE_ORIGIN}/og-image.png">
 
   <script type="application/ld+json">
 ${JSON.stringify(ld, null, 2)}
   </script>
 
+  <script type="application/ld+json">
+${JSON.stringify(breadcrumbLd, null, 2)}
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&display=swap">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/styles.css?v=20260512a">
+  <link rel="stylesheet" href="/css/styles.css?v=20260512b">
 </head>
 <body class="fw-page fw-page--hub">
 

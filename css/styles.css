@@ -23167,3 +23167,90 @@ body.fw-page {
   .home-fw-ribbon { padding: 0 16px 24px; }
   .home-fw-ribbon-link { font-size: 12px; padding: 8px 14px; }
 }
+
+/* ==========================================================================
+   §17 SEO upgrade — byline + article prose styling (May 12)
+   ==========================================================================
+   Visible author byline on the free-worksheet and article pages is a
+   strong E-E-A-T signal for educational content (Google's Helpful
+   Content guidelines reward visible authorship on YMYL/education
+   pages). Prose styling is for the /articles/ pages.
+   ========================================================================== */
+
+.fw-byline {
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin: 4px 0 24px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+}
+.fw-byline-author {
+  color: rgba(255, 255, 255, 0.82);
+  font-weight: 500;
+  text-decoration: none;
+  border-bottom: 1px dotted rgba(255, 255, 255, 0.28);
+  padding-bottom: 1px;
+}
+.fw-byline-author:hover {
+  color: #fde68a;
+  border-bottom-color: rgba(253, 224, 71, 0.6);
+}
+.fw-byline-sep {
+  color: rgba(255, 255, 255, 0.28);
+}
+
+/* Article prose (article pages /articles/*.html) — readable
+   long-form layout with comfortable line length and rhythm. */
+.fw-prose {
+  max-width: 700px;
+}
+.fw-prose-section {
+  margin: 36px 0;
+  font-size: 16px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.82);
+}
+.fw-prose-section h2 {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1.18;
+  letter-spacing: -0.015em;
+  color: #ffffff;
+  margin: 0 0 14px;
+}
+.fw-prose-section p {
+  margin: 0 0 16px;
+}
+.fw-prose-section p:last-child { margin-bottom: 0; }
+.fw-prose-section strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+.fw-prose-section a {
+  color: #fde68a;
+  text-decoration: underline;
+  text-decoration-color: rgba(253, 224, 71, 0.4);
+  text-underline-offset: 2px;
+}
+.fw-prose-section a:hover {
+  text-decoration-color: rgba(253, 224, 71, 0.85);
+}
+.fw-prose-section ul,
+.fw-prose-section ol {
+  margin: 0 0 20px;
+  padding-left: 24px;
+}
+.fw-prose-section li {
+  margin: 8px 0;
+}
+.fw-prose-section li::marker {
+  color: rgba(251, 191, 36, 0.7);
+}
+@media (max-width: 768px) {
+  .fw-prose-section { margin: 28px 0; font-size: 15px; }
+  .fw-prose-section h2 { font-size: 23px; }
+}
