@@ -21227,3 +21227,232 @@ body.game-battle-royale .game-main { padding-top: 12px; }
   0%, 100% { box-shadow: 0 0 22px rgba(239, 68, 68, 0.22); }
   50%      { box-shadow: 0 0 28px rgba(239, 68, 68, 0.4); }
 }
+
+/* ============================================================
+   BEAR & CUB (game #17) — asymmetric tutoring
+   ============================================================ */
+body.game-bear-cub .game-main { padding-top: 12px; }
+.bc-root { padding: 0 14px 24px; max-width: 720px; margin: 0 auto; }
+
+/* Picker — two role cards side-by-side */
+.bc-role-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 16px 0 12px;
+}
+.bc-role-card {
+  padding: 16px 14px;
+  border-radius: var(--r-card);
+  background: rgba(30, 58, 138, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex; flex-direction: column; gap: 8px;
+  text-align: center;
+}
+.bc-role--bear { border-color: rgba(168, 85, 247, 0.4); }
+.bc-role--cub { border-color: rgba(251, 191, 36, 0.4); }
+.bc-role-emoji { font-size: 2.4rem; }
+.bc-role-title { font-size: 1.05rem; font-weight: 800; color: #fde68a; letter-spacing: 0.04em; }
+.bc-role-desc { font-size: 0.86rem; color: rgba(255, 255, 255, 0.78); margin: 0; line-height: 1.4; }
+.bc-role-cents { font-size: 0.85rem; color: rgba(255, 255, 255, 0.7); margin: 4px 0; }
+.bc-role-cents strong { color: #34d399; }
+
+/* Queued state */
+.bc-queued { text-align: center; }
+.bc-queued-roster {
+  display: flex; gap: 8px; justify-content: center; margin: 14px 0;
+  flex-wrap: wrap;
+}
+.bc-queued-chip {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  color: #fff; font-weight: 700; font-size: 0.92rem;
+}
+
+/* Live view */
+.bc-banner {
+  padding: 10px 14px;
+  border-radius: var(--r-button);
+  text-align: center;
+  font-weight: 800;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  margin-bottom: 14px;
+}
+.bc-banner--bear {
+  background: linear-gradient(140deg, rgba(168, 85, 247, 0.35) 0%, rgba(139, 92, 246, 0.45) 100%);
+  border: 1px solid rgba(168, 85, 247, 0.6);
+  color: #e9d5ff;
+}
+.bc-banner--cub {
+  background: linear-gradient(140deg, rgba(253, 224, 71, 0.3) 0%, rgba(251, 191, 36, 0.4) 100%);
+  border: 1px solid rgba(251, 191, 36, 0.6);
+  color: #fef3c7;
+}
+
+.bc-vs {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.bc-vs-side {
+  text-align: center;
+  padding: 10px 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--r-button);
+}
+.bc-vs-side.is-me { border-color: #fde68a; background: rgba(251, 191, 36, 0.12); }
+.bc-vs-name { font-weight: 700; color: #fff; font-size: 0.92rem; margin-top: 4px; }
+.bc-vs-grade { font-size: 0.74rem; color: rgba(255, 255, 255, 0.6); }
+.bc-vs-mid {
+  font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5); font-weight: 700;
+}
+
+/* Bear's read-only choice display (highlights the correct one) */
+.bc-choices--bear {
+  display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px;
+}
+.bc-choice-display {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--r-button);
+  color: #fff;
+}
+.bc-choice-display.is-correct {
+  background: linear-gradient(140deg, rgba(52, 211, 153, 0.25) 0%, rgba(16, 185, 129, 0.35) 100%);
+  border-color: rgba(52, 211, 153, 0.7);
+}
+.bc-choice-letter {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: rgba(253, 224, 71, 0.18); color: #fde68a;
+  font-weight: 800; font-size: 0.92rem; flex-shrink: 0;
+  margin-right: 8px;
+}
+.bc-choice-text { flex: 1; font-weight: 700; }
+.bc-choice-flag {
+  background: #34d399; color: #064e3b;
+  font-size: 0.66rem; font-weight: 800; letter-spacing: 0.08em;
+  padding: 3px 8px; border-radius: 4px;
+}
+
+/* Bear's hint input */
+.bc-hint-input {
+  width: 100%;
+  appearance: none;
+  background: rgba(15, 23, 42, 0.7);
+  color: #fff;
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  border-radius: var(--r-button);
+  padding: 12px 14px;
+  font-size: 1rem; font-family: inherit;
+  resize: vertical;
+  min-height: 64px;
+  margin-bottom: 8px;
+}
+.bc-hint-input:focus { outline: 2px solid #a855f7; border-color: transparent; }
+.bc-hint-actions {
+  display: flex; justify-content: space-between; align-items: center;
+}
+.bc-hint-count {
+  font-size: 0.78rem; color: rgba(255, 255, 255, 0.55);
+}
+.bc-hint-error {
+  margin-top: 10px; padding: 10px 12px;
+  background: rgba(239, 68, 68, 0.18);
+  border-left: 3px solid #ef4444;
+  border-radius: 0 var(--r-button) var(--r-button) 0;
+  color: #fecaca; font-size: 0.9rem; font-weight: 600;
+}
+
+/* Cub's hint display */
+.bc-hint-display {
+  margin: 12px 0;
+  padding: 12px 14px;
+  border-radius: var(--r-button);
+  background: rgba(168, 85, 247, 0.18);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  color: #e9d5ff;
+  font-size: 0.95rem; line-height: 1.5;
+}
+.bc-hint-display--waiting { color: rgba(233, 213, 255, 0.7); font-style: italic; }
+.bc-hint-display--shown strong { color: #fde68a; }
+.bc-hint-display--sent {
+  background: rgba(52, 211, 153, 0.12);
+  border-color: rgba(52, 211, 153, 0.5);
+  color: #d1fae5;
+}
+
+/* Round result band */
+.bc-round-result {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: var(--r-button);
+  text-align: center;
+  font-weight: 700;
+}
+.bc-round-result.is-good {
+  background: rgba(52, 211, 153, 0.18);
+  border: 1px solid rgba(52, 211, 153, 0.55);
+  color: #d1fae5;
+}
+.bc-round-result.is-bad {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fecaca;
+}
+
+/* Done view */
+.bc-done { text-align: center; }
+.bc-family-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  background: linear-gradient(140deg, #fde68a 0%, #fbbf24 100%);
+  color: #1e293b;
+  font-weight: 800;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  margin-bottom: 12px;
+}
+.bc-final-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 12px; align-items: center;
+  margin: 18px 0;
+}
+.bc-final-card {
+  padding: 16px 10px;
+  background: rgba(30, 58, 138, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--r-card);
+  text-align: center;
+}
+.bc-final-card.is-me {
+  border-color: #fde68a;
+  background: linear-gradient(140deg, rgba(253, 224, 71, 0.18) 0%, rgba(251, 191, 36, 0.22) 100%);
+}
+.bc-final-emoji { font-size: 2.4rem; }
+.bc-final-name { font-size: 0.95rem; font-weight: 700; color: #fff; margin: 4px 0; }
+.bc-final-role { font-size: 0.78rem; color: rgba(255, 255, 255, 0.65); }
+.bc-final-cents {
+  font-size: 1.6rem; font-weight: 800; color: #34d399;
+  margin-top: 6px;
+}
+.bc-final-divider { color: rgba(255, 255, 255, 0.4); font-size: 1.2rem; font-weight: 800; }
+
+/* Mobile */
+@media (max-width: 480px) {
+  .bc-role-grid { grid-template-columns: 1fr; }
+  .bc-vs { grid-template-columns: 1fr; gap: 8px; }
+  .bc-vs-mid { display: none; }
+  .bc-final-grid { grid-template-columns: 1fr; }
+  .bc-final-divider { display: none; }
+}

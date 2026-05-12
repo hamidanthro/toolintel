@@ -447,6 +447,7 @@ exports.handler = async (event) => {
   if (action === 'matchmake')               return await handleMatchmake(payload);
   if (action === 'matchState')              return await handleMatchState(payload);
   if (action === 'matchAnswer')             return await handleMatchAnswer(payload);
+  if (action === 'matchHint')               return await handleMatchHint(payload);
   if (action === 'matchFinish')             return await handleMatchFinish(payload);
   if (action === 'matchHistory')            return await handleMatchHistory(payload);
   if (action === 'getGameScores')           return await handleGetGameScores(payload);
@@ -2606,22 +2607,52 @@ async function handleSubmitGameScore(payload) {
   const latestWordAt    = Number.isFinite(payload.latestWordAt) ? payload.latestWordAt : 0;
 
   const key = `${gameId}#${date}`;
-  const entry = {
-    score, wordsFound, totalWords, durationSec,
-    puzzleId, prize, foundPrize,
-    currentSpelling, latestWord, latestWordAt,
-    completed: totalWords > 0 && wordsFound.length >= totalWords,
-    updatedAt: Date.now()
-  };
 
   // Read-modify-write the gameScores map. Cap at 60 entries (rolling
   // ~2-month history per game) so the user record doesn't bloat.
   const cur = await ddb.send(new GetCommand({
     TableName: USERS_TABLE,
     Key: { username: auth.username },
-    ProjectionExpression: 'gameScores'
+    ProjectionExpression: 'gameScores, lifetimeCents, balanceCents'
   }));
   const gs = (cur.Item && cur.Item.gameScores) || {};
+  const prev = gs[key] || {};
+  // Preserve cents-awarded so far for this (game, date) — credit only the
+  // delta when a kid replays and scores higher.
+  const prevCentsAwarded = parseInt(prev.centsAwarded, 10) || 0;
+
+  // Cents formula: 1c per 100 game-points scored, capped at 5c per game
+  // per day. Replays only credit the delta above prev.centsAwarded.
+  // Server-side $100 lifetime cap is the final ceiling.
+  const targetCents = Math.min(5, Math.floor(score / 100));
+  let centsAwardedNow = 0;
+  if (targetCents > prevCentsAwarded) {
+    const wantDelta = targetCents - prevCentsAwarded;
+    const lifetimeNow = (cur.Item && cur.Item.lifetimeCents) || 0;
+    const room = Math.max(0, LIFETIME_CAP_CENTS - lifetimeNow);
+    centsAwardedNow = Math.min(wantDelta, room);
+    if (centsAwardedNow > 0) {
+      try {
+        await ddb.send(new UpdateCommand({
+          TableName: USERS_TABLE,
+          Key: { username: auth.username },
+          UpdateExpression: 'SET balanceCents = if_not_exists(balanceCents, :z) + :a, lifetimeCents = if_not_exists(lifetimeCents, :z) + :a',
+          ExpressionAttributeValues: { ':a': centsAwardedNow, ':z': 0 }
+        }));
+      } catch (_) { centsAwardedNow = 0; }
+    }
+  }
+  const totalCentsAwarded = prevCentsAwarded + centsAwardedNow;
+
+  const entry = {
+    score, wordsFound, totalWords, durationSec,
+    puzzleId, prize, foundPrize,
+    currentSpelling, latestWord, latestWordAt,
+    completed: totalWords > 0 && wordsFound.length >= totalWords,
+    centsAwarded: totalCentsAwarded,
+    updatedAt: Date.now()
+  };
+
   gs[key] = entry;
   const keys = Object.keys(gs);
   if (keys.length > 60) {
@@ -2633,7 +2664,11 @@ async function handleSubmitGameScore(payload) {
     UpdateExpression: 'SET gameScores = :gs',
     ExpressionAttributeValues: { ':gs': gs }
   }));
-  return ok({ ok: true, score: entry });
+  return ok({
+    ok: true, score: entry,
+    centsAwardedNow,
+    totalCentsThisGameToday: totalCentsAwarded
+  });
 }
 
 async function handleGetGameScores(payload) {
@@ -4927,6 +4962,13 @@ const BR_AUTO_START_2PLUS_MS = 60 * 1000;   // ≥2 players + 60s lobby → star
 const BR_CANCEL_SOLO_MS = 90 * 1000;        // 1 player + 90s → cancel
 const BR_ROUND_DURATIONS = [8000, 6000, 4000, 4000, 4000, 4000]; // per round index
 const BR_MAX_ROUNDS = 6;
+// Bear & Cub tuning
+const BC_ROUNDS = 5;
+const BC_ROUND_MS = 30000;       // 30s per round (Cub solves)
+const BC_MIN_GRADE_GAP = 2;
+const BC_MAX_GRADE_GAP = 4;
+const BC_HINT_MIN_LEN = 10;
+const BC_HINT_MAX_LEN = 100;
 
 function _matchId() { return 'm_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10); }
 function _inviteToken() {
@@ -5125,6 +5167,13 @@ async function handleMatchmake(payload) {
 
   const maxPlayers = (mode === 'battle-royale') ? BR_MAX_PLAYERS : 2;
 
+  // Bear & Cub: separate matchmaking path with grade-gap pairing
+  if (mode === 'bear-cub' && !inviteToken) {
+    return await _matchmakeBearCub({
+      auth, gradeBand, payload, expiresAt, myGrade, myDisplay, me
+    });
+  }
+
   // Join via invite token
   if (inviteToken) {
     const scan = await ddb.send(new ScanCommand({
@@ -5265,6 +5314,11 @@ async function handleMatchState(payload) {
   const players = await _readPlayers(matchId);
   if (!players.find(p => p.userId === auth.username)) return bad(403, 'Not a player in this match');
 
+  // Bear & Cub: asymmetric snapshot (Bear sees answer, Cub doesn't)
+  if (header.mode === 'bear-cub') {
+    return ok(await _bearCubSnapshot(matchId, header, players, header.currentRound, auth.username));
+  }
+
   // Lazy auto-start / cancel for Battle Royale lobbies. No cron needed —
   // every state poll has a chance to flip the match forward.
   if (header.mode === 'battle-royale' && header.status === 'queued') {
@@ -5355,6 +5409,9 @@ async function _maybeResolveRound(matchId, roundNumber) {
   const header = await _readMatchHeader(matchId);
   if (header && header.mode === 'battle-royale') {
     return await _maybeResolveRoundBR(matchId, roundNumber, header);
+  }
+  if (header && header.mode === 'bear-cub') {
+    return await _maybeResolveRoundBC(matchId, roundNumber, header);
   }
   const round = await _readRound(matchId, roundNumber);
   if (!round) return bad(404, 'Round not found');
@@ -5555,6 +5612,512 @@ async function handleMatchFinish(payload) {
     // else: match is live — fall through to finalize
   }
   return await _finalizeMatch(matchId);
+}
+
+// ===== Bear & Cub =====
+//
+// Asymmetric match: older "Bear" coaches younger "Cub". Bear sees the
+// correct answer + a hint textarea. Cub sees the problem + Bear's hint
+// (when sent), but NEVER the correct answer. Server guardrail rejects
+// hints that contain the answer letter / answer text / give-away
+// phrases.
+//
+// Pairing: 2 queues — Bear-by-target-grade and Cub-by-own-grade. Bear
+// must be 2-4 grades above Cub.
+
+const BC_GRADE_RANK = {
+  'grade-k': 0, 'grade-1': 1, 'grade-2': 2, 'grade-3': 3, 'grade-4': 4,
+  'grade-5': 5, 'grade-6': 6, 'grade-7': 7, 'grade-8': 8, 'algebra-1': 9
+};
+function _gradeOrdinal(g) { return Object.prototype.hasOwnProperty.call(BC_GRADE_RANK, g) ? BC_GRADE_RANK[g] : -1; }
+
+async function _matchmakeBearCub({ auth, gradeBand, payload, expiresAt, myGrade, myDisplay, me }) {
+  // payload.role: 'bear' or 'cub'.
+  // payload.targetGrade (Bear only): which grade band they're willing to tutor.
+  const role = (payload.role === 'bear') ? 'bear' : 'cub';
+  const targetGrade = String(payload.targetGrade || gradeBand || 'grade-3');
+  const myOrd = _gradeOrdinal(myGrade);
+  const targetOrd = _gradeOrdinal(targetGrade);
+  const now = Date.now();
+
+  if (role === 'bear') {
+    if (myOrd < 0 || targetOrd < 0) return bad(400, 'invalid grades');
+    const gap = myOrd - targetOrd;
+    if (gap < BC_MIN_GRADE_GAP) return bad(400, 'Pick a grade at least 2 below yours');
+    if (gap > BC_MAX_GRADE_GAP) return bad(400, 'That grade gap is too wide (max 4)');
+
+    // Look for a Cub in target grade waiting on a Bear
+    const cubQueue = await ddb.send(new ScanCommand({
+      TableName: MATCHES_TABLE,
+      FilterExpression: 'mode = :m AND cubGrade = :g AND #s = :q AND creatorUserId <> :me AND #k = :h AND attribute_not_exists(bearUserId)',
+      ExpressionAttributeNames: { '#s': 'status', '#k': 'kind' },
+      ExpressionAttributeValues: { ':m': 'bear-cub', ':g': targetGrade, ':q': 'queued', ':me': me, ':h': 'header' },
+      Limit: 5
+    }));
+    const candidate = (cubQueue.Items || [])[0];
+    if (candidate) {
+      await ddb.send(new UpdateCommand({
+        TableName: MATCHES_TABLE,
+        Key: { matchId: candidate.matchId, kind: 'header' },
+        UpdateExpression: 'SET bearUserId = :b, bearGrade = :bg',
+        ConditionExpression: 'attribute_not_exists(bearUserId)',
+        ExpressionAttributeValues: { ':b': me, ':bg': myGrade }
+      })).catch(e => { if (e.name !== 'ConditionalCheckFailedException') throw e; });
+      await _addPlayer(candidate.matchId, me, myDisplay, myGrade, expiresAt);
+      return await _maybeStartBearCub(candidate.matchId);
+    }
+    // No cub waiting — create a Bear-side match
+    const matchId = _matchId();
+    const tok = _inviteToken();
+    await ddb.send(new PutCommand({
+      TableName: MATCHES_TABLE,
+      Item: {
+        matchId, kind: 'header', mode: 'bear-cub', gradeBand: targetGrade, status: 'queued',
+        currentRound: 0, totalRounds: BC_ROUNDS,
+        createdAt: now, queuedSince: now,
+        inviteToken: tok, creatorUserId: me,
+        maxPlayers: 2, minPlayers: 2,
+        bearGrade: myGrade, cubGrade: targetGrade, bearUserId: me,
+        hintCount: 0,
+        expiresAt
+      }
+    }));
+    await _addPlayer(matchId, me, myDisplay, myGrade, expiresAt);
+    return ok({
+      matchId, status: 'queued', mode: 'bear-cub', gradeBand: targetGrade,
+      role: 'bear', cubGrade: targetGrade, bearGrade: myGrade,
+      players: [{ userId: me, displayName: myDisplay, grade: myGrade, score: 0, alive: true, eliminated: false }],
+      inviteToken: tok, maxPlayers: 2, queuedSince: now,
+      serverNowMs: Date.now()
+    });
+  }
+
+  // role === 'cub'
+  if (myOrd < 0) return bad(400, 'invalid grade');
+  // Find a Bear waiting for this Cub's grade
+  const bearQueue = await ddb.send(new ScanCommand({
+    TableName: MATCHES_TABLE,
+    FilterExpression: 'mode = :m AND cubGrade = :g AND #s = :q AND creatorUserId <> :me AND #k = :h AND attribute_not_exists(cubUserId)',
+    ExpressionAttributeNames: { '#s': 'status', '#k': 'kind' },
+    ExpressionAttributeValues: { ':m': 'bear-cub', ':g': myGrade, ':q': 'queued', ':me': me, ':h': 'header' },
+    Limit: 5
+  }));
+  const candidate = (bearQueue.Items || [])[0];
+  if (candidate) {
+    await ddb.send(new UpdateCommand({
+      TableName: MATCHES_TABLE,
+      Key: { matchId: candidate.matchId, kind: 'header' },
+      UpdateExpression: 'SET cubUserId = :c, cubGrade = :cg',
+      ConditionExpression: 'attribute_not_exists(cubUserId)',
+      ExpressionAttributeValues: { ':c': me, ':cg': myGrade }
+    })).catch(e => { if (e.name !== 'ConditionalCheckFailedException') throw e; });
+    await _addPlayer(candidate.matchId, me, myDisplay, myGrade, expiresAt);
+    return await _maybeStartBearCub(candidate.matchId);
+  }
+  // No bear waiting — create a Cub-side match
+  const matchId = _matchId();
+  const tok = _inviteToken();
+  await ddb.send(new PutCommand({
+    TableName: MATCHES_TABLE,
+    Item: {
+      matchId, kind: 'header', mode: 'bear-cub', gradeBand: myGrade, status: 'queued',
+      currentRound: 0, totalRounds: BC_ROUNDS,
+      createdAt: now, queuedSince: now,
+      inviteToken: tok, creatorUserId: me,
+      maxPlayers: 2, minPlayers: 2,
+      cubGrade: myGrade, cubUserId: me,
+      hintCount: 0,
+      expiresAt
+    }
+  }));
+  await _addPlayer(matchId, me, myDisplay, myGrade, expiresAt);
+  return ok({
+    matchId, status: 'queued', mode: 'bear-cub', gradeBand: myGrade,
+    role: 'cub', cubGrade: myGrade,
+    players: [{ userId: me, displayName: myDisplay, grade: myGrade, score: 0, alive: true, eliminated: false }],
+    inviteToken: tok, maxPlayers: 2, queuedSince: now,
+    serverNowMs: Date.now()
+  });
+}
+
+async function _maybeStartBearCub(matchId) {
+  const header = await _readMatchHeader(matchId);
+  if (!header) return bad(404, 'Match not found');
+  if (header.status !== 'queued') {
+    const players = await _readPlayers(matchId);
+    return ok(await _bearCubSnapshot(matchId, header, players, null));
+  }
+  if (!header.bearUserId || !header.cubUserId) {
+    // still waiting for the missing role
+    const players = await _readPlayers(matchId);
+    return ok({
+      matchId, status: 'queued', mode: 'bear-cub',
+      gradeBand: header.gradeBand,
+      bearGrade: header.bearGrade, cubGrade: header.cubGrade,
+      players: players.map(_scrubPlayer),
+      inviteToken: header.inviteToken, maxPlayers: 2,
+      queuedSince: header.queuedSince || header.createdAt,
+      serverNowMs: Date.now()
+    });
+  }
+  // Both roles filled — generate round 1 (Cub's grade), flip live
+  const problem = _showdownProblem(header.cubGrade);
+  const startedAt = Date.now();
+  const deadline = startedAt + BC_ROUND_MS;
+  await ddb.send(new PutCommand({
+    TableName: MATCHES_TABLE,
+    Item: {
+      matchId, kind: 'round#1', roundNumber: 1, problem,
+      startedAt, deadline, answers: {}, hints: {}, winnerUserId: null,
+      expiresAt: header.expiresAt
+    },
+    ConditionExpression: 'attribute_not_exists(matchId)'
+  })).catch(e => { if (e.name !== 'ConditionalCheckFailedException') throw e; });
+  try {
+    await ddb.send(new UpdateCommand({
+      TableName: MATCHES_TABLE,
+      Key: { matchId, kind: 'header' },
+      UpdateExpression: 'SET #s = :live, currentRound = :cr, lockedAt = :ts',
+      ConditionExpression: '#s = :q',
+      ExpressionAttributeNames: { '#s': 'status' },
+      ExpressionAttributeValues: { ':live': 'live', ':cr': 1, ':ts': Date.now(), ':q': 'queued' }
+    }));
+  } catch (_) {}
+  const headerAfter = await _readMatchHeader(matchId);
+  const players = await _readPlayers(matchId);
+  return ok(await _bearCubSnapshot(matchId, headerAfter, players, 1));
+}
+
+// Asymmetric snapshot. Caller's role determines what fields are exposed.
+// Bear gets correctIndex; Cub does not. Both see the current hint (if Bear sent one).
+async function _bearCubSnapshot(matchId, header, players, currentRound, callerUserId) {
+  const out = {
+    matchId, status: header.status, mode: header.mode,
+    gradeBand: header.gradeBand,
+    bearGrade: header.bearGrade, cubGrade: header.cubGrade,
+    bearUserId: header.bearUserId, cubUserId: header.cubUserId,
+    currentRound: header.currentRound || 0, totalRounds: header.totalRounds || BC_ROUNDS,
+    maxPlayers: 2, minPlayers: 2,
+    inviteToken: header.inviteToken,
+    players: players.map(_scrubPlayer),
+    queuedSince: header.queuedSince || header.createdAt,
+    serverNowMs: Date.now()
+  };
+  if (callerUserId) {
+    out.role = (callerUserId === header.bearUserId) ? 'bear' : (callerUserId === header.cubUserId) ? 'cub' : 'spectator';
+  }
+  if ((header.currentRound || 0) > 0 && header.status === 'live') {
+    const round = await _readRound(matchId, header.currentRound);
+    if (round) {
+      out.problem = _publicProblem(round.problem);
+      out.roundStartedAt = round.startedAt;
+      out.roundDeadline = round.deadline;
+      out.roundNumber = round.roundNumber;
+      out.answeredUserIds = Object.keys(round.answers || {});
+      // Bear-only: reveal correctIndex
+      if (callerUserId === header.bearUserId) {
+        out.correctIndex = round.problem.correctIndex;
+      }
+      // Both can see the hint (once Bear has sent it)
+      const hints = round.hints || {};
+      out.currentHint = hints[header.bearUserId] || null;
+      out.hintSent = !!out.currentHint;
+      // Round resolution flag
+      if (round.winnerUserId !== null && round.winnerUserId !== undefined) {
+        out.lastRoundCorrectIndex = round.problem.correctIndex;
+        out.lastRoundAnswers = round.answers;
+      }
+    }
+  }
+  return out;
+}
+
+// Hint guardrail: reject anything that leaks the answer.
+function _validateHint(text, problem) {
+  const t = String(text || '').trim();
+  if (t.length < BC_HINT_MIN_LEN) return { ok: false, reason: `Hints need at least ${BC_HINT_MIN_LEN} characters.` };
+  if (t.length > BC_HINT_MAX_LEN) return { ok: false, reason: `Hints are limited to ${BC_HINT_MAX_LEN} characters.` };
+  const lower = t.toLowerCase();
+
+  const correct = problem.choices[problem.correctIndex];
+  const correctLower = String(correct || '').toLowerCase().trim();
+
+  // Block exact answer text (full substring match if multi-char)
+  if (correctLower.length >= 2 && lower.includes(correctLower)) {
+    return { ok: false, reason: 'That gives away the answer. Hint at the strategy instead — talk about HOW to solve it.' };
+  }
+
+  // Block standalone answer letter referring to the choice
+  const letters = ['A', 'B', 'C', 'D'];
+  const answerLetter = letters[problem.correctIndex];
+  const letterRegex = new RegExp(`(^|\\s|[,.;:!?'"])${answerLetter}(\\s|[,.;:!?'"]|$)`);
+  if (letterRegex.test(t)) {
+    return { ok: false, reason: `Don't tell them the letter — help them think through the math.` };
+  }
+
+  // Common giveaway phrases
+  const giveaways = [
+    /\banswer\s+is\b/i,
+    /\banswer:/i,
+    /\bit['']?s\s+(?:the\s+)?(?:answer\s+)?[a-d0-9]\b/i,
+    /\bchoose\s+[a-d]\b/i,
+    /\bpick\s+[a-d]\b/i,
+    /\bselect\s+[a-d]\b/i,
+    /\bgo\s+with\s+[a-d]\b/i,
+    /\btap\s+[a-d]\b/i
+  ];
+  for (const re of giveaways) {
+    if (re.test(t)) return { ok: false, reason: 'That phrasing gives it away. Try hinting at the method, not the option.' };
+  }
+
+  // Numeric leak: if correct answer is a number, block its standalone occurrence
+  const numAns = Number(correct);
+  if (Number.isFinite(numAns) && String(correct).trim() !== '') {
+    const asStr = String(numAns);
+    const numRegex = new RegExp(`(^|[^\\d])${asStr.replace('.', '\\.')}([^\\d]|$)`);
+    if (numRegex.test(t)) {
+      return { ok: false, reason: `Don't say the number ${asStr} — give them the strategy to find it themselves.` };
+    }
+  }
+
+  // Mild profanity filter (small list, additive). Kids; keep it clean.
+  const banned = ['shit', 'fuck', 'damn', 'crap', 'stupid', 'dumb', 'idiot'];
+  for (const w of banned) {
+    if (lower.includes(w)) return { ok: false, reason: 'Keep hints encouraging — no negative words.' };
+  }
+
+  return { ok: true };
+}
+
+async function handleMatchHint(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  const matchId = String(payload.matchId || '');
+  const roundNumber = parseInt(payload.roundNumber, 10);
+  const hintText = String(payload.hintText || '');
+  if (!matchId || !Number.isFinite(roundNumber)) return bad(400, 'bad request');
+
+  const header = await _readMatchHeader(matchId);
+  if (!header || header.mode !== 'bear-cub') return bad(404, 'Match not found');
+  if (header.bearUserId !== auth.username) return bad(403, 'Only the Bear can send hints');
+  if (header.status !== 'live') return bad(400, 'Match not live');
+  if (roundNumber !== header.currentRound) return bad(400, 'Wrong round');
+
+  const round = await _readRound(matchId, roundNumber);
+  if (!round) return bad(404, 'Round not found');
+  if (Date.now() > round.deadline + 200) return bad(400, 'Round time is up');
+
+  const guard = _validateHint(hintText, round.problem);
+  if (!guard.ok) {
+    return ok({ rejected: true, reason: guard.reason });
+  }
+
+  // Persist
+  try {
+    await ddb.send(new UpdateCommand({
+      TableName: MATCHES_TABLE,
+      Key: { matchId, kind: `round#${roundNumber}` },
+      UpdateExpression: 'SET hints.#b = :h',
+      ExpressionAttributeNames: { '#b': auth.username },
+      ExpressionAttributeValues: { ':h': hintText.trim() }
+    }));
+    await ddb.send(new UpdateCommand({
+      TableName: MATCHES_TABLE,
+      Key: { matchId, kind: 'header' },
+      UpdateExpression: 'ADD hintCount :one',
+      ExpressionAttributeValues: { ':one': 1 }
+    })).catch(() => {});
+  } catch (e) {
+    return bad(500, 'Could not save hint');
+  }
+  return ok({ ok: true, hintText: hintText.trim() });
+}
+
+// Bear & Cub round resolution: Cub answer decides round outcome.
+// Both get points; Bear gets the teacher bonus regardless of correctness
+// (small consolation for showing up to coach).
+async function _maybeResolveRoundBC(matchId, roundNumber, header) {
+  const round = await _readRound(matchId, roundNumber);
+  if (!round) return bad(404, 'Round not found');
+  if (round.winnerUserId !== null && round.winnerUserId !== undefined) {
+    return ok({ resolved: true, roundNumber, correctIndex: round.problem.correctIndex });
+  }
+  const now = Date.now();
+  const cubAnswer = (round.answers || {})[header.cubUserId];
+  const deadlinePassed = now > round.deadline + 200;
+  if (!cubAnswer && !deadlinePassed) {
+    return ok({ resolved: false, pendingUserIds: [header.cubUserId] });
+  }
+  // Resolve
+  const cubCorrect = !!(cubAnswer && cubAnswer.correct);
+  const winner = cubCorrect ? header.cubUserId : '__NONE__';
+  try {
+    await ddb.send(new UpdateCommand({
+      TableName: MATCHES_TABLE,
+      Key: { matchId, kind: `round#${roundNumber}` },
+      UpdateExpression: 'SET winnerUserId = :w',
+      ConditionExpression: 'winnerUserId = :n',
+      ExpressionAttributeValues: { ':w': winner, ':n': null }
+    }));
+  } catch (e) {
+    if (e.name !== 'ConditionalCheckFailedException') throw e;
+    // already resolved
+    return ok({ resolved: true, roundNumber, alreadyResolved: true });
+  }
+  // Bump scores: Cub +50 on correct, Bear +50 (teacher participation)
+  if (cubCorrect) {
+    try { await ddb.send(new UpdateCommand({ TableName: MATCHES_TABLE, Key: { matchId, kind: `player#${header.cubUserId}` }, UpdateExpression: 'ADD score :one', ExpressionAttributeValues: { ':one': 1 } })); } catch (_) {}
+    try { await ddb.send(new UpdateCommand({ TableName: MATCHES_TABLE, Key: { matchId, kind: `player#${header.bearUserId}` }, UpdateExpression: 'ADD score :one', ExpressionAttributeValues: { ':one': 1 } })); } catch (_) {}
+  }
+
+  // Done?
+  if (roundNumber >= (header.totalRounds || BC_ROUNDS)) {
+    return await _finalizeBearCub(matchId);
+  }
+  // Spawn next round (Cub's grade)
+  const nextN = roundNumber + 1;
+  const next = await _bcCreateRound(matchId, nextN, header.cubGrade, header.expiresAt);
+  await ddb.send(new UpdateCommand({
+    TableName: MATCHES_TABLE,
+    Key: { matchId, kind: 'header' },
+    UpdateExpression: 'SET currentRound = :n',
+    ExpressionAttributeValues: { ':n': nextN }
+  })).catch(() => {});
+  return ok({
+    resolved: true,
+    roundNumber,
+    cubCorrect,
+    correctIndex: round.problem.correctIndex,
+    answers: round.answers,
+    nextRound: {
+      roundNumber: nextN,
+      problem: _publicProblem(next.problem),
+      startedAt: next.startedAt,
+      deadline: next.deadline
+    },
+    serverNowMs: Date.now()
+  });
+}
+
+async function _bcCreateRound(matchId, n, cubGrade, expiresAt) {
+  const problem = _showdownProblem(cubGrade);
+  const startedAt = Date.now();
+  const deadline = startedAt + BC_ROUND_MS;
+  await ddb.send(new PutCommand({
+    TableName: MATCHES_TABLE,
+    Item: { matchId, kind: `round#${n}`, roundNumber: n, problem, startedAt, deadline, answers: {}, hints: {}, winnerUserId: null, expiresAt },
+    ConditionExpression: 'attribute_not_exists(matchId)'
+  })).catch(e => { if (e.name !== 'ConditionalCheckFailedException') throw e; });
+  return { problem, startedAt, deadline };
+}
+
+async function _finalizeBearCub(matchId) {
+  const header = await _readMatchHeader(matchId);
+  if (!header) return bad(404, 'Match not found');
+  if (header.status === 'done') {
+    const playersR = await _readPlayers(matchId);
+    return ok({ matchFinished: true, players: playersR.map(_scrubPlayer) });
+  }
+  const players = await _readPlayers(matchId);
+  try {
+    await ddb.send(new UpdateCommand({
+      TableName: MATCHES_TABLE,
+      Key: { matchId, kind: 'header' },
+      UpdateExpression: 'SET #s = :d, finishedAt = :t',
+      ConditionExpression: '#s <> :d',
+      ExpressionAttributeNames: { '#s': 'status' },
+      ExpressionAttributeValues: { ':d': 'done', ':t': Date.now() }
+    }));
+  } catch (e) {
+    if (e.name === 'ConditionalCheckFailedException') {
+      return ok({ matchFinished: true, players: players.map(_scrubPlayer) });
+    }
+    throw e;
+  }
+
+  // Family detection: check if Bear + Cub share a parentEmail
+  const bear = players.find(p => p.userId === header.bearUserId);
+  const cub = players.find(p => p.userId === header.cubUserId);
+  let sameFamily = false;
+  try {
+    if (bear && cub) {
+      const [br, cr] = await Promise.all([
+        ddb.send(new GetCommand({ TableName: USERS_TABLE, Key: { username: header.bearUserId }, ProjectionExpression: 'parentEmail' })),
+        ddb.send(new GetCommand({ TableName: USERS_TABLE, Key: { username: header.cubUserId }, ProjectionExpression: 'parentEmail' }))
+      ]);
+      const be = (br.Item && br.Item.parentEmail || '').trim().toLowerCase();
+      const ce = (cr.Item && cr.Item.parentEmail || '').trim().toLowerCase();
+      sameFamily = (be && ce && be === ce);
+    }
+  } catch (_) {}
+
+  // Per-correct-round cents + completion bonus + family bonus
+  const cubScore = cub ? (cub.score || 0) : 0; // rounds correct
+  const finishedAt = Date.now();
+
+  async function credit(userId, cents) {
+    try {
+      const ur = await ddb.send(new GetCommand({ TableName: USERS_TABLE, Key: { username: userId } }));
+      if (!ur.Item) return 0;
+      const lifetime = ur.Item.lifetimeCents || 0;
+      const room = Math.max(0, LIFETIME_CAP_CENTS - lifetime);
+      const award = Math.min(cents, room);
+      if (award > 0) {
+        await ddb.send(new UpdateCommand({
+          TableName: USERS_TABLE,
+          Key: { username: userId },
+          UpdateExpression: 'SET balanceCents = if_not_exists(balanceCents, :z) + :a, lifetimeCents = if_not_exists(lifetimeCents, :z) + :a',
+          ExpressionAttributeValues: { ':a': award, ':z': 0 }
+        }));
+      }
+      return award;
+    } catch (_) { return 0; }
+  }
+
+  // Cub: 1c per correct + 1c completion bonus + 2c family bonus (max 6c with 5/5 family)
+  const cubTarget = cubScore + 1 + (sameFamily ? 2 : 0);
+  const cubAwarded = await credit(header.cubUserId, cubTarget);
+  // Bear: 2c per correct + 2c completion bonus + 2c family bonus (max 14c with 5/5 family)
+  const bearTarget = (cubScore * 2) + 2 + (sameFamily ? 2 : 0);
+  const bearAwarded = await credit(header.bearUserId, bearTarget);
+
+  // Match history rows
+  const matchMode = sameFamily ? 'bear-cub-family' : 'bear-cub';
+  for (const p of players) {
+    const isBear = (p.userId === header.bearUserId);
+    const oppId = isBear ? header.cubUserId : header.bearUserId;
+    const opp = players.find(x => x.userId === oppId) || {};
+    const result = (cubScore >= 3 ? 'win' : cubScore >= 1 ? 'top-3' : 'eliminated');
+    try {
+      await ddb.send(new PutCommand({
+        TableName: MATCH_HISTORY_TABLE,
+        Item: {
+          userId: p.userId,
+          finishedAtMatchId: `${finishedAt}#${matchId}`,
+          matchId, mode: matchMode,
+          opponentUserId: oppId || null,
+          opponentDisplayName: opp.displayName || null,
+          myScore: p.score || 0,
+          opponentScore: opp.score || 0,
+          role: isBear ? 'bear' : 'cub',
+          result,
+          centsEarned: isBear ? bearAwarded : cubAwarded,
+          finishedAt
+        }
+      }));
+    } catch (_) {}
+  }
+  const finalPlayers = await _readPlayers(matchId);
+  return ok({
+    matchFinished: true,
+    players: finalPlayers.map(_scrubPlayer),
+    cubScore, totalRounds: header.totalRounds || BC_ROUNDS,
+    sameFamily,
+    cubCentsEarned: cubAwarded,
+    bearCentsEarned: bearAwarded,
+    bearUserId: header.bearUserId, cubUserId: header.cubUserId,
+    serverNowMs: Date.now()
+  });
 }
 
 async function handleMatchHistory(payload) {

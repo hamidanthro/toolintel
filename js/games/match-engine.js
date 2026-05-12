@@ -70,19 +70,35 @@
       this.lastRoundResolved = 0; // highest round whose resolution we surfaced
       this.myAnswerChoice = -1;
       this.destroyed = false;
+      this.extraMatchmakePayload = null; // game-specific extras (role, targetGrade, etc)
     }
 
     serverNow() { return Date.now() + this.clockDriftMs; }
 
     async start() {
       try {
-        const payload = { mode: this.mode, gradeBand: this.gradeBand };
+        const payload = Object.assign({ mode: this.mode, gradeBand: this.gradeBand }, this.extraMatchmakePayload || {});
         if (this.inviteToken) payload.inviteToken = this.inviteToken;
         const r = await apiCall('matchmake', payload);
         this._consume(r);
         this.startPolling();
       } catch (e) {
         this.onError(e);
+      }
+    }
+
+    // Bear & Cub: bear sends a hint that the server validates.
+    // Returns the server response so caller can show {rejected, reason}
+    // back to the kid without going through the polling path.
+    async sendHint(roundNumber, hintText) {
+      if (!this.matchId) return null;
+      try {
+        return await apiCall('matchHint', {
+          matchId: this.matchId, roundNumber, hintText
+        });
+      } catch (e) {
+        this.onError(e);
+        return { rejected: true, reason: 'Network error — try again.' };
       }
     }
 
@@ -193,6 +209,13 @@
           this.lastSnapshot.phase = 'done';
           this.lastSnapshot.players = r.players || this.lastSnapshot.players;
           this.lastSnapshot.finalResult = this._computeMyResult(this.lastSnapshot.players);
+          // Bear & Cub final-screen extras
+          if (r.cubScore != null) this.lastSnapshot.cubScore = r.cubScore;
+          if (r.sameFamily != null) this.lastSnapshot.sameFamily = r.sameFamily;
+          if (r.cubCentsEarned != null) this.lastSnapshot.cubCentsEarned = r.cubCentsEarned;
+          if (r.bearCentsEarned != null) this.lastSnapshot.bearCentsEarned = r.bearCentsEarned;
+          if (r.bearUserId) this.lastSnapshot.bearUserId = r.bearUserId;
+          if (r.cubUserId) this.lastSnapshot.cubUserId = r.cubUserId;
           this._emit();
         }
         this.stopPolling();
@@ -222,8 +245,20 @@
         roundDeadline: r.roundDeadline || null,
         answeredUserIds: r.answeredUserIds || [],
         roundWinnerUserId: r.roundWinnerUserId || null,
-        lastRoundCorrectIndex: this.lastSnapshot ? this.lastSnapshot.lastRoundCorrectIndex : null,
-        lastRoundAnswers: this.lastSnapshot ? this.lastSnapshot.lastRoundAnswers : null,
+        lastRoundCorrectIndex: r.lastRoundCorrectIndex != null ? r.lastRoundCorrectIndex : (this.lastSnapshot ? this.lastSnapshot.lastRoundCorrectIndex : null),
+        lastRoundAnswers: r.lastRoundAnswers || (this.lastSnapshot ? this.lastSnapshot.lastRoundAnswers : null),
+        // Battle Royale extras
+        maxPlayers: r.maxPlayers || (this.lastSnapshot ? this.lastSnapshot.maxPlayers : null),
+        queuedSince: r.queuedSince || (this.lastSnapshot ? this.lastSnapshot.queuedSince : null),
+        // Bear & Cub asymmetric extras
+        role: r.role || (this.lastSnapshot ? this.lastSnapshot.role : null),
+        bearUserId: r.bearUserId || (this.lastSnapshot ? this.lastSnapshot.bearUserId : null),
+        cubUserId: r.cubUserId || (this.lastSnapshot ? this.lastSnapshot.cubUserId : null),
+        bearGrade: r.bearGrade || (this.lastSnapshot ? this.lastSnapshot.bearGrade : null),
+        cubGrade: r.cubGrade || (this.lastSnapshot ? this.lastSnapshot.cubGrade : null),
+        correctIndex: r.correctIndex != null ? r.correctIndex : null,
+        currentHint: r.currentHint || null,
+        hintSent: !!r.hintSent,
         myAnswerChoice: this.myAnswerChoice
       };
       if (snap.phase === 'done') {
