@@ -17,6 +17,8 @@ JA="$REPO_ROOT/lambda/judge.js"
 JB="$REPO_ROOT/lambda/tutor-build/judge.js"
 CA="$REPO_ROOT/lambda/crisis-detector.js"
 CB="$REPO_ROOT/lambda/tutor-build/crisis-detector.js"
+RA="$REPO_ROOT/lambda/reply-judge.js"
+RB="$REPO_ROOT/lambda/tutor-build/reply-judge.js"
 
 if [ ! -f "$A" ]; then
   echo "[parity] FAIL: $A not found" >&2
@@ -120,6 +122,22 @@ if [ -f "$CA" ] && [ -f "$CB" ]; then
     FAIL=1
     echo "[parity] FAIL: crisis-detector.js differs (safety-critical — abort)" >&2
     diff "$CA" "$CB" | head -20 | sed 's/^/[parity]   /' >&2
+  fi
+fi
+
+# ============================================================
+# CHECK 6 — reply-judge.js byte-identical between source and build
+# Voice gate for tutor + summary surfaces (§15 banned phrases).
+# Drift here would mean the deployed voice gate doesn't match the
+# regex set we authored in source.
+# ============================================================
+if [ -f "$RA" ] && [ -f "$RB" ]; then
+  if cmp -s "$RA" "$RB"; then
+    echo "[parity] OK: reply-judge.js byte-identical between source and build"
+  else
+    FAIL=1
+    echo "[parity] FAIL: reply-judge.js differs between source and build" >&2
+    diff "$RA" "$RB" | head -20 | sed 's/^/[parity]   /' >&2
   fi
 fi
 

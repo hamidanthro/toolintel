@@ -38,6 +38,7 @@ const crypto = require('crypto');
 const lake = require('./content-lake');
 const judge = require('./judge');
 const crisis = require('./crisis-detector');
+const replyJudge = require('./reply-judge');
 
 const MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
 const SECRET_NAME = process.env.OPENAI_SECRET_NAME || 'staar-tutor/openai-api-key';
@@ -361,17 +362,14 @@ async function handleSummarizeSession(payload) {
     });
     let reply = (result?.choices?.[0]?.message?.content || '').trim();
 
-    // Defense-in-depth: if the model leaks a banned phrase or returns empty,
-    // swap with a neutral score-band-agnostic line. Frontend will render it
-    // the same as any other summary.
-    const lower = reply.toLowerCase();
-    const banned = [
-      'most kids trip', 'no worries', 'lots of kids',
-      'great job', 'nice work', 'good try',
-      "let's work through", 'now you try',
-      'does that make sense'
-    ];
-    if (!reply || banned.some(b => lower.includes(b))) {
+    // Defense-in-depth voice gate (reply-judge.js — §15 banned phrases).
+    // If the model leaks a banned literal or returns empty, swap with a
+    // neutral score-band-agnostic line. Hard gate here because the summary
+    // surface is non-interactive — kid sees one reply, can't ask for a
+    // retry, so a bad summary lingers visually until next session.
+    const voiceVerdict = replyJudge.judgeReply(reply, { surface: 'summary' });
+    if (!voiceVerdict.ok) {
+      console.log('[reply-judge] surface=summary verdict=reject failedChecks=' + voiceVerdict.failedChecks.join(',') + ' reasons=' + voiceVerdict.reasons.join('; '));
       reply = 'Solid session. Keep going.';
     }
 
@@ -555,6 +553,18 @@ exports.handler = async (event) => {
       temperature: 0.4
     });
     const reply = result?.choices?.[0]?.message?.content || '';
+
+    // Reply-judge soft gate (telemetry only — don't replace the kid's
+    // mid-question reply mid-flow). Logs to CloudWatch with [reply-judge]
+    // prefix so offline review can find voice regressions. If a sustained
+    // rate emerges, we escalate to a hard replacement here. See §15.
+    try {
+      const voiceVerdict = replyJudge.judgeReply(reply, { surface: 'tutor' });
+      if (!voiceVerdict.ok) {
+        console.log('[reply-judge] surface=tutor verdict=reject failedChecks=' + voiceVerdict.failedChecks.join(',') + ' reasons=' + voiceVerdict.reasons.join('; '));
+      }
+    } catch (_) {}
+
     return ok({ reply, model: MODEL });
   } catch (err) {
     console.error('OpenAI error:', err.message || err);
@@ -6747,7 +6757,6 @@ async function handleMyspaceChat(payload) {
   // Character.AI / OpenAI lawsuit defense.
   const signal = crisis.detectCrisis(message);
   if (signal) {
-    // Log every signal for compliance audit
     try {
       await logSafetyEvent({
         userId: auth.username,
@@ -6759,18 +6768,14 @@ async function handleMyspaceChat(payload) {
       });
     } catch (_) {}
 
-    // For critical signals, never call the LLM
     if (signal.severity === 'critical') {
       const reply = crisis.safetyReplyFor(signal);
       return ok({ reply: reply, safety: true, signalType: signal.signal_type });
     }
-    // For jailbreak attempts, return fixed refusal too — don't tempt the model
     if (signal.signal_type === 'jailbreak') {
       const reply = crisis.safetyReplyFor(signal);
       return ok({ reply: reply, safety: true, signalType: 'jailbreak' });
     }
-    // 'distress' and 'pii_share' fall through to the LLM with extra context
-    // appended below.
   }
 
   const context = String(payload.context || payload.summary || '').trim().slice(0, 8000);
@@ -6789,7 +6794,6 @@ async function handleMyspaceChat(payload) {
   } else {
     userParts.push('STUDENT SNAPSHOT: (empty — the student has not added any data yet)');
   }
-  // §21: pass-through advisory for distress / pii_share signals
   if (signal && signal.signal_type === 'distress') {
     userParts.push('');
     userParts.push('ADVISORY: the student\'s message contains distress language. Respond with extra warmth and gently suggest talking to a trusted adult. Do not minimize.');
@@ -6836,6 +6840,16 @@ async function handleMyspaceChat(payload) {
       reply = modCheck.replacement;
     }
 
+    // Voice gate (reply-judge.js — §15 banned phrases). Soft gate: log
+    // only, don't replace — myspace chat is interactive and the kid can
+    // ask follow-ups, so a single ungushy reply isn't worth a UI swap.
+    try {
+      const voiceVerdict = replyJudge.judgeReply(reply, { surface: 'myspace' });
+      if (!voiceVerdict.ok) {
+        console.log('[reply-judge] surface=myspace verdict=reject failedChecks=' + voiceVerdict.failedChecks.join(',') + ' reasons=' + voiceVerdict.reasons.join('; '));
+      }
+    } catch (_) {}
+
     return ok({ reply: reply });
   } catch (err) {
     console.error('[myspaceChat] error:', err && (err.message || err));
@@ -6846,9 +6860,6 @@ async function handleMyspaceChat(payload) {
 // =============================================================
 // §21 Safety event logger
 // =============================================================
-// Append-only write to staar-safety-events. Never blocks the main reply
-// — if logging fails, the safety reply still goes out.
-
 const SAFETY_EVENTS_TABLE = process.env.SAFETY_EVENTS_TABLE || 'staar-safety-events';
 
 async function logSafetyEvent(evt) {

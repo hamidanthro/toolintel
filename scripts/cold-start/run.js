@@ -46,6 +46,13 @@ const { generateOne, QUESTION_TYPE_PROMPTS } = require('./generators');
 const { gradesForState, ALL_STATE_SLUGS } = require('./states-grades');
 const { validateStateSpecificity } = require('./state-guardrail');
 const { verifyMath } = require('./verifier');
+// Import the judge module so we can read its per-process stats counter
+// and write it into the per-sweep run log. JudgeRejectedTwiceError is
+// also re-exported here so we can distinguish a "needs review" bucket
+// (judge rejected twice = real quality concern) from generic errors
+// (network, parsing, unknown model output = retry-and-move-on).
+const judge = require('./judge');
+const { JudgeRejectedTwiceError, JudgeBudgetExceededError } = judge;
 
 // approx tokens per generation (system prompt + JSON output)
 const TOKENS_MATH = 700;
@@ -98,6 +105,10 @@ async function fillBucket(bucket, target, opts) {
 
   console.log(`\n  ${pk}  (have ${existingActive.length}, need ${need})`);
   let generated = 0, saved = 0, validationFails = 0, stateRejects = 0, verifyRejects = 0, dedupSkips = 0, errors = 0;
+  // Distinguish judge-rejected-twice (real quality signal — bucket needs
+  // manual review) from generic errors (network / parsing / SDK noise).
+  // Tracked separately so the final summary flags "needs review" buckets.
+  let judgeRejectedTwice = 0;
   let tokensUsed = 0;
 
   // Sequential within bucket; concurrency is across buckets (handled in main loop)
@@ -196,12 +207,25 @@ async function fillBucket(bucket, target, opts) {
       newEmbeddings.push(embedding);
 
     } catch (err) {
-      errors++;
-      console.error(`\n    error: ${err.message}`);
+      if (err instanceof JudgeRejectedTwiceError) {
+        // The model produced TWO consecutive rejected drafts on the same
+        // bucket — that's a quality signal worth a hand-look, not a
+        // network glitch. Tracked separately from generic errors.
+        judgeRejectedTwice++;
+        if (judgeRejectedTwice <= 2) console.log(`\n    [judge-rejected-twice ${bucket.state}/${bucket.grade}] ${err.message}`);
+      } else if (err instanceof JudgeBudgetExceededError) {
+        // Per-process MAX_CALLS cap hit. Stop this bucket — the next one
+        // will hit the same cap. Rethrow so main loop can decide to halt.
+        console.error(`\n    [judge-budget-exceeded] ${err.message}`);
+        throw err;
+      } else {
+        errors++;
+        console.error(`\n    error: ${err.message}`);
+      }
     }
   }
-  console.log(`\n    generated=${generated} saved=${saved} dedup=${dedupSkips} invalid=${validationFails} state-reject=${stateRejects} verify-reject=${verifyRejects} errors=${errors} tokens=${tokensUsed}`);
-  return { bucket: pk, state: bucket.state, generated, saved, dedupSkips, validationFails, stateRejects, verifyRejects, errors, tokensUsed };
+  console.log(`\n    generated=${generated} saved=${saved} dedup=${dedupSkips} invalid=${validationFails} state-reject=${stateRejects} verify-reject=${verifyRejects} judge-rejected-twice=${judgeRejectedTwice} errors=${errors} tokens=${tokensUsed}`);
+  return { bucket: pk, state: bucket.state, generated, saved, dedupSkips, validationFails, stateRejects, verifyRejects, judgeRejectedTwice, errors, tokensUsed };
 }
 
 async function main() {
@@ -332,11 +356,22 @@ async function main() {
     }
   }
 
+  // Roll up judge-rejected-twice across all buckets — surfaces "needs
+  // manual review" buckets distinctly from generic error counts.
+  const totalJudgeRejectedTwice = results.reduce((a, r) => a + (r.judgeRejectedTwice || 0), 0);
+  const needsReviewBuckets = results.filter(r => (r.judgeRejectedTwice || 0) > 0).map(r => ({
+    bucket: r.bucket,
+    judgeRejectedTwice: r.judgeRejectedTwice,
+    saved: r.saved
+  }));
+
   console.log('\n=== SUMMARY ===');
   console.log(`Buckets processed: ${results.length}${halted ? ' (HALTED early)' : ''}`);
   console.log(`Total saved:       ${results.reduce((a, r) => a + (r.saved || 0), 0)}`);
   console.log(`Total dedup skip:  ${results.reduce((a, r) => a + (r.dedupSkips || 0), 0)}`);
   console.log(`Total invalid:     ${results.reduce((a, r) => a + (r.validationFails || 0), 0)}`);
+  console.log(`Total verify-reject: ${results.reduce((a, r) => a + (r.verifyRejects || 0), 0)}`);
+  console.log(`Judge rejected twice: ${totalJudgeRejectedTwice}${needsReviewBuckets.length ? ` (${needsReviewBuckets.length} buckets — see "needs review" list below)` : ''}`);
   console.log(`Total errors:      ${results.reduce((a, r) => a + (r.errors || 0), 0)}`);
   console.log(`Total tokens:      ${totalTokens.toLocaleString()}`);
   console.log(`Approx spend:      $${(totalTokens * COST_PER_TOKEN).toFixed(3)}`);
@@ -344,11 +379,34 @@ async function main() {
     console.log(`Resume hint:       --resume-from ${resumeState}`);
   }
 
-  // Persist run log
+  // Judge-specific roll-up (from judge.stats module-scope counter)
+  if (judge.stats.calls > 0) {
+    const passRate = ((judge.stats.passes / judge.stats.calls) * 100).toFixed(1);
+    console.log(`\n=== JUDGE ===`);
+    console.log(`Judge calls:       ${judge.stats.calls}`);
+    console.log(`  passes:          ${judge.stats.passes} (${passRate}%)`);
+    console.log(`  rejects:         ${judge.stats.rejects}`);
+    console.log(`  tokens in/out:   ${judge.stats.totalTokensIn.toLocaleString()} / ${judge.stats.totalTokensOut.toLocaleString()}`);
+  }
+
+  if (needsReviewBuckets.length) {
+    console.log('\n=== NEEDS REVIEW (judge rejected twice on these buckets) ===');
+    needsReviewBuckets.forEach(b => console.log(`  ${b.bucket}  rejected=${b.judgeRejectedTwice}  saved=${b.saved}`));
+  }
+
+  // Persist run log including the judge-stats snapshot. Adds these fields
+  // on top of the existing { args, results } shape so any older readers
+  // still work.
   const logDir = path.join(__dirname, 'logs');
   fs.mkdirSync(logDir, { recursive: true });
   const logFile = path.join(logDir, `run-${Date.now()}.json`);
-  fs.writeFileSync(logFile, JSON.stringify({ args, results }, null, 2));
+  fs.writeFileSync(logFile, JSON.stringify({
+    args,
+    results,
+    judgeStats: { ...judge.stats },
+    needsReviewBuckets,
+    totalJudgeRejectedTwice
+  }, null, 2));
   console.log(`\nLog: ${logFile}`);
 }
 

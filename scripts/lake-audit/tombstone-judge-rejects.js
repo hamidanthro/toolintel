@@ -176,26 +176,40 @@ const counts = {
       continue;
     }
 
-    // 2. Apply: status='active' → 'broken' with ConditionExpression guard
+    // 2. Apply: status='active' → 'broken' with ConditionExpression guard.
+    //    Also stamp _judgedAt + _judgeVersion from the audit row so a
+    //    future re-audit can selectively re-judge only rows judged by
+    //    an older model (e.g. when judge SYSTEM_PROMPT gains a new
+    //    failure mode). Both fields are optional — older audit JSONs
+    //    don't have them; we just skip the SET if missing.
+    const hasStamps = c.judgedAt != null && c.judgeVersion != null;
+    const updateExpr = hasStamps
+      ? 'SET #st = :broken, tombstonedAt = :ts, tombstoneReason = :r, #jaid = :aid, #jdat = :jdat, #jver = :jver'
+      : 'SET #st = :broken, tombstonedAt = :ts, tombstoneReason = :r, #jaid = :aid';
+    const attrNames = hasStamps
+      ? { '#st': 'status', '#jaid': '_judgeAuditId', '#jdat': '_judgedAt', '#jver': '_judgeVersion' }
+      : { '#st': 'status', '#jaid': '_judgeAuditId' };
+    const attrValues = {
+      ':broken': 'broken',
+      ':active': 'active',
+      ':ts': tombstonedAt,
+      ':r': reason,
+      ':aid': auditId,
+      ...(hasStamps ? { ':jdat': c.judgedAt, ':jver': c.judgeVersion } : {})
+    };
     try {
       await withRetry('UpdateItem', () =>
         ddb.send(new UpdateCommand({
           TableName: TABLE,
           Key: key,
-          UpdateExpression: 'SET #st = :broken, tombstonedAt = :ts, tombstoneReason = :r, #jaid = :aid',
+          UpdateExpression: updateExpr,
           ConditionExpression: '#st = :active',
-          ExpressionAttributeNames: { '#st': 'status', '#jaid': '_judgeAuditId' },
-          ExpressionAttributeValues: {
-            ':broken': 'broken',
-            ':active': 'active',
-            ':ts': tombstonedAt,
-            ':r': reason,
-            ':aid': auditId
-          }
+          ExpressionAttributeNames: attrNames,
+          ExpressionAttributeValues: attrValues
         })));
       counts.updated++;
-      results.push({ ...key, action: 'UPDATED', failedChecks: c.failedChecks, type: live.type || c.type, tombstoneReason: reason, tombstonedAt });
-      console.log(`[tombstone] contentId=${c.contentId} state=${c.state} type=${live.type || c.type || 'undef'} failedChecks=${c.failedChecks.join(',')} action=UPDATED reason=${reason}`);
+      results.push({ ...key, action: 'UPDATED', failedChecks: c.failedChecks, type: live.type || c.type, tombstoneReason: reason, tombstonedAt, judgedAt: c.judgedAt, judgeVersion: c.judgeVersion });
+      console.log(`[tombstone] contentId=${c.contentId} state=${c.state} type=${live.type || c.type || 'undef'} failedChecks=${c.failedChecks.join(',')} action=UPDATED reason=${reason}${hasStamps ? ` judgedAt=${c.judgedAt} judgeVersion=${c.judgeVersion}` : ''}`);
     } catch (err) {
       if (err.name === 'ConditionalCheckFailedException') {
         counts.skippedNotActive++;

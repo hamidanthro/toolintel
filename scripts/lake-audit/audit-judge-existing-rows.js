@@ -87,7 +87,10 @@ const ESTIMATED_BUDGET_HEADROOM = 200000; // generous; this script tracks its ow
 process.env.COLD_START_JUDGE_MAX_CALLS = String(ESTIMATED_BUDGET_HEADROOM);
 
 // Now require the cold-start judge — it reads the env var at module load.
-const { judgeQuestion } = require(path.resolve(__dirname, '..', 'cold-start', 'judge.js'));
+// JUDGE_MODEL is captured so each reject record can identify exactly which
+// model/version produced the verdict. Future re-judges of the same row
+// can compare against this to decide whether to re-run.
+const { judgeQuestion, JUDGE_MODEL } = require(path.resolve(__dirname, '..', 'cold-start', 'judge.js'));
 
 // ---- DynamoDB client ----
 const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({
@@ -308,7 +311,12 @@ function costSoFar() {
         correctIndex: normalized.question.correctIndex,
         answer: row.answer != null ? String(row.answer) : null,
         failedChecks: verdict.failedChecks,
-        reasons: verdict.reasons
+        reasons: verdict.reasons,
+        // Per-row judge stamps so a future re-judge can selectively re-run
+        // only rows judged by an older model. Downstream tombstone scripts
+        // propagate these as `_judgedAt` + `_judgeVersion` on each DDB row.
+        judgedAt: Date.now(),
+        judgeVersion: JUDGE_MODEL
       });
       console.log(`[judge-audit] contentId=${row.contentId} state=${normalized.stateSlug} subject=${normalized.subject} grade=${normalized.grade} verdict=reject failedChecks=${verdict.failedChecks.join(',')}`);
     }
