@@ -25796,3 +25796,70 @@ body.legal-page .fw-prose-section table td {
 .compliance-footer .compliance-sep {
   color: rgba(255, 255, 255, 0.2);
 }
+
+/* ==========================================================================
+   §48 "How it works" section polish (May 12) — subtractive paint pass.
+   Worksheets ribbon + earn-banner CTA removed at the markup layer; this
+   block softens the mockup's secondary gold accents and demotes the
+   guest "Sign in" nav button globally so all marketing surfaces share
+   the same nav-button rhythm.
+   ========================================================================== */
+
+/* Guest "Sign in" nav button — globally hairline-outlined, not gold.
+   Rendered by js/auth.js as <button class="btn btn-primary user-signin">.
+   This override targets only the user-signin variant so other btn-primary
+   CTAs (Practice now, Start challenge, etc.) keep their gold fill. */
+.user-signin.btn-primary {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.7);
+  box-shadow: none;
+  font-weight: 500;
+}
+.user-signin.btn-primary:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+/* Mockup tag (GRADE 3 · MATH) — drop pill chrome, become plain
+   uppercase amber/70 micro-text aligned with eyebrows elsewhere. */
+.session-preview .mockup-tag,
+body.home-page .session-preview .mockup-tag {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  font-weight: 500;
+  color: rgba(252, 211, 77, 0.7);
+}
+
+/* +15 cents reward in the mockup footer — gold text → muted chip with
+   a small gold coin (same shared chip pattern as +50 pts on Home and
+   per-trophy +N¢ on /trophies). */
+.session-preview .mockup-points {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 12px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.session-preview .mockup-points .points-icon { color: rgba(252, 211, 77, 0.8); }
+.session-preview .mockup-streak {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* Re-balance section padding now that the worksheets ribbon is gone and
+   the earn-banner is removed — give the mockup + copy room to breathe
+   without floating in dead space. */
+.session-preview {
+  padding-top: 64px;
+  padding-bottom: 56px;
+}

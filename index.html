@@ -128,7 +128,7 @@
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" />
 
-  <link rel="stylesheet" href="css/styles.css?v=20260512u" />
+  <link rel="stylesheet" href="css/styles.css?v=20260512x" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -228,16 +228,12 @@
     <div class="hero-bottom-fade" aria-hidden="true"></div>
   </section>
 
-  <!-- §16 SEO entry — small ribbon linking to /free-worksheets/. Hidden
-       for signed-in users (they're already in the funnel; this is for
-       parents arriving from search). Toggled by showDashboard(). -->
-  <aside class="home-fw-ribbon" id="home-fw-ribbon" hidden>
-    <a class="home-fw-ribbon-link" href="/free-worksheets/index.html">
-      <span class="home-fw-ribbon-strong">100,000+ free STAAR math worksheets</span>
-      <span>· K through Algebra I · TEKS-aligned · no sign-up</span>
-      <span class="home-fw-ribbon-arrow" aria-hidden="true">→</span>
-    </a>
-  </aside>
+  <!-- §48 polish: SEO worksheets ribbon removed from this surface — it
+       was a credibility pill from another conversation interrupting the
+       "Here's how it works" narrative between nav and eyebrow. The
+       /free-worksheets/ route + footer links remain; only the home-page
+       ribbon is gone. -->
+  <aside class="home-fw-ribbon" id="home-fw-ribbon" hidden style="display:none !important;"></aside>
 
   <!-- §11 focus pass: the math-question mockup was previously floating
        inside the hero, competing with the headline. Moved here as an
@@ -509,34 +505,10 @@
     </div>
   </section>
 
-  <section class="rewards-section">
-    <div class="rewards-callout" id="earn-banner" hidden>
-      <div class="rewards-icon earn-banner-icon" aria-hidden="true">
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-          <defs>
-            <linearGradient id="rewardsStarGrad" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
-              <stop stop-color="#fde68a"/>
-              <stop offset="0.5" stop-color="#fbbf24"/>
-              <stop offset="1" stop-color="#f59e0b"/>
-            </linearGradient>
-          </defs>
-          <path d="M16 4L19.5 12.5L28 13.5L21.5 19.5L23.5 28L16 23.5L8.5 28L10.5 19.5L4 13.5L12.5 12.5L16 4Z"
-                fill="url(#rewardsStarGrad)"
-                stroke="rgba(251, 191, 36, 0.4)"
-                stroke-width="0.5"
-                stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <div class="rewards-content earn-banner-body">
-        <div class="rewards-title earn-banner-title">Practice &rarr; Earn &rarr; Unlock real toys</div>
-        <div class="rewards-subtitle earn-banner-sub">Sign in to earn cents for every correct answer, build daily streaks, and redeem real toys we ship anywhere in the U.S.</div>
-      </div>
-      <button type="button" class="earn-banner-cta" id="earn-banner-btn" aria-label="Sign in to start earning">
-        Sign in to start earning
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-    </div>
-  </section>
+  <!-- §48 polish: gold "Sign in to start earning" CTA card removed from
+       this surface (overlapped the product mockup; nav Sign in button is
+       the canonical guest-conversion affordance). The dedicated CTA
+       section further down the page handles conversion. -->
 
   <!-- §39: removed duplicate .mobile-hero-star — top-left wordmark
        is the brand mark; one logo per screen. Hero copy preserved. -->
@@ -821,19 +793,11 @@
           ? 'Your grade and beyond'
           : 'Choose your grade';
       }
-      // Earn-points banner only for guests.
-      const banner = document.getElementById('earn-banner');
-      if (banner) {
-        const isGuest = !(Auth.currentUser && Auth.currentUser());
-        banner.hidden = !isGuest;
-        if (isGuest) {
-          const btn = document.getElementById('earn-banner-btn');
-          if (btn && !btn._wired) {
-            btn._wired = true;
-            btn.addEventListener('click', () => Auth.showLogin && Auth.showLogin());
-          }
-        }
-      }
+      // §48 polish: earn-banner CTA removed from this section. The nav
+      // "Sign in" button is the canonical sign-in affordance; a second
+      // gold CTA mid-section was crashing into the product mockup.
+      // The dedicated CTA section lower on the page does the conversion
+      // job — this surface explains, that surface converts.
       grids.forEach(grid => {
         grid.innerHTML = '';
         const isDashboard = grid.id === 'grade-grid';
