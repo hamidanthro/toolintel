@@ -24378,11 +24378,17 @@ body.myspace-page .ms-icon-btn:hover {
 /* Hide the old dismiss icon — briefing has no "x"; refresh stays */
 body.myspace-page #ms-briefing-dismiss { display: none; }
 
-/* AI Buddy card — dark panel, hairline border */
+/* AI Buddy card — empty state has NO chrome (greeting/chips/composer
+   float directly on the page, ChatGPT/Perplexity-style). Only the active
+   thread state keeps the dark panel + hairline border. §43 May 12. */
 body.myspace-page .ms-card {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+body.myspace-page.ms-chat-active .ms-card {
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: none;
 }
 body.myspace-page .ms-card-eyebrow {
   color: rgba(252, 211, 77, 0.6);
@@ -24544,16 +24550,20 @@ body.myspace-page .ms-task-delete:hover {
    ========================================================================== */
 
 /* The chat surface owns the AI Buddy region. Two states — empty and
-   active — share the same composer and toggle layout via a body class. */
+   active — share the same composer and toggle layout via a body class.
+   §43 May 12: empty state strips card padding so the greeting/chips/
+   composer breathe with the page. Active state keeps padding for the
+   thread container. */
 body.myspace-page .ms-card {
   display: flex;
   flex-direction: column;
   min-height: 480px;
-  padding: 18px 22px 20px;
+  padding: 0;
   position: relative;
 }
 body.myspace-page.ms-chat-active .ms-card {
   min-height: 70vh;
+  padding: 18px 22px 20px;
 }
 /* In active chat mode, the briefing + quick-win + footer stats collapse
    to reduce visual noise; a small back-to-dashboard affordance appears
@@ -24567,45 +24577,59 @@ body.myspace-page.ms-chat-active .ms-greeting-block {
   display: none;
 }
 
-/* Empty state — centered greeting + suggested chips + composer.
-   Visible only when there is no active thread / no messages. */
+/* Empty state — centered greeting + chips + composer; no card around it
+   (§43 May 12). Vertical rhythm uses per-element margins instead of a
+   flat gap so the spec spacing (sparkle→greeting 12, →sub 8, →chips 32,
+   →composer 40) is preserved without the elements feeling cramped. */
 .ms-chat-empty {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   flex: 1;
-  gap: 14px;
   padding: 24px 12px;
   text-align: center;
 }
 body.myspace-page.ms-chat-active .ms-chat-empty { display: none; }
 .ms-chat-empty-sparkle {
   color: #fbbf24;
-  margin-bottom: 4px;
+  margin: 12px 0 0;
 }
 .ms-chat-empty-greeting {
   font-size: 1.4rem;
   font-weight: 600;
   color: #ffffff;
   letter-spacing: -0.01em;
-  margin: 0;
+  margin: 12px 0 0;
 }
 .ms-chat-empty-sub {
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.45);
-  margin: 0 0 8px;
-}
-.ms-chat-empty-composer {
-  width: 100%;
-  max-width: 720px;
+  margin: 8px 0 0;
 }
 .ms-chat-suggestions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   justify-content: center;
-  margin-top: 8px;
+  margin: 32px auto 0;
+  width: 100%;
+  max-width: 680px;
+}
+/* Composer + AI disclosure: matched 680px max-width on the empty state
+   so chips and composer share a visual baseline */
+body.myspace-page:not(.ms-chat-active) .ms-composer-wrap {
+  width: 100%;
+  max-width: 680px;
+  margin: 40px auto 0;
+}
+body.myspace-page:not(.ms-chat-active) .ms-ai-disclosure {
+  max-width: 680px;
+  margin: 12px auto 0;
+  padding-left: 8px;
+  padding-right: 8px;
+  justify-content: center;
+  text-align: center;
 }
 .ms-chat-suggest-chip {
   background: rgba(255, 255, 255, 0.03);
