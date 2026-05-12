@@ -1,16 +1,22 @@
 #!/usr/bin/env bash
-# deploy.sh — package and ship lambda/tutor-build/ to AWS Lambda staar-tutor.
+# deploy.sh — package and ship a lambda source directory to AWS.
+#
+# Default target is staar-tutor (the kid-facing tutor). Other supported
+# functions: staar-retention-sweeper, staar-safety-alerter, staar-pool-topup,
+# staar-quality-patrol. Source-dir / handler / parity-check mapping lives in
+# the FUNCTION TABLE block below; add a row to extend.
 #
 # Usage:
-#   ./deploy.sh                  # deploy default function (staar-tutor)
-#   ./deploy.sh staar-tutor      # explicit function name
-#   ./deploy.sh --yes            # skip the interactive y/N confirm
-#   ./deploy.sh --allow-dirty    # deploy even if tutor-build/ has uncommitted changes (DANGEROUS)
+#   ./deploy.sh                          # deploy default function (staar-tutor)
+#   ./deploy.sh staar-tutor              # explicit function name
+#   ./deploy.sh staar-retention-sweeper  # deploy a different lambda
+#   ./deploy.sh --yes                    # skip the interactive y/N confirm
+#   ./deploy.sh --allow-dirty            # deploy even if source dir has uncommitted changes (DANGEROUS)
 #
 # Order of guards (each phase aborts on failure with a distinct exit code):
 #   1  PRECHECK         — aws/zip/jq/shasum installed, AWS creds resolve
-#   2  GIT CLEAN        — lambda/tutor-build/ has no uncommitted changes (override: --allow-dirty)
-#   3  PARITY CHECK     — scripts/check-tutor-parity.sh confirms tutor.js ↔ tutor-build/tutor.js parity
+#   2  GIT CLEAN        — source dir has no uncommitted changes (override: --allow-dirty)
+#   3  PARITY CHECK     — tutor only: scripts/check-tutor-parity.sh confirms tutor.js ↔ tutor-build/tutor.js. Skipped for other functions.
 #   4  FETCH FUNCTION   — capture deployed Handler/Runtime/CodeSha256/LastModified, validate Handler match
 #   5  BACKUP           — download deployed code zip to backups/ before any change
 #   6  PACKAGE          — npm install --omit=dev, build new zip in build/, hash it
@@ -67,7 +73,54 @@ for arg in "$@"; do
   esac
 done
 
-DEPLOY_SOURCE="$REPO_ROOT/lambda/tutor-build"
+# --------------------------------------------------------------
+# FUNCTION TABLE — per-function source dir, expected handler, parity check
+# --------------------------------------------------------------
+# To add a new lambda: append a case here. The PARITY_CHECK var is the
+# command to run; empty string means skip parity (single-source lambdas).
+case "$FN" in
+  staar-tutor)
+    DEPLOY_SOURCE="$REPO_ROOT/lambda/tutor-build"
+    EXPECTED_HANDLER="tutor.handler"
+    PARITY_CHECK="$REPO_ROOT/scripts/check-tutor-parity.sh"
+    ;;
+  staar-retention-sweeper)
+    DEPLOY_SOURCE="$REPO_ROOT/lambda/retention-sweeper"
+    EXPECTED_HANDLER="index.handler"
+    PARITY_CHECK=""
+    ;;
+  staar-safety-alerter)
+    DEPLOY_SOURCE="$REPO_ROOT/lambda/safety-alerter"
+    EXPECTED_HANDLER="index.handler"
+    PARITY_CHECK=""
+    ;;
+  staar-pool-topup)
+    DEPLOY_SOURCE="$REPO_ROOT/lambda/pool-topup"
+    EXPECTED_HANDLER="index.handler"
+    PARITY_CHECK=""
+    ;;
+  staar-quality-patrol)
+    DEPLOY_SOURCE="$REPO_ROOT/lambda/quality-patrol"
+    EXPECTED_HANDLER="index.handler"
+    PARITY_CHECK=""
+    ;;
+  *)
+    echo "Unknown function: $FN" >&2
+    echo "Add a row to the FUNCTION TABLE in deploy.sh, or pick one of:" >&2
+    echo "  staar-tutor staar-retention-sweeper staar-safety-alerter" >&2
+    echo "  staar-pool-topup staar-quality-patrol" >&2
+    exit 1
+    ;;
+esac
+
+if [ ! -d "$DEPLOY_SOURCE" ]; then
+  echo "Source dir does not exist: $DEPLOY_SOURCE" >&2
+  exit 1
+fi
+
+# Relative path for `git status` checks (must be repo-relative, not absolute)
+DEPLOY_SOURCE_REL="${DEPLOY_SOURCE#$REPO_ROOT/}"
+
 BACKUP_DIR="$REPO_ROOT/backups"
 BUILD_DIR="$REPO_ROOT/build"
 TIMESTAMP="$(date -u +%Y%m%dT%H%M%SZ)"
@@ -105,31 +158,35 @@ echo "  Target function: $FN"
 # --------------------------------------------------------------
 # [2/9] GIT CLEAN
 # --------------------------------------------------------------
-phase "2/9 GIT CLEAN" "lambda/tutor-build/ has no uncommitted changes"
+phase "2/9 GIT CLEAN" "$DEPLOY_SOURCE_REL has no uncommitted changes"
 
-DIRTY="$(git -C "$REPO_ROOT" status --porcelain lambda/tutor-build/ || true)"
+DIRTY="$(git -C "$REPO_ROOT" status --porcelain "$DEPLOY_SOURCE_REL" || true)"
 if [ -n "$DIRTY" ]; then
   if [ "$ALLOW_DIRTY" -eq 1 ]; then
-    warn "  ⚠  --allow-dirty: deploying with uncommitted changes in tutor-build/"
+    warn "  ⚠  --allow-dirty: deploying with uncommitted changes in $DEPLOY_SOURCE_REL"
     warn "$DIRTY" | sed 's/^/    /'
   else
-    fail "  ❌ Uncommitted changes in lambda/tutor-build/. Commit first or pass --allow-dirty.
+    fail "  ❌ Uncommitted changes in $DEPLOY_SOURCE_REL. Commit first or pass --allow-dirty.
 
 $(echo "$DIRTY" | sed 's/^/    /')" 2
   fi
 else
-  echo "  ✓ tutor-build/ is clean"
+  echo "  ✓ $DEPLOY_SOURCE_REL is clean"
 fi
 
 # --------------------------------------------------------------
-# [3/9] PARITY CHECK
+# [3/9] PARITY CHECK (tutor only; other functions have a single source)
 # --------------------------------------------------------------
-phase "3/9 PARITY CHECK" "tutor.js ↔ tutor-build/tutor.js"
+phase "3/9 PARITY CHECK" "${PARITY_CHECK:-(none — single-source function)}"
 
-if [ ! -x "$REPO_ROOT/scripts/check-tutor-parity.sh" ]; then
-  fail "  ❌ scripts/check-tutor-parity.sh not found or not executable" 3
+if [ -z "$PARITY_CHECK" ]; then
+  echo "  ✓ skipping — $FN has no parity check (single source dir)"
+else
+  if [ ! -x "$PARITY_CHECK" ]; then
+    fail "  ❌ Parity script not found or not executable: $PARITY_CHECK" 3
+  fi
+  "$PARITY_CHECK" || fail "  ❌ Parity check failed (see [parity] lines above)" 3
 fi
-"$REPO_ROOT/scripts/check-tutor-parity.sh" || fail "  ❌ Parity check failed (see [parity] lines above)" 3
 
 # --------------------------------------------------------------
 # [4/9] FETCH FUNCTION INFO
@@ -150,7 +207,6 @@ echo "  Runtime:      $DEPLOYED_RUNTIME"
 echo "  Last modified: $DEPLOYED_LAST"
 echo "  CodeSha256:   $DEPLOYED_SHA"
 
-EXPECTED_HANDLER="tutor.handler"
 if [ "$DEPLOYED_HANDLER" != "$EXPECTED_HANDLER" ]; then
   fail "  ❌ Handler mismatch: deployed=$DEPLOYED_HANDLER expected=$EXPECTED_HANDLER. Aborting." 4
 fi

@@ -10,7 +10,8 @@
  *   - never calls anything that mutates the table
  *
  * Sequential: one judge call at a time, no Promise.all parallelism.
- * Predictable cost. ~$0.0001 per row at gpt-4o-mini.
+ * Predictable cost. ~$0.002 per row at gpt-4o (the current JUDGE_MODEL
+ * since the §27 model bump). 1000 rows ≈ $2; 10000 rows ≈ $20.
  *
  * Resumable: writes scripts/lake-audit/output/judge-audit-state.json
  * every 100 rows. On crash, re-running picks up where it left off.
@@ -209,8 +210,13 @@ function persistState() {
 
 function bump(obj, key) { obj[key] = (obj[key] || 0) + 1; }
 
+// Per-call cost at the current JUDGE_MODEL. §27 bumped it from
+// gpt-4o-mini ($0.0001/call) to gpt-4o ($0.002/call). If JUDGE_MODEL
+// changes again, update this constant — the audit prints it at the
+// end as an estimate, not an invoice.
+const COST_PER_CALL_USD = 0.002;
 function costSoFar() {
-  return (state.counts.totalJudged * 0.0001).toFixed(4);
+  return (state.counts.totalJudged * COST_PER_CALL_USD).toFixed(4);
 }
 
 // ---- main ----

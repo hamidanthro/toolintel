@@ -15216,6 +15216,23 @@ body.is-standalone .mobile-tab-bar { border-top-width: 1.5px; }
   /* Reserve a little space at the bottom of body so the sticky button
      never crowds the very last bit of content. */
   body.practice-page:not(.q-answered) { padding-bottom: 80px; }
+
+  /* Lift bottom-anchored toasts above the sticky-submit button on phone.
+     STAARFx.toast (.toast) fires on streak/daily-goal/win events. Default
+     bottom:28px sits directly OVER the sticky 'Check answer' button at
+     bottom:12px+48px height — kid can't tap submit while a toast is up
+     and z-index 1100 > 6 makes the toast win. Move it above the button. */
+  body.practice-page .toast {
+    bottom: 88px;
+  }
+  /* Achievement toast: pinned top-right by default at 360px max-width.
+     On very narrow phones (<400px), 360 + 32px gutter pushes off screen.
+     Constrain width so it always fits. */
+  .achievement-toast {
+    max-width: calc(100vw - 32px);
+    right: 12px;
+    top: 60px;
+  }
 }
 
 /* ============================================================
