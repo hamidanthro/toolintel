@@ -39,13 +39,22 @@
   const toastEl     = document.getElementById('gameToast');
 
   // State
+  // Match-length timer for sessions. 3 minutes per spec.
+  const GAME_DURATION_MS = 3 * 60 * 1000;
+
   let puzzle = null;
+  let bucket = [];           // all puzzles in this grade band, cached
+  let puzzleIdx = 0;         // current puzzle index in bucket
   let letters = [];          // randomized order for rendering
-  let found = new Set();     // uppercase strings of words found
+  let found = new Set();     // uppercase strings of words found IN CURRENT puzzle
+  let totalFound = 0;        // across all puzzles played this session
   let path = [];             // [{idx, letter}] currently drag-selected
   let pointerDown = false;
   let score = 0;
   let startedAt = null;
+  let endsAt = null;
+  let timerTick = null;
+  let isOver = false;
   let lastSubmitAt = 0;
   let opponentsPollTimer = null;
 
@@ -112,38 +121,91 @@
       return;
     }
     const byGrade = (bank && bank.byGrade) || {};
-    let bucket = byGrade[grade];
+    let b = byGrade[grade];
     // Fallback: if no puzzles for this exact grade, walk up/down nearest.
-    if (!bucket || bucket.length === 0) {
+    if (!b || b.length === 0) {
       const allKeys = Object.keys(byGrade);
       const fallback = allKeys.find(k => (byGrade[k] || []).length > 0);
-      bucket = byGrade[fallback] || [];
+      b = byGrade[fallback] || [];
     }
-    if (!bucket.length) {
+    if (!b.length) {
       statusEl.textContent = 'No puzzles available for your grade yet.';
       return;
     }
-    const idx = dayOfYear() % bucket.length;
-    puzzle = bucket[idx];
-    // Normalize words to uppercase + dedupe
-    puzzle.words = Array.from(new Set((puzzle.words || []).map(w => w.toUpperCase()))).sort((a, b) => a.length - b.length || a.localeCompare(b));
-    statusEl.hidden = true;
-    headerStat.textContent = `${puzzle.words.length} words hidden · ${grade.replace('grade-', 'Grade ').replace('Grade k', 'Kindergarten')}`;
-    letters = (puzzle.letters || []).slice();
-    shuffleLetters(false);
-    renderWords();
-    renderWheel();
+    bucket = b;
+    puzzleIdx = dayOfYear() % bucket.length;
+    loadPuzzleAtIdx(puzzleIdx, grade);
     startedAt = Date.now();
+    endsAt = startedAt + GAME_DURATION_MS;
+    isOver = false;
+    if (timerTick) clearInterval(timerTick);
+    timerTick = setInterval(tickTimer, 200);
     startOpponentsPoll();
   }
 
-  function shuffleLetters(animate) {
-    // Fisher-Yates
-    for (let i = letters.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [letters[i], letters[j]] = [letters[j], letters[i]];
+  function loadPuzzleAtIdx(idx, grade) {
+    puzzle = bucket[idx % bucket.length];
+    // Normalize words to uppercase + dedupe
+    puzzle.words = Array.from(new Set((puzzle.words || []).map(w => w.toUpperCase()))).sort((a, b) => a.length - b.length || a.localeCompare(b));
+    statusEl.hidden = true;
+    const gradeLabel = grade ? grade.replace('grade-', 'Grade ').replace('Grade k', 'Kindergarten') : '';
+    headerStat.innerHTML = `<span id="wcTimer" class="wc-timer">3:00</span> · ${puzzle.words.length} words ${gradeLabel ? '· ' + gradeLabel : ''}`;
+    letters = (puzzle.letters || []).slice();
+    found = new Set();
+    path = [];
+    shuffleLetters(false);
+    renderWords();
+    renderWheel();
+  }
+
+  function tickTimer() {
+    if (isOver || !endsAt) return;
+    const rem = Math.max(0, endsAt - Date.now());
+    const sec = Math.ceil(rem / 1000);
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    const timerEl = document.getElementById('wcTimer');
+    if (timerEl) {
+      timerEl.textContent = `${m}:${String(s).padStart(2, '0')}`;
+      if (sec <= 30) timerEl.classList.add('is-danger');
+      else timerEl.classList.remove('is-danger');
     }
-    if (animate) renderWheel();
+    if (rem <= 0) {
+      isOver = true;
+      if (timerTick) clearInterval(timerTick);
+      showComplete();
+    }
+  }
+
+  // Shuffle now ADVANCES to the next puzzle in the bucket — new letters,
+  // new word list. Score carries over. Found-words list resets per puzzle.
+  function shuffleLetters(animate) {
+    if (!bucket || bucket.length === 0) {
+      // Initial render of current letters — just Fisher-Yates the array
+      for (let i = letters.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [letters[i], letters[j]] = [letters[j], letters[i]];
+      }
+      if (animate) renderWheel();
+      return;
+    }
+    if (!animate) {
+      // First render — just shuffle in place
+      for (let i = letters.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [letters[i], letters[j]] = [letters[j], letters[i]];
+      }
+      return;
+    }
+    // User-triggered shuffle → next puzzle (new letters, new words).
+    if (isOver) return;
+    // Carry forward the count of words found in the current puzzle before
+    // the load wipes `found`. Score already accumulated as kid found them.
+    totalFound += found.size;
+    puzzleIdx = (puzzleIdx + 1) % bucket.length;
+    const me = window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser();
+    loadPuzzleAtIdx(puzzleIdx, me && me.grade);
+    toast('New puzzle — new letters!', 1200);
   }
 
   // ---------- discovered-words display ----------
@@ -278,27 +340,49 @@
     return best;
   }
 
+  // Each tile can appear up to twice in a single word path (so words
+  // like BATTLE, LITTLE, KEEPER work on a 6-tile wheel). During an
+  // active drag, the same tile won't auto-repeat on hover (line 289
+  // logic preserved). To intentionally double a letter, kid taps the
+  // "×2" repeat button which calls repeatLastLetter().
+  const MAX_USES_PER_TILE = 2;
   function addLetterToPath(btn) {
     if (!btn) return;
     const idx = parseInt(btn.dataset.idx, 10);
-    // Don't re-add the SAME letter index. (Kids can use any letter
-    // any number of times, but the drag selects an index sequence —
-    // adding the same index twice in a row would feel like cheating.
-    // BUT: the path can backtrack: if you hover BACK onto the
-    // second-to-last letter, pop the last one. Wordscapes behavior.)
+    // Don't re-add the SAME letter index when drag hovers over it again
     if (path.length > 0 && path[path.length - 1].idx === idx) return;
+    // Backtrack: if going BACK onto second-to-last index, pop last
     if (path.length >= 2 && path[path.length - 2].idx === idx) {
-      // Backtrack: pop the last
       const popped = path.pop();
       const popBtn = wheelEl.querySelector(`.game-letter[data-idx="${popped.idx}"]`);
-      if (popBtn) popBtn.classList.remove('is-selected');
+      if (popBtn) {
+        const remaining = path.filter(p => p.idx === popped.idx).length;
+        if (remaining === 0) popBtn.classList.remove('is-selected');
+      }
       redrawPath();
       updateSpellPreview();
       return;
     }
-    if (path.some(p => p.idx === idx)) return; // already in path elsewhere
+    // Cap re-uses at MAX_USES_PER_TILE (drag only — explicit ×2 path below)
+    const usesOfIdx = path.filter(p => p.idx === idx).length;
+    if (usesOfIdx >= MAX_USES_PER_TILE) return;
     path.push({ idx, letter: btn.dataset.letter });
     btn.classList.add('is-selected');
+    redrawPath();
+    updateSpellPreview();
+  }
+
+  // Explicitly double the most-recently-added letter. Used for words
+  // with adjacent doubled letters (BATTLE: B-A-T-[×2]-L-E).
+  function repeatLastLetter() {
+    if (path.length === 0) return;
+    const last = path[path.length - 1];
+    const usesOfIdx = path.filter(p => p.idx === last.idx).length;
+    if (usesOfIdx >= MAX_USES_PER_TILE) {
+      toast(`That letter is already doubled`, 900);
+      return;
+    }
+    path.push({ idx: last.idx, letter: last.letter });
     redrawPath();
     updateSpellPreview();
   }
@@ -462,10 +546,15 @@
   // ---------- complete screen ----------
   function showComplete() {
     if (opponentsPollTimer) clearInterval(opponentsPollTimer);
+    if (timerTick) { clearInterval(timerTick); timerTick = null; }
+    isOver = true;
     const durationSec = Math.floor((Date.now() - startedAt) / 1000);
-    completeTitle.textContent = found.has(puzzle.prize) ? 'Prize word found!' : 'Nice run!';
+    // Add current puzzle's found-words to totalFound (only on time-up since
+    // shuffle already moves on without crediting via completion).
+    totalFound += found.size;
+    completeTitle.textContent = totalFound >= 20 ? 'Word machine! ⚡' : totalFound >= 10 ? 'Great run!' : totalFound >= 4 ? 'Nice run!' : 'Try again!';
     completeScore.textContent = String(score);
-    completeWords.textContent = `${found.size}/${puzzle.words.length}`;
+    completeWords.textContent = `${totalFound} words`;
     completeTime.textContent = fmtTime(durationSec);
     // Friend comparison
     api('getGameScores', { gameId: GAME_ID, date: todayDateKey() })
@@ -494,6 +583,8 @@
 
   // ---------- wiring ----------
   if (shuffleBtn) shuffleBtn.addEventListener('click', () => shuffleLetters(true));
+  const doubleBtn = document.getElementById('gameDouble');
+  if (doubleBtn) doubleBtn.addEventListener('click', () => repeatLastLetter());
   if (wheelEl) {
     wheelEl.addEventListener('pointerdown', onPointerDown);
     wheelEl.addEventListener('pointermove', onPointerMove);

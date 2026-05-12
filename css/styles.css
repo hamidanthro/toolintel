@@ -21456,3 +21456,46 @@ body.game-bear-cub .game-main { padding-top: 12px; }
   .bc-final-grid { grid-template-columns: 1fr; }
   .bc-final-divider { display: none; }
 }
+
+/* ============================================================
+   Word Connect — 3-min timer + ×2 double-letter button
+   ============================================================ */
+.wc-timer {
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  color: #fde68a;
+  padding: 2px 8px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(253, 224, 71, 0.35);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  margin-right: 4px;
+}
+.wc-timer.is-danger {
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.55);
+  animation: wc-timer-pulse 700ms ease-in-out infinite;
+}
+@keyframes wc-timer-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.55; }
+}
+.wc-wheel-actions {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 3;
+}
+.wc-double-btn {
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  background: linear-gradient(140deg, rgba(253, 224, 71, 0.25) 0%, rgba(251, 191, 36, 0.35) 100%);
+  border-color: rgba(253, 224, 71, 0.55);
+  color: #fde68a;
+  font-weight: 800;
+}
+.wc-double-btn:hover { filter: brightness(1.1); }

@@ -5528,8 +5528,10 @@ async function _finalizeMatch(matchId) {
   for (const p of players) {
     const opp = players.find(o => o.userId !== p.userId);
     let result = 'loss';
-    let centsAwarded = 1;
-    if (isTie) { result = 'tie'; centsAwarded = 2; }
+    // Winner-takes-all (Showdown). Loser and tie = 0; only the
+    // highest-score player earns cents.
+    let centsAwarded = 0;
+    if (isTie) { result = 'tie'; centsAwarded = 0; }
     else if ((p.score || 0) === topScore) { result = 'win'; centsAwarded = 5; }
     // Credit cents directly to balance/lifetime. Server-authoritative
     // (outcome is already verified by _maybeResolveRound's lowest-
@@ -6324,11 +6326,11 @@ async function _finalizeBattleRoyale(matchId, winnerUserId) {
     const p = ranked[i];
     const finalRank = i + 1;
     // Cents schedule (server-authoritative; respects $100 lifetime cap)
-    let centsAwarded = 1;
+    // Winner-takes-all (Battle Royale). Only rank 1 earns cents;
+    // everyone else gets 0. Keeps the stakes meaningful.
+    let centsAwarded = 0;
     let result = 'eliminated';
     if (finalRank === 1) { centsAwarded = 25; result = 'win'; }
-    else if (finalRank === 2) { centsAwarded = 5; result = 'top-3'; }
-    else if (finalRank === 3) { centsAwarded = 1; result = 'top-3'; }
 
     try {
       const ur = await ddb.send(new GetCommand({ TableName: USERS_TABLE, Key: { username: p.userId } }));
