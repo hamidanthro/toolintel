@@ -22645,3 +22645,525 @@ body.grade-page .subject-section--minimal {
     transform: none !important;
   }
 }
+
+/* ==========================================================================
+   §16 Free-worksheets pages (SEO, May 12)
+   ==========================================================================
+   Static SEO landing pages at /free-worksheets/<grade>-math.html — built
+   by scripts/build-free-worksheets.js. Inherits the §15 material system
+   (premium dark surface, subtle gradient, gold accents) so the SEO
+   pages feel like the rest of the app, not a cheap "free worksheet PDF"
+   site.
+   ========================================================================== */
+
+body.fw-page {
+  background: #060d1f;
+  color: #ffffff;
+  min-height: 100vh;
+}
+
+.fw-main {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+}
+
+.fw-article {
+  padding-top: 8px;
+}
+
+/* ---------- Hero ---------- */
+.fw-hero {
+  text-align: center;
+  padding: 24px 0 32px;
+}
+.fw-eyebrow {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(251, 191, 36, 0.85);
+  margin: 0 0 16px;
+}
+.fw-h1 {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 400;
+  line-height: 1.06;
+  letter-spacing: -0.025em;
+  color: #ffffff;
+  margin: 0 0 16px;
+}
+.fw-lead {
+  font-size: 17px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.72);
+  margin: 0 auto 28px;
+  max-width: 640px;
+}
+.fw-hero-cta {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ---------- Premium button ---------- */
+.fw-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 20px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 12px;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1),
+    background 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fw-btn--primary {
+  background: linear-gradient(180deg, rgba(251, 191, 36, 0.18) 0%, rgba(251, 191, 36, 0.05) 100%);
+  border: 1px solid rgba(251, 191, 36, 0.42);
+  color: #fde68a;
+  box-shadow:
+    inset 0 1px 0 rgba(253, 224, 71, 0.30),
+    0 4px 18px rgba(0, 0, 0, 0.28),
+    0 0 32px rgba(251, 191, 36, 0.10);
+}
+.fw-btn--primary:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 rgba(253, 224, 71, 0.36),
+    0 10px 26px rgba(0, 0, 0, 0.38),
+    0 0 48px rgba(251, 191, 36, 0.18);
+  text-decoration: none;
+}
+.fw-btn--ghost {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  color: rgba(255, 255, 255, 0.92);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 2px 8px rgba(0, 0, 0, 0.22);
+}
+.fw-btn--ghost:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.18);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.03) 100%);
+  text-decoration: none;
+}
+
+/* ---------- Intro paragraphs ---------- */
+.fw-intro {
+  max-width: 680px;
+  margin: 24px auto 32px;
+  font-size: 16px;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.78);
+}
+.fw-intro p { margin: 0 0 14px; }
+.fw-intro p:last-child { margin-bottom: 0; }
+.fw-intro strong { color: #ffffff; font-weight: 600; }
+
+/* ---------- TOC ---------- */
+.fw-toc {
+  max-width: 680px;
+  margin: 0 auto 48px;
+  padding: 18px 22px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+.fw-toc-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0 0 10px;
+}
+.fw-toc-list {
+  margin: 0;
+  padding-left: 22px;
+  list-style: decimal;
+  columns: 2;
+  column-gap: 24px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.82);
+}
+.fw-toc-list a { color: rgba(255, 255, 255, 0.82); text-decoration: none; }
+.fw-toc-list a:hover { color: #fde68a; text-decoration: underline; }
+@media (max-width: 640px) {
+  .fw-toc-list { columns: 1; }
+}
+
+/* ---------- Per-unit section ---------- */
+.fw-unit {
+  margin: 0 0 48px;
+  padding: 28px 28px 24px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.025) 0%, rgba(255, 255, 255, 0.01) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 4px 20px rgba(0, 0, 0, 0.22);
+  scroll-margin-top: 16px;
+}
+.fw-unit-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.fw-unit-title {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  color: #ffffff;
+  margin: 0;
+}
+.fw-teks {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: rgba(251, 191, 36, 0.78);
+  background: rgba(251, 191, 36, 0.06);
+  border: 1px solid rgba(251, 191, 36, 0.22);
+  border-radius: 6px;
+  padding: 3px 8px;
+  white-space: nowrap;
+}
+.fw-unit-summary {
+  margin: 0 0 20px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.66);
+}
+
+/* ---------- Question render ---------- */
+.fw-questions {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+.fw-q {
+  display: flex;
+  gap: 14px;
+  padding: 16px 18px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+}
+.fw-q-num {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(251, 191, 36, 0.85);
+  background: rgba(251, 191, 36, 0.06);
+  border: 1px solid rgba(251, 191, 36, 0.22);
+}
+.fw-q-body { flex: 1; min-width: 0; }
+.fw-q-prompt {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: #ffffff;
+  margin: 0 0 12px;
+}
+.fw-q-choices {
+  margin: 0 0 12px;
+  padding-left: 24px;
+  font-size: 15px;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.82);
+}
+.fw-q-choices li { padding: 3px 0; }
+.fw-choice--correct {
+  color: #6ee7b7;
+  font-weight: 600;
+}
+.fw-choice-tick {
+  display: inline-block;
+  margin-left: 6px;
+  color: #34d399;
+  font-weight: 700;
+}
+.fw-q-explanation {
+  margin: 8px 0 0;
+  padding: 10px 12px;
+  background: rgba(96, 165, 250, 0.05);
+  border-left: 3px solid rgba(96, 165, 250, 0.4);
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.72);
+}
+.fw-q-explanation strong { color: #93c5fd; }
+
+/* ---------- Per-unit CTA row ---------- */
+.fw-unit-cta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ---------- FAQ ---------- */
+.fw-faq {
+  margin: 64px 0 48px;
+  padding: 28px;
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+}
+.fw-faq-title {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  color: #ffffff;
+  margin: 0 0 22px;
+}
+.fw-faq-q { margin: 0 0 22px; }
+.fw-faq-q:last-child { margin-bottom: 0; }
+.fw-faq-q h3 {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 6px;
+  letter-spacing: -0.005em;
+}
+.fw-faq-q p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+/* ---------- Related grades ---------- */
+.fw-related {
+  margin: 32px 0 16px;
+  text-align: center;
+}
+.fw-related-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0 0 16px;
+}
+.fw-related-pills {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+.fw-related-pill {
+  font-size: 13px;
+  font-weight: 500;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.82);
+  text-decoration: none;
+  transition:
+    color 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
+}
+.fw-related-pill:hover {
+  color: #fde68a;
+  border-color: rgba(251, 191, 36, 0.40);
+  background: rgba(251, 191, 36, 0.08);
+  text-decoration: none;
+}
+
+/* ---------- Hub page grid ---------- */
+.fw-hub-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin: 16px 0 56px;
+}
+.fw-hub-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 22px 24px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  text-decoration: none;
+  color: #ffffff;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 4px 16px rgba(0, 0, 0, 0.28);
+  transition:
+    transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fw-hub-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(251, 191, 36, 0.32);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    0 10px 28px rgba(0, 0, 0, 0.36),
+    0 0 32px rgba(251, 191, 36, 0.10);
+  text-decoration: none;
+}
+.fw-hub-card-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  grid-column: 1;
+}
+.fw-hub-card-grade {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(251, 191, 36, 0.14) 0%, rgba(251, 191, 36, 0.03) 100%);
+  border: 1px solid rgba(251, 191, 36, 0.32);
+  color: #fde68a;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  box-shadow: inset 0 1px 0 rgba(253, 224, 71, 0.22);
+}
+.fw-hub-card-title {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 22px;
+  font-weight: 500;
+  margin: 0;
+  color: #ffffff;
+}
+.fw-hub-card-meta {
+  grid-column: 1;
+  margin: 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+  padding-left: 58px;
+}
+.fw-hub-card-arrow {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  font-size: 22px;
+  color: rgba(255, 255, 255, 0.45);
+  transition: color 200ms, transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fw-hub-card:hover .fw-hub-card-arrow {
+  color: #fde68a;
+  transform: translateX(4px);
+}
+@media (max-width: 700px) {
+  .fw-hub-grid { grid-template-columns: 1fr; gap: 10px; }
+  .fw-hub-card { padding: 18px 20px; }
+  .fw-hub-card-title { font-size: 19px; }
+  .fw-hub-card-grade { width: 40px; height: 40px; font-size: 14px; }
+  .fw-hub-card-meta { padding-left: 54px; font-size: 12px; }
+}
+
+/* ---------- Mobile sizing ---------- */
+@media (max-width: 768px) {
+  .fw-main { padding: 0 16px 56px; }
+  .fw-hero { padding: 16px 0 24px; }
+  .fw-unit { padding: 22px 18px 18px; margin-bottom: 36px; }
+  .fw-unit-title { font-size: 23px; }
+  .fw-q { padding: 14px 14px; gap: 12px; }
+  .fw-q-num { width: 28px; height: 28px; font-size: 12px; }
+  .fw-q-prompt { font-size: 15px; }
+  .fw-q-choices { font-size: 14px; padding-left: 22px; }
+  .fw-q-explanation { font-size: 13px; padding: 8px 10px; }
+  .fw-btn { padding: 12px 16px; font-size: 14px; }
+  .fw-faq { padding: 22px 18px; margin-top: 48px; }
+  .fw-faq-title { font-size: 23px; }
+}
+
+/* ---------- Reduced-motion guard ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .fw-btn, .fw-btn:hover,
+  .fw-hub-card, .fw-hub-card:hover,
+  .fw-hub-card-arrow, .fw-hub-card:hover .fw-hub-card-arrow,
+  .fw-related-pill, .fw-related-pill:hover {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+/* ---------- Homepage SEO entry (small ribbon below the hero) ----------
+   A tasteful, low-weight link block on index.html pointing kids' parents
+   to the free worksheets. Sits BELOW the §11/§12 hero (which stays as
+   the single focal point) so it doesn't break the focus pass. */
+.home-fw-ribbon {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 24px 32px;
+  text-align: center;
+}
+.home-fw-ribbon-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.78);
+  text-decoration: none;
+  letter-spacing: -0.005em;
+  transition:
+    color 200ms ease,
+    border-color 200ms ease,
+    background 200ms ease,
+    transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.home-fw-ribbon-link:hover {
+  color: #fde68a;
+  border-color: rgba(251, 191, 36, 0.32);
+  background: rgba(251, 191, 36, 0.06);
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+.home-fw-ribbon-strong { font-weight: 700; color: #ffffff; }
+.home-fw-ribbon-arrow { transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1); }
+.home-fw-ribbon-link:hover .home-fw-ribbon-arrow { transform: translateX(3px); }
+@media (max-width: 768px) {
+  .home-fw-ribbon { padding: 0 16px 24px; }
+  .home-fw-ribbon-link { font-size: 12px; padding: 8px 14px; }
+}

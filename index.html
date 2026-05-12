@@ -32,7 +32,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20260511t" />
+  <link rel="stylesheet" href="css/styles.css?v=20260512a" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -107,6 +107,17 @@
     </div>
     <div class="hero-bottom-fade" aria-hidden="true"></div>
   </section>
+
+  <!-- §16 SEO entry — small ribbon linking to /free-worksheets/. Hidden
+       for signed-in users (they're already in the funnel; this is for
+       parents arriving from search). Toggled by showDashboard(). -->
+  <aside class="home-fw-ribbon" id="home-fw-ribbon" hidden>
+    <a class="home-fw-ribbon-link" href="/free-worksheets/index.html">
+      <span class="home-fw-ribbon-strong">100,000+ free STAAR math worksheets</span>
+      <span>· K through Algebra I · TEKS-aligned · no sign-up</span>
+      <span class="home-fw-ribbon-arrow" aria-hidden="true">→</span>
+    </a>
+  </aside>
 
   <!-- §11 focus pass: the math-question mockup was previously floating
        inside the hero, competing with the headline. Moved here as an
@@ -827,18 +838,21 @@
       const dash = document.getElementById('dashboard');
       const gradeSection = document.getElementById('state-picker');
       const sessionPreview = document.getElementById('session-preview');
+      const fwRibbon = document.getElementById('home-fw-ribbon');
       applySignedOutNav(!u);
       if (!u) {
         heroAnon.hidden = false;
         dash.hidden = true;
         if (gradeSection) gradeSection.hidden = false;
         if (sessionPreview) sessionPreview.hidden = false;
+        if (fwRibbon) fwRibbon.hidden = false;
         return;
       }
       heroAnon.hidden = true;
       dash.hidden = false;
       if (gradeSection) gradeSection.hidden = true;
       if (sessionPreview) sessionPreview.hidden = true;
+      if (fwRibbon) fwRibbon.hidden = true;
       renderGradeGrid();
 
       // §B2 — admins shouldn't see "Welcome back, admin" or "Welcome back,
