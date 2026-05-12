@@ -220,6 +220,18 @@
     inputLocked = true;
     completeTitle.textContent = boards >= 3 ? 'Logic legend! 🔢' : boards >= 1 ? 'Solved!' : 'Keep training!';
     completeScore.textContent = String(score);
+
+    // §51 unified scoring: convert session score → wallet cents and
+    // credit the same balanceCents that Practice tops up.
+    try {
+      if (window.GradeEarnReward) {
+        const cents = window.GradeEarnReward.scoreToCents(score);
+        if (cents > 0) {
+          window.GradeEarnReward.award(cents, "sudoku-mini", { grade: (typeof grade !== "undefined" ? grade : "") })
+            .then(function (r) { if (r && r.awarded > 0) window.GradeEarnReward.toastAward(r.awarded); });
+        }
+      }
+    } catch (_) {}
     completeCorrect.textContent = String(boards);
     completeStreak.textContent = String(bestStreak);
     completeFriends.innerHTML = '';

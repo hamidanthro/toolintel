@@ -554,6 +554,18 @@
     totalFound += found.size;
     completeTitle.textContent = totalFound >= 20 ? 'Word machine! ⚡' : totalFound >= 10 ? 'Great run!' : totalFound >= 4 ? 'Nice run!' : 'Try again!';
     completeScore.textContent = String(score);
+
+    // §51 unified scoring: convert session score → wallet cents and
+    // credit the same balanceCents that Practice tops up.
+    try {
+      if (window.GradeEarnReward) {
+        const cents = window.GradeEarnReward.scoreToCents(score);
+        if (cents > 0) {
+          window.GradeEarnReward.award(cents, "word-connect", { grade: (typeof grade !== "undefined" ? grade : "") })
+            .then(function (r) { if (r && r.awarded > 0) window.GradeEarnReward.toastAward(r.awarded); });
+        }
+      }
+    } catch (_) {}
     completeWords.textContent = `${totalFound} words`;
     completeTime.textContent = fmtTime(durationSec);
     // Friend comparison

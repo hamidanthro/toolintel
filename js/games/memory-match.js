@@ -334,6 +334,18 @@
 
     completeTitle.textContent = elapsed < 30 ? 'Memory champ! ⚡' : (flips <= minFlips + 4 ? 'Eagle eye! 🦅' : 'Nice run!');
     completeScore.textContent = String(score);
+
+    // §51 unified scoring: convert session score → wallet cents and
+    // credit the same balanceCents that Practice tops up.
+    try {
+      if (window.GradeEarnReward) {
+        const cents = window.GradeEarnReward.scoreToCents(score);
+        if (cents > 0) {
+          window.GradeEarnReward.award(cents, "memory-match", { grade: (typeof grade !== "undefined" ? grade : "") })
+            .then(function (r) { if (r && r.awarded > 0) window.GradeEarnReward.toastAward(r.awarded); });
+        }
+      }
+    } catch (_) {}
     completePairs.textContent = `${pairsFound}/${puzzle.pairs.length}`;
     completeTime.textContent  = fmtTime(elapsed);
 

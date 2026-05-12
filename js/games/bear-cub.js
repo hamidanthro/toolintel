@@ -291,6 +291,16 @@
     const bearCents = state.bearCentsEarned || 0;
     const myCents = isBear ? bearCents : cubCents;
 
+    // §51 unified scoring: credit the wallet for my role. Bear 14¢ →
+    // 3 server calls (5+5+4); Cub 8¢ → 2 calls (5+3). The helper
+    // chunks the loop automatically. Daily cap 50¢ per game.
+    try {
+      if (window.GradeEarnReward && myCents > 0) {
+        window.GradeEarnReward.award(myCents, 'bear-cub', { grade: meGrade() })
+          .then(function (r) { if (r && r.awarded > 0) window.GradeEarnReward.toastAward(r.awarded); });
+      }
+    } catch (_) {}
+
     root.innerHTML = `
       <div class="sd-card bc-done">
         ${family ? '<div class="bc-family-badge">🏠 Family match! Bonus applied</div>' : ''}

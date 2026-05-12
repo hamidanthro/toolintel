@@ -216,6 +216,16 @@
     const cents = myRank === 1 ? 25 : myRank === 2 ? 5 : 1;
     const title = myRank === 1 ? '👑 Champion!' : myRank === 2 ? '🥈 Runner-up!' : myRank === 3 ? '🥉 Top 3' : `#${myRank} of ${players.length}`;
 
+    // §51 unified scoring: actually credit the wallet (Champion 25¢ is
+    // split into five 5¢ server calls by the helper; 5¢ and 1¢ fit in
+    // one call). Daily cap 50¢; lifetime $100 cap applies globally.
+    try {
+      if (window.GradeEarnReward) {
+        window.GradeEarnReward.award(cents, 'math-battle-royale', { grade: state.gradeBand || '' })
+          .then(function (r) { if (r && r.awarded > 0) window.GradeEarnReward.toastAward(r.awarded); });
+      }
+    } catch (_) {}
+
     const podium = players.slice(0, Math.min(3, players.length));
     const rest = players.slice(3);
 

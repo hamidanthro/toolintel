@@ -193,6 +193,18 @@
     timerEl.textContent = `${Math.floor(elapsed/60)}:${String(elapsed%60).padStart(2,'0')}`;
     completeTitle.textContent = bullseyes >= 8 ? 'Texan native! 🌵' : bullseyes >= 5 ? 'Solid map sense!' : bullseyes >= 2 ? 'Getting there!' : 'Study the map a little!';
     completeScore.textContent = String(score);
+
+    // §51 unified scoring: convert session score → wallet cents and
+    // credit the same balanceCents that Practice tops up.
+    try {
+      if (window.GradeEarnReward) {
+        const cents = window.GradeEarnReward.scoreToCents(score);
+        if (cents > 0) {
+          window.GradeEarnReward.award(cents, "texas-map", { grade: (typeof grade !== "undefined" ? grade : "") })
+            .then(function (r) { if (r && r.awarded > 0) window.GradeEarnReward.toastAward(r.awarded); });
+        }
+      }
+    } catch (_) {}
     completeCorrect.textContent = String(bullseyes);
     completeStreak.textContent = String(bestStreak);
     completeFriends.innerHTML = '';

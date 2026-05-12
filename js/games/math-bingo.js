@@ -224,6 +224,18 @@
     inputLocked = true;
     completeTitle.textContent = bingos >= 3 ? 'BINGO master! 🎯' : bingos >= 1 ? 'BINGO!' : 'Keep marking!';
     completeScore.textContent = String(score);
+
+    // §51 unified scoring: convert session score → wallet cents and
+    // credit the same balanceCents that Practice tops up.
+    try {
+      if (window.GradeEarnReward) {
+        const cents = window.GradeEarnReward.scoreToCents(score);
+        if (cents > 0) {
+          window.GradeEarnReward.award(cents, "math-bingo", { grade: (typeof grade !== "undefined" ? grade : "") })
+            .then(function (r) { if (r && r.awarded > 0) window.GradeEarnReward.toastAward(r.awarded); });
+        }
+      }
+    } catch (_) {}
     completeCorrect.textContent = String(bingos);
     completeStreak.textContent = String(bestStreak);
     completeFriends.innerHTML = '';

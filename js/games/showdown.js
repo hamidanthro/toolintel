@@ -173,6 +173,16 @@
     const title = result === 'win' ? 'You won! 🏆' : result === 'loss' ? 'Good game!' : 'It\'s a tie!';
     const subtitle = result === 'win' ? `+${cents}¢ to your wallet` : `+${cents}¢ for showing up`;
 
+    // §51 unified scoring: actually credit the wallet (UI was previously
+    // promising "+N¢ to your wallet" without writing). 1-5¢ per result;
+    // server caps at 5¢ per call so a single call is enough.
+    try {
+      if (window.GradeEarnReward) {
+        window.GradeEarnReward.award(cents, 'math-showdown', { grade: state.gradeBand || '' })
+          .then(function (r) { if (r && r.awarded > 0) window.GradeEarnReward.toastAward(r.awarded); });
+      }
+    } catch (_) {}
+
     root.innerHTML = `
       <div class="sd-card sd-card--done">
         <h2 class="sd-h">${title}</h2>

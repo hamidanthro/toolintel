@@ -464,6 +464,19 @@
     completeCorrect.textContent = String(correctCount);
     completeStreak.textContent = String(bestStreak);
 
+    // §51 unified scoring: convert session score → wallet cents and
+    // credit the same balanceCents that Practice tops up. Daily cap
+    // applies per-game; lifetime $100 cap applies globally.
+    try {
+      if (window.GradeEarnReward) {
+        const cents = window.GradeEarnReward.scoreToCents(score);
+        if (cents > 0) {
+          window.GradeEarnReward.award(cents, 'math-sprint', { grade })
+            .then((r) => { if (r && r.awarded > 0) window.GradeEarnReward.toastAward(r.awarded); });
+        }
+      }
+    } catch (_) {}
+
     // Friend comparison
     completeFriends.innerHTML = '';
     api('getGameScores', { gameId: GAME_ID, date: todayDateKey() })

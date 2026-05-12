@@ -245,6 +245,18 @@
     inputLocked = true;
     completeTitle.textContent = score >= 200 ? 'Pattern wizard! 🔁' : score >= 100 ? 'Sharp eye!' : 'Keep practicing!';
     completeScore.textContent = String(score);
+
+    // §51 unified scoring: convert session score → wallet cents and
+    // credit the same balanceCents that Practice tops up.
+    try {
+      if (window.GradeEarnReward) {
+        const cents = window.GradeEarnReward.scoreToCents(score);
+        if (cents > 0) {
+          window.GradeEarnReward.award(cents, "pattern-builder", { grade: (typeof grade !== "undefined" ? grade : "") })
+            .then(function (r) { if (r && r.awarded > 0) window.GradeEarnReward.toastAward(r.awarded); });
+        }
+      }
+    } catch (_) {}
     completeCorrect.textContent = String(correctCount);
     completeStreak.textContent = String(bestStreak);
     completeFriends.innerHTML = '';
