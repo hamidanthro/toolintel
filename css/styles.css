@@ -18301,13 +18301,20 @@ body.games-page .container { max-width: 880px; }
   overflow: hidden;
   text-decoration: none;
   color: inherit;
-  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
 }
 .game-card:hover {
   transform: translateY(-3px);
   border-color: rgba(251, 191, 36, 0.5);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+  background: #142c5a;
+  text-decoration: none;
 }
+/* Defeat global a:hover { text-decoration: underline } on the heading +
+   description inside the card link. The card itself lifts subtly; text
+   stays unadorned. */
+.game-card:hover .game-card-name,
+.game-card:hover .game-card-desc { text-decoration: none; }
 .game-card-art {
   position: relative;
   display: flex;
@@ -18317,34 +18324,40 @@ body.games-page .container { max-width: 880px; }
   overflow: hidden;
 }
 .game-card-emoji { font-size: 4.4rem; line-height: 1; filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.45)); }
+/* Premium-polish (May 12): category eyebrow whispers — plain uppercase
+   micro-text, no pill background, no border. The 3D icon is the visual
+   anchor; the eyebrow announces category quietly. */
 .game-card-tag {
   position: absolute;
   top: 12px;
   left: 12px;
-  padding: 4px 10px;
-  background: rgba(251, 191, 36, 0.2);
-  color: #fde68a;
-  border: 1px solid rgba(251, 191, 36, 0.4);
-  border-radius: 999px;
-  font-size: 0.62rem;
-  font-weight: 800;
-  letter-spacing: 0.07em;
+  padding: 0;
+  background: transparent;
+  color: rgba(253, 230, 138, 0.6); /* amber-300 at ~60% */
+  border: none;
+  border-radius: 0;
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 .game-card-body { padding: 16px 18px 18px; }
 .game-card-name { margin: 0 0 6px; font-size: 1.1rem; font-weight: 700; }
 .game-card-desc { margin: 0 0 12px; font-size: 0.88rem; color: rgba(255, 255, 255, 0.7); line-height: 1.5; }
 .game-card-meta { display: flex; gap: 6px; flex-wrap: wrap; }
+/* Premium-polish (May 12): softer pill — translucent surface, white/70
+   text, medium weight (not bold). Less stocky than the previous
+   bright-blue treatment. */
 .game-card-meta-pill {
   padding: 3px 9px;
-  background: rgba(96, 165, 250, 0.18);
-  color: #93c5fd;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.7);
   border-radius: 999px;
   font-size: 0.72rem;
-  font-weight: 700;
+  font-weight: 500;
 }
 .game-card--soon { opacity: 0.55; cursor: not-allowed; pointer-events: none; }
-.game-card--soon .game-card-tag { background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.7); border-color: rgba(255, 255, 255, 0.18); }
+.game-card--soon .game-card-tag { background: transparent; color: rgba(255, 255, 255, 0.4); border-color: transparent; }
 
 /* ----- WORD CONNECT GAME ----- */
 body.game-page {
