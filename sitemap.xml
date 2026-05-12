@@ -875,4 +875,40 @@
     <xhtml:link xmlns:xhtml="http://www.w3.org/1999/xhtml" rel="alternate" hreflang="en-US" href="https://gradeearn.com/articles/texas-staar-parent-guide.html"/>
     <xhtml:link xmlns:xhtml="http://www.w3.org/1999/xhtml" rel="alternate" hreflang="es-MX" href="https://gradeearn.com/articles/es/guia-staar-para-padres-texas.html"/>
   </url>
+
+  <!-- Phase-3 articles + Spanish translations (May 12 evening) -->
+  <url>
+    <loc>https://gradeearn.com/articles/staar-math-anxiety.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <lastmod>2026-05-12</lastmod>
+  </url>
+  <url>
+    <loc>https://gradeearn.com/articles/what-to-do-after-low-staar-score.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <lastmod>2026-05-12</lastmod>
+  </url>
+  <url>
+    <loc>https://gradeearn.com/articles/teks-overview-by-grade.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+    <lastmod>2026-05-12</lastmod>
+  </url>
+  <url>
+    <loc>https://gradeearn.com/articles/es/como-preparar-para-staar-en-casa.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <lastmod>2026-05-12</lastmod>
+    <xhtml:link xmlns:xhtml="http://www.w3.org/1999/xhtml" rel="alternate" hreflang="en-US" href="https://gradeearn.com/articles/how-to-prep-for-staar-at-home.html"/>
+    <xhtml:link xmlns:xhtml="http://www.w3.org/1999/xhtml" rel="alternate" hreflang="es-MX" href="https://gradeearn.com/articles/es/como-preparar-para-staar-en-casa.html"/>
+  </url>
+  <url>
+    <loc>https://gradeearn.com/articles/es/puntajes-staar-explicados.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <lastmod>2026-05-12</lastmod>
+    <xhtml:link xmlns:xhtml="http://www.w3.org/1999/xhtml" rel="alternate" hreflang="en-US" href="https://gradeearn.com/articles/staar-scores-explained.html"/>
+    <xhtml:link xmlns:xhtml="http://www.w3.org/1999/xhtml" rel="alternate" hreflang="es-MX" href="https://gradeearn.com/articles/es/puntajes-staar-explicados.html"/>
+  </url>
 </urlset>
