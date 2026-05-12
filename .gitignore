@@ -10,6 +10,12 @@ scripts/fun-facts/output/
 # tts lambda — node_modules are deploy-only artifacts
 lambda/tts/node_modules/
 lambda/tts/package-lock.json
+
+# retention-sweeper + safety-alerter (compliance lambdas) — same convention
+lambda/retention-sweeper/node_modules/
+lambda/retention-sweeper/package-lock.json
+lambda/safety-alerter/node_modules/
+lambda/safety-alerter/package-lock.json
 scripts/science/output/
 scripts/science-openai/output/
 scripts/social-studies/output/
