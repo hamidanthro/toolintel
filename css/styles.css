@@ -23326,3 +23326,854 @@ body.home-page .hero-staar-score-btn:hover svg { opacity: 1; }
     transform: none !important;
   }
 }
+
+/* ==========================================================================
+   §19 MySpace — kid-facing personal dashboard (May 12)
+   ==========================================================================
+   Light-theme island scoped to body.myspace-page. Visual model matches the
+   ReplyQuik reference dashboard: fixed left sidebar, thin top header bar,
+   centered max-width content column with white cards on a slate-50
+   background. The rest of GradeEarn keeps its dark navy theme — this
+   page is intentionally different because it's a kid's personal space.
+   ========================================================================== */
+
+body.myspace-page {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #f8fafc;
+  color: #0f172a;
+  min-height: 100vh;
+  margin: 0;
+  display: block;
+}
+body.myspace-page * { box-sizing: border-box; }
+body.myspace-page a { color: #0f172a; text-decoration: none; }
+
+.ms-shell {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: 100vh;
+}
+
+/* ---------- Sidebar ---------- */
+.ms-sidebar {
+  background: #ffffff;
+  border-right: 1px solid #e2e8f0;
+  padding: 18px 14px;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+.ms-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 6px 8px 16px;
+  font-weight: 700;
+  color: #0f172a;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+}
+.ms-brand-text { font-weight: 700; }
+
+.ms-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  position: relative;
+}
+.ms-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  text-align: left;
+  width: 100%;
+  font-family: inherit;
+  transition: background 140ms ease, color 140ms ease;
+}
+.ms-nav-item:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+.ms-nav-item--active {
+  background: #f1f5f9;
+  color: #0f172a;
+  font-weight: 600;
+}
+.ms-nav-item svg { flex-shrink: 0; opacity: 0.85; }
+.ms-nav-item--active svg { opacity: 1; }
+
+.ms-popover {
+  position: absolute;
+  bottom: -8px;
+  left: 12px;
+  transform: translateY(100%);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 6px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  min-width: 180px;
+  z-index: 20;
+}
+.ms-popover-item {
+  display: block;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: #475569;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+}
+.ms-popover-item:hover { background: #f1f5f9; color: #0f172a; }
+
+/* ---------- Top header ---------- */
+.ms-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.ms-top {
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  height: 60px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 0 24px;
+  gap: 16px;
+}
+.ms-top-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #0f172a;
+}
+.ms-top-title {
+  font-weight: 600;
+  font-size: 15px;
+  color: #0f172a;
+  text-align: center;
+}
+.ms-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: flex-end;
+}
+.ms-top-btn,
+.ms-quicknote-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #475569;
+  background: transparent;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 140ms ease, color 140ms ease;
+}
+.ms-quicknote-btn:hover { background: #f1f5f9; color: #0f172a; }
+.ms-top-icon {
+  background: transparent;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #475569;
+  transition: background 140ms ease;
+}
+.ms-top-icon:hover { background: #f1f5f9; color: #0f172a; }
+.ms-top-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #0f172a;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* ---------- Quick-win banner ---------- */
+.ms-quickwin {
+  margin: 18px 28px 0;
+  padding: 10px 16px;
+  background: #f1f5f9;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #475569;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.ms-quickwin-msg { display: inline-flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+.ms-quickwin-msg strong { color: #0f172a; font-weight: 600; }
+.ms-quickwin-msg a { color: #0f172a; text-decoration: underline; text-decoration-color: #cbd5e1; }
+.ms-quickwin-actions { display: inline-flex; align-items: center; gap: 12px; }
+.ms-quickwin-actions a { color: #0f172a; font-weight: 500; }
+.ms-ghost-btn {
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  color: #475569;
+  cursor: pointer;
+  font-family: inherit;
+}
+.ms-ghost-btn:hover { background: #ffffff; border-color: #cbd5e1; }
+
+/* ---------- Content column ---------- */
+.ms-content {
+  max-width: 920px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 36px 32px 64px;
+}
+.ms-greeting {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+  margin: 0 0 28px;
+}
+
+/* ---------- AI Buddy card ---------- */
+.ms-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 28px;
+}
+.ms-card-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+.ms-card-eyebrow svg { color: #0f172a; opacity: 0.7; }
+
+/* Chat thread (above briefing once messages exist) */
+.ms-chat-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+.ms-msg {
+  max-width: 80%;
+  padding: 9px 13px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.ms-msg--user {
+  align-self: flex-end;
+  background: #0f172a;
+  color: #ffffff;
+}
+.ms-msg--ai {
+  align-self: flex-start;
+  background: #f1f5f9;
+  color: #0f172a;
+}
+.ms-msg--thinking { opacity: 0.6; font-style: italic; }
+
+/* Briefing block (the gray inner card) */
+.ms-briefing {
+  background: #f1f5f9;
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-bottom: 14px;
+}
+.ms-briefing-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.ms-briefing-eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+.ms-briefing-actions { display: inline-flex; gap: 4px; }
+.ms-icon-btn {
+  background: transparent;
+  border: none;
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  color: #94a3b8;
+  cursor: pointer;
+}
+.ms-icon-btn:hover { background: #e2e8f0; color: #475569; }
+.ms-briefing-body {
+  margin: 0;
+  font-size: 14px;
+  font-style: italic;
+  color: #64748b;
+  line-height: 1.55;
+}
+
+.ms-continue {
+  margin: 14px 0 14px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+/* Composer (pill input) */
+.ms-composer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  padding: 4px 6px 4px 14px;
+}
+.ms-composer:focus-within { border-color: #cbd5e1; }
+.ms-composer-subject {
+  position: relative;
+  flex-shrink: 0;
+}
+.ms-composer-subject-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: #475569;
+  cursor: pointer;
+  font-family: inherit;
+}
+.ms-composer-subject-list {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.08);
+  min-width: 160px;
+  z-index: 10;
+}
+.ms-composer-subject-list li {
+  padding: 7px 10px;
+  font-size: 13px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.ms-composer-subject-list li:hover { background: #f1f5f9; }
+.ms-composer-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  color: #0f172a;
+  padding: 8px 4px;
+  min-width: 0;
+}
+.ms-composer-input::placeholder { color: #94a3b8; }
+.ms-composer-send {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 140ms ease;
+}
+.ms-composer-send:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* ---------- Stats footer (centered middot row) ---------- */
+.ms-stats-footer {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #94a3b8;
+}
+.ms-stats-footer strong { color: #475569; font-weight: 700; }
+.ms-stat-sep { margin: 0 10px; color: #cbd5e1; }
+.ms-stat-link {
+  color: #475569;
+  text-decoration: none;
+  font-weight: 600;
+}
+.ms-stat-link:hover { color: #0f172a; }
+
+/* ---------- Subpage layout (shared shell for journal/homework/etc) ---------- */
+.ms-subpage {
+  max-width: 920px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 36px 32px 64px;
+}
+.ms-subpage-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.ms-subpage-head h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+/* Empty state card */
+.ms-empty {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 48px 32px;
+  text-align: center;
+}
+.ms-empty-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: #f1f5f9;
+  color: #94a3b8;
+  margin-bottom: 16px;
+}
+.ms-empty-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0 0 6px;
+}
+.ms-empty-text {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0 0 18px;
+  line-height: 1.5;
+}
+
+/* ---------- Primary/secondary buttons ---------- */
+.ms-primary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 140ms ease;
+}
+.ms-primary-btn:hover { opacity: 0.88; }
+.ms-secondary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.ms-secondary-btn:hover { border-color: #cbd5e1; }
+
+/* ---------- Lists (journal entries, homework, tasks) ---------- */
+.ms-list { display: flex; flex-direction: column; gap: 12px; }
+.ms-entry {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 18px 20px;
+}
+.ms-entry header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+.ms-entry h3 { margin: 0; font-size: 16px; font-weight: 600; color: #0f172a; }
+.ms-entry time { font-size: 12px; color: #94a3b8; }
+.ms-entry p { margin: 0; color: #475569; line-height: 1.55; font-size: 14px; }
+.ms-entry-delete {
+  margin-top: 10px;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+}
+.ms-entry-delete:hover { color: #ef4444; }
+
+.ms-hw {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: start;
+  gap: 14px;
+  padding: 16px 18px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+}
+.ms-hw--done { opacity: 0.55; }
+.ms-hw--done h3 { text-decoration: line-through; }
+.ms-hw--overdue { border-color: #fecaca; background: #fef2f2; }
+.ms-hw label {
+  position: relative;
+  display: inline-flex;
+  cursor: pointer;
+  padding-top: 2px;
+}
+.ms-hw input[type="checkbox"] { position: absolute; opacity: 0; pointer-events: none; }
+.ms-hw label span {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 1.5px solid #cbd5e1;
+  display: inline-block;
+  position: relative;
+  transition: background 140ms ease, border-color 140ms ease;
+}
+.ms-hw input:checked + span {
+  background: #0f172a;
+  border-color: #0f172a;
+}
+.ms-hw input:checked + span::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 6px;
+  height: 11px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.ms-hw-body { min-width: 0; }
+.ms-hw-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.ms-hw-subject {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0f172a;
+  background: #f1f5f9;
+  border-radius: 6px;
+  padding: 3px 8px;
+}
+.ms-hw-top time { font-size: 12px; color: #94a3b8; }
+.ms-hw--overdue .ms-hw-top time { color: #dc2626; font-weight: 600; }
+.ms-hw h3 { margin: 0 0 4px; font-size: 15px; font-weight: 600; color: #0f172a; }
+.ms-hw p { margin: 0; font-size: 13px; color: #64748b; line-height: 1.5; }
+.ms-hw-delete {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: #cbd5e1;
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+}
+.ms-hw-delete:hover { background: #f1f5f9; color: #ef4444; }
+
+/* ---------- Timetable grid ---------- */
+.ms-timetable {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+.ms-tt-day {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px;
+  min-height: 140px;
+}
+.ms-tt-day--today { border-color: #0f172a; }
+.ms-tt-day header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+}
+.ms-tt-today {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0f172a;
+  background: #fef3c7;
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.ms-tt-empty { font-size: 12px; color: #cbd5e1; margin: 0; }
+.ms-tt-class {
+  position: relative;
+  padding: 8px 10px;
+  background: #f8fafc;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+.ms-tt-time { color: #94a3b8; font-weight: 500; margin-bottom: 2px; }
+.ms-tt-subject { font-weight: 600; color: #0f172a; }
+.ms-tt-room { color: #64748b; margin-top: 2px; font-size: 11px; }
+.ms-tt-delete {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: transparent;
+  border: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 1;
+  color: #cbd5e1;
+  cursor: pointer;
+}
+.ms-tt-delete:hover { background: #ffffff; color: #ef4444; }
+@media (max-width: 1080px) {
+  .ms-timetable { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 700px) {
+  .ms-timetable { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ---------- Tasks ---------- */
+.ms-task-add {
+  display: flex;
+  gap: 8px;
+}
+.ms-task-add input {
+  padding: 10px 14px;
+  font-family: inherit;
+  font-size: 14px;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  min-width: 280px;
+}
+.ms-task-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ms-task {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+.ms-task--done { opacity: 0.55; }
+.ms-task--done .ms-task-text { text-decoration: line-through; color: #64748b; }
+.ms-task label { position: relative; display: inline-flex; cursor: pointer; }
+.ms-task input[type="checkbox"] { position: absolute; opacity: 0; pointer-events: none; }
+.ms-task label span {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid #cbd5e1;
+  display: inline-block;
+  position: relative;
+  transition: background 140ms ease, border-color 140ms ease;
+}
+.ms-task input:checked + span {
+  background: #0f172a;
+  border-color: #0f172a;
+}
+.ms-task input:checked + span::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 0;
+  width: 5px;
+  height: 9px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.ms-task-text { font-size: 14px; color: #0f172a; }
+.ms-task-delete {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  color: #cbd5e1;
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+}
+.ms-task-delete:hover { background: #f1f5f9; color: #ef4444; }
+
+/* ---------- Overlay (Quick Note + editors) ---------- */
+.ms-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.40);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 80px 20px 20px;
+  z-index: 100;
+}
+.ms-overlay-card {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 540px;
+  padding: 24px;
+  box-shadow: 0 24px 56px rgba(15, 23, 42, 0.25);
+}
+.ms-overlay-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.ms-overlay-head h3 { margin: 0; font-size: 16px; font-weight: 600; color: #0f172a; }
+.ms-overlay-card input,
+.ms-overlay-card select,
+.ms-overlay-card textarea {
+  width: 100%;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  font-family: inherit;
+  font-size: 14px;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  resize: vertical;
+}
+.ms-overlay-card input:focus,
+.ms-overlay-card select:focus,
+.ms-overlay-card textarea:focus { outline: none; border-color: #94a3b8; }
+.ms-overlay-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+/* ---------- Mobile ---------- */
+@media (max-width: 768px) {
+  .ms-shell { grid-template-columns: 1fr; }
+  .ms-sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: auto;
+    height: 56px;
+    flex-direction: row;
+    padding: 4px 8px;
+    overflow-x: auto;
+    z-index: 50;
+    border-right: none;
+    border-top: 1px solid #e2e8f0;
+  }
+  .ms-brand { display: none; }
+  .ms-nav { flex-direction: row; gap: 4px; flex: 1; justify-content: space-around; }
+  .ms-nav-item { flex-direction: column; gap: 2px; padding: 4px 6px; font-size: 10px; }
+  .ms-nav-item span { font-size: 10px; }
+  .ms-popover { bottom: calc(100% + 8px); transform: translateY(0); }
+  .ms-content,
+  .ms-subpage { padding: 24px 16px 80px; }
+  .ms-top { padding: 0 16px; height: 52px; }
+  .ms-top-title { font-size: 14px; }
+  .ms-quicknote-btn span,
+  .ms-top-btn span { display: none; }
+  .ms-greeting { font-size: 22px; margin-bottom: 18px; }
+  .ms-card { padding: 18px 16px; border-radius: 12px; }
+  .ms-quickwin { margin: 14px 16px 0; }
+  .ms-composer-subject-trigger { padding: 5px 8px; font-size: 11px; }
+  .ms-composer-input { font-size: 13px; }
+}
