@@ -448,15 +448,171 @@
     return div;
   }
 
+  // ============================================================
+  // FULL CONTEXT for the AI Buddy.
+  // ============================================================
+  // The previous shipped version only sent count-summary lines ("you
+  // have 2 homework items due Friday"). The AI couldn't read actual
+  // content — when the kid asked "tell me about my journal entry,"
+  // the model truthfully said "I can't see it."
+  //
+  // This builds a fuller snapshot the model can reference:
+  //   - Recent journal entries (latest 8, with title + first 240 chars)
+  //   - All pending homework (subject / title / due / notes)
+  //   - Full timetable (all classes per day)
+  //   - All open tasks + 5 most recent completed
+  //   - GradeEarn app practice data: streak, level/XP if Achievements
+  //     module is loaded, recent unit from staar.stats.*
+  //
+  // Capped at ~6 KB of text so the lambda + OpenAI roundtrip stays
+  // snappy. Lambda also re-trims at its end.
+  function buildFullContext() {
+    const lines = [];
+    const u = getUser();
+    const firstName = getFirstName();
+
+    lines.push('— Student snapshot —');
+    lines.push('First name: ' + firstName);
+    if (u && u.grade) lines.push('Grade: ' + u.grade);
+
+    // ----- Journal entries (latest 8, full title + 240-char excerpt)
+    const journal = data.journal();
+    if (journal.length > 0) {
+      lines.push('');
+      lines.push('JOURNAL ENTRIES (' + journal.length + ' total, most recent first):');
+      journal.slice(0, 8).forEach(function (e, i) {
+        const date = (e.date || '').slice(0, 10);
+        const title = (e.title || '').trim() || 'Untitled';
+        const body = String(e.text || '').replace(/\s+/g, ' ').trim();
+        const excerpt = body.length > 240 ? body.slice(0, 240) + '…' : body;
+        lines.push('  ' + (i + 1) + '. [' + date + '] ' + title);
+        if (excerpt) lines.push('     "' + excerpt + '"');
+      });
+    } else {
+      lines.push('');
+      lines.push('JOURNAL: (no entries yet)');
+    }
+
+    // ----- Homework (all pending + last 3 completed for context)
+    const hw = data.homework();
+    const pendingHw = hw.filter(function (h) { return !h.done; });
+    const recentDoneHw = hw.filter(function (h) { return h.done; }).slice(0, 3);
+    lines.push('');
+    if (pendingHw.length > 0) {
+      lines.push('PENDING HOMEWORK (' + pendingHw.length + '):');
+      pendingHw.forEach(function (h, i) {
+        const due = h.dueDate ? 'due ' + h.dueDate : 'no due date';
+        const subj = h.subject || 'General';
+        const overdue = h.dueDate && h.dueDate < todayISO() ? ' [OVERDUE]' : '';
+        lines.push('  ' + (i + 1) + '. ' + subj + ': ' + h.title + ' (' + due + ')' + overdue);
+        if (h.notes) lines.push('     notes: ' + String(h.notes).slice(0, 140));
+      });
+    } else {
+      lines.push('PENDING HOMEWORK: (none)');
+    }
+    if (recentDoneHw.length > 0) {
+      lines.push('Recently completed homework:');
+      recentDoneHw.forEach(function (h) {
+        lines.push('  ✓ ' + (h.subject || 'General') + ': ' + h.title);
+      });
+    }
+
+    // ----- Timetable
+    const tt = data.timetable();
+    lines.push('');
+    if (tt.length > 0) {
+      lines.push('WEEKLY TIMETABLE:');
+      DAYS.forEach(function (d) {
+        const dayClasses = tt.filter(function (c) { return c.day === d; })
+          .sort(function (a, b) { return (a.startTime || '').localeCompare(b.startTime || ''); });
+        if (dayClasses.length > 0) {
+          lines.push('  ' + d + ': ' + dayClasses.map(function (c) {
+            return c.startTime + ' ' + c.subject + (c.room ? ' (' + c.room + ')' : '');
+          }).join(' · '));
+        }
+      });
+      const next = findNextClass();
+      if (next) lines.push('Next class: ' + next.day + ' at ' + next.startTime + ' — ' + next.subject);
+    } else {
+      lines.push('TIMETABLE: (empty)');
+    }
+
+    // ----- Tasks (open + 5 recent completed)
+    const tasks = data.tasks();
+    const openTasks = tasks.filter(function (t) { return !t.done; });
+    const doneTasks = tasks.filter(function (t) { return t.done; }).slice(0, 5);
+    lines.push('');
+    if (openTasks.length > 0) {
+      lines.push('OPEN TASKS (' + openTasks.length + '):');
+      openTasks.forEach(function (t, i) {
+        lines.push('  ' + (i + 1) + '. ' + t.title);
+      });
+    } else {
+      lines.push('OPEN TASKS: (none)');
+    }
+    if (doneTasks.length > 0) {
+      lines.push('Recently completed tasks: ' + doneTasks.map(function (t) { return t.title; }).join(' · '));
+    }
+
+    // ----- GradeEarn app practice data (best-effort, may not be present)
+    lines.push('');
+    lines.push('PRACTICE APP STATS:');
+    lines.push('  Journal streak: ' + streakDays() + ' day' + (streakDays() === 1 ? '' : 's'));
+    lines.push('  Tasks done today: ' + tasksDoneToday());
+    lines.push('  Journal entries this week: ' + journalsThisWeek());
+
+    // Pull achievements/level data if the Achievements module loaded
+    try {
+      if (window.Achievements && typeof window.Achievements.getStats === 'function') {
+        const s = window.Achievements.getStats();
+        if (s) {
+          if (s.xp != null) lines.push('  Total XP: ' + s.xp);
+          if (s.loginStreak) lines.push('  Login streak: ' + s.loginStreak + ' days');
+          if (s.streakShields) lines.push('  Streak shields held: ' + s.streakShields);
+          if (typeof window.Achievements.levelFromXp === 'function') {
+            const lev = window.Achievements.levelFromXp(s.xp || 0);
+            if (lev && lev.level) lines.push('  Level: ' + lev.level + ' (' + (lev.inLevelXp || 0) + '/' + (lev.levelSpan || 0) + ' XP)');
+          }
+        }
+      }
+    } catch (_) {}
+
+    // Pull journey data if available (last practiced grade, by-grade correct counts)
+    try {
+      if (u && u.username) {
+        const raw = localStorage.getItem('staar.journey.' + u.username);
+        if (raw) {
+          const j = JSON.parse(raw);
+          if (j && j.byGrade) {
+            const grades = Object.keys(j.byGrade);
+            if (grades.length > 0) {
+              const counts = grades.map(function (g) {
+                return g + ': ' + (j.byGrade[g].correct || 0) + ' correct';
+              }).join(' · ');
+              lines.push('  Practice history: ' + counts);
+            }
+          }
+          if (j.bestStreak) lines.push('  Best practice streak: ' + j.bestStreak + ' in a row');
+        }
+      }
+    } catch (_) {}
+
+    let out = lines.join('\n');
+    // Hard cap at ~6 KB to avoid bloating the request
+    if (out.length > 6000) out = out.slice(0, 6000) + '\n…(truncated)';
+    return out;
+  }
+
   async function sendChat(message, subjectFilter) {
-    // Build a tiny snapshot of the kid's data for the backend to use as context
-    const summary = buildBriefingSummary();
+    // Build the full snapshot the AI Buddy needs to actually be useful
+    const context = buildFullContext();
+    const briefingSummary = buildBriefingSummary(); // short version for back-compat
     const u = getUser();
     const token = window.STAARAuth && window.STAARAuth.token && window.STAARAuth.token();
     if (!token) throw new Error('Not signed in');
 
     const ctrl = new AbortController();
-    const timeout = setTimeout(function () { ctrl.abort(); }, 12000);
+    const timeout = setTimeout(function () { ctrl.abort(); }, 15000);
     try {
       const r = await fetch(API + '/', {
         method: 'POST',
@@ -466,8 +622,10 @@
           token: token,
           message: message,
           subjectFilter: subjectFilter || '',
-          summary: summary,
-          firstName: getFirstName()
+          context: context,
+          summary: briefingSummary, // back-compat with older lambda
+          firstName: getFirstName(),
+          grade: u && u.grade ? u.grade : ''
         }),
         signal: ctrl.signal
       });
