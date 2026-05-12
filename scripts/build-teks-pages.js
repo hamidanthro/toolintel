@@ -22,6 +22,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const cp = require('child_process');
 
 const REPO_ROOT = path.resolve(__dirname, '..');
 const DATA_DIR = path.join(REPO_ROOT, 'data');
@@ -29,6 +30,16 @@ const OUT_DIR = path.join(REPO_ROOT, 'free-worksheets');
 const TEKS_PACK = path.join(REPO_ROOT, 'state-packs/texas/standards/teks-math.json');
 const SITE_ORIGIN = 'https://gradeearn.com';
 const STATE_SLUG = 'texas';
+
+// Source toggle: --source=lake reads questions from DynamoDB staar-content-pool
+// (the §31/§35/§37 pack-wired sweep content — Texas-flavored, TEKS-tagged).
+// Default (--source=curriculum) reads the static /data/grade-*-curriculum.json
+// files (offline-safe, no AWS deps). Lake source yields ~190 TEKS pages vs
+// curriculum's 103 because the lake covers more standards.
+const SOURCE = (() => {
+  const arg = process.argv.find((a) => a.startsWith('--source='));
+  return arg ? arg.split('=')[1] : 'curriculum';
+})();
 
 const GRADES = [
   { gradeKey: 'grade_3',   slug: 'grade-3',   label: 'Grade 3',     urlSlug: 'grade-3',   file: 'grade-3-curriculum.json'   },
@@ -71,6 +82,88 @@ function bucketByTeks(curr) {
       });
     });
   });
+  return buckets;
+}
+
+// Hand-rolled DynamoDB AttributeValue → plain JS (no SDK dep at repo root).
+// Only covers the types this script consumes: S, N, L, BOOL, NULL.
+function unmarshall(av) {
+  if (av == null) return null;
+  if ('S' in av) return av.S;
+  if ('N' in av) return Number(av.N);
+  if ('BOOL' in av) return !!av.BOOL;
+  if ('NULL' in av) return null;
+  if ('L' in av) return av.L.map(unmarshall);
+  if ('M' in av) {
+    const o = {};
+    for (const k of Object.keys(av.M)) o[k] = unmarshall(av.M[k]);
+    return o;
+  }
+  return null;
+}
+
+// Load Texas-math rows from staar-content-pool via the aws CLI.
+// Auto-pagination: aws CLI follows NextToken by default and returns one
+// merged Items array. Filter expression keeps the wire payload small
+// (~14MB for ~14k rows).
+function loadLakeBuckets() {
+  console.log('[lake] scanning staar-content-pool (state=texas, subject=math, status=active)...');
+  const args = [
+    'dynamodb', 'scan',
+    '--table-name', 'staar-content-pool',
+    '--filter-expression', '#st = :s AND #sub = :sub AND #status = :a',
+    '--expression-attribute-names', '{"#st":"state","#sub":"subject","#status":"status"}',
+    '--expression-attribute-values', '{":s":{"S":"texas"},":sub":{"S":"math"},":a":{"S":"active"}}',
+    '--projection-expression', '#g, teks, question, choices, correctIndex, explanation',
+    '--expression-attribute-names', '{"#st":"state","#sub":"subject","#status":"status","#g":"grade"}',
+    '--output', 'json',
+    '--no-cli-pager'
+  ];
+  // Note: --expression-attribute-names appears twice above; aws CLI merges them.
+  // Actually CLI rejects duplicate args — switch to a single combined map.
+  const argsFinal = [
+    'dynamodb', 'scan',
+    '--table-name', 'staar-content-pool',
+    '--filter-expression', '#st = :s AND #sub = :sub AND #status = :a',
+    '--expression-attribute-names', JSON.stringify({
+      '#st': 'state', '#sub': 'subject', '#status': 'status', '#g': 'grade'
+    }),
+    '--expression-attribute-values', JSON.stringify({
+      ':s': { S: 'texas' }, ':sub': { S: 'math' }, ':a': { S: 'active' }
+    }),
+    '--projection-expression', '#g, teks, question, choices, correctIndex, explanation',
+    '--output', 'json',
+    '--no-cli-pager'
+  ];
+  const t0 = Date.now();
+  const out = cp.execFileSync('aws', argsFinal, {
+    maxBuffer: 200 * 1024 * 1024,
+    encoding: 'utf8'
+  });
+  const data = JSON.parse(out);
+  const elapsed = ((Date.now() - t0) / 1000).toFixed(1);
+  console.log(`[lake] scan done in ${elapsed}s — ${(data.Items || []).length} rows returned`);
+
+  // Bucket by gradeKey (grade-3 → grade_3) → teks → [{prompt, choices, ...}]
+  const buckets = {};
+  let dropped = 0;
+  for (const av of (data.Items || [])) {
+    const row = unmarshall({ M: av });
+    if (!row.teks || !row.grade || !row.question || !Array.isArray(row.choices)) {
+      dropped++;
+      continue;
+    }
+    const gradeKey = row.grade.replace('-', '_'); // grade-3 → grade_3, algebra-1 → algebra_1
+    if (!buckets[gradeKey]) buckets[gradeKey] = {};
+    if (!buckets[gradeKey][row.teks]) buckets[gradeKey][row.teks] = [];
+    buckets[gradeKey][row.teks].push({
+      prompt: row.question,
+      choices: row.choices,
+      correctIndex: row.correctIndex,
+      explanation: row.explanation || ''
+    });
+  }
+  if (dropped > 0) console.log(`[lake] dropped ${dropped} rows missing required fields`);
   return buckets;
 }
 
@@ -441,16 +534,25 @@ function main() {
   const allTeksByGrade = {};
   GRADES.forEach((g) => { allTeksByGrade[g.gradeKey] = (teksPack[g.gradeKey] && teksPack[g.gradeKey].standards) || []; });
 
-  // Pre-bucket curriculum questions by TEKS per grade
-  const teksBuckets = {};
-  GRADES.forEach((g) => {
-    try {
-      teksBuckets[g.gradeKey] = bucketByTeks(loadJson(path.join(DATA_DIR, g.file)));
-    } catch (err) {
-      console.error(`✗ ${g.urlSlug} curriculum load failed: ${err.message}`);
-      teksBuckets[g.gradeKey] = {};
-    }
-  });
+  // Pre-bucket questions by TEKS per grade. Source defaults to curriculum
+  // JSON; --source=lake reads from staar-content-pool (Texas-flavored,
+  // pack-wired content — yields ~190 TEKS pages vs curriculum's 103).
+  let teksBuckets = {};
+  if (SOURCE === 'lake') {
+    console.log('[source] lake (DynamoDB staar-content-pool)');
+    const lakeBuckets = loadLakeBuckets();
+    GRADES.forEach((g) => { teksBuckets[g.gradeKey] = lakeBuckets[g.gradeKey] || {}; });
+  } else {
+    console.log('[source] curriculum (/data/grade-*-curriculum.json)');
+    GRADES.forEach((g) => {
+      try {
+        teksBuckets[g.gradeKey] = bucketByTeks(loadJson(path.join(DATA_DIR, g.file)));
+      } catch (err) {
+        console.error(`✗ ${g.urlSlug} curriculum load failed: ${err.message}`);
+        teksBuckets[g.gradeKey] = {};
+      }
+    });
+  }
 
   let pagesWritten = 0;
   let pagesSkipped = 0;
