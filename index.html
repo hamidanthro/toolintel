@@ -938,19 +938,12 @@
       catch (_) { return {}; }
     }
 
-    // §11 focus pass — signed-out kids/parents see only Home / Games /
-    // Toys + the Sign in slot. Trophies / League / How it works require
-    // an account to be meaningful; surfacing them on the anon hero
-    // dilutes the single focal point (the grade picker).
-    function applySignedOutNav(isSignedOut) {
-      const nav = document.querySelector('.site-header .nav');
-      if (!nav) return;
-      const keep = new Set(['index.html', 'games.html', 'marketplace.html']);
-      nav.querySelectorAll('a').forEach((a) => {
-        const href = (a.getAttribute('href') || '').trim();
-        a.hidden = isSignedOut && !keep.has(href);
-      });
-    }
+    // §11/§19 nav-simplification was replaced by js/site-header.js
+    // (canonical site-wide nav normalizer). applySignedOutNav here used
+    // relative-path keys that didn't match site-header.js's absolute-path
+    // hrefs — they fought each other and the result was an empty nav.
+    // Kept as a no-op so any other callers don't break.
+    function applySignedOutNav() { /* noop — see js/site-header.js */ }
 
     async function showDashboard() {
       const u = window.STAARAuth?.currentUser?.();

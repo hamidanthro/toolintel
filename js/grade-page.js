@@ -557,7 +557,12 @@
   // works require an account to be meaningful, so they're hidden
   // for a cleaner first-touch header.
   // ============================================================
+  // §11/§19 — superseded by js/site-header.js (site-wide nav normalizer).
+  // The old keep-set used relative paths that didn't match site-header's
+  // absolute-path hrefs, hiding everything. Kept as no-op for back-compat.
   function simplifyNavForSignedOut() {
+    return;
+    // eslint-disable-next-line no-unreachable
     const auth = window.STAARAuth;
     if (auth && typeof auth.currentUser === 'function' && auth.currentUser()) return;
     const nav = document.querySelector('.site-header .nav');
