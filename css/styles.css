@@ -20312,9 +20312,154 @@ body.game-number-tetris .game-main { padding-top: 12px; }
 
 /* Mobile-first layout: stack canvas + controls; hide sidebar */
 @media (max-width: 1099px) {
-  body.game-number-tetris .nt-board { max-width: 460px; }
-  body.game-number-tetris .nt-sidebar { display: none; }
+  body.game-number-tetris .nt-board { max-width: 460px; margin: 0 auto; }
+  body.game-number-tetris .nt-sidebar { display: none !important; }
 }
+
+/* ============================================================
+   NUMBER TETRIS — tutorial overlay (first-launch demo)
+   ============================================================ */
+.nt-tutorial {
+  margin: 0 auto;
+  padding: 12px;
+  max-width: 520px;
+  width: 100%;
+}
+.nt-tut-card {
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(253, 224, 71, 0.4);
+  border-radius: var(--r-card);
+  padding: 22px 22px 18px;
+  color: #fff;
+}
+.nt-tut-step {
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  font-weight: 800;
+  color: rgba(253, 224, 71, 0.8);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+.nt-tut-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #fde68a;
+  margin: 0 0 16px;
+  line-height: 1.2;
+}
+.nt-tut-visual {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--r-button);
+  padding: 14px 12px;
+  margin-bottom: 14px;
+}
+.nt-tut-row {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 4px;
+  margin-bottom: 10px;
+}
+.nt-tut-row--clearing { animation: nt-tut-clear 1500ms ease-in-out infinite; }
+@keyframes nt-tut-clear {
+  0%, 70% { opacity: 1; }
+  85%     { opacity: 0.3; filter: brightness(2); }
+  100%    { opacity: 1; }
+}
+.nt-tut-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1 / 1;
+  border-radius: 4px;
+  font-weight: 800;
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+}
+.nt-tut-math {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fde68a;
+  font-variant-numeric: tabular-nums;
+}
+.nt-tut-math strong { color: #34d399; font-size: 1.2rem; }
+.nt-tut-earn {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #34d399;
+  margin-top: 12px;
+}
+.nt-tut-earn-sub {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+}
+.nt-tut-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.nt-tut-ctl-row {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 10px 12px;
+  border-radius: var(--r-button);
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+.nt-tut-ctl-row strong { color: #fde68a; font-weight: 800; margin-right: 6px; }
+.nt-tut-body {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.88);
+  margin-bottom: 16px;
+}
+.nt-tut-body strong { color: #fde68a; }
+.nt-tut-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  align-items: center;
+}
+.nt-tut-skip {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.88rem;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 8px 6px;
+  text-decoration: underline;
+}
+.nt-tut-skip:hover { color: #fff; }
+.nt-tut-back {
+  appearance: none;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 10px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.nt-tut-next {
+  appearance: none;
+  background: linear-gradient(140deg, #fde68a 0%, #fbbf24 100%);
+  border: 0;
+  color: #1e293b;
+  font-weight: 800;
+  font-size: 1rem;
+  padding: 12px 26px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 6px 14px rgba(251, 191, 36, 0.3);
+}
+.nt-tut-next:hover { filter: brightness(1.08); }
 
 /* Desktop ≥1100px — three-column rail + visible sidebar */
 @media (min-width: 1100px) {
@@ -20346,9 +20491,11 @@ body.game-number-tetris .game-main { padding-top: 12px; }
   body.game-number-tetris .ms-prestart {
     grid-area: board; align-self: center; padding: 60px 16px;
   }
+  body.game-number-tetris .nt-tutorial {
+    grid-area: board; max-width: 520px; margin: 0; padding: 0;
+  }
   body.game-number-tetris .nt-board {
     grid-area: board; max-width: 520px; margin: 0; padding: 0;
-    grid-template-columns: 1fr;
   }
   body.game-number-tetris .nt-mobile-controls { display: none; }
   body.game-number-tetris .nt-sidebar {
@@ -20356,7 +20503,14 @@ body.game-number-tetris .game-main { padding-top: 12px; }
     display: flex;
     position: sticky; top: 28px;
     margin: 0;
+    align-self: start;
   }
+  /* Defensive: tutorial + sidebar use HTML hidden attribute for
+     visibility; without this !important the desktop grid display:
+     rules would override it. */
+  body.game-number-tetris .nt-tutorial[hidden],
+  body.game-number-tetris .nt-sidebar[hidden],
+  body.game-number-tetris .nt-board[hidden] { display: none !important; }
   body.game-number-tetris {
     background:
       radial-gradient(ellipse at 70% 25%, rgba(253, 224, 71, 0.03) 0%, transparent 45%),

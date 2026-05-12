@@ -58,17 +58,21 @@
   // weights array parallels digits; index k means weight for digits[k].
   // Higher weight = more common. Lower digits should be weighted heavier
   // so rows hover near target (need a few specific picks to land exactly).
+  // Targets tuned so an average row is reachable. Minimum row sum
+  // with 10 cells × digit=1 is 10, so targets ≤9 require 0s in the
+  // pool. Each row's expected sum (EV per cell × 10) sits ~30% above
+  // the target so kids must steer pieces, not pray.
   const GRADE_CONFIG = {
-    'grade-k':   { target: 5,  digits: [1,2,3,4,5],            weights: [4,4,3,2,1], neg: false, multAfterLevel: 99 },
-    'grade-1':   { target: 5,  digits: [1,2,3,4,5],            weights: [4,4,3,2,1], neg: false, multAfterLevel: 99 },
-    'grade-2':   { target: 10, digits: [1,2,3,4,5,6,7,8,9],    weights: [5,5,4,3,3,2,2,1,1], neg: false, multAfterLevel: 99 },
-    'grade-3':   { target: 10, digits: [1,2,3,4,5,6,7,8,9],    weights: [5,5,4,3,3,2,2,1,1], neg: false, multAfterLevel: 99 },
-    'grade-4':   { target: 15, digits: [1,2,3,4,5,6,7,8,9],    weights: [3,3,3,3,3,3,3,2,2], neg: false, multAfterLevel: 99 },
-    'grade-5':   { target: 20, digits: [1,2,3,4,5,6,7,8,9,10,12], weights: [3,3,3,3,3,3,3,2,2,1,1], neg: false, multAfterLevel: 99 },
-    'grade-6':   { target: 20, digits: [1,2,3,4,5,6,7,8,9],    weights: [3,3,3,3,3,3,3,2,2], neg: true,  negDigits: [-1,-2,-3,-4,-5], negChance: 0.18, multAfterLevel: 99 },
-    'grade-7':   { target: 30, digits: [2,3,4,5,6,7,8,9,10],   weights: [2,3,3,3,3,3,3,2,2], neg: true,  negDigits: [-1,-2,-3,-4,-5], negChance: 0.22, multAfterLevel: 5 },
-    'grade-8':   { target: 30, digits: [2,3,4,5,6,7,8,9,10],   weights: [2,3,3,3,3,3,3,2,2], neg: true,  negDigits: [-1,-2,-3,-4,-5], negChance: 0.22, multAfterLevel: 5 },
-    'algebra-1': { target: 50, digits: [3,4,5,6,7,8,9,10,11,12], weights: [2,3,3,3,3,3,3,2,2,2], neg: true,  negDigits: [-1,-2,-3,-4,-5,-6], negChance: 0.25, multAfterLevel: 1 }
+    'grade-k':   { target: 10, digits: [0,1,2,3],           weights: [5,5,3,1],   neg: false, multAfterLevel: 99 },
+    'grade-1':   { target: 12, digits: [0,1,2,3,4],         weights: [4,5,4,2,1], neg: false, multAfterLevel: 99 },
+    'grade-2':   { target: 15, digits: [0,1,2,3,4,5],       weights: [3,4,4,3,2,1], neg: false, multAfterLevel: 99 },
+    'grade-3':   { target: 18, digits: [0,1,2,3,4,5,6],     weights: [2,4,4,3,3,2,1], neg: false, multAfterLevel: 99 },
+    'grade-4':   { target: 22, digits: [0,1,2,3,4,5,6,7],   weights: [2,3,3,4,3,3,2,1], neg: false, multAfterLevel: 99 },
+    'grade-5':   { target: 28, digits: [0,1,2,3,4,5,6,7,8,9], weights: [2,3,3,3,3,3,2,2,1,1], neg: false, multAfterLevel: 99 },
+    'grade-6':   { target: 25, digits: [0,1,2,3,4,5,6,7,8,9], weights: [2,3,3,3,3,3,2,2,1,1], neg: true,  negDigits: [-1,-2,-3,-4], negChance: 0.16, multAfterLevel: 99 },
+    'grade-7':   { target: 35, digits: [0,1,2,3,4,5,6,7,8,9], weights: [1,2,3,3,3,3,3,2,2,1], neg: true,  negDigits: [-1,-2,-3,-4,-5], negChance: 0.20, multAfterLevel: 5 },
+    'grade-8':   { target: 40, digits: [0,1,2,3,4,5,6,7,8,9], weights: [1,2,3,3,3,3,3,2,2,1], neg: true,  negDigits: [-1,-2,-3,-4,-5], negChance: 0.20, multAfterLevel: 5 },
+    'algebra-1': { target: 50, digits: [0,1,2,3,4,5,6,7,8,9,10,12], weights: [1,2,3,3,3,3,3,2,2,1,1,1], neg: true,  negDigits: [-1,-2,-3,-4,-5,-6], negChance: 0.22, multAfterLevel: 1 }
   };
 
   function weightedPick(digits, weights) {
@@ -684,6 +688,9 @@
     statsEl.hidden = false;
     boardEl.hidden = false;
     completeEl.hidden = true;
+    if (tutorialEl) tutorialEl.hidden = true;
+    const sidebarEl = document.getElementById('ntSidebar');
+    if (sidebarEl) sidebarEl.hidden = false;
     if (pauseOverlay) pauseOverlay.hidden = true;
 
     resizeCanvas();
@@ -711,14 +718,117 @@
     try { api('submitGameScore', { gameId: GAME_ID, date: todayDateKey(), score, wordsFound: new Array(lines).fill('LINE'), totalWords: lines, durationSec: 0, puzzleId: 'nt-' + grade, prize: 'Number Tetris', foundPrize: lines >= 4 }); } catch (_) {}
   }
 
-  // ---------- howto + wiring ----------
+  // ---------- howto + tutorial ----------
   const HOWTO_KEY = 'nt_howto_dismissed';
+  const TUT_KEY = 'nt_tutorial_seen';
   const howTo = document.getElementById('howToPlay');
   const howToBtn = document.getElementById('howToDismiss');
   if (howTo) { try { if (localStorage.getItem(HOWTO_KEY) === '1') howTo.hidden = true; } catch (_) {} }
   if (howToBtn) howToBtn.addEventListener('click', () => { if (howTo) howTo.hidden = true; try { localStorage.setItem(HOWTO_KEY, '1'); } catch (_) {} });
 
-  if (startBtn) startBtn.addEventListener('click', startGame);
+  // Tutorial: 3-step illustrated walkthrough. Always available; the
+  // first launch on a fresh device auto-opens it. Repeat plays can
+  // skip by reading the small "(See demo again)" link instead.
+  const tutorialEl = document.getElementById('ntTutorial');
+  const tutStepEl = document.getElementById('ntTutStepNum');
+  const tutTitleEl = document.getElementById('ntTutTitle');
+  const tutVisualEl = document.getElementById('ntTutVisual');
+  const tutBodyEl = document.getElementById('ntTutBody');
+  const tutSkipBtn = document.getElementById('ntTutSkip');
+  const tutBackBtn = document.getElementById('ntTutBack');
+  const tutNextBtn = document.getElementById('ntTutNext');
+  let tutStep = 0;
+
+  // Find a valid 10-cell row that sums to the current target, using
+  // small-friendly digits. We start from a baseline distribution and
+  // adjust the last cells. Returns array of 10 digits.
+  function sampleRowForTarget(target) {
+    const cells = new Array(10).fill(0);
+    let remaining = target;
+    // Greedy fill with small digits
+    for (let i = 0; i < 10 && remaining > 0; i++) {
+      const max = Math.min(9, remaining);
+      const v = Math.max(0, Math.min(max, Math.round(remaining / (10 - i))));
+      cells[i] = v;
+      remaining -= v;
+    }
+    // If still remaining, distribute to earliest non-9 cell
+    for (let i = 0; i < 10 && remaining > 0; i++) {
+      const room = 9 - cells[i];
+      const add = Math.min(room, remaining);
+      cells[i] += add; remaining -= add;
+    }
+    // Shuffle for visual variety
+    for (let i = cells.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [cells[i], cells[j]] = [cells[j], cells[i]];
+    }
+    return cells;
+  }
+
+  function tutorialSteps() {
+    const tgt = cfg.target;
+    const row = sampleRowForTarget(tgt);
+    const mathStr = row.join(' + ') + ' = <strong>' + tgt + '</strong>';
+    const rowHtml = row.map(d => `<span class="nt-tut-cell" style="background:${d === 0 ? 'rgba(255,255,255,0.06)' : '#22c55e'};color:${d === 0 ? 'rgba(255,255,255,0.4)' : '#fff'}">${d}</span>`).join('');
+    return [
+      {
+        title: `Make rows that sum to ${tgt}`,
+        visual: `<div class="nt-tut-row">${rowHtml}</div><div class="nt-tut-math">${mathStr} ✓</div>`,
+        body: `Every row has <strong>10 cells</strong>. When the digits add up to <strong>${tgt}</strong>, the whole row clears.`
+      },
+      {
+        title: 'Cleared rows earn cents',
+        visual: `<div class="nt-tut-row nt-tut-row--clearing">${rowHtml}</div><div class="nt-tut-earn">+1¢ <span class="nt-tut-earn-sub">(per row cleared)</span></div>`,
+        body: `<strong>1 row = 1¢</strong> · <strong>2 rows = 3¢</strong> · <strong>3+ rows = 5¢</strong><br>Daily cap: 50¢. Tomorrow it resets.`
+      },
+      {
+        title: 'Steer the falling blocks',
+        visual: `<div class="nt-tut-controls"><div class="nt-tut-ctl-row"><strong>📱 Phone</strong> · tap = rotate · swipe ←/→ = move · swipe ↓↓ fast = hard drop</div><div class="nt-tut-ctl-row"><strong>💻 Desktop</strong> · ← → move · ↑ rotate · ↓ soft · Space hard · P pause</div></div>`,
+        body: `Plan each piece. <strong>You don't HAVE to make ${tgt} every row</strong> — but each one you do earns cents. Ready?`
+      }
+    ];
+  }
+
+  function renderTutorialStep() {
+    const steps = tutorialSteps();
+    const s = steps[tutStep];
+    if (!s) return;
+    tutStepEl.textContent = String(tutStep + 1);
+    tutTitleEl.textContent = s.title;
+    tutVisualEl.innerHTML = s.visual;
+    tutBodyEl.innerHTML = s.body;
+    tutBackBtn.hidden = tutStep === 0;
+    tutNextBtn.textContent = tutStep === steps.length - 1 ? '▶ Play' : 'Next →';
+  }
+  function showTutorial() {
+    if (!tutorialEl) { startGame(); return; }
+    tutStep = 0;
+    renderTutorialStep();
+    tutorialEl.hidden = false;
+    preStartEl.hidden = true;
+  }
+  function closeTutorial(startAfter) {
+    if (tutorialEl) tutorialEl.hidden = true;
+    try { localStorage.setItem(TUT_KEY, '1'); } catch (_) {}
+    if (startAfter) startGame();
+    else preStartEl.hidden = false;
+  }
+  if (tutSkipBtn) tutSkipBtn.addEventListener('click', () => closeTutorial(true));
+  if (tutBackBtn) tutBackBtn.addEventListener('click', () => { tutStep = Math.max(0, tutStep - 1); renderTutorialStep(); });
+  if (tutNextBtn) tutNextBtn.addEventListener('click', () => {
+    const steps = tutorialSteps();
+    if (tutStep >= steps.length - 1) { closeTutorial(true); return; }
+    tutStep++; renderTutorialStep();
+  });
+
+  if (startBtn) startBtn.addEventListener('click', () => {
+    // Show tutorial on first launch (or if user explicitly re-opens it).
+    let seen = false;
+    try { seen = localStorage.getItem(TUT_KEY) === '1'; } catch (_) {}
+    if (seen) startGame();
+    else showTutorial();
+  });
   if (playAgainBtn) playAgainBtn.addEventListener('click', () => { completeEl.hidden = true; startGame(); });
 
   document.addEventListener('keydown', onKey);

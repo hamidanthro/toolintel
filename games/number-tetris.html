@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#060d1f" />
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="../css/styles.css?v=20260512b" />
+  <link rel="stylesheet" href="../css/styles.css?v=20260512c" />
   <title>Number Tetris — GradeEarn</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -56,6 +56,22 @@
       <p class="ms-prestart-hint">Block-stacking + math. Earn real cents.</p>
     </div>
 
+    <!-- Tutorial: 3 illustrated steps shown before the first game.
+         Skippable; localStorage flag remembers if a kid has seen it. -->
+    <div id="ntTutorial" class="nt-tutorial" hidden>
+      <div class="nt-tut-card">
+        <div class="nt-tut-step"><span id="ntTutStepNum">1</span> of 3</div>
+        <h2 class="nt-tut-title" id="ntTutTitle">How it works</h2>
+        <div class="nt-tut-visual" id="ntTutVisual"></div>
+        <div class="nt-tut-body" id="ntTutBody"></div>
+        <div class="nt-tut-actions">
+          <button type="button" id="ntTutSkip" class="nt-tut-skip">Skip</button>
+          <button type="button" id="ntTutBack" class="nt-tut-back" hidden>← Back</button>
+          <button type="button" id="ntTutNext" class="nt-tut-next">Next →</button>
+        </div>
+      </div>
+    </div>
+
     <div id="ntBoard" class="nt-board" hidden>
       <div class="nt-canvas-wrap">
         <button type="button" id="ntPauseBtn" class="nt-pause-btn" aria-label="Pause game" title="Pause (P)">⏸</button>
@@ -75,22 +91,24 @@
         <button type="button" class="nt-ctrl nt-ctrl--hard" data-action="hard" aria-label="Hard drop">⤓ DROP</button>
         <button type="button" class="nt-ctrl" data-action="pause" aria-label="Pause">⏸</button>
       </div>
-
-      <div class="nt-sidebar">
-        <div class="nt-next">
-          <div class="nt-next-label">NEXT</div>
-          <canvas id="ntNextCanvas" class="nt-next-canvas"></canvas>
-        </div>
-        <div class="nt-keys">
-          <div class="nt-keys-label">KEYS</div>
-          <div class="nt-key"><kbd>←</kbd><kbd>→</kbd> move</div>
-          <div class="nt-key"><kbd>↑</kbd> rotate</div>
-          <div class="nt-key"><kbd>↓</kbd> soft drop</div>
-          <div class="nt-key"><kbd>Space</kbd> hard drop</div>
-          <div class="nt-key"><kbd>P</kbd> pause</div>
-        </div>
-      </div>
     </div>
+
+    <!-- Sidebar is OUTSIDE .nt-board so the grid's 'panel' area can
+         place it correctly in the right column on desktop. -->
+    <aside class="nt-sidebar" id="ntSidebar" hidden>
+      <div class="nt-next">
+        <div class="nt-next-label">NEXT</div>
+        <canvas id="ntNextCanvas" class="nt-next-canvas"></canvas>
+      </div>
+      <div class="nt-keys">
+        <div class="nt-keys-label">KEYS</div>
+        <div class="nt-key"><kbd>←</kbd><kbd>→</kbd> move</div>
+        <div class="nt-key"><kbd>↑</kbd> rotate</div>
+        <div class="nt-key"><kbd>↓</kbd> soft drop</div>
+        <div class="nt-key"><kbd>Space</kbd> hard drop</div>
+        <div class="nt-key"><kbd>P</kbd> pause</div>
+      </div>
+    </aside>
   </main>
 
   <div id="gameComplete" class="game-complete" hidden>
@@ -115,6 +133,6 @@
   <script src="../js/prefs.js?v=20260426a"></script>
   <script src="../js/fx.js?v=20260426a"></script>
   <script src="../js/auth.js?v=20260511c"></script>
-  <script src="../js/games/number-tetris.js?v=20260512b"></script>
+  <script src="../js/games/number-tetris.js?v=20260512c"></script>
 </body>
 </html>
