@@ -39,7 +39,7 @@
   // Order matters — this is the left-to-right reading order in the pill.
   const NAV_ITEMS = [
     { href: '/index.html',        label: 'Home',        i18n: 'nav.home' },
-    { href: '/myspace.html',      label: 'MySpace' },
+    { href: '/myspace.html',      label: 'MySpace',                            authOnly: true },
     { href: '/achievements.html', label: 'Trophies',    i18n: 'nav.trophies',  authOnly: true },
     { href: '/league.html',       label: 'League',                              authOnly: true },
     { href: '/games.html',        label: 'Games' },
