@@ -278,16 +278,64 @@ POST_INFO="$(aws lambda get-function-configuration --function-name "$FN" 2>&1)" 
 POST_SHA="$(echo "$POST_INFO" | jq -r '.CodeSha256')"
 POST_LAST="$(echo "$POST_INFO" | jq -r '.LastModified')"
 
+# Phase 6: publish a numbered immutable version + update the prod alias.
+# This gives instant rollback ("alias swap" without re-upload) on top of
+# the existing zip-restore mechanism. Best-effort — if the alias doesn't
+# exist (e.g. deploying a function other than staar-tutor) we skip
+# gracefully so the deploy still succeeds.
+PREV_PROD=""
+PUB_VER=""
+PUB_RESULT="$(aws lambda publish-version \
+  --function-name "$FN" \
+  --description "deploy.sh ${POST_LAST}" \
+  --output json 2>&1)" || PUB_RESULT="ERROR"
+
+if [ "$PUB_RESULT" != "ERROR" ]; then
+  PUB_VER="$(echo "$PUB_RESULT" | jq -r '.Version' 2>/dev/null || echo '')"
+fi
+
+if [ -n "$PUB_VER" ]; then
+  PREV_PROD="$(aws lambda get-alias --function-name "$FN" --name prod \
+    --query FunctionVersion --output text 2>/dev/null || true)"
+  if [ -n "$PREV_PROD" ] && [ "$PREV_PROD" != "None" ]; then
+    aws lambda update-alias --function-name "$FN" --name prod \
+      --function-version "$PUB_VER" \
+      --description "deploy.sh ${POST_LAST} (was v${PREV_PROD})" \
+      --output text > /dev/null 2>&1 || PREV_PROD=""
+  fi
+fi
+
 cat <<DONE
 
 ${GREEN}✓ DEPLOY COMPLETE${RESET}
   New CodeSha256:   $POST_SHA
   Last modified:    $POST_LAST
+DONE
 
-${YELLOW}If anything looks wrong, ROLLBACK with:${RESET}
-  aws lambda update-function-code \\
-    --function-name $FN \\
-    --zip-file fileb://$BACKUP_PATH
+if [ -n "$PUB_VER" ]; then
+  echo "  Published version: v${PUB_VER}"
+fi
+if [ -n "$PREV_PROD" ] && [ "$PREV_PROD" != "None" ]; then
+  echo "  Prod alias:       v${PREV_PROD} → v${PUB_VER}"
+fi
+
+cat <<ROLLBACK
+
+${YELLOW}If anything looks wrong:${RESET}
+ROLLBACK
+
+if [ -n "$PREV_PROD" ] && [ "$PREV_PROD" != "None" ] && [ -n "$PUB_VER" ]; then
+  cat <<ALIAS
+  Fast rollback (alias swap — no upload, instant):
+    aws lambda update-alias --function-name $FN --name prod --function-version $PREV_PROD
+ALIAS
+fi
+
+cat <<ZIP
+  Zip rollback (full \$LATEST restore):
+    aws lambda update-function-code \\
+      --function-name $FN \\
+      --zip-file fileb://$BACKUP_PATH
 
 See ROLLBACK.md for full procedure.
-DONE
+ZIP
