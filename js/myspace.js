@@ -1442,39 +1442,89 @@
   // ============================================================
   // TASKS PAGE
   // ============================================================
+  // §44 Tasks page — section-routed render (TODAY / UPCOMING / COMPLETED)
+  // with a single inline pill input (no Add button). Date eyebrow above
+  // the title for visual anchor.
   function initTasks() {
-    const empty = document.getElementById('ms-tasks-empty');
-    const list = document.getElementById('ms-task-list');
-    const form = document.getElementById('ms-task-form');
+    const form  = document.getElementById('ms-task-form');
     const input = document.getElementById('ms-task-input');
+    const successTick = document.getElementById('ms-task-pill-check');
+    const eyebrow = document.getElementById('ms-tasks-date-eyebrow');
+
+    // Date eyebrow ("TUESDAY, MAY 12")
+    if (eyebrow) {
+      try {
+        const fmt = new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+        eyebrow.textContent = fmt.format(new Date()).toUpperCase();
+      } catch (_) {}
+    }
+
+    // Routing: TODAY = !done + (no dueDate || dueDate <= today)
+    //          UPCOMING = !done + dueDate > today
+    //          COMPLETED = done, sorted by doneAt desc, capped 20
+    function classify(t) {
+      if (t.done) return 'completed';
+      if (!t.dueDate) return 'today';
+      const today = new Date(); today.setHours(0, 0, 0, 0);
+      const due = new Date(t.dueDate); due.setHours(0, 0, 0, 0);
+      return due.getTime() > today.getTime() ? 'upcoming' : 'today';
+    }
+
+    function rowHtml(t) {
+      return '<li class="ms-task' + (t.done ? ' ms-task--done' : '') + '">' +
+        '<label><input type="checkbox" data-id="' + esc(t.id) + '"' + (t.done ? ' checked' : '') + '><span></span></label>' +
+        '<span class="ms-task-text">' + esc(t.title) + '</span>' +
+        '<button type="button" class="ms-task-delete" data-id="' + esc(t.id) + '" aria-label="Delete">×</button>' +
+      '</li>';
+    }
+
+    function renderSection(name, items) {
+      const list  = document.getElementById('ms-task-list-' + name);
+      const empty = document.getElementById('ms-task-empty-' + name);
+      const count = document.getElementById('ms-task-count-' + name);
+      if (!list) return;
+      list.innerHTML = items.map(rowHtml).join('');
+      if (count) count.textContent = items.length;
+      if (empty) empty.style.display = items.length === 0 ? '' : 'none';
+    }
 
     function render() {
-      const tasks = data.tasks().slice().sort(function (a, b) {
-        if (a.done !== b.done) return a.done ? 1 : -1;
-        return (b.createdAt || 0) - (a.createdAt || 0);
+      const all = data.tasks().slice();
+      const buckets = { today: [], upcoming: [], completed: [] };
+      all.forEach(function (t) {
+        buckets[classify(t)].push(t);
       });
-      if (tasks.length === 0) { empty.style.display = ''; list.hidden = true; return; }
-      empty.style.display = 'none';
-      list.hidden = false;
-      list.innerHTML = tasks.map(function (t) {
-        return '<li class="ms-task' + (t.done ? ' ms-task--done' : '') + '">' +
-          '<label><input type="checkbox" data-id="' + esc(t.id) + '"' + (t.done ? ' checked' : '') + '><span></span></label>' +
-          '<span class="ms-task-text">' + esc(t.title) + '</span>' +
-          '<button type="button" class="ms-task-delete" data-id="' + esc(t.id) + '" aria-label="Delete">×</button>' +
-        '</li>';
-      }).join('');
-      list.querySelectorAll('input[type="checkbox"][data-id]').forEach(function (cb) {
+      // Newest-first within today + upcoming; doneAt-desc + cap 20 for completed
+      buckets.today.sort(function (a, b) { return (b.createdAt || 0) - (a.createdAt || 0); });
+      buckets.upcoming.sort(function (a, b) { return (a.dueDate || '').localeCompare(b.dueDate || ''); });
+      buckets.completed.sort(function (a, b) {
+        const aT = a.doneAt ? new Date(a.doneAt).getTime() : 0;
+        const bT = b.doneAt ? new Date(b.doneAt).getTime() : 0;
+        return bT - aT;
+      });
+      buckets.completed = buckets.completed.slice(0, 20);
+
+      renderSection('today', buckets.today);
+      renderSection('upcoming', buckets.upcoming);
+      renderSection('completed', buckets.completed);
+
+      // Wire delegated handlers (rebuild on each render so listeners stay
+      // attached to the freshly-rendered DOM)
+      document.querySelectorAll('.ms-task input[type="checkbox"][data-id]').forEach(function (cb) {
         cb.addEventListener('change', function () {
           const id = cb.dataset.id;
           const items = data.tasks().map(function (t) {
-            if (t.id === id) return Object.assign({}, t, { done: cb.checked, doneAt: cb.checked ? new Date().toISOString() : null });
-            return t;
+            if (t.id !== id) return t;
+            return Object.assign({}, t, {
+              done: cb.checked,
+              doneAt: cb.checked ? new Date().toISOString() : null
+            });
           });
           data.setTasks(items);
           render();
         });
       });
-      list.querySelectorAll('.ms-task-delete').forEach(function (b) {
+      document.querySelectorAll('.ms-task .ms-task-delete').forEach(function (b) {
         b.addEventListener('click', function () {
           data.setTasks(data.tasks().filter(function (t) { return t.id !== b.dataset.id; }));
           render();
@@ -1490,7 +1540,14 @@
       tasks.unshift({ id: uid(), title: title, done: false, createdAt: Date.now() });
       data.setTasks(tasks);
       input.value = '';
+      // Brief success tick at the right edge of the pill (200ms fade in,
+      // 600ms hold, fade out)
+      if (successTick) {
+        successTick.classList.add('show');
+        setTimeout(function () { successTick.classList.remove('show'); }, 800);
+      }
       render();
+      setTimeout(function () { input.focus(); }, 0);
     });
 
     render();

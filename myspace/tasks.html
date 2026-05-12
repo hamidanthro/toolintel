@@ -11,37 +11,60 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/styles.css?v=20260512s">
+  <link rel="stylesheet" href="/css/styles.css?v=20260512t">
   <script>window.STAARAuth = window.STAARAuth || {}; window.STAARAuth.requireLoginOnLoad = true;</script>
 </head>
 <body class="myspace-page" data-myspace-active="tasks" data-myspace-page-title="Tasks">
 <div class="ms-shell" id="ms-shell-mount"></div>
 
-<section class="ms-subpage" id="ms-subpage-content">
-  <header class="ms-subpage-head">
-    <h2>Your tasks</h2>
-    <form class="ms-task-add" id="ms-task-form" autocomplete="off">
-      <input type="text" id="ms-task-input" placeholder="Add a task and press Enter" maxlength="120">
-      <button type="submit" class="ms-primary-btn">Add</button>
-    </form>
+<section class="ms-subpage ms-tasks-page" id="ms-subpage-content">
+  <header class="ms-tasks-head">
+    <div class="ms-date-eyebrow" id="ms-tasks-date-eyebrow"></div>
+    <h2 class="ms-tasks-title">Your tasks</h2>
   </header>
 
-  <div class="ms-empty" id="ms-tasks-empty">
-    <div class="ms-empty-icon">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <polyline points="3 7 5 9 9 5"/><line x1="13" y1="7" x2="21" y2="7"/>
-        <polyline points="3 14 5 16 9 12"/><line x1="13" y1="14" x2="21" y2="14"/>
-        <polyline points="3 21 5 23 9 19"/><line x1="13" y1="21" x2="21" y2="21"/>
-      </svg>
+  <form class="ms-task-pill" id="ms-task-form" autocomplete="off">
+    <svg class="ms-task-pill-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <line x1="12" y1="5" x2="12" y2="19"/>
+      <line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+    <input type="text" id="ms-task-input" placeholder="Add a task and press Enter" maxlength="120">
+    <span class="ms-task-pill-check" id="ms-task-pill-check" aria-hidden="true">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </span>
+  </form>
+
+  <!-- Section scaffolds — TODAY / UPCOMING / COMPLETED. Always rendered so
+       the page reads as a structured surface even with zero tasks. -->
+  <div class="ms-task-section" data-section="today">
+    <div class="ms-task-section-head">
+      <span class="ms-task-section-eyebrow">Today</span>
+      <span class="ms-task-section-count" id="ms-task-count-today">0</span>
     </div>
-    <h2 class="ms-empty-title">Your tasks live here</h2>
-    <p class="ms-empty-text">Anything small — "finish Ch. 3 by Friday," "ask teacher about Q7." One line each.</p>
+    <ul class="ms-task-list" id="ms-task-list-today" data-section="today"></ul>
+    <p class="ms-task-section-empty" id="ms-task-empty-today">Nothing due today.</p>
   </div>
 
-  <ul class="ms-task-list" id="ms-task-list" hidden></ul>
+  <div class="ms-task-section" data-section="upcoming">
+    <div class="ms-task-section-head">
+      <span class="ms-task-section-eyebrow">Upcoming</span>
+      <span class="ms-task-section-count" id="ms-task-count-upcoming">0</span>
+    </div>
+    <ul class="ms-task-list" id="ms-task-list-upcoming" data-section="upcoming"></ul>
+    <p class="ms-task-section-empty" id="ms-task-empty-upcoming">No upcoming tasks yet.</p>
+  </div>
+
+  <div class="ms-task-section" data-section="completed">
+    <div class="ms-task-section-head">
+      <span class="ms-task-section-eyebrow">Completed</span>
+      <span class="ms-task-section-count" id="ms-task-count-completed">0</span>
+    </div>
+    <ul class="ms-task-list" id="ms-task-list-completed" data-section="completed"></ul>
+    <p class="ms-task-section-empty" id="ms-task-empty-completed">Completed tasks will appear here.</p>
+  </div>
 </section>
 
 <script src="/js/auth.js?v=20260511c"></script>
-<script src="/js/myspace.js?v=20260512e"></script>
+<script src="/js/myspace.js?v=20260512f"></script>
 </body>
 </html>

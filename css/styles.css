@@ -25187,6 +25187,209 @@ body.myspace-page .ms-subpage-head h2 {
   letter-spacing: -0.01em;
 }
 
+/* ==========================================================================
+   §44 Tasks page — single pill input + section scaffolds + custom checkbox
+   (May 12). No card chrome on the empty state; the page reads as a
+   structured surface even with zero tasks.
+   ========================================================================== */
+
+body.myspace-page .ms-tasks-page { padding-bottom: 96px; }
+
+/* Date eyebrow + title header (no flex-row + button — title anchors the
+   page; pill input lives below) */
+body.myspace-page .ms-tasks-head { margin-bottom: 16px; }
+body.myspace-page .ms-tasks-head .ms-date-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+body.myspace-page .ms-tasks-title {
+  color: #ffffff;
+  font-size: 1.55rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+/* Single inline pill — Plus icon + textarea-style input; no Add button */
+.ms-task-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 680px;
+  height: 44px;
+  padding: 0 14px;
+  margin: 16px 0 0;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  transition: border-color 160ms ease;
+}
+.ms-task-pill:focus-within { border-color: rgba(255, 255, 255, 0.25); }
+.ms-task-pill-icon {
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.4);
+  transition: color 160ms ease;
+}
+.ms-task-pill:focus-within .ms-task-pill-icon { color: rgba(255, 255, 255, 0.7); }
+.ms-task-pill input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 15px;
+  padding: 0;
+}
+.ms-task-pill input::placeholder { color: rgba(255, 255, 255, 0.3); }
+.ms-task-pill-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  color: #fbbf24;
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+.ms-task-pill-check.show { opacity: 1; }
+
+/* Section scaffolds (TODAY / UPCOMING / COMPLETED) — always rendered */
+.ms-task-section { margin-top: 40px; }
+.ms-task-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.ms-task-section-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 500;
+}
+.ms-task-section-count {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.ms-task-section-empty {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.3);
+  padding: 12px 4px 4px;
+  margin: 0;
+}
+
+/* Task list + rows */
+body.myspace-page .ms-task-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+body.myspace-page .ms-task-list:empty { display: none; }
+body.myspace-page .ms-task {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition: background 140ms ease;
+  position: relative;
+}
+body.myspace-page .ms-task:hover { background: rgba(255, 255, 255, 0.02); }
+body.myspace-page .ms-task:last-child { border-bottom: none; }
+
+/* Custom checkbox — 18px rounded square, gold-filled when checked */
+body.myspace-page .ms-task label {
+  position: relative;
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+body.myspace-page .ms-task input[type="checkbox"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  margin: 0;
+}
+body.myspace-page .ms-task label span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  transition: border-color 140ms ease, background 140ms ease;
+}
+body.myspace-page .ms-task label:hover span { border-color: rgba(255, 255, 255, 0.4); }
+body.myspace-page .ms-task input:checked + span {
+  background: #fbbf24;
+  border-color: #fbbf24;
+}
+body.myspace-page .ms-task input:checked + span::after {
+  content: '';
+  display: block;
+  width: 9px;
+  height: 5px;
+  border-left: 2px solid #0a1628;
+  border-bottom: 2px solid #0a1628;
+  transform: rotate(-45deg) translate(1px, -1px);
+}
+body.myspace-page .ms-task .ms-task-text {
+  flex: 1;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 15px;
+  line-height: 1.4;
+}
+body.myspace-page .ms-task--done .ms-task-text {
+  color: rgba(255, 255, 255, 0.35);
+  text-decoration: line-through;
+}
+body.myspace-page .ms-task-delete {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.3);
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 140ms ease, color 140ms ease, background 140ms ease;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0;
+}
+body.myspace-page .ms-task:hover .ms-task-delete { opacity: 1; }
+body.myspace-page .ms-task-delete:hover {
+  background: rgba(239, 68, 68, 0.12);
+  color: #fca5a5;
+}
+@media (hover: none) { body.myspace-page .ms-task-delete { opacity: 0.7; } }
+
+/* Hide the old .ms-empty boxed empty-state on the tasks page (replaced
+   by the section scaffolds + per-section empty lines) */
+body.myspace-page .ms-tasks-page .ms-empty { display: none; }
+
+/* Mobile: pill input goes full-width */
+@media (max-width: 640px) {
+  .ms-task-pill { max-width: none; }
+  body.myspace-page .ms-tasks-title { font-size: 1.35rem; }
+}
+
 /* Homework + journal list rows and entries — same dark surface treatment */
 body.myspace-page .ms-list .ms-entry,
 body.myspace-page .ms-hw-card {
