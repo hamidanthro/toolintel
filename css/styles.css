@@ -3934,6 +3934,102 @@ body.marketplace-page .toy-card--affordable {
     0 4px 12px -2px rgba(0, 0, 0, 0.2);
 }
 
+/* ==========================================================================
+   §47 Marketplace premium polish (May 12) — subtractive paint pass.
+   Shrinks headline ~40%, demotes Sign-in button, demotes "All toys"
+   filter active state, moves points badge into content block (no longer
+   obstructing the product photo) and styles it as a muted chip with a
+   small gold coin. Scarcity chips ("X LEFT") dropped at the JS render
+   layer. Layout / grid / nav structure untouched.
+   ========================================================================== */
+
+/* Shrink hero — headline ~40% smaller; section padding reduced */
+body.marketplace-page .marketplace-hero {
+  padding: 56px 32px 36px;
+}
+body.marketplace-page .marketplace-hero::before,
+body.marketplace-page .marketplace-hero::after {
+  /* Soften the amber + indigo background glows so the hero feels calmer */
+  opacity: 0.55;
+}
+body.marketplace-page .marketplace-title {
+  font-size: clamp(28px, 3.6vw, 44px);
+  margin-bottom: 14px;
+  max-width: 720px;
+}
+body.marketplace-page .marketplace-subtitle {
+  font-size: 15px;
+  margin-bottom: 28px;
+}
+
+/* Sign-in button: gold-filled CTA → hairline outline. The marketplace is
+   product-first; the sign-in nudge belongs in the muted nav-action style. */
+body.marketplace-page #user-slot .user-signin.btn-primary {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.7);
+  box-shadow: none;
+  font-weight: 500;
+}
+body.marketplace-page #user-slot .user-signin.btn-primary:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+/* "All toys" + filter chips: gold-filled active → elevated dark-on-dark.
+   Same pattern as the Home Math/Reading segmented control. */
+body.marketplace-page .filter-pill--active {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: none;
+  font-weight: 500;
+}
+
+/* Toy card — let the image area breathe. The outer card keeps its
+   single hairline border; the image-wrapper no longer paints a
+   background or radial-glow, so the photo sits directly on the panel. */
+body.marketplace-page .toy-image-wrapper {
+  background: transparent;
+}
+body.marketplace-page .toy-image {
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.25));
+}
+
+/* Points badge — moved into .toy-content by JS; restyle as a muted chip
+   with a small gold coin. No longer absolute-positioned. */
+body.marketplace-page .toy-points-badge {
+  position: static;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.85);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  box-shadow: none;
+  margin-bottom: 8px;
+  align-self: flex-start;
+}
+body.marketplace-page .toy-points-badge svg {
+  color: rgba(252, 211, 77, 0.8);
+  flex-shrink: 0;
+}
+
+/* Affordable card — soften the green ring to a subtle hairline tint
+   so the card doesn't lit up like a CTA. */
+body.marketplace-page .toy-card--affordable {
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.03) inset,
+    0 4px 12px -2px rgba(0, 0, 0, 0.2);
+}
+
 /* Admin edit pill (for admins) */
 body.marketplace-page .toy-edit {
   position: absolute;

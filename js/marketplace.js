@@ -76,16 +76,9 @@
       const canAfford = !isGuest && balance >= t.priceCents;
       const need = t.priceCents - balance;
       const stock = (t.stock != null) ? Number(t.stock) : null;
-      let stockBadge = '';
-      if (stock != null) {
-        if (stock <= 0) {
-          stockBadge = `<span class="toy-stock-badge toy-stock-badge--out">Sold out</span>`;
-        } else if (stock <= 2) {
-          stockBadge = `<span class="toy-stock-badge toy-stock-badge--scarce">Only ${stock} left!</span>`;
-        } else {
-          stockBadge = `<span class="toy-stock-badge toy-stock-badge--limited">${stock} left</span>`;
-        }
-      }
+      // §47 polish: scarcity chips ("19 LEFT" / "9 LEFT") are a dark
+      // pattern for kids and have been removed from product cards.
+      // Sold-out state is still surfaced via the CTA label below.
       const looksBroken = t.imageUrl && /placehold\.co|placeholder/i.test(t.imageUrl);
       const img = (t.imageUrl && !looksBroken)
         ? `<img class="toy-image" src="${escapeHtml(t.imageUrl)}" alt="${escapeHtml(t.name)}" loading="lazy" decoding="async" onerror="this.outerHTML='<div class=\\'toy-image-placeholder\\'>\u{1F381}</div>'" />`
@@ -101,22 +94,24 @@
       const adminBadge = isAdmin
         ? `<a class="toy-edit" href="admin.html#edit=${encodeURIComponent(t.toyId)}" title="Edit this toy">Edit</a>`
         : '';
+      // §47 polish: points badge moved out of the image overlay and into
+      // the content block above the title. The product photo is no longer
+      // obstructed by a gold pill; the badge becomes a muted chip with a
+      // small gold coin icon (same pattern as +50 pts on Home).
       return `
         <article class="toy-card${canAfford ? ' toy-card--affordable' : ''}" data-toy-id="${escapeHtml(t.toyId)}">
-          ${stockBadge}
           ${adminBadge}
           <div class="toy-image-wrapper">
             <div class="toy-image-glow"></div>
             ${img}
+          </div>
+          <div class="toy-content">
             <span class="toy-points-badge">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                <circle cx="6" cy="6" r="5" fill="#0a1628" stroke="rgba(10,22,40,0.4)" stroke-width="0.5"/>
-                <path d="M6 2L7 4.5L9.5 4.8L7.6 6.5L8.2 9L6 7.7L3.8 9L4.4 6.5L2.5 4.8L5 4.5L6 2Z" fill="currentColor"/>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="9"/><path d="M12 6v12M9 9h4.5a2 2 0 010 4H10a2 2 0 000 4h5"/>
               </svg>
               ${priceLabel}
             </span>
-          </div>
-          <div class="toy-content">
             <h3 class="toy-title">${escapeHtml(t.name)}</h3>
             ${desc ? `<p class="toy-description">${escapeHtml(desc)}</p>` : '<p class="toy-description">&nbsp;</p>'}
           </div>
