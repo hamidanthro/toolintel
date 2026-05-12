@@ -7,50 +7,49 @@
   <meta name="theme-color" content="#060d1f" />
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="../css/styles.css?v=20260512d" />
-  <title>Math Showdown — GradeEarn</title>
+  <link rel="stylesheet" href="../css/styles.css?v=20260512e" />
+  <title>Math Battle Royale — GradeEarn</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 </head>
-<body class="game-page game-showdown">
+<body class="game-page game-battle-royale">
   <header class="game-header">
     <a href="../games.html" class="game-back" aria-label="Back">‹</a>
     <div class="game-header-title">
-      <div class="game-header-eyebrow"><span class="game-header-dot" aria-hidden="true"></span> MATH SHOWDOWN · 1v1</div>
-      <div class="game-header-stat" id="gameHeaderStat">Race a friend · 10 rounds · winner 5¢</div>
+      <div class="game-header-eyebrow"><span class="game-header-dot" aria-hidden="true"></span> MATH BATTLE ROYALE · 2-8</div>
+      <div class="game-header-stat" id="gameHeaderStat">Last kid standing wins 25¢</div>
     </div>
     <div class="game-header-score">
-      <div class="game-header-score-num" id="gameYourScore">0</div>
-      <div class="game-header-score-label">your wins</div>
+      <div class="game-header-score-num" id="gameYourScore">—</div>
+      <div class="game-header-score-label">your rank</div>
     </div>
   </header>
-  <div id="gameInviteBanner" class="game-invite-banner" hidden></div>
   <main class="game-main">
-    <div id="gameStatus" class="game-status">Math Showdown · loading…</div>
+    <div id="gameStatus" class="game-status">Battle Royale · loading…</div>
 
     <div id="howToPlay" class="memory-howto">
       <div class="memory-howto-head">
-        <span class="memory-howto-icon" aria-hidden="true">⚔️</span>
+        <span class="memory-howto-icon" aria-hidden="true">👑</span>
         <strong>How to play</strong>
         <button type="button" id="howToDismiss" class="memory-howto-dismiss" aria-label="Dismiss">✕</button>
       </div>
       <ol class="memory-howto-list">
-        <li><strong>10 rounds.</strong> 10 seconds per round.</li>
-        <li>Each round, a math problem appears — <strong>fastest correct answer wins the round</strong>.</li>
-        <li><strong>Both answer or time runs out</strong> → next round.</li>
-        <li>Most rounds won = match winner. <strong>Winner earns 5¢, loser 1¢, tie 2¢.</strong></li>
-        <li>Share the invite link to play with a friend — or auto-match anyone at your grade.</li>
+        <li><strong>Up to 8 players.</strong> Lobby starts when full OR 30s after 4 join.</li>
+        <li>Each round, <strong>everyone gets the same problem</strong>.</li>
+        <li><strong>Wrong answer = eliminated.</strong> All correct = slowest 50% eliminated.</li>
+        <li><strong>Timer tightens every round:</strong> 8s → 6s → 4s.</li>
+        <li><strong>Last kid standing wins 25¢.</strong> 2nd place 5¢. 3rd+ 1¢.</li>
       </ol>
     </div>
 
-    <div id="showdownRoot" class="sd-root"></div>
+    <div id="brRoot" class="br-root"></div>
   </main>
   <div id="gameToast" class="game-toast" hidden role="status" aria-live="polite"></div>
   <script src="../js/prefs.js?v=20260426a"></script>
   <script src="../js/fx.js?v=20260426a"></script>
   <script src="../js/auth.js?v=20260511c"></script>
   <script src="../js/games/match-engine.js?v=20260512b"></script>
-  <script src="../js/games/showdown.js?v=20260512a"></script>
+  <script src="../js/games/battle-royale.js?v=20260512a"></script>
 </body>
 </html>

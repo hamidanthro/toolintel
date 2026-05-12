@@ -4919,6 +4919,14 @@ Output ONLY valid JSON:
 const MATCH_TTL_SEC = 60 * 60; // 1 hour
 const SHOWDOWN_ROUNDS = 10;
 const SHOWDOWN_ROUND_MS = 10000;
+// Battle Royale tuning
+const BR_MIN_PLAYERS = 2;
+const BR_MAX_PLAYERS = 8;
+const BR_AUTO_START_4PLUS_MS = 30 * 1000;   // ≥4 players + 30s lobby → start
+const BR_AUTO_START_2PLUS_MS = 60 * 1000;   // ≥2 players + 60s lobby → start (graceful)
+const BR_CANCEL_SOLO_MS = 90 * 1000;        // 1 player + 90s → cancel
+const BR_ROUND_DURATIONS = [8000, 6000, 4000, 4000, 4000, 4000]; // per round index
+const BR_MAX_ROUNDS = 6;
 
 function _matchId() { return 'm_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10); }
 function _inviteToken() {
@@ -5030,10 +5038,13 @@ async function _addPlayer(matchId, userId, displayName, grade, expiresAt) {
   }
 }
 
-async function _createRound(matchId, n, gradeBand, expiresAt) {
-  const problem = _showdownProblem(gradeBand);
+async function _createRound(matchId, n, gradeBand, expiresAt, durationMs, brTier) {
+  // brTier !== null/undefined → use BR problem with difficulty tier;
+  // durationMs overrides the default round length.
+  const isBR = (brTier !== null && brTier !== undefined);
+  const problem = isBR ? _battleRoyaleProblem(gradeBand, brTier) : _showdownProblem(gradeBand);
   const startedAt = Date.now();
-  const deadline = startedAt + SHOWDOWN_ROUND_MS;
+  const deadline = startedAt + (durationMs || SHOWDOWN_ROUND_MS);
   await ddb.send(new PutCommand({
     TableName: MATCHES_TABLE,
     Item: { matchId, kind: `round#${n}`, roundNumber: n, problem, startedAt, deadline, answers: {}, winnerUserId: null, expiresAt },
@@ -5042,7 +5053,63 @@ async function _createRound(matchId, n, gradeBand, expiresAt) {
   return { problem, startedAt, deadline };
 }
 
-function _scrubPlayer(p) { return { userId: p.userId, displayName: p.displayName, grade: p.grade, score: p.score || 0, eliminated: !!p.eliminated }; }
+// Battle Royale problem with difficulty tier (0=base, 1=+, 2=++).
+// Reuses the showdown generator but scales numbers/steps by tier.
+function _battleRoyaleProblem(gradeBand, tier) {
+  if (!tier || tier <= 0) return _showdownProblem(gradeBand);
+  function ri(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }
+  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+  function shuf(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+  function build(stem, ans) {
+    const a = String(ans);
+    const set = new Set([a]);
+    const n = Number(ans);
+    while (set.size < 4) {
+      const d = ri(-Math.max(2, Math.abs(n) - 1), Math.max(5, Math.abs(n) + 5));
+      if (d === 0) continue;
+      const c = n + d;
+      if (c < 0 && gradeBand !== 'grade-7' && gradeBand !== 'grade-8' && gradeBand !== 'algebra-1') continue;
+      if (c === n) continue;
+      set.add(String(c));
+    }
+    const choices = shuf(Array.from(set));
+    return { stem, choices, correctIndex: choices.indexOf(a) };
+  }
+  const mul = tier === 1 ? 2 : 4;
+  const g = gradeBand || 'grade-3';
+  if (g === 'grade-k' || g === 'grade-1') {
+    const a = ri(2, 8 * mul), b = ri(2, 6 * mul);
+    return build(`${a} + ${b}`, a + b);
+  }
+  if (g === 'grade-2') {
+    const a = ri(5, 20 * mul), b = ri(2, Math.max(2, 15 * mul - 1));
+    return build(`${a} + ${b}`, a + b);
+  }
+  if (g === 'grade-3') {
+    const a = ri(2, 9 + tier * 2), b = ri(2, 9 + tier * 2);
+    return build(`${a} × ${b}`, a * b);
+  }
+  if (g === 'grade-4') {
+    const a = ri(6, 12 + tier * 3), b = ri(3, 9 + tier * 2);
+    return build(`${a} × ${b}`, a * b);
+  }
+  if (g === 'grade-5') {
+    const a = ri(7, 15 + tier * 5), b = ri(5, 20 + tier * 5);
+    return build(`${a} × ${b}`, a * b);
+  }
+  if (g === 'grade-6') {
+    const p = pick([15, 30, 45, 60]); const w = pick([40, 60, 80, 120, 200]);
+    return build(`${p}% of ${w}`, Math.round(p * w / 100));
+  }
+  if (g === 'grade-7' || g === 'grade-8') {
+    const a = ri(2, 9 + tier * 2), x = ri(2, 9 + tier * 2), b = ri(-25, 25);
+    return build(`${a}x ${b >= 0 ? '+' : '−'} ${Math.abs(b)} = ${a * x + b}\\nx = ?`, x);
+  }
+  const a = ri(2, 7 + tier), b = ri(1, 12 + tier * 3), x = ri(2, 8 + tier);
+  return build(`${a}x + ${b}, when x = ${x}`, a * x + b);
+}
+
+function _scrubPlayer(p) { return { userId: p.userId, displayName: p.displayName, grade: p.grade, score: p.score || 0, eliminated: !!p.eliminated, alive: p.alive !== false, eliminationRound: p.eliminationRound || null, finalRank: p.finalRank || null }; }
 
 async function handleMatchmake(payload) {
   const auth = await authedUser(payload);
@@ -5056,59 +5123,87 @@ async function handleMatchmake(payload) {
   const now = Date.now();
   const expiresAt = Math.floor(now / 1000) + MATCH_TTL_SEC;
 
+  const maxPlayers = (mode === 'battle-royale') ? BR_MAX_PLAYERS : 2;
+
   // Join via invite token
   if (inviteToken) {
     const scan = await ddb.send(new ScanCommand({
       TableName: MATCHES_TABLE,
-      FilterExpression: 'inviteToken = :t AND #k = :h AND #s <> :done',
+      FilterExpression: 'inviteToken = :t AND #k = :h AND #s <> :done AND #s <> :cancelled',
       ExpressionAttributeNames: { '#k': 'kind', '#s': 'status' },
-      ExpressionAttributeValues: { ':t': inviteToken, ':h': 'header', ':done': 'done' },
+      ExpressionAttributeValues: { ':t': inviteToken, ':h': 'header', ':done': 'done', ':cancelled': 'cancelled' },
       Limit: 5
     }));
     const header = (scan.Items || [])[0];
     if (!header) return bad(404, 'Invite expired or not found');
-    if (header.creatorUserId === me) {
-      const players = await _readPlayers(header.matchId);
-      const headerR = header;
-      return ok(await _matchSnapshot(headerR.matchId, headerR, players, headerR.currentRound));
-    }
     const players = await _readPlayers(header.matchId);
-    if (players.length >= 2 && !players.find(p => p.userId === me)) return bad(409, 'Match is full');
+    if (players.find(p => p.userId === me)) {
+      return ok(await _matchSnapshot(header.matchId, header, players, header.currentRound));
+    }
+    const cap = header.maxPlayers || 2;
+    if (players.length >= cap) return bad(409, 'Match is full');
     await _addPlayer(header.matchId, me, myDisplay, myGrade, expiresAt);
     return await _maybeStartMatch(header.matchId);
   }
 
-  // Auto-match: find someone else's queued match in same gradeBand
+  // Auto-match: find a queued match in same gradeBand+mode with room
   const queued = await ddb.send(new ScanCommand({
     TableName: MATCHES_TABLE,
     FilterExpression: 'mode = :m AND gradeBand = :g AND #s = :q AND creatorUserId <> :me AND #k = :h',
     ExpressionAttributeNames: { '#s': 'status', '#k': 'kind' },
     ExpressionAttributeValues: { ':m': mode, ':g': gradeBand, ':q': 'queued', ':me': me, ':h': 'header' },
-    Limit: 5
+    Limit: 10
   }));
-  if (queued.Items && queued.Items.length > 0) {
-    const header = queued.Items[0];
-    await _addPlayer(header.matchId, me, myDisplay, myGrade, expiresAt);
-    return await _maybeStartMatch(header.matchId);
+  for (const cand of (queued.Items || [])) {
+    const cap = cand.maxPlayers || 2;
+    const players = await _readPlayers(cand.matchId);
+    if (players.length < cap && !players.find(p => p.userId === me)) {
+      await _addPlayer(cand.matchId, me, myDisplay, myGrade, expiresAt);
+      return await _maybeStartMatch(cand.matchId);
+    }
   }
 
   // Otherwise create a new queued match
   const matchId = _matchId();
   const tok = _inviteToken();
+  const totalRounds = (mode === 'battle-royale') ? BR_MAX_ROUNDS : SHOWDOWN_ROUNDS;
   await ddb.send(new PutCommand({
     TableName: MATCHES_TABLE,
-    Item: { matchId, kind: 'header', mode, gradeBand, status: 'queued', currentRound: 0, totalRounds: SHOWDOWN_ROUNDS, createdAt: now, inviteToken: tok, creatorUserId: me, expiresAt }
+    Item: {
+      matchId, kind: 'header', mode, gradeBand, status: 'queued',
+      currentRound: 0, totalRounds,
+      createdAt: now, queuedSince: now,
+      inviteToken: tok, creatorUserId: me,
+      maxPlayers, minPlayers: (mode === 'battle-royale') ? BR_MIN_PLAYERS : 2,
+      expiresAt
+    }
   }));
   await _addPlayer(matchId, me, myDisplay, myGrade, expiresAt);
-  return ok({ matchId, status: 'queued', mode, gradeBand, players: [{ userId: me, displayName: myDisplay, grade: myGrade, score: 0, eliminated: false }], inviteToken: tok, serverNowMs: Date.now() });
+  return ok({
+    matchId, status: 'queued', mode, gradeBand,
+    players: [{ userId: me, displayName: myDisplay, grade: myGrade, score: 0, alive: true, eliminated: false }],
+    inviteToken: tok, maxPlayers, queuedSince: now,
+    serverNowMs: Date.now()
+  });
 }
 
 async function _maybeStartMatch(matchId) {
   const header = await _readMatchHeader(matchId);
   if (!header) return bad(404, 'Match not found');
   const players = await _readPlayers(matchId);
-  if (players.length === 2 && header.status === 'queued') {
-    const round = await _createRound(matchId, 1, header.gradeBand, header.expiresAt);
+  const isBR = header.mode === 'battle-royale';
+  const cap = header.maxPlayers || 2;
+  let shouldStart = false;
+  if (header.status === 'queued') {
+    if (isBR) {
+      // Start immediately when lobby is full.
+      shouldStart = (players.length >= cap);
+    } else {
+      shouldStart = (players.length === 2);
+    }
+  }
+  if (shouldStart) {
+    const round = await _createRound(matchId, 1, header.gradeBand, header.expiresAt, isBR ? BR_ROUND_DURATIONS[0] : SHOWDOWN_ROUND_MS, isBR ? 0 : null);
     await ddb.send(new UpdateCommand({
       TableName: MATCHES_TABLE,
       Key: { matchId, kind: 'header' },
@@ -5119,7 +5214,8 @@ async function _maybeStartMatch(matchId) {
     return ok({
       matchId, status: 'live', mode: header.mode, gradeBand: header.gradeBand,
       players: players.map(_scrubPlayer),
-      currentRound: 1, totalRounds: SHOWDOWN_ROUNDS,
+      currentRound: 1, totalRounds: header.totalRounds || (isBR ? BR_MAX_ROUNDS : SHOWDOWN_ROUNDS),
+      maxPlayers: header.maxPlayers || (isBR ? BR_MAX_PLAYERS : 2),
       problem: _publicProblem(round.problem),
       roundStartedAt: round.startedAt, roundDeadline: round.deadline,
       inviteToken: header.inviteToken,
@@ -5139,6 +5235,9 @@ async function _matchSnapshot(matchId, header, players, currentRound) {
     matchId, status: header.status, mode: header.mode, gradeBand: header.gradeBand,
     players: players.map(_scrubPlayer),
     currentRound: header.currentRound || 0, totalRounds: header.totalRounds || SHOWDOWN_ROUNDS,
+    maxPlayers: header.maxPlayers || ((header.mode === 'battle-royale') ? BR_MAX_PLAYERS : 2),
+    minPlayers: header.minPlayers || ((header.mode === 'battle-royale') ? BR_MIN_PLAYERS : 2),
+    queuedSince: header.queuedSince || header.createdAt,
     inviteToken: header.inviteToken,
     serverNowMs: Date.now()
   };
@@ -5165,7 +5264,52 @@ async function handleMatchState(payload) {
   if (!header) return bad(404, 'Match not found');
   const players = await _readPlayers(matchId);
   if (!players.find(p => p.userId === auth.username)) return bad(403, 'Not a player in this match');
+
+  // Lazy auto-start / cancel for Battle Royale lobbies. No cron needed —
+  // every state poll has a chance to flip the match forward.
+  if (header.mode === 'battle-royale' && header.status === 'queued') {
+    const elapsed = Date.now() - (header.queuedSince || header.createdAt || Date.now());
+    if (players.length >= 4 && elapsed >= BR_AUTO_START_4PLUS_MS) {
+      return await _maybeStartMatchBR(matchId, header, players);
+    }
+    if (players.length >= 2 && elapsed >= BR_AUTO_START_2PLUS_MS) {
+      return await _maybeStartMatchBR(matchId, header, players);
+    }
+    if (players.length === 1 && elapsed >= BR_CANCEL_SOLO_MS) {
+      try {
+        await ddb.send(new UpdateCommand({
+          TableName: MATCHES_TABLE,
+          Key: { matchId, kind: 'header' },
+          UpdateExpression: 'SET #s = :c, finishedAt = :t',
+          ConditionExpression: '#s = :q',
+          ExpressionAttributeNames: { '#s': 'status' },
+          ExpressionAttributeValues: { ':c': 'cancelled', ':t': Date.now(), ':q': 'queued' }
+        }));
+      } catch (_) {}
+      const headerAfter = await _readMatchHeader(matchId);
+      const playersAfter = await _readPlayers(matchId);
+      return ok(await _matchSnapshot(matchId, headerAfter, playersAfter, 0));
+    }
+  }
   return ok(await _matchSnapshot(matchId, header, players, header.currentRound));
+}
+
+// Force-start a BR lobby with whatever players are present.
+async function _maybeStartMatchBR(matchId, header, players) {
+  const round = await _createRound(matchId, 1, header.gradeBand, header.expiresAt, BR_ROUND_DURATIONS[0], 0);
+  try {
+    await ddb.send(new UpdateCommand({
+      TableName: MATCHES_TABLE,
+      Key: { matchId, kind: 'header' },
+      UpdateExpression: 'SET #s = :live, currentRound = :cr, lockedAt = :ts',
+      ConditionExpression: '#s = :q',
+      ExpressionAttributeNames: { '#s': 'status' },
+      ExpressionAttributeValues: { ':live': 'live', ':cr': 1, ':ts': Date.now(), ':q': 'queued' }
+    }));
+  } catch (_) { /* already started by parallel writer; just return snapshot */ }
+  const headerAfter = await _readMatchHeader(matchId);
+  const playersAfter = await _readPlayers(matchId);
+  return ok(await _matchSnapshot(matchId, headerAfter, playersAfter, 1));
 }
 
 async function handleMatchAnswer(payload) {
@@ -5208,6 +5352,10 @@ async function handleMatchAnswer(payload) {
 }
 
 async function _maybeResolveRound(matchId, roundNumber) {
+  const header = await _readMatchHeader(matchId);
+  if (header && header.mode === 'battle-royale') {
+    return await _maybeResolveRoundBR(matchId, roundNumber, header);
+  }
   const round = await _readRound(matchId, roundNumber);
   if (!round) return bad(404, 'Round not found');
   if (round.winnerUserId !== null) {
@@ -5253,17 +5401,17 @@ async function _maybeResolveRound(matchId, roundNumber) {
     // someone else resolved first; that's fine
   }
 
-  const header = await _readMatchHeader(matchId);
-  if (!header) return bad(404, 'Match disappeared');
+  const headerAfter = await _readMatchHeader(matchId);
+  if (!headerAfter) return bad(404, 'Match disappeared');
 
   // Done?
-  if (roundNumber >= header.totalRounds) {
+  if (roundNumber >= headerAfter.totalRounds) {
     return await _finalizeMatch(matchId);
   }
 
   // Otherwise spawn next round
   const nextN = roundNumber + 1;
-  const next = await _createRound(matchId, nextN, header.gradeBand, header.expiresAt);
+  const next = await _createRound(matchId, nextN, headerAfter.gradeBand, headerAfter.expiresAt);
   await ddb.send(new UpdateCommand({
     TableName: MATCHES_TABLE,
     Key: { matchId, kind: 'header' },
@@ -5394,4 +5542,249 @@ async function handleMatchHistory(payload) {
   } catch (_) {
     return ok({ history: [] });
   }
+}
+
+// ===== Battle Royale resolution =====
+//
+// Round resolution: any alive player wrong / no-answer is eliminated.
+// If all alive correct, eliminate slowest 50% (by serverLatencyMs).
+// If all alive wrong, no eliminations — round counter still advances.
+// If exactly 1 survivor remains, finalize. If 0 survivors but multiple
+// went into the round, pick the player with the lowest cumulative
+// latency across all rounds as winner.
+
+async function _maybeResolveRoundBR(matchId, roundNumber, header) {
+  const round = await _readRound(matchId, roundNumber);
+  if (!round) return bad(404, 'Round not found');
+  if (round.winnerUserId !== null) {
+    // already resolved
+    const playersR = await _readPlayers(matchId);
+    return ok({ resolved: true, roundNumber, alivePlayers: playersR.filter(p => p.alive !== false).map(p => p.userId), correctIndex: round.problem.correctIndex });
+  }
+  const players = await _readPlayers(matchId);
+  const aliveBefore = players.filter(p => p.alive !== false);
+  const aliveIds = aliveBefore.map(p => p.userId);
+  const answers = round.answers || {};
+  const allAlivedAnswered = aliveIds.every(id => answers[id]);
+  const deadlinePassed = Date.now() > round.deadline + 200;
+  if (!allAlivedAnswered && !deadlinePassed) {
+    return ok({ resolved: false, pendingUserIds: aliveIds.filter(id => !answers[id]) });
+  }
+
+  // Determine eliminations
+  const wrongOrNoAnswer = [];
+  const correctList = []; // { id, latencyMs }
+  for (const p of aliveBefore) {
+    const a = answers[p.userId];
+    if (!a || !a.correct) wrongOrNoAnswer.push(p.userId);
+    else correctList.push({ id: p.userId, latencyMs: a.latencyMs || 999999 });
+  }
+  let eliminateIds = wrongOrNoAnswer.slice();
+  let survivorIds;
+  if (wrongOrNoAnswer.length === 0 && correctList.length > 1) {
+    // All correct — eliminate slowest half
+    correctList.sort((a, b) => a.latencyMs - b.latencyMs);
+    const keep = Math.ceil(correctList.length / 2);
+    const fastHalf = correctList.slice(0, keep).map(x => x.id);
+    const slowHalf = correctList.slice(keep).map(x => x.id);
+    eliminateIds = eliminateIds.concat(slowHalf);
+    survivorIds = fastHalf;
+  } else if (wrongOrNoAnswer.length === aliveBefore.length) {
+    // All wrong — no eliminations (replay-style)
+    eliminateIds = [];
+    survivorIds = aliveIds.slice();
+  } else {
+    survivorIds = correctList.map(x => x.id);
+  }
+
+  // Atomically mark the round resolved so only one writer applies the
+  // eliminations + spawns the next round. Subsequent calls bail early.
+  try {
+    await ddb.send(new UpdateCommand({
+      TableName: MATCHES_TABLE,
+      Key: { matchId, kind: `round#${roundNumber}` },
+      UpdateExpression: 'SET winnerUserId = :w',
+      ConditionExpression: 'winnerUserId = :n',
+      ExpressionAttributeValues: { ':w': survivorIds[0] || '__NONE__', ':n': null }
+    }));
+  } catch (e) {
+    if (e.name !== 'ConditionalCheckFailedException') throw e;
+    // someone else resolved first; re-read state
+    const playersR = await _readPlayers(matchId);
+    return ok({ resolved: true, roundNumber, alivePlayers: playersR.filter(p => p.alive !== false).map(p => p.userId) });
+  }
+
+  // Mark eliminated players
+  for (const uid of eliminateIds) {
+    try {
+      await ddb.send(new UpdateCommand({
+        TableName: MATCHES_TABLE,
+        Key: { matchId, kind: `player#${uid}` },
+        UpdateExpression: 'SET alive = :f, eliminationRound = :r',
+        ConditionExpression: 'alive = :t OR attribute_not_exists(alive)',
+        ExpressionAttributeValues: { ':f': false, ':r': roundNumber, ':t': true }
+      }));
+    } catch (e) {
+      if (e.name !== 'ConditionalCheckFailedException') throw e;
+    }
+  }
+
+  // 1 survivor → winner
+  if (survivorIds.length === 1) {
+    return await _finalizeBattleRoyale(matchId, survivorIds[0]);
+  }
+  // 0 survivors with multiple wrong-answer kids → no eliminations branch
+  // handled above; survivorIds == aliveIds in that case. The only way to
+  // reach 0 survivors here is the slowest-50% logic on a single-correct
+  // edge case, which is impossible (>= 1 fastest). So this is a safe-guard.
+  if (survivorIds.length === 0) {
+    // tie-break: pick the survivor with lowest cumulative latency so far
+    const winner = aliveBefore[0] ? aliveBefore[0].userId : null;
+    return await _finalizeBattleRoyale(matchId, winner);
+  }
+
+  // Cap at BR_MAX_ROUNDS — if still >1 alive, pick by cumulative latency
+  if (roundNumber >= (header.totalRounds || BR_MAX_ROUNDS)) {
+    return await _finalizeBattleRoyale(matchId, null /* pick by latency */);
+  }
+
+  // Spawn next round
+  const nextN = roundNumber + 1;
+  const durIdx = Math.min(nextN - 1, BR_ROUND_DURATIONS.length - 1);
+  const tier = Math.min(2, Math.floor((nextN - 1) / 1)); // 1→0, 2→1, 3→2
+  const next = await _createRound(matchId, nextN, header.gradeBand, header.expiresAt, BR_ROUND_DURATIONS[durIdx], tier);
+  await ddb.send(new UpdateCommand({
+    TableName: MATCHES_TABLE,
+    Key: { matchId, kind: 'header' },
+    UpdateExpression: 'SET currentRound = :n',
+    ExpressionAttributeValues: { ':n': nextN }
+  })).catch(() => {});
+
+  return ok({
+    resolved: true,
+    roundNumber, correctIndex: round.problem.correctIndex,
+    answers,
+    eliminatedThisRound: eliminateIds,
+    aliveAfter: survivorIds,
+    nextRound: {
+      roundNumber: nextN,
+      problem: _publicProblem(next.problem),
+      startedAt: next.startedAt,
+      deadline: next.deadline,
+      durationMs: BR_ROUND_DURATIONS[durIdx],
+      tier
+    },
+    serverNowMs: Date.now()
+  });
+}
+
+async function _finalizeBattleRoyale(matchId, winnerUserId) {
+  const header = await _readMatchHeader(matchId);
+  if (!header) return bad(404, 'Match not found');
+  if (header.status === 'done') {
+    const playersR = await _readPlayers(matchId);
+    return ok({ matchFinished: true, players: playersR.map(_scrubPlayer), winnerUserId });
+  }
+  const players = await _readPlayers(matchId);
+  if (players.length === 0) return bad(404, 'No players');
+
+  // Mark done
+  try {
+    await ddb.send(new UpdateCommand({
+      TableName: MATCHES_TABLE,
+      Key: { matchId, kind: 'header' },
+      UpdateExpression: 'SET #s = :d, finishedAt = :t',
+      ConditionExpression: '#s <> :d',
+      ExpressionAttributeNames: { '#s': 'status' },
+      ExpressionAttributeValues: { ':d': 'done', ':t': Date.now() }
+    }));
+  } catch (e) {
+    if (e.name !== 'ConditionalCheckFailedException') throw e;
+    const playersR = await _readPlayers(matchId);
+    return ok({ matchFinished: true, players: playersR.map(_scrubPlayer) });
+  }
+
+  // Compute final ranks. Sort: alive (true=last-standing) before
+  // eliminated. Within alive group, higher score first. Within
+  // eliminated group, later eliminationRound first (lasted longer).
+  const ranked = players.slice().sort((a, b) => {
+    const aAlive = a.alive !== false ? 1 : 0;
+    const bAlive = b.alive !== false ? 1 : 0;
+    if (aAlive !== bAlive) return bAlive - aAlive;
+    if (aAlive) return (b.score || 0) - (a.score || 0);
+    const aer = a.eliminationRound || 0;
+    const ber = b.eliminationRound || 0;
+    return ber - aer;
+  });
+  if (winnerUserId) {
+    // pin chosen winner to rank 1
+    const idx = ranked.findIndex(p => p.userId === winnerUserId);
+    if (idx > 0) {
+      const [w] = ranked.splice(idx, 1);
+      ranked.unshift(w);
+    }
+  }
+
+  const finishedAt = Date.now();
+  for (let i = 0; i < ranked.length; i++) {
+    const p = ranked[i];
+    const finalRank = i + 1;
+    // Cents schedule (server-authoritative; respects $100 lifetime cap)
+    let centsAwarded = 1;
+    let result = 'eliminated';
+    if (finalRank === 1) { centsAwarded = 25; result = 'win'; }
+    else if (finalRank === 2) { centsAwarded = 5; result = 'top-3'; }
+    else if (finalRank === 3) { centsAwarded = 1; result = 'top-3'; }
+
+    try {
+      const ur = await ddb.send(new GetCommand({ TableName: USERS_TABLE, Key: { username: p.userId } }));
+      if (ur.Item) {
+        const lifetime = ur.Item.lifetimeCents || 0;
+        const room = Math.max(0, LIFETIME_CAP_CENTS - lifetime);
+        const award = Math.min(centsAwarded, room);
+        if (award > 0) {
+          await ddb.send(new UpdateCommand({
+            TableName: USERS_TABLE,
+            Key: { username: p.userId },
+            UpdateExpression: 'SET balanceCents = if_not_exists(balanceCents, :z) + :a, lifetimeCents = if_not_exists(lifetimeCents, :z) + :a',
+            ExpressionAttributeValues: { ':a': award, ':z': 0 }
+          }));
+        }
+      }
+    } catch (_) {}
+
+    try {
+      await ddb.send(new UpdateCommand({
+        TableName: MATCHES_TABLE,
+        Key: { matchId, kind: `player#${p.userId}` },
+        UpdateExpression: 'SET finalRank = :r',
+        ExpressionAttributeValues: { ':r': finalRank }
+      }));
+    } catch (_) {}
+
+    try {
+      await ddb.send(new PutCommand({
+        TableName: MATCH_HISTORY_TABLE,
+        Item: {
+          userId: p.userId,
+          finishedAtMatchId: `${finishedAt}#${matchId}`,
+          matchId, mode: header.mode,
+          opponentUserId: null,
+          opponentDisplayName: null,
+          myScore: p.score || 0,
+          opponentScore: 0,
+          finalRank,
+          result, centsEarned: centsAwarded,
+          finishedAt
+        }
+      }));
+    } catch (_) {}
+  }
+  const finalPlayers = await _readPlayers(matchId);
+  return ok({
+    matchFinished: true,
+    players: finalPlayers.map(_scrubPlayer),
+    winnerUserId: ranked[0] ? ranked[0].userId : null,
+    serverNowMs: Date.now()
+  });
 }

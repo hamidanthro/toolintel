@@ -156,6 +156,9 @@
           this.lastSnapshot.roundWinnerUserId = r.winnerUserId;
           this.lastSnapshot.lastRoundCorrectIndex = r.correctIndex;
           this.lastSnapshot.lastRoundAnswers = r.answers || {};
+          // Battle Royale: surface elimination metadata
+          this.lastSnapshot.eliminatedThisRound = r.eliminatedThisRound || [];
+          this.lastSnapshot.aliveAfter = r.aliveAfter || null;
           this._emit();
         }
         if (r.nextRound) {

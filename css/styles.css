@@ -21016,3 +21016,187 @@ body.game-showdown .game-main { padding-top: 12px; }
   .sd-player { padding: 10px 6px; }
   .sd-pscore { font-size: 1.4rem; }
 }
+
+/* ============================================================
+   MATH BATTLE ROYALE (game #16) — 2-8 player elimination
+   Reuses sd-* primitives where it makes sense; br-* for unique bits.
+   ============================================================ */
+body.game-battle-royale .game-main { padding-top: 12px; }
+.br-root { padding: 0 14px 24px; max-width: 720px; margin: 0 auto; }
+
+/* Lobby roster */
+.br-lobby { text-align: center; }
+.br-lobby-roster {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 14px 0;
+}
+.br-slot {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 10px 8px;
+  border-radius: var(--r-button);
+  font-size: 0.74rem;
+}
+.br-slot--filled {
+  background: rgba(30, 58, 138, 0.5);
+  border: 1px solid rgba(253, 224, 71, 0.4);
+  color: #fff; font-weight: 700;
+}
+.br-slot--empty {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.4);
+  min-height: 64px;
+  display: flex; align-items: center; justify-content: center;
+}
+.br-slot-name {
+  font-size: 0.72rem;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-width: 100%;
+}
+.br-av {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(140deg, #fde68a 0%, #fbbf24 100%);
+  color: #1e293b;
+  font-weight: 800; font-size: 0.95rem;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.br-av--lg { width: 56px; height: 56px; font-size: 1.5rem; }
+
+/* Live view */
+.br-live { padding: 14px; }
+.br-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 12px;
+}
+.br-round-tag {
+  font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase;
+  font-weight: 800; color: #fde68a;
+}
+.br-alive-count {
+  font-size: 0.85rem; color: rgba(255, 255, 255, 0.78);
+}
+.br-alive-count strong { color: #34d399; font-size: 1.1rem; }
+
+.br-spectator-band {
+  margin-top: 14px; padding: 10px 12px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: var(--r-button);
+  color: #fca5a5; font-weight: 600; font-size: 0.92rem;
+  text-align: center;
+}
+.br-eliminated-banner {
+  margin-top: 12px; padding: 8px 12px;
+  background: rgba(15, 23, 42, 0.7);
+  border-left: 3px solid #ef4444;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.85rem; font-weight: 600;
+  border-radius: 0 var(--r-button) var(--r-button) 0;
+}
+
+/* Roster strip at bottom */
+.br-roster {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(56px, 1fr));
+  gap: 6px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.br-roster-cell {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 6px 4px;
+  border-radius: var(--r-button);
+  background: rgba(30, 58, 138, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: background 150ms ease, opacity 150ms ease;
+}
+.br-roster-cell.is-me {
+  border-color: #fde68a;
+  background: rgba(251, 191, 36, 0.18);
+}
+.br-roster-cell.is-dead {
+  opacity: 0.45;
+  background: rgba(15, 23, 42, 0.6);
+}
+.br-roster-name {
+  font-size: 0.66rem;
+  color: rgba(255, 255, 255, 0.78);
+  font-weight: 600;
+  max-width: 100%;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.br-roster-pip {
+  font-size: 0.72rem;
+  color: #fde68a;
+  font-weight: 800;
+}
+.br-roster-cell.is-dead .br-roster-pip {
+  color: rgba(239, 68, 68, 0.85);
+}
+
+.sd-choice.is-spectator {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Done view — podium */
+.br-done { text-align: center; }
+.br-podium {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  gap: 8px;
+  margin: 18px 0 14px;
+  align-items: end;
+}
+.br-podium-slot {
+  background: rgba(30, 58, 138, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--r-card);
+  padding: 14px 8px;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.br-podium-1 {
+  background: linear-gradient(160deg, rgba(253, 224, 71, 0.35) 0%, rgba(251, 191, 36, 0.45) 100%);
+  border-color: #fbbf24;
+  padding: 22px 8px;
+  order: 2;
+}
+.br-podium-2 { order: 1; padding-top: 18px; }
+.br-podium-3 { order: 3; padding-top: 14px; }
+.br-podium-rank { font-size: 0.78rem; font-weight: 800; color: rgba(255, 255, 255, 0.7); letter-spacing: 0.08em; }
+.br-podium-1 .br-podium-rank { color: #1e293b; }
+.br-podium-name { font-size: 0.92rem; font-weight: 700; color: #fff; }
+.br-podium-1 .br-podium-name { color: #1e293b; }
+.br-podium-cents { font-size: 1.1rem; font-weight: 800; color: #fde68a; }
+.br-podium-1 .br-podium-cents { color: #1e293b; }
+
+.br-results-list {
+  margin-top: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: var(--r-button);
+  padding: 8px 12px;
+}
+.br-results-row {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.86rem;
+}
+.br-results-row:last-child { border-bottom: 0; }
+.br-results-rank { color: rgba(253, 224, 71, 0.8); font-weight: 800; }
+.br-results-name { color: rgba(255, 255, 255, 0.85); font-weight: 600; }
+.br-results-cents { color: #fde68a; font-weight: 700; }
+
+/* Mobile tweaks */
+@media (max-width: 480px) {
+  .br-lobby-roster { grid-template-columns: repeat(2, 1fr); }
+  .br-podium { grid-template-columns: 1fr 1.3fr 1fr; }
+  .br-podium-1 { padding: 18px 6px; }
+  .br-roster { grid-template-columns: repeat(auto-fit, minmax(50px, 1fr)); }
+}
