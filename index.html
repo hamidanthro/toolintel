@@ -128,7 +128,7 @@
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" />
 
-  <link rel="stylesheet" href="css/styles.css?v=20260512g" />
+  <link rel="stylesheet" href="css/styles.css?v=20260512u" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -287,17 +287,15 @@
 
       <div class="dashboard-welcome">
         <div class="welcome-content">
-          <!-- Live-count social proof — same time-of-day curve as the
-               anon hero pill. Hidden by default; refreshLiveCount()
-               unhides + populates it. -->
-          <div class="dash-live-pill" id="dash-live" hidden>
-            <span class="dash-live-dot" aria-hidden="true"></span>
-            <span id="dash-live-text">0 students practicing right now</span>
+          <!-- §45 polish: live-count pill removed from the kid's dashboard
+               (concurrent-users belongs on marketing, not above the kid's
+               name on their own home). The #dash-live element remains as
+               a hidden no-op so refreshLiveCount() doesn't error. -->
+          <div class="dash-live-pill" id="dash-live" hidden aria-hidden="true">
+            <span class="dash-live-dot" hidden></span>
+            <span id="dash-live-text" hidden></span>
           </div>
-          <span class="welcome-eyebrow">
-            <span class="eyebrow-emoji">⭐</span>
-            Lifetime stats
-          </span>
+          <span class="welcome-eyebrow welcome-eyebrow--quiet">Lifetime stats</span>
           <h1 id="dash-greeting" class="welcome-title">Welcome back</h1>
           <p id="dash-sub" class="welcome-subtitle">Here's how you're doing.</p>
 

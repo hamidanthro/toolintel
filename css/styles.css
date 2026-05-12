@@ -5598,9 +5598,120 @@ body.home-page #dashboard .activity-empty-cta:hover {
   border-color: rgba(251,191,36,0.3);
 }
 
-/* ============================================================
-   PRACTICE SELECT PAGE — premium dark grade picker (Prompt 14)
-   ============================================================ */
+/* ==========================================================================
+   §45 Home premium polish (May 12) — subtractive paint pass.
+   Gold accent appears ~9 times above the fold in the pre-polish version;
+   this block brings it down to ~5 by demoting eyebrows, segmented controls,
+   the challenge card chrome, the +50 pts chip, the marketplace link, and
+   the header wallet pill. Layout / structure untouched.
+   ========================================================================== */
+
+/* 1. Live-count pill: hidden (already hidden via JS, but be explicit) */
+body.home-page #dashboard .dash-live-pill { display: none !important; }
+
+/* 2. LIFETIME STATS eyebrow — drop pill chrome, plain micro-text */
+body.home-page #dashboard .welcome-eyebrow--quiet {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  font-size: 10px !important;
+  letter-spacing: 0.2em !important;
+  color: rgba(252, 211, 77, 0.6) !important;
+  font-weight: 500 !important;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+body.home-page #dashboard .welcome-eyebrow--quiet .eyebrow-emoji { display: none; }
+
+/* 3. Subject toggle (Math/Reading) — segmented pill, no gold fill */
+body.home-page #dashboard .subject-toggle {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  padding: 4px;
+  gap: 0;
+}
+body.home-page #dashboard .subject-segment {
+  border-radius: 999px;
+  min-height: 36px;
+  padding: 6px 14px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+}
+body.home-page #dashboard .subject-segment:hover { color: #ffffff; }
+body.home-page #dashboard .subject-segment.active {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  font-weight: 500;
+}
+
+/* 4. Daily challenge — strip gold border + gradient + glow; use plain panel */
+body.home-page #dashboard .daily-challenge {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: none;
+  backdrop-filter: none;
+}
+body.home-page #dashboard .challenge-glow { display: none; }
+body.home-page #dashboard .challenge-fire { filter: none; }
+body.home-page #dashboard .challenge-eyebrow {
+  letter-spacing: 0.2em;
+  font-weight: 500;
+  color: rgba(252, 211, 77, 0.6);
+}
+
+/* 5. Dedupe bonus value — body copy is white/65, not gold */
+body.home-page #dashboard .challenge-subtitle strong {
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 600;
+}
+
+/* +50 pts chip softens to white-on-dark; only the coin keeps gold */
+body.home-page #dashboard .challenge-reward {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+body.home-page #dashboard .reward-amount {
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
+}
+
+/* Challenge progress fill — was bright gold gradient; soften to a single
+   tone so the +50 chip and the eyebrow are the only gold signals here */
+body.home-page #dashboard .challenge-progress-fill {
+  background: rgba(251, 191, 36, 0.55);
+  box-shadow: none;
+}
+
+/* 6. Stat cards — Spend in marketplace link goes from gold to white/55 */
+body.home-page #dashboard .stat-card-link {
+  color: rgba(255, 255, 255, 0.55);
+  font-weight: 400;
+}
+body.home-page #dashboard .stat-card-link:hover { color: #ffffff; gap: 6px; }
+/* (.stat-card-value default = white; .stat-card--wallet override = gold
+   already in place at line 4957. Wallet number stays the single gold
+   numeric highlight in the row — that's the spec.) */
+
+/* 7. Header wallet pill on home — muted background, gold-tinted coin only */
+body.home-page .wallet-pill {
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.85);
+  border-color: rgba(255, 255, 255, 0.1);
+  font-weight: 500;
+}
+body.home-page .wallet-pill:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+body.home-page .wallet-pill svg { color: rgba(251, 191, 36, 0.8); }
+
+/* 10. Level progress bar fill — was gold-tinged elsewhere; force to white/30
+   so the only remaining color in the level pill is the purple avatar */
+body.home-page #dashboard .level-progress-fill {
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: none;
+}
 body.practice-select-page {
   position: relative;
   background: #060d1f;
