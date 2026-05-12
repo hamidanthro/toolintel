@@ -1369,16 +1369,21 @@
     const subI = document.getElementById('ms-timetable-subject');
     const roomI = document.getElementById('ms-timetable-room');
 
+    // §42 empty-state affordance — Plus icon + "Add class" instead of grey
+    // "No classes" placeholder text. Whole day card becomes a clickable
+    // drop zone that opens the Add class overlay with the day pre-filled.
+    const PLUS_SVG = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+
     function render() {
       const tt = data.timetable();
       grid.innerHTML = DAYS.map(function (d) {
         const today = DAYS[(new Date().getDay() + 6) % 7];
         const dayClasses = tt.filter(function (c) { return c.day === d; })
           .sort(function (a, b) { return (a.startTime || '').localeCompare(b.startTime || ''); });
-        return '<div class="ms-tt-day' + (d === today ? ' ms-tt-day--today' : '') + '">' +
+        return '<div class="ms-tt-day' + (d === today ? ' ms-tt-day--today' : '') + '" data-day="' + esc(d) + '">' +
           '<header><span>' + d + '</span>' + (d === today ? '<span class="ms-tt-today">Today</span>' : '') + '</header>' +
           (dayClasses.length === 0 ?
-            '<p class="ms-tt-empty">No classes</p>' :
+            '<div class="ms-tt-empty"><span class="ms-tt-empty-icon">' + PLUS_SVG + '</span><span>Add class</span></div>' :
             dayClasses.map(function (c) {
               return '<div class="ms-tt-class" data-id="' + esc(c.id) + '">' +
                 '<div class="ms-tt-time">' + esc(c.startTime || '') + '</div>' +
@@ -1390,10 +1395,22 @@
           '</div>';
       }).join('');
       grid.querySelectorAll('.ms-tt-delete').forEach(function (b) {
-        b.addEventListener('click', function () {
+        b.addEventListener('click', function (e) {
+          e.stopPropagation();
           if (!confirm('Delete this class?')) return;
           data.setTimetable(data.timetable().filter(function (c) { return c.id !== b.dataset.id; }));
           render();
+        });
+      });
+      // Whole-card click opens the Add overlay with the day pre-selected.
+      // Skip the click handler when the kid clicked inside an existing
+      // class item — that surface has its own actions.
+      grid.querySelectorAll('.ms-tt-day').forEach(function (card) {
+        card.addEventListener('click', function (e) {
+          if (e.target.closest('.ms-tt-class')) return;
+          const day = card.dataset.day;
+          if (day && dayI) dayI.value = day;
+          show();
         });
       });
     }

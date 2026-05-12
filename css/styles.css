@@ -25039,6 +25039,146 @@ body.myspace-page .ms-composer-send.ms-composer-stop:hover {
   .ms-chat-suggest-chip { font-size: 0.8rem; padding: 7px 12px; }
   .ms-recent-panel { right: 8px; width: calc(100vw - 32px); }
 }
+
+/* ==========================================================================
+   §42 Timetable + sub-route dark-theme inheritance (May 12)
+   Day cards, "Today" eyebrow, empty-state affordance, primary/secondary
+   buttons all flip from light to navy + gold accent.
+   ========================================================================== */
+
+/* Primary action button — gold filled (used for "Add class" + overlay save) */
+body.myspace-page .ms-primary-btn {
+  background: #fbbf24;
+  color: #0a1628;
+  border: 1px solid rgba(251, 191, 36, 0.6);
+}
+body.myspace-page .ms-primary-btn:hover {
+  background: #fde68a;
+  opacity: 1;
+}
+
+/* Secondary action button — outlined hairline */
+body.myspace-page .ms-secondary-btn {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+body.myspace-page .ms-secondary-btn:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Day cards — dark panel with hairline border, interactive */
+body.myspace-page .ms-tt-day {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  min-height: 180px;
+  cursor: pointer;
+  transition: background 180ms ease, border-color 180ms ease;
+  display: flex;
+  flex-direction: column;
+}
+body.myspace-page .ms-tt-day:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+body.myspace-page .ms-tt-day--today {
+  border-left: 2px solid rgba(251, 191, 36, 0.6);
+  padding-left: 11px; /* compensate for the +1px left border so day labels align */
+}
+body.myspace-page .ms-tt-day header {
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+}
+/* "TODAY" eyebrow text (replaces the cream pill) */
+body.myspace-page .ms-tt-today {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  color: rgba(252, 211, 77, 0.85);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+/* Empty-state affordance — centered Plus + "Add class" prompt that the
+   whole card surface clicks through to. JS renders the markup; CSS
+   centers and tints it. */
+body.myspace-page .ms-tt-empty {
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 13px;
+  transition: color 180ms ease;
+}
+body.myspace-page .ms-tt-empty-icon {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.15);
+  transition: color 180ms ease;
+}
+body.myspace-page .ms-tt-day:hover .ms-tt-empty { color: rgba(255, 255, 255, 0.65); }
+body.myspace-page .ms-tt-day:hover .ms-tt-empty-icon { color: rgba(255, 255, 255, 0.45); }
+
+/* Class items inside a day card — dark surfaces */
+body.myspace-page .ms-tt-class {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+body.myspace-page .ms-tt-time { color: rgba(255, 255, 255, 0.45); }
+body.myspace-page .ms-tt-subject { color: #ffffff; }
+body.myspace-page .ms-tt-room { color: rgba(255, 255, 255, 0.5); }
+body.myspace-page .ms-tt-delete { color: rgba(255, 255, 255, 0.3); }
+body.myspace-page .ms-tt-delete:hover {
+  background: rgba(239, 68, 68, 0.12);
+  color: #fca5a5;
+}
+
+/* Hairline above the "Back" sidebar item (it's always the last child of
+   the .ms-nav nav inside the injected shell — last-of-type is reliable) */
+body.myspace-page .ms-nav .ms-nav-item:last-of-type {
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.5);
+}
+body.myspace-page .ms-nav .ms-nav-item:last-of-type:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Sub-page heading — "This week", "Your journal", etc. all share .ms-subpage-head h2 */
+body.myspace-page .ms-subpage-head h2 {
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* Homework + journal list rows and entries — same dark surface treatment */
+body.myspace-page .ms-list .ms-entry,
+body.myspace-page .ms-hw-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.85);
+}
+body.myspace-page .ms-hw-card .ms-hw-subject,
+body.myspace-page .ms-entry .ms-entry-title { color: #ffffff; }
+body.myspace-page .ms-hw-card .ms-hw-meta,
+body.myspace-page .ms-entry .ms-entry-meta { color: rgba(255, 255, 255, 0.5); }
+body.myspace-page .ms-hw-delete { color: rgba(255, 255, 255, 0.3); }
+body.myspace-page .ms-hw-delete:hover {
+  background: rgba(239, 68, 68, 0.12);
+  color: #fca5a5;
+}
 /* Legal-page utility class — drops the OG SEO-page intro padding so
    long-form legal docs read cleanly on /legal/*.html. Inherits .fw-page
    shell otherwise. */
