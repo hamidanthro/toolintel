@@ -15,6 +15,8 @@ A="$REPO_ROOT/lambda/tutor.js"
 B="$REPO_ROOT/lambda/tutor-build/tutor.js"
 JA="$REPO_ROOT/lambda/judge.js"
 JB="$REPO_ROOT/lambda/tutor-build/judge.js"
+CA="$REPO_ROOT/lambda/crisis-detector.js"
+CB="$REPO_ROOT/lambda/tutor-build/crisis-detector.js"
 
 if [ ! -f "$A" ]; then
   echo "[parity] FAIL: $A not found" >&2
@@ -103,6 +105,22 @@ else
   FAIL=1
   echo "[parity] FAIL: judge.js differs between source and build (showing first 20 lines of diff):" >&2
   diff "$JA" "$JB" | head -20 | sed 's/^/[parity]   /' >&2
+fi
+
+# ============================================================
+# CHECK 5 — crisis-detector.js byte-identical between source and build
+# §21 May 12 — safety-critical module. Drift here means the deployed
+# crisis filter doesn't match the source we test against. NEVER deploy
+# with crisis-detector drift.
+# ============================================================
+if [ -f "$CA" ] && [ -f "$CB" ]; then
+  if cmp -s "$CA" "$CB"; then
+    echo "[parity] OK: crisis-detector.js byte-identical between source and build"
+  else
+    FAIL=1
+    echo "[parity] FAIL: crisis-detector.js differs (safety-critical — abort)" >&2
+    diff "$CA" "$CB" | head -20 | sed 's/^/[parity]   /' >&2
+  fi
 fi
 
 if [ "$FAIL" -ne 0 ]; then

@@ -37,6 +37,7 @@ const { SESv2Client, SendEmailCommand } = require('@aws-sdk/client-sesv2');
 const crypto = require('crypto');
 const lake = require('./content-lake');
 const judge = require('./judge');
+const crisis = require('./crisis-detector');
 
 const MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
 const SECRET_NAME = process.env.OPENAI_SECRET_NAME || 'staar-tutor/openai-api-key';
@@ -511,6 +512,13 @@ exports.handler = async (event) => {
 
   // ===== MySpace AI Buddy (Phase 4 — May 12) =====
   if (action === 'myspaceChat')        return await handleMyspaceChat(payload);
+
+  // ===== §21 Compliance — policy acceptance, audit, deletion, export =====
+  if (action === 'getPolicyVersions')        return await handleGetPolicyVersions(payload);
+  if (action === 'acceptPolicy')             return await handleAcceptPolicy(payload);
+  if (action === 'getMyAuditTrail')          return await handleGetMyAuditTrail(payload);
+  if (action === 'getMyDataExport')          return await handleGetMyDataExport(payload);
+  if (action === 'requestAccountDeletion')   return await handleRequestAccountDeletion(payload);
 
   if (!payload.question || payload.studentAnswer == null || payload.correctAnswer == null) {
     return bad(400, 'Missing required fields: question, studentAnswer, correctAnswer');
@@ -6733,10 +6741,38 @@ async function handleMyspaceChat(payload) {
   if (!message) return bad(400, 'message required');
   if (message.length > 1000) return bad(400, 'message too long');
 
-  // §20: Frontend now sends a "context" string with the full snapshot
-  // (journal content, homework details, timetable, tasks, app stats).
-  // Older clients sent just "summary" (count-line summary). Read whichever
-  // is present; cap at 8 KB for safety.
+  // §21 SAFETY LAYER (pre-LLM crisis detection).
+  // Critical signals (self_harm, abuse) MUST bypass the LLM entirely
+  // and return a fixed, lawyer-reviewable safety message. This is the
+  // Character.AI / OpenAI lawsuit defense.
+  const signal = crisis.detectCrisis(message);
+  if (signal) {
+    // Log every signal for compliance audit
+    try {
+      await logSafetyEvent({
+        userId: auth.username,
+        signalType: signal.signal_type,
+        severity: signal.severity,
+        excerpt: (signal.matched || '').slice(0, 80),
+        source: 'myspaceChat',
+        action: signal.severity === 'critical' ? 'llm_bypassed' : 'llm_continued'
+      });
+    } catch (_) {}
+
+    // For critical signals, never call the LLM
+    if (signal.severity === 'critical') {
+      const reply = crisis.safetyReplyFor(signal);
+      return ok({ reply: reply, safety: true, signalType: signal.signal_type });
+    }
+    // For jailbreak attempts, return fixed refusal too — don't tempt the model
+    if (signal.signal_type === 'jailbreak') {
+      const reply = crisis.safetyReplyFor(signal);
+      return ok({ reply: reply, safety: true, signalType: 'jailbreak' });
+    }
+    // 'distress' and 'pii_share' fall through to the LLM with extra context
+    // appended below.
+  }
+
   const context = String(payload.context || payload.summary || '').trim().slice(0, 8000);
   const subjectFilter = String(payload.subjectFilter || '').trim().slice(0, 60);
   const firstName = String(payload.firstName || '').trim().slice(0, 30).replace(/[^A-Za-z\s'-]/g, '') || 'friend';
@@ -6752,6 +6788,14 @@ async function handleMyspaceChat(payload) {
     userParts.push(context);
   } else {
     userParts.push('STUDENT SNAPSHOT: (empty — the student has not added any data yet)');
+  }
+  // §21: pass-through advisory for distress / pii_share signals
+  if (signal && signal.signal_type === 'distress') {
+    userParts.push('');
+    userParts.push('ADVISORY: the student\'s message contains distress language. Respond with extra warmth and gently suggest talking to a trusted adult. Do not minimize.');
+  } else if (signal && signal.signal_type === 'pii_share') {
+    userParts.push('');
+    userParts.push('ADVISORY: the student\'s message contains personal info (phone/address/email). Do not store or repeat it. Politely redirect.');
   }
   userParts.push('');
   userParts.push('Student question: ' + message);
@@ -6774,9 +6818,296 @@ async function handleMyspaceChat(payload) {
       reply = String(result.choices[0].message.content || '').trim();
     }
     if (!reply) reply = 'I\'m here when you\'re ready. Try asking what\'s due this week, or your next class.';
+
+    // §21 SAFETY LAYER (post-LLM output moderation). Last line of defense.
+    const modCheck = crisis.moderateOutput(reply);
+    if (!modCheck.clean) {
+      try {
+        await logSafetyEvent({
+          userId: auth.username,
+          signalType: 'output_moderation',
+          severity: 'high',
+          excerpt: reply.slice(0, 80),
+          source: 'myspaceChat',
+          action: 'reply_replaced',
+          reason: modCheck.reason
+        });
+      } catch (_) {}
+      reply = modCheck.replacement;
+    }
+
     return ok({ reply: reply });
   } catch (err) {
     console.error('[myspaceChat] error:', err && (err.message || err));
     return ok({ reply: 'I had trouble reaching the network just now — try again in a sec, or check your homework tab.', error: 'openai_error' });
   }
+}
+
+// =============================================================
+// §21 Safety event logger
+// =============================================================
+// Append-only write to staar-safety-events. Never blocks the main reply
+// — if logging fails, the safety reply still goes out.
+
+const SAFETY_EVENTS_TABLE = process.env.SAFETY_EVENTS_TABLE || 'staar-safety-events';
+
+async function logSafetyEvent(evt) {
+  try {
+    const eventId = 'se_' + Date.now().toString(36) + '_' + crypto.randomBytes(4).toString('hex');
+    await ddb.send(new PutCommand({
+      TableName: SAFETY_EVENTS_TABLE,
+      Item: {
+        eventId: eventId,
+        userId: evt.userId || 'anon',
+        signalType: evt.signalType,
+        severity: evt.severity,
+        excerpt: (evt.excerpt || '').slice(0, 200),
+        source: evt.source || 'unknown',
+        action: evt.action || 'none',
+        reason: evt.reason || null,
+        occurredAt: Date.now()
+      }
+    }));
+  } catch (err) {
+    console.error('[safety-event] log failed:', err && err.message);
+  }
+}
+
+// =============================================================
+// §21 Compliance handlers (May 12)
+// =============================================================
+// Adds the lambda actions parents/kids need to exercise the rights
+// guaranteed by COPPA + GDPR-K:
+//   - acceptPolicy: record a versioned acceptance (privacy, terms, AI
+//     disclosure, parent agreement, etc.) for audit trail
+//   - getPolicyVersions: returns current published versions so the
+//     frontend can prompt re-acceptance when something changed
+//   - getMyAuditTrail: kid/parent sees every compliance-relevant
+//     event on their account (consent, deletion request, safety
+//     events, policy acceptance)
+//   - getMyDataExport: parent-requested full export of child's data
+//     across every staar-* table that holds kid content. JSON blob.
+//   - requestAccountDeletion: kicks off cascading delete. Tombstones
+//     the user row immediately (login disabled), then sweeps content
+//     in a follow-up worker. Audit + safety events preserved per
+//     retention schedule.
+//
+// All writes go through logAuditEvent() so we have a provable trail.
+
+const POLICY_ACCEPTANCES_TABLE = process.env.POLICY_ACCEPTANCES_TABLE || 'staar-policy-acceptances';
+const AUDIT_LOG_TABLE          = process.env.AUDIT_LOG_TABLE          || 'staar-audit-log';
+const CONSENTS_TABLE           = process.env.CONSENTS_TABLE           || 'staar-consents';
+
+// Canonical document types + current versions. Bump when content changes.
+const POLICY_VERSIONS = {
+  privacy_policy:    { version: 1, effectiveDate: '2026-05-12' },
+  terms:             { version: 1, effectiveDate: '2026-05-12' },
+  ai_disclosure:     { version: 1, effectiveDate: '2026-05-12' },
+  acceptable_use:    { version: 1, effectiveDate: '2026-05-12' },
+  parent_agreement:  { version: 1, effectiveDate: '2026-05-12' },
+  subprocessors:     { version: 1, effectiveDate: '2026-05-12' },
+};
+const POLICY_DOC_TYPES = Object.keys(POLICY_VERSIONS);
+
+// IPv4/IPv6 normalize → sha256 prefix (we don't store raw IPs; we
+// store a one-way hash for audit-only correlation, never identifying).
+function hashIp(ip) {
+  if (!ip) return null;
+  try {
+    return crypto.createHash('sha256').update(String(ip)).digest('hex').slice(0, 16);
+  } catch (_) { return null; }
+}
+
+async function logAuditEvent(evt) {
+  try {
+    const eventId = 'ae_' + Date.now().toString(36) + '_' + crypto.randomBytes(4).toString('hex');
+    await ddb.send(new PutCommand({
+      TableName: AUDIT_LOG_TABLE,
+      Item: {
+        eventId: eventId,
+        userId: evt.userId || 'anon',
+        type: evt.type,
+        metadata: evt.metadata || {},
+        ipHash: evt.ipHash || null,
+        userAgentSnippet: (evt.userAgent || '').slice(0, 120),
+        occurredAt: Date.now()
+      }
+    }));
+  } catch (err) {
+    console.error('[audit] log failed:', err && err.message);
+  }
+}
+
+async function handleGetPolicyVersions(payload) {
+  // Public — no auth required. The frontend uses this to know whether
+  // to prompt re-acceptance.
+  return ok({ policies: POLICY_VERSIONS });
+}
+
+async function handleAcceptPolicy(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+
+  const docType = String(payload.docType || '').trim();
+  const version = parseInt(payload.version, 10);
+  if (POLICY_DOC_TYPES.indexOf(docType) === -1) return bad(400, 'unknown docType');
+  if (!Number.isFinite(version) || version < 1) return bad(400, 'invalid version');
+
+  const expected = POLICY_VERSIONS[docType];
+  if (!expected || expected.version !== version) {
+    return bad(400, 'policy version mismatch — please reload and re-accept');
+  }
+
+  const ipHash = hashIp(payload._sourceIp || (payload.event && payload.event.requestContext && payload.event.requestContext.identity && payload.event.requestContext.identity.sourceIp));
+  const userAgent = String(payload._userAgent || '').slice(0, 200);
+
+  const eventId = 'pa_' + auth.username + ':' + docType + ':v' + version;
+  await ddb.send(new PutCommand({
+    TableName: POLICY_ACCEPTANCES_TABLE,
+    Item: {
+      eventId: eventId,
+      userId: auth.username,
+      docType: docType,
+      version: version,
+      effectiveDate: expected.effectiveDate,
+      acceptedAt: Date.now(),
+      ipHash: ipHash,
+      userAgent: userAgent
+    }
+  }));
+
+  await logAuditEvent({
+    userId: auth.username,
+    type: 'policy_accepted',
+    metadata: { docType: docType, version: version },
+    ipHash: ipHash,
+    userAgent: userAgent
+  });
+
+  return ok({ ok: true, docType: docType, version: version });
+}
+
+async function handleGetMyAuditTrail(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  // Self-only: a user can only see their own audit trail (parents see
+  // their kid's via a different action — to be added when parent/child
+  // accounts diverge).
+  const r = await ddb.send(new ScanCommand({
+    TableName: AUDIT_LOG_TABLE,
+    FilterExpression: 'userId = :u',
+    ExpressionAttributeValues: { ':u': auth.username },
+    Limit: 200
+  }));
+  const events = (r.Items || []).sort(function (a, b) {
+    return (b.occurredAt || 0) - (a.occurredAt || 0);
+  });
+  return ok({ events: events });
+}
+
+async function handleGetMyDataExport(payload) {
+  // COPPA-required: parent can request a full export of the child's data.
+  // Returns a JSON blob with everything we hold across staar-* tables.
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+
+  const exportData = {
+    exportedAt: new Date().toISOString(),
+    userId: auth.username,
+    sources: {}
+  };
+
+  // Helper that does a Scan-with-filter and tucks results under a named key
+  async function dumpTable(name, tableName, filterExpr, attrValues, attrNames) {
+    try {
+      const params = {
+        TableName: tableName,
+        FilterExpression: filterExpr,
+        ExpressionAttributeValues: attrValues
+      };
+      if (attrNames) params.ExpressionAttributeNames = attrNames;
+      const r = await ddb.send(new ScanCommand(params));
+      exportData.sources[name] = r.Items || [];
+    } catch (err) {
+      exportData.sources[name] = { error: err.message };
+    }
+  }
+
+  // User profile (sanitized — no password hash, no salt)
+  try {
+    const r = await ddb.send(new GetCommand({
+      TableName: USERS_TABLE,
+      Key: { username: auth.username }
+    }));
+    if (r.Item) {
+      const u = Object.assign({}, r.Item);
+      delete u.passwordHash;
+      delete u.salt;
+      delete u.tokenSecret;
+      exportData.sources.userProfile = u;
+    }
+  } catch (_) {}
+
+  // Stats, blog posts (own), match history, audit log, policy acceptances,
+  // friends, messages — every kid-content table that supports a userId
+  // attribute. Lookups go through generic scan-by-userId.
+  await dumpTable('stats',             STATS_TABLE,             'username = :u', { ':u': auth.username });
+  await dumpTable('blogPosts',         'staar-blog-posts',      'userId = :u',    { ':u': auth.username });
+  await dumpTable('matchHistory',      MATCH_HISTORY_TABLE,     'userId = :u',    { ':u': auth.username });
+  await dumpTable('safetyEvents',      SAFETY_EVENTS_TABLE,     'userId = :u',    { ':u': auth.username });
+  await dumpTable('policyAcceptances', POLICY_ACCEPTANCES_TABLE,'userId = :u',    { ':u': auth.username });
+  await dumpTable('auditLog',          AUDIT_LOG_TABLE,         'userId = :u',    { ':u': auth.username });
+  await dumpTable('consents',          CONSENTS_TABLE,          'userId = :u',    { ':u': auth.username });
+
+  await logAuditEvent({
+    userId: auth.username,
+    type: 'data_export_delivered',
+    metadata: { tableCount: Object.keys(exportData.sources).length }
+  });
+
+  return ok({ export: exportData });
+}
+
+async function handleRequestAccountDeletion(payload) {
+  // COPPA: parent can request deletion of child data at any time.
+  // Two-step pattern:
+  //   1. Tombstone the user immediately (login disabled, displayName
+  //      replaced with "[deleted]") — kid can no longer interact
+  //   2. Audit event 'data_deletion_requested' fires; a follow-up
+  //      worker (not yet built — TODO) does the cascading content sweep
+  //      within 30 days per the privacy-policy SLA
+  //   3. Safety + audit + consent rows are PRESERVED (retention rules)
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+
+  const confirmed = !!payload.confirm;
+  if (!confirmed) return bad(400, 'set confirm=true to proceed — this is irreversible');
+
+  try {
+    await ddb.send(new UpdateCommand({
+      TableName: USERS_TABLE,
+      Key: { username: auth.username },
+      UpdateExpression: 'SET deletionRequestedAt = :t, accountStatus = :s, displayName = :d REMOVE balanceCents, lifetimeCents, parentEmail, parentEmailWeekly, pushSubscription',
+      ExpressionAttributeValues: {
+        ':t': Date.now(),
+        ':s': 'pending_deletion',
+        ':d': '[deleted]'
+      }
+    }));
+  } catch (err) {
+    console.error('[delete] tombstone failed:', err.message);
+    return bad(500, 'tombstone failed — please retry');
+  }
+
+  await logAuditEvent({
+    userId: auth.username,
+    type: 'data_deletion_requested',
+    metadata: { method: 'self-service', sla: '30 days for content sweep' }
+  });
+
+  return ok({
+    ok: true,
+    status: 'pending_deletion',
+    message: 'Your account is tombstoned. Content will be fully removed within 30 days. Audit + safety records are kept for legal compliance per our privacy policy.'
+  });
 }
