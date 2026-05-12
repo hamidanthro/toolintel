@@ -52,6 +52,22 @@ function esc(s) {
     .replace(/'/g, '&#39;');
 }
 
+// Slugify a unit title for URL use.
+//   "Place Value to 1,000,000,000" → "place-value-to-1-000-000-000"
+//   "Decimals to Hundredths"       → "decimals-to-hundredths"
+//   "Operations with Fractions"    → "operations-with-fractions"
+// Stable + reversible enough that a re-slug after a curriculum update
+// produces near-identical URLs (good for Google's crawl cache).
+function slugify(s) {
+  return String(s == null ? '' : s)
+    .toLowerCase()
+    .replace(/&/g, ' and ')
+    .replace(/[+]/g, ' plus ')
+    .replace(/['"`’]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 function loadCurriculum(file) {
   const p = path.join(DATA_DIR, file);
   return JSON.parse(fs.readFileSync(p, 'utf8'));
@@ -461,6 +477,304 @@ ${unitsHtml}
 `;
 }
 
+// ============================================================
+// Per-unit pages — long-tail SEO at /free-worksheets/<grade>/<unit>.html
+// ============================================================
+// Each unit on a grade-level page (e.g. "Place Value to 1,000,000,000"
+// inside grade-4-math.html) ALSO gets its own dedicated page. Captures
+// long-tail search queries like "fractions worksheets grade 5", "place
+// value worksheets grade 4" — much higher search volume per page than
+// the broad grade-level landing pages, and the per-page conversion
+// rate is higher because the kid lands exactly on what they searched.
+//
+// Each per-unit page:
+//   - URL: /free-worksheets/<grade-url-slug>/<unit-slug>.html
+//   - Sample questions: 8 (more than the 5 on the grade index — this
+//     IS the page the user wanted, give them more)
+//   - Internal links: parent grade page, sibling units (within-grade),
+//     same-topic in adjacent grades (vertical-curriculum links)
+//   - Schema: LearningResource + BreadcrumbList + FAQPage (focused
+//     to this unit's TEKS)
+
+function renderUnitPage(unit, grade, allUnits) {
+  const slug = slugify(unit.title);
+  const samples = sampleQuestionsFromUnit(unit, 8);
+  const qHtml = samples.map((q, i) => renderQuestion(q, i + 1)).join('\n');
+
+  // Question count across the entire unit (for keyword-rich copy)
+  let qCount = 0;
+  (unit.lessons || []).forEach((l) => { qCount += (l.questions || []).length; });
+
+  // Sibling units (within the same grade — for in-grade nav)
+  const siblings = allUnits.filter((u) => u.id !== unit.id);
+
+  // Look for the same topic in adjacent grades (vertical-curriculum
+  // linking — e.g. grade-3 fractions ↔ grade-4 fractions ↔ grade-5
+  // fractions). Matches loosely on the first 2-3 keywords of the
+  // title (slugify both, check for prefix overlap).
+  const verticalLinks = [];
+  const myKey = slug.split('-').slice(0, 3).join('-');
+  GRADES.forEach((g) => {
+    if (g.slug === grade.slug) return;
+    let other;
+    try {
+      const otherCurr = loadCurriculum(g.file);
+      other = (otherCurr.units || []).find((u) => {
+        const otherSlug = slugify(u.title);
+        const otherKey = otherSlug.split('-').slice(0, 3).join('-');
+        return otherKey === myKey
+          || (myKey.length > 8 && otherSlug.startsWith(myKey))
+          || (otherKey.length > 8 && slug.startsWith(otherKey));
+      });
+    } catch (_) {}
+    if (other) {
+      verticalLinks.push({
+        grade: g,
+        unit: other,
+        url: `/free-worksheets/${g.urlSlug}/${slugify(other.title)}.html`,
+      });
+    }
+  });
+
+  const canonicalUrl = `${SITE_ORIGIN}/free-worksheets/${grade.urlSlug}/${slug}.html`;
+  const parentUrl = `${SITE_ORIGIN}/free-worksheets/${grade.urlSlug}-math.html`;
+
+  const pageTitle = `Free ${grade.label} ${unit.title} Worksheets — TEKS Practice`;
+  const pageDesc = `Free printable ${grade.label} ${unit.title} worksheets aligned to Texas TEKS${unit.teks ? ' ' + unit.teks : ''}. ${qCount}+ practice questions, no sign-up.`;
+
+  // File-mtime for dateModified (freshness signal)
+  let dateModifiedIso = '2026-05-12';
+  try { dateModifiedIso = fs.statSync(path.join(DATA_DIR, grade.file)).mtime.toISOString().slice(0, 10); } catch (_) {}
+
+  // JSON-LD blocks
+  const learningResourceLd = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'LearningResource',
+    name: `Free ${grade.label} ${unit.title} Worksheets`,
+    description: pageDesc,
+    url: canonicalUrl,
+    educationalLevel: grade.label,
+    learningResourceType: 'Worksheet',
+    teaches: unit.title,
+    audience: { '@type': 'EducationalAudience', educationalRole: 'student' },
+    isAccessibleForFree: true,
+    inLanguage: 'en-US',
+    datePublished: '2026-05-12',
+    dateModified: dateModifiedIso,
+    author: { '@type': 'Person', name: 'Hamid Ali', url: 'https://gradeearn.com' },
+    publisher: {
+      '@type': 'Organization',
+      name: 'GradeEarn',
+      url: 'https://gradeearn.com',
+      logo: { '@type': 'ImageObject', url: 'https://gradeearn.com/og-image.png', width: 1200, height: 630 },
+    },
+    educationalAlignment: {
+      '@type': 'AlignmentObject',
+      alignmentType: 'teaches',
+      educationalFramework: 'Texas Essential Knowledge and Skills (TEKS)',
+      targetName: unit.teks ? `TEKS ${unit.teks}` : `${grade.label} Mathematics`,
+    },
+  }, null, 2);
+
+  const breadcrumbLd = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_ORIGIN}/` },
+      { '@type': 'ListItem', position: 2, name: 'Free worksheets', item: `${SITE_ORIGIN}/free-worksheets/` },
+      { '@type': 'ListItem', position: 3, name: `${grade.label} math`, item: parentUrl },
+      { '@type': 'ListItem', position: 4, name: unit.title },
+    ],
+  }, null, 2);
+
+  // Sibling-unit + vertical-curriculum nav HTML
+  const siblingsHtml = siblings.map((u) =>
+    `<a class="fw-related-pill" href="/free-worksheets/${grade.urlSlug}/${slugify(u.title)}.html">${esc(u.title)}</a>`
+  ).join('\n        ');
+
+  const verticalHtml = verticalLinks.map((v) =>
+    `<a class="fw-related-pill" href="${esc(v.url)}">${esc(v.grade.label)}: ${esc(v.unit.title)}</a>`
+  ).join('\n        ');
+
+  return `<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com https://api.gradeearn.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#060d1f">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+
+  <title>${esc(pageTitle)} — GradeEarn</title>
+  <meta name="description" content="${esc(pageDesc)}">
+  <meta name="keywords" content="${esc(unit.title.toLowerCase())} worksheets, ${esc(grade.label.toLowerCase())} ${esc(unit.title.toLowerCase())} practice, free ${esc(grade.label.toLowerCase())} math, TEKS ${esc(unit.teks || '')} practice, printable math worksheets">
+  <meta name="author" content="Hamid Ali, GradeEarn">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+
+  <link rel="canonical" href="${canonicalUrl}">
+  <link rel="alternate" hreflang="en-US" href="${canonicalUrl}" />
+  <link rel="alternate" hreflang="x-default" href="${canonicalUrl}" />
+  <link rel="up" href="${parentUrl}" />
+
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="GradeEarn">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:title" content="${esc(pageTitle)}">
+  <meta property="og:description" content="${esc(pageDesc)}">
+  <meta property="og:url" content="${canonicalUrl}">
+  <meta property="og:image" content="${SITE_ORIGIN}/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="article:author" content="Hamid Ali">
+  <meta property="article:section" content="Education">
+  <meta property="article:published_time" content="2026-05-12">
+  <meta property="article:modified_time" content="${dateModifiedIso}">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@gradeearn">
+
+  <script type="application/ld+json">
+${learningResourceLd}
+  </script>
+
+  <script type="application/ld+json">
+${breadcrumbLd}
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&display=swap">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css?v=20260512d">
+</head>
+<body class="fw-page">
+
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="/index.html" aria-label="GradeEarn home">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="#fbbf24" aria-hidden="true">
+        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+      </svg>
+      <span class="brand-text">Grade<span class="brand-text-accent">Earn</span></span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="/index.html">Home</a>
+      <a href="/free-worksheets/index.html">Free worksheets</a>
+      <a href="/articles/">Articles</a>
+      <a href="/marketplace.html">Toys</a>
+    </nav>
+    <div id="user-slot" class="user-slot"></div>
+  </div>
+</header>
+
+<main class="fw-main">
+  <nav class="breadcrumb-nav breadcrumb-nav--minimal" aria-label="Breadcrumb">
+    <ol class="breadcrumb breadcrumb--mid-dot">
+      <li class="breadcrumb-item"><a href="/index.html">Home</a></li>
+      <li class="breadcrumb-item"><a href="/free-worksheets/index.html">Free worksheets</a></li>
+      <li class="breadcrumb-item"><a href="${esc(parentUrl)}">${esc(grade.label)} math</a></li>
+      <li class="breadcrumb-item breadcrumb-item--current">${esc(unit.title)}</li>
+    </ol>
+  </nav>
+
+  <article class="fw-article">
+
+    <header class="fw-hero">
+      <p class="fw-eyebrow">Free · Printable · ${unit.teks ? 'TEKS ' + esc(unit.teks) : 'TEKS-aligned'}</p>
+      <h1 class="fw-h1">Free ${esc(grade.label)} ${esc(unit.title)} Worksheets</h1>
+      <p class="fw-lead">${qCount.toLocaleString()}+ Texas TEKS-aligned practice questions on ${esc(unit.title).toLowerCase()}. Print at home or practice online with a built-in AI tutor. No sign-up. No paywall.</p>
+      <p class="fw-byline">
+        By <a class="fw-byline-author" href="/about.html" rel="author">Hamid Ali</a>
+        <span class="fw-byline-sep" aria-hidden="true">·</span>
+        Updated <time datetime="${dateModifiedIso}">${new Date(dateModifiedIso).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
+      </p>
+
+      <div class="fw-hero-cta">
+        <a class="fw-btn fw-btn--primary" href="/practice.html?print=1&amp;s=${STATE_SLUG}&amp;g=${grade.slug}&amp;subj=math&amp;u=${encodeURIComponent(unit.id)}&amp;n=20">Print 20-question worksheet</a>
+        <a class="fw-btn fw-btn--ghost" href="/practice.html?s=${STATE_SLUG}&amp;g=${grade.slug}&amp;subj=math&amp;u=${encodeURIComponent(unit.id)}">Practice online with AI tutor</a>
+      </div>
+    </header>
+
+    <section class="fw-intro">
+      <p>Looking for <strong>${esc(unit.title.toLowerCase())} worksheets</strong> for ${esc(grade.label)}? This page has ${qCount.toLocaleString()}+ TEKS-aligned practice questions on this exact topic${unit.teks ? `, mapped to Texas TEKS ${esc(unit.teks)}` : ''}. Every question goes through an AI quality gate before publishing — no typos, no wrong answer keys, no factually-broken explanations.</p>
+      ${unit.summary ? `<p>${esc(unit.summary)}</p>` : ''}
+      <p>Below: a sample of 8 questions with answers and explanations so you can see what's on the worksheet before you print. Each question has the correct choice marked and a one-line "why" so kids who get it wrong understand the fix.</p>
+    </section>
+
+    <section class="fw-questions" style="margin-bottom:32px;">
+${qHtml}
+    </section>
+
+    <div class="fw-unit-cta">
+      <a class="fw-btn fw-btn--primary" href="/practice.html?print=1&amp;s=${STATE_SLUG}&amp;g=${grade.slug}&amp;subj=math&amp;u=${encodeURIComponent(unit.id)}&amp;n=20">Print 20-question worksheet</a>
+      <a class="fw-btn fw-btn--ghost" href="/practice.html?print=1&amp;s=${STATE_SLUG}&amp;g=${grade.slug}&amp;subj=math&amp;u=${encodeURIComponent(unit.id)}&amp;n=10">Print 10-question quick set</a>
+      <a class="fw-btn fw-btn--ghost" href="/practice.html?s=${STATE_SLUG}&amp;g=${grade.slug}&amp;subj=math&amp;u=${encodeURIComponent(unit.id)}">Practice online with AI tutor</a>
+    </div>
+
+    <section class="fw-faq" aria-label="Frequently asked questions">
+      <h2 class="fw-faq-title">Common questions</h2>
+
+      <div class="fw-faq-q">
+        <h3>Are these worksheets really free?</h3>
+        <p>Yes. Free to print, free to practice online. No email, no sign-up, no paywall. We make money from optional paid features (toy redemption with real cents), not from the worksheets.</p>
+      </div>
+
+      <div class="fw-faq-q">
+        <h3>${unit.teks ? `What is TEKS ${esc(unit.teks)}?` : `What TEKS standards does this cover?`}</h3>
+        <p>${unit.teks ? `TEKS ${esc(unit.teks)} is the ${esc(grade.label)} ${esc(unit.title)} standard from the Texas Essential Knowledge and Skills.` : `This unit aligns to multiple ${esc(grade.label)} math TEKS standards.`} ${unit.summary ? esc(unit.summary) : ''}</p>
+      </div>
+
+      <div class="fw-faq-q">
+        <h3>How many total questions are available?</h3>
+        <p>${qCount.toLocaleString()}+ questions in our ${esc(grade.label)} ${esc(unit.title)} bank. Print as many 20-question worksheets as you like — each one pulls a fresh set so your kid doesn't see the same questions twice.</p>
+      </div>
+
+      <div class="fw-faq-q">
+        <h3>Where do these questions come from?</h3>
+        <p>Generated by our AI pipeline, then quality-gated by two independent models (gpt-4o for content review, Claude Sonnet 4.5 for math verification) before publishing. Every question is tagged to ${unit.teks ? `TEKS ${esc(unit.teks)}` : 'a specific TEKS standard'} and modeled on real STAAR item shapes.</p>
+      </div>
+    </section>
+
+    ${verticalLinks.length > 0 ? `
+    <section class="fw-related">
+      <h2 class="fw-related-title">${esc(unit.title)} in other grades</h2>
+      <div class="fw-related-pills">
+        ${verticalHtml}
+      </div>
+    </section>
+    ` : ''}
+
+    <section class="fw-related">
+      <h2 class="fw-related-title">More ${esc(grade.label)} math topics</h2>
+      <div class="fw-related-pills">
+        <a class="fw-related-pill" href="${esc(parentUrl)}">← All ${esc(grade.label)} math</a>
+        ${siblingsHtml}
+      </div>
+    </section>
+
+  </article>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="footer-copyright">&copy; 2026 GradeEarn. All rights reserved.</p>
+    <nav class="footer-mobile-links">
+      <a href="/about.html">How it works</a>
+      <a href="/free-worksheets/index.html">Free worksheets</a>
+      <a href="/articles/">Articles</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="/js/auth.js?v=20260511c"></script>
+</body>
+</html>
+`;
+}
+
 function renderHubPage() {
   const items = GRADES.map((grade) => {
     let qCount = 0, unitCount = 0;
@@ -664,13 +978,39 @@ function main() {
   if (!fs.existsSync(OUT_DIR)) fs.mkdirSync(OUT_DIR, { recursive: true });
 
   let totalBytes = 0;
+  let unitPagesWritten = 0;
+  const allUnitUrls = []; // collected for sitemap output at end
+
   GRADES.forEach((g) => {
     try {
+      // Grade index page
       const html = renderGradePage(g);
       const outPath = path.join(OUT_DIR, `${g.urlSlug}-math.html`);
       fs.writeFileSync(outPath, html);
       totalBytes += html.length;
       console.log(`✓ ${path.relative(REPO_ROOT, outPath)}  (${(html.length / 1024).toFixed(1)} KB)`);
+
+      // Per-unit pages — one HTML file per topic inside this grade
+      const curr = loadCurriculum(g.file);
+      const units = curr.units || [];
+      const gradeDir = path.join(OUT_DIR, g.urlSlug);
+      if (!fs.existsSync(gradeDir)) fs.mkdirSync(gradeDir, { recursive: true });
+
+      units.forEach((u) => {
+        try {
+          const unitHtml = renderUnitPage(u, g, units);
+          const slug = slugify(u.title);
+          const unitPath = path.join(gradeDir, `${slug}.html`);
+          fs.writeFileSync(unitPath, unitHtml);
+          totalBytes += unitHtml.length;
+          unitPagesWritten++;
+          allUnitUrls.push(`${SITE_ORIGIN}/free-worksheets/${g.urlSlug}/${slug}.html`);
+        } catch (err) {
+          console.error(`✗ ${g.urlSlug}/${slugify(u.title)}.html — ${err.message}`);
+          process.exitCode = 1;
+        }
+      });
+      console.log(`  → ${units.length} per-unit pages in ${g.urlSlug}/`);
     } catch (err) {
       console.error(`✗ ${g.urlSlug}-math.html — ${err.message}`);
       process.exitCode = 1;
@@ -689,7 +1029,12 @@ function main() {
     process.exitCode = 1;
   }
 
-  console.log(`\nGenerated ${GRADES.length + 1} pages, ${(totalBytes / 1024).toFixed(1)} KB total.`);
+  // Sitemap-fragment output — paste-ready URL list for sitemap.xml
+  const fragmentPath = path.join(OUT_DIR, '.sitemap-unit-urls.txt');
+  fs.writeFileSync(fragmentPath, allUnitUrls.join('\n') + '\n');
+  console.log(`\nGenerated ${GRADES.length + 1 + unitPagesWritten} pages, ${(totalBytes / 1024).toFixed(1)} KB total.`);
+  console.log(`  ${GRADES.length} grade index + 1 hub + ${unitPagesWritten} per-unit`);
+  console.log(`  Unit-URL list (paste into sitemap.xml): ${path.relative(REPO_ROOT, fragmentPath)}`);
 }
 
 if (require.main === module) main();
