@@ -657,6 +657,8 @@
     if (pauseOverlay) pauseOverlay.hidden = !isPaused;
   }
   if (resumeBtn) resumeBtn.addEventListener('click', togglePause);
+  const pauseBtn = document.getElementById('ntPauseBtn');
+  if (pauseBtn) pauseBtn.addEventListener('click', togglePause);
 
   // ---------- start / end ----------
   function startGame() {

@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#060d1f" />
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="../css/styles.css?v=20260512a" />
+  <link rel="stylesheet" href="../css/styles.css?v=20260512b" />
   <title>Number Tetris — GradeEarn</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -58,6 +58,7 @@
 
     <div id="ntBoard" class="nt-board" hidden>
       <div class="nt-canvas-wrap">
+        <button type="button" id="ntPauseBtn" class="nt-pause-btn" aria-label="Pause game" title="Pause (P)">⏸</button>
         <canvas id="ntCanvas" class="nt-canvas" aria-label="Tetris board"></canvas>
         <div id="ntPauseOverlay" class="nt-overlay" hidden>
           <div class="nt-overlay-text">PAUSED</div>
@@ -114,6 +115,6 @@
   <script src="../js/prefs.js?v=20260426a"></script>
   <script src="../js/fx.js?v=20260426a"></script>
   <script src="../js/auth.js?v=20260511c"></script>
-  <script src="../js/games/number-tetris.js?v=20260512a"></script>
+  <script src="../js/games/number-tetris.js?v=20260512b"></script>
 </body>
 </html>

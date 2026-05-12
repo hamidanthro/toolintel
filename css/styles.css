@@ -20193,6 +20193,33 @@ body.game-number-tetris .game-main { padding-top: 12px; }
   border-radius: var(--r-button);
 }
 
+/* Always-visible pause button on top-right of the canvas */
+.nt-pause-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(253, 224, 71, 0.5);
+  background: rgba(15, 23, 42, 0.92);
+  color: #fde68a;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 4;
+  font-family: inherit;
+  transition: transform 100ms ease, background 100ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.nt-pause-btn:hover {
+  background: rgba(30, 58, 138, 0.85);
+  border-color: #fde68a;
+}
+.nt-pause-btn:active { transform: scale(0.92); }
+
 /* Pause overlay */
 .nt-overlay {
   position: absolute;
