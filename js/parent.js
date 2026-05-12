@@ -112,6 +112,19 @@
             <p class="parent-email-note">Email delivery starts when our scheduled job lands (coming soon). Saving here puts you on the list.</p>
           </form>
         </article>
+
+        <article class="card parent-card parent-card--rights">
+          <h3 class="parent-card-title">Your data &amp; rights</h3>
+          <p class="parent-card-subtitle">COPPA gives parents the right to review, export, or delete the data we hold on your child. All three are below.</p>
+          <div class="parent-rights-actions">
+            <button type="button" class="btn btn-secondary" id="parent-export-btn">Download data export (.json)</button>
+            <button type="button" class="btn btn-secondary" id="parent-audit-btn">View activity log</button>
+            <button type="button" class="btn btn-danger" id="parent-delete-btn">Request account deletion</button>
+          </div>
+          <p id="parent-rights-status" class="parent-rights-status" aria-live="polite"></p>
+          <div id="parent-audit-panel" class="parent-audit-panel" hidden></div>
+          <p class="parent-email-note">Audit + safety + consent records are kept for 7 / 3 / 7 years respectively per COPPA. Everything else is deleted within 30 days of a deletion request.</p>
+        </article>
       </div>`;
 
     // Wire the email form.
@@ -136,6 +149,117 @@
       saveBtn.disabled = false;
       setTimeout(() => { status.textContent = ''; }, 3000);
     });
+
+    // Data & rights: export, audit, delete
+    wireRightsPanel();
+  }
+
+  function setRightsStatus(msg, isError) {
+    const el = document.getElementById('parent-rights-status');
+    if (!el) return;
+    el.textContent = msg || '';
+    el.classList.toggle('parent-rights-status--error', !!isError);
+  }
+
+  async function downloadDataExport() {
+    setRightsStatus('Preparing export…');
+    try {
+      const token = window.STAARAuth.token && window.STAARAuth.token();
+      const r = await window.STAARAuth.api('getMyDataExport', { token });
+      if (!r || !r.export) {
+        setRightsStatus('Export failed — please try again.', true);
+        return;
+      }
+      const blob = new Blob([JSON.stringify(r.export, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const dateStr = new Date().toISOString().slice(0, 10);
+      a.download = 'gradeearn-data-export-' + (r.export.userId || 'me') + '-' + dateStr + '.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      setRightsStatus('Export downloaded.');
+    } catch (err) {
+      setRightsStatus((err && err.message) || 'Export failed.', true);
+    }
+  }
+
+  async function loadAuditTrail() {
+    const panel = document.getElementById('parent-audit-panel');
+    if (!panel) return;
+    if (!panel.hidden && panel.dataset.loaded === '1') {
+      panel.hidden = true;
+      return;
+    }
+    setRightsStatus('Loading activity log…');
+    try {
+      const token = window.STAARAuth.token && window.STAARAuth.token();
+      const r = await window.STAARAuth.api('getMyAuditTrail', { token });
+      const events = (r && r.events) || [];
+      if (!events.length) {
+        panel.innerHTML = '<p class="parent-audit-empty">No events recorded yet.</p>';
+      } else {
+        const rows = events.slice(0, 50).map(function (ev) {
+          const when = ev.occurredAt ? new Date(ev.occurredAt).toLocaleString() : '—';
+          const type = escapeHtml(ev.type || ev.eventType || 'event');
+          const meta = ev.metadata ? escapeHtml(JSON.stringify(ev.metadata)) : '';
+          return '<tr><td class="parent-audit-when">' + escapeHtml(when) + '</td>'
+            + '<td class="parent-audit-type">' + type + '</td>'
+            + '<td class="parent-audit-meta">' + meta + '</td></tr>';
+        }).join('');
+        panel.innerHTML =
+          '<table class="parent-audit-table">'
+          + '<thead><tr><th>When</th><th>Event</th><th>Details</th></tr></thead>'
+          + '<tbody>' + rows + '</tbody>'
+          + '</table>'
+          + '<p class="parent-audit-note">Showing most recent ' + Math.min(events.length, 50) + ' of ' + events.length + ' events.</p>';
+      }
+      panel.dataset.loaded = '1';
+      panel.hidden = false;
+      setRightsStatus('');
+    } catch (err) {
+      setRightsStatus((err && err.message) || 'Activity log failed.', true);
+    }
+  }
+
+  async function requestDeletion() {
+    const ok1 = window.confirm(
+      'Request account deletion?\n\n'
+      + 'Your account will be tombstoned immediately (login disabled). '
+      + 'Content is removed within 30 days. Audit + safety + consent '
+      + 'records are kept per COPPA legal requirements.\n\n'
+      + 'This is irreversible.'
+    );
+    if (!ok1) return;
+    const phrase = window.prompt('To confirm, type DELETE in capital letters:');
+    if (phrase !== 'DELETE') {
+      setRightsStatus('Cancelled — confirmation phrase did not match.');
+      return;
+    }
+    setRightsStatus('Submitting deletion request…');
+    try {
+      const token = window.STAARAuth.token && window.STAARAuth.token();
+      const r = await window.STAARAuth.api('requestAccountDeletion', { token, confirm: true });
+      if (r && r.ok) {
+        setRightsStatus('Deletion requested. ' + (r.message || ''));
+        document.getElementById('parent-delete-btn').disabled = true;
+      } else {
+        setRightsStatus((r && r.message) || 'Deletion request failed.', true);
+      }
+    } catch (err) {
+      setRightsStatus((err && err.message) || 'Deletion request failed.', true);
+    }
+  }
+
+  function wireRightsPanel() {
+    const exportBtn = document.getElementById('parent-export-btn');
+    const auditBtn  = document.getElementById('parent-audit-btn');
+    const deleteBtn = document.getElementById('parent-delete-btn');
+    if (exportBtn) exportBtn.addEventListener('click', downloadDataExport);
+    if (auditBtn)  auditBtn.addEventListener('click',  loadAuditTrail);
+    if (deleteBtn) deleteBtn.addEventListener('click', requestDeletion);
   }
 
   async function load() {

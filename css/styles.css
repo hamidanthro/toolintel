@@ -19042,8 +19042,93 @@ body.game-page {
   color: rgba(255, 255, 255, 0.45);
   font-style: italic;
 }
+.parent-card--rights { grid-column: 1 / -1; }
+.parent-rights-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 4px 0 8px;
+}
+.parent-rights-actions .btn { min-height: 40px; }
+.parent-rights-status {
+  margin: 6px 0 0;
+  font-size: 0.88rem;
+  color: var(--gold, #fbbf24);
+  min-height: 1.2em;
+}
+.parent-rights-status--error { color: #fca5a5; }
+.btn.btn-danger {
+  background: rgba(220, 38, 38, 0.18);
+  border: 1px solid rgba(220, 38, 38, 0.45);
+  color: #fecaca;
+}
+.btn.btn-danger:hover:not(:disabled) {
+  background: rgba(220, 38, 38, 0.28);
+  border-color: rgba(220, 38, 38, 0.7);
+}
+.btn.btn-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.parent-audit-panel {
+  margin-top: 12px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  overflow-x: auto;
+}
+.parent-audit-empty {
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+  margin: 0;
+}
+.parent-audit-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.parent-audit-table th,
+.parent-audit-table td {
+  text-align: left;
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  vertical-align: top;
+}
+.parent-audit-table th {
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+}
+.parent-audit-when {
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.65);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+}
+.parent-audit-type {
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 500;
+}
+.parent-audit-meta {
+  color: rgba(255, 255, 255, 0.55);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.76rem;
+  word-break: break-all;
+  max-width: 320px;
+}
+.parent-audit-note {
+  margin: 8px 0 0;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.45);
+  font-style: italic;
+}
 @media (max-width: 768px) {
   .parent-grid { grid-template-columns: 1fr; }
+  .parent-rights-actions .btn { flex: 1 1 100%; }
+  .parent-audit-meta { max-width: 200px; font-size: 0.7rem; }
 }
 @media (max-width: 480px) {
   .parent-stat-num { font-size: 1.8rem; }
