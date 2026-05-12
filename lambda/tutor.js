@@ -499,6 +499,16 @@ exports.handler = async (event) => {
   if (action === 'adminPoolStats')     return await handleAdminPoolStats(payload);
   if (action === 'adminPatrolStats')   return await handleAdminPatrolStats(payload);
 
+  // ===== Student blog (Phase 4 — May 12) =====
+  if (action === 'submitBlogPost')     return await handleSubmitBlogPost(payload);
+  if (action === 'getBlogPosts')       return await handleGetBlogPosts(payload);
+  if (action === 'getBlogPost')        return await handleGetBlogPost(payload);
+  if (action === 'getMyBlogPosts')     return await handleGetMyBlogPosts(payload);
+  if (action === 'getBlogQueue')       return await handleGetBlogQueue(payload);
+  if (action === 'approveBlogPost')    return await handleApproveBlogPost(payload);
+  if (action === 'rejectBlogPost')     return await handleRejectBlogPost(payload);
+  if (action === 'deleteBlogPost')     return await handleDeleteBlogPost(payload);
+
   if (!payload.question || payload.studentAnswer == null || payload.correctAnswer == null) {
     return bad(400, 'Missing required fields: question, studentAnswer, correctAnswer');
   }
@@ -6383,4 +6393,297 @@ async function _finalizeBattleRoyale(matchId, winnerUserId) {
     winnerUserId: ranked[0] ? ranked[0].userId : null,
     serverNowMs: Date.now()
   });
+}
+
+// =============================================================
+// Student Blog (Phase 4 — May 12)
+// =============================================================
+// Kids can write blog posts. Posts go to a moderation queue
+// (status='pending') and are not public until an admin approves
+// (status='approved'). Public list/post endpoints only return
+// approved posts. Owner + admin can delete a post (soft-delete via
+// status='deleted'). PII filter blocks emails, phone numbers, URLs,
+// and street addresses from being submitted. Rate-limited to 3
+// submissions per user per UTC day.
+//
+// Table: staar-blog-posts
+//   PK: postId (string)
+//   Attrs: userId, displayName, gradeSlug, title, body, status,
+//          createdAt, approvedAt, approvedBy, rejectedAt, rejectedBy,
+//          rejectedReason, deletedAt, deletedBy, viewCount
+//   PITR: enabled
+
+const BLOG_POSTS_TABLE = process.env.BLOG_POSTS_TABLE || 'staar-blog-posts';
+const BLOG_TITLE_MIN = 5;
+const BLOG_TITLE_MAX = 100;
+const BLOG_BODY_MIN = 100;
+const BLOG_BODY_MAX = 3000;
+const BLOG_RATE_LIMIT_PER_DAY = 3;
+const BLOG_POSTID_RE = /^bp_[a-f0-9]{16}$/;
+
+function _blogContainsPii(s) {
+  if (!s) return false;
+  const text = String(s);
+  if (/\b\d{3}[\s.\-]?\d{3}[\s.\-]?\d{4}\b/.test(text)) return 'phone number';
+  if (/[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}/.test(text)) return 'email address';
+  if (/https?:\/\/[^\s]+/i.test(text)) return 'web link';
+  if (/\b\d{1,5}\s+(north|south|east|west|n|s|e|w)?\.?\s*[A-Za-z]+\s+(street|st|avenue|ave|road|rd|drive|dr|lane|ln|boulevard|blvd|circle|cir)\b/i.test(text)) return 'street address';
+  return false;
+}
+
+async function handleSubmitBlogPost(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+
+  const title = String(payload.title || '').trim();
+  const body = String(payload.body || '').trim();
+
+  if (title.length < BLOG_TITLE_MIN || title.length > BLOG_TITLE_MAX) {
+    return bad(400, 'title must be ' + BLOG_TITLE_MIN + '-' + BLOG_TITLE_MAX + ' characters');
+  }
+  if (body.length < BLOG_BODY_MIN || body.length > BLOG_BODY_MAX) {
+    return bad(400, 'body must be ' + BLOG_BODY_MIN + '-' + BLOG_BODY_MAX + ' characters');
+  }
+
+  const piiTitle = _blogContainsPii(title);
+  const piiBody = _blogContainsPii(body);
+  if (piiTitle || piiBody) {
+    return bad(400, 'please remove personal info (' + (piiTitle || piiBody) + ') — for safety, blog posts can\'t include phone numbers, emails, addresses, or external links');
+  }
+
+  // Rate limit: BLOG_RATE_LIMIT_PER_DAY submissions per user per UTC day
+  const dayStart = new Date();
+  dayStart.setUTCHours(0, 0, 0, 0);
+  const dayStartMs = dayStart.getTime();
+  const recent = await ddb.send(new ScanCommand({
+    TableName: BLOG_POSTS_TABLE,
+    FilterExpression: 'userId = :u AND createdAt >= :t',
+    ExpressionAttributeValues: { ':u': auth.username, ':t': dayStartMs },
+    Limit: 10
+  }));
+  if ((recent.Items || []).length >= BLOG_RATE_LIMIT_PER_DAY) {
+    return bad(429, 'you can submit up to ' + BLOG_RATE_LIMIT_PER_DAY + ' posts a day — try again tomorrow');
+  }
+
+  // Pull display info from user profile
+  const userRow = await ddb.send(new GetCommand({
+    TableName: USERS_TABLE,
+    Key: { username: auth.username },
+    ProjectionExpression: 'displayName, grade'
+  }));
+  const u = userRow.Item || {};
+  // First name only — never expose username or full name on public posts
+  const displayName = String(u.displayName || auth.username).split(' ')[0].slice(0, 30);
+  const gradeSlug = u.grade || null;
+
+  const postId = 'bp_' + crypto.randomBytes(8).toString('hex');
+  const now = Date.now();
+
+  await ddb.send(new PutCommand({
+    TableName: BLOG_POSTS_TABLE,
+    Item: {
+      postId,
+      userId: auth.username,
+      displayName,
+      gradeSlug,
+      title,
+      body,
+      status: 'pending',
+      createdAt: now,
+      viewCount: 0
+    }
+  }));
+
+  return ok({
+    ok: true,
+    postId,
+    status: 'pending',
+    message: 'Your post is in the moderation queue. We\'ll review it within 24 hours.'
+  });
+}
+
+async function handleGetBlogPosts(payload) {
+  // Public — no auth needed. Returns approved posts only.
+  const limit = Math.min(20, Math.max(1, parseInt(payload.limit, 10) || 12));
+  let startKey;
+  if (payload.cursor) {
+    try { startKey = JSON.parse(Buffer.from(String(payload.cursor), 'base64').toString()); }
+    catch (_) { return bad(400, 'invalid cursor'); }
+  }
+
+  const r = await ddb.send(new ScanCommand({
+    TableName: BLOG_POSTS_TABLE,
+    FilterExpression: '#s = :s',
+    ExpressionAttributeNames: { '#s': 'status' },
+    ExpressionAttributeValues: { ':s': 'approved' },
+    Limit: 100,
+    ExclusiveStartKey: startKey
+  }));
+
+  const items = (r.Items || [])
+    .sort(function (a, b) { return (b.approvedAt || b.createdAt || 0) - (a.approvedAt || a.createdAt || 0); })
+    .slice(0, limit);
+
+  const posts = items.map(function (p) {
+    const body = String(p.body || '');
+    return {
+      postId: p.postId,
+      title: p.title,
+      excerpt: body.slice(0, 240) + (body.length > 240 ? '…' : ''),
+      displayName: p.displayName,
+      gradeSlug: p.gradeSlug,
+      approvedAt: p.approvedAt || p.createdAt,
+      viewCount: p.viewCount || 0
+    };
+  });
+
+  const nextCursor = r.LastEvaluatedKey
+    ? Buffer.from(JSON.stringify(r.LastEvaluatedKey)).toString('base64')
+    : null;
+
+  return ok({ posts: posts, nextCursor: nextCursor });
+}
+
+async function handleGetBlogPost(payload) {
+  const postId = String(payload.postId || '').trim();
+  if (!BLOG_POSTID_RE.test(postId)) return bad(400, 'invalid postId');
+
+  const r = await ddb.send(new GetCommand({
+    TableName: BLOG_POSTS_TABLE,
+    Key: { postId }
+  }));
+  const post = r.Item;
+  if (!post || post.status !== 'approved') return bad(404, 'post not found');
+
+  // Fire-and-forget view-count increment
+  ddb.send(new UpdateCommand({
+    TableName: BLOG_POSTS_TABLE,
+    Key: { postId },
+    UpdateExpression: 'ADD viewCount :one',
+    ExpressionAttributeValues: { ':one': 1 }
+  })).catch(function () {});
+
+  return ok({
+    post: {
+      postId: post.postId,
+      title: post.title,
+      body: post.body,
+      displayName: post.displayName,
+      gradeSlug: post.gradeSlug,
+      approvedAt: post.approvedAt || post.createdAt,
+      viewCount: (post.viewCount || 0) + 1
+    }
+  });
+}
+
+async function handleGetMyBlogPosts(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+
+  const r = await ddb.send(new ScanCommand({
+    TableName: BLOG_POSTS_TABLE,
+    FilterExpression: 'userId = :u AND #s <> :d',
+    ExpressionAttributeNames: { '#s': 'status' },
+    ExpressionAttributeValues: { ':u': auth.username, ':d': 'deleted' }
+  }));
+  const posts = (r.Items || [])
+    .sort(function (a, b) { return (b.createdAt || 0) - (a.createdAt || 0); })
+    .map(function (p) {
+      return {
+        postId: p.postId,
+        title: p.title,
+        status: p.status,
+        createdAt: p.createdAt,
+        approvedAt: p.approvedAt || null,
+        rejectedReason: p.rejectedReason || null
+      };
+    });
+  return ok({ posts: posts });
+}
+
+async function handleGetBlogQueue(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  if (!auth.isAdmin) return bad(403, 'admin only');
+
+  const r = await ddb.send(new ScanCommand({
+    TableName: BLOG_POSTS_TABLE,
+    FilterExpression: '#s = :s',
+    ExpressionAttributeNames: { '#s': 'status' },
+    ExpressionAttributeValues: { ':s': 'pending' }
+  }));
+  const posts = (r.Items || []).sort(function (a, b) { return (a.createdAt || 0) - (b.createdAt || 0); });
+  return ok({ posts: posts });
+}
+
+async function handleApproveBlogPost(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  if (!auth.isAdmin) return bad(403, 'admin only');
+
+  const postId = String(payload.postId || '').trim();
+  if (!BLOG_POSTID_RE.test(postId)) return bad(400, 'invalid postId');
+
+  await ddb.send(new UpdateCommand({
+    TableName: BLOG_POSTS_TABLE,
+    Key: { postId },
+    UpdateExpression: 'SET #s = :s, approvedAt = :t, approvedBy = :a',
+    ExpressionAttributeNames: { '#s': 'status' },
+    ExpressionAttributeValues: { ':s': 'approved', ':t': Date.now(), ':a': auth.username },
+    ConditionExpression: 'attribute_exists(postId)'
+  }));
+  return ok({ ok: true });
+}
+
+async function handleRejectBlogPost(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+  if (!auth.isAdmin) return bad(403, 'admin only');
+
+  const postId = String(payload.postId || '').trim();
+  if (!BLOG_POSTID_RE.test(postId)) return bad(400, 'invalid postId');
+  const reason = String(payload.reason || '').trim().slice(0, 200);
+
+  await ddb.send(new UpdateCommand({
+    TableName: BLOG_POSTS_TABLE,
+    Key: { postId },
+    UpdateExpression: 'SET #s = :s, rejectedAt = :t, rejectedBy = :a, rejectedReason = :r',
+    ExpressionAttributeNames: { '#s': 'status' },
+    ExpressionAttributeValues: {
+      ':s': 'rejected',
+      ':t': Date.now(),
+      ':a': auth.username,
+      ':r': reason || 'Does not meet community guidelines'
+    },
+    ConditionExpression: 'attribute_exists(postId)'
+  }));
+  return ok({ ok: true });
+}
+
+async function handleDeleteBlogPost(payload) {
+  const auth = await authedUser(payload);
+  if (!auth) return bad(401, 'Not signed in');
+
+  const postId = String(payload.postId || '').trim();
+  if (!BLOG_POSTID_RE.test(postId)) return bad(400, 'invalid postId');
+
+  const r = await ddb.send(new GetCommand({
+    TableName: BLOG_POSTS_TABLE,
+    Key: { postId }
+  }));
+  const post = r.Item;
+  if (!post) return bad(404, 'post not found');
+
+  if (post.userId !== auth.username && !auth.isAdmin) {
+    return bad(403, 'can only delete your own posts');
+  }
+
+  await ddb.send(new UpdateCommand({
+    TableName: BLOG_POSTS_TABLE,
+    Key: { postId },
+    UpdateExpression: 'SET #s = :s, deletedAt = :t, deletedBy = :a',
+    ExpressionAttributeNames: { '#s': 'status' },
+    ExpressionAttributeValues: { ':s': 'deleted', ':t': Date.now(), ':a': auth.username }
+  }));
+  return ok({ ok: true });
 }
