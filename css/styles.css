@@ -26249,3 +26249,50 @@ body.home-page #dashboard .level-label::after {
   margin-left: 4px;
   letter-spacing: 0;
 }
+
+/* ==========================================================================
+   §54 MySpace empty-state calm pass (May 12) — aggressive subtractive.
+   Body had thirteen textual elements competing for attention before
+   the kid did anything. This block softens the disclaimer further,
+   verifies the date eyebrow is at the quietest tier, and pulls the
+   empty-state block toward the visual center when surrounding pieces
+   collapse. Quick Win / briefing / footer-stats are gated at the JS
+   layer (js/myspace.js); the disclaimer subtitle is removed in HTML.
+   ========================================================================== */
+
+/* AI disclaimer — quieter still. text-white/25 + 11px per spec. */
+body.myspace-page .ms-ai-disclosure {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.25);
+}
+body.myspace-page .ms-ai-disclosure svg { color: rgba(255, 255, 255, 0.18); }
+body.myspace-page .ms-ai-disclosure a {
+  color: rgba(255, 255, 255, 0.45);
+  text-decoration-color: rgba(255, 255, 255, 0.15);
+}
+body.myspace-page .ms-ai-disclosure a:hover {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* Date eyebrow — dim to white/30 (was white/35 in §40). Matches the
+   "barely there" rhythm of the rest of the calm pass. */
+body.myspace-page .ms-date-eyebrow {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Greeting block + empty-state vertical centering. When Quick Win,
+   briefing, footer stats are all gated off, the chat-empty + composer
+   should occupy the visual center instead of hugging the top. */
+body.myspace-page:not(.ms-chat-active) .ms-chat-empty {
+  margin-top: 6vh;
+  margin-bottom: 6vh;
+}
+body.myspace-page:not(.ms-chat-active) .ms-content {
+  min-height: 70vh;
+}
+@media (max-width: 640px) {
+  body.myspace-page:not(.ms-chat-active) .ms-chat-empty {
+    margin-top: 4vh;
+    margin-bottom: 4vh;
+  }
+}

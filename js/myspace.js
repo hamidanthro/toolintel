@@ -211,10 +211,17 @@
     const dismiss = document.getElementById('ms-quickwin-dismiss');
     if (!banner) return;
 
-    // Pick a quick win in priority order. §40 polish: the message is
-    // prefixed with "Quick win —" inline rather than a bold "Quick win:"
-    // banner. The "Go to X" CTA pill is gone; the inline link does both
-    // jobs (acts as call-to-action + dismiss × at the end).
+    // §54 calm pass: suppress the Quick Win entirely on a fully empty
+    // account. Telling a kid "do this first" before they've added
+    // anything is pushy — the chips below the greeting already invite
+    // the action. Quick Win re-appears the moment there's context to
+    // nudge from (any homework / task / journal / class added).
+    const hasAnyActivity =
+      data.journal().length + data.homework().length +
+      data.tasks().length + data.timetable().length > 0;
+    if (!hasAnyActivity) { banner.hidden = true; return; }
+
+    // Pick a quick win in priority order.
     let win = null;
     if (data.journal().length === 0) {
       win = { id: 'first-journal', msg: 'Quick win — write your first journal entry to start a streak.', link: '/myspace/journal.html', linkLabel: 'Journal' };
@@ -244,11 +251,24 @@
   }
 
   function renderBriefing() {
+    const wrap = document.getElementById('ms-briefing');
     const body = document.getElementById('ms-briefing-body');
     if (!body) return;
-    body.textContent = buildBriefingSummary();
+    // §54 calm pass: hide the whole briefing block when there's nothing
+    // substantive to report. A "quiet week so far" line is worse than
+    // no line — it narrates absence. The briefing returns the moment
+    // there's anything real to surface.
+    const summary = buildBriefingSummary();
+    if (!summary) {
+      if (wrap) wrap.hidden = true;
+      return;
+    }
+    if (wrap) wrap.hidden = false;
+    body.textContent = summary;
   }
 
+  // Returns a non-empty summary string when there's something useful to
+  // say, or null when the dashboard is quiet. Callers gate on null.
   function buildBriefingSummary() {
     const facts = [];
     const dueSoon = homeworkDueSoon();
@@ -264,9 +284,7 @@
     const nextClass = findNextClass();
     if (nextClass) facts.push('Next on your schedule: ' + nextClass.subject + ' on ' + nextClass.day + ' at ' + nextClass.startTime);
 
-    if (facts.length === 0) {
-      return 'Quiet week so far. Add a journal entry or some homework and I\'ll start tracking your progress.';
-    }
+    if (facts.length === 0) return null;
     return facts.join('. ') + '.';
   }
 
@@ -313,10 +331,21 @@
     const tLabel = document.getElementById('ms-stat-tasks-label');
     const jLabel = document.getElementById('ms-stat-journals-label');
     const sLabel = document.getElementById('ms-stat-streak-label');
+    const footer = document.getElementById('ms-stats-footer');
 
     const td = tasksDoneToday();
     const je = journalsThisWeek();
     const st = streakDays();
+
+    // §54 calm pass: hide the entire footer when everything is zero AND
+    // there's no historical activity. Three zeros in a row is depressing,
+    // not motivating. The row appears the moment the kid earns their
+    // first non-zero stat.
+    const hasAnyHistory =
+      data.tasks().length + data.journal().length + data.homework().length > 0;
+    const shouldShow = td > 0 || je > 0 || st > 0 || hasAnyHistory;
+    if (footer) footer.hidden = !shouldShow;
+    if (!shouldShow) return;
 
     if (t) t.textContent = td;
     if (j) j.textContent = je;
@@ -1158,7 +1187,9 @@
   async function sendChat(message, subjectFilter) {
     // Build the full snapshot the AI Buddy needs to actually be useful
     const context = buildFullContext();
-    const briefingSummary = buildBriefingSummary(); // short version for back-compat
+    // §54 — buildBriefingSummary() now returns null on a quiet account;
+    // the lambda accepts a string, so coerce to empty string here.
+    const briefingSummary = buildBriefingSummary() || '';
     const u = getUser();
     const token = window.STAARAuth && window.STAARAuth.token && window.STAARAuth.token();
     if (!token) throw new Error('Not signed in');
