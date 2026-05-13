@@ -28705,45 +28705,13 @@ body.facts-page .facts-loadmore:hover {
   body.facts-page .facts-card-body { font-size: 15px; }
 }
 
-/* ==========================================================================
-   §76 Practice — phone no-scroll lock (May 13). User: "There should be
-   no scroll down on screen on phone period - content should fit the
-   page for reading inside the reading box scrolldown is fine but no
-   page scroll down."
-   Approach: at <=767px, lock body to viewport height with overflow
-   hidden. The question area becomes the ONLY scrollable region for
-   reading-passage cases (passage stem can scroll inside its own card).
-   The sticky-bottom action bar (§69) and the top context bar stay
-   pinned. The kid never has to scroll the page itself.
-   ========================================================================== */
-
-@media (max-width: 767px) {
-  /* Lock body to viewport height — prevents page scroll on phone */
-  html, body.practice-page {
-    height: 100vh;
-    height: 100dvh; /* dynamic viewport — better with iOS toolbar */
-    overflow: hidden;
-  }
-  body.practice-page {
-    display: flex;
-    flex-direction: column;
-  }
-  /* Practice-context-bar pinned, no-shrink */
-  body.practice-page section:first-of-type {
-    flex: 0 0 auto;
-  }
-  /* The #practice-root scrolls internally if its content overflows;
-     the sticky action bar (§69) overlays at the bottom either way */
-  body.practice-page #practice-root {
-    flex: 1 1 auto;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-  }
-  /* Hide product-footer on phone practice (already in §69, kept defensive
-     here) */
-  body.practice-page .product-footer { display: none !important; }
-}
+/* §76 REVERTED (May 13) — the phone no-scroll lock made the practice
+   page harder to use (sticky+fixed elements interacted poorly with
+   the inner-scroll container, the wrong-answer Explain More expansion
+   got clipped, iOS keyboard pushed content into a zone that couldn't
+   scroll). The page now scrolls normally on phone. The §69 sticky
+   bottom action bar already keeps Check answer / Next visible without
+   needing a viewport-height lock. */
 
 /* §75 — Browse-fun-facts link on subject.html */
 .subject-facts-link {
