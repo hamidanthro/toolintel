@@ -27217,7 +27217,323 @@ body.home-page #dashboard .grades-panel .grade-grid-compact {
 }
 
 /* ==========================================================================
-   §63 MySpace global header parity (May 13). User feedback: "header
+   §64 Home one-CTA reshuffle (May 13). Replaces the welcome hero +
+   4-stat-card row + 10-grade grid + standalone challenge banner with
+   a focused single-column layout: subject pills → tiny greeting →
+   Continue card (the ONE primary CTA) → Wallet→Toy ladder → daily
+   quest + grade picker row → demoted stats line. Mobile-first;
+   desktop centers at max-width 520px (kid-first; no two-column).
+   ========================================================================== */
+
+/* Strip the legacy chrome that used to live inside #dashboard. The
+   markup is replaced (lines 263+ of index.html) but several global
+   selectors target .dashboard-section / .dashboard-inner / .stats-grid /
+   etc. Override the spacing those rules introduced so the new
+   home-v2 layout breathes correctly. */
+body.home-page #dashboard.home-v2 {
+  background: transparent;
+}
+body.home-page #dashboard .home-v2-inner {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 24px 20px 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+@media (min-width: 1024px) {
+  body.home-page #dashboard .home-v2-inner { padding-top: 40px; }
+}
+
+/* Subject pills bar at top of home */
+.home-subject-bar {
+  display: flex;
+  justify-content: center;
+}
+.home-subject-pills {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+}
+.home-subject-pill {
+  appearance: none;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 7px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease;
+}
+.home-subject-pill:hover { color: #ffffff; }
+.home-subject-pill.active {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+/* Tiny greeting */
+.home-greet {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.55);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.home-greet-wave { margin-left: 4px; }
+
+/* Continue card — the one big yellow CTA on this page */
+.home-continue {
+  display: block;
+  position: relative;
+  padding: 20px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.015) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 200ms ease, transform 100ms ease;
+}
+.home-continue:hover { border-color: rgba(251, 191, 36, 0.3); }
+.home-continue:active { transform: scale(0.99); }
+.home-continue-eyebrow {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(252, 211, 77, 0.75);
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+.home-continue-title {
+  margin: 0 0 6px;
+  font-family: 'Instrument Serif', serif;
+  font-size: 26px;
+  font-weight: 400;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+.home-continue-sep { color: rgba(255, 255, 255, 0.3); margin: 0 6px; }
+.home-continue-sub {
+  margin: 0 0 14px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.4;
+}
+.home-continue-track {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 0 0 16px;
+}
+.home-continue-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+  border-radius: 999px;
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.4);
+  transition: width 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.home-continue-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
+  color: #0a1628;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 13px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 4px 16px -4px rgba(251, 191, 36, 0.45);
+}
+
+/* Wallet → Toy ladder */
+.home-wallet {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 200ms ease, background 200ms ease;
+}
+.home-wallet:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.04);
+}
+.home-wallet-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.25);
+  color: #fbbf24;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.home-wallet-content { flex: 1; min-width: 0; }
+.home-wallet-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.home-wallet-pts {
+  font-size: 18px;
+  font-weight: 600;
+  color: #fbbf24;
+  font-variant-numeric: tabular-nums;
+}
+.home-wallet-delta {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+.home-wallet-toy {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.home-wallet-arrow {
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 24px;
+  line-height: 1;
+  font-weight: 300;
+}
+
+/* Secondary row: Daily quest + Grade picker */
+.home-secondary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+@media (max-width: 480px) {
+  .home-secondary { grid-template-columns: 1fr; }
+}
+.home-quest,
+.home-gradepicker {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  text-decoration: none;
+  color: inherit;
+  min-height: 64px;
+}
+.home-quest:hover { border-color: rgba(255, 255, 255, 0.18); }
+.home-quest-eyebrow,
+.home-gradepicker-eyebrow {
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 500;
+}
+.home-quest-meta {
+  font-size: 14px;
+  color: #ffffff;
+  font-weight: 500;
+}
+.home-quest-meta strong {
+  color: #fbbf24;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.home-quest-reward {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+/* Grade pill row inside switch-grade card */
+.home-grade-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.home-grade-pill {
+  appearance: none;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.65);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  min-width: 24px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  transition: background 140ms ease, color 140ms ease, border-color 140ms ease;
+}
+.home-grade-pill:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+.home-grade-pill--active {
+  background: #fbbf24;
+  border-color: #fbbf24;
+  color: #0a1628;
+  font-weight: 600;
+}
+.home-grade-pill--active:hover {
+  background: #fde68a;
+  color: #0a1628;
+}
+
+/* Demoted stats line */
+.home-stats-line {
+  margin: 8px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  text-align: center;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  font-variant-numeric: tabular-nums;
+}
+.home-stats-line .home-stats-sep {
+  margin: 0 8px;
+  color: rgba(255, 255, 255, 0.2);
+}
+
+/* Hide legacy mounts that exist purely to keep showDashboard's
+   textContent writes from throwing. */
+.home-legacy-mounts { display: none !important; }
+
+/* Mobile: tighten paddings; everything else already mobile-first */
+@media (max-width: 480px) {
+  body.home-page #dashboard .home-v2-inner {
+    padding: 16px 16px 48px;
+    gap: 16px;
+  }
+  .home-continue { padding: 18px; }
+  .home-continue-title { font-size: 22px; }
+  .home-continue-cta { padding: 9px 16px; }
+  .home-wallet { padding: 12px 14px; gap: 12px; }
+  .home-wallet-icon { width: 36px; height: 36px; }
+} User feedback: "header
    options should stay the same no matter which page you are on".
    MySpace was rendering its own ms-shell topbar (Recent + Quick Note
    + bell + avatar) and hiding the global nav (Home / MySpace /
