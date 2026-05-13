@@ -122,7 +122,7 @@
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" />
 
-  <link rel="stylesheet" href="css/styles.css?v=20260513a" />
+  <link rel="stylesheet" href="css/styles.css?v=20260513b" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -399,10 +399,13 @@
 
       <div class="dashboard-grid">
 
+        <!-- §60: panel titles trimmed. "Your grade and beyond" + "Pick
+             a grade to start practicing" both said the same thing the
+             tiles already show. Single quiet "Practice" eyebrow stays
+             as a section anchor. -->
         <section class="dashboard-panel grades-panel">
           <div class="dashboard-panel-header">
-            <h3 class="dashboard-panel-title">Your grade and beyond</h3>
-            <p class="dashboard-panel-subtitle">Pick a grade to start practicing.</p>
+            <h3 class="dashboard-panel-title">Practice</h3>
           </div>
           <div class="grade-grid grade-grid-compact" id="grade-grid"></div>
         </section>
@@ -410,45 +413,33 @@
         <section class="dashboard-panel journey-panel">
           <div class="dashboard-panel-header journey-header">
             <div>
-              <h3 class="dashboard-panel-title">
-                <span class="journey-icon" aria-hidden="true">🌱</span>
-                Your journey
-              </h3>
-              <p class="dashboard-panel-subtitle" id="dash-board-sub">Start fresh today — your first streak is one question away.</p>
+              <h3 class="dashboard-panel-title">Your journey</h3>
             </div>
           </div>
 
+          <!-- §60: per-stat SVG icons + hint lines dropped. Label +
+               number reads cleaner; the SVGs were decoration and the
+               hint lines ("Practice today to start a streak" etc.)
+               were nag-copy that's redundant when the number is 0. -->
           <div class="journey-stats">
             <div class="journey-stat journey-stat--streak">
-              <div class="journey-stat-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2c0 5-4 6-4 11a4 4 0 008 0c0-2-1-3-1-5 0 0 3 2 3 5a6 6 0 11-12 0c0-6 6-7 6-11z"/></svg>
-              </div>
               <div class="journey-stat-content">
-                <span class="journey-stat-label">Practice streak</span>
+                <span class="journey-stat-label">Streak</span>
                 <div class="journey-stat-value"><span id="dash-streak">0</span><span class="journey-stat-unit">days</span></div>
-                <span class="journey-stat-hint" id="dash-streak-foot">Practice today to start a streak</span>
               </div>
             </div>
 
             <div class="journey-stat">
-              <div class="journey-stat-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>
-              </div>
               <div class="journey-stat-content">
-                <span class="journey-stat-label">Today's correct</span>
+                <span class="journey-stat-label">Today</span>
                 <div class="journey-stat-value"><span id="dash-today-correct">0</span><span class="journey-stat-unit">correct</span></div>
-                <span class="journey-stat-hint" id="dash-today-foot">Aim for 5 today ⭐</span>
               </div>
             </div>
 
             <div class="journey-stat">
-              <div class="journey-stat-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/><path d="M4 22h16"/><path d="M18 2H6v7a6 6 0 0012 0V2z"/></svg>
-              </div>
               <div class="journey-stat-content">
-                <span class="journey-stat-label">Personal best</span>
+                <span class="journey-stat-label">Best run</span>
                 <div class="journey-stat-value"><span id="dash-best">0</span><span class="journey-stat-unit">in a row</span></div>
-                <span class="journey-stat-hint">Beat your own record</span>
               </div>
             </div>
           </div>
@@ -740,7 +731,7 @@
   <script src="js/dashboard.js?v=20260427b"></script>
   <script src="js/friends.js?v=20260426b"></script>
   <script src="js/staar-data.js"></script>
-  <script src="js/grade-card.js?v=20260510s"></script>
+  <script src="js/grade-card.js?v=20260513a"></script>
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -980,20 +971,29 @@
         const todayActed = (j.daily && j.daily[tk] && (j.daily[tk].answered > 0));
         const hour = new Date().getHours();
         const streakAtRisk = streak >= 2 && !todayActed && hour >= 17;
+        // §60 — hint lines below each journey-stat were dropped from
+        // the markup. Null-guard the writes so render continues
+        // cleanly; the "save your streak" warning + "aim for N more"
+        // nag are intentionally gone (the number says it).
         const footEl = document.getElementById('dash-streak-foot');
-        if (streakAtRisk) {
-          footEl.innerHTML = '🛑 <strong>Practice today</strong> to keep your ' + streak + '-day streak';
-          footEl.style.color = '#fbbf24';
-        } else {
-          footEl.style.color = '';
-          footEl.textContent = streak > 0
-            ? (streak === 1 ? 'You started — keep it up tomorrow!' : `Best ever: ${best || streak} days`)
-            : 'Practice today to start a streak';
+        if (footEl) {
+          if (streakAtRisk) {
+            footEl.innerHTML = '🛑 <strong>Practice today</strong> to keep your ' + streak + '-day streak';
+            footEl.style.color = '#fbbf24';
+          } else {
+            footEl.style.color = '';
+            footEl.textContent = streak > 0
+              ? (streak === 1 ? 'You started — keep it up tomorrow!' : `Best ever: ${best || streak} days`)
+              : 'Practice today to start a streak';
+          }
         }
         document.getElementById('dash-today-correct').textContent = todayCorrect.toLocaleString();
-        document.getElementById('dash-today-foot').textContent = todayCorrect >= 5
-          ? '✓ Daily goal reached!'
-          : `Aim for ${5 - todayCorrect} more today 🌟`;
+        const todayFootEl = document.getElementById('dash-today-foot');
+        if (todayFootEl) {
+          todayFootEl.textContent = todayCorrect >= 5
+            ? '✓ Daily goal reached!'
+            : `Aim for ${5 - todayCorrect} more today 🌟`;
+        }
         document.getElementById('dash-best').textContent = personalBest.toLocaleString();
 
         const subBoard = document.getElementById('dash-board-sub');

@@ -27021,3 +27021,95 @@ body.home-page #dashboard .stats-grid { gap: 12px; }
     justify-content: flex-end !important;
   }
 }
+
+/* ==========================================================================
+   §60 Home dashboard — minimalist pass on the lower regions (May 13).
+   The §59 calm pass cleaned the top (Welcome → Level → CTA → Stats).
+   The lower regions ("Your grade and beyond" + "Your journey") were
+   still busy: every grade tile had a "STATE TEST · MATH" eyebrow +
+   grade-letter chip + "4 reporting categories · Ages 5–6" meta, and
+   the journey card had a sprout emoji + subtitle + three SVG icons +
+   three nag-copy hint lines. JS-side strip in grade-card.js + HTML
+   strip in index.html removed the markup; this CSS block tightens
+   what's left so the surviving elements read as one quiet row.
+   ========================================================================== */
+
+/* Grade tile — title + progress only. Tighter padding now that the
+   header row + meta line are gone. */
+body.home-page #dashboard .dashboard-grade-tile {
+  padding: 14px 16px;
+  gap: 8px;
+}
+body.home-page #dashboard .dashboard-grade-tile-title {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+/* Progress text shrinks; bar stays the gradient warmth treatment */
+body.home-page #dashboard .tile-progress-text {
+  font-size: 10px !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+  letter-spacing: 0.02em;
+}
+
+/* Journey panel — flat row of 3 quiet stats. Drop the per-stat
+   icon column + background panel chrome. The label + number reads
+   as one unit instead of the old card-within-a-card. */
+body.home-page #dashboard .journey-stats {
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 24px !important;
+  margin-bottom: 18px;
+}
+body.home-page #dashboard .journey-stat {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  display: block !important;
+}
+body.home-page #dashboard .journey-stat::before { display: none !important; }
+body.home-page #dashboard .journey-stat--streak { background: transparent !important; }
+body.home-page #dashboard .journey-stat-content { gap: 4px; }
+body.home-page #dashboard .journey-stat-label {
+  font-size: 10px !important;
+  letter-spacing: 0.18em !important;
+  color: rgba(255, 255, 255, 0.45) !important;
+  text-transform: uppercase;
+  font-weight: 500 !important;
+}
+body.home-page #dashboard .journey-stat-value {
+  font-size: 28px !important;
+  font-weight: 400 !important;
+  font-family: 'Instrument Serif', serif !important;
+  color: #ffffff !important;
+  letter-spacing: -0.02em !important;
+  line-height: 1.1 !important;
+}
+body.home-page #dashboard .journey-stat-unit {
+  font-size: 11px !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+  margin-left: 6px;
+  font-family: 'Inter', sans-serif !important;
+}
+
+/* Panel headers — drop the subtitle slot via the markup change; here
+   just ensure the title sits cleanly at the top without bottom-padding
+   reserved for a now-absent subtitle. */
+body.home-page #dashboard .dashboard-panel-header { margin-bottom: 16px !important; }
+body.home-page #dashboard .dashboard-panel-title {
+  font-size: 1.1rem !important;
+  font-weight: 500 !important;
+}
+
+/* "Keep going" CTA — pull back to match the new tighter rhythm */
+body.home-page #dashboard .journey-cta {
+  height: 40px !important;
+  padding: 0 18px !important;
+  font-size: 13px !important;
+}
+
+@media (max-width: 768px) {
+  body.home-page #dashboard .journey-stats {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 16px !important;
+  }
+  body.home-page #dashboard .journey-stat-value { font-size: 24px !important; }
+}

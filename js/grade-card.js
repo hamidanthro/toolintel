@@ -83,16 +83,15 @@
     const isKinder = grade.slug === 'grade-k';
 
     // ---- COMPACT (dashboard tile with progress) ----
+    // §60: stripped to title + progress only. The "STATE TEST · MATH"
+    // eyebrow + "4 reporting categories · Ages 5–6" meta were
+    // repetitive across every tile and used parent-vocabulary
+    // ("reporting categories") that kids don't decode. Title alone
+    // ("Kindergarten Math") already says what the tile is.
     if (variant === 'compact') {
       const p = opts.progress || { pct: 0, answered: 0, target: 300 };
-      const ageBit = m.ages ? ' · ' + m.ages : '';
       return `
-        <div class="dashboard-grade-tile-header">
-          <span class="dashboard-grade-tile-eyebrow">STATE TEST · ${subject}</span>
-          <div class="dashboard-grade-tile-icon">${m.icon}</div>
-        </div>
         <h4 class="dashboard-grade-tile-title">${grade.title}</h4>
-        <p class="dashboard-grade-tile-meta">${grade.categories.length} reporting categories${ageBit}</p>
         <div class="dashboard-grade-tile-progress">
           <div class="tile-progress-bar"><div class="tile-progress-fill" style="width:${p.pct}%"></div></div>
           <span class="tile-progress-text">${p.pct}% · ${p.answered}/${p.target}</span>
