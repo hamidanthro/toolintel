@@ -23,7 +23,7 @@
           "questions": [
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐶🐶🐶🐶🐶🐶🐶",
+              "prompt": "How many puppies do you see?  🐶🐶🐶🐶🐶🐶🐶",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -41,7 +41,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐰🐰",
+              "prompt": "How many bunnies do you see?  🐰🐰",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -59,7 +59,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍌🍌🍌",
+              "prompt": "How many bananas do you see?  🍌🍌🍌",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -77,7 +77,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🌸🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸🌸",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -95,7 +95,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⚽⚽",
+              "prompt": "How many soccer balls do you see?  ⚽⚽",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -131,7 +131,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍌🍌🍌🍌",
+              "prompt": "How many bananas do you see?  🍌🍌🍌🍌",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -149,7 +149,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🚗🚗🚗",
+              "prompt": "How many cars do you see?  🚗🚗🚗",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -167,7 +167,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🌸🌸🌸🌸🌸🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸🌸🌸🌸🌸🌸",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -221,7 +221,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🚗🚗🚗🚗🚗🚗",
+              "prompt": "How many cars do you see?  🚗🚗🚗🚗🚗🚗",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -275,7 +275,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🚗🚗🚗🚗🚗🚗🚗",
+              "prompt": "How many cars do you see?  🚗🚗🚗🚗🚗🚗🚗",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -311,7 +311,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐢🐢🐢🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢🐢🐢🐢",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -329,7 +329,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐶🐶🐶🐶🐶🐶",
+              "prompt": "How many puppies do you see?  🐶🐶🐶🐶🐶🐶",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -365,7 +365,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🦋",
+              "prompt": "How many butterflies do you see?  🦋",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -383,7 +383,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸",
               "answer": "10",
               "explanation": "Count one by one. There are 10.",
               "acceptable": [
@@ -401,7 +401,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⚽⚽⚽",
+              "prompt": "How many soccer balls do you see?  ⚽⚽⚽",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -437,7 +437,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⭐⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐⭐",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -455,7 +455,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐟",
+              "prompt": "How many fish do you see?  🐟",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -473,7 +473,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐟🐟🐟🐟🐟🐟🐟🐟",
+              "prompt": "How many fish do you see?  🐟🐟🐟🐟🐟🐟🐟🐟",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -509,7 +509,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍌🍌",
+              "prompt": "How many bananas do you see?  🍌🍌",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -527,7 +527,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐟🐟🐟🐟🐟🐟🐟🐟",
+              "prompt": "How many fish do you see?  🐟🐟🐟🐟🐟🐟🐟🐟",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -563,7 +563,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🦋🦋",
+              "prompt": "How many butterflies do you see?  🦋🦋",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -599,7 +599,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍎🍎🍎🍎🍎🍎🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎🍎🍎🍎🍎🍎🍎",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -635,7 +635,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🌸🌸🌸🌸🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸🌸🌸🌸🌸",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -689,7 +689,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐢🐢🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢🐢🐢",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -707,7 +707,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍌🍌🍌🍌🍌🍌🍌🍌",
+              "prompt": "How many bananas do you see?  🍌🍌🍌🍌🍌🍌🍌🍌",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -725,7 +725,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -761,7 +761,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐰🐰🐰🐰🐰🐰🐰🐰",
+              "prompt": "How many bunnies do you see?  🐰🐰🐰🐰🐰🐰🐰🐰",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -815,7 +815,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐢🐢🐢🐢🐢🐢🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢🐢🐢🐢🐢🐢🐢",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -833,7 +833,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🦋🦋🦋🦋🦋🦋",
+              "prompt": "How many butterflies do you see?  🦋🦋🦋🦋🦋🦋",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -851,7 +851,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🦋🦋🦋🦋",
+              "prompt": "How many butterflies do you see?  🦋🦋🦋🦋",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -869,7 +869,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐶🐶🐶🐶🐶🐶🐶🐶",
+              "prompt": "How many puppies do you see?  🐶🐶🐶🐶🐶🐶🐶🐶",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -887,7 +887,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🦋🦋🦋🦋🦋",
+              "prompt": "How many butterflies do you see?  🦋🦋🦋🦋🦋",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -905,7 +905,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐱🐱🐱🐱🐱",
+              "prompt": "How many cats do you see?  🐱🐱🐱🐱🐱",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -941,7 +941,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍌🍌🍌🍌",
+              "prompt": "How many bananas do you see?  🍌🍌🍌🍌",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -959,7 +959,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🦋🦋🦋🦋🦋🦋🦋",
+              "prompt": "How many butterflies do you see?  🦋🦋🦋🦋🦋🦋🦋",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -977,7 +977,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐶🐶🐶",
+              "prompt": "How many puppies do you see?  🐶🐶🐶",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -1013,7 +1013,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐱🐱",
+              "prompt": "How many cats do you see?  🐱🐱",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -1031,7 +1031,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🦋🦋🦋🦋🦋🦋🦋🦋🦋",
+              "prompt": "How many butterflies do you see?  🦋🦋🦋🦋🦋🦋🦋🦋🦋",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -1049,7 +1049,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍎🍎🍎🍎🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎🍎🍎🍎🍎",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -1085,7 +1085,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶",
+              "prompt": "How many puppies do you see?  🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶",
               "answer": "10",
               "explanation": "Count one by one. There are 10.",
               "acceptable": [
@@ -1139,7 +1139,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐⭐",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -1157,7 +1157,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍌🍌",
+              "prompt": "How many bananas do you see?  🍌🍌",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -1175,7 +1175,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍎🍎🍎🍎🍎🍎🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎🍎🍎🍎🍎🍎🍎",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -1193,7 +1193,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐟🐟🐟",
+              "prompt": "How many fish do you see?  🐟🐟🐟",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -1247,7 +1247,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐟",
+              "prompt": "How many fish do you see?  🐟",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -1265,7 +1265,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⚽⚽⚽⚽⚽⚽",
+              "prompt": "How many soccer balls do you see?  ⚽⚽⚽⚽⚽⚽",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -1283,7 +1283,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐰🐰🐰🐰🐰🐰🐰🐰🐰",
+              "prompt": "How many bunnies do you see?  🐰🐰🐰🐰🐰🐰🐰🐰🐰",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -1319,7 +1319,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🚗🚗🚗🚗🚗",
+              "prompt": "How many cars do you see?  🚗🚗🚗🚗🚗",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -1337,7 +1337,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🚗🚗🚗🚗",
+              "prompt": "How many cars do you see?  🚗🚗🚗🚗",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -1355,7 +1355,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐱🐱🐱🐱🐱🐱",
+              "prompt": "How many cats do you see?  🐱🐱🐱🐱🐱🐱",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -1373,7 +1373,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍎🍎🍎🍎🍎🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎🍎🍎🍎🍎🍎",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -1391,7 +1391,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍌",
+              "prompt": "How many bananas do you see?  🍌",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -1409,7 +1409,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⚽⚽",
+              "prompt": "How many soccer balls do you see?  ⚽⚽",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -1427,7 +1427,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🦋🦋🦋🦋🦋🦋🦋🦋",
+              "prompt": "How many butterflies do you see?  🦋🦋🦋🦋🦋🦋🦋🦋",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -1445,7 +1445,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -1535,7 +1535,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐶",
+              "prompt": "How many puppies do you see?  🐶",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -1589,7 +1589,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍌",
+              "prompt": "How many bananas do you see?  🍌",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -1607,7 +1607,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐰🐰🐰🐰🐰🐰🐰🐰🐰🐰",
+              "prompt": "How many bunnies do you see?  🐰🐰🐰🐰🐰🐰🐰🐰🐰🐰",
               "answer": "10",
               "explanation": "Count one by one. There are 10.",
               "acceptable": [
@@ -1625,7 +1625,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐰🐰🐰🐰🐰",
+              "prompt": "How many bunnies do you see?  🐰🐰🐰🐰🐰",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -1661,7 +1661,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐶🐶",
+              "prompt": "How many puppies do you see?  🐶🐶",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -1679,7 +1679,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⚽⚽⚽⚽⚽⚽⚽",
+              "prompt": "How many soccer balls do you see?  ⚽⚽⚽⚽⚽⚽⚽",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -1697,7 +1697,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⚽",
+              "prompt": "How many soccer balls do you see?  ⚽",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -1733,7 +1733,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍌🍌🍌🍌🍌🍌🍌",
+              "prompt": "How many bananas do you see?  🍌🍌🍌🍌🍌🍌🍌",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -1787,7 +1787,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐶🐶🐶🐶🐶🐶🐶🐶🐶",
+              "prompt": "How many puppies do you see?  🐶🐶🐶🐶🐶🐶🐶🐶🐶",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -1805,7 +1805,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -1823,7 +1823,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐶",
+              "prompt": "How many puppies do you see?  🐶",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -1859,7 +1859,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⭐⭐⭐⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐⭐⭐⭐",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -1877,7 +1877,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍌🍌🍌🍌🍌🍌🍌🍌",
+              "prompt": "How many bananas do you see?  🍌🍌🍌🍌🍌🍌🍌🍌",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -1913,7 +1913,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍎🍎🍎🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎🍎🍎🍎",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -1931,7 +1931,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐢🐢🐢🐢🐢🐢🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢🐢🐢🐢🐢🐢🐢",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -1967,7 +1967,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐶🐶🐶🐶🐶🐶🐶🐶",
+              "prompt": "How many puppies do you see?  🐶🐶🐶🐶🐶🐶🐶🐶",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -2003,7 +2003,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⚽⚽⚽⚽⚽⚽⚽⚽⚽",
+              "prompt": "How many soccer balls do you see?  ⚽⚽⚽⚽⚽⚽⚽⚽⚽",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -2039,7 +2039,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐰🐰🐰🐰🐰🐰🐰",
+              "prompt": "How many bunnies do you see?  🐰🐰🐰🐰🐰🐰🐰",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -2057,7 +2057,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐢🐢🐢🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢🐢🐢🐢",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -2093,7 +2093,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐱🐱🐱🐱🐱",
+              "prompt": "How many cats do you see?  🐱🐱🐱🐱🐱",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -2147,7 +2147,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🦋🦋🦋🦋🦋🦋🦋🦋🦋",
+              "prompt": "How many butterflies do you see?  🦋🦋🦋🦋🦋🦋🦋🦋🦋",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -2165,7 +2165,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🌸🌸🌸🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸🌸🌸🌸",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -2201,7 +2201,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐱🐱🐱",
+              "prompt": "How many cats do you see?  🐱🐱🐱",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -2255,7 +2255,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -2309,7 +2309,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢",
               "answer": "10",
               "explanation": "Count one by one. There are 10.",
               "acceptable": [
@@ -2327,7 +2327,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐰🐰🐰🐰",
+              "prompt": "How many bunnies do you see?  🐰🐰🐰🐰",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -2345,7 +2345,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⚽⚽⚽",
+              "prompt": "How many soccer balls do you see?  ⚽⚽⚽",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -2363,7 +2363,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -2381,7 +2381,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🚗🚗🚗🚗",
+              "prompt": "How many cars do you see?  🚗🚗🚗🚗",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -2399,7 +2399,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🦋🦋🦋🦋🦋",
+              "prompt": "How many butterflies do you see?  🦋🦋🦋🦋🦋",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -2417,7 +2417,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐢🐢🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢🐢🐢",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -2453,7 +2453,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🦋🦋🦋🦋🦋🦋🦋🦋🦋🦋",
+              "prompt": "How many butterflies do you see?  🦋🦋🦋🦋🦋🦋🦋🦋🦋🦋",
               "answer": "10",
               "explanation": "Count one by one. There are 10.",
               "acceptable": [
@@ -2489,7 +2489,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐟🐟🐟🐟🐟🐟🐟",
+              "prompt": "How many fish do you see?  🐟🐟🐟🐟🐟🐟🐟",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -2543,7 +2543,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⚽⚽⚽⚽⚽⚽⚽",
+              "prompt": "How many soccer balls do you see?  ⚽⚽⚽⚽⚽⚽⚽",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -2579,7 +2579,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐶🐶🐶🐶",
+              "prompt": "How many puppies do you see?  🐶🐶🐶🐶",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -2597,7 +2597,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐰🐰🐰🐰🐰🐰🐰",
+              "prompt": "How many bunnies do you see?  🐰🐰🐰🐰🐰🐰🐰",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -2615,7 +2615,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🦋🦋",
+              "prompt": "How many butterflies do you see?  🦋🦋",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -2633,7 +2633,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐰🐰🐰",
+              "prompt": "How many bunnies do you see?  🐰🐰🐰",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -2651,7 +2651,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍎🍎🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎🍎🍎",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -2669,7 +2669,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐶🐶🐶🐶🐶",
+              "prompt": "How many puppies do you see?  🐶🐶🐶🐶🐶",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -2705,7 +2705,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍌🍌🍌🍌🍌🍌🍌🍌🍌🍌",
+              "prompt": "How many bananas do you see?  🍌🍌🍌🍌🍌🍌🍌🍌🍌🍌",
               "answer": "10",
               "explanation": "Count one by one. There are 10.",
               "acceptable": [
@@ -2759,7 +2759,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⭐",
+              "prompt": "How many stars do you see?  ⭐",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -2777,7 +2777,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⭐⭐⭐⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐⭐⭐⭐",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -2813,7 +2813,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🚗🚗🚗",
+              "prompt": "How many cars do you see?  🚗🚗🚗",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -2831,7 +2831,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⚽⚽⚽⚽⚽⚽⚽⚽",
+              "prompt": "How many soccer balls do you see?  ⚽⚽⚽⚽⚽⚽⚽⚽",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -2849,7 +2849,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐶🐶🐶🐶🐶🐶",
+              "prompt": "How many puppies do you see?  🐶🐶🐶🐶🐶🐶",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -2867,7 +2867,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⚽⚽⚽⚽⚽⚽",
+              "prompt": "How many soccer balls do you see?  ⚽⚽⚽⚽⚽⚽",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -2885,7 +2885,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🦋",
+              "prompt": "How many butterflies do you see?  🦋",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -2903,7 +2903,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🚗🚗🚗🚗🚗",
+              "prompt": "How many cars do you see?  🚗🚗🚗🚗🚗",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -2921,7 +2921,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -2993,7 +2993,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐱🐱🐱🐱🐱🐱🐱🐱🐱",
+              "prompt": "How many cats do you see?  🐱🐱🐱🐱🐱🐱🐱🐱🐱",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -3029,7 +3029,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🌸🌸🌸🌸🌸🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸🌸🌸🌸🌸🌸",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -3065,7 +3065,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🦋🦋🦋",
+              "prompt": "How many butterflies do you see?  🦋🦋🦋",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -3083,7 +3083,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🌸🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸🌸",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -3137,7 +3137,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🚗🚗",
+              "prompt": "How many cars do you see?  🚗🚗",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -3173,7 +3173,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐱🐱🐱🐱🐱🐱🐱🐱🐱🐱",
+              "prompt": "How many cats do you see?  🐱🐱🐱🐱🐱🐱🐱🐱🐱🐱",
               "answer": "10",
               "explanation": "Count one by one. There are 10.",
               "acceptable": [
@@ -3191,7 +3191,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🦋🦋🦋🦋🦋🦋🦋🦋🦋🦋",
+              "prompt": "How many butterflies do you see?  🦋🦋🦋🦋🦋🦋🦋🦋🦋🦋",
               "answer": "10",
               "explanation": "Count one by one. There are 10.",
               "acceptable": [
@@ -3209,7 +3209,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🚗🚗",
+              "prompt": "How many cars do you see?  🚗🚗",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -3299,7 +3299,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐱🐱🐱",
+              "prompt": "How many cats do you see?  🐱🐱🐱",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -3317,7 +3317,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐰🐰🐰🐰🐰🐰🐰🐰🐰🐰",
+              "prompt": "How many bunnies do you see?  🐰🐰🐰🐰🐰🐰🐰🐰🐰🐰",
               "answer": "10",
               "explanation": "Count one by one. There are 10.",
               "acceptable": [
@@ -3353,7 +3353,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸",
               "answer": "10",
               "explanation": "Count one by one. There are 10.",
               "acceptable": [
@@ -3371,7 +3371,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐟🐟🐟🐟🐟🐟🐟🐟🐟",
+              "prompt": "How many fish do you see?  🐟🐟🐟🐟🐟🐟🐟🐟🐟",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -3389,7 +3389,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⚽⚽⚽⚽⚽",
+              "prompt": "How many soccer balls do you see?  ⚽⚽⚽⚽⚽",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -3407,7 +3407,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐰",
+              "prompt": "How many bunnies do you see?  🐰",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -3425,7 +3425,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍎🍎🍎🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎🍎🍎🍎",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -3443,7 +3443,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐟🐟",
+              "prompt": "How many fish do you see?  🐟🐟",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -3461,7 +3461,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🌸🌸🌸🌸🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸🌸🌸🌸🌸",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -3479,7 +3479,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍌🍌🍌🍌🍌🍌🍌🍌🍌🍌",
+              "prompt": "How many bananas do you see?  🍌🍌🍌🍌🍌🍌🍌🍌🍌🍌",
               "answer": "10",
               "explanation": "Count one by one. There are 10.",
               "acceptable": [
@@ -3515,7 +3515,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍌🍌🍌🍌🍌🍌",
+              "prompt": "How many bananas do you see?  🍌🍌🍌🍌🍌🍌",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -3533,7 +3533,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -3551,7 +3551,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐰🐰🐰🐰🐰",
+              "prompt": "How many bunnies do you see?  🐰🐰🐰🐰🐰",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -3605,7 +3605,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🌸",
+              "prompt": "How many flowers do you see?  🌸",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -3623,7 +3623,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍎🍎🍎🍎🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎🍎🍎🍎🍎",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -3641,7 +3641,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🦋🦋🦋🦋🦋🦋",
+              "prompt": "How many butterflies do you see?  🦋🦋🦋🦋🦋🦋",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -3659,7 +3659,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -3677,7 +3677,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🦋🦋🦋",
+              "prompt": "How many butterflies do you see?  🦋🦋🦋",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -3695,7 +3695,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍌🍌🍌🍌🍌",
+              "prompt": "How many bananas do you see?  🍌🍌🍌🍌🍌",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -3713,7 +3713,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐱🐱🐱🐱🐱🐱🐱🐱🐱",
+              "prompt": "How many cats do you see?  🐱🐱🐱🐱🐱🐱🐱🐱🐱",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -3767,7 +3767,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐢",
+              "prompt": "How many turtles do you see?  🐢",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -3785,7 +3785,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐶🐶🐶🐶",
+              "prompt": "How many puppies do you see?  🐶🐶🐶🐶",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -3839,7 +3839,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐢🐢🐢🐢🐢🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢🐢🐢🐢🐢🐢",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -3857,7 +3857,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐱🐱🐱🐱🐱🐱🐱🐱",
+              "prompt": "How many cats do you see?  🐱🐱🐱🐱🐱🐱🐱🐱",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -3911,7 +3911,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🚗🚗🚗🚗🚗🚗🚗🚗🚗",
+              "prompt": "How many cars do you see?  🚗🚗🚗🚗🚗🚗🚗🚗🚗",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -3929,7 +3929,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🚗🚗🚗🚗🚗🚗🚗🚗",
+              "prompt": "How many cars do you see?  🚗🚗🚗🚗🚗🚗🚗🚗",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -3947,7 +3947,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐟🐟🐟🐟🐟🐟🐟🐟🐟🐟",
+              "prompt": "How many fish do you see?  🐟🐟🐟🐟🐟🐟🐟🐟🐟🐟",
               "answer": "10",
               "explanation": "Count one by one. There are 10.",
               "acceptable": [
@@ -3965,7 +3965,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢",
               "answer": "10",
               "explanation": "Count one by one. There are 10.",
               "acceptable": [
@@ -3983,7 +3983,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐟🐟🐟🐟🐟🐟🐟🐟🐟🐟",
+              "prompt": "How many fish do you see?  🐟🐟🐟🐟🐟🐟🐟🐟🐟🐟",
               "answer": "10",
               "explanation": "Count one by one. There are 10.",
               "acceptable": [
@@ -4019,7 +4019,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⭐⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐⭐",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -4037,7 +4037,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐶🐶🐶🐶🐶",
+              "prompt": "How many puppies do you see?  🐶🐶🐶🐶🐶",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -4055,7 +4055,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍎🍎🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎🍎🍎",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -4073,7 +4073,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⚽⚽⚽⚽⚽⚽⚽⚽",
+              "prompt": "How many soccer balls do you see?  ⚽⚽⚽⚽⚽⚽⚽⚽",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -4109,7 +4109,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐱🐱",
+              "prompt": "How many cats do you see?  🐱🐱",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -4127,7 +4127,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🚗🚗🚗🚗🚗🚗🚗🚗",
+              "prompt": "How many cars do you see?  🚗🚗🚗🚗🚗🚗🚗🚗",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -4145,7 +4145,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🚗",
+              "prompt": "How many cars do you see?  🚗",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -4163,7 +4163,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐰🐰",
+              "prompt": "How many bunnies do you see?  🐰🐰",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -4181,7 +4181,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐⭐",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -4199,7 +4199,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐶🐶🐶🐶🐶🐶🐶🐶🐶",
+              "prompt": "How many puppies do you see?  🐶🐶🐶🐶🐶🐶🐶🐶🐶",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -4217,7 +4217,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⚽",
+              "prompt": "How many soccer balls do you see?  ⚽",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -4235,7 +4235,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⭐⭐⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐⭐⭐",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -4271,7 +4271,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐰🐰🐰🐰🐰🐰",
+              "prompt": "How many bunnies do you see?  🐰🐰🐰🐰🐰🐰",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -4343,7 +4343,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -4397,7 +4397,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍌🍌🍌🍌🍌🍌🍌🍌🍌",
+              "prompt": "How many bananas do you see?  🍌🍌🍌🍌🍌🍌🍌🍌🍌",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -4415,7 +4415,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐰🐰🐰🐰🐰🐰🐰🐰🐰",
+              "prompt": "How many bunnies do you see?  🐰🐰🐰🐰🐰🐰🐰🐰🐰",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -4487,7 +4487,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐱🐱🐱🐱🐱🐱🐱",
+              "prompt": "How many cats do you see?  🐱🐱🐱🐱🐱🐱🐱",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -4523,7 +4523,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐢",
+              "prompt": "How many turtles do you see?  🐢",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -4541,7 +4541,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍎",
+              "prompt": "How many apples do you see?  🍎",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -4559,7 +4559,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐢🐢🐢🐢🐢🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢🐢🐢🐢🐢🐢",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -4577,7 +4577,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐟🐟🐟🐟🐟🐟",
+              "prompt": "How many fish do you see?  🐟🐟🐟🐟🐟🐟",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -4631,7 +4631,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⚽⚽⚽⚽⚽⚽⚽⚽⚽",
+              "prompt": "How many soccer balls do you see?  ⚽⚽⚽⚽⚽⚽⚽⚽⚽",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -4649,7 +4649,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐟🐟",
+              "prompt": "How many fish do you see?  🐟🐟",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -4667,7 +4667,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐱🐱🐱🐱🐱🐱🐱🐱",
+              "prompt": "How many cats do you see?  🐱🐱🐱🐱🐱🐱🐱🐱",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -4685,7 +4685,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🚗",
+              "prompt": "How many cars do you see?  🚗",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -4703,7 +4703,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🦋🦋🦋🦋",
+              "prompt": "How many butterflies do you see?  🦋🦋🦋🦋",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -4739,7 +4739,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐",
               "answer": "10",
               "explanation": "Count one by one. There are 10.",
               "acceptable": [
@@ -4757,7 +4757,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🦋🦋🦋🦋🦋🦋🦋",
+              "prompt": "How many butterflies do you see?  🦋🦋🦋🦋🦋🦋🦋",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -4775,7 +4775,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -4793,7 +4793,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍌🍌🍌",
+              "prompt": "How many bananas do you see?  🍌🍌🍌",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -4829,7 +4829,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -4865,7 +4865,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐰🐰🐰🐰🐰🐰🐰🐰",
+              "prompt": "How many bunnies do you see?  🐰🐰🐰🐰🐰🐰🐰🐰",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -4883,7 +4883,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐱",
+              "prompt": "How many cats do you see?  🐱",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -4901,7 +4901,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -4919,7 +4919,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐟🐟🐟🐟🐟🐟",
+              "prompt": "How many fish do you see?  🐟🐟🐟🐟🐟🐟",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -4955,7 +4955,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐰🐰🐰🐰",
+              "prompt": "How many bunnies do you see?  🐰🐰🐰🐰",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -4991,7 +4991,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⭐⭐⭐⭐⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐⭐⭐⭐⭐",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -5009,7 +5009,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -5045,7 +5045,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐟🐟🐟🐟🐟🐟🐟",
+              "prompt": "How many fish do you see?  🐟🐟🐟🐟🐟🐟🐟",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -5081,7 +5081,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -5117,7 +5117,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐶🐶",
+              "prompt": "How many puppies do you see?  🐶🐶",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -5135,7 +5135,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🚗🚗🚗🚗🚗🚗🚗",
+              "prompt": "How many cars do you see?  🚗🚗🚗🚗🚗🚗🚗",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -5153,7 +5153,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⚽⚽⚽⚽⚽",
+              "prompt": "How many soccer balls do you see?  ⚽⚽⚽⚽⚽",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -5171,7 +5171,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -5189,7 +5189,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐱🐱🐱🐱🐱🐱🐱",
+              "prompt": "How many cats do you see?  🐱🐱🐱🐱🐱🐱🐱",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -5225,7 +5225,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐟🐟🐟🐟🐟",
+              "prompt": "How many fish do you see?  🐟🐟🐟🐟🐟",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -5243,7 +5243,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐢🐢🐢🐢🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢🐢🐢🐢🐢",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -5279,7 +5279,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐱🐱🐱🐱",
+              "prompt": "How many cats do you see?  🐱🐱🐱🐱",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -5297,7 +5297,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⭐⭐⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐⭐⭐",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -5333,7 +5333,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐟🐟🐟🐟🐟",
+              "prompt": "How many fish do you see?  🐟🐟🐟🐟🐟",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -5369,7 +5369,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐱🐱🐱🐱",
+              "prompt": "How many cats do you see?  🐱🐱🐱🐱",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -5387,7 +5387,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⚽⚽⚽⚽⚽⚽⚽⚽⚽⚽",
+              "prompt": "How many soccer balls do you see?  ⚽⚽⚽⚽⚽⚽⚽⚽⚽⚽",
               "answer": "10",
               "explanation": "Count one by one. There are 10.",
               "acceptable": [
@@ -5405,7 +5405,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍎🍎🍎🍎🍎🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎🍎🍎🍎🍎🍎",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -5423,7 +5423,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🌸🌸🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸🌸🌸",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -5441,7 +5441,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🚗🚗🚗🚗🚗🚗",
+              "prompt": "How many cars do you see?  🚗🚗🚗🚗🚗🚗",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -5459,7 +5459,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎",
               "answer": "2",
               "explanation": "Count one by one. There are 2.",
               "acceptable": [
@@ -5477,7 +5477,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⭐⭐⭐⭐⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐⭐⭐⭐⭐",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -5495,7 +5495,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍌🍌🍌🍌🍌🍌🍌",
+              "prompt": "How many bananas do you see?  🍌🍌🍌🍌🍌🍌🍌",
               "answer": "7",
               "explanation": "Count one by one. There are 7.",
               "acceptable": [
@@ -5513,7 +5513,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐰🐰🐰🐰🐰🐰",
+              "prompt": "How many bunnies do you see?  🐰🐰🐰🐰🐰🐰",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -5531,7 +5531,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⚽⚽⚽⚽⚽⚽⚽⚽⚽⚽",
+              "prompt": "How many soccer balls do you see?  ⚽⚽⚽⚽⚽⚽⚽⚽⚽⚽",
               "answer": "10",
               "explanation": "Count one by one. There are 10.",
               "acceptable": [
@@ -5567,7 +5567,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍎🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎🍎",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -5585,7 +5585,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐱",
+              "prompt": "How many cats do you see?  🐱",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -5639,7 +5639,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶",
+              "prompt": "How many puppies do you see?  🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶",
               "answer": "10",
               "explanation": "Count one by one. There are 10.",
               "acceptable": [
@@ -5657,7 +5657,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎",
               "answer": "10",
               "explanation": "Count one by one. There are 10.",
               "acceptable": [
@@ -5693,7 +5693,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍎🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎🍎",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -5711,7 +5711,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🦋🦋🦋🦋🦋🦋🦋🦋",
+              "prompt": "How many butterflies do you see?  🦋🦋🦋🦋🦋🦋🦋🦋",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -5729,7 +5729,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -5747,7 +5747,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐰",
+              "prompt": "How many bunnies do you see?  🐰",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -5765,7 +5765,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🌸",
+              "prompt": "How many flowers do you see?  🌸",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -5783,7 +5783,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -5801,7 +5801,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -5837,7 +5837,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍌🍌🍌🍌🍌",
+              "prompt": "How many bananas do you see?  🍌🍌🍌🍌🍌",
               "answer": "5",
               "explanation": "Count one by one. There are 5.",
               "acceptable": [
@@ -5855,7 +5855,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐",
               "answer": "8",
               "explanation": "Count one by one. There are 8.",
               "acceptable": [
@@ -5909,7 +5909,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐟🐟🐟",
+              "prompt": "How many fish do you see?  🐟🐟🐟",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -5927,7 +5927,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍌🍌🍌🍌🍌🍌",
+              "prompt": "How many bananas do you see?  🍌🍌🍌🍌🍌🍌",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -5963,7 +5963,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐱🐱🐱🐱🐱🐱🐱🐱🐱🐱",
+              "prompt": "How many cats do you see?  🐱🐱🐱🐱🐱🐱🐱🐱🐱🐱",
               "answer": "10",
               "explanation": "Count one by one. There are 10.",
               "acceptable": [
@@ -5981,7 +5981,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐰🐰🐰",
+              "prompt": "How many bunnies do you see?  🐰🐰🐰",
               "answer": "3",
               "explanation": "Count one by one. There are 3.",
               "acceptable": [
@@ -5999,7 +5999,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍌🍌🍌🍌🍌🍌🍌🍌🍌",
+              "prompt": "How many bananas do you see?  🍌🍌🍌🍌🍌🍌🍌🍌🍌",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -6017,7 +6017,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🚗🚗🚗🚗🚗🚗🚗🚗🚗",
+              "prompt": "How many cars do you see?  🚗🚗🚗🚗🚗🚗🚗🚗🚗",
               "answer": "9",
               "explanation": "Count one by one. There are 9.",
               "acceptable": [
@@ -6035,7 +6035,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⚽⚽⚽⚽",
+              "prompt": "How many soccer balls do you see?  ⚽⚽⚽⚽",
               "answer": "4",
               "explanation": "Count one by one. There are 4.",
               "acceptable": [
@@ -6071,7 +6071,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🌸🌸🌸🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸🌸🌸🌸",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -6089,7 +6089,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⭐",
+              "prompt": "How many stars do you see?  ⭐",
               "answer": "1",
               "explanation": "Count one by one. There are 1.",
               "acceptable": [
@@ -6107,7 +6107,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐱🐱🐱🐱🐱🐱",
+              "prompt": "How many cats do you see?  🐱🐱🐱🐱🐱🐱",
               "answer": "6",
               "explanation": "Count one by one. There are 6.",
               "acceptable": [
@@ -6313,7 +6313,7 @@
           "questions": [
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶",
+              "prompt": "How many puppies do you see?  🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶",
               "answer": "17",
               "explanation": "Count one by one. There are 17.",
               "acceptable": [
@@ -6331,7 +6331,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶",
+              "prompt": "How many puppies do you see?  🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶",
               "answer": "12",
               "explanation": "Count one by one. There are 12.",
               "acceptable": [
@@ -6349,7 +6349,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓",
+              "prompt": "How many strawberries do you see?  🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓",
               "answer": "13",
               "explanation": "Count one by one. There are 13.",
               "acceptable": [
@@ -6367,7 +6367,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸",
               "answer": "15",
               "explanation": "Count one by one. There are 15.",
               "acceptable": [
@@ -6385,7 +6385,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢",
               "answer": "18",
               "explanation": "Count one by one. There are 18.",
               "acceptable": [
@@ -6403,7 +6403,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐",
               "answer": "19",
               "explanation": "Count one by one. There are 19.",
               "acceptable": [
@@ -6421,7 +6421,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝",
+              "prompt": "How many bees do you see?  🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝",
               "answer": "11",
               "explanation": "Count one by one. There are 11.",
               "acceptable": [
@@ -6439,7 +6439,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐",
               "answer": "16",
               "explanation": "Count one by one. There are 16.",
               "acceptable": [
@@ -6457,7 +6457,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢",
               "answer": "13",
               "explanation": "Count one by one. There are 13.",
               "acceptable": [
@@ -6475,7 +6475,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢",
               "answer": "12",
               "explanation": "Count one by one. There are 12.",
               "acceptable": [
@@ -6493,7 +6493,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓",
+              "prompt": "How many strawberries do you see?  🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓",
               "answer": "20",
               "explanation": "Count one by one. There are 20.",
               "acceptable": [
@@ -6511,7 +6511,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎",
               "answer": "18",
               "explanation": "Count one by one. There are 18.",
               "acceptable": [
@@ -6529,7 +6529,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐",
               "answer": "18",
               "explanation": "Count one by one. There are 18.",
               "acceptable": [
@@ -6547,7 +6547,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓",
+              "prompt": "How many strawberries do you see?  🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓",
               "answer": "16",
               "explanation": "Count one by one. There are 16.",
               "acceptable": [
@@ -6565,7 +6565,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓",
+              "prompt": "How many strawberries do you see?  🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓",
               "answer": "14",
               "explanation": "Count one by one. There are 14.",
               "acceptable": [
@@ -6583,7 +6583,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶",
+              "prompt": "How many puppies do you see?  🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶",
               "answer": "18",
               "explanation": "Count one by one. There are 18.",
               "acceptable": [
@@ -6601,7 +6601,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐",
               "answer": "13",
               "explanation": "Count one by one. There are 13.",
               "acceptable": [
@@ -6619,7 +6619,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓",
+              "prompt": "How many strawberries do you see?  🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓",
               "answer": "11",
               "explanation": "Count one by one. There are 11.",
               "acceptable": [
@@ -6637,7 +6637,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝",
+              "prompt": "How many bees do you see?  🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝",
               "answer": "15",
               "explanation": "Count one by one. There are 15.",
               "acceptable": [
@@ -6655,7 +6655,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎",
               "answer": "16",
               "explanation": "Count one by one. There are 16.",
               "acceptable": [
@@ -6673,7 +6673,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢",
               "answer": "19",
               "explanation": "Count one by one. There are 19.",
               "acceptable": [
@@ -6691,7 +6691,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶",
+              "prompt": "How many puppies do you see?  🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶",
               "answer": "20",
               "explanation": "Count one by one. There are 20.",
               "acceptable": [
@@ -6709,7 +6709,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝",
+              "prompt": "How many bees do you see?  🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝",
               "answer": "14",
               "explanation": "Count one by one. There are 14.",
               "acceptable": [
@@ -6727,7 +6727,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓",
+              "prompt": "How many strawberries do you see?  🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓",
               "answer": "19",
               "explanation": "Count one by one. There are 19.",
               "acceptable": [
@@ -6745,7 +6745,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐",
               "answer": "11",
               "explanation": "Count one by one. There are 11.",
               "acceptable": [
@@ -6763,7 +6763,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶",
+              "prompt": "How many puppies do you see?  🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶",
               "answer": "13",
               "explanation": "Count one by one. There are 13.",
               "acceptable": [
@@ -6781,7 +6781,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓",
+              "prompt": "How many strawberries do you see?  🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓",
               "answer": "17",
               "explanation": "Count one by one. There are 17.",
               "acceptable": [
@@ -6799,7 +6799,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸",
               "answer": "20",
               "explanation": "Count one by one. There are 20.",
               "acceptable": [
@@ -6817,7 +6817,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸",
               "answer": "14",
               "explanation": "Count one by one. There are 14.",
               "acceptable": [
@@ -6835,7 +6835,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢",
               "answer": "14",
               "explanation": "Count one by one. There are 14.",
               "acceptable": [
@@ -6853,7 +6853,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢",
               "answer": "16",
               "explanation": "Count one by one. There are 16.",
               "acceptable": [
@@ -6871,7 +6871,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎",
               "answer": "14",
               "explanation": "Count one by one. There are 14.",
               "acceptable": [
@@ -6889,7 +6889,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸",
               "answer": "12",
               "explanation": "Count one by one. There are 12.",
               "acceptable": [
@@ -6907,7 +6907,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎",
               "answer": "13",
               "explanation": "Count one by one. There are 13.",
               "acceptable": [
@@ -6925,7 +6925,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸",
               "answer": "18",
               "explanation": "Count one by one. There are 18.",
               "acceptable": [
@@ -6943,7 +6943,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢",
               "answer": "17",
               "explanation": "Count one by one. There are 17.",
               "acceptable": [
@@ -6961,7 +6961,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓",
+              "prompt": "How many strawberries do you see?  🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓",
               "answer": "15",
               "explanation": "Count one by one. There are 15.",
               "acceptable": [
@@ -6979,7 +6979,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝",
+              "prompt": "How many bees do you see?  🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝",
               "answer": "19",
               "explanation": "Count one by one. There are 19.",
               "acceptable": [
@@ -6997,7 +6997,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝",
+              "prompt": "How many bees do you see?  🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝",
               "answer": "18",
               "explanation": "Count one by one. There are 18.",
               "acceptable": [
@@ -7015,7 +7015,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸",
               "answer": "16",
               "explanation": "Count one by one. There are 16.",
               "acceptable": [
@@ -7033,7 +7033,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎",
               "answer": "12",
               "explanation": "Count one by one. There are 12.",
               "acceptable": [
@@ -7051,7 +7051,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝",
+              "prompt": "How many bees do you see?  🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝",
               "answer": "16",
               "explanation": "Count one by one. There are 16.",
               "acceptable": [
@@ -7069,7 +7069,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶",
+              "prompt": "How many puppies do you see?  🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶",
               "answer": "11",
               "explanation": "Count one by one. There are 11.",
               "acceptable": [
@@ -7087,7 +7087,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎",
               "answer": "11",
               "explanation": "Count one by one. There are 11.",
               "acceptable": [
@@ -7105,7 +7105,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎",
               "answer": "20",
               "explanation": "Count one by one. There are 20.",
               "acceptable": [
@@ -7123,7 +7123,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸",
               "answer": "11",
               "explanation": "Count one by one. There are 11.",
               "acceptable": [
@@ -7141,7 +7141,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎",
               "answer": "19",
               "explanation": "Count one by one. There are 19.",
               "acceptable": [
@@ -7159,7 +7159,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝",
+              "prompt": "How many bees do you see?  🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝",
               "answer": "17",
               "explanation": "Count one by one. There are 17.",
               "acceptable": [
@@ -7177,7 +7177,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶",
+              "prompt": "How many puppies do you see?  🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶",
               "answer": "19",
               "explanation": "Count one by one. There are 19.",
               "acceptable": [
@@ -7195,7 +7195,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓",
+              "prompt": "How many strawberries do you see?  🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓",
               "answer": "18",
               "explanation": "Count one by one. There are 18.",
               "acceptable": [
@@ -7213,7 +7213,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸",
               "answer": "13",
               "explanation": "Count one by one. There are 13.",
               "acceptable": [
@@ -7231,7 +7231,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝",
+              "prompt": "How many bees do you see?  🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝",
               "answer": "13",
               "explanation": "Count one by one. There are 13.",
               "acceptable": [
@@ -7249,7 +7249,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎",
               "answer": "17",
               "explanation": "Count one by one. There are 17.",
               "acceptable": [
@@ -7267,7 +7267,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢",
               "answer": "20",
               "explanation": "Count one by one. There are 20.",
               "acceptable": [
@@ -7285,7 +7285,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓",
+              "prompt": "How many strawberries do you see?  🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓",
               "answer": "12",
               "explanation": "Count one by one. There are 12.",
               "acceptable": [
@@ -7303,7 +7303,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸",
               "answer": "17",
               "explanation": "Count one by one. There are 17.",
               "acceptable": [
@@ -7321,7 +7321,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢",
               "answer": "15",
               "explanation": "Count one by one. There are 15.",
               "acceptable": [
@@ -7339,7 +7339,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐",
               "answer": "14",
               "explanation": "Count one by one. There are 14.",
               "acceptable": [
@@ -7357,7 +7357,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐",
               "answer": "12",
               "explanation": "Count one by one. There are 12.",
               "acceptable": [
@@ -7375,7 +7375,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶",
+              "prompt": "How many puppies do you see?  🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶",
               "answer": "14",
               "explanation": "Count one by one. There are 14.",
               "acceptable": [
@@ -7393,7 +7393,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐",
               "answer": "17",
               "explanation": "Count one by one. There are 17.",
               "acceptable": [
@@ -7411,7 +7411,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢",
+              "prompt": "How many turtles do you see?  🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢🐢",
               "answer": "11",
               "explanation": "Count one by one. There are 11.",
               "acceptable": [
@@ -7429,7 +7429,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐",
               "answer": "20",
               "explanation": "Count one by one. There are 20.",
               "acceptable": [
@@ -7447,7 +7447,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶",
+              "prompt": "How many puppies do you see?  🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶",
               "answer": "16",
               "explanation": "Count one by one. There are 16.",
               "acceptable": [
@@ -7465,7 +7465,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐",
+              "prompt": "How many stars do you see?  ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐",
               "answer": "15",
               "explanation": "Count one by one. There are 15.",
               "acceptable": [
@@ -7483,7 +7483,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝",
+              "prompt": "How many bees do you see?  🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝",
               "answer": "12",
               "explanation": "Count one by one. There are 12.",
               "acceptable": [
@@ -7501,7 +7501,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸",
+              "prompt": "How many flowers do you see?  🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸",
               "answer": "19",
               "explanation": "Count one by one. There are 19.",
               "acceptable": [
@@ -7519,7 +7519,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝",
+              "prompt": "How many bees do you see?  🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝🐝",
               "answer": "20",
               "explanation": "Count one by one. There are 20.",
               "acceptable": [
@@ -7537,7 +7537,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎",
+              "prompt": "How many apples do you see?  🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎",
               "answer": "15",
               "explanation": "Count one by one. There are 15.",
               "acceptable": [
@@ -7555,7 +7555,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "How many do you see?  🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶",
+              "prompt": "How many puppies do you see?  🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶",
               "answer": "15",
               "explanation": "Count one by one. There are 15.",
               "acceptable": [

@@ -29139,3 +29139,25 @@ body.topic-page {
   .topic-example { padding: 14px 16px; }
   .topic-example-prompt { font-size: 16px; }
 }
+
+/* ==========================================================================
+   §79 Drop A/B/C/D letter chips on practice choice tiles (May 13).
+   User: "the options should not say a, b, c, d it should only say
+   answers 11, 12, 10, 9 less text is good."
+   The visible letter circle is hidden. The data-letter attribute on
+   the .choice label is preserved so §68 wrong-answer state coloring
+   (data-correct-letter / data-picked-letter selectors) keeps working.
+   Padding shifts left since the letter chip is gone.
+   ========================================================================== */
+body.practice-page .choice .choice-letter,
+body.practice-page .question-card .choice-letter {
+  display: none !important;
+}
+body.practice-page .choice {
+  padding-left: 16px !important;
+}
+body.practice-page .choice .choice-content {
+  /* Without the letter chip, the answer text is the only thing in
+     the row — give it a touch more vertical weight. */
+  font-size: 15px;
+}
