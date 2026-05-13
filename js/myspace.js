@@ -133,11 +133,57 @@
   // ============================================================
   // SHARED SHELL (rendered into subpages where #ms-shell-mount exists)
   // ============================================================
+  //
+  // §63 — every MySpace page now ships with the global site-header
+  // (same nav links + #user-slot as every other surface). User-facing
+  // rule: "the header options should stay the same no matter which
+  // page you are on". ensureSiteHeader() prepends the standard
+  // <header class="site-header"> to <body> if not already present.
+  // auth.js automatically populates #user-slot with pts + chat icon +
+  // avatar dropdown when the page loads, same as on home / games /
+  // toys / etc.
+  function _siteHeaderHTML() {
+    return (
+      '<header class="site-header">' +
+        '<div class="container">' +
+          '<a href="/index.html" class="brand">' +
+            '<svg class="brand-logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false">' +
+              '<defs><linearGradient id="msStarGrad" x1="0%" y1="0%" x2="100%" y2="100%">' +
+                '<stop offset="0%" stop-color="#fde047"/>' +
+                '<stop offset="55%" stop-color="#fbbf24"/>' +
+                '<stop offset="100%" stop-color="#f59e0b"/>' +
+              '</linearGradient></defs>' +
+              '<path d="M16 2.6 19.6 11.5 29.2 12.2 21.8 18.4 24.2 27.6 16 22.4 7.8 27.6 10.2 18.4 2.8 12.2 12.4 11.5 Z" fill="url(#msStarGrad)" stroke="rgba(255,255,255,0.18)" stroke-width="0.6" stroke-linejoin="round"/>' +
+            '</svg>' +
+            '<span class="brand-text">Grade<span class="brand-text-accent">Earn</span></span>' +
+          '</a>' +
+          '<nav class="nav">' +
+            '<a href="/index.html">Home</a>' +
+            '<a href="/myspace.html" class="active">MySpace</a>' +
+            '<a href="/achievements.html">Trophies</a>' +
+            '<a href="/league.html">League</a>' +
+            '<a href="/games.html">Games</a>' +
+            '<a href="/marketplace.html">Toys</a>' +
+          '</nav>' +
+          '<div id="user-slot" class="user-slot"></div>' +
+        '</div>' +
+      '</header>'
+    );
+  }
+  function ensureSiteHeader() {
+    if (document.querySelector('body > .site-header')) return;
+    const wrap = document.createElement('div');
+    wrap.innerHTML = _siteHeaderHTML();
+    const header = wrap.firstChild;
+    document.body.insertBefore(header, document.body.firstChild);
+  }
+
   function renderShell() {
     const mount = document.getElementById('ms-shell-mount');
     if (!mount) return; // main /myspace.html ships with shell pre-rendered
     const active = document.body.getAttribute('data-myspace-active') || 'home';
     const pageTitle = document.body.getAttribute('data-myspace-page-title') || 'MySpace';
+    ensureSiteHeader();
     mount.innerHTML =
       '<aside class="ms-sidebar" aria-label="MySpace navigation">' +
         '<a class="ms-brand" href="/index.html" aria-label="GradeEarn home">' +
@@ -154,12 +200,13 @@
         '</nav>' +
       '</aside>' +
       '<main class="ms-main">' +
+        // §63 — ms-top no longer duplicates the global header.
+        // The brand wordmark + page title + avatar all live in the
+        // site-header at the top of the page. This sub-route header
+        // keeps only the "back to dashboard" affordance.
         '<header class="ms-top">' +
-          '<div class="ms-top-brand"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>GradeEarn</span></div>' +
-          '<div class="ms-top-title">' + esc(pageTitle) + '</div>' +
           '<div class="ms-top-actions">' +
             '<a class="ms-top-btn ms-quicknote-btn" href="/myspace.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> Dashboard</a>' +
-            '<div class="ms-top-avatar">' + getAvatarLetter() + '</div>' +
           '</div>' +
         '</header>' +
         // The page's actual content (#ms-subpage-content) sits after this mount
@@ -1821,6 +1868,13 @@
   // ROUTER
   // ============================================================
   function init() {
+    // §63 — every MySpace page (home + sub-routes) gets the global
+    // site-header. renderShell only fires on sub-routes (it bails
+    // when #ms-shell-mount is absent), so ensureSiteHeader is
+    // called separately to cover the main /myspace.html which ships
+    // with its shell inline. Idempotent — bails if a site-header
+    // already exists in the body.
+    ensureSiteHeader();
     renderShell();
     const active = document.body.getAttribute('data-myspace-active') || 'home';
     if (active === 'journal') return initJournal();

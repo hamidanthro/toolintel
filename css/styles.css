@@ -27215,3 +27215,55 @@ body.home-page #dashboard .grades-panel .grade-grid-compact {
     font-size: 18px !important;
   }
 }
+
+/* ==========================================================================
+   §63 MySpace global header parity (May 13). User feedback: "header
+   options should stay the same no matter which page you are on".
+   MySpace was rendering its own ms-shell topbar (Recent + Quick Note
+   + bell + avatar) and hiding the global nav (Home / MySpace /
+   Trophies / League / Games / Toys + pts + chat + avatar). Fix: the
+   standard .site-header is now injected on every MySpace surface by
+   js/myspace.js#ensureSiteHeader, with #user-slot which auth.js
+   auto-populates with pts/chat/avatar identically to every other page.
+   This CSS block resolves the sticky-stack collision (site-header AND
+   ms-sidebar both wanted top:0) and tightens ms-top now that its
+   brand+title+duplicate-avatar are stripped.
+   ========================================================================== */
+
+/* The site-header is sticky at top:0 with height ~64px. Push the
+   ms-sidebar's sticky anchor down so it lives BELOW the header. */
+body.myspace-page .site-header {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+}
+body.myspace-page .ms-sidebar {
+  top: 64px !important;
+  height: calc(100vh - 64px) !important;
+}
+
+/* ms-top — slim secondary toolbar for MySpace-specific tools only
+   (Recent + Quick Note). No brand, no page-title, no duplicate
+   avatar. Shrink the row height accordingly. */
+body.myspace-page .ms-top {
+  height: 48px !important;
+  grid-template-columns: 1fr !important;
+  padding: 0 24px !important;
+  background: transparent !important;
+  border-bottom: none !important;
+}
+body.myspace-page .ms-top-actions {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+/* Recent-panel still anchors to .ms-top; adjust offset since the
+   header is shorter now. */
+body.myspace-page .ms-recent-panel { top: 44px !important; }
+
+/* Mobile: site-header keeps its own existing mobile rules
+   (collapsed nav etc). Sidebar reflows under header. */
+@media (max-width: 1024px) {
+  body.myspace-page .ms-sidebar { top: 56px !important; height: auto !important; }
+}
