@@ -27113,3 +27113,36 @@ body.home-page #dashboard .journey-cta {
   }
   body.home-page #dashboard .journey-stat-value { font-size: 24px !important; }
 }
+
+/* ==========================================================================
+   §61 Stat cards — tighten further (May 13). The §59 pass took them
+   from 36 → 30px and reduced padding 24 → 18. Still reading as too
+   large in the row; user wants smaller. This block: number 30 → 24
+   (22 mobile), padding 18 → 14, eyebrow + meta one notch smaller,
+   gap 6 → 4. Cards now feel like a quiet stat strip, not four hero
+   tiles. Every §53 hue-tint + inset highlight stays.
+   ========================================================================== */
+
+body.home-page #dashboard .stat-card {
+  padding: 14px 16px !important;
+  gap: 4px !important;
+  border-radius: 12px;
+}
+body.home-page #dashboard .stat-card-value,
+body.home-page #dashboard .stat-card--wallet .stat-card-value {
+  font-size: 24px !important;
+}
+@media (max-width: 640px) {
+  body.home-page #dashboard .stat-card-value,
+  body.home-page #dashboard .stat-card--wallet .stat-card-value {
+    font-size: 22px !important;
+  }
+}
+body.home-page #dashboard .stat-card-label {
+  font-size: 9px !important;
+  letter-spacing: 0.16em !important;
+  margin-bottom: 2px !important;
+}
+body.home-page #dashboard .stat-card-meta { font-size: 10px !important; }
+/* "Spend in marketplace →" link on wallet card — match new size */
+body.home-page #dashboard .stat-card-link { font-size: 10px !important; }
