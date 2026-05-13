@@ -26869,3 +26869,155 @@ body.home-page #dashboard .stat-card--wallet .stat-card-value {
     font-size: 32px !important;
   }
 }
+
+/* ==========================================================================
+   §59 Home dashboard — quiet pass (May 13). Six competing regions →
+   one ordered scan. Subtractive: drop the four stat-card corner icons
+   (eyebrow already names them), drop the redundant "LIFETIME STATS"
+   eyebrow, collapse Today's Challenge from a giant amber card into
+   a single quiet row. Keep every §53 warmth treatment.
+   ========================================================================== */
+
+/* Drop the "LIFETIME STATS" eyebrow above Welcome. "Welcome back,
+   aaima" IS the eyebrow — labeling it again is filler. */
+body.home-page .welcome-eyebrow--quiet { display: none; }
+
+/* Stat cards: drop the corner icons entirely. Eyebrow + number + meta
+   reads cleaner. The icons were duplicate signal — every card already
+   has a 10px tracked-uppercase label naming what the number is. */
+body.home-page #dashboard .stat-card-icon { display: none; }
+
+/* Stat card header → just the eyebrow, no flex justify */
+body.home-page #dashboard .stat-card-header {
+  display: block;
+}
+
+/* Pull the number scale down another notch. 36px was still
+   dominating the page at the §58 size. Numbers at 30px desktop /
+   28px phone now feel proportional to the card. */
+body.home-page #dashboard .stat-card-value {
+  font-size: 30px !important;
+}
+body.home-page #dashboard .stat-card--wallet .stat-card-value {
+  font-size: 30px !important;
+}
+@media (max-width: 640px) {
+  body.home-page #dashboard .stat-card-value { font-size: 28px !important; }
+  body.home-page #dashboard .stat-card--wallet .stat-card-value {
+    font-size: 28px !important;
+  }
+}
+
+/* Tighten the stat card vertical rhythm — eyebrow → number → meta
+   now reads as one unit instead of three stacked rows. */
+body.home-page #dashboard .stat-card {
+  padding: 18px !important;
+  gap: 6px !important;
+}
+
+/* ---- Today's challenge — collapse into a single quiet row. Was a
+   tall amber-tinted card with eyebrow + h3 + subtitle + progress +
+   reward chip + CTA + timer. New shape: fire icon · "Today: 0/10
+   for +50 pts" · thin progress bar · Start →. The full headline +
+   subtitle disappear; the kid already knows what 0/10 means and
+   the CTA names the action. */
+body.home-page #dashboard .daily-challenge {
+  padding: 14px 18px !important;
+  grid-template-columns: 1fr auto !important;
+  gap: 16px !important;
+  background: linear-gradient(180deg, rgba(251, 191, 36, 0.05) 0%, rgba(20, 29, 51, 0.4) 100%) !important;
+  border-color: rgba(251, 191, 36, 0.15) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 4px 12px -6px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Suppress the glow blob; the card is no longer a hero */
+body.home-page #dashboard .challenge-glow { display: none; }
+
+/* Eyebrow keeps its fire icon but becomes inline-with-progress.
+   Hide the long title + subtitle entirely. */
+body.home-page #dashboard .challenge-title,
+body.home-page #dashboard .challenge-subtitle { display: none; }
+
+/* Build the new row from the existing pieces: .challenge-eyebrow
+   becomes the row label, .challenge-progress sits next to it. */
+body.home-page #dashboard .challenge-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+body.home-page #dashboard .challenge-eyebrow {
+  margin: 0 !important;
+  font-size: 11px !important;
+  letter-spacing: 0.15em !important;
+  color: rgba(252, 211, 77, 0.85) !important;
+  white-space: nowrap;
+}
+body.home-page #dashboard .challenge-fire {
+  font-size: 12px !important;
+  filter: none !important;
+}
+body.home-page #dashboard .challenge-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 200px;
+}
+body.home-page #dashboard .challenge-progress-track {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+body.home-page #dashboard .challenge-progress-bar {
+  flex: 1;
+  height: 6px !important;
+  max-width: 240px;
+}
+body.home-page #dashboard .challenge-progress-text {
+  font-size: 11px !important;
+  color: rgba(255, 255, 255, 0.55) !important;
+  white-space: nowrap;
+}
+/* Reward chip stays inline; shrink it */
+body.home-page #dashboard .challenge-reward {
+  padding: 3px 8px !important;
+  font-size: 11px !important;
+}
+body.home-page #dashboard .reward-coin { font-size: 11px !important; }
+body.home-page #dashboard .reward-amount { font-size: 11px !important; }
+
+/* Right side: shrink the CTA + hide the timer line (the bar's
+   "0/10 today" already tells the same story; the reset timer is
+   noise on a kid-facing surface). */
+body.home-page #dashboard .challenge-actions {
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+body.home-page #dashboard .challenge-cta {
+  height: 32px !important;
+  padding: 0 14px !important;
+  font-size: 12px !important;
+  border-radius: 8px !important;
+}
+body.home-page #dashboard .challenge-timer { display: none; }
+
+/* Tighten the vertical rhythm between regions */
+body.home-page #dashboard .daily-challenge { margin: 0 32px 24px !important; }
+body.home-page #dashboard .stats-grid { gap: 12px; }
+
+/* Mobile: stack daily-challenge content + actions cleanly */
+@media (max-width: 768px) {
+  body.home-page #dashboard .daily-challenge {
+    grid-template-columns: 1fr !important;
+    padding: 12px 16px !important;
+    margin: 0 16px 20px !important;
+  }
+  body.home-page #dashboard .challenge-actions {
+    justify-content: flex-end !important;
+  }
+}
