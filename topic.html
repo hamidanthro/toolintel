@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com https://api.gradeearn.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#060d1f" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+
+  <title>About this topic — GradeEarn</title>
+  <meta name="description" content="Read about this practice topic with two worked examples." />
+  <meta name="robots" content="noindex, follow" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css?v=20260513p" />
+</head>
+<body class="topic-page">
+
+  <!-- §78 — minimal chrome: no global nav clutter, just a close
+       affordance pinned top-right. The kid is mid-practice; they
+       need to read + bounce back. The global home affordance (§70)
+       still renders on phone via auth.js. -->
+  <header class="topic-topbar">
+    <a class="topic-back" href="#" id="topic-back" aria-label="Back to practice">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="19" y1="12" x2="5" y2="12"/>
+        <polyline points="12 19 5 12 12 5"/>
+      </svg>
+      <span>Back</span>
+    </a>
+    <button type="button" class="topic-close" id="topic-close" aria-label="Close — back to practice">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+      <span>Close</span>
+    </button>
+  </header>
+
+  <main class="topic-main">
+    <div class="topic-inner">
+
+      <!-- Loading skeleton -->
+      <div class="topic-loading" id="topic-loading" aria-busy="true">
+        <div class="topic-skel topic-skel-eyebrow"></div>
+        <div class="topic-skel topic-skel-title"></div>
+        <div class="topic-skel topic-skel-prose"></div>
+        <div class="topic-skel topic-skel-prose short"></div>
+      </div>
+
+      <!-- Error fallback (curriculum unreachable / unit not found) -->
+      <div class="topic-error" id="topic-error" hidden>
+        <h2 class="topic-error-title">Couldn't load this topic</h2>
+        <p class="topic-error-text">Head back to practice and try again.</p>
+        <a class="topic-error-cta" href="#" id="topic-error-back">Back to practice →</a>
+      </div>
+
+      <!-- Content (filled by topic.js) -->
+      <article class="topic-content" id="topic-content" hidden>
+
+        <header class="topic-head">
+          <span class="topic-eyebrow" id="topic-eyebrow">Topic</span>
+          <h1 class="topic-title" id="topic-title">—</h1>
+          <p class="topic-summary" id="topic-summary"></p>
+        </header>
+
+        <!-- What you'll learn (lesson objectives — quick bullets) -->
+        <section class="topic-section" id="topic-objectives-section" hidden>
+          <h2 class="topic-section-head">What you'll learn</h2>
+          <ul class="topic-objectives" id="topic-objectives"></ul>
+        </section>
+
+        <!-- Two worked examples — pulled from the unit's lesson
+             questions; answer + explanation revealed inline. -->
+        <section class="topic-section" id="topic-examples-section" hidden>
+          <h2 class="topic-section-head">Try these two</h2>
+          <div class="topic-examples" id="topic-examples"></div>
+        </section>
+
+        <!-- Close-and-return CTA at the bottom — repeats the topbar
+             close so the kid doesn't have to scroll up after reading. -->
+        <a class="topic-cta" href="#" id="topic-cta-bottom">
+          Back to practice
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </a>
+
+      </article>
+
+    </div>
+  </main>
+
+  <script src="js/migrate-storage.js?v=20260427a"></script>
+  <script src="js/auth.js?v=20260513b"></script>
+  <script src="js/topic.js?v=20260513a"></script>
+</body>
+</html>

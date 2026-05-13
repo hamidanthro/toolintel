@@ -172,13 +172,23 @@
   // we just don't crowd the picker with it.)
   function buildTopicCard(unit, unitIndex) {
     const targetUrl = `practice.html?s=${encodeURIComponent(STATE_SLUG)}&g=${encodeURIComponent(GRADE_SLUG)}&subj=${encodeURIComponent(SUBJ_SLUG)}&u=${encodeURIComponent(unit.id)}`;
+    // §78 — "Read about this topic" deep-link → /topic.html with
+    // the same params so the kid can read context + 2 worked
+    // examples without leaving the practice flow.
+    const explainUrl = `topic.html?s=${encodeURIComponent(STATE_SLUG)}&g=${encodeURIComponent(GRADE_SLUG)}&subj=${encodeURIComponent(SUBJ_SLUG)}&u=${encodeURIComponent(unit.id)}`;
     const glyph = topicGlyph(unit.title);
     return `
-      <a class="topic-card" href="${escapeHtml(targetUrl)}" data-topic="${escapeHtml(unit.id)}" aria-label="Practice ${escapeHtml(unit.title)}">
-        <span class="topic-card-icon" aria-hidden="true">${escapeHtml(glyph)}</span>
-        <h3 class="topic-card-title">${escapeHtml(unit.title)}</h3>
-        <span class="topic-card-chevron" aria-hidden="true">→</span>
-      </a>
+      <div class="topic-card-wrap">
+        <a class="topic-card" href="${escapeHtml(targetUrl)}" data-topic="${escapeHtml(unit.id)}" aria-label="Practice ${escapeHtml(unit.title)}">
+          <span class="topic-card-icon" aria-hidden="true">${escapeHtml(glyph)}</span>
+          <h3 class="topic-card-title">${escapeHtml(unit.title)}</h3>
+          <span class="topic-card-chevron" aria-hidden="true">→</span>
+        </a>
+        <a class="topic-card-explain" href="${escapeHtml(explainUrl)}" aria-label="Read about ${escapeHtml(unit.title)}">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <span>Read about this topic</span>
+        </a>
+      </div>
     `;
   }
 

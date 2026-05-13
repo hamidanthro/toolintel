@@ -28834,3 +28834,308 @@ body.facts-page .facts-loadmore:hover {
   padding: 0 !important;
   margin: 0 !important;
 }
+
+/* ==========================================================================
+   §78 Per-topic explanation page (May 13). User: "for every topic i
+   need a link 'read about this topic' that opens an internal page
+   explaining that topic with 2 examples and with a close option for
+   the students to return to the test practice."
+   New /topic.html surface; entry-point added to each topic card on
+   /subject.html (Math topic picker).
+   ========================================================================== */
+
+/* ---- Topic card — wrap + 'Read about this topic' link ---- */
+.topic-card-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.topic-card-explain {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 4px;
+  padding: 8px 10px;
+  background: transparent;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition: color 160ms ease, background 160ms ease;
+}
+.topic-card-explain:hover {
+  background: rgba(251, 191, 36, 0.06);
+  color: #fbbf24;
+}
+.topic-card-explain svg { flex-shrink: 0; opacity: 0.7; }
+.topic-card-explain:hover svg { opacity: 1; }
+
+/* ---- /topic.html page ---- */
+body.topic-page {
+  background: #060d1f;
+  color: #ffffff;
+  min-height: 100vh;
+}
+.topic-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  padding-top: calc(12px + env(safe-area-inset-top, 0px));
+  background: rgba(6, 13, 31, 0.85);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.topic-back, .topic-close {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.72);
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+.topic-back:hover, .topic-close:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.topic-main {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 24px 20px 64px;
+}
+.topic-head { margin-bottom: 28px; }
+.topic-eyebrow {
+  display: inline-block;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(252, 211, 77, 0.85);
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+.topic-title {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: clamp(28px, 5vw, 40px);
+  font-weight: 400;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+  margin: 0 0 10px;
+  line-height: 1.15;
+}
+.topic-summary {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+/* Sections */
+.topic-section { margin-top: 36px; }
+.topic-section-head {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 500;
+  margin: 0 0 14px;
+}
+
+/* Objectives bullets */
+.topic-objectives {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.topic-objectives li {
+  position: relative;
+  padding-left: 22px;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.topic-objectives li::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 9px;
+  width: 6px;
+  height: 6px;
+  background: #fbbf24;
+  border-radius: 50%;
+}
+
+/* Worked examples */
+.topic-examples {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.topic-example {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 18px 20px;
+}
+.topic-example-head { margin-bottom: 10px; }
+.topic-example-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 500;
+}
+.topic-example-prompt {
+  margin: 0 0 12px;
+  font-size: 17px;
+  font-weight: 500;
+  color: #ffffff;
+  line-height: 1.5;
+}
+.topic-ex-choices {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.topic-ex-choice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+}
+.topic-ex-choice--correct {
+  background: rgba(34, 197, 94, 0.08);
+  border-color: rgba(34, 197, 94, 0.4);
+  color: rgba(255, 255, 255, 0.92);
+}
+.topic-ex-choice-letter {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.65);
+}
+.topic-ex-choice--correct .topic-ex-choice-letter {
+  background: rgba(34, 197, 94, 0.18);
+  border-color: rgba(34, 197, 94, 0.5);
+  color: #86efac;
+}
+.topic-ex-choice-text { flex: 1; }
+.topic-ex-choice-check {
+  color: #34d399;
+  font-weight: 700;
+  font-size: 13px;
+}
+.topic-example-answer {
+  margin: 0 0 10px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 14px;
+}
+.topic-example-explain {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 10px 0 0;
+  padding: 10px 12px;
+  background: rgba(251, 191, 36, 0.05);
+  border-left: 2px solid rgba(251, 191, 36, 0.4);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 13px;
+  line-height: 1.55;
+}
+.topic-example-explain-icon { color: #fbbf24; flex-shrink: 0; }
+
+/* Bottom CTA */
+.topic-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 36px;
+  padding: 12px 22px;
+  background: linear-gradient(180deg, #fbbf24, #f59e0b);
+  color: #0a1628;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 4px 14px -4px rgba(251, 191, 36, 0.4);
+}
+.topic-cta:hover { filter: brightness(1.05); }
+
+/* Loading skeleton + error */
+.topic-loading {
+  padding: 24px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.topic-skel {
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+  background-size: 200% 100%;
+  animation: topic-skel 1.4s ease-in-out infinite;
+  border-radius: 8px;
+}
+.topic-skel-eyebrow { width: 100px; height: 12px; }
+.topic-skel-title { width: 70%; height: 32px; }
+.topic-skel-prose { width: 100%; height: 14px; }
+.topic-skel-prose.short { width: 80%; }
+@keyframes topic-skel {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.topic-error {
+  text-align: center;
+  padding: 48px 20px;
+}
+.topic-error-title { color: #ffffff; font-size: 18px; margin: 0 0 6px; }
+.topic-error-text { color: rgba(255, 255, 255, 0.55); margin: 0 0 18px; }
+.topic-error-cta {
+  display: inline-block;
+  padding: 10px 18px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 13px;
+}
+
+@media (max-width: 480px) {
+  .topic-main { padding: 18px 16px 56px; }
+  .topic-example { padding: 14px 16px; }
+  .topic-example-prompt { font-size: 16px; }
+}
