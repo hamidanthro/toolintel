@@ -122,7 +122,7 @@
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" />
 
-  <link rel="stylesheet" href="css/styles.css?v=20260513c" />
+  <link rel="stylesheet" href="css/styles.css?v=20260513d" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -410,45 +410,14 @@
           <div class="grade-grid grade-grid-compact" id="grade-grid"></div>
         </section>
 
-        <section class="dashboard-panel journey-panel">
-          <div class="dashboard-panel-header journey-header">
-            <div>
-              <h3 class="dashboard-panel-title">Your journey</h3>
-            </div>
-          </div>
+        <!-- §62: "Your journey" panel removed entirely. Streak / Today /
+             Best run were nice-to-haves that duplicated the streak number
+             shown elsewhere; "Keep going" CTA was redundant with the
+             "Practice now" gold button at the top. The stat IDs
+             (#dash-streak, #dash-today-correct, #dash-best) are no
+             longer in the DOM — JS writes that targeted them are
+             null-guarded (§60). -->
 
-          <!-- §60: per-stat SVG icons + hint lines dropped. Label +
-               number reads cleaner; the SVGs were decoration and the
-               hint lines ("Practice today to start a streak" etc.)
-               were nag-copy that's redundant when the number is 0. -->
-          <div class="journey-stats">
-            <div class="journey-stat journey-stat--streak">
-              <div class="journey-stat-content">
-                <span class="journey-stat-label">Streak</span>
-                <div class="journey-stat-value"><span id="dash-streak">0</span><span class="journey-stat-unit">days</span></div>
-              </div>
-            </div>
-
-            <div class="journey-stat">
-              <div class="journey-stat-content">
-                <span class="journey-stat-label">Today</span>
-                <div class="journey-stat-value"><span id="dash-today-correct">0</span><span class="journey-stat-unit">correct</span></div>
-              </div>
-            </div>
-
-            <div class="journey-stat">
-              <div class="journey-stat-content">
-                <span class="journey-stat-label">Best run</span>
-                <div class="journey-stat-value"><span id="dash-best">0</span><span class="journey-stat-unit">in a row</span></div>
-              </div>
-            </div>
-          </div>
-
-          <a href="grades.html" class="btn btn-primary journey-cta" data-practice-cta>
-            Keep going
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7H11M11 7L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
-        </section>
 
         <section class="dashboard-panel achievements-panel">
           <div class="dashboard-panel-header achievements-header">
@@ -963,7 +932,9 @@
         const streak = parseInt(j.streak, 10) || 0;
         const best = parseInt(j.bestStreak, 10) || 0;
         const personalBest = parseInt(j.bestRunInARow, 10) || 0;
-        document.getElementById('dash-streak').textContent = streak.toLocaleString();
+        // §62: journey panel removed; null-guard remaining writes
+        const dStreakEl = document.getElementById('dash-streak');
+        if (dStreakEl) dStreakEl.textContent = streak.toLocaleString();
         // K10: streak-about-to-break warning. If the kid has a multi-day
         // streak AND hasn't practiced today AND it's after 5pm local,
         // show an urgent "save your streak" message instead of the
@@ -987,14 +958,16 @@
               : 'Practice today to start a streak';
           }
         }
-        document.getElementById('dash-today-correct').textContent = todayCorrect.toLocaleString();
+        const dTodayCorrectEl = document.getElementById('dash-today-correct');
+        if (dTodayCorrectEl) dTodayCorrectEl.textContent = todayCorrect.toLocaleString();
         const todayFootEl = document.getElementById('dash-today-foot');
         if (todayFootEl) {
           todayFootEl.textContent = todayCorrect >= 5
             ? '✓ Daily goal reached!'
             : `Aim for ${5 - todayCorrect} more today 🌟`;
         }
-        document.getElementById('dash-best').textContent = personalBest.toLocaleString();
+        const dBestEl = document.getElementById('dash-best');
+        if (dBestEl) dBestEl.textContent = personalBest.toLocaleString();
 
         const subBoard = document.getElementById('dash-board-sub');
         if (subBoard) subBoard.textContent = todayCorrect > 0 ? `${todayCorrect} today` : 'Start fresh today';

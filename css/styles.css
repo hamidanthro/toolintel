@@ -27146,3 +27146,72 @@ body.home-page #dashboard .stat-card-label {
 body.home-page #dashboard .stat-card-meta { font-size: 10px !important; }
 /* "Spend in marketplace →" link on wallet card — match new size */
 body.home-page #dashboard .stat-card-link { font-size: 10px !important; }
+
+/* ==========================================================================
+   §62 Stat row — thin horizontal strip (May 13). User feedback: the
+   tile shape itself was the problem ("I don't like the big rectangle
+   blocks"). Cards now lay out as a single-row pill per stat: eyebrow
+   on top + value inline below + meta line dropped. ~50px tall, half
+   the previous height. Premium-quiet stat ribbon.
+   Also: "Your journey" panel removed (markup-side); the Practice
+   panel now spans the full dashboard-grid row.
+   ========================================================================== */
+
+/* Strip the meta line entirely. "out of 230 questions" / "lifetime
+   average" / "Spend in marketplace →" / "lifetime hours" — every
+   stat's helper text. Premium dashboards (Linear, Vercel, Stripe)
+   surface the number, not the supporting clause. */
+body.home-page #dashboard .stat-card-meta { display: none !important; }
+body.home-page #dashboard .stat-card-link { display: none !important; }
+
+/* Thin card geometry. Padding 14 → 10/14, value 24 → 20px, eyebrow
+   stays 9px. Cards are ~46px tall. */
+body.home-page #dashboard .stat-card {
+  padding: 10px 14px !important;
+  gap: 2px !important;
+  border-radius: 10px !important;
+  min-height: 0 !important;
+}
+body.home-page #dashboard .stat-card-value,
+body.home-page #dashboard .stat-card--wallet .stat-card-value {
+  font-size: 20px !important;
+  line-height: 1.1 !important;
+}
+body.home-page #dashboard .stat-card-label {
+  font-size: 9px !important;
+  letter-spacing: 0.16em !important;
+  margin-bottom: 0 !important;
+}
+/* Tighten the row gap between cards */
+body.home-page #dashboard .stats-grid { gap: 10px !important; margin-bottom: 24px !important; }
+
+/* Practice panel goes full-width now that Journey is gone */
+body.home-page #dashboard .dashboard-grid {
+  grid-template-columns: 1fr !important;
+}
+body.home-page #dashboard .grades-panel {
+  max-width: 920px;
+  margin: 0 auto;
+  width: 100%;
+}
+/* Grade-grid: 4 columns on wide screens since it has the full row */
+body.home-page #dashboard .grades-panel .grade-grid-compact {
+  grid-template-columns: repeat(4, 1fr) !important;
+}
+@media (max-width: 1024px) {
+  body.home-page #dashboard .grades-panel .grade-grid-compact {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+@media (max-width: 480px) {
+  body.home-page #dashboard .grades-panel .grade-grid-compact {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 640px) {
+  body.home-page #dashboard .stat-card-value,
+  body.home-page #dashboard .stat-card--wallet .stat-card-value {
+    font-size: 18px !important;
+  }
+}
