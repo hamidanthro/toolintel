@@ -26296,3 +26296,194 @@ body.myspace-page:not(.ms-chat-active) .ms-content {
     margin-bottom: 4vh;
   }
 }
+
+/* ==========================================================================
+   §56 MySpace chat surface 7→10 polish pass (May 12).
+   Subtractive: kill the active-state card chrome, the duplicate thread
+   title, the uniform 24px gap. Additive: sticky composer dock with
+   backdrop-blur, turn-pairing rhythm (32px between turns / 12px within),
+   crisis safety surface, user-bubble polish, dynamic avatar.
+   Server-side moderation pipeline + audit logging untouched.
+   ========================================================================== */
+
+/* Active-state card chrome strip — the thread should flow on the page,
+   not inside a bordered panel. Overrides both §40 (.ms-card border) and
+   §43 (.ms-chat-active .ms-card bg+border) using cascade order alone. */
+body.myspace-page.ms-chat-active .ms-card {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  min-height: 0;
+}
+
+/* Thread — turn-pairing rhythm. Adjacent role-change = 32px (new turn);
+   same-role continuation = 12px (within a turn). The flex gap that used
+   to set a uniform 24px is overridden to 0 so per-message margins win. */
+body.myspace-page.ms-chat-active .ms-chat-thread {
+  gap: 0;
+  max-height: none;
+  overflow-y: visible;
+  padding: 16px 0 24px;
+  /* drop the §41 top/bottom fade — the thread is no longer inside a
+     bordered card, so the soft-fade was masking nothing useful */
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+body.myspace-page.ms-chat-active .ms-msg { margin-top: 12px; }
+body.myspace-page.ms-chat-active .ms-msg:first-child { margin-top: 0; }
+body.myspace-page.ms-chat-active .ms-msg--user + .ms-msg--ai,
+body.myspace-page.ms-chat-active .ms-msg--ai + .ms-msg--user {
+  margin-top: 32px;
+}
+
+/* User bubble — max-w 80% + lighter border (was 75% + 0.10 border) */
+body.myspace-page .ms-msg--user .ms-msg-body {
+  max-width: 80%;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+/* Sparkle: softer amber (0.7 alpha = the amber-300/70 spec read) */
+.ms-msg-spark,
+.ms-chat-empty-sparkle {
+  color: rgba(252, 211, 77, 0.7);
+}
+
+/* Sticky composer dock — composer + AI disclaimer ride together at
+   the viewport bottom as the kid scrolls through long threads. Backdrop
+   blur + gradient fade so messages bleed up through the bar visually
+   without colliding with the input. */
+.ms-composer-dock {
+  margin-top: auto;
+}
+body.myspace-page.ms-chat-active .ms-composer-dock {
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+  margin: 0 -16px;
+  padding: 16px 16px 12px;
+  background: linear-gradient(180deg,
+    rgba(6, 13, 31, 0) 0%,
+    rgba(6, 13, 31, 0.75) 30%,
+    rgba(6, 13, 31, 0.92) 100%);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+/* Empty state — center the dock with the chips; same composer surface */
+body.myspace-page:not(.ms-chat-active) .ms-composer-dock {
+  width: 100%;
+  max-width: 680px;
+  margin: 40px auto 0;
+  padding: 0;
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+/* Disclaimer inside the dock — sit directly under the composer with
+   barely-there styling. Active state stays sticky-pinned; empty state
+   sits inline below the composer-wrap as before. */
+body.myspace-page .ms-composer-dock .ms-ai-disclosure {
+  margin: 8px 0 0;
+  padding: 0 4px;
+}
+body.myspace-page.ms-chat-active .ms-composer-dock .ms-ai-disclosure {
+  background: transparent;
+  border: none;
+  padding: 0 4px;
+  margin: 6px 0 0;
+}
+/* In active state the §41 "active composer-wrap → margin-top:auto" rule
+   is moot because the dock owns the auto-margin now. Reset the inner
+   wrap so it doesn't double-push. */
+body.myspace-page.ms-chat-active .ms-composer-wrap {
+  margin-top: 0;
+  padding-top: 0;
+}
+/* Scroll-to-bottom button — float clear of the now-sticky dock */
+body.myspace-page.ms-chat-active .ms-scroll-to-bottom {
+  position: fixed;
+  bottom: 120px;
+  left: auto;
+  right: 32px;
+  transform: none;
+}
+
+/* Topbar — only ← Dashboard remains. Drop the bottom hairline so the
+   thread doesn't read as a separate card. */
+body.myspace-page.ms-chat-active .ms-chat-topbar {
+  border-bottom: none;
+  padding: 0 0 12px;
+  margin-bottom: 0;
+}
+
+/* Crisis safety surface — red-tinted card stacked into the thread as
+   the AI's turn. Anchored visually but not loud (the kid is already in
+   a hard moment; the card needs to feel held, not alarming). */
+.ms-msg--crisis { align-self: stretch; }
+.ms-crisis-card {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-left: 3px solid rgba(252, 165, 165, 0.85);
+  border-radius: 12px;
+  padding: 16px 18px;
+  color: rgba(255, 255, 255, 0.92);
+  max-width: 640px;
+  margin: 8px 0;
+}
+.ms-crisis-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fca5a5;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+.ms-crisis-head strong { color: #fecaca; font-weight: 600; }
+.ms-crisis-body {
+  margin: 0 0 12px;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 14px;
+  line-height: 1.55;
+}
+.ms-crisis-list {
+  margin: 0 0 12px;
+  padding-left: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.88);
+}
+.ms-crisis-list li {
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+}
+.ms-crisis-list strong { color: #ffffff; }
+.ms-crisis-footnote {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+}
+.ms-crisis-countdown {
+  color: #fca5a5;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  font-style: normal;
+}
+
+/* Mobile tweaks for the dock + sticky scroll-to-bottom */
+@media (max-width: 640px) {
+  body.myspace-page.ms-chat-active .ms-composer-dock {
+    margin: 0 -12px;
+    padding: 12px 12px 10px;
+  }
+  body.myspace-page.ms-chat-active .ms-scroll-to-bottom {
+    bottom: 96px;
+    right: 16px;
+  }
+  .ms-crisis-card { padding: 14px 14px; }
+}

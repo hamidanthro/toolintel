@@ -598,9 +598,9 @@
         : 'What would you like to work on?';
     }
 
-    // Thread title
-    const title = document.getElementById('ms-chat-title');
-    if (title) title.textContent = thread ? thread.title : '';
+    // §56: thread title element was removed from markup (duplicate of
+    // the sidebar/top-bar wordmark). Skip the title write — left in
+    // history if we ever bring it back as e.g. a breadcrumb.
 
     // Render thread messages
     const threadEl = document.getElementById('ms-chat-thread');
@@ -618,6 +618,12 @@
 
   function renderMessageInto(threadEl, msg, opts) {
     opts = opts || {};
+    // §56: persisted crisis turn — re-render as the safety card rather
+    // than a normal AI bubble. No countdown on reload (lockout was the
+    // in-the-moment guardrail, not a per-session rule).
+    if (msg && msg.crisis) {
+      return { wrap: renderCrisisCard(threadEl), body: null };
+    }
     const wrap = document.createElement('div');
     wrap.className = 'ms-msg ms-msg--' + msg.role;
     wrap.dataset.msgId = msg.id || ('m_' + Math.random().toString(36).slice(2, 8));
@@ -762,10 +768,100 @@
     btn.setAttribute('aria-expanded', 'false');
   }
 
+  // ---- §56 Crisis safety surface.
+  // Keyword pre-filter only — server-side moderation is still
+  // authoritative. On match: do NOT call the API, render a red-tinted
+  // card with 988 + 741741 + parent suggestion, disable the composer
+  // for 60s with a live countdown. The 60s lockout is a "breathing
+  // room" rule from the child-safety review (the kid shouldn't be
+  // able to mash through this surface as if it were a normal turn).
+  const CRISIS_REGEXES = [
+    /\bkill\s+(?:myself|me)\b/i,
+    /\bwant\s+to\s+die\b/i,
+    /\b(suicide|suicidal)\b/i,
+    /\bself[\s-]?harm\b/i,
+    /\bhurt(?:ing)?\s+myself\b/i,
+    /\bend\s+(?:my\s+)?life\b/i,
+    /\b(?:no\s+(?:reason|point))\s+to\s+(?:live|be\s+alive)\b/i,
+    /\bcut(?:ting)?\s+myself\b/i
+  ];
+  function isCrisisMessage(text) {
+    const t = String(text || '');
+    for (let i = 0; i < CRISIS_REGEXES.length; i++) {
+      if (CRISIS_REGEXES[i].test(t)) return true;
+    }
+    return false;
+  }
+  function renderCrisisCard(threadEl) {
+    const wrap = document.createElement('div');
+    wrap.className = 'ms-msg ms-msg--crisis';
+    wrap.innerHTML =
+      '<div class="ms-crisis-card" role="alert">' +
+        '<div class="ms-crisis-head">' +
+          '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+            '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>' +
+          '</svg>' +
+          '<strong>I want to make sure you’re safe.</strong>' +
+        '</div>' +
+        '<p class="ms-crisis-body">If you’re thinking about hurting yourself, please talk to someone right now. You don’t have to do this alone.</p>' +
+        '<ul class="ms-crisis-list">' +
+          '<li><strong>Call or text 988</strong> — Suicide & Crisis Lifeline (free, 24/7).</li>' +
+          '<li><strong>Text HOME to 741741</strong> — Crisis Text Line.</li>' +
+          '<li><strong>Tell a parent or trusted adult</strong> — even right now, in person.</li>' +
+        '</ul>' +
+        '<p class="ms-crisis-footnote">I’m an AI. I can’t replace a real person. The composer will reopen in <span class="ms-crisis-countdown" data-countdown>60</span>s.</p>' +
+      '</div>';
+    threadEl.appendChild(wrap);
+    return wrap;
+  }
+  function startCrisisLockout(seconds) {
+    const send = document.getElementById('ms-composer-send');
+    const input = document.getElementById('ms-composer-input');
+    if (send) { send.disabled = true; send.setAttribute('aria-disabled', 'true'); }
+    if (input) { input.disabled = true; input.setAttribute('aria-disabled', 'true'); }
+    const cdEl = document.querySelector('[data-countdown]');
+    let remaining = seconds;
+    const tick = setInterval(function () {
+      remaining -= 1;
+      if (cdEl) cdEl.textContent = String(remaining);
+      if (remaining <= 0) {
+        clearInterval(tick);
+        if (send) { send.removeAttribute('aria-disabled'); send.disabled = (input && input.value.trim().length === 0); }
+        if (input) { input.removeAttribute('aria-disabled'); input.disabled = false; input.focus(); }
+      }
+    }, 1000);
+  }
+
   // ---- Send + stream a message
   async function submitMessage(userText) {
     userText = String(userText || '').trim();
     if (!userText || chatState.isStreaming) return;
+
+    // §56 crisis intercept — render safety card, never hit the API.
+    if (isCrisisMessage(userText)) {
+      // Persist the kid's message so the conversation reads correctly,
+      // then attach the crisis card as the AI turn (audit-trail intact).
+      let thread = getActiveThread();
+      if (!thread) thread = createNewThread();
+      const userMsg = { id: 'm_u_' + Date.now(), role: 'user', text: userText, ts: Date.now() };
+      thread.messages.push(userMsg);
+      if (thread.messages.filter(function (m) { return m.role === 'user'; }).length === 1) {
+        thread.title = userText.slice(0, 40) + (userText.length > 40 ? '…' : '');
+      }
+      const crisisMsg = { id: 'm_c_' + Date.now(), role: 'ai', text: 'CRISIS_SURFACE', crisis: true, ts: Date.now() };
+      thread.messages.push(crisisMsg);
+      thread.updatedAt = Date.now();
+      persistChatThreads();
+
+      document.body.classList.add('ms-chat-active');
+      const threadEl = document.getElementById('ms-chat-thread');
+      renderMessageInto(threadEl, userMsg, { withActions: false });
+      renderCrisisCard(threadEl);
+      threadEl.scrollTop = threadEl.scrollHeight;
+      startCrisisLockout(60);
+      renderRecentList();
+      return;
+    }
 
     // Make sure there's an active thread to attach to
     let thread = getActiveThread();
@@ -790,7 +886,8 @@
     const aiRender = renderMessageInto(threadEl, aiPlaceholder, { withActions: false });
     aiRender.body.innerHTML = '<span class="ms-thinking-dots"><span></span><span></span><span></span></span>';
     threadEl.scrollTop = threadEl.scrollHeight;
-    document.getElementById('ms-chat-title').textContent = thread.title;
+    // §56: ms-chat-title was removed; thread title still lives on the
+    // recent-chats dropdown so the kid can locate the conversation there.
 
     // Wire abort + send/stop UI
     chatState.isStreaming = true;
@@ -923,6 +1020,12 @@
     const send = document.getElementById('ms-composer-send');
     const charCount = document.getElementById('ms-composer-char-count');
     if (!form || !input || !send) return;
+
+    // §56: stamp the user's first initial onto the top-bar avatar.
+    // Markup ships with a literal "M" placeholder; replace it with the
+    // signed-in user's letter so the avatar isn't lying about identity.
+    const avatar = document.getElementById('ms-avatar');
+    if (avatar) avatar.textContent = getAvatarLetter();
 
     // Load threads + populate UI
     loadChatThreads();

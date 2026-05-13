@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/styles.css?v=20260512ad">
+  <link rel="stylesheet" href="/css/styles.css?v=20260512af">
 
   <script>window.STAARAuth = window.STAARAuth || {}; window.STAARAuth.requireLoginOnLoad = true;</script>
 </head>
@@ -187,12 +187,13 @@
       <!-- AI Buddy card — §41 chat surface: empty state ↔ active state -->
       <section class="ms-card">
 
-        <!-- Top of thread: back-to-dashboard + thread title (active only) -->
+        <!-- §56: only the back-link remains. Thread title was duplicate
+             chrome (sidebar + top-bar + this row all named the same thing).
+             Dropped to give the thread a cleaner top edge. -->
         <div class="ms-chat-topbar" id="ms-chat-topbar">
           <button type="button" class="ms-chat-back" id="ms-chat-back" aria-label="Back to dashboard">
             ← Dashboard
           </button>
-          <div class="ms-chat-title" id="ms-chat-title"></div>
         </div>
 
         <!-- Empty state (visible when no messages in the active thread) -->
@@ -221,6 +222,11 @@
             <polyline points="6 9 12 15 18 9"/>
           </svg>
         </button>
+
+        <!-- §56: composer + disclaimer share a sticky dock so they pin
+             to the viewport bottom together as the kid scrolls through a
+             long thread. Backdrop blur lets messages bleed up behind. -->
+        <div class="ms-composer-dock" id="ms-composer-dock">
 
         <!-- Composer (shared between empty and active states) -->
         <div class="ms-composer-wrap">
@@ -264,6 +270,8 @@
           AI assistant — not a person. Conversations may be reviewed by your parent.
           <a href="/legal/ai-disclosure.html" target="_blank" rel="noopener">Learn more</a>
         </p>
+
+        </div><!-- /ms-composer-dock -->
 
       </section>
 
@@ -314,6 +322,6 @@
 </div>
 
 <script src="/js/auth.js?v=20260512a"></script>
-<script src="/js/myspace.js?v=20260512g"></script>
+<script src="/js/myspace.js?v=20260512h"></script>
 </body>
 </html>
