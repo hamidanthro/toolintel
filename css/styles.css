@@ -26093,12 +26093,12 @@ body.home-page #dashboard .stats-grid .stat-card:nth-child(4) {
   --card-tint: rgba(129, 140, 248, 0.10);
 }
 
-/* Stat numbers — make them the visual hero. Already 48px in base CSS;
-   tighten the tracking + ensure tabular-nums for clean alignment. */
+/* §58 May 12 — pulled back. 52px was over-corrected; the stat numbers
+   were dominating the page. New sizing inherits from base 48px and
+   then §58 (below) tightens further to 36px desktop / 32px mobile. */
 body.home-page #dashboard .stat-card-value {
-  font-size: 52px;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
 }
 body.home-page #dashboard .stat-card--wallet .stat-card-value {
   /* Wallet number stays gold per §45 rule; texture matches the others */
@@ -26782,4 +26782,90 @@ body.myspace-page .ms-jr-row:last-child { border-bottom: none; }
   body.myspace-page .ms-hw-row .ms-row-delete { grid-area: delete; opacity: 0.7; }
   body.myspace-page .ms-hw-row .ms-due { grid-area: due; padding-left: 4px; }
   body.myspace-page .ms-jr-row-title { white-space: normal; }
+}
+
+/* ==========================================================================
+   §58 Home dashboard — tighten scale (May 12). The §53 warmth pass
+   was right on hue/depth but over-corrected the stat numbers (52px)
+   and inherited generous padding from base. This block pulls back
+   the absolute sizing ~20% while keeping every warmth treatment.
+   ========================================================================== */
+
+/* Stat numbers: 48px base + 52px §53 → 36px desktop / 32px phone.
+   Still confident as the visual hero of each card; no longer dominating
+   the page. Uses !important to win against the base + §53 rules
+   without re-touching them (those rules stay live for any future
+   stat-card surface that needs different sizing). */
+body.home-page #dashboard .stat-card-value {
+  font-size: 36px !important;
+  letter-spacing: -0.02em !important;
+}
+@media (max-width: 640px) {
+  body.home-page #dashboard .stat-card-value { font-size: 32px !important; }
+}
+
+/* Stat card padding: 24px → 20px. Snug + confident, not airy. */
+body.home-page #dashboard .stat-card {
+  padding: 20px !important;
+  gap: 10px !important;
+}
+
+/* Stat card label (eyebrow): 11px is fine; ensure §53 didn't bloat it. */
+body.home-page #dashboard .stat-card-label {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+}
+
+/* Stat card meta line (the "out of 831 questions" / "lifetime average"
+   footer). Shrink slightly so the card reads as a tighter triplet. */
+body.home-page #dashboard .stat-card-meta { font-size: 11px; }
+
+/* Today's challenge card — 28px/32px padding → 22px/26px. Title 32px
+   → 26px. Subtitle leading tightens. CTA shrinks. */
+body.home-page #dashboard .daily-challenge {
+  padding: 22px 26px;
+  gap: 24px;
+}
+body.home-page #dashboard .challenge-title {
+  font-size: 26px;
+  line-height: 1.15;
+}
+body.home-page #dashboard .challenge-subtitle {
+  font-size: 13px;
+  line-height: 1.5;
+}
+body.home-page #dashboard .challenge-cta {
+  height: 40px;
+  padding: 0 18px;
+  font-size: 13px;
+}
+body.home-page #dashboard .challenge-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+}
+
+/* Practice now button (right side of the welcome region) — back from
+   1.05rem / 14px-22px to ~0.9rem / 11px-18px. Keep the warmth shadow
+   from §53. */
+body.home-page .dash-practice-cta {
+  font-size: 0.9rem;
+  padding: 11px 18px;
+}
+
+/* Math / Reading subject toggle — tighter active chip */
+body.home-page #dashboard .subject-segment {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+/* Wallet stat number stays gold; explicitly re-state at the new size
+   so any cascade order surprise doesn't drop the gold color. */
+body.home-page #dashboard .stat-card--wallet .stat-card-value {
+  color: #fbbf24;
+  font-size: 36px !important;
+}
+@media (max-width: 640px) {
+  body.home-page #dashboard .stat-card--wallet .stat-card-value {
+    font-size: 32px !important;
+  }
 }

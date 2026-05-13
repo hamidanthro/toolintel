@@ -1,7 +1,7 @@
 {
-  "name": "GradeEarn — State Test Prep",
+  "name": "GradeEarn",
   "short_name": "GradeEarn",
-  "description": "AI-powered state test prep for K–12. Real toys for correct answers. STAAR, CAASPP, FAST, TCAP, and 47 more.",
+  "description": "Kids practice grade-aligned questions, earn cents, and trade them for real toys.",
   "start_url": "/?utm_source=pwa",
   "scope": "/",
   "display": "standalone",
