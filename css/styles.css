@@ -27832,3 +27832,162 @@ body.practice-page .tutor-followup--row .tutor-send:hover {
   body.practice-page .q-wrong-explain,
   body.practice-page .q-wrong-next { flex: 1 1 auto; min-width: 0; }
 }
+
+/* ==========================================================================
+   §69 Practice mobile shell — sticky bottom action bar (May 13).
+   User feedback (with screenshot): "when kids answers a question on
+   the phone they have to scroll down to click next question option.
+   that should not be the case." iPhone 14 has ~694px usable height;
+   the old chrome (global site-header + 'Sign in' button + breadcrumb
+   pill row + '323 days to STAAR' countdown + Grade-Math-Unit row +
+   80px progress bar) burned ~400px before the question started,
+   pushing 'Check answer' below the fold. This block:
+
+   1. Drops the global site-header on practice (kid is mid-session,
+      no nav nag, no 'Sign in' chrome). Practice has its own context
+      bar with a back arrow; that's the only top affordance needed.
+   2. Drops the redundant TX/STAAR pill (countdown emission already
+      removed in practice.js §69). One tight breadcrumb row.
+   3. Slims the .practice-header progress block on phone.
+   4. Pins the action zone (Check / Explain more+Next / autoadvance)
+      to the bottom of the viewport with iOS safe-area padding so
+      the kid never scrolls to find the action.
+   5. Hides .product-footer on mobile (would push action above it).
+
+   Sticky strategy: position: fixed with safe-area bottom padding.
+   Reliable across iOS Safari versions; sticky-bottom is fragile
+   under iOS keyboard interactions when an input gets focus.
+   ========================================================================== */
+
+/* Drop the global site-header on practice — kid is mid-session,
+   doesn't need 'Sign in' + 6 nav links + brand wordmark eating
+   the top of the viewport. The practice-context-bar is the
+   only top chrome they need. */
+@media (max-width: 1023px) {
+  body.practice-page .site-header { display: none !important; }
+}
+
+/* Slim the breadcrumb on phone — drop the TX/STAAR pill since
+   "Texas only — for now" is the product anyway (no need to
+   re-state on every question). Keep grade + subject pills and
+   the overflow menu. */
+@media (max-width: 767px) {
+  body.practice-page .practice-pill--state { display: none !important; }
+  body.practice-page .practice-breadcrumb-pills {
+    gap: 6px;
+  }
+  body.practice-page .practice-pill {
+    font-size: 11px;
+    padding: 4px 10px;
+  }
+  body.practice-page .practice-breadcrumb {
+    padding: 10px 14px;
+    gap: 8px;
+  }
+}
+
+/* Slim the practice-header progress block on phone — was ~80px of
+   vertical chrome per the audit; now ~28px (16px caption + 6px
+   bar + small padding). */
+@media (max-width: 767px) {
+  body.practice-page .practice-header {
+    padding: 8px 4px 6px;
+  }
+  body.practice-page .practice-eyebrow {
+    font-size: 11px;
+    line-height: 1.3;
+  }
+  body.practice-page .practice-eyebrow-title {
+    /* Compress the long "Grade 3 Math · Unit 1: Place Value & Whole
+       Numbers" caption — truncate on overflow rather than wrap to
+       two lines. */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+    display: inline-block;
+  }
+  /* Slim the progress bar itself (was ~6-8px) */
+  body.practice-page .practice-progress-bar,
+  body.practice-page .practice-header [class*="progress"] {
+    height: 3px !important;
+  }
+}
+
+/* ---- STICKY BOTTOM ACTION BAR ---------------------------------------
+   On mobile, lift the action zone (whatever's currently showing —
+   Check answer button, wrong-answer Explain more+Next pair, or the
+   correct-answer auto-advance progress chip) out of the question
+   card flow and pin it to the viewport bottom. iOS safe-area
+   padding ensures the bar sits above the home indicator. */
+@media (max-width: 767px) {
+  /* Reserve space at the bottom of the question column so the
+     fixed bar doesn't cover the last bit of content. */
+  body.practice-page .practice-main,
+  body.practice-page #practice-root {
+    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* The "Check answer" submit button (asking state) */
+  body.practice-page .question-card[data-state="asking"] .q-cta,
+  /* Wrong-answer two-button row (§68) */
+  body.practice-page .q-wrong-actions,
+  /* Correct-answer auto-advance progress chip (§54) */
+  body.practice-page .q-autoadvance {
+    position: fixed !important;
+    left: 0; right: 0; bottom: 0;
+    z-index: 50;
+    margin: 0 !important;
+    padding: 12px 16px !important;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+    background: rgba(6, 13, 31, 0.95);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0 !important;
+    /* Visually: full width on phone */
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* The Check button itself fills the bar */
+  body.practice-page .question-card[data-state="asking"] .q-cta {
+    width: 100%;
+    height: 52px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  /* Wrong-state buttons share the row inside the fixed bar */
+  body.practice-page .q-wrong-actions {
+    display: flex !important;
+    gap: 10px !important;
+    align-items: center !important;
+  }
+  body.practice-page .q-wrong-explain { height: 44px; }
+  body.practice-page .q-wrong-next { height: 44px; flex: 1 1 auto; }
+
+  /* Auto-advance chip — same fixed bar geometry, centered content */
+  body.practice-page .q-autoadvance {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 52px;
+  }
+}
+
+/* ---- Drop chrome that competes for vertical space on phone ------- */
+@media (max-width: 767px) {
+  /* Product footer is a parent-facing legal row; not for the kid
+     mid-session. Reappears at >=768px. */
+  body.practice-page .product-footer { display: none !important; }
+  /* §44 guest banner — already opt-in via existing CSS; ensure it
+     doesn't push above the action bar when present. */
+  body.practice-page #guest-banner { margin-bottom: 8px !important; }
+}
+
+/* ---- Desktop: sidebar dim from §68 still applies; action bar
+   stays inline (not fixed). The mobile sticky treatment above is
+   media-gated to <=767px so desktop is unaffected. ----------- */

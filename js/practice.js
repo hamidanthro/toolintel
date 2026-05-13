@@ -198,21 +198,13 @@
     const gradeName = gradeNames[slug] || slug;
     const subjLabel = SUBJECT_SLUG.charAt(0).toUpperCase() + SUBJECT_SLUG.slice(1).replace('-', ' ');
     const backHref = `grade.html?s=${encodeURIComponent(STATE_SLUG)}&g=${encodeURIComponent(slug)}`;
-    // Days-to-test pill — uses state's testWindowMonth (1=Jan..12=Dec).
-    // Roll forward to NEXT year if test month already passed. Hidden if
-    // state lacks testWindowMonth or if test is more than 365 days out.
+    // §69 (May 13) — STAAR countdown dropped from the practice surface.
+    // "323 days to STAAR" was anxiety chrome above every question.
+    // The asset is a great parent-acquisition hook — it belongs on
+    // marketing / MySpace (when that lands), not above a kid mid-
+    // session. countdownPill kept as an empty string so the template
+    // string interpolation below doesn't error.
     let countdownPill = '';
-    if (STATE_INFO.testWindowMonth) {
-      const now = new Date();
-      const tm = parseInt(STATE_INFO.testWindowMonth, 10);
-      let nextTest = new Date(now.getFullYear(), tm - 1, 1);
-      if (nextTest <= now) nextTest = new Date(now.getFullYear() + 1, tm - 1, 1);
-      const daysOut = Math.ceil((nextTest - now) / (1000 * 60 * 60 * 24));
-      if (daysOut > 0 && daysOut <= 365) {
-        const label = daysOut === 1 ? '1 day' : `${daysOut} days`;
-        countdownPill = `<span class="practice-pill practice-pill--countdown" title="Days until ${escapePcb(STATE_INFO.testName)} testing window opens">${label} to ${escapePcb(STATE_INFO.testName || 'test')}</span>`;
-      }
-    }
     bar.innerHTML = `
       <nav class="practice-breadcrumb" aria-label="Practice context">
         <a class="practice-breadcrumb-back" href="${backHref}" aria-label="Back to grade">
