@@ -71,6 +71,26 @@
   ];
   function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
+  // §71 — Floating "+N pts" toast for correct answers. Slides in
+  // top-right of viewport, holds 1800ms, slides out. Does NOT push
+  // any content (position: fixed). Reuses .ge-pts-toast CSS in §71.
+  // Replaces the inline "+5 pts earned" chip the old practice
+  // surface rendered as part of the green-bordered correct card.
+  function spawnPtsToast(cents) {
+    try {
+      const t = document.createElement('div');
+      t.className = 'ge-pts-toast';
+      t.setAttribute('role', 'status');
+      t.setAttribute('aria-live', 'polite');
+      t.innerHTML = `<span class="ge-pts-toast-coin" aria-hidden="true">🪙</span><strong>+${cents} pts</strong>`;
+      document.body.appendChild(t);
+      // Force reflow then add .show so the slide-in animation fires
+      requestAnimationFrame(() => t.classList.add('ge-pts-toast--show'));
+      setTimeout(() => t.classList.remove('ge-pts-toast--show'), 1800);
+      setTimeout(() => { try { t.remove(); } catch (_) {} }, 2100);
+    } catch (_) {}
+  }
+
   const root = document.getElementById('practice-root');
   const params = new URLSearchParams(location.search);
 
@@ -1002,11 +1022,16 @@
     //       (.practice-header[data-q="1"]). Progress bar formula fixed below
     //       in setQuestion: pct = ((i + 0.5) / N) * 100 so Q1/5 reads 10%
     //       not 0% — kid sees momentum just by being on a question.
+    // §71 (May 13) — practice screen stripped to 7 elements. No
+    // sidebar, no two-column grid. The <aside id="perf-panel"> stays
+    // in the DOM (display:none in CSS) so the existing renderPerf
+    // writes don't throw — but it never paints. All accuracy/stats/
+    // mastery moves to MySpace in a follow-up prompt.
     root.innerHTML = `
-      <div class="practice-layout">
+      <div class="practice-layout practice-layout--solo">
         <div class="practice-main">
           ${lockedBanner}
-          <div class="practice-header" data-q="1">
+          <div class="practice-header practice-header--slim" data-q="1">
             <div class="practice-eyebrow">
               <span class="practice-eyebrow-title">${titleBits.join(' · ')}</span>
               <span class="practice-eyebrow-sep">·</span>
@@ -1023,7 +1048,7 @@
           <div id="qbox"></div>
           <div id="scratchpad-mount"></div>
         </div>
-        <aside class="performance-panel" id="perf-panel"></aside>
+        <aside class="performance-panel" id="perf-panel" aria-hidden="true"></aside>
       </div>`;
 
     const qbox = document.getElementById('qbox');
@@ -1146,35 +1171,58 @@
     function mountFunFactCard(fact, isFirstFactEver, seqAtCall) {
       const qCard = qbox.querySelector('.question-card');
       if (!qCard) return;
-      const fbSlot = qCard.querySelector('[data-role="inline-fb"]');
-      if (!fbSlot) return;
 
       // §73 — fact card mounts cancel any in-flight question speech.
       try { if (window.Speech) window.Speech.stop(); } catch (_) {}
 
-      const icon = FUN_FACT_CATEGORY_EMOJI[fact.category] || '✨';
-      const card = document.createElement('div');
-      card.className = 'ff-card';
-      card.setAttribute('data-fact-id', fact.id);
-      card.setAttribute('role', 'group');
-      card.setAttribute('aria-label', 'Fun fact');
+      // §71 — Fun Fact as a MODAL overlay (was inline card that pushed
+      // question content). Native <dialog>. Mobile gets a bottom-sheet
+      // treatment via CSS; desktop a centered card. The kid's question
+      // stays exactly where it is, dimmed behind the backdrop.
+      //
+      // The category-emoji map (octopus/space/etc.) is dropped — kept
+      // tripping content mismatches (octopus icon over chameleon fact
+      // in user screenshot). One consistent bulb SVG for every fact.
       const welcomeHtml = isFirstFactEver
         ? '<div class="ff-card-welcome">Welcome to fun facts</div>'
         : '';
       const speakerHtml = (window.Speech && window.Speech._isSupported())
-        ? `<button type="button" class="speech-btn ff-speech-btn" data-role="ff-speak" aria-label="Read aloud" aria-pressed="false">
-            ${SPEECH_ICON_HTML}
-          </button>`
+        ? `<button type="button" class="speech-btn ff-speech-btn" data-role="ff-speak" aria-label="Read aloud" aria-pressed="false">${SPEECH_ICON_HTML}</button>`
         : '';
+      const card = document.createElement('dialog');
+      card.className = 'practice-modal ff-modal';
+      card.setAttribute('data-fact-id', fact.id);
+      card.setAttribute('aria-label', 'Fun fact');
       card.innerHTML = `
-        ${speakerHtml}
-        ${welcomeHtml}
-        <div class="ff-card-label" aria-hidden="true">★ Fun Fact</div>
-        <div class="ff-card-icon" aria-hidden="true">${icon}</div>
-        <div class="ff-card-body">${escapeHtml(fact.fact || '')}</div>
-        <button type="button" class="ff-card-cta" data-act="ff-got-it">Got it!</button>
+        <div class="practice-modal-inner">
+          ${speakerHtml}
+          ${welcomeHtml}
+          <div class="ff-modal-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 4 12.7c-.6.5-1 1.2-1 2v.3H9v-.3c0-.8-.4-1.5-1-2A7 7 0 0 1 12 2z"/></svg>
+          </div>
+          <div class="ff-modal-label" aria-hidden="true">Fun fact</div>
+          <div class="ff-modal-body">${escapeHtml(fact.fact || '')}</div>
+          <button type="button" class="ff-modal-cta" data-act="ff-got-it">Got it!</button>
+        </div>
       `;
-      fbSlot.appendChild(card);
+      document.body.appendChild(card);
+      try { card.showModal(); } catch (_) {
+        // Fallback for ancient browsers without <dialog>: render as
+        // a flex-overlay so the kid isn't stuck.
+        card.setAttribute('open', '');
+        card.style.position = 'fixed';
+        card.style.inset = '0';
+        card.style.zIndex = '200';
+      }
+      // §71 — backdrop click on MOBILE only (per spec — desktop
+      // backdrop click is too easy to misfire). 768px breakpoint.
+      card.addEventListener('click', (e) => {
+        if (e.target !== card) return; // only fire on the backdrop itself
+        if (window.matchMedia && window.matchMedia('(max-width: 767px)').matches) {
+          const cta = card.querySelector('[data-act="ff-got-it"]');
+          if (cta) cta.click();
+        }
+      });
 
       // §73 — fact-card speaker wiring. Tap-to-play, tap-to-stop.
       const speakBtn = card.querySelector('[data-role="ff-speak"]');
@@ -1227,6 +1275,14 @@
           try { clearTimeout(window._stAutoAdvance); } catch (_) {}
           window._stAutoAdvance = null;
         }
+        // §71 — close + remove the dialog before advancing so the
+        // backdrop disappears cleanly (was inline card → DOM removal
+        // happened naturally via qbox.innerHTML reset; dialog needs
+        // explicit close + remove).
+        try {
+          if (typeof card.close === 'function') card.close();
+        } catch (_) {}
+        try { card.remove(); } catch (_) {}
         if (i === seqAtCall) {
           try { i++; show(); } catch (_) {}
         }
@@ -1640,12 +1696,23 @@
       if (fbSlot) {
         const explanation = String(q.explanation || '').trim();
         if (isCorrect) {
-          // §68 — single-line compact: pts + explanation in one row,
-          // separated by middle dot. Hamid 10:47am compaction call.
-          const explanationHtml = explanation
-            ? ` <span class="q-inline-fb-sep" aria-hidden="true">·</span> <span class="q-inline-fb-body-inline">${escapeHtml(explanation)}</span>`
-            : '';
-          fbSlot.innerHTML = `<div class="q-inline-fb-head">✓ <span class="q-inline-fb-pts">+${cents} pts earned</span>${explanationHtml}</div>`;
+          // §71 — split the old single-row "+5 pts earned · explanation"
+          // into TWO surfaces:
+          //   (a) a floating "+N pts" toast that slides in top-right,
+          //       holds, slides out — does NOT push content
+          //   (b) a one-line whisper-style explanation above the
+          //       sticky action bar — small star icon + tutor's
+          //       first sentence, truncated at 80 chars
+          // The card-with-green-border chrome is gone.
+          if (cents > 0) spawnPtsToast(cents);
+          const whisper = (() => {
+            if (!explanation) return '';
+            const truncated = explanation.length > 80
+              ? explanation.slice(0, 78).trimEnd() + '…'
+              : explanation;
+            return `<div class="q-correct-whisper" role="status"><span class="q-correct-whisper-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><polygon points="12 2 15 8 21 9 17 14 18 21 12 18 6 21 7 14 3 9 9 8"/></svg></span> <span class="q-correct-whisper-text">${escapeHtml(truncated)}</span></div>`;
+          })();
+          fbSlot.innerHTML = whisper;
           fbSlot.classList.remove('q-inline-fb--tutor');
         } else {
           // §68 — COMPRESSED wrong-answer view. The old layout injected
