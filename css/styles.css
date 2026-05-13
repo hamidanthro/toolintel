@@ -28777,3 +28777,60 @@ body.facts-page .facts-loadmore:hover {
   color: #fbbf24;
   transform: translateX(3px);
 }
+
+/* ==========================================================================
+   §77 Scratch-paper toggle → pencil icon (May 13). User shared an IXL
+   screenshot with a small blue pencil glyph as the scratch affordance
+   and asked for the same shape. Replaces the full-width card-style
+   toggle that said "Need scratch paper? · Press S or click to open"
+   with a single compact pencil button. The expanded scratchpad UI
+   (body / canvas / toolbar) is unchanged — only the COLLAPSED entry
+   point is repainted.
+   ========================================================================== */
+
+/* Compact icon-only collapsed state */
+.scratchpad-toggle.scratchpad-toggle--icon {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin-left: auto; /* right-align inside the question-card flow */
+  margin-top: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  color: rgba(251, 191, 36, 0.85);
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease, transform 100ms ease;
+  gap: 0;
+}
+.scratchpad-toggle.scratchpad-toggle--icon:hover {
+  background: rgba(251, 191, 36, 0.08);
+  border-color: rgba(251, 191, 36, 0.35);
+  color: #fbbf24;
+}
+.scratchpad-toggle.scratchpad-toggle--icon:active {
+  transform: scale(0.94);
+}
+.scratchpad-toggle.scratchpad-toggle--icon .scratchpad-toggle-icon {
+  /* Reset the existing gold-tinted square chip — the BUTTON owns the
+     pill shape now; the inner icon is just the glyph. */
+  width: auto;
+  height: auto;
+  background: transparent !important;
+  border: none !important;
+  color: inherit;
+  padding: 0;
+}
+/* Place the .scratchpad-inline at the right edge of the question card
+   so the pencil floats top-right of the choices, like the IXL pattern */
+.scratchpad-inline[data-state="collapsed"] {
+  display: flex;
+  justify-content: flex-end;
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}

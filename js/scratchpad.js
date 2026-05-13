@@ -23,20 +23,18 @@
   function mountMarkup(host) {
     host.innerHTML = `
       <div class="scratchpad-inline" data-state="collapsed">
-        <button class="scratchpad-toggle" type="button" aria-expanded="false">
+        <!-- §77 (May 13) — collapsed scratchpad is just a pencil icon
+             now (was a labeled card with "Need scratch paper?" +
+             keyboard hint + chevron taking up a full row inside the
+             question card). User saw IXL's blue pencil and asked for
+             the same affordance shape. SVG = tilted pencil glyph;
+             aria-label still says "Open scratch paper" for SR users
+             since the visible text is gone. -->
+        <button class="scratchpad-toggle scratchpad-toggle--icon" type="button" aria-expanded="false" aria-label="Open scratch paper" title="Scratch paper (press S)">
           <span class="scratchpad-toggle-icon" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-              <polyline points="14 2 14 8 20 8"/>
-              <line x1="9" y1="13" x2="15" y2="13"/>
-              <line x1="9" y1="17" x2="13" y2="17"/>
-            </svg>
-          </span>
-          <span class="scratchpad-toggle-label">Need scratch paper?</span>
-          <span class="scratchpad-toggle-hint">Press <kbd>S</kbd> or click to open</span>
-          <span class="scratchpad-toggle-chevron" aria-hidden="true">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M3.5 5L7 8.5L10.5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 20h9"/>
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4z"/>
             </svg>
           </span>
         </button>
