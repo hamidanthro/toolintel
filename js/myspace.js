@@ -1348,11 +1348,50 @@
   }
 
   // ============================================================
-  // JOURNAL PAGE
+  // §57 SHARED HELPERS for sub-route section scaffolds.
+  // ============================================================
+  // Date eyebrow ("MONDAY, MAY 12") — every sub-route now opens with
+  // the same header pattern (eyebrow + title + top-right outlined
+  // Add button). Extracted so future sub-routes pick up the polish
+  // without re-implementing this each time.
+  function setPageDateEyebrow(elId) {
+    const el = document.getElementById(elId);
+    if (!el) return;
+    try {
+      const fmt = new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+      el.textContent = fmt.format(new Date()).toUpperCase();
+    } catch (_) {}
+  }
+
+  // Relative due-date string for homework rows ("Today", "Tomorrow",
+  // "Fri", "In 3 days", "Yesterday", "3 days ago"). Returns also
+  // `overdue: true` when the due date is in the past.
+  function relativeDueDate(iso) {
+    if (!iso) return { text: 'No due date', overdue: false };
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const due = new Date(iso); due.setHours(0, 0, 0, 0);
+    const ms = due.getTime() - today.getTime();
+    const days = Math.round(ms / 86400000);
+    if (days === 0) return { text: 'Today', overdue: false };
+    if (days === 1) return { text: 'Tomorrow', overdue: false };
+    if (days === -1) return { text: 'Yesterday', overdue: true };
+    if (days < -1 && days >= -6) return { text: Math.abs(days) + ' days ago', overdue: true };
+    if (days > 1 && days <= 6) {
+      try {
+        return { text: new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(due), overdue: false };
+      } catch (_) {
+        return { text: 'In ' + days + ' days', overdue: false };
+      }
+    }
+    if (days > 6) return { text: 'In ' + days + ' days', overdue: false };
+    return { text: niceDate(iso.slice(0, 10)), overdue: true };
+  }
+
+  // ============================================================
+  // JOURNAL PAGE — §57 section-scaffold render (TODAY / THIS WEEK / EARLIER)
   // ============================================================
   function initJournal() {
-    const empty = document.querySelector('.ms-empty');
-    const list = document.getElementById('ms-journal-list');
+    setPageDateEyebrow('ms-jr-date-eyebrow');
     const newBtn = document.getElementById('ms-journal-new');
     const overlay = document.getElementById('ms-journal-overlay');
     const close = document.getElementById('ms-journal-close');
@@ -1361,27 +1400,65 @@
     const titleI = document.getElementById('ms-journal-title');
     const textI = document.getElementById('ms-journal-text');
 
+    function classify(e) {
+      const dISO = (e.date || '').slice(0, 10);
+      if (!dISO) return 'earlier';
+      const today = new Date(); today.setHours(0, 0, 0, 0);
+      const d = new Date(dISO); d.setHours(0, 0, 0, 0);
+      const diffDays = Math.round((today.getTime() - d.getTime()) / 86400000);
+      if (diffDays <= 0) return 'today';
+      if (diffDays <= 6) return 'week';
+      return 'earlier';
+    }
+
+    function rowHtml(e) {
+      const title = (e.title || '').trim() || 'Untitled';
+      const body = String(e.text || '').replace(/\s+/g, ' ').trim();
+      const excerpt = body.length > 160 ? body.slice(0, 160) + '…' : body;
+      return '<li class="ms-jr-row" data-id="' + esc(e.id) + '">' +
+        '<div class="ms-jr-row-main">' +
+          '<div class="ms-jr-row-head">' +
+            '<span class="ms-jr-row-title">' + esc(title) + '</span>' +
+            '<time class="ms-jr-row-date">' + esc(niceDate((e.date || '').slice(0, 10))) + '</time>' +
+          '</div>' +
+          (excerpt ? '<p class="ms-jr-row-excerpt">' + esc(excerpt) + '</p>' : '') +
+        '</div>' +
+        '<button type="button" class="ms-row-delete" data-del="' + esc(e.id) + '" aria-label="Delete entry">' +
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+            '<polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/>' +
+          '</svg>' +
+        '</button>' +
+      '</li>';
+    }
+
+    function renderSection(name, items) {
+      const list  = document.getElementById('ms-jr-list-' + name);
+      const empty = document.getElementById('ms-jr-empty-' + name);
+      const count = document.getElementById('ms-jr-count-' + name);
+      if (!list) return;
+      list.innerHTML = items.map(rowHtml).join('');
+      if (count) count.textContent = items.length;
+      if (empty) empty.style.display = items.length === 0 ? '' : 'none';
+    }
+
     function render() {
-      const entries = data.journal();
-      if (entries.length === 0) {
-        empty.style.display = '';
-        list.hidden = true;
-        return;
-      }
-      empty.style.display = 'none';
-      list.hidden = false;
-      list.innerHTML = entries.map(function (e) {
-        return '<article class="ms-entry" data-id="' + esc(e.id) + '">' +
-          '<header><h3>' + esc(e.title || 'Untitled') + '</h3>' +
-          '<time>' + niceDate((e.date || '').slice(0, 10)) + '</time></header>' +
-          '<p>' + esc(e.text || '').replace(/\n/g, '<br>') + '</p>' +
-          '<button type="button" class="ms-entry-delete" data-id="' + esc(e.id) + '">Delete</button>' +
-          '</article>';
-      }).join('');
-      list.querySelectorAll('.ms-entry-delete').forEach(function (b) {
+      const all = data.journal().slice();
+      const buckets = { today: [], week: [], earlier: [] };
+      all.forEach(function (e) { buckets[classify(e)].push(e); });
+      // Newest-first inside each bucket (data.journal() is already newest-first
+      // via unshift on save; keep it explicit so re-render after delete stays stable)
+      ['today', 'week', 'earlier'].forEach(function (k) {
+        buckets[k].sort(function (a, b) { return new Date(b.date || 0) - new Date(a.date || 0); });
+      });
+      buckets.earlier = buckets.earlier.slice(0, 30);
+      renderSection('today', buckets.today);
+      renderSection('week', buckets.week);
+      renderSection('earlier', buckets.earlier);
+
+      document.querySelectorAll('.ms-jr-row [data-del]').forEach(function (b) {
         b.addEventListener('click', function () {
           if (!confirm('Delete this entry?')) return;
-          const id = b.dataset.id;
+          const id = b.dataset.del;
           data.setJournal(data.journal().filter(function (e) { return e.id !== id; }));
           render();
         });
@@ -1407,11 +1484,18 @@
   }
 
   // ============================================================
-  // HOMEWORK PAGE
+  // HOMEWORK PAGE — §57 section-scaffold render
+  // Sections: DUE TODAY / THIS WEEK / LATER / DONE.
+  // Routing rules:
+  //   today     = !done && dueDate === todayISO
+  //   week      = !done && today < dueDate <= today+7
+  //   later     = !done && (dueDate > today+7 || no dueDate)
+  //   done      = done === true (newest-first, capped 20)
+  // Overdue items (dueDate < today && !done) bucket into 'today' so the
+  // kid sees them immediately, with the date stamp turning amber.
   // ============================================================
   function initHomework() {
-    const empty = document.querySelector('.ms-empty');
-    const list = document.getElementById('ms-homework-list');
+    setPageDateEyebrow('ms-hw-date-eyebrow');
     const newBtn = document.getElementById('ms-homework-new');
     const overlay = document.getElementById('ms-homework-overlay');
     const close = document.getElementById('ms-homework-close');
@@ -1422,42 +1506,88 @@
     const dueI = document.getElementById('ms-homework-due');
     const notesI = document.getElementById('ms-homework-notes');
 
+    function classify(h) {
+      if (h.done) return 'done';
+      const t = todayISO();
+      if (!h.dueDate) return 'later';
+      if (h.dueDate < t) return 'today'; // overdue → surface in TODAY
+      if (h.dueDate === t) return 'today';
+      const today = new Date(t); today.setHours(0, 0, 0, 0);
+      const due = new Date(h.dueDate); due.setHours(0, 0, 0, 0);
+      const days = Math.round((due.getTime() - today.getTime()) / 86400000);
+      return days <= 7 ? 'week' : 'later';
+    }
+
+    function rowHtml(h) {
+      const rel = relativeDueDate(h.dueDate);
+      const dueClass = h.done ? 'ms-due ms-due--muted'
+        : rel.overdue ? 'ms-due ms-due--overdue'
+        : 'ms-due';
+      const subjectLabel = (h.subject || 'General').trim().toUpperCase().slice(0, 20);
+      return '<li class="ms-hw-row' + (h.done ? ' ms-hw-row--done' : '') + '" data-id="' + esc(h.id) + '">' +
+        '<span class="ms-hw-chip">' + esc(subjectLabel) + '</span>' +
+        '<span class="ms-hw-title">' + esc(h.title || 'Untitled') + '</span>' +
+        '<time class="' + dueClass + '">' + esc(rel.text) + '</time>' +
+        '<label class="ms-row-check">' +
+          '<input type="checkbox" data-check="' + esc(h.id) + '"' + (h.done ? ' checked' : '') + '>' +
+          '<span></span>' +
+        '</label>' +
+        '<button type="button" class="ms-row-delete" data-del="' + esc(h.id) + '" aria-label="Delete homework">' +
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+            '<polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/>' +
+          '</svg>' +
+        '</button>' +
+      '</li>';
+    }
+
+    function renderSection(name, items) {
+      const list  = document.getElementById('ms-hw-list-' + name);
+      const empty = document.getElementById('ms-hw-empty-' + name);
+      const count = document.getElementById('ms-hw-count-' + name);
+      if (!list) return;
+      list.innerHTML = items.map(rowHtml).join('');
+      if (count) count.textContent = items.length;
+      if (empty) empty.style.display = items.length === 0 ? '' : 'none';
+    }
+
     function render() {
-      const items = data.homework().slice().sort(function (a, b) {
-        if (a.done !== b.done) return a.done ? 1 : -1;
-        return (a.dueDate || '').localeCompare(b.dueDate || '');
+      const all = data.homework().slice();
+      const buckets = { today: [], week: [], later: [], done: [] };
+      all.forEach(function (h) { buckets[classify(h)].push(h); });
+      // today first (overdue at top), then by due date asc
+      buckets.today.sort(function (a, b) { return (a.dueDate || '').localeCompare(b.dueDate || ''); });
+      buckets.week.sort(function (a, b) { return (a.dueDate || '').localeCompare(b.dueDate || ''); });
+      buckets.later.sort(function (a, b) { return (a.dueDate || 'zzz').localeCompare(b.dueDate || 'zzz'); });
+      buckets.done.sort(function (a, b) {
+        const aT = a.doneAt ? new Date(a.doneAt).getTime() : 0;
+        const bT = b.doneAt ? new Date(b.doneAt).getTime() : 0;
+        return bT - aT;
       });
-      if (items.length === 0) { empty.style.display = ''; list.hidden = true; return; }
-      empty.style.display = 'none';
-      list.hidden = false;
-      list.innerHTML = items.map(function (h) {
-        const overdue = !h.done && h.dueDate && h.dueDate < todayISO();
-        return '<article class="ms-hw' + (h.done ? ' ms-hw--done' : '') + (overdue ? ' ms-hw--overdue' : '') + '">' +
-          '<label><input type="checkbox" data-id="' + esc(h.id) + '"' + (h.done ? ' checked' : '') + '><span></span></label>' +
-          '<div class="ms-hw-body">' +
-            '<div class="ms-hw-top"><span class="ms-hw-subject">' + esc(h.subject || 'General') + '</span>' +
-              (h.dueDate ? '<time>Due ' + esc(niceDate(h.dueDate)) + (overdue ? ' · overdue' : '') + '</time>' : '') + '</div>' +
-            '<h3>' + esc(h.title) + '</h3>' +
-            (h.notes ? '<p>' + esc(h.notes).replace(/\n/g, '<br>') + '</p>' : '') +
-          '</div>' +
-          '<button type="button" class="ms-hw-delete" data-id="' + esc(h.id) + '" aria-label="Delete">×</button>' +
-          '</article>';
-      }).join('');
-      list.querySelectorAll('input[type="checkbox"][data-id]').forEach(function (cb) {
+      buckets.done = buckets.done.slice(0, 20);
+
+      renderSection('today', buckets.today);
+      renderSection('week',  buckets.week);
+      renderSection('later', buckets.later);
+      renderSection('done',  buckets.done);
+
+      document.querySelectorAll('.ms-hw-row [data-check]').forEach(function (cb) {
         cb.addEventListener('change', function () {
-          const id = cb.dataset.id;
+          const id = cb.dataset.check;
           const items = data.homework().map(function (h) {
-            if (h.id === id) return Object.assign({}, h, { done: cb.checked, doneAt: cb.checked ? new Date().toISOString() : null });
-            return h;
+            if (h.id !== id) return h;
+            return Object.assign({}, h, {
+              done: cb.checked,
+              doneAt: cb.checked ? new Date().toISOString() : null
+            });
           });
           data.setHomework(items);
           render();
         });
       });
-      list.querySelectorAll('.ms-hw-delete').forEach(function (b) {
+      document.querySelectorAll('.ms-hw-row [data-del]').forEach(function (b) {
         b.addEventListener('click', function () {
           if (!confirm('Delete this homework?')) return;
-          data.setHomework(data.homework().filter(function (h) { return h.id !== b.dataset.id; }));
+          data.setHomework(data.homework().filter(function (h) { return h.id !== b.dataset.del; }));
           render();
         });
       });
