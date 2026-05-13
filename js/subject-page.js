@@ -251,6 +251,27 @@
     if (loading) loading.hidden = true;
     if (content) content.hidden = false;
 
+    // §75 — wire the "Browse fun facts" link to deep-link into
+    // /facts.html with subject + age-band pre-selected. Maps the
+    // user's grade slug to the catalog's gradeLevel bands.
+    try {
+      const factsLink = document.getElementById('subject-facts-link');
+      if (factsLink) {
+        const gradeNum = (() => {
+          const m = String(slug || '').match(/^grade-(\d+|k)$/);
+          if (!m) return null;
+          if (m[1] === 'k') return 0;
+          return parseInt(m[1], 10);
+        })();
+        const ageBand = (gradeNum == null || gradeNum < 0) ? 'all' :
+                        gradeNum <= 2 ? 'k-2' :
+                        gradeNum <= 4 ? '3-4' : '5-8';
+        const subj = (subject || 'math').toLowerCase();
+        const subjParam = (subj === 'math' || subj === 'reading' || subj === 'science') ? subj : 'all';
+        factsLink.setAttribute('href', '/facts.html?subj=' + subjParam + '&age=' + ageBand);
+      }
+    } catch (_) {}
+
     // Mobile haptic on tap (matches grade-page behavior).
     document.querySelectorAll('.topic-card').forEach(c => {
       c.addEventListener('touchstart', () => {

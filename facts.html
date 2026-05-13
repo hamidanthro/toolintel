@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com https://api.gradeearn.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#060d1f" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+
+  <title>Fun Facts — GradeEarn</title>
+  <meta name="description" content="Browse age-appropriate fun facts by subject and grade band." />
+  <meta name="robots" content="noindex, follow" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css?v=20260513n" />
+</head>
+<body class="facts-page">
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="brand"><svg class="brand-logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><defs><linearGradient id="starGradF" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fde047"/><stop offset="55%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient></defs><path d="M16 2.6 19.6 11.5 29.2 12.2 21.8 18.4 24.2 27.6 16 22.4 7.8 27.6 10.2 18.4 2.8 12.2 12.4 11.5 Z" fill="url(#starGradF)" stroke="rgba(255,255,255,0.18)" stroke-width="0.6" stroke-linejoin="round"/></svg><span class="brand-text">Grade<span class="brand-text-accent">Earn</span></span></a>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="myspace.html">MySpace</a>
+        <a href="achievements.html">Trophies</a>
+        <a href="league.html">League</a>
+        <a href="games.html">Games</a>
+        <a href="marketplace.html">Toys</a>
+      </nav>
+      <div id="user-slot" class="user-slot"></div>
+    </div>
+  </header>
+
+  <main class="facts-main">
+    <div class="facts-inner">
+
+      <header class="facts-page-head">
+        <span class="facts-eyebrow">Fun Facts</span>
+        <h1 class="facts-title">Stuff worth knowing</h1>
+        <p class="facts-sub" id="facts-sub">Pick a subject and an age band to browse.</p>
+      </header>
+
+      <!-- Subject pills (math / reading / science / all) -->
+      <div class="facts-filter-row" role="radiogroup" aria-label="Subject">
+        <button type="button" class="facts-pill facts-pill--active" data-filter="subject" data-value="all" role="radio" aria-checked="true">All</button>
+        <button type="button" class="facts-pill" data-filter="subject" data-value="math"    role="radio" aria-checked="false">Math</button>
+        <button type="button" class="facts-pill" data-filter="subject" data-value="reading" role="radio" aria-checked="false">Reading</button>
+        <button type="button" class="facts-pill" data-filter="subject" data-value="science" role="radio" aria-checked="false">Science</button>
+      </div>
+
+      <!-- Grade-band pills (k-2 / 3-4 / 5-8 / all) -->
+      <div class="facts-filter-row facts-filter-row--second" role="radiogroup" aria-label="Age band">
+        <button type="button" class="facts-pill facts-pill--active" data-filter="grade" data-value="all" role="radio" aria-checked="true">All ages</button>
+        <button type="button" class="facts-pill" data-filter="grade" data-value="k-2" role="radio" aria-checked="false">K–2</button>
+        <button type="button" class="facts-pill" data-filter="grade" data-value="3-4" role="radio" aria-checked="false">Grades 3–4</button>
+        <button type="button" class="facts-pill" data-filter="grade" data-value="5-8" role="radio" aria-checked="false">Grades 5–8</button>
+      </div>
+
+      <!-- Stats line: "147 facts · 18 you've seen" -->
+      <div class="facts-meta" id="facts-meta" hidden>
+        <span id="facts-count">0</span> facts<span class="facts-meta-sep">·</span>
+        <span id="facts-seen-count">0</span> you've seen
+      </div>
+
+      <!-- Feed — fact cards. Populated by js/facts.js. -->
+      <div class="facts-feed" id="facts-feed" aria-live="polite"></div>
+
+      <!-- Empty state (shown when 0 facts match the active filters) -->
+      <div class="facts-empty" id="facts-empty" hidden>
+        <p>No facts match those filters yet.</p>
+        <p class="facts-empty-sub">Try a different subject or age band.</p>
+      </div>
+
+      <!-- Load-more (large catalog; paginated 30 per page) -->
+      <button type="button" class="facts-loadmore" id="facts-loadmore" hidden>Show more facts</button>
+
+    </div>
+  </main>
+
+  <footer class="product-footer" aria-label="Compliance and support">
+    <a href="/parent.html" class="product-footer-link">Parent dashboard</a>
+    <span class="product-footer-sep" aria-hidden="true">·</span>
+    <a href="/legal/privacy.html" class="product-footer-link">Privacy</a>
+    <span class="product-footer-sep" aria-hidden="true">·</span>
+    <a href="/legal/terms.html" class="product-footer-link">Terms</a>
+    <span class="product-footer-sep" aria-hidden="true">·</span>
+    <a href="/legal/ai-disclosure.html" class="product-footer-link">AI Disclosure</a>
+  </footer>
+
+  <script src="js/migrate-storage.js?v=20260427a"></script>
+  <script src="js/auth.js?v=20260513b"></script>
+  <script src="js/fun-facts.js?v=20260513a"></script>
+  <script src="js/speech.js?v=20260512a"></script>
+  <script src="js/facts.js?v=20260513a"></script>
+</body>
+</html>

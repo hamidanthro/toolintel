@@ -1900,39 +1900,15 @@
             try { i++; show(); } catch (_) {}
           }, 1500);
 
-          // §71 — Fun Facts integration. Pure-fn selector returns null
-          // synchronously when the gate fails (frequency, paused, etc.)
-          // OR when the catalog isn't loaded yet (lazy fetch kicks off
-          // in the background; next correct will see it ready). When a
-          // fact IS returned, cancel auto-advance and mount the card.
-          // Race protection: capture i so a slow catalog fetch can't
-          // mount a stale card after the kid moved on.
-          if (window.FunFacts && typeof window.FunFacts.pickFactForCorrect === 'function') {
-            try {
-              const _u = (window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser()) || null;
-              const lifetimeCorrect = (_u && Number.isFinite(_u.lifetimeCorrect)) ? _u.lifetimeCorrect : 0;
-              const seqAtCall = i;
-              const fact = window.FunFacts.pickFactForCorrect({
-                isFirstTry: true,                  // No retry mechanism in this codebase — every check is first try.
-                lifetimeCorrect,
-                sessionCorrectCount: correct,      // already incremented before showFeedback
-                userGrade: slug                    // K-2 kids prefer K-2-tagged facts.
-              });
-              if (fact && i === seqAtCall) {
-                if (window._stAutoAdvance) {
-                  clearTimeout(window._stAutoAdvance);
-                  window._stAutoAdvance = null;
-                }
-                const aa = qCard ? qCard.querySelector('.q-autoadvance') : null;
-                if (aa && aa.parentNode) aa.parentNode.removeChild(aa);
-                const isFirstFactEver = !(window.FunFacts._getFirstShownAt && window.FunFacts._getFirstShownAt());
-                mountFunFactCard(fact, isFirstFactEver, seqAtCall);
-              }
-            } catch (err) {
-              // Silent fallback — auto-advance still active, kid moves on normally.
-              console.warn('[funFacts] integration error:', err && err.message || err);
-            }
-          }
+          // §75 (May 13) — Fun Facts removed from the practice flow.
+          // User feedback: "Remove fun facts and put it as a separate
+          // area under each subject." The every-5-correct trigger was
+          // a context-break; kids hunting points didn't want fact
+          // cards interrupting flow. Facts now live at /facts.html
+          // as a browsable feed (subject- + age-filtered). The
+          // catalog stays loaded on this page for backward compat
+          // but no longer mounts. mountFunFactCard is dead code
+          // (preserved one section below until next cleanup pass).
         } else {
           const nextInline = document.createElement('button');
           nextInline.type = 'button';

@@ -142,11 +142,16 @@
   // and culturally tone-deaf. Future: parent-controlled `interests`
   // array in settings, layered over these grade defaults.
   const GRADE_CATEGORY_PREFS = {
-    'grade-k':   ['animals', 'body',     'food',           'weird-funny', 'texas'],
-    'grade-1':   ['animals', 'body',     'food',           'weird-funny', 'texas', 'sports'],
-    'grade-2':   ['animals', 'body',     'food',           'weird-funny', 'texas', 'sports', 'dinosaurs'],
-    'grade-3':   ['animals', 'dinosaurs','space',          'mythology',   'weird-funny', 'sports', 'texas'],
-    'grade-4':   ['animals', 'space',    'mythology',      'inventions',  'history', 'sports', 'weird-funny', 'texas'],
+    // §75 May 13 — Texas dropped from grade-k/1/2/3/4 default
+    // preferences. User: "Don't push too hard to make it for Texas.
+    // Go global." Texas facts stay in the catalog and remain
+    // selectable via the /facts.html browse surface; they're just
+    // no longer biased INTO the random selection on K-4 picks.
+    'grade-k':   ['animals', 'body',     'food',           'weird-funny'],
+    'grade-1':   ['animals', 'body',     'food',           'weird-funny', 'sports'],
+    'grade-2':   ['animals', 'body',     'food',           'weird-funny', 'sports', 'dinosaurs'],
+    'grade-3':   ['animals', 'dinosaurs','space',          'mythology',   'weird-funny', 'sports'],
+    'grade-4':   ['animals', 'space',    'mythology',      'inventions',  'history', 'sports', 'weird-funny'],
     'grade-5':   ['space',   'history',  'math-numbers',   'mythology',   'inventions', 'music', 'sports'],
     'grade-6':   ['space',   'history',  'inventions',     'robots-tech', 'music', 'geography', 'math-numbers'],
     'grade-7':   ['space',   'history',  'inventions',     'robots-tech', 'music', 'geography', 'math-numbers'],
@@ -453,6 +458,10 @@
     setFrequency,
     isPaused,
     loadCatalog,
+    // §75 — direct catalog read for /facts.html (avoids a second fetch
+    // when FunFacts has already loaded the JSON). Returns the array
+    // (or null if not yet loaded).
+    _getCatalog: function () { return _catalog; },
     // Internal — exposed for tests + auth.js wiring + Phase 3 prefetch
     _getSeenIds,
     _getFirstShownAt,

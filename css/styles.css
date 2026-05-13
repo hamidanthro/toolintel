@@ -28509,3 +28509,271 @@ body.practice-page .practice-eyebrow-livesep[hidden] { display: none !important;
 @media (max-width: 480px) {
   body.practice-page .practice-eyebrow-live { font-size: 11px; }
 }
+
+/* ==========================================================================
+   §75 Fun Facts browse page (May 13). User feedback: "Remove fun
+   facts and put it as a separate area under each subject. Fun facts
+   should be subject and age specific. Don't push too hard to make
+   it for Texas. Go global."
+   The every-5-correct inline mount is gone (js/practice.js cleanup).
+   Catalog is now browsable at /facts.html as a filtered feed.
+   ========================================================================== */
+
+body.facts-page {
+  background: #060d1f;
+  color: #ffffff;
+  min-height: 100vh;
+}
+body.facts-page .facts-main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 20px 80px;
+}
+body.facts-page .facts-page-head {
+  text-align: center;
+  margin-bottom: 24px;
+}
+body.facts-page .facts-eyebrow {
+  display: inline-block;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(252, 211, 77, 0.85);
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+body.facts-page .facts-title {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: clamp(28px, 5vw, 40px);
+  font-weight: 400;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+  margin: 0 0 6px;
+}
+body.facts-page .facts-sub {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 13px;
+  margin: 0;
+}
+
+/* Filter pill rows */
+body.facts-page .facts-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+body.facts-page .facts-filter-row--second {
+  margin-bottom: 16px;
+}
+body.facts-page .facts-pill {
+  appearance: none;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.65);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 7px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+body.facts-page .facts-pill:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+body.facts-page .facts-pill--active {
+  background: rgba(251, 191, 36, 0.12);
+  border-color: rgba(251, 191, 36, 0.45);
+  color: #fbbf24;
+}
+body.facts-page .facts-pill--active:hover {
+  background: rgba(251, 191, 36, 0.18);
+  color: #fbbf24;
+}
+
+/* Meta line under filters */
+body.facts-page .facts-meta {
+  text-align: center;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+  margin: 8px 0 18px;
+}
+body.facts-page .facts-meta-sep { margin: 0 8px; color: rgba(255, 255, 255, 0.2); }
+body.facts-page .facts-meta span { color: rgba(255, 255, 255, 0.7); }
+
+/* Card feed */
+body.facts-page .facts-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+body.facts-page .facts-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 18px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+body.facts-page .facts-card:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+body.facts-page .facts-card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+body.facts-page .facts-card-emoji {
+  font-size: 18px;
+  line-height: 1;
+}
+body.facts-page .facts-card-cat {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 500;
+}
+body.facts-page .facts-card-seen {
+  margin-left: auto;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: rgba(34, 197, 94, 0.75);
+  font-weight: 500;
+}
+body.facts-page .facts-card--seen {
+  background: rgba(255, 255, 255, 0.015);
+}
+body.facts-page .facts-card--seen .facts-card-body {
+  color: rgba(255, 255, 255, 0.6);
+}
+body.facts-page .facts-card-body {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* Empty state */
+body.facts-page .facts-empty {
+  text-align: center;
+  padding: 48px 20px;
+  color: rgba(255, 255, 255, 0.6);
+}
+body.facts-page .facts-empty p {
+  margin: 0 0 6px;
+  font-size: 15px;
+}
+body.facts-page .facts-empty-sub {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+/* Load more */
+body.facts-page .facts-loadmore {
+  display: block;
+  margin: 24px auto 0;
+  padding: 11px 22px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.78);
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+body.facts-page .facts-loadmore:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+@media (max-width: 480px) {
+  body.facts-page .facts-main { padding: 18px 14px 64px; }
+  body.facts-page .facts-card { padding: 14px 16px; }
+  body.facts-page .facts-card-body { font-size: 15px; }
+}
+
+/* ==========================================================================
+   §76 Practice — phone no-scroll lock (May 13). User: "There should be
+   no scroll down on screen on phone period - content should fit the
+   page for reading inside the reading box scrolldown is fine but no
+   page scroll down."
+   Approach: at <=767px, lock body to viewport height with overflow
+   hidden. The question area becomes the ONLY scrollable region for
+   reading-passage cases (passage stem can scroll inside its own card).
+   The sticky-bottom action bar (§69) and the top context bar stay
+   pinned. The kid never has to scroll the page itself.
+   ========================================================================== */
+
+@media (max-width: 767px) {
+  /* Lock body to viewport height — prevents page scroll on phone */
+  html, body.practice-page {
+    height: 100vh;
+    height: 100dvh; /* dynamic viewport — better with iOS toolbar */
+    overflow: hidden;
+  }
+  body.practice-page {
+    display: flex;
+    flex-direction: column;
+  }
+  /* Practice-context-bar pinned, no-shrink */
+  body.practice-page section:first-of-type {
+    flex: 0 0 auto;
+  }
+  /* The #practice-root scrolls internally if its content overflows;
+     the sticky action bar (§69) overlays at the bottom either way */
+  body.practice-page #practice-root {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+  /* Hide product-footer on phone practice (already in §69, kept defensive
+     here) */
+  body.practice-page .product-footer { display: none !important; }
+}
+
+/* §75 — Browse-fun-facts link on subject.html */
+.subject-facts-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 28px auto 0;
+  padding: 12px 22px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.78);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+.subject-facts-link:hover {
+  background: rgba(251, 191, 36, 0.06);
+  border-color: rgba(251, 191, 36, 0.3);
+  color: #fbbf24;
+}
+.subject-facts-link-icon { font-size: 16px; }
+.subject-facts-link-arrow {
+  color: rgba(255, 255, 255, 0.4);
+  margin-left: 2px;
+  transition: transform 160ms ease;
+}
+.subject-facts-link:hover .subject-facts-link-arrow {
+  color: #fbbf24;
+  transform: translateX(3px);
+}
