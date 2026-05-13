@@ -128,7 +128,7 @@
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" />
 
-  <link rel="stylesheet" href="css/styles.css?v=20260512ac" />
+  <link rel="stylesheet" href="css/styles.css?v=20260512ae" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -955,9 +955,26 @@
           timeEl.textContent = secs > 0 ? `${secs}s` : '0m';
           timeFootEl.textContent = secs > 0 ? 'just getting started' : 'no time yet';
         }
-        document.getElementById('dash-sub').textContent = d.answered > 0
-          ? `You've answered ${(d.answered).toLocaleString()} questions and earned ${fmtPts(d.lifetimeCents)} all-time.`
-          : 'Answer your first question to begin your journey.';
+        // §55 — append the "X% lost to incorrect answers" copy so the
+        // accuracy gap is visible in the subhead, not just in the stat
+        // card. lostPct = 100 - accuracy (rounded). Only render the
+        // second sentence when the kid has at least one wrong answer
+        // (lostPct > 0); on a perfect-so-far account it would be 0%
+        // and the sentence would be noise.
+        (function () {
+          const sub = document.getElementById('dash-sub');
+          if (!sub) return;
+          if (!(d.answered > 0)) {
+            sub.textContent = 'Answer your first question to begin your journey.';
+            return;
+          }
+          const accuracy = Math.max(0, Math.min(100, Number(d.accuracy) || 0));
+          const lostPct = Math.round(100 - accuracy);
+          const base = `You've answered ${(d.answered).toLocaleString()} questions and earned ${fmtPts(d.lifetimeCents)} all-time.`;
+          sub.textContent = lostPct > 0
+            ? `${base} You lost ${lostPct}% of this score to incorrect answers.`
+            : base;
+        })();
 
         // Populate "Your journey" tiles from local storage (zero-cost, kid-friendly).
         const j = loadJourney(u.username);
