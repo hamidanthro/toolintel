@@ -6586,12 +6586,21 @@ body.practice-page .perf-ring .accuracy-label {
 }
 body.practice-page .perf-stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  /* §67 — 4 tiles (correct / answered / streak / pts earned). 2×2
+     on the panel keeps each tile readable; was repeat(3, 1fr). */
+  grid-template-columns: repeat(2, 1fr);
   gap: 8px;
   text-align: center;
   border-top: 1px solid rgba(255,255,255,0.06);
   padding-top: 14px;
 }
+/* §67 — "pts earned" tile: gold accent so it visually weighs as
+   the test-feel motivator without recoloring the other tiles. */
+body.practice-page .perf-stats .stat--points {
+  background: linear-gradient(180deg, rgba(251, 191, 36, 0.10), rgba(255,255,255,0.02)) !important;
+  border-color: rgba(251, 191, 36, 0.25) !important;
+}
+body.practice-page .perf-stats .stat--points .stat-num { color: #fbbf24; }
 body.practice-page .perf-stats .stat {
   padding: 12px 8px;
   background: rgba(255,255,255,0.03) !important;

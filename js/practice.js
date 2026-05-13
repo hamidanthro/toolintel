@@ -307,6 +307,47 @@
     return !(window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser());
   }
 
+  // §67 — Guest deterministic question set. For non-signed-in
+  // visitors, cache the question IDs for this (subject, grade) on
+  // first visit and replay the SAME set on every subsequent visit
+  // (up to the 30-question cap). Two effects:
+  //
+  //   1. The "preview" is a real preview — a kid who comes back the
+  //      next day sees the SAME 30 questions, so they feel the limit
+  //      ("I've seen all this already") and convert to sign up.
+  //   2. We don't burn lambda quota or AI tokens on returning guests.
+  //
+  // Cache stores the FULL question objects (not just IDs), keyed by
+  // `staar.guest.qcache:<subject>:<grade>`. Capped at 30 entries to
+  // match GUEST_LIMIT. Total size: ~25 buckets × ~50KB = ~1.2MB
+  // worst case across all (subject, grade) combos — well under the
+  // 5MB localStorage origin limit.
+  function guestQCacheKey() {
+    const g = (typeof slug === 'string' && slug) ? slug : (params.get('g') || 'unknown');
+    const s = (typeof SUBJECT_SLUG === 'string' && SUBJECT_SLUG) ? SUBJECT_SLUG : (params.get('subj') || 'math');
+    return `staar.guest.qcache:${s}:${g}`;
+  }
+  function loadGuestQCache() {
+    try {
+      const raw = localStorage.getItem(guestQCacheKey());
+      if (!raw) return null;
+      const arr = JSON.parse(raw);
+      return Array.isArray(arr) && arr.length ? arr : null;
+    } catch (_) { return null; }
+  }
+  function saveGuestQCache(questions) {
+    try {
+      const trimmed = questions.slice(0, GUEST_LIMIT);
+      localStorage.setItem(guestQCacheKey(), JSON.stringify(trimmed));
+    } catch (_) { /* localStorage full or unavailable — quietly degrade to non-cached */ }
+  }
+
+  // §67 — Session points accumulator. Visible in the perf panel +
+  // guest banner so the kid feels accumulated value during the test
+  // (and, for guests, sees what they'd lose by closing the tab
+  // without signing up). Resets each runQuiz session.
+  window._sessionPoints = window._sessionPoints || 0;
+
   // ---- Local "Your journey" tracker: streak, today's correct, best run-in-a-row.
   // Stored locally per-user so it stays kid-friendly and zero-cost.
   function todayKeyJ() {
@@ -436,8 +477,18 @@
       }
     }
     const remaining = guestRemaining();
-    bar.innerHTML = `<span>Free preview · <strong style="color:#fde68a;">${remaining} of ${GUEST_LIMIT}</strong> questions left in this area.</span>
-      <a href="#" id="guest-signup-btn" style="color:#fbbf24;font-weight:600;text-decoration:none;">Sign up free to unlock 100,000+ questions →</a>`;
+    // §67 — pts-earned pressure line. The kid sees a running total
+    // they'd LOSE by closing the tab. Standard loss-aversion pattern;
+    // pts only appear once they've earned anything (>0).
+    const pts = window._sessionPoints || 0;
+    const ptsBit = pts > 0
+      ? `<span style="color:rgba(255,255,255,0.4);"> · </span><strong style="color:#fbbf24;">${pts} pts earned</strong>`
+      : '';
+    const ctaLabel = pts > 0
+      ? 'Sign up free to keep them &rarr;'
+      : 'Sign up free to unlock 100,000+ questions &rarr;';
+    bar.innerHTML = `<span>Free preview · <strong style="color:#fde68a;">${remaining} of ${GUEST_LIMIT}</strong> questions left${ptsBit}</span>
+      <a href="#" id="guest-signup-btn" style="color:#fbbf24;font-weight:600;text-decoration:none;">${ctaLabel}</a>`;
     const btn = document.getElementById('guest-signup-btn');
     if (btn) btn.onclick = (e) => { e.preventDefault(); if (window.STAARAuth && window.STAARAuth.showLogin) window.STAARAuth.showLogin(); };
   }
@@ -627,9 +678,26 @@
 
     // Start instantly with a curriculum-only set so the kid never waits,
     // then swap in fresh AI-generated questions in the background.
-    const initial = buildInitialSet(questions);
+    // §67 — for guests, restore the cached question set (if any) so
+    // they see the SAME 30 on every visit. No AI enhancement either
+    // — fresh content via lambda would defeat the "you've seen this"
+    // psychology that drives signup.
+    let initial;
+    if (isGuest()) {
+      const cached = loadGuestQCache();
+      if (cached && cached.length) {
+        initial = cached;
+      } else {
+        initial = buildInitialSet(questions);
+        saveGuestQCache(initial);
+      }
+    } else {
+      initial = buildInitialSet(questions);
+    }
     runQuiz(curr, initial, lessonMeta, {
-      enhance: cb => fetchGeneratedAsync(curr, questions, lessonMeta, cb)
+      enhance: isGuest()
+        ? null  // §67 — guests get a fixed deterministic preview set; no lambda fresh content
+        : (cb => fetchGeneratedAsync(curr, questions, lessonMeta, cb))
     });
   }
 
@@ -907,6 +975,10 @@
   function runQuiz(curr, questions, meta, opts) {
     let i = 0;
     let correct = 0;
+    // §67 — reset session points each new runQuiz call. The kid's
+    // accumulated pts during this session feeds the perf-panel tile
+    // + the guest banner ("X pts earned · sign up to keep them").
+    window._sessionPoints = 0;
     // Per-question results for the end-of-set summary call. Keep it to the
     // fields the lambda actually needs (see handleSummarizeSession in
     // lambda/tutor.js): brief question text, correct flag, the kid's
@@ -1536,6 +1608,14 @@
       // the symbol + explanation alongside the inline data-state chrome).
       const qCard = qbox.querySelector('.question-card');
       const cents = qCard ? parseInt(qCard.dataset.cents, 10) || 0 : 0;
+      // §67 — bump session points on correct. Powers both the
+      // perf-panel "+pts" tile and the guest-banner "X pts earned"
+      // pressure line. _refreshSessionPts is wired by renderPerf.
+      if (isCorrect && cents > 0) {
+        window._sessionPoints = (window._sessionPoints || 0) + cents;
+        try { if (typeof window._refreshSessionPts === 'function') window._refreshSessionPts(); } catch (_) {}
+        try { renderGuestBanner(); } catch (_) {}
+      }
       const nextLabel = i + 1 >= questions.length ? 'See results' : 'Next question →';
 
       // 1. Flip card data-state — drives green/red border + input-lock CSS.
@@ -3669,6 +3749,7 @@
           <div class="stat"><div class="stat-num">${s.correct}</div><div class="stat-label">correct</div></div>
           <div class="stat"><div class="stat-num">${s.total}</div><div class="stat-label">answered</div></div>
           <div class="stat ${s.streak > 0 ? 'has-streak' : ''}"><div class="stat-num">${s.streak}${s.streak > 0 ? '<span class="streak-emoji">🔥</span>' : ''}</div><div class="stat-label">streak</div></div>
+          <div class="stat stat--points" id="perf-pts-tile"><div class="stat-num"><span id="perf-pts-num">${window._sessionPoints || 0}</span></div><div class="stat-label">pts earned</div></div>
         </div>
       </div>
 
@@ -3684,6 +3765,13 @@
     `;
     // Tier 7 AP — refresh the top stats pill with the same numbers.
     try { if (typeof window._refreshStatsPill === 'function') window._refreshStatsPill(s); } catch (_) {}
+
+    // §67 — let showFeedback bump the pts tile without re-rendering
+    // the entire perf panel (would lose ring transition + dot fades).
+    window._refreshSessionPts = function () {
+      const el = document.getElementById('perf-pts-num');
+      if (el) el.textContent = String(window._sessionPoints || 0);
+    };
   }
 
   // Track time-on-task while the practice page is open & visible.
