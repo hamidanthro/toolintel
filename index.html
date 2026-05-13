@@ -122,7 +122,7 @@
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" />
 
-  <link rel="stylesheet" href="css/styles.css?v=20260513r" />
+  <link rel="stylesheet" href="css/styles.css?v=20260513s" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -989,12 +989,20 @@
         // §64 — paint the new home-v2 surface. Everything above this
         // line writes to legacy IDs that are now hidden no-op mounts;
         // the visible state is owned by populateHomeV2.
-        populateHomeV2(u, d, {
+        const _lv = {
           level, title, xpPct, toNext, totalCorrect,
           inLevel, span,
           todayCorrect, challengeTarget,
           isMaxLevel: level >= titles.length
-        });
+        };
+        populateHomeV2(u, d, _lv);
+        // §80 — cache the dashboard payload so the subject pill
+        // click handler can re-call populateHomeV2 with the new
+        // subject without a second dashboard fetch. The Continue
+        // card title reads readSubject() internally, so re-rendering
+        // is enough to flip "Kindergarten Math · Level 4" to
+        // "Kindergarten Reading · Level 4".
+        window._homeData = { u, d, lv: _lv };
       } catch (_) { /* offline */ }
     }
 
@@ -1069,9 +1077,19 @@
       if (gradeEl) gradeEl.textContent = `${gradeName} ${subjectLabel}`;
       if (lvlEl)   lvlEl.textContent = `Level ${lv.level}`;
       if (subEl) {
+        // §80 — make the level title prefix follow the active
+        // subject ("Math Trailblazer" → "Reading Trailblazer")
+        // so the Continue card subtitle isn't lying when the kid
+        // toggles. The lv.title was generated from a Math-prefixed
+        // array (titles=['Math Rookie','Math Apprentice',...]); a
+        // simple swap handles the Reading case without changing
+        // the level-progression math.
+        const subjectTitle = subj === 'reading'
+          ? lv.title.replace(/^Math\s/, 'Reading ')
+          : lv.title;
         subEl.textContent = lv.isMaxLevel
-          ? `${lv.title} · Max level reached`
-          : `${lv.title} · ${lv.inLevel} of ${lv.span} to Level ${lv.level + 1}`;
+          ? `${subjectTitle} · Max level reached`
+          : `${subjectTitle} · ${lv.inLevel} of ${lv.span} to Level ${lv.level + 1}`;
       }
       if (fillEl) fillEl.style.width = lv.xpPct + '%';
 
@@ -1209,6 +1227,15 @@
           b.setAttribute('aria-checked', on ? 'true' : 'false');
         });
         wirePracticeCTAs();
+        // §80 — re-render the Continue card + stats line with the
+        // new subject. populateHomeV2 reads readSubject() internally
+        // so just re-invoking with the cached dashboard payload is
+        // enough — no second API call.
+        try {
+          if (window._homeData && typeof populateHomeV2 === 'function') {
+            populateHomeV2(window._homeData.u, window._homeData.d, window._homeData.lv);
+          }
+        } catch (_) {}
       };
       apply();
       segs.forEach(b => {
