@@ -1,85 +1,134 @@
-# DNS / domain status (verified 2026-05-09)
+# DNS / domain status — toolintel.ai retirement
 
-**Both domains are live and serve the same site from GitHub Pages.**
-The cutover that CLAUDE.md §4 framed as pending has already happened.
+**Single-domain decision logged 2026-05-13.** Going forward
+**`gradeearn.com` is the only domain.** `toolintel.ai` is being
+retired. This doc is the runbook for the retirement.
 
-## Current state
+---
 
-| Domain | DNS | TLS | What it serves |
+## Current state (2026-05-13)
+
+| Domain | DNS | TLS | Status |
 |---|---|---|---|
-| **`gradeearn.com`** | A → 185.199.108.153 / .109 / .110 / .111 (GitHub Pages CDN) | ✓ approved, expires 2026-08-04 | Same site as toolintel.ai, served directly from GitHub Pages from `main` branch. |
-| **`www.gradeearn.com`** | (covered by same cert) | ✓ approved | 301 → `https://gradeearn.com/` |
-| **`toolintel.ai`** | A → 13.224.x.x (AWS CloudFront) | ✓ active | Same site (legacy host name; CloudFront fronts the same Pages origin). |
+| **`gradeearn.com`** | A → 185.199.108-111.153 (GitHub Pages CDN) | ✓ approved, expires 2026-08-04 | **Canonical.** Direct GitHub Pages serve from `main` branch. |
+| **`www.gradeearn.com`** | (same cert) | ✓ approved | 301 → `https://gradeearn.com/` |
+| **`toolintel.ai`** | A → CloudFront (`13.224.x.x`) | ✓ active | **Being retired.** CloudFront fronts the same Pages origin today. |
 
-Verified via:
-```
-$ dig +short A gradeearn.com
-185.199.111.153
-185.199.110.153
-185.199.109.153
-185.199.108.153
+The repo's `CNAME` file already says `gradeearn.com` only — no
+GitHub-Pages-side change needed.
 
-$ curl -sI https://gradeearn.com/ | head -2
-HTTP/2 200
-server: GitHub.com
+---
 
-$ gh api repos/hamidanthro/toolintel/pages
-"html_url":"http://gradeearn.com/", "https_certificate":{"state":"approved",...}
-```
+## Why retire toolintel.ai
 
-## What's left if you want to fully retire `toolintel.ai`
+1. **Brand confusion.** `toolintel.ai` is a legacy host name from
+   before the rebrand. Browser tab title on PWA-installed copies
+   still shows "StarTest — State Test Prep" because the cached
+   manifest captured that label.
+2. **Two-domain ops overhead.** Every push now requires verifying
+   both GH Pages and the CloudFront-fronted toolintel.ai mirror.
+3. **CDN cache risk.** CloudFront on toolintel.ai uses
+   `s-maxage=31536000` (1 year). During the rapid §61–§71 deploy
+   cycle this morning, every intermediate state could have been
+   edge-cached for a year. Single-domain removes the risk.
+4. **Cost.** CloudFront + AWS WAF on toolintel.ai is unnecessary
+   spend once the redirect lands.
 
-The brand is GradeEarn (CLAUDE.md §1, §2). `toolintel.ai` is a legacy
-host name. Keeping it live indefinitely is fine — old links keep working —
-but here's the runbook if you ever want to retire it.
+---
 
-### Phase A — soft-deprecate (passive; low-risk)
+## The retirement runbook (3 phases, do in order)
 
-1. **Update marketing copy** to reference `gradeearn.com` as the canonical
-   URL everywhere. (Most of CLAUDE.md and the README already do this.)
-2. **Update OG / SEO meta tags** — `og:url`, `canonical` — to point at
-   `https://gradeearn.com/`. Already done in this commit's index.html.
-3. **Wait for organic traffic to migrate** (3-6 months typically).
+### Phase 1 — Active 301 redirect at toolintel.ai (do now)
 
-### Phase B — active redirect (when you're ready)
+Switch toolintel.ai from "serve same content" to "permanent
+redirect to gradeearn.com." Old links keep working forever.
+Search engines transfer ranking to gradeearn.com.
 
-Switch the `toolintel.ai` CloudFront distribution from "serve same content"
-to "301 redirect to gradeearn.com". This costs nothing extra and keeps old
-bookmarks / shared links from breaking.
+**Steps (AWS Console):**
 
-In AWS Console:
-1. CloudFront → distribution serving `toolintel.ai` → Behaviors
-2. Edit the default behavior: viewer protocol policy → Redirect HTTP to HTTPS
-3. Add a Lambda@Edge function (or use a CloudFront Function) on
-   viewer-request that returns:
+1. Open AWS Console → CloudFront → find the distribution serving
+   `toolintel.ai` (note its Distribution ID).
+2. Behaviors → Default Behavior → Edit.
+3. Function associations → CloudFront Functions → Viewer Request →
+   Create function (or attach existing if one exists). Function code:
+   ```js
+   function handler(event) {
+     var request = event.request;
+     return {
+       statusCode: 301,
+       statusDescription: 'Moved Permanently',
+       headers: {
+         'location': { value: 'https://gradeearn.com' + request.uri }
+       }
+     };
+   }
    ```
-   { status: 301, statusDescription: 'Moved',
-     headers: { location: [{ value: 'https://gradeearn.com' + request.uri }] } }
+4. Publish the function. Attach to viewer-request on the default
+   behavior of the toolintel.ai distribution.
+5. **Invalidate cache** so the 301 takes effect immediately:
+   ```sh
+   aws cloudfront create-invalidation \
+     --distribution-id <DIST_ID> \
+     --paths '/*'
    ```
-4. Test: `curl -sI https://toolintel.ai/` should return `301 Location: https://gradeearn.com/`.
+6. **Verify:**
+   ```sh
+   curl -sI https://toolintel.ai/        # should return 301 Location: https://gradeearn.com/
+   curl -sI https://toolintel.ai/practice.html
+   # should return 301 Location: https://gradeearn.com/practice.html
+   ```
 
-### Phase C — full retirement
+**Time:** ~15 min in AWS Console. Reversible (detach the function
+to revert to passthrough).
 
-When traffic is near zero on `toolintel.ai`:
-1. Remove the CloudFront distribution.
-2. Cancel the `toolintel.ai` domain renewal at next expiry.
-3. Update `CLAUDE.md` §4 to reflect single-domain state.
+### Phase 2 — Clean code references (do after Phase 1 verifies)
 
-## What you DON'T need to do
+The lambda CORS allow-list at `lambda/tutor.js:85-86` (and its
+build mirror `lambda/tutor-build/tutor.js:85-86`) still allows
+`toolintel.ai` and `www.toolintel.ai`. After the 301 lands, no
+real browser will send requests with `Origin: https://toolintel.ai`
+because the page that originated the request would have been
+redirected to `gradeearn.com` first. Removing them tightens the
+security surface.
 
-- **`CNAME` file in repo:** already correct (`gradeearn.com`).
-- **GitHub Pages settings:** already configured (custom domain set,
-  HTTPS enforced flag is currently `false` — see below).
-- **DNS records on Namecheap:** already correct for `gradeearn.com`.
+**Steps:**
+1. Edit `lambda/tutor.js`: drop `'https://toolintel.ai'` and
+   `'https://www.toolintel.ai'` from the ALLOWED_ORIGINS array.
+2. Mirror the same edit to `lambda/tutor-build/tutor.js` (parity
+   per CLAUDE.md §5).
+3. `./deploy.sh` to ship the lambda update.
+4. Run the parity check: `./scripts/check-tutor-parity.sh`.
 
-## One thing worth flipping: enforce HTTPS
+**Time:** ~10 min. Defer until 24h after Phase 1 — gives the
+redirect time to bake.
 
-GitHub Pages reports `"https_enforced": false`. Means anyone hitting
-`http://gradeearn.com/` gets HTTP, not auto-redirected to HTTPS. The
-TLS cert is approved and live, so flipping enforce-HTTPS on costs
-nothing and closes a downgrade-attack vector.
+### Phase 3 — Full retirement (do when toolintel.ai traffic = 0)
 
-**Action:**
+After 30-60 days of zero direct toolintel.ai traffic (everyone
+hits the 301 and lands on gradeearn.com):
+
+1. **AWS:** Delete the CloudFront distribution.
+2. **Route 53 / Namecheap:** Remove the toolintel.ai DNS A records.
+   You can keep the domain registered as a defensive purchase (cheap,
+   stops someone else from grabbing it), OR cancel at next renewal.
+3. **Code:** Update CLAUDE.md §4 to remove the "two-domain" wording
+   and reflect single-domain-from-day-this state.
+4. **GitHub Pages settings:** No change needed — `CNAME` was already
+   single-domain (`gradeearn.com`).
+
+**Time:** ~10 min.
+
+---
+
+## HTTPS enforce flag (separate, do now)
+
+GitHub Pages reports `"https_enforced": false`. Means anyone
+hitting `http://gradeearn.com/` gets HTTP, not auto-redirected
+to HTTPS. The TLS cert is approved and live, so flipping
+enforce-HTTPS on costs nothing and closes a downgrade-attack vector.
+
+**Action (one of two):**
+
 ```sh
 gh api -X PUT repos/hamidanthro/toolintel/pages \
   --input - <<< '{"https_enforced": true}'
@@ -87,7 +136,28 @@ gh api -X PUT repos/hamidanthro/toolintel/pages \
 
 Or via UI: Repo → Settings → Pages → check "Enforce HTTPS".
 
-## Stale doc cleanup
+---
 
-CLAUDE.md §4 is being updated in the same commit as this file to
-reflect "cutover complete" instead of "cutover pending."
+## What ALREADY changed in the repo (2026-05-13)
+
+- `CNAME` = `gradeearn.com` only (verified)
+- All marketing meta tags (`og:url`, `canonical`, `og:image:alt`,
+  `twitter:title`) point at `https://gradeearn.com/` (§58)
+- Cache-bust strategy unified across all 314 HTML pages so
+  styles.css and auth.js no longer ship 8 different versions
+  (§72 — the immediate fix for "90% of changes invisible")
+- New helper script `scripts/bump-cache.sh` enforces one-shot
+  cache-bust rotation per push
+
+---
+
+## What remains for the user to execute (NOT code, manual ops)
+
+- [ ] **AWS Console:** add CloudFront Function returning 301
+      (Phase 1 above)
+- [ ] **GitHub Pages:** flip `https_enforced` to true
+- [ ] **CLAUDE.md §4:** owner-edit to remove dual-domain wording
+      once Phase 3 ships (CI/agents will pick up the new policy)
+
+Once Phase 1 is verified, ping me and I'll ship Phase 2 (lambda CORS
+cleanup) the same session.
