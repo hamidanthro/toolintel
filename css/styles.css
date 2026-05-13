@@ -27991,3 +27991,73 @@ body.practice-page .tutor-followup--row .tutor-send:hover {
 /* ---- Desktop: sidebar dim from §68 still applies; action bar
    stays inline (not fixed). The mobile sticky treatment above is
    media-gated to <=767px so desktop is unaffected. ----------- */
+
+/* ==========================================================================
+   §70 Universal mobile home affordance (May 13). Every sub-page on
+   phone gets a small fixed-position 🏠 button so the kid can always
+   bail to home in one tap — no hamburger dig, no header hunt. On
+   practice.html (§69 hides the global site-header on phone), this
+   is the kid's only home affordance — must always be visible.
+   Injected by js/auth.js#ensureHomeAffordance on every non-home
+   page. Mobile-only via CSS so desktop chrome stays clean.
+   ========================================================================== */
+
+.ge-home-affordance {
+  /* Hidden by default; CSS turns it on for mobile widths only */
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .ge-home-affordance {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    /* Top-left so it doesn't collide with the §69 sticky bottom
+       action bar OR the iOS home indicator. Respects notch via
+       safe-area-inset-top. */
+    top: calc(8px + env(safe-area-inset-top, 0px));
+    left: calc(8px + env(safe-area-inset-left, 0px));
+    z-index: 100;
+    width: 38px;
+    height: 38px;
+    border-radius: 999px;
+    background: rgba(6, 13, 31, 0.85);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.78);
+    text-decoration: none;
+    transition: background 160ms ease, color 160ms ease, border-color 160ms ease, transform 100ms ease;
+  }
+  .ge-home-affordance:hover,
+  .ge-home-affordance:focus-visible {
+    background: rgba(6, 13, 31, 0.95);
+    color: #fbbf24;
+    border-color: rgba(251, 191, 36, 0.45);
+    outline: none;
+  }
+  .ge-home-affordance:active {
+    transform: scale(0.94);
+  }
+  /* Make sure the home button stays above the §69 sticky action bar
+     when scrolling and above the §44 mobile tab bar if present. */
+  .ge-home-affordance svg {
+    color: inherit;
+  }
+}
+
+/* Surfaces that have their own top-left chrome — push the home
+   affordance slightly inward so it doesn't overlap. Practice page
+   (§69) hides the site-header on phone, so the home button sits at
+   the cleanest top-left corner. MySpace has its own sidebar; the
+   home button still shows on phone since the sidebar reflows to
+   header at <=1024px (§63). */
+@media (max-width: 767px) {
+  body.myspace-page .ge-home-affordance,
+  body.practice-page .ge-home-affordance {
+    /* On these pages, the site-header is either hidden (practice)
+       or replaced by the ms-shell layout (myspace). The default
+       top: 8px + safe-area is correct. */
+  }
+}

@@ -1106,6 +1106,7 @@ if ('serviceWorker' in navigator) {
     menu.querySelector('[data-act="logout"]').addEventListener('click', () => attemptSignOut());
     try { ensureMobileMenu(); } catch (_) {}
     try { ensureMobileTabBar(); } catch (_) {}
+    try { ensureHomeAffordance(); } catch (_) {} // §70
     // Live-update tab bar balance badge if present.
     try {
       const badge = document.querySelector('[data-tab-balance]');
@@ -1632,10 +1633,37 @@ if ('serviceWorker' in navigator) {
     }
   });
 
+  // §70 — Universal mobile home affordance. The user pointed out
+  // that on phone, sub-pages without a visible home link force the
+  // kid to dig through the hamburger menu or rely on hidden
+  // affordances (e.g. the brand wordmark is clickable but doesn't
+  // read as "home"). Worse: on practice.html (§69) the global
+  // site-header is hidden entirely on phone, leaving the kid with
+  // no obvious escape hatch.
+  //
+  // Fix: a small fixed-position 🏠 button injected on every page
+  // EXCEPT home itself. Top-left corner so it doesn't compete with
+  // the sticky-bottom action bar (§69). Visible only on mobile
+  // (<=767px) via CSS. One source of truth; idempotent.
+  function ensureHomeAffordance() {
+    // Skip on home itself
+    if (document.body.classList.contains('home-page')) return;
+    // Idempotent — bail if already mounted
+    if (document.querySelector('.ge-home-affordance')) return;
+    const a = document.createElement('a');
+    a.className = 'ge-home-affordance';
+    a.setAttribute('href', '/index.html');
+    a.setAttribute('aria-label', 'Home');
+    a.setAttribute('title', 'Home');
+    a.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2h-4v-7h-6v7H5a2 2 0 0 1-2-2z"/></svg>';
+    document.body.appendChild(a);
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     refreshHeader();
     ensureMobileMenu();
     ensureMobileTabBar();
+    ensureHomeAffordance();
     setupInputFocusedClass();
     setupIOSKeyboardHandler();
     maybeShowSignedOutToast();
