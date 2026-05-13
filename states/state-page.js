@@ -79,12 +79,40 @@
   // <meta name="robots" content="noindex"> tag so Google doesn't
   // index 50 stub pages. Sets Texas-aligned SEO so any social
   // share preview from these URLs reads sensibly.
+  // §65 (May 13) — DISABLED-STATE BEHAVIOR.
+  // When a state has `active: false` in js/states-data.js (anything
+  // other than Texas today), we now silently redirect home instead
+  // of rendering a "Coming soon for X" page. The page-load barely
+  // flashes; the kid lands on /index.html.
+  //
+  // GROWTH PATH — when Hamid is ready to launch California (or any
+  // other state), the workflow is ONE LINE: flip `active: true` on
+  // that state's record in `js/states-data.js`. The populate*
+  // machinery below is fully wired and will render the same surface
+  // Texas uses today. No edits to this file, no edits to markup,
+  // no router changes. The full state-detail rendering pipeline
+  // (populateSEO + populateBreadcrumb + populateHero + populateGradeGrid
+  // + populateTrust + populateCTA) stays armed.
+  //
+  // The old `showInactive` body — which painted a "Coming soon for
+  // {state}" surface — is preserved below the early-return for git
+  // history and future use if we ever want a real waitlist page.
   function showInactive(state) {
+    // Single source of truth: a disabled state means redirect home.
+    try { sessionStorage.setItem('gradeearn.attemptedState', state.slug); } catch (_) {}
+    location.replace('../index.html');
+    return;
+
+    // ----- preserved dead code (kept per "don't delete" rule) -----
+    // To re-enable a real "Coming soon" surface in the future:
+    // remove the redirect above. The block below renders the
+    // §47-era waitlist page.
+    /* eslint-disable */
     const loading = document.getElementById('state-loading');
     if (loading) { loading.hidden = true; loading.style.display = 'none'; }
 
-    const inactiveTitle = `Coming soon for ${state.name} — GradeEarn (Texas STAAR practice)`;
-    const inactiveDesc = `GradeEarn is currently focused on Texas STAAR Math. ${state.name} support is coming. Try Texas STAAR practice today.`;
+    const inactiveTitle = `Coming soon for ${state.name} — GradeEarn`;
+    const inactiveDesc = `GradeEarn is currently focused on Texas. ${state.name} support is coming.`;
 
     document.title = inactiveTitle;
     const titleEl = document.getElementById('page-title');
@@ -111,19 +139,18 @@
       const textNode = err.querySelector('.state-error-text');
       const ctaNode = err.querySelector('.state-error-cta');
       if (titleNode) titleNode.textContent = `Coming soon for ${state.name}`;
-      if (textNode) textNode.textContent = `We're focused on Texas right now — building the deepest STAAR Math practice anywhere. ${state.name} is on the roadmap.`;
+      if (textNode) textNode.textContent = `We're focused on Texas right now. ${state.name} is on the roadmap.`;
       if (ctaNode) {
         ctaNode.setAttribute('href', '../index.html');
-        const span = ctaNode.querySelector('span') || ctaNode.firstChild;
-        // Replace any existing visible text node with the Texas-redirect label.
         ctaNode.childNodes.forEach(n => { if (n.nodeType === 3) n.textContent = ''; });
-        ctaNode.insertBefore(document.createTextNode('Try Texas STAAR practice '), ctaNode.firstChild);
+        ctaNode.insertBefore(document.createTextNode('Practice now '), ctaNode.firstChild);
       }
       err.hidden = false;
     }
 
     const breadcrumb = document.getElementById('breadcrumb-state');
     if (breadcrumb) breadcrumb.textContent = `${state.name} · Coming soon`;
+    /* eslint-enable */
   }
 
   function showError() {
