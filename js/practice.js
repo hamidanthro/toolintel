@@ -1656,43 +1656,92 @@
           fbSlot.innerHTML = `<div class="q-inline-fb-head">✓ <span class="q-inline-fb-pts">+${cents} pts earned</span>${explanationHtml}</div>`;
           fbSlot.classList.remove('q-inline-fb--tutor');
         } else {
-          // §69 — WRONG inline. Render only the static parts up-front:
-          //   - brief inline header (✗ + correct answer)
-          //   - brief explanation
-          //   - empty .tutor-box wrapper with #tutor-out only
-          // Follow-up form + chip buttons are NOT in the markup yet —
-          // they get insertAdjacentHTML'd by fireInitialTutor() ONLY
-          // on success. If the tutor fails or times out, we remove
-          // the entire .tutor-box silently — kid sees no apology UI.
-          const briefExplanationHtml = explanation
-            ? `<div class="q-inline-fb-body">${escapeHtml(explanation)}</div>`
-            : '';
-          // Bug L from master audit: Lumen visible above tutor reply.
-          // Lumen is the gold-star mascot already in the system prompt
-          // — give the kid a visual anchor so the AI feels like a
-          // character, not "AI."
-          // Bug R from master audit: kid's typed answer was redundantly
-          // displayed in a beveled box; inline it into the feedback so
-          // there's only ONE place showing it. Keep it short.
+          // §68 — COMPRESSED wrong-answer view. The old layout injected
+          // ~10 elements (header + equation reveal + Lumen badge +
+          // tutor paragraphs + 5 action buttons + follow-up input +
+          // breadcrumb) pushing Next below the fold on every wrong
+          // answer. New default view: ONE inline tutor line + 2
+          // buttons. Full dialogue + chips + follow-up live inside
+          // the [Explain more] expansion below.
+          //
+          // Tile visual states (CSS-driven via data-attrs on the form):
+          //   correct tile  → green border + check + green tint
+          //   picked-wrong  → red border + X + red tint + 'your pick' (K-2)
+          //   others        → 0.5 opacity
+          const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
+          const correctIdx = q.choices ? q.choices.indexOf(q.answer) : -1;
           const userAnswerStr = userAnswer != null ? String(userAnswer) : '';
-          const youWroteHtml = userAnswerStr
-            ? `<span class="q-inline-fb-userwrote">You wrote ${escapeHtml(userAnswerStr.slice(0, 60))}.</span> `
-            : '';
+          const pickedIdx = q.choices ? q.choices.indexOf(userAnswerStr) : -1;
+          if (qCard) {
+            if (correctIdx >= 0) qCard.dataset.correctLetter = LETTERS[correctIdx] || '';
+            if (pickedIdx >= 0)  qCard.dataset.pickedLetter  = LETTERS[pickedIdx]  || '';
+          }
+
+          // K/1/2 only: append a small "· your pick" caption to the
+          // wrong tile. Grade 3+ finds it condescending; younger kids
+          // benefit from explicit labels (per §68 A3).
+          const gradeBand = (typeof slug === 'string') ? slug : '';
+          const isYounger = gradeBand === 'grade-k' || gradeBand === 'grade-1' || gradeBand === 'grade-2';
+          if (isYounger && pickedIdx >= 0 && qCard) {
+            const pickedTile = qCard.querySelector(`.choice[data-letter="${LETTERS[pickedIdx]}"] .choice-content`);
+            if (pickedTile && !pickedTile.querySelector('.choice-yourpick')) {
+              pickedTile.insertAdjacentHTML('beforeend', '<span class="choice-yourpick"> · your pick</span>');
+            }
+          }
+
+          // Inline tutor line: starts with the stored explanation's
+          // first sentence as the immediate fallback. When the AI
+          // tutor's reply arrives (fireInitialTutor below), the line
+          // is replaced with the tutor's first sentence.
+          const explanationFirst = (() => {
+            const sentences = explanation.split(/(?<=[.!?])\s+/);
+            return sentences[0] || 'Take another look at this one.';
+          })();
           fbSlot.innerHTML = `
-            <div class="q-inline-fb-head">✗ ${pickRandom(WRONG_HEADERS)} ${youWroteHtml}<span class="q-inline-fb-correct">The answer is <strong>${escapeHtml(q.answer)}</strong>.</span></div>
-            ${briefExplanationHtml}
-            <div class="tutor-box" id="tutor-box">
-              <div class="lumen-avatar" aria-hidden="true">
-                <svg viewBox="0 0 32 32" width="28" height="28">
-                  <defs><linearGradient id="lumenGrad${i}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fde047"/><stop offset="55%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient></defs>
-                  <path d="M16 2.6 19.6 11.5 29.2 12.2 21.8 18.4 24.2 27.6 16 22.4 7.8 27.6 10.2 18.4 2.8 12.2 12.4 11.5 Z" fill="url(#lumenGrad${i})" stroke="rgba(255,255,255,0.20)" stroke-width="0.6" stroke-linejoin="round"/>
-                </svg>
-                <span class="lumen-name">Lumen</span>
-              </div>
-              <div class="tutor-output" id="tutor-out" aria-live="polite" aria-atomic="false"></div>
+            <p class="q-wrong-tutor-line" role="status">
+              <span class="q-wrong-tutor-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><polygon points="12 2 15 8 21 9 17 14 18 21 12 18 6 21 7 14 3 9 9 8"/></svg>
+              </span>
+              <span id="q-wrong-tutor-text">${escapeHtml(explanationFirst)}</span>
+            </p>
+            <div class="q-wrong-actions">
+              <button type="button" class="q-wrong-explain" data-act="explain-more" aria-expanded="false" aria-controls="q-wrong-expand">Explain more</button>
+              <button type="button" class="btn btn-primary q-wrong-next" id="next-btn">${nextLabel}</button>
             </div>
-            ${q.contentId && q.poolKey ? `<button type="button" class="q-report-link" data-act="report" data-cid="${escapeHtml(q.contentId)}" data-pk="${escapeHtml(q.poolKey)}" aria-label="Report this question">Question seems wrong? Report it.</button>` : ''}`;
+            <div class="q-wrong-expand" id="q-wrong-expand" hidden>
+              <div class="tutor-box" id="tutor-box">
+                <div class="tutor-output" id="tutor-out" aria-live="polite" aria-atomic="false"></div>
+              </div>
+              ${q.contentId && q.poolKey ? `<button type="button" class="q-report-link" data-act="report" data-cid="${escapeHtml(q.contentId)}" data-pk="${escapeHtml(q.poolKey)}" aria-label="Report this question">Question seems wrong? Report it.</button>` : ''}
+            </div>`;
           fbSlot.classList.remove('q-inline-fb--tutor');
+
+          // Wire the [Explain more] toggle. Expanding adds a body
+          // class that dims the perf sidebar (§68 A2). The
+          // follow-up input + 3 chips already live inside the
+          // expand container thanks to the tutor-box being there;
+          // fireInitialTutor() mounts them after the first
+          // successful tutor reply.
+          const explainBtn = fbSlot.querySelector('[data-act="explain-more"]');
+          const expandEl   = fbSlot.querySelector('#q-wrong-expand');
+          if (explainBtn && expandEl) {
+            explainBtn.addEventListener('click', () => {
+              const isOpen = explainBtn.getAttribute('aria-expanded') === 'true';
+              if (isOpen) {
+                expandEl.hidden = true;
+                explainBtn.setAttribute('aria-expanded', 'false');
+                explainBtn.textContent = 'Explain more';
+                document.body.classList.remove('q-wrong-expanded');
+              } else {
+                expandEl.hidden = false;
+                explainBtn.setAttribute('aria-expanded', 'true');
+                explainBtn.textContent = 'Hide';
+                document.body.classList.add('q-wrong-expanded');
+                const input = expandEl.querySelector('#tutor-q');
+                if (input) setTimeout(() => { try { input.focus(); } catch (_) {} }, 220);
+              }
+            });
+          }
         }
         fbSlot.hidden = false;
 
@@ -1830,6 +1879,8 @@
             currentTutorController = null;
           }
           if (window.STAARFx) window.STAARFx.stopSpeak();
+          // §68 — clear sidebar-dim body class before advancing
+          document.body.classList.remove('q-wrong-expanded');
           i++;
           show();
         });
@@ -1881,11 +1932,19 @@
         // previous pre-rendered version; just deferred to success.
         function mountTutorInputs() {
           if (followup) return; // idempotent
+          // \u00a768 \u2014 the old form used a flex row but the send button
+          // floated free of the input visually (CSS bug visible in
+          // user screenshot: yellow square detached from the input
+          // row). Fix: explicit single row container with input
+          // (flex: 1 + min-width: 0) and a small icon button (32px,
+          // flex-shrink: 0). Both rules in the \u00a768 CSS block. The
+          // `tutor-followup--row` modifier scopes the new geometry
+          // so the old `.tutor-followup` rules don't override.
           tutorBox.insertAdjacentHTML('beforeend', `
-            <form class="tutor-followup" id="tutor-followup">
-              <input type="text" id="tutor-q" placeholder="Ask a follow-up question\u2026" />
+            <form class="tutor-followup tutor-followup--row" id="tutor-followup">
+              <input type="text" id="tutor-q" placeholder="Ask a follow-up\u2026" autocomplete="off" />
               <button class="tutor-send" type="submit" aria-label="Send" title="Send">
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
               </button>
             </form>
           `);
@@ -1981,6 +2040,18 @@
           tutorOut.innerHTML = `<div class="tutor-msg assistant">${formatTutor(result.reply)}</div>`;
           renderChips();
           mountTutorInputs(); // §69 — only after first successful reply
+          // §68 — surface the tutor's first sentence as the inline
+          // "★ ..." line outside the expand panel. The kid sees a
+          // real AI hint without expanding anything; the rest of the
+          // dialogue lives inside Explain More.
+          try {
+            const inlineEl = document.getElementById('q-wrong-tutor-text');
+            if (inlineEl && result.reply) {
+              const plain = String(result.reply).replace(/<[^>]*>/g, '');
+              const firstSentence = (plain.split(/(?<=[.!?])\s+/)[0] || plain).trim();
+              if (firstSentence) inlineEl.textContent = firstSentence;
+            }
+          } catch (_) {}
         }
 
         // Auto-fire the tutor as soon as the wrong-answer panel renders.
@@ -3055,7 +3126,7 @@
       // stable identity for screen readers.
       const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
       body = q.choices.map((c, cIdx) => `
-        <label class="choice">
+        <label class="choice" data-letter="${LETTERS[cIdx] || (cIdx + 1)}">
           <input type="radio" name="ans" value="${escapeAttr(c)}" required />
           <span class="choice-letter" aria-hidden="true">${LETTERS[cIdx] || (cIdx + 1)}</span>
           <span class="choice-content">${renderChoiceLabel(c)}</span>

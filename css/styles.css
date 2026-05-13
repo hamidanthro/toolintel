@@ -27592,3 +27592,243 @@ body.myspace-page .ms-recent-panel { top: 44px !important; }
 @media (max-width: 1024px) {
   body.myspace-page .ms-sidebar { top: 56px !important; height: auto !important; }
 }
+
+/* ==========================================================================
+   §68 Practice wrong-answer compression (May 13). Old layout injected
+   10+ elements (header + equation reveal + Lumen badge + tutor paras
+   + 5 action buttons + follow-up input + breadcrumb) — pushing Next
+   below the fold + a floating-send-button CSS bug. New: tile-state
+   visual change carries the "what happened" signal; ONE inline tutor
+   line + 2 buttons (Explain more / Next); full dialogue + chips +
+   follow-up live inside the [Explain more] expansion.
+   ========================================================================== */
+
+/* ---- Tile visual states (driven by data-attrs the JS sets on the
+   form when an answer is submitted). The correct tile gets green
+   treatment regardless of whether the kid picked it; the picked-
+   wrong tile gets red treatment; the other two unselected tiles
+   fade to half opacity. ----------------------------------------- */
+body.practice-page .question-card[data-state="wrong"] .choice {
+  opacity: 0.5;
+  transition: opacity 200ms ease, border-color 200ms ease, background 200ms ease;
+}
+body.practice-page .question-card[data-state="wrong"][data-correct-letter] .choice[data-letter] {
+  /* default for non-correct/non-picked = stays dim */
+}
+/* The correct choice — green tint, check icon */
+body.practice-page .question-card[data-state="wrong"][data-correct-letter="A"] .choice[data-letter="A"],
+body.practice-page .question-card[data-state="wrong"][data-correct-letter="B"] .choice[data-letter="B"],
+body.practice-page .question-card[data-state="wrong"][data-correct-letter="C"] .choice[data-letter="C"],
+body.practice-page .question-card[data-state="wrong"][data-correct-letter="D"] .choice[data-letter="D"],
+body.practice-page .question-card[data-state="correct"] .choice:has(input:checked) {
+  opacity: 1 !important;
+  border-color: rgba(34, 197, 94, 0.55) !important;
+  background: rgba(34, 197, 94, 0.08) !important;
+  position: relative;
+}
+body.practice-page .question-card[data-state="wrong"][data-correct-letter="A"] .choice[data-letter="A"]::after,
+body.practice-page .question-card[data-state="wrong"][data-correct-letter="B"] .choice[data-letter="B"]::after,
+body.practice-page .question-card[data-state="wrong"][data-correct-letter="C"] .choice[data-letter="C"]::after,
+body.practice-page .question-card[data-state="wrong"][data-correct-letter="D"] .choice[data-letter="D"]::after,
+body.practice-page .question-card[data-state="correct"] .choice:has(input:checked)::after {
+  content: '';
+  position: absolute;
+  right: 14px; top: 50%; transform: translateY(-50%);
+  width: 18px; height: 18px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2322c55e' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>");
+  background-size: contain; background-repeat: no-repeat;
+}
+/* Picked-wrong choice — red tint, X icon */
+body.practice-page .question-card[data-state="wrong"][data-picked-letter="A"] .choice[data-letter="A"],
+body.practice-page .question-card[data-state="wrong"][data-picked-letter="B"] .choice[data-letter="B"],
+body.practice-page .question-card[data-state="wrong"][data-picked-letter="C"] .choice[data-letter="C"],
+body.practice-page .question-card[data-state="wrong"][data-picked-letter="D"] .choice[data-letter="D"] {
+  opacity: 1 !important;
+  border-color: rgba(239, 68, 68, 0.55) !important;
+  background: rgba(239, 68, 68, 0.08) !important;
+  position: relative;
+}
+body.practice-page .question-card[data-state="wrong"][data-picked-letter="A"] .choice[data-letter="A"]::after,
+body.practice-page .question-card[data-state="wrong"][data-picked-letter="B"] .choice[data-letter="B"]::after,
+body.practice-page .question-card[data-state="wrong"][data-picked-letter="C"] .choice[data-letter="C"]::after,
+body.practice-page .question-card[data-state="wrong"][data-picked-letter="D"] .choice[data-letter="D"]::after {
+  content: '';
+  position: absolute;
+  right: 14px; top: 50%; transform: translateY(-50%);
+  width: 16px; height: 16px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ef4444' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><line x1='18' y1='6' x2='6' y2='18'/><line x1='6' y1='6' x2='18' y2='18'/></svg>");
+  background-size: contain; background-repeat: no-repeat;
+}
+/* Letter badge tint for picked-wrong */
+body.practice-page .question-card[data-state="wrong"][data-picked-letter="A"] .choice[data-letter="A"] .choice-letter,
+body.practice-page .question-card[data-state="wrong"][data-picked-letter="B"] .choice[data-letter="B"] .choice-letter,
+body.practice-page .question-card[data-state="wrong"][data-picked-letter="C"] .choice[data-letter="C"] .choice-letter,
+body.practice-page .question-card[data-state="wrong"][data-picked-letter="D"] .choice[data-letter="D"] .choice-letter {
+  background: rgba(239, 68, 68, 0.18) !important;
+  color: #fca5a5 !important;
+}
+/* Letter badge tint for correct */
+body.practice-page .question-card[data-state="wrong"][data-correct-letter="A"] .choice[data-letter="A"] .choice-letter,
+body.practice-page .question-card[data-state="wrong"][data-correct-letter="B"] .choice[data-letter="B"] .choice-letter,
+body.practice-page .question-card[data-state="wrong"][data-correct-letter="C"] .choice[data-letter="C"] .choice-letter,
+body.practice-page .question-card[data-state="wrong"][data-correct-letter="D"] .choice[data-letter="D"] .choice-letter {
+  background: rgba(34, 197, 94, 0.18) !important;
+  color: #86efac !important;
+}
+/* K/1/2 "your pick" caption (injected by JS only for younger grades) */
+.choice-yourpick {
+  color: rgba(252, 165, 165, 0.85);
+  font-size: 0.8em;
+  margin-left: 6px;
+  font-weight: 500;
+}
+
+/* ---- Hide everything the old wrong-view used to render at the
+   bottom of the question card --------------------------------- */
+body.practice-page .question-card[data-state="wrong"] .q-meta {
+  display: none !important;
+}
+/* The §54 inline-fb-head / inline-fb-body / inline-fb-userwrote /
+   inline-fb-correct elements are no longer emitted in the new
+   wrong-branch markup (§68), but if any legacy code path renders
+   them in the future, hide so they don't leak through. */
+body.practice-page .question-card[data-state="wrong"] .q-inline-fb-head,
+body.practice-page .question-card[data-state="wrong"] .q-inline-fb-body,
+body.practice-page .question-card[data-state="wrong"] .q-inline-fb-userwrote,
+body.practice-page .question-card[data-state="wrong"] .q-inline-fb-correct {
+  display: none !important;
+}
+/* The Lumen text badge inside the (now expand-only) tutor-box was
+   header chrome the kid already knows. Star icon stays on the
+   inline tutor line; this label is redundant. */
+body.practice-page .question-card[data-state="wrong"] .lumen-avatar .lumen-name {
+  display: none !important;
+}
+
+/* ---- New compressed wrong-view: inline tutor line + 2 buttons --- */
+body.practice-page .q-wrong-tutor-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 14px 0 10px;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  font-style: normal;
+}
+body.practice-page .q-wrong-tutor-icon {
+  flex-shrink: 0;
+  color: #fbbf24;
+  margin-top: 4px;
+  display: inline-flex;
+}
+body.practice-page .q-wrong-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+  align-items: center;
+}
+body.practice-page .q-wrong-explain {
+  appearance: none;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.75);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 9px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+  flex: 0 0 auto;
+}
+body.practice-page .q-wrong-explain:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+body.practice-page .q-wrong-next {
+  flex: 1 1 auto;
+  /* Wider than Explain more (~1.4:1 by visual emphasis via flex) */
+}
+
+/* ---- Explain-more expansion: full tutor dialogue + chips + form -- */
+body.practice-page .q-wrong-expand {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.08);
+}
+body.practice-page .q-wrong-expand[hidden] { display: none; }
+
+/* ---- Sidebar dim when wrong-answer is expanded (§68 A2) --------- */
+body.practice-page.q-wrong-expanded .performance-panel {
+  opacity: 0.3;
+  transition: opacity 200ms ease;
+}
+body.practice-page .performance-panel {
+  transition: opacity 200ms ease;
+}
+
+/* ---- Fix the floating send button (§68 Step 7). Old .tutor-followup
+   had `display: flex; gap: 8px` but the button's 40×40 + thick SVG
+   stroke combined with the input shrinking below content-width on
+   narrow viewports caused the button to overflow visually. New row
+   container with explicit min-width: 0 on input + flex-shrink: 0
+   on button + 32px button (was 40). Both nested inside a single
+   rounded shell that owns the border. ------------------------- */
+body.practice-page .tutor-followup--row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  margin-top: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 12px;
+  transition: border-color 160ms ease;
+}
+body.practice-page .tutor-followup--row:focus-within {
+  border-color: rgba(251, 191, 36, 0.45);
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.10);
+}
+body.practice-page .tutor-followup--row input {
+  flex: 1 1 0%;
+  min-width: 0;
+  background: transparent !important;
+  border: none !important;
+  height: 36px;
+  padding: 0 10px;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  box-shadow: none !important;
+}
+body.practice-page .tutor-followup--row input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+body.practice-page .tutor-followup--row .tutor-send {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #fde68a, #fbbf24, #f59e0b);
+  color: #0a1628;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+body.practice-page .tutor-followup--row .tutor-send:hover {
+  filter: brightness(1.05);
+}
+
+/* Mobile tweaks for the compressed wrong-view */
+@media (max-width: 480px) {
+  body.practice-page .q-wrong-actions { flex-wrap: wrap; }
+  body.practice-page .q-wrong-explain,
+  body.practice-page .q-wrong-next { flex: 1 1 auto; min-width: 0; }
+}
