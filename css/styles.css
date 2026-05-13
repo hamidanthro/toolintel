@@ -17565,7 +17565,13 @@ body.practice-page .practice-header[data-q="1"] .practice-eyebrow-restart {
         Hide entirely during practice — the breadcrumb back arrow is the
         only navigation kids need mid-question. Brand mark + user pill
         stay so the kid still has a clear sign-out path. */
-body.practice-page .site-header .nav { display: none !important; }
+/* §81 — hide the ENTIRE site-header on practice routes, not just
+   .nav. The previous rule (just .nav hidden) left the orphaned
+   #user-slot pts/chat/avatar cluster floating top-right with no
+   relationship to anything. The practice context bar below is the
+   single navigation surface for practice; it now includes brand +
+   pts chip + ⋯ menu, so site-header is purely redundant here. */
+body.practice-page .site-header { display: none !important; }
 
 /* B8: A/B/C/D letter chips on multiple-choice answers. Visible-bordered
        circular chip on the left of each choice; the existing radio is
@@ -29128,4 +29134,144 @@ body.practice-page .choice .choice-content {
   /* Without the letter chip, the answer text is the only thing in
      the row — give it a touch more vertical weight. */
   font-size: 15px;
+}
+
+/* ==========================================================================
+   §81 Slim practice top bar (May 13).
+
+   Planning-agent rated the prior top bar 3/10: site-header was hidden
+   only at `.nav`, leaving an orphaned `593 pts` cluster + avatar with
+   nothing to anchor to, and the breadcrumb's ⋯ menu held a single
+   "Restart" item. This block restores the missing chrome inside the
+   single navigation surface (the practice-breadcrumb itself):
+     - brand wordmark (left, links home)
+     - pts chip (right of pills, before ⋯)
+     - 7-item ⋯ menu (Sound / Switch state / Show progress /
+       Restart unit / Report a problem / Exit to home / user)
+
+   Works at all viewport sizes. The mobile @media block above already
+   has the tight pill + overflow styling; these rules add the new
+   elements without disturbing those.
+   ========================================================================== */
+body.practice-page .practice-breadcrumb-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 4px 8px;
+  border-radius: 8px;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+body.practice-page .practice-breadcrumb-brand:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+body.practice-page .practice-breadcrumb-brand-mark {
+  color: var(--gold, #f5c542);
+  font-size: 16px;
+  line-height: 1;
+}
+body.practice-page .practice-pts-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  padding: 4px 10px;
+  margin-left: auto;
+  border-radius: 999px;
+  background: rgba(245, 197, 66, 0.12);
+  border: 1px solid rgba(245, 197, 66, 0.28);
+  color: var(--gold, #f5c542);
+  font-weight: 700;
+  font-size: 13px;
+  text-decoration: none;
+  white-space: nowrap;
+  line-height: 1;
+}
+body.practice-page .practice-pts-chip:hover {
+  background: rgba(245, 197, 66, 0.18);
+}
+body.practice-page .practice-pts-chip-icon {
+  font-size: 12px;
+  line-height: 1;
+}
+body.practice-page .practice-pts-chip--guest {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.85);
+  padding: 4px 12px;
+}
+
+/* The mobile breadcrumb already declares margin-left:auto on the
+   overflow button. Now that the pts chip lives between pills and ⋯
+   and takes that auto-margin instead, the overflow button just needs
+   a small left gap. */
+body.practice-page .practice-pts-chip + .practice-breadcrumb-overflow {
+  margin-left: 6px;
+}
+
+/* Expanded ⋯ menu — keep the existing dark surface but add icons,
+   right-aligned state text (sound on/off, state abbr), separator,
+   and a user-row at the bottom. */
+body.practice-page .practice-breadcrumb-menu {
+  min-width: 220px;
+}
+body.practice-page .practice-breadcrumb-menu-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  text-decoration: none;
+}
+body.practice-page .practice-breadcrumb-menu-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+body.practice-page .practice-breadcrumb-menu-ico {
+  width: 18px;
+  text-align: center;
+  font-size: 14px;
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.75);
+}
+body.practice-page .practice-breadcrumb-menu-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+body.practice-page .practice-breadcrumb-menu-state {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  flex-shrink: 0;
+}
+body.practice-page .practice-breadcrumb-menu-sep {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 6px 4px;
+}
+body.practice-page .practice-breadcrumb-menu-item--user {
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  /* On phone the brand wordmark gets just the ★ to save horizontal
+     room — the full "GradeEarn" text is redundant with the homepage
+     it links to. */
+  body.practice-page .practice-breadcrumb-brand-text { display: none; }
+  body.practice-page .practice-breadcrumb-brand { padding: 4px 6px; }
+  body.practice-page .practice-pts-chip { padding: 4px 8px; font-size: 12px; }
 }
