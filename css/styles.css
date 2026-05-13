@@ -26038,3 +26038,214 @@ body.home-page .placement-arrow {
   body.home-page .hero-headline-light { display: block; }
   body.home-page .hero-headline-bold--gold { display: block; margin-top: 4px; }
 }
+
+/* ==========================================================================
+   §53 Home cosmetic warmth pass (May 12) — add tactility back without
+   structural changes. The §45 + §48 polish made the page minimal and
+   business-like; §53 reintroduces depth (gradients, inset highlights),
+   per-card hue tints (emerald/teal/amber/indigo/violet at 4-6% opacity),
+   gradient progress bars with weight, a gradient avatar orb, and
+   slight CTA glow. No new sections, no new copy, no new pills.
+   ========================================================================== */
+
+/* Stat card base — top-light/bottom-shadow gradient + inset top highlight.
+   The pseudo-element overlay carries the per-card hue tint. */
+body.home-page #dashboard .stat-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035) 0%, rgba(255, 255, 255, 0.012) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 6px 18px -8px rgba(0, 0, 0, 0.35);
+}
+body.home-page #dashboard .stat-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: radial-gradient(circle at 20% 0%, var(--card-tint, transparent) 0%, transparent 55%);
+  opacity: 0.9;
+}
+body.home-page #dashboard .stat-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 12px 32px -10px rgba(0, 0, 0, 0.55);
+}
+
+/* Per-card hue tints — barely perceptible 4-6% washes that warm the row
+   without screaming color. Card order in markup:
+   1) Lifetime correct  → emerald
+   2) Accuracy          → teal
+   3) Wallet balance    → amber (already gold-leaning; keep + reinforce)
+   4) Time practicing   → indigo */
+body.home-page #dashboard .stats-grid .stat-card:nth-child(1) {
+  --card-tint: rgba(52, 211, 153, 0.10);
+}
+body.home-page #dashboard .stats-grid .stat-card:nth-child(2) {
+  --card-tint: rgba(45, 212, 191, 0.10);
+}
+body.home-page #dashboard .stats-grid .stat-card:nth-child(3) {
+  --card-tint: rgba(252, 211, 77, 0.14);
+}
+body.home-page #dashboard .stats-grid .stat-card:nth-child(4) {
+  --card-tint: rgba(129, 140, 248, 0.10);
+}
+
+/* Stat numbers — make them the visual hero. Already 48px in base CSS;
+   tighten the tracking + ensure tabular-nums for clean alignment. */
+body.home-page #dashboard .stat-card-value {
+  font-size: 52px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+}
+body.home-page #dashboard .stat-card--wallet .stat-card-value {
+  /* Wallet number stays gold per §45 rule; texture matches the others */
+  font-variant-numeric: tabular-nums;
+}
+body.home-page #dashboard .stat-card-label {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  margin-bottom: 4px;
+}
+
+/* Today's challenge card — gradient + tint + inset highlight, same
+   chrome family as stat cards but its own amber wash. */
+body.home-page #dashboard .daily-challenge {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035) 0%, rgba(255, 255, 255, 0.012) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 8px 22px -10px rgba(0, 0, 0, 0.4);
+}
+body.home-page #dashboard .daily-challenge::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: radial-gradient(circle at 12% 0%, rgba(252, 211, 77, 0.10) 0%, transparent 50%);
+}
+
+/* Challenge progress bar — depth + height + gradient fill + inset shine */
+body.home-page #dashboard .challenge-progress-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+}
+body.home-page #dashboard .challenge-progress-fill {
+  background: linear-gradient(90deg, rgba(251, 191, 36, 0.95) 0%, rgba(245, 158, 11, 0.85) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 0 12px -2px rgba(252, 211, 77, 0.35);
+  border-radius: 999px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Level pill — gradient orb avatar with soft glow + sphere highlight */
+body.home-page #dashboard .level-pill {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035) 0%, rgba(255, 255, 255, 0.015) 100%);
+  border-color: rgba(255, 255, 255, 0.10);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  position: relative;
+  overflow: hidden;
+}
+body.home-page #dashboard .level-pill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: radial-gradient(circle at 16% 0%, rgba(167, 139, 250, 0.10) 0%, transparent 60%);
+}
+body.home-page #dashboard .level-badge {
+  background: radial-gradient(circle at 30% 25%, #a78bfa 0%, #8b5cf6 45%, #7c3aed 100%);
+  border: 2px solid rgba(255, 255, 255, 0.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -2px 4px rgba(76, 29, 149, 0.4),
+    0 0 18px -4px rgba(167, 139, 250, 0.55),
+    0 4px 12px -2px rgba(99, 102, 241, 0.35);
+  position: relative;
+  z-index: 1;
+}
+/* Sphere top-light highlight on the level orb */
+body.home-page #dashboard .level-badge::before {
+  content: '';
+  position: absolute;
+  top: 2px; left: 6px; right: 6px;
+  height: 40%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center top, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Level progress bar — give it weight + a violet gradient fill */
+body.home-page #dashboard .level-progress-bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.06);
+}
+body.home-page #dashboard .level-progress-fill {
+  background: linear-gradient(90deg, #a78bfa 0%, #7c3aed 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 0 8px -2px rgba(167, 139, 250, 0.5);
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Practice now + Start challenge CTAs — gold-filled with inset shine
+   + soft outer glow + active-press scale */
+body.home-page .dash-practice-cta,
+body.home-page #dashboard .challenge-cta {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -1px 0 rgba(146, 64, 14, 0.2),
+    0 4px 18px -4px rgba(252, 211, 77, 0.45),
+    0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 100ms ease, box-shadow 200ms ease;
+}
+body.home-page .dash-practice-cta:hover,
+body.home-page #dashboard .challenge-cta:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -1px 0 rgba(146, 64, 14, 0.25),
+    0 6px 28px -4px rgba(252, 211, 77, 0.6),
+    0 2px 4px rgba(0, 0, 0, 0.25);
+}
+body.home-page .dash-practice-cta:active,
+body.home-page #dashboard .challenge-cta:active {
+  transform: scale(0.98);
+}
+
+/* Math / Reading segmented toggle — add depth to the active chip */
+body.home-page #dashboard .subject-segment.active {
+  background: rgba(255, 255, 255, 0.10);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* +50 pts reward chip — gentle breathing pulse when challenge incomplete.
+   3s cycle, very subtle (0.92 → 1.0 opacity). Halts when .challenge-cta
+   styling resolves to a "completed" state (no class for this today; the
+   animation is non-aggressive enough to stay on throughout). */
+body.home-page #dashboard .challenge-reward {
+  animation: challenge-reward-pulse 3.2s ease-in-out infinite;
+}
+@keyframes challenge-reward-pulse {
+  0%, 100% { opacity: 0.85; }
+  50%       { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.home-page #dashboard .challenge-reward { animation: none; }
+}
+
+/* "Math Rookie" inline star — small amber accent next to the title.
+   ::after pseudo-element so no markup change needed. */
+body.home-page #dashboard .level-label::after {
+  content: ' ★';
+  color: rgba(252, 211, 77, 0.65);
+  font-size: 11px;
+  margin-left: 4px;
+  letter-spacing: 0;
+}
