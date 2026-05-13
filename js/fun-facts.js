@@ -277,8 +277,20 @@
   // Synchronous decision based on cached state. If catalog isn't loaded
   // yet, kicks off load and returns null this round; next correct will
   // see it cached. This keeps the practice flow non-blocking.
+  // Grades that opt OUT of fun-facts entirely. K and Grade 1 kids
+  // are still building reading fluency — a fact card mid-session
+  // adds vocabulary load they don't have the bandwidth for. The
+  // celebration on a correct answer is handled by the streak +
+  // wallet ping, which they CAN read. Returning null here turns
+  // off the surface at the source so every caller (practice.js
+  // today + any future call site) inherits the gate.
+  const FACT_OPTOUT_GRADES = ['grade-k', 'grade-1'];
+
   function pickFactForCorrect(ctx) {
     const args = ctx || {};
+    if (args.userGrade && FACT_OPTOUT_GRADES.indexOf(args.userGrade) !== -1) {
+      return null;
+    }
     const should = _shouldShow({
       isFirstTry: args.isFirstTry,
       lifetimeCorrect: args.lifetimeCorrect,
