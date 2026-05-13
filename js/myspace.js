@@ -245,10 +245,145 @@
     renderBriefing();
     renderStats();
     renderSubjects();
+    renderMyspacePerformance(); // §73 — practice stats relocated from sidebar
     wireComposer();
     wireBriefingButtons();
     wireQuickNote();
     wireMorePopover();
+  }
+
+  // §73 — Practice performance on MySpace home. Replaces the sidebar
+  // that §71 stripped off the practice screen. Three sections:
+  //   1. Overview — accuracy ring + 4 stat tiles (lifetime, from
+  //      dashboard API)
+  //   2. Recent — LAST 20 dots (scoped to kid's last-practiced grade)
+  //   3. Mastery — per-unit bars (scoped to kid's last-practiced grade)
+  //
+  // Each section self-hides until JS confirms data. Whole region
+  // stays hidden for guests + zero-state kids (no `answered > 0`).
+  async function renderMyspacePerformance() {
+    const root = document.getElementById('ms-performance');
+    if (!root) return;
+    const u = (window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser()) || null;
+    if (!u || !u.username) return;
+
+    // Lifetime data via the dashboard API. Failure = quiet bail.
+    let d;
+    try {
+      const token = window.STAARAuth.token && window.STAARAuth.token();
+      if (!token) return;
+      d = await window.STAARAuth.api('dashboard', { token });
+    } catch (_) { return; }
+    if (!d || !(d.answered > 0)) return; // zero-state stays hidden
+
+    root.hidden = false;
+
+    // ----- Overview section (always shown once we have data) -----
+    const overview = root.querySelector('.ms-perf-overview');
+    if (overview) {
+      overview.hidden = false;
+      const acc = Math.max(0, Math.min(100, parseInt(d.accuracy, 10) || 0));
+      // Build accuracy ring inline
+      const ringRadius = 70;
+      const ringCirc = 2 * Math.PI * ringRadius;
+      const ringOffset = ringCirc - (acc / 100) * ringCirc;
+      const ring = document.getElementById('ms-perf-ring');
+      if (ring) {
+        ring.innerHTML = `
+          <defs>
+            <linearGradient id="msPerfGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#fde68a"/>
+              <stop offset="55%" stop-color="#fbbf24"/>
+              <stop offset="100%" stop-color="#f59e0b"/>
+            </linearGradient>
+          </defs>
+          <circle cx="80" cy="80" r="${ringRadius}" stroke="rgba(255,255,255,0.08)" stroke-width="12" fill="none"/>
+          <circle cx="80" cy="80" r="${ringRadius}" stroke="url(#msPerfGrad)" stroke-width="12" fill="none"
+                  stroke-dasharray="${ringCirc}" stroke-dashoffset="${ringOffset}"
+                  stroke-linecap="round" transform="rotate(-90 80 80)"
+                  style="transition: stroke-dashoffset 0.5s ease;"/>
+          <text x="80" y="82" text-anchor="middle" fill="#ffffff" font-size="38" font-weight="700">${acc}<tspan font-size="22">%</tspan></text>
+          <text x="80" y="106" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11" letter-spacing="0.12em">ACCURACY</text>`;
+      }
+      // 4 stat tiles
+      const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = String(v); };
+      setTxt('ms-perf-correct',  (d.correct || 0).toLocaleString());
+      setTxt('ms-perf-answered', (d.answered || 0).toLocaleString());
+      setTxt('ms-perf-wallet',   (d.balanceCents || 0).toLocaleString());
+      // Streak from per-user journey (same source the practice page uses)
+      try {
+        const j = JSON.parse(localStorage.getItem('staar.journey.' + u.username) || '{}');
+        setTxt('ms-perf-streak', parseInt(j.streak, 10) || 0);
+      } catch (_) {}
+    }
+
+    // ----- Recent + Mastery (need a grade-scoped Stats object) -----
+    // The kid's "last practiced grade" — same pattern home (§66) uses.
+    // Fall back to their account grade if no last-practiced is recorded.
+    const lastSlug = (() => {
+      try { return localStorage.getItem('staar.lastPracticedGrade.' + u.username) || u.username && (u.grade || null); }
+      catch (_) { return u.grade || null; }
+    })();
+    const gradeSlug = lastSlug || u.grade;
+    if (!gradeSlug) return;
+
+    // Pull the Stats object. Practice.js writes it under the same key
+    // STAARAuth.statsKey returns. Direct read here matches that format.
+    let stats = null;
+    try {
+      const statsKey = (window.STAARAuth && window.STAARAuth.statsKey)
+        ? window.STAARAuth.statsKey(gradeSlug)
+        : ('staar.stats.' + u.username + '.' + gradeSlug);
+      const raw = localStorage.getItem(statsKey);
+      if (raw) stats = JSON.parse(raw);
+    } catch (_) {}
+
+    // Recent dots: only show if there's any answer history
+    if (stats && Array.isArray(stats.recent) && stats.recent.length > 0) {
+      const recent = root.querySelector('.ms-perf-recent');
+      const dotsEl = document.getElementById('ms-perf-dots');
+      if (recent && dotsEl) {
+        recent.hidden = false;
+        const cells = [];
+        for (let n = 0; n < 20; n++) {
+          const v = stats.recent[n];
+          const cls = v === 1 ? 'dot correct' : v === 0 ? 'dot incorrect' : 'dot empty';
+          cells.push('<span class="' + cls + '"></span>');
+        }
+        dotsEl.innerHTML = cells.join('');
+      }
+    }
+
+    // Mastery bars: render only for units the kid has actually touched
+    if (stats && stats.units && Object.keys(stats.units).length > 0) {
+      const mastery = root.querySelector('.ms-perf-mastery');
+      const unitsEl = document.getElementById('ms-perf-units');
+      const subEl   = document.getElementById('ms-perf-mastery-sub');
+      if (mastery && unitsEl) {
+        mastery.hidden = false;
+        if (subEl) {
+          const gName = ({
+            'grade-k':'Kindergarten','grade-1':'Grade 1','grade-2':'Grade 2','grade-3':'Grade 3',
+            'grade-4':'Grade 4','grade-5':'Grade 5','grade-6':'Grade 6','grade-7':'Grade 7',
+            'grade-8':'Grade 8','algebra-1':'Algebra 1'
+          })[gradeSlug] || gradeSlug;
+          subEl.textContent = '· ' + gName;
+        }
+        const rows = Object.values(stats.units)
+          .filter(unit => unit && unit.total > 0)
+          .sort((a, b) => b.total - a.total)
+          .map(unit => {
+            const pct = Math.round((unit.correct / unit.total) * 100);
+            const color = pct >= 80 ? 'good' : pct >= 60 ? 'mid' : 'low';
+            return '<div class="ms-perf-unit ms-perf-unit--' + color + '">' +
+              '<div class="ms-perf-unit-title">' + escHtml(unit.title || 'Unit') + '</div>' +
+              '<div class="ms-perf-unit-bar"><div class="ms-perf-unit-fill" style="width:' + pct + '%"></div></div>' +
+              '<div class="ms-perf-unit-pct">' + pct + '%</div>' +
+            '</div>';
+          }).join('');
+        unitsEl.innerHTML = rows;
+      }
+    }
   }
 
   function renderQuickWin() {

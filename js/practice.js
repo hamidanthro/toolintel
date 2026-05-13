@@ -1036,6 +1036,20 @@
               <span class="practice-eyebrow-title">${titleBits.join(' · ')}</span>
               <span class="practice-eyebrow-sep">·</span>
               <span class="practice-eyebrow-progress" aria-label="Question progress"><span id="progress-num">1</span>/${questions.length}</span>
+              <!-- §74 (May 13) — live session score on the practice
+                   eyebrow. The §71 strip removed the sidebar (with its
+                   accuracy ring + stat cards) and the kid lost ALL
+                   visibility of how they were doing mid-session.
+                   These two micro-pills (correct count + pts earned)
+                   live INLINE on the eyebrow — no card chrome
+                   re-added, no sidebar back, just two numbers the
+                   kid can glance at. Updated by updateLiveScore()
+                   on every answer. Both default to 0; hidden until
+                   first answer lands. -->
+              <span class="practice-eyebrow-sep practice-eyebrow-livesep" hidden>·</span>
+              <span class="practice-eyebrow-live" id="practice-live-correct" hidden aria-label="Correct this session"><span id="practice-live-correct-num">0</span> correct</span>
+              <span class="practice-eyebrow-sep practice-eyebrow-livesep" hidden>·</span>
+              <span class="practice-eyebrow-live practice-eyebrow-live--pts" id="practice-live-pts" hidden aria-label="Points earned this session"><span id="practice-live-pts-num">0</span> pts</span>
               <span id="restart-wrap" class="practice-eyebrow-restart">
                 <button type="button" class="btn-restart" id="restart-btn" title="Start this practice over">
                   <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
@@ -1664,6 +1678,26 @@
         try { if (typeof window._refreshSessionPts === 'function') window._refreshSessionPts(); } catch (_) {}
         try { renderGuestBanner(); } catch (_) {}
       }
+      // §74 — live session score on the practice eyebrow. The §71
+      // strip pulled out the perf-panel sidebar; the kid lost ALL
+      // mid-session feedback on how they were doing. This two-pill
+      // inline strip fills the gap: "N correct" + "M pts" appear
+      // on the eyebrow row as soon as the first answer lands.
+      // Updates on every answer (correct + wrong both bump
+      // "answered" implicitly via stats.total). `correct` is the
+      // closure variable runQuiz already maintains.
+      try {
+        const liveCorrect    = document.getElementById('practice-live-correct');
+        const liveCorrectNum = document.getElementById('practice-live-correct-num');
+        const livePts        = document.getElementById('practice-live-pts');
+        const livePtsNum     = document.getElementById('practice-live-pts-num');
+        const liveSeps       = document.querySelectorAll('.practice-eyebrow-livesep');
+        if (liveCorrectNum) liveCorrectNum.textContent = correct;
+        if (livePtsNum)     livePtsNum.textContent = (window._sessionPoints || 0);
+        if (liveCorrect)    liveCorrect.hidden = false;
+        if (livePts)        livePts.hidden = false;
+        liveSeps.forEach(s => { s.hidden = false; });
+      } catch (_) {}
       const nextLabel = i + 1 >= questions.length ? 'See results' : 'Next question →';
 
       // 1. Flip card data-state — drives green/red border + input-lock CSS.

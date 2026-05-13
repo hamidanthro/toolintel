@@ -28309,3 +28309,203 @@ body.practice-page .practice-breadcrumb {
 body.practice-page .q-inline-fb .ff-card {
   display: none !important;
 }
+
+/* ==========================================================================
+   §73 MySpace performance section — relocated from practice sidebar
+   (May 13). The accuracy ring + 4 stats + LAST 20 dots + per-unit
+   mastery bars that §71 stripped off the practice screen now live
+   here on MySpace home. Three sub-blocks, each self-hides until JS
+   confirms data: Overview / Recent / Mastery.
+   ========================================================================== */
+
+body.myspace-page .ms-performance {
+  margin: 24px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+body.myspace-page .ms-performance[hidden] { display: none; }
+body.myspace-page .ms-perf-block {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 18px 18px;
+}
+body.myspace-page .ms-perf-block[hidden] { display: none; }
+body.myspace-page .ms-perf-section-title {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  font-weight: 500;
+  margin-bottom: 14px;
+}
+body.myspace-page .ms-perf-section-sub {
+  color: rgba(255, 255, 255, 0.35);
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+  margin-left: 4px;
+}
+
+/* ---- Overview: ring + 4-stat grid -------------------------------- */
+body.myspace-page .ms-perf-grid {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 18px;
+  align-items: center;
+}
+@media (max-width: 640px) {
+  body.myspace-page .ms-perf-grid {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+}
+body.myspace-page .ms-perf-ring-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+body.myspace-page .ms-perf-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+body.myspace-page .ms-perf-stat {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+body.myspace-page .ms-perf-stat-num {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 22px;
+  font-weight: 400;
+  color: #ffffff;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+body.myspace-page .ms-perf-stat--wallet .ms-perf-stat-num { color: #fbbf24; }
+body.myspace-page .ms-perf-stat-label {
+  margin-top: 6px;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* ---- Recent: 20 dots in a row ----------------------------------- */
+body.myspace-page .ms-perf-dots {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+body.myspace-page .ms-perf-dots .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+}
+body.myspace-page .ms-perf-dots .dot.correct {
+  background: #34d399;
+  box-shadow: 0 0 6px rgba(52, 211, 153, 0.4);
+}
+body.myspace-page .ms-perf-dots .dot.incorrect {
+  background: #ef4444;
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.35);
+}
+body.myspace-page .ms-perf-dots .dot.empty {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* ---- Mastery: unit rows with progress bars ---------------------- */
+body.myspace-page .ms-perf-units {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+body.myspace-page .ms-perf-unit {
+  display: grid;
+  grid-template-columns: 1fr 120px auto;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 0;
+}
+body.myspace-page .ms-perf-unit-title {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.82);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+body.myspace-page .ms-perf-unit-bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  overflow: hidden;
+}
+body.myspace-page .ms-perf-unit-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.4);
+  transition: width 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+body.myspace-page .ms-perf-unit--good .ms-perf-unit-fill {
+  background: linear-gradient(90deg, #34d399, #10b981);
+}
+body.myspace-page .ms-perf-unit--mid .ms-perf-unit-fill {
+  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+}
+body.myspace-page .ms-perf-unit--low .ms-perf-unit-fill {
+  background: linear-gradient(90deg, #f87171, #ef4444);
+}
+body.myspace-page .ms-perf-unit-pct {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  body.myspace-page .ms-perf-unit {
+    grid-template-columns: 1fr 80px auto;
+    gap: 8px;
+  }
+}
+
+/* ==========================================================================
+   §74 Live session score on practice eyebrow (May 13). User feedback
+   after §71: "when a user is answering questions he cannot see his
+   score progress anymore on page." Two micro-pills appear inline on
+   the eyebrow as soon as the first answer lands: "N correct" + "M pts".
+   No card chrome, no sidebar re-introduced — just two numbers on the
+   line that already says "1/25".
+   ========================================================================== */
+
+body.practice-page .practice-eyebrow-live {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: lowercase;
+  font-weight: 500;
+}
+body.practice-page .practice-eyebrow-live span {
+  color: #ffffff;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  margin-right: 2px;
+}
+body.practice-page .practice-eyebrow-live--pts {
+  color: rgba(252, 211, 77, 0.85);
+}
+body.practice-page .practice-eyebrow-live--pts span {
+  color: #fbbf24;
+}
+body.practice-page .practice-eyebrow-livesep[hidden] { display: none !important; }
+/* Phone: keep the live pills on the same row but tighten kerning */
+@media (max-width: 480px) {
+  body.practice-page .practice-eyebrow-live { font-size: 11px; }
+}

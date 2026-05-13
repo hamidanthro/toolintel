@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/styles.css?v=20260513l">
+  <link rel="stylesheet" href="/css/styles.css?v=20260513m">
 
   <script>window.STAARAuth = window.STAARAuth || {}; window.STAARAuth.requireLoginOnLoad = true;</script>
 </head>
@@ -179,6 +179,44 @@
         <p class="ms-briefing-body" id="ms-briefing-body">Quiet week so far — add a journal entry or some homework and I'll start tracking.</p>
       </div>
 
+      <!-- §73 Practice performance — accuracy ring + 4 stats + LAST 20
+           + per-unit mastery bars. Relocated from the practice sidebar
+           (§71 strip the practice page to 7 elements). Three sections,
+           each hidden until JS confirms data. -->
+      <section class="ms-performance" id="ms-performance" hidden>
+
+        <!-- Overview: accuracy ring + 4-stat grid -->
+        <div class="ms-perf-block ms-perf-overview" hidden>
+          <div class="ms-perf-section-title">Your performance</div>
+          <div class="ms-perf-grid">
+            <div class="ms-perf-ring-wrap">
+              <svg class="ms-perf-ring" id="ms-perf-ring" viewBox="0 0 160 160" width="160" height="160" aria-hidden="true"></svg>
+            </div>
+            <div class="ms-perf-stats">
+              <div class="ms-perf-stat"><div class="ms-perf-stat-num" id="ms-perf-correct">0</div><div class="ms-perf-stat-label">Correct</div></div>
+              <div class="ms-perf-stat"><div class="ms-perf-stat-num" id="ms-perf-answered">0</div><div class="ms-perf-stat-label">Answered</div></div>
+              <div class="ms-perf-stat"><div class="ms-perf-stat-num" id="ms-perf-streak">0</div><div class="ms-perf-stat-label">Streak</div></div>
+              <div class="ms-perf-stat ms-perf-stat--wallet"><div class="ms-perf-stat-num" id="ms-perf-wallet">0</div><div class="ms-perf-stat-label">Wallet pts</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent: last 20 answer dots -->
+        <div class="ms-perf-block ms-perf-recent" hidden>
+          <div class="ms-perf-section-title">Last 20 answers</div>
+          <div class="ms-perf-dots" id="ms-perf-dots"></div>
+        </div>
+
+        <!-- Mastery: per-unit progress bars (scoped to kid's last-
+             practiced grade so the bars are meaningful — lifetime
+             rollup would smear weak grades into strong) -->
+        <div class="ms-perf-block ms-perf-mastery" hidden>
+          <div class="ms-perf-section-title"><span>Mastery</span> <span class="ms-perf-section-sub" id="ms-perf-mastery-sub"></span></div>
+          <div class="ms-perf-units" id="ms-perf-units"></div>
+        </div>
+
+      </section>
+
       <!-- AI Buddy card — §41 chat surface: empty state ↔ active state -->
       <section class="ms-card">
 
@@ -317,6 +355,6 @@
 </div>
 
 <script src="/js/auth.js?v=20260513b"></script>
-<script src="/js/myspace.js?v=20260513a"></script>
+<script src="/js/myspace.js?v=20260513b"></script>
 </body>
 </html>
