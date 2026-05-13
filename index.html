@@ -122,7 +122,7 @@
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" />
 
-  <link rel="stylesheet" href="css/styles.css?v=20260513f" />
+  <link rel="stylesheet" href="css/styles.css?v=20260513g" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -1019,6 +1019,31 @@
       { slug: 'algebra-1', label: 'A1' }
     ];
 
+    // §66 — effective practice grade: last-tapped pill (persisted)
+    // takes precedence over the kid's account grade. The account
+    // grade is parent-locked at the lambda layer (handleSetGrade
+    // returns 409 once set); the pill row is a navigation shortcut,
+    // not an account-level setter. Read/write helpers:
+    function lastPracticedGradeKey(u) {
+      return u && u.username ? `staar.lastPracticedGrade.${u.username}` : null;
+    }
+    function getEffectiveGrade(u) {
+      try {
+        const k = lastPracticedGradeKey(u);
+        if (k) {
+          const last = localStorage.getItem(k);
+          if (last) return last;
+        }
+      } catch (_) {}
+      return (u && u.grade) || 'grade-3';
+    }
+    function setEffectiveGrade(u, slug) {
+      try {
+        const k = lastPracticedGradeKey(u);
+        if (k) localStorage.setItem(k, slug);
+      } catch (_) {}
+    }
+
     function populateHomeV2(u, d, lv) {
       // Tiny greeting — replaces the big "Welcome back" hero
       const greetEl = document.getElementById('dash-greeting');
@@ -1032,7 +1057,10 @@
       // Continue card — the one primary CTA.
       const subj = readSubject(); // math | reading
       const subjectLabel = subj === 'reading' ? 'Reading' : 'Math';
-      const gradeSlug = u.grade || 'grade-3';
+      // §66 — Continue card reflects what the kid is actually
+      // practicing (last-tapped pill), not their parent-locked
+      // account grade. Falls back to account grade for first visit.
+      const gradeSlug = getEffectiveGrade(u);
       const gradeName = GRADE_DISPLAY[gradeSlug] || 'Grade';
       const gradeEl = document.getElementById('home-continue-grade');
       const lvlEl   = document.getElementById('home-continue-level');
@@ -1105,6 +1133,16 @@
       }
     }
 
+    // §66 — pill row is a NAVIGATION shortcut, not an account-level
+    // setter. The lambda parent-locks `setGrade` once a grade is on
+    // file (returns 409 "Grade is already set. Ask an adult to
+    // change it."), so calling it from the pill row was guaranteed
+    // to fail every time after the first.
+    //
+    // Behavior now: tapping a pill (a) persists it as the kid's
+    // effective practice grade in localStorage, and (b) navigates
+    // straight into practice for that grade. The kid's account
+    // grade `u.grade` stays parent-locked.
     function renderGradePills(activeSlug) {
       const wrap = document.getElementById('home-grade-pills');
       if (!wrap) return;
@@ -1113,18 +1151,27 @@
         return `<button type="button" class="home-grade-pill${active ? ' home-grade-pill--active' : ''}" data-grade="${g.slug}" role="radio" aria-checked="${active}">${g.label}</button>`;
       }).join('');
       wrap.querySelectorAll('.home-grade-pill').forEach(b => {
-        b.addEventListener('click', async () => {
+        b.addEventListener('click', () => {
           const slug = b.dataset.grade;
-          if (!slug || slug === activeSlug) return;
+          if (!slug) return;
           try {
-            await window.STAARAuth.setGrade(slug);
-            // Re-render the home with the new grade. showDashboard
-            // refetches the dashboard payload + repaints everything.
-            showDashboard();
-          } catch (_) {
-            // setGrade failed (offline/server) — fall back to a
-            // toast and revert the pill
-            try { window.STAARAuth.showToast && window.STAARAuth.showToast('Could not switch grade. Try again.'); } catch (_) {}
+            const u = window.STAARAuth?.currentUser?.();
+            if (u) setEffectiveGrade(u, slug);
+            const subj = readSubject();
+            const stateSlug = (u && u.state) || (() => {
+              try { return localStorage.getItem('gradeearn.state'); }
+              catch (_) { return null; }
+            })() || 'texas';
+            const targetPage = subj === 'math' ? 'subject.html' : 'practice.html';
+            const qs = `?s=${encodeURIComponent(stateSlug)}&g=${encodeURIComponent(slug)}&subj=${subj}`;
+            location.href = targetPage + qs;
+          } catch (err) {
+            // Defensive — should never fire on a same-origin nav,
+            // but if it does, surface the actual reason instead
+            // of a generic "try again" toast.
+            const msg = (err && err.message) || 'Could not open that grade.';
+            try { window.STAARAuth.showToast && window.STAARAuth.showToast(msg); } catch (_) {}
+            console.warn('[grade-pill] navigation failed:', err);
           }
         });
       });
