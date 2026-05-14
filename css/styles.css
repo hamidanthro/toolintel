@@ -17445,16 +17445,30 @@ body[data-subject="reading"] .performance-panel {
 /* Reclaim the 280px right-rail column when reading */
 body[data-subject="reading"] .practice-layout {
   grid-template-columns: minmax(0, 1fr);
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
+}
+
+/* §82 hotfix #2 — let the reading surface breathe wider than the
+   default 1100px `.container --max`. The whole page sat in ~590px on
+   1500px+ desktop with two ~280px columns reading words one-per-line.
+   Override the parent .container constraints on reading mode so #qbox
+   has room to actually use 1400px. */
+body[data-subject="reading"] section > .container {
+  max-width: 1400px;
+  padding: 0 24px;
 }
 
 /* ----- Two-column desktop (≥768px): passage LEFT, question RIGHT ----- */
 @media (min-width: 768px) {
   body[data-subject="reading"] #qbox {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 24px;
+    /* §82 hotfix #2 — passage gets 3fr, question gets 2fr. The passage
+       is the content the kid actually has to read; the question is 4
+       short choices + a Check button. Reweighting gives the passage
+       ~60% of the row width = wider paragraphs, fewer line wraps. */
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    gap: 32px;
     align-items: start;
   }
   body[data-subject="reading"] #qbox .reading-passage-card {
