@@ -8107,7 +8107,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "12 = ___ tens and ___ ones. How many ones?",
+              "prompt": "12 = 1 ten and ___ ones. How many ones?",
               "answer": "2",
               "explanation": "12 = 1 ten + 2 ones, so the ones digit is 2.",
               "acceptable": [
@@ -8158,7 +8158,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "72 = ___ tens and ___ ones. How many ones?",
+              "prompt": "72 = 7 tens and ___ ones. How many ones?",
               "answer": "2",
               "explanation": "72 = 7 tens + 2 ones, so the ones digit is 2.",
               "acceptable": [
@@ -8192,7 +8192,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "12 = ___ tens and ___ ones. How many tens?",
+              "prompt": "12 = ___ tens and 2 ones. How many tens?",
               "answer": "1",
               "explanation": "12 = 1 ten + 2 ones, so the tens digit is 1.",
               "acceptable": [
@@ -8243,7 +8243,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "32 = ___ tens and ___ ones. How many ones?",
+              "prompt": "32 = 3 tens and ___ ones. How many ones?",
               "answer": "2",
               "explanation": "32 = 3 tens + 2 ones, so the ones digit is 2.",
               "acceptable": [
@@ -8260,7 +8260,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "79 = ___ tens and ___ ones. How many ones?",
+              "prompt": "79 = 7 tens and ___ ones. How many ones?",
               "answer": "9",
               "explanation": "79 = 7 tens + 9 ones, so the ones digit is 9.",
               "acceptable": [
@@ -8277,7 +8277,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "65 = ___ tens and ___ ones. How many ones?",
+              "prompt": "65 = 6 tens and ___ ones. How many ones?",
               "answer": "5",
               "explanation": "65 = 6 tens + 5 ones, so the ones digit is 5.",
               "acceptable": [
@@ -8328,7 +8328,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "89 = ___ tens and ___ ones. How many tens?",
+              "prompt": "89 = ___ tens and 9 ones. How many tens?",
               "answer": "8",
               "explanation": "89 = 8 tens + 9 ones, so the tens digit is 8.",
               "acceptable": [
@@ -8379,7 +8379,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "41 = ___ tens and ___ ones. How many ones?",
+              "prompt": "41 = 4 tens and ___ ones. How many ones?",
               "answer": "1",
               "explanation": "41 = 4 tens + 1 one, so the ones digit is 1.",
               "acceptable": [
@@ -8464,7 +8464,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "78 = ___ tens and ___ ones. How many ones?",
+              "prompt": "78 = 7 tens and ___ ones. How many ones?",
               "answer": "8",
               "explanation": "78 = 7 tens + 8 ones, so the ones digit is 8.",
               "acceptable": [
@@ -8481,7 +8481,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "35 = ___ tens and ___ ones. How many ones?",
+              "prompt": "35 = 3 tens and ___ ones. How many ones?",
               "answer": "5",
               "explanation": "35 = 3 tens + 5 ones, so the ones digit is 5.",
               "acceptable": [
@@ -8515,7 +8515,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "80 = ___ tens and ___ ones. How many tens?",
+              "prompt": "80 = ___ tens and 0 ones. How many tens?",
               "answer": "8",
               "explanation": "80 = 8 tens + 0 ones, so the tens digit is 8.",
               "acceptable": [
@@ -8549,7 +8549,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "67 = ___ tens and ___ ones. How many ones?",
+              "prompt": "67 = 6 tens and ___ ones. How many ones?",
               "answer": "7",
               "explanation": "67 = 6 tens + 7 ones, so the ones digit is 7.",
               "acceptable": [
@@ -8600,7 +8600,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "73 = ___ tens and ___ ones. How many ones?",
+              "prompt": "73 = 7 tens and ___ ones. How many ones?",
               "answer": "3",
               "explanation": "73 = 7 tens + 3 ones, so the ones digit is 3.",
               "acceptable": [
@@ -8617,7 +8617,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "35 = ___ tens and ___ ones. How many tens?",
+              "prompt": "35 = ___ tens and 5 ones. How many tens?",
               "answer": "3",
               "explanation": "35 = 3 tens + 5 ones, so the tens digit is 3.",
               "acceptable": [
@@ -8668,7 +8668,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "79 = ___ tens and ___ ones. How many tens?",
+              "prompt": "79 = ___ tens and 9 ones. How many tens?",
               "answer": "7",
               "explanation": "79 = 7 tens + 9 ones, so the tens digit is 7.",
               "acceptable": [
@@ -8702,7 +8702,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "66 = ___ tens and ___ ones. How many tens?",
+              "prompt": "66 = ___ tens and 6 ones. How many tens?",
               "answer": "6",
               "explanation": "66 = 6 tens + 6 ones, so the tens digit is 6.",
               "acceptable": [
@@ -8719,7 +8719,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "56 = ___ tens and ___ ones. How many tens?",
+              "prompt": "56 = ___ tens and 6 ones. How many tens?",
               "answer": "5",
               "explanation": "56 = 5 tens + 6 ones, so the tens digit is 5.",
               "acceptable": [
@@ -8736,7 +8736,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "16 = ___ tens and ___ ones. How many ones?",
+              "prompt": "16 = 1 ten and ___ ones. How many ones?",
               "answer": "6",
               "explanation": "16 = 1 ten + 6 ones, so the ones digit is 6.",
               "acceptable": [
@@ -8770,7 +8770,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "26 = ___ tens and ___ ones. How many tens?",
+              "prompt": "26 = ___ tens and 6 ones. How many tens?",
               "answer": "2",
               "explanation": "26 = 2 tens + 6 ones, so the tens digit is 2.",
               "acceptable": [
@@ -8804,7 +8804,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "56 = ___ tens and ___ ones. How many ones?",
+              "prompt": "56 = 5 tens and ___ ones. How many ones?",
               "answer": "6",
               "explanation": "56 = 5 tens + 6 ones, so the ones digit is 6.",
               "acceptable": [
@@ -8821,7 +8821,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "32 = ___ tens and ___ ones. How many tens?",
+              "prompt": "32 = ___ tens and 2 ones. How many tens?",
               "answer": "3",
               "explanation": "32 = 3 tens + 2 ones, so the tens digit is 3.",
               "acceptable": [
@@ -8855,7 +8855,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "80 = ___ tens and ___ ones. How many ones?",
+              "prompt": "80 = 8 tens and ___ ones. How many ones?",
               "answer": "0",
               "explanation": "80 = 8 tens + 0 ones, so the ones digit is 0.",
               "acceptable": [
@@ -8889,7 +8889,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "39 = ___ tens and ___ ones. How many tens?",
+              "prompt": "39 = ___ tens and 9 ones. How many tens?",
               "answer": "3",
               "explanation": "39 = 3 tens + 9 ones, so the tens digit is 3.",
               "acceptable": [
@@ -8923,7 +8923,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "73 = ___ tens and ___ ones. How many tens?",
+              "prompt": "73 = ___ tens and 3 ones. How many tens?",
               "answer": "7",
               "explanation": "73 = 7 tens + 3 ones, so the tens digit is 7.",
               "acceptable": [
@@ -8991,7 +8991,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "24 = ___ tens and ___ ones. How many ones?",
+              "prompt": "24 = 2 tens and ___ ones. How many ones?",
               "answer": "4",
               "explanation": "24 = 2 tens + 4 ones, so the ones digit is 4.",
               "acceptable": [
@@ -9008,7 +9008,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "42 = ___ tens and ___ ones. How many tens?",
+              "prompt": "42 = ___ tens and 2 ones. How many tens?",
               "answer": "4",
               "explanation": "42 = 4 tens + 2 ones, so the tens digit is 4.",
               "acceptable": [
@@ -9025,7 +9025,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "23 = ___ tens and ___ ones. How many tens?",
+              "prompt": "23 = ___ tens and 3 ones. How many tens?",
               "answer": "2",
               "explanation": "23 = 2 tens + 3 ones, so the tens digit is 2.",
               "acceptable": [
@@ -9110,7 +9110,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "14 = ___ tens and ___ ones. How many tens?",
+              "prompt": "14 = ___ tens and 4 ones. How many tens?",
               "answer": "1",
               "explanation": "14 = 1 ten + 4 ones, so the tens digit is 1.",
               "acceptable": [
@@ -9127,7 +9127,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "78 = ___ tens and ___ ones. How many tens?",
+              "prompt": "78 = ___ tens and 8 ones. How many tens?",
               "answer": "7",
               "explanation": "78 = 7 tens + 8 ones, so the tens digit is 7.",
               "acceptable": [
@@ -9144,7 +9144,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "91 = ___ tens and ___ ones. How many tens?",
+              "prompt": "91 = ___ tens and 1 one. How many tens?",
               "answer": "9",
               "explanation": "91 = 9 tens + 1 one, so the tens digit is 9.",
               "acceptable": [
@@ -9178,7 +9178,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "86 = ___ tens and ___ ones. How many tens?",
+              "prompt": "86 = ___ tens and 6 ones. How many tens?",
               "answer": "8",
               "explanation": "86 = 8 tens + 6 ones, so the tens digit is 8.",
               "acceptable": [
@@ -9195,7 +9195,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "90 = ___ tens and ___ ones. How many ones?",
+              "prompt": "90 = 9 tens and ___ ones. How many ones?",
               "answer": "0",
               "explanation": "90 = 9 tens + 0 ones, so the ones digit is 0.",
               "acceptable": [
@@ -9280,7 +9280,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "15 = ___ tens and ___ ones. How many tens?",
+              "prompt": "15 = ___ tens and 5 ones. How many tens?",
               "answer": "1",
               "explanation": "15 = 1 ten + 5 ones, so the tens digit is 1.",
               "acceptable": [
@@ -9348,7 +9348,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "19 = ___ tens and ___ ones. How many ones?",
+              "prompt": "19 = 1 ten and ___ ones. How many ones?",
               "answer": "9",
               "explanation": "19 = 1 ten + 9 ones, so the ones digit is 9.",
               "acceptable": [
@@ -9365,7 +9365,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "44 = ___ tens and ___ ones. How many tens?",
+              "prompt": "44 = ___ tens and 4 ones. How many tens?",
               "answer": "4",
               "explanation": "44 = 4 tens + 4 ones, so the tens digit is 4.",
               "acceptable": [
@@ -9399,7 +9399,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "21 = ___ tens and ___ ones. How many tens?",
+              "prompt": "21 = ___ tens and 1 one. How many tens?",
               "answer": "2",
               "explanation": "21 = 2 tens + 1 one, so the tens digit is 2.",
               "acceptable": [
@@ -9433,7 +9433,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "64 = ___ tens and ___ ones. How many ones?",
+              "prompt": "64 = 6 tens and ___ ones. How many ones?",
               "answer": "4",
               "explanation": "64 = 6 tens + 4 ones, so the ones digit is 4.",
               "acceptable": [
@@ -9484,7 +9484,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "87 = ___ tens and ___ ones. How many tens?",
+              "prompt": "87 = ___ tens and 7 ones. How many tens?",
               "answer": "8",
               "explanation": "87 = 8 tens + 7 ones, so the tens digit is 8.",
               "acceptable": [
@@ -9501,7 +9501,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "77 = ___ tens and ___ ones. How many ones?",
+              "prompt": "77 = 7 tens and ___ ones. How many ones?",
               "answer": "7",
               "explanation": "77 = 7 tens + 7 ones, so the ones digit is 7.",
               "acceptable": [
@@ -9586,7 +9586,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "45 = ___ tens and ___ ones. How many ones?",
+              "prompt": "45 = 4 tens and ___ ones. How many ones?",
               "answer": "5",
               "explanation": "45 = 4 tens + 5 ones, so the ones digit is 5.",
               "acceptable": [
@@ -9620,7 +9620,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "38 = ___ tens and ___ ones. How many ones?",
+              "prompt": "38 = 3 tens and ___ ones. How many ones?",
               "answer": "8",
               "explanation": "38 = 3 tens + 8 ones, so the ones digit is 8.",
               "acceptable": [
@@ -9688,7 +9688,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "27 = ___ tens and ___ ones. How many tens?",
+              "prompt": "27 = ___ tens and 7 ones. How many tens?",
               "answer": "2",
               "explanation": "27 = 2 tens + 7 ones, so the tens digit is 2.",
               "acceptable": [
@@ -9739,7 +9739,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "51 = ___ tens and ___ ones. How many tens?",
+              "prompt": "51 = ___ tens and 1 one. How many tens?",
               "answer": "5",
               "explanation": "51 = 5 tens + 1 one, so the tens digit is 5.",
               "acceptable": [
@@ -9756,7 +9756,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "83 = ___ tens and ___ ones. How many ones?",
+              "prompt": "83 = 8 tens and ___ ones. How many ones?",
               "answer": "3",
               "explanation": "83 = 8 tens + 3 ones, so the ones digit is 3.",
               "acceptable": [
@@ -9807,7 +9807,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "71 = ___ tens and ___ ones. How many tens?",
+              "prompt": "71 = ___ tens and 1 one. How many tens?",
               "answer": "7",
               "explanation": "71 = 7 tens + 1 one, so the tens digit is 7.",
               "acceptable": [
@@ -9824,7 +9824,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "93 = ___ tens and ___ ones. How many ones?",
+              "prompt": "93 = 9 tens and ___ ones. How many ones?",
               "answer": "3",
               "explanation": "93 = 9 tens + 3 ones, so the ones digit is 3.",
               "acceptable": [
@@ -9875,7 +9875,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "96 = ___ tens and ___ ones. How many tens?",
+              "prompt": "96 = ___ tens and 6 ones. How many tens?",
               "answer": "9",
               "explanation": "96 = 9 tens + 6 ones, so the tens digit is 9.",
               "acceptable": [
@@ -9892,7 +9892,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "94 = ___ tens and ___ ones. How many tens?",
+              "prompt": "94 = ___ tens and 4 ones. How many tens?",
               "answer": "9",
               "explanation": "94 = 9 tens + 4 ones, so the tens digit is 9.",
               "acceptable": [
@@ -9960,7 +9960,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "46 = ___ tens and ___ ones. How many ones?",
+              "prompt": "46 = 4 tens and ___ ones. How many ones?",
               "answer": "6",
               "explanation": "46 = 4 tens + 6 ones, so the ones digit is 6.",
               "acceptable": [
@@ -9977,7 +9977,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "33 = ___ tens and ___ ones. How many tens?",
+              "prompt": "33 = ___ tens and 3 ones. How many tens?",
               "answer": "3",
               "explanation": "33 = 3 tens + 3 ones, so the tens digit is 3.",
               "acceptable": [
@@ -10079,7 +10079,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "49 = ___ tens and ___ ones. How many tens?",
+              "prompt": "49 = ___ tens and 9 ones. How many tens?",
               "answer": "4",
               "explanation": "49 = 4 tens + 9 ones, so the tens digit is 4.",
               "acceptable": [
@@ -10113,7 +10113,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "33 = ___ tens and ___ ones. How many ones?",
+              "prompt": "33 = 3 tens and ___ ones. How many ones?",
               "answer": "3",
               "explanation": "33 = 3 tens + 3 ones, so the ones digit is 3.",
               "acceptable": [
@@ -10164,7 +10164,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "53 = ___ tens and ___ ones. How many tens?",
+              "prompt": "53 = ___ tens and 3 ones. How many tens?",
               "answer": "5",
               "explanation": "53 = 5 tens + 3 ones, so the tens digit is 5.",
               "acceptable": [
@@ -10198,7 +10198,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "93 = ___ tens and ___ ones. How many tens?",
+              "prompt": "93 = ___ tens and 3 ones. How many tens?",
               "answer": "9",
               "explanation": "93 = 9 tens + 3 ones, so the tens digit is 9.",
               "acceptable": [
@@ -10266,7 +10266,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "70 = ___ tens and ___ ones. How many ones?",
+              "prompt": "70 = 7 tens and ___ ones. How many ones?",
               "answer": "0",
               "explanation": "70 = 7 tens + 0 ones, so the ones digit is 0.",
               "acceptable": [
@@ -10300,7 +10300,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "95 = ___ tens and ___ ones. How many tens?",
+              "prompt": "95 = ___ tens and 5 ones. How many tens?",
               "answer": "9",
               "explanation": "95 = 9 tens + 5 ones, so the tens digit is 9.",
               "acceptable": [
@@ -10317,7 +10317,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "14 = ___ tens and ___ ones. How many ones?",
+              "prompt": "14 = 1 ten and ___ ones. How many ones?",
               "answer": "4",
               "explanation": "14 = 1 ten + 4 ones, so the ones digit is 4.",
               "acceptable": [
@@ -10334,7 +10334,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "60 = ___ tens and ___ ones. How many ones?",
+              "prompt": "60 = 6 tens and ___ ones. How many ones?",
               "answer": "0",
               "explanation": "60 = 6 tens + 0 ones, so the ones digit is 0.",
               "acceptable": [
@@ -10606,7 +10606,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "40 = ___ tens and ___ ones. How many tens?",
+              "prompt": "40 = ___ tens and 0 ones. How many tens?",
               "answer": "4",
               "explanation": "40 = 4 tens + 0 ones, so the tens digit is 4.",
               "acceptable": [
@@ -10691,7 +10691,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "77 = ___ tens and ___ ones. How many tens?",
+              "prompt": "77 = ___ tens and 7 ones. How many tens?",
               "answer": "7",
               "explanation": "77 = 7 tens + 7 ones, so the tens digit is 7.",
               "acceptable": [
@@ -10725,7 +10725,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "47 = ___ tens and ___ ones. How many ones?",
+              "prompt": "47 = 4 tens and ___ ones. How many ones?",
               "answer": "7",
               "explanation": "47 = 4 tens + 7 ones, so the ones digit is 7.",
               "acceptable": [
@@ -10793,7 +10793,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "39 = ___ tens and ___ ones. How many ones?",
+              "prompt": "39 = 3 tens and ___ ones. How many ones?",
               "answer": "9",
               "explanation": "39 = 3 tens + 9 ones, so the ones digit is 9.",
               "acceptable": [
@@ -10810,7 +10810,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "89 = ___ tens and ___ ones. How many ones?",
+              "prompt": "89 = 8 tens and ___ ones. How many ones?",
               "answer": "9",
               "explanation": "89 = 8 tens + 9 ones, so the ones digit is 9.",
               "acceptable": [
@@ -10861,7 +10861,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "29 = ___ tens and ___ ones. How many tens?",
+              "prompt": "29 = ___ tens and 9 ones. How many tens?",
               "answer": "2",
               "explanation": "29 = 2 tens + 9 ones, so the tens digit is 2.",
               "acceptable": [
@@ -10929,7 +10929,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "74 = ___ tens and ___ ones. How many tens?",
+              "prompt": "74 = ___ tens and 4 ones. How many tens?",
               "answer": "7",
               "explanation": "74 = 7 tens + 4 ones, so the tens digit is 7.",
               "acceptable": [
@@ -10997,7 +10997,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "92 = ___ tens and ___ ones. How many ones?",
+              "prompt": "92 = 9 tens and ___ ones. How many ones?",
               "answer": "2",
               "explanation": "92 = 9 tens + 2 ones, so the ones digit is 2.",
               "acceptable": [
@@ -11031,7 +11031,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "99 = ___ tens and ___ ones. How many ones?",
+              "prompt": "99 = 9 tens and ___ ones. How many ones?",
               "answer": "9",
               "explanation": "99 = 9 tens + 9 ones, so the ones digit is 9.",
               "acceptable": [
@@ -11082,7 +11082,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "58 = ___ tens and ___ ones. How many ones?",
+              "prompt": "58 = 5 tens and ___ ones. How many ones?",
               "answer": "8",
               "explanation": "58 = 5 tens + 8 ones, so the ones digit is 8.",
               "acceptable": [
@@ -11116,7 +11116,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "98 = ___ tens and ___ ones. How many ones?",
+              "prompt": "98 = 9 tens and ___ ones. How many ones?",
               "answer": "8",
               "explanation": "98 = 9 tens + 8 ones, so the ones digit is 8.",
               "acceptable": [
@@ -11167,7 +11167,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "68 = ___ tens and ___ ones. How many ones?",
+              "prompt": "68 = 6 tens and ___ ones. How many ones?",
               "answer": "8",
               "explanation": "68 = 6 tens + 8 ones, so the ones digit is 8.",
               "acceptable": [
@@ -11252,7 +11252,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "11 = ___ tens and ___ ones. How many tens?",
+              "prompt": "11 = ___ tens and 1 one. How many tens?",
               "answer": "1",
               "explanation": "11 = 1 ten + 1 one, so the tens digit is 1.",
               "acceptable": [
@@ -11269,7 +11269,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "50 = ___ tens and ___ ones. How many ones?",
+              "prompt": "50 = 5 tens and ___ ones. How many ones?",
               "answer": "0",
               "explanation": "50 = 5 tens + 0 ones, so the ones digit is 0.",
               "acceptable": [
@@ -11507,7 +11507,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "81 = ___ tens and ___ ones. How many tens?",
+              "prompt": "81 = ___ tens and 1 one. How many tens?",
               "answer": "8",
               "explanation": "81 = 8 tens + 1 one, so the tens digit is 8.",
               "acceptable": [
@@ -11575,7 +11575,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "13 = ___ tens and ___ ones. How many ones?",
+              "prompt": "13 = 1 ten and ___ ones. How many ones?",
               "answer": "3",
               "explanation": "13 = 1 ten + 3 ones, so the ones digit is 3.",
               "acceptable": [
@@ -11609,7 +11609,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "90 = ___ tens and ___ ones. How many tens?",
+              "prompt": "90 = ___ tens and 0 ones. How many tens?",
               "answer": "9",
               "explanation": "90 = 9 tens + 0 ones, so the tens digit is 9.",
               "acceptable": [
@@ -11626,7 +11626,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "82 = ___ tens and ___ ones. How many ones?",
+              "prompt": "82 = 8 tens and ___ ones. How many ones?",
               "answer": "2",
               "explanation": "82 = 8 tens + 2 ones, so the ones digit is 2.",
               "acceptable": [
@@ -11694,7 +11694,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "53 = ___ tens and ___ ones. How many ones?",
+              "prompt": "53 = 5 tens and ___ ones. How many ones?",
               "answer": "3",
               "explanation": "53 = 5 tens + 3 ones, so the ones digit is 3.",
               "acceptable": [
@@ -11711,7 +11711,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "31 = ___ tens and ___ ones. How many ones?",
+              "prompt": "31 = 3 tens and ___ ones. How many ones?",
               "answer": "1",
               "explanation": "31 = 3 tens + 1 one, so the ones digit is 1.",
               "acceptable": [
@@ -11762,7 +11762,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "20 = ___ tens and ___ ones. How many tens?",
+              "prompt": "20 = ___ tens and 0 ones. How many tens?",
               "answer": "2",
               "explanation": "20 = 2 tens + 0 ones, so the tens digit is 2.",
               "acceptable": [
@@ -11796,7 +11796,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "71 = ___ tens and ___ ones. How many ones?",
+              "prompt": "71 = 7 tens and ___ ones. How many ones?",
               "answer": "1",
               "explanation": "71 = 7 tens + 1 one, so the ones digit is 1.",
               "acceptable": [
@@ -11813,7 +11813,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "31 = ___ tens and ___ ones. How many tens?",
+              "prompt": "31 = ___ tens and 1 one. How many tens?",
               "answer": "3",
               "explanation": "31 = 3 tens + 1 one, so the tens digit is 3.",
               "acceptable": [
@@ -11881,7 +11881,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "26 = ___ tens and ___ ones. How many ones?",
+              "prompt": "26 = 2 tens and ___ ones. How many ones?",
               "answer": "6",
               "explanation": "26 = 2 tens + 6 ones, so the ones digit is 6.",
               "acceptable": [
@@ -11966,7 +11966,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "91 = ___ tens and ___ ones. How many ones?",
+              "prompt": "91 = 9 tens and ___ ones. How many ones?",
               "answer": "1",
               "explanation": "91 = 9 tens + 1 one, so the ones digit is 1.",
               "acceptable": [
@@ -12017,7 +12017,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "83 = ___ tens and ___ ones. How many tens?",
+              "prompt": "83 = ___ tens and 3 ones. How many tens?",
               "answer": "8",
               "explanation": "83 = 8 tens + 3 ones, so the tens digit is 8.",
               "acceptable": [
@@ -12153,7 +12153,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "37 = ___ tens and ___ ones. How many ones?",
+              "prompt": "37 = 3 tens and ___ ones. How many ones?",
               "answer": "7",
               "explanation": "37 = 3 tens + 7 ones, so the ones digit is 7.",
               "acceptable": [
@@ -12170,7 +12170,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "11 = ___ tens and ___ ones. How many ones?",
+              "prompt": "11 = 1 ten and ___ ones. How many ones?",
               "answer": "1",
               "explanation": "11 = 1 ten + 1 one, so the ones digit is 1.",
               "acceptable": [
@@ -12289,7 +12289,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "40 = ___ tens and ___ ones. How many ones?",
+              "prompt": "40 = 4 tens and ___ ones. How many ones?",
               "answer": "0",
               "explanation": "40 = 4 tens + 0 ones, so the ones digit is 0.",
               "acceptable": [
@@ -12374,7 +12374,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "95 = ___ tens and ___ ones. How many ones?",
+              "prompt": "95 = 9 tens and ___ ones. How many ones?",
               "answer": "5",
               "explanation": "95 = 9 tens + 5 ones, so the ones digit is 5.",
               "acceptable": [
@@ -12493,7 +12493,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "19 = ___ tens and ___ ones. How many tens?",
+              "prompt": "19 = ___ tens and 9 ones. How many tens?",
               "answer": "1",
               "explanation": "19 = 1 ten + 9 ones, so the tens digit is 1.",
               "acceptable": [
@@ -12510,7 +12510,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "43 = ___ tens and ___ ones. How many ones?",
+              "prompt": "43 = 4 tens and ___ ones. How many ones?",
               "answer": "3",
               "explanation": "43 = 4 tens + 3 ones, so the ones digit is 3.",
               "acceptable": [
@@ -12561,7 +12561,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "87 = ___ tens and ___ ones. How many ones?",
+              "prompt": "87 = 8 tens and ___ ones. How many ones?",
               "answer": "7",
               "explanation": "87 = 8 tens + 7 ones, so the ones digit is 7.",
               "acceptable": [
@@ -12612,7 +12612,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "81 = ___ tens and ___ ones. How many ones?",
+              "prompt": "81 = 8 tens and ___ ones. How many ones?",
               "answer": "1",
               "explanation": "81 = 8 tens + 1 one, so the ones digit is 1.",
               "acceptable": [
@@ -12663,7 +12663,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "17 = ___ tens and ___ ones. How many tens?",
+              "prompt": "17 = ___ tens and 7 ones. How many tens?",
               "answer": "1",
               "explanation": "17 = 1 ten + 7 ones, so the tens digit is 1.",
               "acceptable": [
@@ -12697,7 +12697,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "30 = ___ tens and ___ ones. How many ones?",
+              "prompt": "30 = 3 tens and ___ ones. How many ones?",
               "answer": "0",
               "explanation": "30 = 3 tens + 0 ones, so the ones digit is 0.",
               "acceptable": [
@@ -12765,7 +12765,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "49 = ___ tens and ___ ones. How many ones?",
+              "prompt": "49 = 4 tens and ___ ones. How many ones?",
               "answer": "9",
               "explanation": "49 = 4 tens + 9 ones, so the ones digit is 9.",
               "acceptable": [
@@ -12867,7 +12867,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "64 = ___ tens and ___ ones. How many tens?",
+              "prompt": "64 = ___ tens and 4 ones. How many tens?",
               "answer": "6",
               "explanation": "64 = 6 tens + 4 ones, so the tens digit is 6.",
               "acceptable": [
@@ -12884,7 +12884,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "75 = ___ tens and ___ ones. How many tens?",
+              "prompt": "75 = ___ tens and 5 ones. How many tens?",
               "answer": "7",
               "explanation": "75 = 7 tens + 5 ones, so the tens digit is 7.",
               "acceptable": [
@@ -12935,7 +12935,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "88 = ___ tens and ___ ones. How many ones?",
+              "prompt": "88 = 8 tens and ___ ones. How many ones?",
               "answer": "8",
               "explanation": "88 = 8 tens + 8 ones, so the ones digit is 8.",
               "acceptable": [
@@ -12986,7 +12986,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "82 = ___ tens and ___ ones. How many tens?",
+              "prompt": "82 = ___ tens and 2 ones. How many tens?",
               "answer": "8",
               "explanation": "82 = 8 tens + 2 ones, so the tens digit is 8.",
               "acceptable": [
@@ -13071,7 +13071,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "88 = ___ tens and ___ ones. How many tens?",
+              "prompt": "88 = ___ tens and 8 ones. How many tens?",
               "answer": "8",
               "explanation": "88 = 8 tens + 8 ones, so the tens digit is 8.",
               "acceptable": [
@@ -13105,7 +13105,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "42 = ___ tens and ___ ones. How many ones?",
+              "prompt": "42 = 4 tens and ___ ones. How many ones?",
               "answer": "2",
               "explanation": "42 = 4 tens + 2 ones, so the ones digit is 2.",
               "acceptable": [
@@ -13190,7 +13190,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "43 = ___ tens and ___ ones. How many tens?",
+              "prompt": "43 = ___ tens and 3 ones. How many tens?",
               "answer": "4",
               "explanation": "43 = 4 tens + 3 ones, so the tens digit is 4.",
               "acceptable": [
@@ -13343,7 +13343,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "21 = ___ tens and ___ ones. How many ones?",
+              "prompt": "21 = 2 tens and ___ ones. How many ones?",
               "answer": "1",
               "explanation": "21 = 2 tens + 1 one, so the ones digit is 1.",
               "acceptable": [
@@ -13377,7 +13377,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "23 = ___ tens and ___ ones. How many ones?",
+              "prompt": "23 = 2 tens and ___ ones. How many ones?",
               "answer": "3",
               "explanation": "23 = 2 tens + 3 ones, so the ones digit is 3.",
               "acceptable": [
@@ -13394,7 +13394,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "20 = ___ tens and ___ ones. How many ones?",
+              "prompt": "20 = 2 tens and ___ ones. How many ones?",
               "answer": "0",
               "explanation": "20 = 2 tens + 0 ones, so the ones digit is 0.",
               "acceptable": [
@@ -13445,7 +13445,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "74 = ___ tens and ___ ones. How many ones?",
+              "prompt": "74 = 7 tens and ___ ones. How many ones?",
               "answer": "4",
               "explanation": "74 = 7 tens + 4 ones, so the ones digit is 4.",
               "acceptable": [
@@ -13496,7 +13496,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "76 = ___ tens and ___ ones. How many ones?",
+              "prompt": "76 = 7 tens and ___ ones. How many ones?",
               "answer": "6",
               "explanation": "76 = 7 tens + 6 ones, so the ones digit is 6.",
               "acceptable": [
@@ -13547,7 +13547,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "62 = ___ tens and ___ ones. How many tens?",
+              "prompt": "62 = ___ tens and 2 ones. How many tens?",
               "answer": "6",
               "explanation": "62 = 6 tens + 2 ones, so the tens digit is 6.",
               "acceptable": [
@@ -13615,7 +13615,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "58 = ___ tens and ___ ones. How many tens?",
+              "prompt": "58 = ___ tens and 8 ones. How many tens?",
               "answer": "5",
               "explanation": "58 = 5 tens + 8 ones, so the tens digit is 5.",
               "acceptable": [
@@ -13700,7 +13700,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "36 = ___ tens and ___ ones. How many ones?",
+              "prompt": "36 = 3 tens and ___ ones. How many ones?",
               "answer": "6",
               "explanation": "36 = 3 tens + 6 ones, so the ones digit is 6.",
               "acceptable": [
@@ -13768,7 +13768,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "75 = ___ tens and ___ ones. How many ones?",
+              "prompt": "75 = 7 tens and ___ ones. How many ones?",
               "answer": "5",
               "explanation": "75 = 7 tens + 5 ones, so the ones digit is 5.",
               "acceptable": [
@@ -13836,7 +13836,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "69 = ___ tens and ___ ones. How many ones?",
+              "prompt": "69 = 6 tens and ___ ones. How many ones?",
               "answer": "9",
               "explanation": "69 = 6 tens + 9 ones, so the ones digit is 9.",
               "acceptable": [
@@ -13853,7 +13853,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "52 = ___ tens and ___ ones. How many ones?",
+              "prompt": "52 = 5 tens and ___ ones. How many ones?",
               "answer": "2",
               "explanation": "52 = 5 tens + 2 ones, so the ones digit is 2.",
               "acceptable": [
@@ -13887,7 +13887,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "44 = ___ tens and ___ ones. How many ones?",
+              "prompt": "44 = 4 tens and ___ ones. How many ones?",
               "answer": "4",
               "explanation": "44 = 4 tens + 4 ones, so the ones digit is 4.",
               "acceptable": [
@@ -13955,7 +13955,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "55 = ___ tens and ___ ones. How many ones?",
+              "prompt": "55 = 5 tens and ___ ones. How many ones?",
               "answer": "5",
               "explanation": "55 = 5 tens + 5 ones, so the ones digit is 5.",
               "acceptable": [
@@ -13989,7 +13989,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "57 = ___ tens and ___ ones. How many ones?",
+              "prompt": "57 = 5 tens and ___ ones. How many ones?",
               "answer": "7",
               "explanation": "57 = 5 tens + 7 ones, so the ones digit is 7.",
               "acceptable": [
@@ -14006,7 +14006,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "59 = ___ tens and ___ ones. How many tens?",
+              "prompt": "59 = ___ tens and 9 ones. How many tens?",
               "answer": "5",
               "explanation": "59 = 5 tens + 9 ones, so the tens digit is 5.",
               "acceptable": [
@@ -14023,7 +14023,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "84 = ___ tens and ___ ones. How many tens?",
+              "prompt": "84 = ___ tens and 4 ones. How many tens?",
               "answer": "8",
               "explanation": "84 = 8 tens + 4 ones, so the tens digit is 8.",
               "acceptable": [
@@ -14159,7 +14159,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "84 = ___ tens and ___ ones. How many ones?",
+              "prompt": "84 = 8 tens and ___ ones. How many ones?",
               "answer": "4",
               "explanation": "84 = 8 tens + 4 ones, so the ones digit is 4.",
               "acceptable": [
@@ -14176,7 +14176,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "63 = ___ tens and ___ ones. How many ones?",
+              "prompt": "63 = 6 tens and ___ ones. How many ones?",
               "answer": "3",
               "explanation": "63 = 6 tens + 3 ones, so the ones digit is 3.",
               "acceptable": [
@@ -14244,7 +14244,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "36 = ___ tens and ___ ones. How many tens?",
+              "prompt": "36 = ___ tens and 6 ones. How many tens?",
               "answer": "3",
               "explanation": "36 = 3 tens + 6 ones, so the tens digit is 3.",
               "acceptable": [
@@ -14261,7 +14261,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "92 = ___ tens and ___ ones. How many tens?",
+              "prompt": "92 = ___ tens and 2 ones. How many tens?",
               "answer": "9",
               "explanation": "92 = 9 tens + 2 ones, so the tens digit is 9.",
               "acceptable": [
@@ -14329,7 +14329,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "46 = ___ tens and ___ ones. How many tens?",
+              "prompt": "46 = ___ tens and 6 ones. How many tens?",
               "answer": "4",
               "explanation": "46 = 4 tens + 6 ones, so the tens digit is 4.",
               "acceptable": [
@@ -14346,7 +14346,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "61 = ___ tens and ___ ones. How many tens?",
+              "prompt": "61 = ___ tens and 1 one. How many tens?",
               "answer": "6",
               "explanation": "61 = 6 tens + 1 one, so the tens digit is 6.",
               "acceptable": [
@@ -14363,7 +14363,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "76 = ___ tens and ___ ones. How many tens?",
+              "prompt": "76 = ___ tens and 6 ones. How many tens?",
               "answer": "7",
               "explanation": "76 = 7 tens + 6 ones, so the tens digit is 7.",
               "acceptable": [
@@ -14482,7 +14482,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "41 = ___ tens and ___ ones. How many tens?",
+              "prompt": "41 = ___ tens and 1 one. How many tens?",
               "answer": "4",
               "explanation": "41 = 4 tens + 1 one, so the tens digit is 4.",
               "acceptable": [
@@ -14499,7 +14499,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "52 = ___ tens and ___ ones. How many tens?",
+              "prompt": "52 = ___ tens and 2 ones. How many tens?",
               "answer": "5",
               "explanation": "52 = 5 tens + 2 ones, so the tens digit is 5.",
               "acceptable": [
@@ -14652,7 +14652,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "27 = ___ tens and ___ ones. How many ones?",
+              "prompt": "27 = 2 tens and ___ ones. How many ones?",
               "answer": "7",
               "explanation": "27 = 2 tens + 7 ones, so the ones digit is 7.",
               "acceptable": [
@@ -14669,7 +14669,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "28 = ___ tens and ___ ones. How many ones?",
+              "prompt": "28 = 2 tens and ___ ones. How many ones?",
               "answer": "8",
               "explanation": "28 = 2 tens + 8 ones, so the ones digit is 8.",
               "acceptable": [
@@ -14703,7 +14703,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "59 = ___ tens and ___ ones. How many ones?",
+              "prompt": "59 = 5 tens and ___ ones. How many ones?",
               "answer": "9",
               "explanation": "59 = 5 tens + 9 ones, so the ones digit is 9.",
               "acceptable": [
@@ -14720,7 +14720,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "86 = ___ tens and ___ ones. How many ones?",
+              "prompt": "86 = 8 tens and ___ ones. How many ones?",
               "answer": "6",
               "explanation": "86 = 8 tens + 6 ones, so the ones digit is 6.",
               "acceptable": [
@@ -14754,7 +14754,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "18 = ___ tens and ___ ones. How many tens?",
+              "prompt": "18 = ___ tens and 8 ones. How many tens?",
               "answer": "1",
               "explanation": "18 = 1 ten + 8 ones, so the tens digit is 1.",
               "acceptable": [
@@ -14771,7 +14771,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "85 = ___ tens and ___ ones. How many tens?",
+              "prompt": "85 = ___ tens and 5 ones. How many tens?",
               "answer": "8",
               "explanation": "85 = 8 tens + 5 ones, so the tens digit is 8.",
               "acceptable": [
@@ -14805,7 +14805,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "57 = ___ tens and ___ ones. How many tens?",
+              "prompt": "57 = ___ tens and 7 ones. How many tens?",
               "answer": "5",
               "explanation": "57 = 5 tens + 7 ones, so the tens digit is 5.",
               "acceptable": [
@@ -14839,7 +14839,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "85 = ___ tens and ___ ones. How many ones?",
+              "prompt": "85 = 8 tens and ___ ones. How many ones?",
               "answer": "5",
               "explanation": "85 = 8 tens + 5 ones, so the ones digit is 5.",
               "acceptable": [
@@ -14856,7 +14856,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "68 = ___ tens and ___ ones. How many tens?",
+              "prompt": "68 = ___ tens and 8 ones. How many tens?",
               "answer": "6",
               "explanation": "68 = 6 tens + 8 ones, so the tens digit is 6.",
               "acceptable": [
@@ -14924,7 +14924,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "50 = ___ tens and ___ ones. How many tens?",
+              "prompt": "50 = ___ tens and 0 ones. How many tens?",
               "answer": "5",
               "explanation": "50 = 5 tens + 0 ones, so the tens digit is 5.",
               "acceptable": [
@@ -14941,7 +14941,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "22 = ___ tens and ___ ones. How many tens?",
+              "prompt": "22 = ___ tens and 2 ones. How many tens?",
               "answer": "2",
               "explanation": "22 = 2 tens + 2 ones, so the tens digit is 2.",
               "acceptable": [
@@ -14975,7 +14975,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "38 = ___ tens and ___ ones. How many tens?",
+              "prompt": "38 = ___ tens and 8 ones. How many tens?",
               "answer": "3",
               "explanation": "38 = 3 tens + 8 ones, so the tens digit is 3.",
               "acceptable": [
@@ -15077,7 +15077,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "45 = ___ tens and ___ ones. How many tens?",
+              "prompt": "45 = ___ tens and 5 ones. How many tens?",
               "answer": "4",
               "explanation": "45 = 4 tens + 5 ones, so the tens digit is 4.",
               "acceptable": [
@@ -15094,7 +15094,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "94 = ___ tens and ___ ones. How many ones?",
+              "prompt": "94 = 9 tens and ___ ones. How many ones?",
               "answer": "4",
               "explanation": "94 = 9 tens + 4 ones, so the ones digit is 4.",
               "acceptable": [
@@ -15111,7 +15111,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "60 = ___ tens and ___ ones. How many tens?",
+              "prompt": "60 = ___ tens and 0 ones. How many tens?",
               "answer": "6",
               "explanation": "60 = 6 tens + 0 ones, so the tens digit is 6.",
               "acceptable": [
@@ -15128,7 +15128,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "97 = ___ tens and ___ ones. How many ones?",
+              "prompt": "97 = 9 tens and ___ ones. How many ones?",
               "answer": "7",
               "explanation": "97 = 9 tens + 7 ones, so the ones digit is 7.",
               "acceptable": [
@@ -15213,7 +15213,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "13 = ___ tens and ___ ones. How many tens?",
+              "prompt": "13 = ___ tens and 3 ones. How many tens?",
               "answer": "1",
               "explanation": "13 = 1 ten + 3 ones, so the tens digit is 1.",
               "acceptable": [
@@ -15247,7 +15247,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "51 = ___ tens and ___ ones. How many ones?",
+              "prompt": "51 = 5 tens and ___ ones. How many ones?",
               "answer": "1",
               "explanation": "51 = 5 tens + 1 one, so the ones digit is 1.",
               "acceptable": [
@@ -15281,7 +15281,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "98 = ___ tens and ___ ones. How many tens?",
+              "prompt": "98 = ___ tens and 8 ones. How many tens?",
               "answer": "9",
               "explanation": "98 = 9 tens + 8 ones, so the tens digit is 9.",
               "acceptable": [
@@ -15315,7 +15315,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "29 = ___ tens and ___ ones. How many ones?",
+              "prompt": "29 = 2 tens and ___ ones. How many ones?",
               "answer": "9",
               "explanation": "29 = 2 tens + 9 ones, so the ones digit is 9.",
               "acceptable": [
@@ -15417,7 +15417,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "17 = ___ tens and ___ ones. How many ones?",
+              "prompt": "17 = 1 ten and ___ ones. How many ones?",
               "answer": "7",
               "explanation": "17 = 1 ten + 7 ones, so the ones digit is 7.",
               "acceptable": [
@@ -15519,7 +15519,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "69 = ___ tens and ___ ones. How many tens?",
+              "prompt": "69 = ___ tens and 9 ones. How many tens?",
               "answer": "6",
               "explanation": "69 = 6 tens + 9 ones, so the tens digit is 6.",
               "acceptable": [
@@ -15587,7 +15587,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "67 = ___ tens and ___ ones. How many tens?",
+              "prompt": "67 = ___ tens and 7 ones. How many tens?",
               "answer": "6",
               "explanation": "67 = 6 tens + 7 ones, so the tens digit is 6.",
               "acceptable": [
@@ -15621,7 +15621,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "54 = ___ tens and ___ ones. How many tens?",
+              "prompt": "54 = ___ tens and 4 ones. How many tens?",
               "answer": "5",
               "explanation": "54 = 5 tens + 4 ones, so the tens digit is 5.",
               "acceptable": [
@@ -15655,7 +15655,7 @@
             },
             {
               "type": "multiple_choice",
-              "prompt": "34 = ___ tens and ___ ones. How many tens?",
+              "prompt": "34 = ___ tens and 4 ones. How many tens?",
               "answer": "3",
               "explanation": "34 = 3 tens + 4 ones, so the tens digit is 3.",
               "acceptable": [
