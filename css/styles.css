@@ -28310,11 +28310,10 @@ body.practice-page .tutor-followup--row .tutor-send:hover {
     padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
   }
 
-  /* The "Check answer" submit button (asking state) */
-  body.practice-page .question-card[data-state="asking"] .q-cta,
-  /* Wrong-answer two-button row (§68) */
+  /* Wrong-answer two-button row (§68) + Correct-answer auto-advance
+     chip (§54) — these are CONTAINERS, so they get the navy bar
+     treatment with backdrop blur. They hold their own buttons inside. */
   body.practice-page .q-wrong-actions,
-  /* Correct-answer auto-advance progress chip (§54) */
   body.practice-page .q-autoadvance {
     position: fixed !important;
     left: 0; right: 0; bottom: 0;
@@ -28327,17 +28326,48 @@ body.practice-page .tutor-followup--row .tutor-send:hover {
     backdrop-filter: blur(12px);
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 0 !important;
-    /* Visually: full width on phone */
     width: 100%;
     box-sizing: border-box;
   }
 
-  /* The Check button itself fills the bar */
+  /* §93 — Check answer button: kid couldn't see it on mobile Safari.
+     The prior rule applied navy-bar styling DIRECTLY to the button
+     (background: rgba(6,13,31,0.95) on .q-cta), overriding the gold
+     gradient from line 6419 → button rendered navy-on-navy with
+     dark text → invisible. Hamid screenshot 7:53 PM May 14 confirms.
+     Fix: float the button as a gold pill at viewport bottom with
+     side gutters. No navy bar — the button IS the action, full
+     contrast, unambiguous. Reaches above iPhone home indicator via
+     safe-area-inset-bottom. */
   body.practice-page .question-card[data-state="asking"] .q-cta {
-    width: 100%;
-    height: 52px;
-    font-size: 15px;
-    font-weight: 600;
+    position: fixed !important;
+    left: 16px !important;
+    right: 16px !important;
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+    z-index: 50 !important;
+    width: auto !important;
+    height: 52px !important;
+    margin: 0 !important;
+    padding: 0 26px !important;
+    /* Restore gold gradient from line 6419 — was the primary brand
+       button treatment, accidentally overridden by §69. */
+    background: linear-gradient(135deg, #fde68a 0%, #fbbf24 50%, #f59e0b 100%) !important;
+    color: #060d1f !important;
+    border: none !important;
+    border-radius: 12px !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.01em !important;
+    box-shadow: 0 8px 22px rgba(251,191,36,0.35), 0 2px 6px rgba(0,0,0,0.3) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  /* Visual disabled state when no choice is selected. Form-level
+     submit still fires the existing validation path — this is
+     visual-only to telegraph "pick something first". */
+  body.practice-page .question-card[data-state="asking"]:not(:has(input:checked)) .q-cta {
+    opacity: 0.55;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
   }
 
   /* Wrong-state buttons share the row inside the fixed bar */
