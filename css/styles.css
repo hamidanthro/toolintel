@@ -29277,68 +29277,23 @@ body.practice-page .practice-breadcrumb-menu-item--user {
 }
 
 /* ==========================================================================
-   §82 Reading mode — first-class two-column layout (May 13).
+   §82 Reading mode — first-class polish (May 13).
 
-   Planning-agent rated the Reading practice surface 3/10: 80% empty
-   viewport on desktop (passage card narrow + centred), question card
-   stacked below with another big empty band, "Record yourself reading"
-   pill weighted equally to "Check answer", and two sound icons (one
-   on the passage, one on the question stem).
+   Planning-agent rated the Reading practice surface 3/10. The
+   originally-shipped fix wrapped passage + question in a .reading-split
+   grid wrapper — that BROKE the existing two-column layout at
+   body[data-subject="reading"] #qbox (which had been treating the two
+   cards as direct children of #qbox). DO NOT re-introduce a wrapper.
 
-   Fixes:
-     - .reading-split wraps passage + question side-by-side on
-       desktop (>= 768px) at 50/50 inside a 1200px max-width
-     - Phone collapses to single column; passage capped at 40vh
-       with internal scroll so the question is always reachable
-       without scrolling past the whole story
-     - Question-stem speaker dropped (handled in practice.js) →
-       single sound source = passage TTS
-     - Voice recorder restyled to ghost CTA — lower visual weight
-       than 'Check answer' so the kid's primary CTA is unambiguous
+   What this block keeps from §82:
+     - Question-stem speaker dropped when q.passage is present (handled
+       in practice.js) → single sound source = passage TTS.
+     - "Record yourself reading" demoted to ghost CTA — lower visual
+       weight than 'Check answer' so the primary CTA is unambiguous.
+   The two-column desktop / single-column phone layout itself is
+   handled by the existing §74-era CSS at body[data-subject="reading"]
+   #qbox above.
    ========================================================================== */
-body.practice-page .reading-split {
-  display: block;
-  width: 100%;
-}
-
-@media (min-width: 768px) {
-  body.practice-page .reading-split {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    max-width: 1200px;
-    margin: 0 auto;
-    align-items: start;
-  }
-  body.practice-page .reading-split-passage,
-  body.practice-page .reading-split-question {
-    min-width: 0;
-  }
-  /* Passage column gets a sticky top on desktop so the kid can read
-     a long passage and still see the question card at any scroll
-     position. align-items: start lets the grid item shrink to its
-     content height so sticky has a parent that's tall enough. */
-  body.practice-page .reading-split-passage {
-    position: sticky;
-    top: 16px;
-    max-height: calc(100vh - 32px);
-    overflow-y: auto;
-  }
-}
-
-@media (max-width: 767px) {
-  /* Phone: passage on top, capped at 40vh with internal scroll.
-     The internal scroll matters — without it a 12-paragraph passage
-     pushes the question + Check button off-screen and the kid has
-     to scroll back up after reading. With the cap, the question is
-     always reachable; kids who want the whole passage scroll inside
-     the passage card. */
-  body.practice-page .reading-split-passage > .reading-passage-card {
-    max-height: 40vh;
-    overflow-y: auto;
-    margin-bottom: 12px;
-  }
-}
 
 /* §82 — ghost-CTA restyle for "Record yourself reading". The pill
    was carrying gold border + filled background + 0.92rem text =

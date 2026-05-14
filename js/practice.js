@@ -3311,7 +3311,14 @@
     // §56 — inline feedback slot. Sits between input and primary
     // button so the kid sees outcome → explanation → next-action in
     // natural reading order. Hidden in ASKING; populated by showFeedback.
-    const questionHtml = `
+    // §82 (revised) — passage + question stay as direct children of
+    // #qbox; the existing body[data-subject="reading"] #qbox grid CSS
+    // (styles.css §74-era) already lays them out as two columns on
+    // desktop and stacks them on phone. The earlier §82 .reading-split
+    // wrapper broke that layout by inserting a single child between
+    // them and the grid container — DO NOT re-wrap.
+    return `
+      ${passageHtml}
       <form class="question-card" data-state="asking" data-cents="${cents}">
         ${navHtml}
         <div class="q-prompt">${readBtn}<span class="q-prompt-text">${escapeHtml(q.prompt)}</span></div>
@@ -3320,20 +3327,6 @@
         <button class="btn btn-primary q-cta" type="submit" data-role="check">Check answer</button>
         <div class="q-meta" data-role="meta"><span class="q-meta-text">${metaParts.join(' · ')}</span></div>
       </form>`;
-
-    // §82 — when a passage is present, wrap passage + question in a
-    // two-column split container. Desktop renders 50/50 side-by-side
-    // (passage left, question right); phone single-column with the
-    // passage capped at 40vh + internal scroll so the question is
-    // always reachable without scrolling past the whole story.
-    if (passageHtml) {
-      return `
-        <div class="reading-split">
-          <div class="reading-split-passage">${passageHtml}</div>
-          <div class="reading-split-question">${questionHtml}</div>
-        </div>`;
-    }
-    return questionHtml;
   }
 
   // §74 Phase 3 — Reading passage card (markdown body via ReadingRender).
