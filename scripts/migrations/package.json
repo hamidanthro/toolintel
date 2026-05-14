@@ -1,0 +1,10 @@
+{
+  "name": "migrations",
+  "version": "1.0.0",
+  "private": true,
+  "description": "One-shot migration scripts for staar-content-pool. Every destructive script has a restore companion in the same directory.",
+  "type": "commonjs",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.658.0"
+  }
+}
