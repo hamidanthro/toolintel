@@ -339,7 +339,11 @@
           <a role="menuitem" class="practice-breadcrumb-menu-item practice-breadcrumb-menu-item--user" href="myspace.html">
             <span class="practice-breadcrumb-menu-ico" aria-hidden="true">👤</span>
             <span class="practice-breadcrumb-menu-label">${escapePcb(userDisplay)}</span>
-          </a>` : ''}
+          </a>
+          <button type="button" role="menuitem" class="practice-breadcrumb-menu-item" data-action="signout">
+            <span class="practice-breadcrumb-menu-ico" aria-hidden="true">⎋</span>
+            <span class="practice-breadcrumb-menu-label">Sign out</span>
+          </button>` : ''}
         </div>
       </nav>
     `;
@@ -381,6 +385,16 @@
             window.location.href = 'myspace.html';
           } else if (action === 'home') {
             window.location.href = 'index.html';
+          } else if (action === 'signout') {
+            // §94 — invoke the public auth signOut. Handles the
+            // mid-practice confirm dialog (practice.html IS mid-
+            // practice by definition) + clears session + redirects
+            // to '/' which then re-renders unauthenticated state.
+            try {
+              if (window.STAARAuth && typeof window.STAARAuth.signOut === 'function') {
+                window.STAARAuth.signOut();
+              }
+            } catch (_) {}
           } else if (action === 'switch-state' || action === 'report') {
             // TODO §81: switch-state picker + report-a-problem capture.
             // No-op for now so the menu surface is visible and the

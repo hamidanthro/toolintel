@@ -1584,6 +1584,12 @@ if ('serviceWorker' in navigator) {
     currentUser,
     token,
     showLogin,
+    // §94 — public signOut so the §81 practice top-bar ⋯ menu (and
+    // any future surface) can trigger the kid-protection-aware
+    // sign-out without re-implementing the clearSession + redirect
+    // dance. Matches the semantics used by the desktop user-menu
+    // and mobile sheet handlers internally.
+    signOut: attemptSignOut,
     refreshHeader,
     pushStats,
     pullStats,
