@@ -46,6 +46,54 @@
     "Off this time.",
     "Worth another look."
   ];
+
+  // §83 — Correct-answer praise. Grade-band-aware varied praise that
+  // replaces the bare ⭐ + truncated-explanation whisper with a short
+  // encouragement line first. K-2 gets concrete short cheer; 3-5 gets
+  // a touch more sophistication; 6+ gets understated factual praise.
+  // No banned phrases from §15 — every line here is fresh.
+  const CORRECT_PRAISE_K2 = [
+    "You got it!",
+    "Yes — that's it!",
+    "Spot on!",
+    "Nailed it!",
+    "Way to go!",
+    "You did it!",
+    "Right on!",
+    "Yes!",
+    "Smart!",
+    "Brilliant!"
+  ];
+  const CORRECT_PRAISE_35 = [
+    "Nice thinking.",
+    "You worked that out.",
+    "Solid reasoning.",
+    "Sharp.",
+    "Cleanly done.",
+    "You earned that one.",
+    "Smart move.",
+    "Bingo.",
+    "Right where you needed to land.",
+    "Read it well, answered it well."
+  ];
+  const CORRECT_PRAISE_6PLUS = [
+    "Correct.",
+    "Right.",
+    "Cleanly solved.",
+    "Nicely reasoned.",
+    "Tight work.",
+    "Locked in.",
+    "Clean.",
+    "Read that one well.",
+    "On the nose.",
+    "Got it."
+  ];
+  function pickCorrectPraise(gradeSlug) {
+    const g = String(gradeSlug || '');
+    if (g === 'grade-k' || g === 'grade-1' || g === 'grade-2') return pickRandom(CORRECT_PRAISE_K2);
+    if (g === 'grade-3' || g === 'grade-4' || g === 'grade-5') return pickRandom(CORRECT_PRAISE_35);
+    return pickRandom(CORRECT_PRAISE_6PLUS);
+  }
   const DAILY_GOAL_TOASTS = [
     "Daily mission complete! 🌟",
     "Daily goal hit! 🌟",
@@ -1798,14 +1846,22 @@
           //       first sentence, truncated at 80 chars
           // The card-with-green-border chrome is gone.
           if (cents > 0) spawnPtsToast(cents);
+          // §83 — varied praise line + the existing whisper-style
+          // explanation. Praise is band-aware (K-2 cheerful, 3-5
+          // mid-range, 6+ understated) and picked fresh from a
+          // small dictionary each time so kids don't see the same
+          // line back-to-back. Sits ABOVE the whisper so the
+          // encouragement reads first, then the why.
+          const praise = pickCorrectPraise(slug);
+          const praiseLine = `<div class="q-correct-praise" role="status">${escapeHtml(praise)}</div>`;
           const whisper = (() => {
             if (!explanation) return '';
             const truncated = explanation.length > 80
               ? explanation.slice(0, 78).trimEnd() + '…'
               : explanation;
-            return `<div class="q-correct-whisper" role="status"><span class="q-correct-whisper-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><polygon points="12 2 15 8 21 9 17 14 18 21 12 18 6 21 7 14 3 9 9 8"/></svg></span> <span class="q-correct-whisper-text">${escapeHtml(truncated)}</span></div>`;
+            return `<div class="q-correct-whisper"><span class="q-correct-whisper-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><polygon points="12 2 15 8 21 9 17 14 18 21 12 18 6 21 7 14 3 9 9 8"/></svg></span> <span class="q-correct-whisper-text">${escapeHtml(truncated)}</span></div>`;
           })();
-          fbSlot.innerHTML = whisper;
+          fbSlot.innerHTML = praiseLine + whisper;
           fbSlot.classList.remove('q-inline-fb--tutor');
         } else {
           // §68 — COMPRESSED wrong-answer view. The old layout injected
