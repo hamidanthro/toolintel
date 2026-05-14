@@ -6532,16 +6532,11 @@ body.practice-page .tutor-send {
   display: flex; align-items: center; justify-content: center;
 }
 
-/* Guest banner */
-body.practice-page #guest-banner {
-  background: linear-gradient(135deg, rgba(251,191,36,0.16), rgba(245,158,11,0.06)) !important;
-  border: 1px solid rgba(251,191,36,0.40) !important;
-  border-radius: 14px !important;
-  padding: 12px 18px !important;
-  color: #fde68a !important;
-  margin-bottom: 18px !important;
-}
-body.practice-page #guest-banner strong { color: #ffffff; }
+/* §95 — pre-§95 inline-banner rules retired. The new fixed-top
+   sticky banner lives at the bottom of this file under the §95
+   block. The .guest-banner class is the new canonical selector;
+   #guest-banner is still the element id for back-compat with
+   the existing render code. */
 
 /* Sidebar */
 body.practice-page .performance-panel {
@@ -28466,11 +28461,19 @@ body.practice-page .tutor-followup--row .tutor-send:hover {
    home button still shows on phone since the sidebar reflows to
    header at <=1024px (§63). */
 @media (max-width: 767px) {
-  body.myspace-page .ge-home-affordance,
+  body.myspace-page .ge-home-affordance {
+    /* MySpace has its own sidebar that reflows to a header at
+       <=1024px; the home button still shows on phone since the
+       sidebar reflow may not cover all paths home. */
+  }
+  /* §95 — kill the home affordance on practice.html. The slim
+     practice top bar (§81) carries back-arrow + ⋯ menu with
+     'Exit to home' (and §94 'Sign out'). A floating home icon
+     mid-page (caused by some iOS Safari layouts where the fixed
+     positioning regressed to static) is orphaned chrome — Khan
+     + IXL mobile have NO floating nav. Hide entirely. */
   body.practice-page .ge-home-affordance {
-    /* On these pages, the site-header is either hidden (practice)
-       or replaced by the ms-shell layout (myspace). The default
-       top: 8px + safe-area is correct. */
+    display: none !important;
   }
 }
 
@@ -29960,4 +29963,106 @@ body.home-page #dashboard .home-grade-pill--active {
     z-index: -1;
     pointer-events: none;
   }
+}
+
+/* ==========================================================================
+   §95 Guest banner — fixed-top sticky (May 14, 2026)
+
+   Was: inline at bottom of #practice-root with margin-top:18px,
+   pushed the question stem above the fold on iPhone SE (375x667).
+   Per Hamid screenshot 1:08 PM May 14, "the right symbol:" prompt
+   got cut off by the banner.
+
+   Now: position:fixed at viewport top, ~44px mobile / 40px desktop,
+   Khan Academy pattern. Doesn't push content; main column gets
+   matching padding-top when banner is present via body.has-guest-
+   banner class. Dismissable per-session via × icon + sessionStorage
+   flag.
+   ========================================================================== */
+
+#guest-banner.guest-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 12px 0 16px;
+  height: 40px;
+  background: rgba(6, 13, 31, 0.96);
+  border-left: 4px solid var(--gold, #fbbf24);
+  border-bottom: 1px solid rgba(251, 191, 36, 0.18);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.85);
+  box-sizing: border-box;
+}
+#guest-banner.guest-banner .guest-banner-count {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#guest-banner.guest-banner .guest-banner-count strong {
+  color: #fde68a;
+  font-weight: 700;
+}
+#guest-banner.guest-banner .guest-banner-pts {
+  color: var(--gold, #fbbf24) !important;
+}
+#guest-banner.guest-banner .guest-banner-cta {
+  flex: 0 0 auto;
+  color: var(--gold, #fbbf24);
+  font-weight: 700;
+  text-decoration: none;
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+#guest-banner.guest-banner .guest-banner-cta:hover {
+  background: rgba(251, 191, 36, 0.1);
+}
+#guest-banner.guest-banner .guest-banner-dismiss {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 0;
+}
+#guest-banner.guest-banner .guest-banner-dismiss:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* Reserve space at the top of every page that has the banner
+   visible so content doesn't render behind it. Body class toggled
+   by renderGuestBanner(). */
+body.has-guest-banner { padding-top: 40px; }
+
+/* Mobile: 44px banner, more generous tap targets, drop the
+   "free preview" word if needed (the count + sign-up button are
+   the primary affordances). */
+@media (max-width: 480px) {
+  #guest-banner.guest-banner {
+    height: 44px;
+    padding: 0 8px 0 12px;
+    gap: 8px;
+    font-size: 12.5px;
+  }
+  #guest-banner.guest-banner .guest-banner-cta {
+    padding: 6px 8px;
+    font-size: 12.5px;
+  }
+  body.has-guest-banner { padding-top: 44px; }
 }

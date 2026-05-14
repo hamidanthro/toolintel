@@ -590,40 +590,58 @@
     if (!isGuest()) {
       const old = document.getElementById('guest-banner');
       if (old) old.remove();
+      document.body.classList.remove('has-guest-banner');
       return;
     }
+    // §95 — per-session dismissal. sessionStorage so closing the
+    // tab clears it; banner reappears on next visit. (NOT
+    // localStorage — that would persist permanently and the kid
+    // would never see the sign-up nudge again.)
+    let dismissed = false;
+    try { dismissed = sessionStorage.getItem('staar.guestBanner.dismissed') === '1'; } catch (_) {}
+    if (dismissed) {
+      const old = document.getElementById('guest-banner');
+      if (old) old.remove();
+      document.body.classList.remove('has-guest-banner');
+      return;
+    }
+
     let bar = document.getElementById('guest-banner');
     if (!bar) {
+      // §95 — Khan-style fixed-top sticky banner. Was inline at
+      // bottom of #practice-root (pushed content off the fold on
+      // iPhone). Now: position:fixed at viewport top, ~44px tall,
+      // mounted on document.body so it's not constrained by the
+      // practice-root flow.
       bar = document.createElement('div');
       bar.id = 'guest-banner';
-      // §56 — quiet footer style. No alert-yellow background, no border;
-      // muted single-line link below the question card. Was wasting hero
-      // real estate at the top of the practice page.
-      bar.style.cssText = 'margin-top:18px;padding:12px 14px;border-top:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.55);font-size:0.85rem;display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;text-align:center;';
-      const root = document.getElementById('practice-root');
-      if (root) root.appendChild(bar); // §56 — bottom, not top
-    } else {
-      // If banner already exists at top from prior render, move it to the bottom.
-      const root = document.getElementById('practice-root');
-      if (root && bar.parentNode === root && bar !== root.lastChild) {
-        root.appendChild(bar);
-      }
+      bar.className = 'guest-banner';
+      document.body.appendChild(bar);
+    } else if (bar.parentNode !== document.body) {
+      // Migrate any pre-§95 inline banner up to body so the fixed
+      // positioning works.
+      document.body.appendChild(bar);
     }
+    document.body.classList.add('has-guest-banner');
+
     const remaining = guestRemaining();
-    // §67 — pts-earned pressure line. The kid sees a running total
-    // they'd LOSE by closing the tab. Standard loss-aversion pattern;
-    // pts only appear once they've earned anything (>0).
     const pts = window._sessionPoints || 0;
-    const ptsBit = pts > 0
-      ? `<span style="color:rgba(255,255,255,0.4);"> · </span><strong style="color:#fbbf24;">${pts} pts earned</strong>`
-      : '';
-    const ctaLabel = pts > 0
-      ? 'Sign up free to keep them &rarr;'
-      : 'Sign up free to unlock 100,000+ questions &rarr;';
-    bar.innerHTML = `<span>Free preview · <strong style="color:#fde68a;">${remaining} of ${GUEST_LIMIT}</strong> questions left${ptsBit}</span>
-      <a href="#" id="guest-signup-btn" style="color:#fbbf24;font-weight:600;text-decoration:none;">${ctaLabel}</a>`;
+    // Compact one-line format. On phone, the long form ("Sign up
+    // free to unlock 100,000+ questions") is replaced with the
+    // shorter "Sign up →" — CSS controls which span renders.
+    bar.innerHTML = `
+      <span class="guest-banner-count"><strong>${remaining} of ${GUEST_LIMIT}</strong> free preview${pts > 0 ? ` · <strong class="guest-banner-pts">${pts} pts earned</strong>` : ''}</span>
+      <a href="#" class="guest-banner-cta" id="guest-signup-btn">Sign up &rarr;</a>
+      <button type="button" class="guest-banner-dismiss" id="guest-banner-dismiss" aria-label="Dismiss">×</button>
+    `;
     const btn = document.getElementById('guest-signup-btn');
     if (btn) btn.onclick = (e) => { e.preventDefault(); if (window.STAARAuth && window.STAARAuth.showLogin) window.STAARAuth.showLogin(); };
+    const dismissBtn = document.getElementById('guest-banner-dismiss');
+    if (dismissBtn) dismissBtn.onclick = () => {
+      try { sessionStorage.setItem('staar.guestBanner.dismissed', '1'); } catch (_) {}
+      bar.remove();
+      document.body.classList.remove('has-guest-banner');
+    };
   }
   function maybeBlockGuest() {
     if (!isGuest()) return false;
