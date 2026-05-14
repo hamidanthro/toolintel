@@ -1905,6 +1905,13 @@
             const sentences = explanation.split(/(?<=[.!?])\s+/);
             return sentences[0] || 'Take another look at this one.';
           })();
+          // §93b — drop the inline "Next question" button from the
+          // tutor card. The standalone .q-cta below (replaced via
+          // checkBtn.replaceWith() further down) is the canonical
+          // primary action across all states; an inline duplicate
+          // gave kids two affordances for the same job ~80px apart.
+          // .q-wrong-actions retains the single secondary action
+          // [Explain more].
           fbSlot.innerHTML = `
             <p class="q-wrong-tutor-line" role="status">
               <span class="q-wrong-tutor-icon" aria-hidden="true">
@@ -1914,7 +1921,6 @@
             </p>
             <div class="q-wrong-actions">
               <button type="button" class="q-wrong-explain" data-act="explain-more" aria-expanded="false" aria-controls="q-wrong-expand">Explain more</button>
-              <button type="button" class="btn btn-primary q-wrong-next" id="next-btn">${nextLabel}</button>
             </div>
             <div class="q-wrong-expand" id="q-wrong-expand" hidden>
               <div class="tutor-box" id="tutor-box">
