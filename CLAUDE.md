@@ -2872,6 +2872,14 @@ expanding to other states. The 50-state bulk sweep that was
 greenlit at end-of-§33 is **PARKED** in favor of building deep
 state-specific foundations one state at a time.
 
+> **§SS-USA-BROAD exception (May 14, 2026):** Per the May 14 SS audit
+> (§91), the per-state-deep strategy applies only to **Math and
+> Reading** (the state-test-divergent subjects). **Social Studies and
+> Science default to USA-broad** — one national KP per subject, with
+> state-specific overlays only where state tests materially demand
+> (e.g. STAAR G8 Texas-history strand). See
+> `docs/knowledge-packs/architecture-decisions.md §SS-USA-BROAD`.
+
 The rationale: high-quality state-flavor-authentic content for one
 state (Texas) is more valuable than mediocre coverage of 50 states.
 A kid in Texas using GradeEarn should see questions that feel

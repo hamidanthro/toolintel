@@ -49,15 +49,21 @@
       tagline: 'History, geography, civics, economics.',
       icon: 'globe',
       color: '#f472b6',
-      // Texas social studies live for K-8: K-3 practice (Texas symbols,
-      // heroes, geography), G4-G7 middle-grade (US history overview,
-      // world cultures, detailed Texas history), G8 STAAR-tested
-      // (US history 1763-1877, Constitution).
+      // §91 (May 14, 2026) — SS gated until USA-broad KP ships. Audit
+      // found 870 active Texas SS rows in staar-content-pool, ZERO
+      // judged (no _judge or _judgedAt stamps), schema mismatch
+      // (rows store grade as bare '3'/'k' vs frontend's 'grade-3'
+      // form), passage-tethered orphans in K-2 (questions reference a
+      // passage that isn't there), AGE_FIT mismatch on G3 (Reconstruction
+      // is grade-7+ TEKS), and §27 letter-prefix-in-choice-text bug on
+      // G8 ('A. ...' / 'B. ...' literal letters inside choice strings).
+      // Re-enable per-grade when the USA-broad SS Knowledge Pack ships
+      // AND a judge sweep clears the existing rows or new content gens.
+      // See docs/knowledge-packs/architecture-decisions.md §SS-USA-BROAD.
       live: false,
       eta: 'Coming soon',
       liveForGrade: function (stateSlug, gradeSlug) {
-        if (stateSlug !== 'texas') return false;
-        return ['grade-k','grade-1','grade-2','grade-3','grade-4','grade-5','grade-6','grade-7','grade-8'].includes(gradeSlug);
+        return false;
       }
     }
   ];
