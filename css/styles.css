@@ -17686,6 +17686,80 @@ body.grade-page .grade-content--minimal {
   text-transform: uppercase;
 }
 
+/* ==========================================================================
+   §85 MySpace — chat IS the main area (May 13).
+
+   User: "my space main area should be the chat gpt style chat box.
+   what the hell is it showing this as well" — referring to the 3
+   stat panels (Your performance / Last 20 / Mastery) sitting above
+   the chat surface, pushing the chat below the fold.
+
+   Hide every stat / briefing / greeting / footer chrome on MySpace
+   so the chat surface (which already exists at .ms-card) is the
+   FIRST visible thing in .ms-content. The hidden stats data still
+   flows underneath — JS keeps writing — so future surfaces (e.g.
+   /achievements.html, parent dashboard) can read them. We just
+   don't render them on MySpace.
+
+   Also: enlarge .ms-card to ChatGPT-style proportions so it reads
+   as the dedicated chat surface, not a card.
+   ========================================================================== */
+body.myspace-page .ms-performance,
+body.myspace-page .ms-briefing,
+body.myspace-page .ms-greeting-block,
+body.myspace-page .ms-quickwin,
+body.myspace-page .ms-stats-footer {
+  display: none !important;
+}
+
+/* Chat surface becomes the centerpiece. Drop the card chrome
+   (white background + border + padding) — let the chat thread sit
+   on the page bg directly so it reads as the page, not a tile. */
+body.myspace-page .ms-content {
+  max-width: 860px;
+  padding: 24px 24px 0;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 100px);
+}
+body.myspace-page .ms-card {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+body.myspace-page .ms-chat-topbar {
+  display: none; /* No back-to-dashboard chrome — chat IS the dashboard. */
+}
+body.myspace-page .ms-chat-empty {
+  /* Center the empty-state greeting + suggestion chips vertically
+     in the available space, ChatGPT-style. */
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 24px 16px;
+}
+body.myspace-page .ms-chat-thread {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 16px 0 24px;
+}
+
+@media (max-width: 767px) {
+  body.myspace-page .ms-content {
+    padding: 16px 16px 0;
+    min-height: calc(100vh - 72px);
+  }
+}
+
 /* Subject card — two-line variant with optional level/XP subtitle. */
 .subject-card .subject-card-text {
   flex: 1;
