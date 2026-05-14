@@ -17459,6 +17459,28 @@ body[data-subject="reading"] section > .container {
   padding: 0 24px;
 }
 
+/* §82 hotfix #3 — diagnosis run revealed the REAL bottleneck wasn't
+   .container, it was line 28107's `body.practice-page .practice-layout
+   { max-width: 640px }` and `.practice-main { max-width: 640px }`. The
+   §69-era single-column rule was clamping the reading surface to 640px
+   regardless of how wide its parent container was. Reading needs the
+   full 1400px, not 640px, because the kid is reading paragraphs not a
+   single-column quiz card.
+
+   Specificity bump: combine .practice-page + [data-subject="reading"]
+   on the same body selector (0,0,3,1) to beat the §69 rule (0,0,2,1)
+   and bypass the source-order dependence. */
+body.practice-page[data-subject="reading"] .practice-layout,
+body.practice-page[data-subject="reading"] .practice-layout--solo {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+body.practice-page[data-subject="reading"] .practice-main {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
 /* ----- Two-column desktop (≥768px): passage LEFT, question RIGHT ----- */
 @media (min-width: 768px) {
   body[data-subject="reading"] #qbox {
