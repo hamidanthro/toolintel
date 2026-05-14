@@ -122,7 +122,7 @@
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" />
 
-  <link rel="stylesheet" href="css/styles.css?v=20260513ac" />
+  <link rel="stylesheet" href="css/styles.css?v=20260513ad" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -763,12 +763,18 @@
       if (!u) {
         heroAnon.hidden = false;
         dash.hidden = true;
+        document.body.classList.remove('is-signed-in');
         if (sessionPreview) sessionPreview.hidden = false;
         if (fwRibbon) fwRibbon.hidden = false;
         return;
       }
       heroAnon.hidden = true;
       dash.hidden = false;
+      // §88 — signed-in body class hook. CSS hides parent marketing
+      // (parent-layer--how / --toys / --trust / --quote / --pricing)
+      // and other unauthed chrome when this class is on body. Stays
+      // off for guests so the marketing site continues to render.
+      document.body.classList.add('is-signed-in');
       if (sessionPreview) sessionPreview.hidden = true;
       if (fwRibbon) fwRibbon.hidden = true;
       renderGradeGrid();

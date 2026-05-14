@@ -29719,6 +29719,39 @@ body.home-page #dashboard .home-stats-line {
   display: none !important;
 }
 
+/* §88 — hide ALL parent-marketing layers on the signed-in home.
+   Guests still see them because body.is-signed-in is only set in
+   showDashboard() after auth resolves. Killed surfaces:
+     - parent-layer--how    (For parents · Here's how it works + 3 cards)
+     - parent-layer--toys   (Real rewards · toy showcase)
+     - parent-layer--trust  (Built for parents · trust marks)
+     - parent-layer--quote  (Parent testimonial)
+     - parent-layer--pricing (Pricing block)
+     - .mobile-hero         (mobile marketing headline)
+     - .session-preview     (session-preview "Here's how it works" eyebrow)
+     - .grade-picker-section (guest grade-card grid below dashboard)
+   Copy preserved at docs/marketing-copy.md per §88 spec. */
+body.is-signed-in .parent-layer,
+body.is-signed-in .mobile-hero,
+body.is-signed-in .session-preview,
+body.is-signed-in .grade-picker-section,
+body.is-signed-in #home-fw-ribbon,
+body.is-signed-in .hero {
+  display: none !important;
+}
+
+/* §88 — center the grade picker in the viewport on the signed-in
+   home. Kills the dead zone the planner flagged. */
+body.home-page.is-signed-in main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: calc(100vh - 100px);
+}
+body.home-page.is-signed-in #dashboard {
+  width: 100%;
+}
+
 body.home-page #dashboard .home-v2-inner {
   padding-top: 64px;
   max-width: 560px;
