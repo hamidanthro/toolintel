@@ -30066,3 +30066,34 @@ body.has-guest-banner { padding-top: 40px; }
   }
   body.has-guest-banner { padding-top: 44px; }
 }
+
+/* ==========================================================================
+   §96 Text-contrast stopgap (May 14, 2026)
+
+   Hamid screenshot 2026-05-14: /practice.html?review=1 rendered the
+   H2 "Review your wrong answers" in dark navy on the dark navy page
+   background — invisible (WCAG AA contrast fail). Likely repeats
+   anywhere a generic <h1>/<h2>/<h3> renders on a dark product
+   surface without an explicit color override.
+
+   Root cause: generic <h2> rule sets color: var(--ink) (dark navy);
+   body.{page}-page sets color: #fff on body, but the h-tag selector
+   wins by specificity.
+
+   This is the STOPGAP — blanket white headings on every authed
+   product surface. The proper fix (axe / Lighthouse audit, then
+   tighter per-component overrides) lives in the TODO under
+   "TEXT-CONTRAST AUDIT".
+   ========================================================================== */
+
+body.practice-page h1, body.practice-page h2, body.practice-page h3,
+body.grade-page h1, body.grade-page h2, body.grade-page h3,
+body.myspace-page h1, body.myspace-page h2, body.myspace-page h3,
+body.subject-page h1, body.subject-page h2, body.subject-page h3,
+body.marketplace-page h1, body.marketplace-page h2, body.marketplace-page h3,
+body.achievements-page h1, body.achievements-page h2, body.achievements-page h3,
+body.league-page h1, body.league-page h2, body.league-page h3,
+body.games-page h1, body.games-page h2, body.games-page h3,
+body.settings-page h1, body.settings-page h2, body.settings-page h3 {
+  color: rgba(255, 255, 255, 0.96) !important;
+}
