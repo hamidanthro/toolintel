@@ -314,11 +314,12 @@
             <span class="practice-breadcrumb-menu-label">Sound</span>
             <span class="practice-breadcrumb-menu-state">${soundOn ? 'On' : 'Off'}</span>
           </button>
-          <button type="button" role="menuitem" class="practice-breadcrumb-menu-item" data-action="switch-state">
-            <span class="practice-breadcrumb-menu-ico" aria-hidden="true">📍</span>
-            <span class="practice-breadcrumb-menu-label">Switch state</span>
-            <span class="practice-breadcrumb-menu-state">${escapePcb(STATE_INFO.nameAbbr || 'TX')}</span>
-          </button>
+          <!-- §81 "Switch state" item removed 2026-05-14 — Texas-only
+               product per memory rule (feedback_texas_only.md). The
+               item was a no-op TODO; surfacing a "Switch state" menu
+               item that always says "TX" with no other choices is
+               affordance-pollution. If multi-state ever ships, this
+               is the right home for the picker. -->
           <button type="button" role="menuitem" class="practice-breadcrumb-menu-item" data-action="progress">
             <span class="practice-breadcrumb-menu-ico" aria-hidden="true">📊</span>
             <span class="practice-breadcrumb-menu-label">Show progress</span>
@@ -395,10 +396,12 @@
                 window.STAARAuth.signOut();
               }
             } catch (_) {}
-          } else if (action === 'switch-state' || action === 'report') {
-            // TODO §81: switch-state picker + report-a-problem capture.
-            // No-op for now so the menu surface is visible and the
-            // intent is discoverable; full handlers ship in a follow-up.
+          } else if (action === 'report') {
+            // TODO: report-a-problem capture. No-op for now so the
+            // menu surface is visible and the intent is discoverable;
+            // full handler ships in a follow-up. (The 'switch-state'
+            // action was removed 2026-05-14 with the menu item per
+            // Texas-only product rule.)
           }
         });
       });

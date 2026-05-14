@@ -118,16 +118,8 @@ Append new items under the right category. Move resolved items to
 
 ## pre-launch infra
 
-### §81 STATE-PICKER EXTRACTION
-- **State:** TODO from §81 (slim practice top bar, commit `0e53187`).
-  The practice context bar's ⋯ menu has a "Switch state" item that's
-  currently a no-op + TODO comment — needs a reusable state-picker
-  component before it can route somewhere real.
-- **Today:** state-picker logic is embedded in onboarding (`states/`
-  page) and not extractable as a component.
-- **Order:** deferred — Texas-only product per memory rule; switch-
-  state isn't a paying-user request today.
-- **Logged:** 2026-05-14
+_(empty — §81 state-picker resolved by deletion 2026-05-14, see
+Resolved section)_
 
 ---
 
@@ -196,3 +188,27 @@ Append new items under the right category. Move resolved items to
 - **Resolved:** 2026-05-14. HTTP → 301 → HTTPS verified server-side
   (Fastly/GitHub-Pages, `Location: https://gradeearn.com/`). DNS +
   cert chain confirmed.
+
+### §93 LETTER-PREFIX SWEEP — gpt-4o-mini choice-text leak
+- **Resolved:** 2026-05-14. 143/143 rows cleaned (116 in first run +
+  27 in finish run after fixing the dual-migration condition).
+  Verified 0 rows remain with all-letter-prefixed choices.
+
+### §81 STATE-PICKER EXTRACTION — resolved by deletion
+- **Resolved:** 2026-05-14. Removed the "Switch state" item from
+  the §81 practice ⋯ menu rather than building a picker. Texas-
+  only product per memory rule (feedback_texas_only.md). If
+  multi-state ever ships, the menu item is the obvious home — a
+  comment in practice.js marks the spot.
+
+### TEXT-CONTRAST stopgap (§96)
+- **Resolved:** 2026-05-14. Blanket-white H1/H2/H3 rule with
+  `!important` on every authed product surface. Per CLAUDE.md §96
+  block. The "other opportunities" (empty viewport dead-zone,
+  guest-wall fallback, two-primary-CTA conflict, undifferentiated
+  card surface) remain documented in the TODO above but are not
+  shipped — they're polish, not a contrast fix.
+
+### POST-§92 wrong-answer reverse-lookup verify
+- **Resolved:** 2026-05-14. Scan of `staar-content-events` for
+  bare-grade math poolKey references returned 0. Clean.
