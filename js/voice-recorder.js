@@ -171,20 +171,30 @@
         return;
       }
       if (state === 'recording') {
-        // Inline: subtle "recording" indicator so the kid sees that
-        // the slot did something; live UI is in the fixed-bottom bar.
-        container.innerHTML =
-          '<div class="voice-rec-inline-recording" aria-hidden="true">' +
-            '<span class="voice-rec-pulse"></span>' +
-            '<span>Recording — tap Stop below when you\'re done</span>' +
-          '</div>';
-        // Only paint the bar once; subsequent renders just update the
-        // existing bar's time so we don't lose the event listener.
-        if (!document.querySelector('.voice-rec-fixed')) {
-          paintFixedBar();
-        } else {
-          updateFixedBarTime();
+        // §86 — Stop button + time live INLINE next to the recording
+        // indicator. The old fixed-bottom bar is gone — user explicitly
+        // asked for Stop next to the indicator, not at viewport bottom.
+        // Reachability is fine: the recorder slot sits at the TOP of
+        // the passage card, the passage card is sticky on desktop and
+        // scrolls internally on mobile, so the Stop button never goes
+        // off-screen.
+        removeFixedBar();
+        const existingTime = container.querySelector('[data-role="vr-time"]');
+        if (existingTime) {
+          // In-place time update — preserves the click listener on the
+          // Stop button (don't blow away innerHTML on every tick).
+          existingTime.textContent = fmtTime(durationSec);
+          return;
         }
+        container.innerHTML =
+          '<div class="voice-rec-inline-recording" role="status" aria-live="polite">' +
+            '<span class="voice-rec-pulse" aria-hidden="true"></span>' +
+            '<span class="voice-rec-fixed-label">Recording</span>' +
+            '<span class="voice-rec-time" data-role="vr-time">' + fmtTime(durationSec) + '</span>' +
+            '<button type="button" class="voice-rec-btn voice-rec-stop voice-rec-stop-inline" aria-label="Stop recording">Stop</button>' +
+          '</div>';
+        const stopBtn = container.querySelector('.voice-rec-stop');
+        if (stopBtn) stopBtn.addEventListener('click', stopRecording);
         return;
       }
       if (state === 'recorded') {

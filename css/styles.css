@@ -18369,20 +18369,50 @@ body.practice-page .practice-eyebrow .btn-restart:hover {
   font-style: italic;
 }
 
-/* Inline "recording" indicator shown in the original slot at the top
-   of the passage. Lightweight so the kid's eyes go to the bigger
-   fixed-bottom bar instead. */
+/* §86 — Inline recording UI. Stop button + time live HERE, right
+   next to the indicator, instead of a fixed-bottom bar. The slot
+   sits at the top of the passage card so the kid never loses the
+   Stop button when scrolling. */
 .voice-rec-inline-recording {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 10px;
-  padding: 6px 12px;
+  padding: 8px 8px 8px 14px;
   background: rgba(239, 68, 68, 0.08);
-  border: 1px solid rgba(239, 68, 68, 0.22);
+  border: 1px solid rgba(239, 68, 68, 0.28);
   border-radius: 999px;
-  font-size: 0.85rem;
-  color: rgba(254, 202, 202, 0.85);
+  font-size: 0.9rem;
+  color: rgba(254, 202, 202, 0.92);
+  width: fit-content;
+  max-width: 100%;
 }
+.voice-rec-inline-recording .voice-rec-fixed-label {
+  flex: 0 0 auto;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.9rem;
+}
+.voice-rec-inline-recording .voice-rec-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #fde68a;
+  min-width: 40px;
+  text-align: right;
+}
+.voice-rec-stop-inline {
+  background: linear-gradient(180deg, #ef4444, #b91c1c);
+  border: 1px solid rgba(255, 200, 200, 0.18);
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 32px;
+  font-size: 0.85rem;
+  margin-left: 4px;
+}
+.voice-rec-stop-inline:hover { filter: brightness(1.08); }
 
 /* Fixed-bottom recording bar — appended to <body> when recording
    starts so the timer + Stop button are reachable from any scroll
