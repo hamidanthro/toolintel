@@ -43,7 +43,7 @@
   </script>
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&family=JetBrains+Mono:wght@400;500&display=swap">
-  <link rel="stylesheet" href="css/styles.css?v=20260513y">
+  <link rel="stylesheet" href="css/styles.css?v=20260513z">
 
   <script src="js/migrate-storage.js?v=20260427a"></script>
   <script src="js/i18n.js?v=20260510a"></script>
@@ -111,10 +111,13 @@
        collapses to a single "Subjects" H1 + clean list of cards. -->
   <article class="grade-content grade-content--minimal" id="grade-content" hidden>
 
-    <!-- SUBJECT PICKER -->
+    <!-- SUBJECT PICKER — §84 minimalism: status bar (single chip row)
+         is JS-inserted right above this section, then this section
+         carries a tiny eyebrow and the subject rows. The serif
+         "Subjects" h1 is dropped; subjects ARE the page, no banner. -->
     <section class="subject-section subject-section--minimal" id="subject-section">
-      <header class="subject-section-head">
-        <h1 class="subject-section-title" id="hero-title">Subjects</h1>
+      <header class="subject-section-head subject-section-head--minimal">
+        <span class="subject-section-eyebrow">PICK A SUBJECT</span>
       </header>
 
       <div class="subject-grid topic-list" id="subject-grid">
@@ -178,7 +181,7 @@
 <script src="js/spaced-rep.js?v=20260509a"></script>
 <script src="js/mastery.js?v=20260510a"></script>
 <script src="js/achievements.js?v=20260510d"></script>
-<script src="js/grade-page.js?v=20260512c"></script>
+<script src="js/grade-page.js?v=20260513d"></script>
 
   <script src="/js/site-header.js?v=20260512j"></script>
 </body>

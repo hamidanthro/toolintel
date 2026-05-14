@@ -258,12 +258,30 @@
       return subjSlug === 'math';
     };
 
-    // §15 minimalism pass — subject cards become the same .list-card
-    // shape as topic cards on subject.html: [icon] [title] [chevron].
-    // Descriptor taglines and inline "Start →" buttons removed; the
-    // whole card is the button. Unavailable subjects keep a small
-    // muted badge in place of the chevron so kids see they're not
-    // tappable (but at much lower visual weight than before).
+    // §84 minimalism — subject cards become two-line rows:
+    //   [icon] {Name}                                        [→ / badge]
+    //          Level N · M/T XP   (only on last-practiced)
+    // The level subtitle surfaces the GLOBAL level (Achievements
+    // doesn't track per-subject XP yet) only on the subject the kid
+    // most recently practiced, so it reads as "Continue here" rather
+    // than duplicating the same number on every row.
+    const lastSubj = (function () {
+      try {
+        const explicit = localStorage.getItem('staar.lastSubject');
+        if (explicit) return explicit;
+        // Fall back to the per-user journey record practice.js writes.
+        const auth = window.STAARAuth;
+        const u = auth && typeof auth.currentUser === 'function' && auth.currentUser();
+        if (u && u.username) {
+          const raw = localStorage.getItem(`staar.journey.${u.username}`);
+          if (raw) {
+            const j = JSON.parse(raw);
+            return (j && j.lastSubject) || '';
+          }
+        }
+      } catch (_) {}
+      return '';
+    })();
     grid.innerHTML = SUBJECTS.map(subj => {
       const offered = offeredFor(subj.slug);
       const isLive = offered && ((typeof subj.liveForGrade === 'function')
@@ -290,16 +308,24 @@
         trailing = `<span class="list-card-badge">${escapeHtml(subj.eta || 'Soon')}</span>`;
       } else {
         stateClass = 'list-card--live subject-card--live';
-        trailing = `<span class="list-card-chevron" aria-hidden="true">→</span>`;
+        trailing = `<span class="list-card-chevron" aria-hidden="true">${TI_CHEVRON}</span>`;
       }
       const ariaLabel = isLive ? `Practice ${subj.name}` : `${subj.name} — not yet available`;
+      const isContinue = isLive && subj.slug === lastSubj;
+      const continueClass = isContinue ? ' subject-card--continue' : '';
+      const levelSub = (isLive && isContinue && _latestLevel)
+        ? `<div class="subject-card-sub">Level ${_latestLevel.level} · ${_latestLevel.inLevelXp}/${_latestLevel.levelSpan} XP</div>`
+        : '';
 
       return `
-        <${tag} class="list-card subject-card ${stateClass}" ${hrefAttr} data-subject="${escapeHtml(subj.slug)}" ${isLive ? `role="button" aria-label="${escapeHtml(ariaLabel)}"` : 'aria-disabled="true"'}>
+        <${tag} class="list-card subject-card ${stateClass}${continueClass}" ${hrefAttr} data-subject="${escapeHtml(subj.slug)}" ${isLive ? `role="button" aria-label="${escapeHtml(ariaLabel)}"` : 'aria-disabled="true"'}>
           <span class="list-card-icon" style="--subject-color: ${subj.color}" aria-hidden="true">
             ${getSubjectIcon(subj.icon)}
           </span>
-          <h3 class="list-card-title">${escapeHtml(subj.name)}</h3>
+          <span class="subject-card-text">
+            <h3 class="list-card-title">${escapeHtml(subj.name)}</h3>
+            ${levelSub}
+          </span>
           ${trailing}
         </${tag}>
       `;
@@ -383,8 +409,27 @@
   }
 
   // ============================================================
-  // REWARD STRIP — level + streak + shields above subject grid
+  // STATUS BAR — §84 minimalist redesign (May 13).
+  //
+  // The old 3-stat-card row (`.reward-strip` with Level / streak /
+  // shields cards) and the old "Today's quest" card with 3 sub-tasks
+  // are both replaced by a single inline chip row that sits above
+  // the subject picker. Subjects ARE the page; everything else is a
+  // whisper.
+  //
+  // Layout:  [Texas · Kindergarten]               [🔥 N] [🛡 N] [✓ Quest D/T · +R¢]
+  // Tabler-style outline SVG icons inline (no emoji). Quest chip
+  // tap → opens native <dialog> popover with the 3 sub-tasks +
+  // progress bars (the detail the old card always showed).
   // ============================================================
+
+  // Tabler-style inline SVGs (outline, currentColor) used in the
+  // status bar chips. Kept here so the renderer is self-contained.
+  const TI_FLAME = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12c2-2.96 0-7-1-8 0 3.038-1.773 4.741-3 6-1.226 1.26-2 3.24-2 5a6 6 0 1 0 12 0c0-1.532-1.056-3.94-2-5-1.786 3-2.791 3-4 2Z"/></svg>';
+  const TI_SHIELD = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a12 12 0 0 0 8.5 3 12 12 0 0 1-8.5 15A12 12 0 0 1 3.5 6 12 12 0 0 0 12 3"/></svg>';
+  const TI_CHECKLIST = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.615 20H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6.5"/><path d="M14 19l2 2 4-4"/><path d="M9 8h4M9 12h2"/></svg>';
+  const TI_CHEVRON = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>';
+
   function renderRewardStrip(state, gradeSlug) {
     if (!window.Achievements) return;
     const stats = window.Achievements.getStats();
@@ -411,103 +456,157 @@
       maybeRenderZeroStateTagline();
       return;
     }
-    if (!section || section.previousElementSibling && section.previousElementSibling.classList && section.previousElementSibling.classList.contains('reward-strip')) {
-      // Already rendered — refresh contents
-      const old = section.previousElementSibling;
-      old.innerHTML = buildRewardStripHtml(stats, lev);
-      return;
+    // Stash the level on the module so populateSubjects() can surface
+    // it as a subtitle on the last-practiced subject row.
+    _latestLevel = lev;
+    // Remove any pre-§84 reward-strip card if it's still in the DOM
+    // from cached markup.
+    const oldStrip = document.querySelector('.reward-strip');
+    if (oldStrip && oldStrip.parentNode) oldStrip.parentNode.removeChild(oldStrip);
+
+    // (Re-)render the §84 inline status bar.
+    let bar = document.querySelector('.home-status-bar');
+    if (!bar) {
+      bar = document.createElement('div');
+      bar.className = 'home-status-bar';
+      section.parentNode.insertBefore(bar, section);
     }
-    const strip = document.createElement('section');
-    strip.className = 'reward-strip';
-    strip.innerHTML = buildRewardStripHtml(stats, lev);
-    section.parentNode.insertBefore(strip, section);
+    bar.innerHTML = buildStatusBarHtml(stats, state, gradeSlug);
+    wireStatusBar(bar);
+    // Quest chip details come from renderDailyQuest() — it populates
+    // the chip contents now that the big card is gone.
     maybeRenderZeroStateTagline();
   }
-  function buildRewardStripHtml(stats, lev) {
-    const shields = stats.streakShields || 0;
+  // Module-scoped — populated by renderRewardStrip, read by
+  // populateSubjects to print the level subtitle on the last
+  // practiced subject row only.
+  let _latestLevel = null;
+
+  function buildStatusBarHtml(stats, state, gradeSlug) {
     const streak = stats.loginStreak || 0;
-    const shieldRow = shields > 0
-      ? Array.from({length: shields}).map(()=>'🛡').join('')
-      : '<span class="reward-strip-shield-empty">no shields yet</span>';
+    const shields = stats.streakShields || 0;
+    const gradeName = (function () {
+      const map = {
+        'grade-k':'Kindergarten','grade-1':'Grade 1','grade-2':'Grade 2','grade-3':'Grade 3',
+        'grade-4':'Grade 4','grade-5':'Grade 5','grade-6':'Grade 6','grade-7':'Grade 7',
+        'grade-8':'Grade 8'
+      };
+      return map[gradeSlug] || gradeSlug;
+    })();
+    // Quest chip — count + reward come from Achievements; chip body
+    // is populated/refreshed by renderDailyQuest() via [data-quest-chip].
     return `
-      <a class="reward-strip-tile reward-strip-level" href="achievements.html" aria-label="Level ${lev.level}, ${lev.inLevelXp} of ${lev.levelSpan} XP toward next level">
-        <div class="reward-strip-icon">⚡</div>
-        <div class="reward-strip-body">
-          <div class="reward-strip-label">Level ${lev.level}</div>
-          <div class="reward-strip-progress"><div class="reward-strip-progress-bar" style="width:${lev.pct}%"></div></div>
-          <div class="reward-strip-sub">${lev.inLevelXp} / ${lev.levelSpan} XP</div>
-        </div>
-      </a>
-      <a class="reward-strip-tile reward-strip-streak" href="achievements.html" aria-label="${streak} day streak">
-        <div class="reward-strip-icon">🔥</div>
-        <div class="reward-strip-body">
-          <div class="reward-strip-label">${streak} day${streak === 1 ? '' : 's'}</div>
-          <div class="reward-strip-sub">streak</div>
-        </div>
-      </a>
-      <a class="reward-strip-tile reward-strip-shields" href="achievements.html" aria-label="${shields} streak shields held">
-        <div class="reward-strip-icon">🛡</div>
-        <div class="reward-strip-body">
-          <div class="reward-strip-label">${shields} shield${shields === 1 ? '' : 's'}</div>
-          <div class="reward-strip-sub">${shieldRow}</div>
-        </div>
-      </a>
+      <button type="button" class="home-status-context" data-action="switch-state" aria-label="Change state or grade">
+        <span>${escapeHtml(state.name || 'Texas')}</span>
+        <span class="home-status-sep" aria-hidden="true">·</span>
+        <span>${escapeHtml(gradeName)}</span>
+      </button>
+      <div class="home-status-chips" role="group" aria-label="Today's status">
+        <span class="home-status-chip home-status-chip--streak" title="${streak} day streak">
+          <span class="home-status-chip-ico" aria-hidden="true">${TI_FLAME}</span>
+          <span class="home-status-chip-num">${streak}</span>
+        </span>
+        <span class="home-status-chip home-status-chip--shields" title="${shields} shield${shields === 1 ? '' : 's'}">
+          <span class="home-status-chip-ico" aria-hidden="true">${TI_SHIELD}</span>
+          <span class="home-status-chip-num">${shields}</span>
+        </span>
+        <button type="button" class="home-status-chip home-status-chip--quest" data-quest-chip aria-haspopup="dialog">
+          <span class="home-status-chip-ico" aria-hidden="true">${TI_CHECKLIST}</span>
+          <span class="home-status-chip-num" data-quest-progress>—</span>
+          <span class="home-status-chip-reward" data-quest-reward></span>
+        </button>
+      </div>`;
+  }
+
+  function wireStatusBar(bar) {
+    if (!bar || bar.dataset.wired === '1') return;
+    bar.dataset.wired = '1';
+    // Context chip (state · grade). Switcher not yet wired — TODO §84.
+    // For now: route to state-picker on home so the kid has a path
+    // forward instead of a dead tap.
+    const ctx = bar.querySelector('[data-action="switch-state"]');
+    if (ctx) {
+      ctx.addEventListener('click', () => {
+        window.location.href = 'index.html#state-picker';
+      });
+    }
+    // Quest chip opens the detail dialog. Dialog is rendered into the
+    // body by openQuestDialog() the first time so the bar markup
+    // stays compact.
+    const questChip = bar.querySelector('[data-quest-chip]');
+    if (questChip) {
+      questChip.addEventListener('click', openQuestDialog);
+    }
+  }
+
+  function openQuestDialog() {
+    if (!window.Achievements) return;
+    let dlg = document.getElementById('home-quest-dialog');
+    if (!dlg) {
+      dlg = document.createElement('dialog');
+      dlg.id = 'home-quest-dialog';
+      dlg.className = 'home-quest-dialog';
+      document.body.appendChild(dlg);
+      dlg.addEventListener('click', (e) => {
+        // Backdrop dismiss — close when click lands on the dialog
+        // itself (not on inner content).
+        if (e.target === dlg) dlg.close();
+      });
+    }
+    const m = window.Achievements.getDailyMissionState();
+    const tasksHtml = (m.tasks || []).map(t => {
+      const pct = t.target > 0 ? Math.min(100, Math.round(((t.current || 0) / t.target) * 100)) : 0;
+      return `
+        <div class="dq-task ${t.done ? 'dq-task--done' : ''}" data-task-id="${escapeHtml(t.id)}">
+          <div class="dq-task-body">
+            <div class="dq-task-label">${escapeHtml(t.label)}</div>
+            <div class="dq-task-progress"><div class="dq-task-progress-bar" style="width:${pct}%"></div></div>
+            <div class="dq-task-sub">${t.current || 0} / ${t.target}</div>
+          </div>
+        </div>`;
+    }).join('');
+    dlg.innerHTML = `
+      <div class="home-quest-dialog-head">
+        <div class="home-quest-dialog-title">Today's quest</div>
+        <div class="home-quest-dialog-reward">+${m.rewardCents}¢ all done</div>
+        <button type="button" class="home-quest-dialog-close" aria-label="Close" data-act="close">×</button>
+      </div>
+      <div class="home-quest-dialog-tasks">${tasksHtml}</div>
+      ${m.completed ? '<div class="home-quest-dialog-done">Quest complete.</div>' : ''}
     `;
+    dlg.querySelector('[data-act="close"]').addEventListener('click', () => dlg.close());
+    if (typeof dlg.showModal === 'function') dlg.showModal();
+    else dlg.setAttribute('open', '');
   }
 
   // ============================================================
   // DAILY QUEST CARD — 3 sub-tasks above subject grid
   // ============================================================
+  // §84 — quest card is replaced by a chip + dialog. This function
+  // now ONLY populates the chip text on the status bar; the detail
+  // (3 sub-tasks + progress bars) lives in the dialog opened by the
+  // chip click. Quest tracking + reward computation are unchanged.
   function renderDailyQuest(state, gradeSlug) {
     if (!window.Achievements) return;
     const m = window.Achievements.getDailyMissionState();
-    const grid = document.getElementById('subject-grid');
-    if (!grid) return;
-    const section = grid.closest('.subject-section') || grid.parentNode;
-    // §15: same hard gate as renderRewardStrip — signed-out users never
-    // see the daily quest card.
-    const auth = window.STAARAuth;
-    const isSignedIn = !!(auth && typeof auth.currentUser === 'function' && auth.currentUser());
-    const hasAnyProgress = m.completed
-      || (Array.isArray(m.tasks) && m.tasks.some(t => (t.current || 0) > 0));
-    if (!isSignedIn || !hasAnyProgress) {
-      const existing = document.querySelector('.daily-quest-card-grade');
-      if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
-      maybeRenderZeroStateTagline();
-      return;
-    }
-    // Insert AFTER reward strip but BEFORE subject section
-    let card = document.querySelector('.daily-quest-card-grade');
-    if (!card) {
-      card = document.createElement('section');
-      card.className = 'daily-quest-card-grade';
-      // Insert it just before the subject section
-      section.parentNode.insertBefore(card, section);
-    }
-    const tasksHtml = m.tasks.map(t => {
-      const pct = t.target > 0 ? Math.min(100, Math.round((t.current / t.target) * 100)) : 0;
-      return `
-        <div class="dq-task ${t.done ? 'dq-task--done' : ''}" data-task-id="${escapeHtml(t.id)}">
-          <div class="dq-task-emoji" aria-hidden="true">${t.done ? '✅' : escapeHtml(t.emoji || '🎯')}</div>
-          <div class="dq-task-body">
-            <div class="dq-task-label">${escapeHtml(t.label)}</div>
-            <div class="dq-task-progress"><div class="dq-task-progress-bar" style="width:${pct}%"></div></div>
-            <div class="dq-task-sub">${t.current} / ${t.target}</div>
-          </div>
-        </div>
-      `;
-    }).join('');
-    const completedHtml = m.completed
-      ? `<div class="dq-completed">✨ Today's quest complete · +${m.rewardCents}¢ earned</div>`
-      : '';
-    card.innerHTML = `
-      <div class="dq-head">
-        <div class="dq-head-title">Today's quest</div>
-        <div class="dq-head-reward">+${m.rewardCents}¢ all done</div>
-      </div>
-      <div class="dq-tasks">${tasksHtml}</div>
-      ${completedHtml}
-    `;
+    // Strip the legacy big-card render if it's still in the DOM from
+    // cached markup.
+    const legacy = document.querySelector('.daily-quest-card-grade');
+    if (legacy && legacy.parentNode) legacy.parentNode.removeChild(legacy);
+
+    const bar = document.querySelector('.home-status-bar');
+    if (!bar) return;
+    const chip = bar.querySelector('[data-quest-chip]');
+    if (!chip) return;
+    const progressEl = chip.querySelector('[data-quest-progress]');
+    const rewardEl   = chip.querySelector('[data-quest-reward]');
+    const tasks = Array.isArray(m.tasks) ? m.tasks : [];
+    const done = tasks.filter(t => t.done).length;
+    const total = tasks.length || 0;
+    if (progressEl) progressEl.textContent = total ? `${done}/${total}` : '—';
+    if (rewardEl)   rewardEl.textContent   = m.rewardCents ? ` · +${m.rewardCents}¢` : '';
+    if (m.completed) chip.classList.add('home-status-chip--quest-done');
+    else chip.classList.remove('home-status-chip--quest-done');
   }
 
   // ============================================================

@@ -17481,6 +17481,242 @@ body.practice-page[data-subject="reading"] .practice-main {
   padding: 0 16px;
 }
 
+/* ==========================================================================
+   §84 Home / grade landing — minimalist redesign (May 13).
+
+   Killed: 3-stat card row (Level/streak/shields), big "Today's quest"
+   card with 3 sub-tasks + progress bars, "no shields yet" placeholder
+   copy, serif "Subjects" heading, emoji icons in chrome.
+
+   New: a single inline `.home-status-bar` chip row above the subject
+   list. Tabler-style outline SVG icons. Quest detail moves into a
+   <dialog> opened by tapping the quest chip. Subject rows get an
+   optional "Level N · M/T XP" subtitle on the last-practiced subject
+   row (acts as the "Continue" affordance from A10).
+   ========================================================================== */
+
+/* Centered minimal column for the entire grade landing surface. */
+body.grade-page .grade-content--minimal {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* Status bar — one inline row, no card, secondary colour. */
+.home-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 8px 0 24px;
+  padding: 6px 0;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  flex-wrap: wrap;
+}
+.home-status-context {
+  background: none;
+  border: none;
+  padding: 4px 0;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.01em;
+}
+.home-status-context:hover {
+  color: rgba(255, 255, 255, 0.9);
+}
+.home-status-sep {
+  color: rgba(255, 255, 255, 0.3);
+}
+.home-status-chips {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+}
+.home-status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  padding: 4px 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: default;
+  line-height: 1;
+}
+.home-status-chip--quest {
+  cursor: pointer;
+}
+.home-status-chip--quest:hover {
+  color: rgba(255, 255, 255, 0.9);
+}
+.home-status-chip-ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+}
+.home-status-chip--streak .home-status-chip-ico { color: #ef4444; }
+.home-status-chip--shields .home-status-chip-ico { color: rgba(255, 255, 255, 0.55); }
+.home-status-chip--quest .home-status-chip-ico { color: var(--gold, #fbbf24); }
+.home-status-chip-num {
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.home-status-chip-reward {
+  color: var(--gold, #fbbf24);
+  font-weight: 600;
+}
+.home-status-chip--quest-done .home-status-chip-num { color: var(--gold, #fbbf24); }
+
+/* Phone: wrap to two lines if needed. */
+@media (max-width: 480px) {
+  .home-status-bar {
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .home-status-chips {
+    gap: 12px;
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+/* Quest detail dialog — native <dialog>, dim backdrop. */
+.home-quest-dialog {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  background: rgba(13, 18, 36, 0.98);
+  color: #fff;
+  width: min(420px, calc(100vw - 32px));
+  padding: 0;
+  max-height: 80vh;
+}
+.home-quest-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+}
+.home-quest-dialog-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px 8px;
+}
+.home-quest-dialog-title {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+}
+.home-quest-dialog-reward {
+  font-size: 12px;
+  color: var(--gold, #fbbf24);
+  font-weight: 600;
+}
+.home-quest-dialog-close {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+}
+.home-quest-dialog-tasks {
+  padding: 8px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.home-quest-dialog-tasks .dq-task {
+  display: block;
+}
+.home-quest-dialog-tasks .dq-task-label {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 6px;
+}
+.home-quest-dialog-tasks .dq-task--done .dq-task-label { color: #34d399; }
+.home-quest-dialog-tasks .dq-task-progress {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+.home-quest-dialog-tasks .dq-task-progress-bar {
+  height: 100%;
+  background: var(--gold, #fbbf24);
+  transition: width 0.3s;
+}
+.home-quest-dialog-tasks .dq-task--done .dq-task-progress-bar { background: #34d399; }
+.home-quest-dialog-tasks .dq-task-sub {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.45);
+}
+.home-quest-dialog-done {
+  padding: 12px 20px 16px;
+  color: var(--gold, #fbbf24);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Subject-section eyebrow — replaces the serif <h1>Subjects</h1>. */
+.subject-section-head--minimal {
+  padding: 0;
+  margin: 0 0 12px;
+  border: none;
+}
+.subject-section-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+}
+
+/* Subject card — two-line variant with optional level/XP subtitle. */
+.subject-card .subject-card-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  text-align: left;
+}
+.subject-card .subject-card-text .list-card-title {
+  margin: 0;
+}
+.subject-card-sub {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 500;
+  letter-spacing: 0.005em;
+}
+
+/* Last-practiced subject gets a slim gold left-border accent so the
+   kid sees "this is where you were." Per A10. */
+.subject-card--continue {
+  border-left: 2px solid var(--gold, #fbbf24) !important;
+  padding-left: 14px;
+}
+.subject-card .list-card-chevron {
+  color: rgba(255, 255, 255, 0.5);
+  display: inline-flex;
+  align-items: center;
+}
+
 /* ----- Two-column desktop (≥768px): passage LEFT, question RIGHT ----- */
 @media (min-width: 768px) {
   body[data-subject="reading"] #qbox {
