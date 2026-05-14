@@ -2055,15 +2055,12 @@
         }
       }
 
-      // 5. §68 — Update muted footer line. Drop the '±N pts' stake
-      //    chip since pts are now inline in the q-inline-fb head
-      //    on CORRECT, and 0 pts is implied on WRONG. Footer is
-      //    just topic + TEKS (informational, no scoring duplication).
-      const metaText = qCard ? qCard.querySelector('.q-meta-text') : null;
-      if (metaText) {
-        const base = metaText.textContent.replace(/ · ±?\d+ pts.*$/, '').replace(/ · ⭐ Mastered$/, '');
-        metaText.textContent = base;
-      }
+      // §94 — old .q-meta footer is gone (was at bottom of card,
+      // buried below Check answer). Topic + reward now render as a
+      // .q-card-eyebrow at the TOP of the card, before the question
+      // stem. The eyebrow stays static through the answer state —
+      // kid keeps topic context throughout. No mutation needed
+      // here.
 
       // 6. §59 — out-of-card panel deleted entirely. Both states render
       //    inside the question card now: CORRECT inline chip, WRONG AI
@@ -3349,7 +3346,7 @@
     // 3/10 critique. Drop the per-question speaker on reading flows.
     const hasPassage = !!(q.passage && (q.passage.body || q.passage.text));
     const readBtn = (!hasPassage && window.Speech && window.Speech._isSupported())
-      ? `<button type="button" class="speech-btn q-speech-btn" data-act="read" data-role="speak" aria-label="Read aloud" aria-pressed="false">
+      ? `<button type="button" class="speech-btn q-speech-btn" data-act="read" data-role="speak" aria-label="Read question aloud" title="Read question aloud" aria-pressed="false">
           ${SPEECH_ICON_HTML}
         </button>`
       : '';
@@ -3369,20 +3366,22 @@
       ? `<div class="reading-q-nav" aria-label="Question position">Question ${idx + 1} of ${total}</div>`
       : '';
 
-    // §54 — explicit state machine. data-state drives CSS visuals
-    // (border color, input lock styling). Footer chip demoted from
-    // pair-of-pills (caps + ±N PTS) to a single muted sentence-case
-    // line. Reward text is the only stake-info shown; topic/TEKS
-    // moves into the same line, lowercase + separated by middots.
+    // §94 — topic + reward stake render as an EYEBROW at the TOP of
+    // the question card now (was a buried footer line at the
+    // bottom under the Check answer button, where kids never saw
+    // it). Format: WORD PROBLEMS · +5 pts — uppercase, gold-tinted,
+    // 11px letter-spaced. The leading topic anchors context; the
+    // trailing stake reads as a reward, not a stake (the `±` was
+    // misleading copy — per §94 non-punitive policy, wallet only
+    // ever increments).
     const topic = q._unit?.title ? escapeHtml(q._unit.title) : '';
     const stake = locked
       ? '⭐ Mastered'
-      : `±${cents} pts`;
-    // Bug M from master audit: TEKS code (e.g. "TEKS 3.4B") is
-    // cognitive noise for kids. Hidden from the meta line. Still
-    // available in q._lesson.teks for the parent dashboard / future
-    // teacher view.
-    const metaParts = [topic, stake].filter(Boolean);
+      : `+${cents} pts`;
+    const eyebrowParts = [topic, stake].filter(Boolean);
+    const eyebrowHtml = eyebrowParts.length
+      ? `<div class="q-card-eyebrow" data-role="eyebrow">${eyebrowParts.join(' · ')}</div>`
+      : '';
 
     // §56 — inline feedback slot. Sits between input and primary
     // button so the kid sees outcome → explanation → next-action in
@@ -3397,11 +3396,11 @@
       ${passageHtml}
       <form class="question-card" data-state="asking" data-cents="${cents}">
         ${navHtml}
+        ${eyebrowHtml}
         <div class="q-prompt">${readBtn}<span class="q-prompt-text">${escapeHtml(q.prompt)}</span></div>
         <div class="q-body">${body}</div>
         <div class="q-inline-fb" data-role="inline-fb" hidden></div>
         <button class="btn btn-primary q-cta" type="submit" data-role="check">Check answer</button>
-        <div class="q-meta" data-role="meta"><span class="q-meta-text">${metaParts.join(' · ')}</span></div>
       </form>`;
   }
 

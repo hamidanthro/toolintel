@@ -3694,32 +3694,27 @@ async function handleLose(payload) {
   // (legacy duplicate bump removed — answered is now incremented above so
   // it also covers the mastered-section path.)
 
-  const deduct = Math.min(cents, balance); // floor at 0
-
-  if (deduct <= 0) {
-    return ok({
-      lostCents: 0,
-      balanceCents: balance,
-      lifetimeCents: lifetime,
-      capCents: LIFETIME_CAP_CENTS,
-      flooredAtZero: true
-    });
-  }
-
-  const upd = await ddb.send(new UpdateCommand({
-    TableName: USERS_TABLE,
-    Key: { username: auth.username },
-    UpdateExpression: 'SET balanceCents = balanceCents - :d',
-    ConditionExpression: 'balanceCents >= :d',
-    ExpressionAttributeValues: { ':d': deduct },
-    ReturnValues: 'ALL_NEW'
-  }));
+  // §94 NON-PUNITIVE POLICY (May 14, 2026) — wrong answers no longer
+  // deduct from the wallet. Khan Academy + IXL both diverged from
+  // "punish wrong" 10+ years ago; research shows it harms persistence
+  // on hard topics. Internal XP / mastery score (Phase 4) can still
+  // move both ways for adaptive signal, but real-money-equivalent
+  // (cents → toys) only ever increments via handleEarn.
+  //
+  // The lifetimeAnswered++ bump above STILL fires unconditionally so
+  // accuracy stats remain truthful — wrong answers count as attempts.
+  // We just don't touch balanceCents anymore.
+  //
+  // The `cents` payload parameter is now ignored. The lambda still
+  // accepts it for backwards-compat with practice.js callers that
+  // pass it; we just don't act on it.
+  void cents; // explicit no-op so eslint doesn't flag unused
   return ok({
-    lostCents: deduct,
-    balanceCents: upd.Attributes.balanceCents || 0,
-    lifetimeCents: upd.Attributes.lifetimeCents || 0,
+    lostCents: 0,
+    balanceCents: balance,
+    lifetimeCents: lifetime,
     capCents: LIFETIME_CAP_CENTS,
-    flooredAtZero: (upd.Attributes.balanceCents || 0) === 0
+    flooredAtZero: balance === 0
   });
 }
 
