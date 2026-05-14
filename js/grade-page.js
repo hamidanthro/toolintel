@@ -679,26 +679,16 @@
   // prop before the kid scans the subject picker.
   // ============================================================
   function maybeRenderZeroStateTagline() {
-    const grid = document.getElementById('subject-grid');
-    if (!grid) return;
-    const section = grid.closest('.subject-section');
-    if (!section) return;
-    const rewardVisible = !!document.querySelector('.reward-strip');
-    const questVisible = !!document.querySelector('.daily-quest-card-grade');
+    // §90 KILL-HOME — the 'Practice. Earn real cents. Redeem toys.'
+    // tagline is marketing copy. After §84 killed the reward strip
+    // and quest card, this tagline started rendering on EVERY
+    // grade.html (because the rewardVisible/questVisible gates
+    // never returned true). It's appropriate on the unauthed
+    // marketing landing, not on an authed product surface. Strip
+    // any pre-existing rendering of it and never render again.
     const existing = document.querySelector('.zero-state-tagline');
-    if (rewardVisible || questVisible) {
-      // Returning kid — drop tagline if it was previously rendered, drop the body
-      // marker too so the subject-picker margin returns to its default rhythm.
-      if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
-      document.body.classList.remove('has-zero-state');
-      return;
-    }
-    document.body.classList.add('has-zero-state');
-    if (existing) return;
-    const tagline = document.createElement('div');
-    tagline.className = 'zero-state-tagline';
-    tagline.textContent = 'Practice. Earn real cents. Redeem toys.';
-    section.parentNode.insertBefore(tagline, section);
+    if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
+    document.body.classList.remove('has-zero-state');
   }
 
   // ============================================================

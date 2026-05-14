@@ -775,6 +775,26 @@
       // and other unauthed chrome when this class is on body. Stays
       // off for guests so the marketing site continues to render.
       document.body.classList.add('is-signed-in');
+
+      // §90 KILL-HOME — returning kids skip the home grade tiles and
+      // land directly on grade.html (the §84 subject picker) for
+      // their last-practiced grade. Home stops being a tollbooth: it
+      // only renders for guests + first-time signed-in kids without
+      // a lastPracticedGrade yet. Per the user's prior directive
+      // 'grades takes me to subjects', target is the subject picker
+      // (grade.html), NOT practice.html — kid still picks subject
+      // (and for math, topic) before answering.
+      try {
+        const lastGrade = localStorage.getItem(`staar.lastPracticedGrade.${u.username}`);
+        if (lastGrade) {
+          const stateSlug = (u && u.state) || (() => {
+            try { return localStorage.getItem('gradeearn.state'); } catch (_) { return null; }
+          })() || 'texas';
+          location.replace(`grade.html?s=${encodeURIComponent(stateSlug)}&g=${encodeURIComponent(lastGrade)}`);
+          return;
+        }
+      } catch (_) {}
+
       if (sessionPreview) sessionPreview.hidden = true;
       if (fwRibbon) fwRibbon.hidden = true;
       renderGradeGrid();
