@@ -705,6 +705,13 @@ async function handleGenerate(payload) {
     const userIdForLake = (await verifyToken(payload.token).catch(() => null))?.username || 'guest';
     questions.forEach(q => {
       const teks = (q.teks || '').toLowerCase().replace(/[^a-z0-9.-]/g, '') || 'unknown';
+      // §SCHEMA-DRIFT: math stores grade in PREFIXED form (grade-3,
+      // grade-k, algebra-1) — do NOT strip 'grade-' prefix here.
+      // Reading/Science/SS strip; math does not. The 20,253 canonical
+      // math rows use prefixed grade. See architecture-decisions.md
+      // §SCHEMA-DRIFT. (593 historical bare-grade math orphans are
+      // being migrated to prefixed form via §92 — see
+      // scripts/migrations/m92-math-grade-orphans.js.)
       const poolKey = `${effectiveState}#${grade}#${effectiveSubject}#teks-${teks}`;
       const contentId = lake.generateId('q');
       q.contentId = contentId;
@@ -2034,6 +2041,10 @@ async function handleGetWrongAnswers(payload) {
   const requestedLimit = parseInt(payload.limit, 10);
   const limit = Math.min(50, Math.max(5, Number.isFinite(requestedLimit) ? requestedLimit : 25));
   const stateFilter = payload.state ? String(payload.state).toLowerCase() : null;
+  // IMPORTANT (§SCHEMA-DRIFT): do not remove — strips frontend's
+  // 'grade-3' form to match pool's bare-form rows for reading/science/
+  // SS. Removing this returns 0 wrong-answer rows for those subjects.
+  // See docs/knowledge-packs/architecture-decisions.md §SCHEMA-DRIFT.
   const gradeFilter = payload.grade != null ? String(payload.grade).toLowerCase().replace(/^grade-/, '') : null;
   const subjectFilter = payload.subject ? String(payload.subject).toLowerCase() : null;
 
@@ -2946,9 +2957,13 @@ async function handleGetReadingItem(payload) {
   const auth = await authedUser(payload).catch(() => null);
   const username = auth?.username || 'guest';
   const state = String(payload.state || 'texas').trim().toLowerCase();
-  // Frontend sends slug-shaped grade ('grade-3'); GSI partition key uses
-  // numeric-only ('3'). Normalize: strip 'grade-' prefix; map 'algebra-1'
-  // to '9' (Phase 2 didn't seed algebra-1, but the mapping matches CLAUDE.md).
+  // IMPORTANT (§SCHEMA-DRIFT): do NOT remove the prefix-strip below.
+  // Reading rows in staar-content-pool store grade in BARE form
+  // ('3', 'k', '9'); frontend sends PREFIXED form ('grade-3',
+  // 'grade-k', 'algebra-1'). Removing this strip silently returns
+  // 0 rows for every reading kid. Smoke check:
+  // scripts/audit/read-path-smoke.js. Design rationale:
+  // docs/knowledge-packs/architecture-decisions.md §SCHEMA-DRIFT.
   const rawGrade = String(payload.grade || '3').trim().toLowerCase();
   let grade = rawGrade.replace(/^grade-/, '');
   if (rawGrade === 'algebra-1') grade = '9';
@@ -3034,6 +3049,11 @@ async function handleGetScienceItem(payload) {
   const auth = await authedUser(payload).catch(() => null);
   const username = auth?.username || 'guest';
   const state = String(payload.state || 'texas').trim().toLowerCase();
+  // IMPORTANT (§SCHEMA-DRIFT): do NOT remove the prefix-strip below.
+  // Science rows in staar-content-pool store grade in BARE form;
+  // frontend sends PREFIXED form. Removing this strip silently returns
+  // 0 rows for every science kid. See architecture-decisions.md
+  // §SCHEMA-DRIFT. Smoke check: scripts/audit/read-path-smoke.js.
   const rawGrade = String(payload.grade || '5').trim().toLowerCase();
   let grade = rawGrade.replace(/^grade-/, '');
   if (rawGrade === 'algebra-1') grade = '9';
@@ -3121,6 +3141,13 @@ async function handleGetSocialStudiesItem(payload) {
   const auth = await authedUser(payload).catch(() => null);
   const username = auth?.username || 'guest';
   const state = String(payload.state || 'texas').trim().toLowerCase();
+  // IMPORTANT (§SCHEMA-DRIFT): do NOT remove the prefix-strip below.
+  // SS rows in staar-content-pool store grade in BARE form; frontend
+  // sends PREFIXED form. Removing this strip silently returns 0 rows
+  // for every SS kid. (Note: SS is currently §91-gated in the
+  // frontend until the USA-broad KP ships, but the read path is
+  // still load-bearing for future re-enablement.) See
+  // architecture-decisions.md §SCHEMA-DRIFT.
   const rawGrade = String(payload.grade || '8').trim().toLowerCase();
   const grade = rawGrade.replace(/^grade-/, '');
 

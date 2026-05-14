@@ -220,3 +220,57 @@ Overlay rows in `staar-content-pool` carry `state='texas'` (or other); USA-broad
 
 Texas Science KP (May 8, 2026, commit `438a353`) is a Texas-tuned investment. Per this strategy, Science also defaults USA-broad. Texas Science KP becomes a TX overlay on top of `usa-science.md`. **No action needed now** — just don't deepen the Texas-only science investment without considering the USA-broad direction first.
 
+
+---
+
+## §SCHEMA-DRIFT — Per-subject grade-field form in `staar-content-pool` (May 14, 2026)
+
+**Decision date:** 2026-05-14
+**Context:** May 14 schema audit
+**Status:** Documented design (was previously undocumented)
+
+### What
+
+In `staar-content-pool`, the `grade` field uses different forms by subject:
+
+| Subject          | Grade form        | Example values             | Active rows (Texas, 2026-05-14) |
+|------------------|-------------------|----------------------------|---------------------------------|
+| math             | prefixed          | `grade-3`, `grade-k`, `algebra-1` | 20,253 (canonical) + 593 orphans (§92 cleanup) |
+| reading          | bare              | `3`, `k`, `9`              | 1,100 |
+| science          | bare              | `3`, `k`, `9`              | 976 |
+| social-studies   | bare              | `3`, `k`, `9`              | 1,030 (gated §91) |
+
+Frontend (`liveForGrade`, `grade.html`, `practice.html` URL params) always passes the prefixed form (`grade-3`). Reading/Science/SS read paths strip the prefix at read time via `rawGrade.replace(/^grade-/, '')` with `algebra-1 → '9'` special-case. Math read path uses the prefixed form directly.
+
+### Why this is intentional
+
+- Math has 20,253 rows in canonical prefixed form. Migrating those to bare form to match other subjects = 20k+ row migration for no serving-time benefit. Bad cost/correctness ratio.
+- Reading/Science/SS launched with bare form. Migrating those = same bad ratio in the other direction.
+- The read-time normalize convention is now the documented contract.
+
+### What this means for new code
+
+- **Writing math rows:** use prefixed form (`grade-3`, `grade-k`, `algebra-1`).
+- **Writing reading/science/SS rows:** use bare form (`3`, `k`, `9`).
+- **Reading math rows:** pass prefixed form directly to poolKey.
+- **Reading reading/science/SS rows:** strip prefix first via `rawGrade.replace(/^grade-/, '')`.
+- **DO NOT REMOVE** the strip step at the following lambda/tutor.js sites — each is load-bearing; removal silently returns 0 rows to every kid in that subject:
+  - `handleGetReadingItem` (~line 2953)
+  - `handleGetScienceItem` (~line 3038)
+  - `handleGetSocialStudiesItem` (~line 3125)
+  - `handleGetWrongAnswers` (~line 2037)
+
+### Open: 593 math orphans
+
+See `§92` migration (commit `3e3bea1`). 593 historical math rows in bare form — bounded one-shot rescue via `scripts/migrations/m92-math-grade-orphans.js`. Migration script and restore companion shipped together per §22 + §28 destructive-script rule.
+
+### Smoke check
+
+`scripts/audit/read-path-smoke.js` exercises each subject's read path with frontend-form input (`grade-3`, `grade-k`) and asserts non-zero results. Run before any deploy that touches `lambda/tutor.js` or its read paths:
+
+```sh
+cd scripts/audit && npm install && node read-path-smoke.js
+```
+
+Exit 0 on healthy state. Exit 1 if any required subject returns 0 rows — that's the signal a normalize step was removed.
+

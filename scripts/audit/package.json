@@ -1,0 +1,13 @@
+{
+  "name": "audit",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pre-deploy smoke checks against staar-content-pool. Read-only.",
+  "type": "commonjs",
+  "scripts": {
+    "smoke": "node read-path-smoke.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.658.0"
+  }
+}
