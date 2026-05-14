@@ -29692,6 +29692,94 @@ body.practice-page .practice-breadcrumb-menu-item--user {
    #qbox above.
    ========================================================================== */
 
+/* ==========================================================================
+   §87 Signed-in home — grade picker IS the page (May 13).
+
+   User: 'i dont want this view when i login. all i want is list of
+   grades to choose from, grades takes me to subjects and i go to
+   subject and choose a topic and study.'
+
+   Strip every signed-in home-v2 surface EXCEPT the grade picker.
+   Promote the grade picker to centerpiece: big tappable tiles
+   (44px+ tap target, 18px text), centered column. Pill click now
+   navigates to grade.html (§84 subject picker), which is the
+   correct next step in the flow Home → Grade → Subject → Topic →
+   Practice.
+
+   Hidden under-the-hood data (continue card, wallet, daily quest,
+   stats line) keeps refreshing in JS — surfaces that read it (e.g.
+   MySpace, parent dashboard) are unaffected.
+   ========================================================================== */
+body.home-page #dashboard .home-subject-bar,
+body.home-page #dashboard .home-greet,
+body.home-page #dashboard .home-continue,
+body.home-page #dashboard .home-wallet,
+body.home-page #dashboard .home-quest,
+body.home-page #dashboard .home-stats-line {
+  display: none !important;
+}
+
+body.home-page #dashboard .home-v2-inner {
+  padding-top: 64px;
+  max-width: 560px;
+  margin: 0 auto;
+}
+body.home-page #dashboard .home-secondary {
+  display: block;
+  margin: 0;
+}
+body.home-page #dashboard .home-gradepicker {
+  display: block;
+  text-align: center;
+}
+body.home-page #dashboard .home-gradepicker-eyebrow {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+body.home-page #dashboard .home-grade-pills {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+  gap: 10px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+body.home-page #dashboard .home-grade-pill {
+  font-size: 18px;
+  font-weight: 600;
+  padding: 18px 12px;
+  min-height: 56px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.85);
+}
+body.home-page #dashboard .home-grade-pill:hover {
+  background: rgba(251, 191, 36, 0.08);
+  border-color: rgba(251, 191, 36, 0.4);
+  color: #fff;
+}
+body.home-page #dashboard .home-grade-pill--active {
+  background: #fbbf24;
+  border-color: #fbbf24;
+  color: #0a1628;
+}
+@media (max-width: 480px) {
+  body.home-page #dashboard .home-v2-inner { padding-top: 32px; }
+  body.home-page #dashboard .home-grade-pills {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  body.home-page #dashboard .home-grade-pill {
+    font-size: 16px;
+    padding: 14px 8px;
+    min-height: 52px;
+  }
+}
+
 /* §82 — ghost-CTA restyle for "Record yourself reading". The pill
    was carrying gold border + filled background + 0.92rem text =
    nearly as loud as the primary 'Check answer' button below. A kid

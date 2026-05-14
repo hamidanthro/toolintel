@@ -122,7 +122,7 @@
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" />
 
-  <link rel="stylesheet" href="css/styles.css?v=20260513ab" />
+  <link rel="stylesheet" href="css/styles.css?v=20260513ac" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -325,7 +325,7 @@
           </span>
         </a>
         <div class="home-gradepicker">
-          <span class="home-gradepicker-eyebrow">Switch grade</span>
+          <span class="home-gradepicker-eyebrow">Pick a grade</span>
           <div class="home-grade-pills" id="home-grade-pills" role="radiogroup" aria-label="Grade"></div>
         </div>
       </div>
@@ -1175,14 +1175,17 @@
           try {
             const u = window.STAARAuth?.currentUser?.();
             if (u) setEffectiveGrade(u, slug);
-            const subj = readSubject();
             const stateSlug = (u && u.state) || (() => {
               try { return localStorage.getItem('gradeearn.state'); }
               catch (_) { return null; }
             })() || 'texas';
-            const targetPage = subj === 'math' ? 'subject.html' : 'practice.html';
-            const qs = `?s=${encodeURIComponent(stateSlug)}&g=${encodeURIComponent(slug)}&subj=${subj}`;
-            location.href = targetPage + qs;
+            // §87 — grade pill goes to grade.html (the §84 minimalist
+            // subject picker). The user explicitly asked for the flow
+            // Home → Grade → Subject → Topic → Practice, so we no
+            // longer leapfrog from Home directly to subject.html or
+            // practice.html.
+            const qs = `?s=${encodeURIComponent(stateSlug)}&g=${encodeURIComponent(slug)}`;
+            location.href = 'grade.html' + qs;
           } catch (err) {
             // Defensive — should never fire on a same-origin nav,
             // but if it does, surface the actual reason instead
