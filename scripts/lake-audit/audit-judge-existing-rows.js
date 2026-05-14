@@ -274,7 +274,16 @@ function costSoFar() {
 
     let verdict;
     try {
-      verdict = await judgeQuestion(normalized.question, {
+      // FIX 2026-05-14 — was passing `normalized.question` (just the
+      // stem string). judgeQuestion → buildUserPrompt reads
+      // question.{question,stem,choices,correctIndex,answer,
+      // explanation,passage} on the FIRST arg. Passing just the stem
+      // produced a 100%-reject rate on subjects with non-numeric
+      // content because the judge couldn't see the choices array.
+      // The May 3 §27 audit rejects (87 rows) were therefore tainted —
+      // worth a re-judge with the corrected call path before any
+      // further tombstone work uses that data.
+      verdict = await judgeQuestion(normalized, {
         stateSlug: normalized.stateSlug,
         subject: normalized.subject,
         grade: normalized.grade

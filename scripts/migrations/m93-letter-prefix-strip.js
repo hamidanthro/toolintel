@@ -102,7 +102,6 @@ async function applyUpdate(client, plan, item) {
     ':newChoices': { L: plan.newChoices.map(s => ({ S: s })) },
     ':tag': { S: MIGRATION_TAG },
     ':at': { S: NOW_ISO },
-    ':beforeChoices': { L: beforeChoices },
   };
   const exprNames = { '#m': '_migration', '#ma': '_migrationAt', '#mb': '_migrationBefore' };
   let setExpr = 'choices = :newChoices, #m = :tag, #ma = :at, #mb = :before';
@@ -122,6 +121,12 @@ async function applyUpdate(client, plan, item) {
       },
     };
   }
+  // Idempotency: refuse to re-write if THIS migration tag already
+  // present. Allow writing when no migration OR a DIFFERENT migration
+  // (e.g. §92 math-grade-orphan touched the same row first — those
+  // rows still need §93's choice-strip; the §92 restore trail for
+  // those rows is preserved separately in §92's manifest).
+  exprValues[':selfTag'] = { S: MIGRATION_TAG };
   await client.send(new UpdateItemCommand({
     TableName: TABLE,
     Key: {
@@ -131,9 +136,7 @@ async function applyUpdate(client, plan, item) {
     UpdateExpression: `SET ${setExpr}`,
     ExpressionAttributeValues: exprValues,
     ExpressionAttributeNames: exprNames,
-    // Refuse to overwrite if the migration tag is already there
-    // (idempotency — re-running on already-migrated rows is a no-op).
-    ConditionExpression: 'attribute_not_exists(#m)',
+    ConditionExpression: 'attribute_not_exists(#m) OR #m <> :selfTag',
   }));
 }
 

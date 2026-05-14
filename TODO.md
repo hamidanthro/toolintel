@@ -26,16 +26,34 @@ Append new items under the right category. Move resolved items to
 - **Logged:** 2026-05-14
 
 ### LAKE-WIDE JUDGE BACKFILL — Reading + Science coverage
-- **State:** identified, not prioritized.
-- **Coverage today:** Reading 2.5% `_judgedAt`, Science 10.7%
-  `_judgedAt`, Math 97.2% `_judge`, SS 0%. Pre-judge era content
-  never went through the gate; new writes get judged.
-- **Approach:** adapt `scripts/lake-audit/audit-judge-existing-rows.js`
-  (the §27 lake-wide judge run, gpt-4o JUDGE_MODEL per CLAUDE.md §27)
-  per subject — Reading + Science each get their own pass. Cost
-  estimate: 1100 + 976 rows × ~$0.002/call ≈ $4-5 + Anthropic
-  verifier ≈ $10. Drift-rejects tombstoned per §28 pattern.
-- **Order:** schedule after §93 letter-prefix sweep ships.
+- **State:** sample done 2026-05-14 (50 rows each, $0.20 total). Two
+  findings:
+  - **Reading: 12% reject rate** on sample (44/50 pass, 6 reject —
+    3 FACTUAL, 2 AGE_FIT, 1 AMBIGUITY). Acceptable baseline; full
+    sweep is reasonable but defer for now.
+  - **Science: 56% reject rate** on sample (22/50 pass, 28 reject —
+    15 AMBIGUITY, 6 FACTUAL, 5 ANSWER_LANGUAGE, 4 AGE_FIT,
+    4 MULTIPLE_CORRECT). **Policy-decision territory** — tombstoning
+    ~550 science rows requires Hamid eyeball + decision (regenerate
+    vs leave vs gate). Texas Science KP shipped May 8; the post-KP
+    rows may differ from these pre-KP rows.
+  - Sample outputs: `scripts/lake-audit/output/judge-reading-2026-
+    05-14T19-17-29-874Z.json`, `output/judge-science-2026-05-14T19-
+    20-15-075Z.json`.
+- **Side finding — pre-existing audit bug fixed.** The May 3 §27
+  lake-wide audit (`audit-judge-existing-rows.js`) was passing
+  `normalized.question` (just the stem string) to `judgeQuestion`
+  instead of the full structured object. The judge couldn't see
+  choices/correctIndex → reasonable rejections on legitimate rows.
+  **The 87 rejects from §27 May 3 are tainted data.** Bug fixed
+  2026-05-14; future runs of that script are accurate. Worth re-
+  running the §27 audit before any tombstone work consumes those
+  rejects.
+- **Approach for full sweep (after Hamid eyeballs samples):**
+  `cd scripts/lake-audit && OPENAI_API_KEY=... node
+  judge-by-subject-sample.js --subject reading --all` (~$2.20,
+  ~50 min wall-clock for 1,100 rows). Same for science. Then a
+  sample-eyeball + tombstone pass.
 - **Logged:** 2026-05-14
 
 ### SS USA-BROAD KNOWLEDGE PACK
