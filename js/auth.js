@@ -1659,7 +1659,26 @@ if ('serviceWorker' in navigator) {
     document.body.appendChild(a);
   }
 
+  // §89 — global signed-in body class. Set BEFORE any fetch so the
+  // marketing footer never flashes for an authed user. Listened to
+  // by every page's CSS to suppress unauthed chrome (footer, parent
+  // marketing layers, etc.). Toggled again on login / logout via the
+  // onSTAARLogin hook so a same-tab signin doesn't keep the footer.
+  function setupSignedInBodyClass() {
+    const apply = () => {
+      if (currentUser()) document.body.classList.add('is-signed-in');
+      else document.body.classList.remove('is-signed-in');
+    };
+    apply();
+    const prevLogin = window.onSTAARLogin;
+    window.onSTAARLogin = function (u) {
+      apply();
+      if (typeof prevLogin === 'function') try { prevLogin(u); } catch (_) {}
+    };
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
+    setupSignedInBodyClass();
     refreshHeader();
     ensureMobileMenu();
     ensureMobileTabBar();

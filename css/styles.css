@@ -29740,6 +29740,34 @@ body.is-signed-in .hero {
   display: none !important;
 }
 
+/* §89 — kill the 17-link marketing footer on every authed view.
+   The footer (4-column link grid + "Made for kids who want to win"
+   + copyright row) is appropriate on the marketing landing for
+   guests, but a logged-in kid has no use for "Careers / Blog /
+   Subprocessors" links. body.is-signed-in is set by auth.js
+   setupSignedInBodyClass() on DOMContentLoaded so no flash on first
+   paint. */
+body.is-signed-in .footer {
+  display: none !important;
+}
+
+/* §89 — product-only pages NEVER show the marketing footer, even
+   for guests (a guest hitting /myspace or /achievements wouldn't
+   land there organically anyway; if they do, the footer is still
+   wrong for the surface). Marketing pages (/, /about, /parents)
+   keep the footer for guests. */
+body.myspace-page .footer,
+body.achievements-page .footer,
+body.league-page .footer,
+body.games-page .footer,
+body.settings-page .footer,
+body.subject-page .footer,
+body.grade-page .footer,
+body.marketplace-page .footer,
+body.practice-page .footer {
+  display: none !important;
+}
+
 /* §88 — center the grade picker in the viewport on the signed-in
    home. Kills the dead zone the planner flagged. */
 body.home-page.is-signed-in main {
