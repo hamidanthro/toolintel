@@ -365,9 +365,25 @@ async function _callGenerator(systemPrompt, regenFeedback, grade, stateSlug, pac
   // questions). The widget-mode system prompt is self-contained.
   let userMessage;
   if (widgetMode === 'fraction-bar-choices') {
+    // §110 phase-5b — fraction-target injection. Same pattern as the
+    // §30 name-pool fix: gpt-4o-mini at temp 0.9 defaults to "1/3"
+    // across calls when given no concrete target. Per-call SHUFFLED
+    // injection of one target fraction gives the model a specific
+    // number to build around. Mix of unit fractions (1/n) and
+    // non-unit fractions across denominators K-3 kids see.
+    const FRACTION_POOL = [
+      '1/2', '1/3', '1/4', '1/5', '1/6', '1/8',
+      '2/3', '2/4', '2/5', '2/6', '2/8',
+      '3/4', '3/5', '3/6', '3/8',
+      '4/5', '4/6', '4/8',
+      '5/6', '5/8',
+      '3/3', '4/4', '5/5'
+    ];
+    const targetFrac = FRACTION_POOL[Math.floor(Math.random() * FRACTION_POOL.length)];
+    const targetLine = `\nThe question must ask about the fraction ${targetFrac} (the kid is comparing 4 fraction-bar diagrams; the matching one is ${targetFrac}). Vary the stem wording across calls — do not default to "Which model represents X?" every time. Mix in: "Which fraction bar shows X shaded?", "Lila divides... shades N of them. Which bar matches?", "Which model has X of the rectangle shaded?".`;
     userMessage = regenFeedback
-      ? `Generate the visual fraction question now. ${namesLine}\n\nPrevious attempt was rejected by quality review for: ${regenFeedback.failedChecks.join(', ')}. Specifically: ${regenFeedback.reasons.join(' ')} Generate a new question where each choice is a valid fraction-bar widget spec.`
-      : `Generate the visual fraction question now. ${namesLine}`;
+      ? `Generate the visual fraction question now. ${namesLine}${targetLine}\n\nPrevious attempt was rejected by quality review for: ${regenFeedback.failedChecks.join(', ')}. Specifically: ${regenFeedback.reasons.join(' ')} Generate a new question where each choice is a valid fraction-bar widget spec.`
+      : `Generate the visual fraction question now. ${namesLine}${targetLine}`;
   } else {
     userMessage = regenFeedback
       ? `Generate the question now. ${namesLine}\n${demandLine}${contextsLine}${stemsLine}${grammarLine}\n\nPrevious attempt was rejected by quality review for: ${regenFeedback.failedChecks.join(', ')}. Specifically: ${regenFeedback.reasons.join(' ')} Generate a new question that fixes these issues.`
