@@ -125,6 +125,29 @@ Resolved section)_
 
 ## pre-paid-launch
 
+### §105-PHASE-3 "Show example" pre-practice scaffold (Lumen walkthrough)
+- **State:** spec received 2026-05-15; shipped Phase 2 + 5 + 6 in §105 commit. Phase 3 deferred.
+- **What needed:**
+  1. `[⭐ Show example]` ghost button on the question card on the first 3 questions per topic. Auto-hides after.
+  2. Tap → modal with Lumen-voice worked example. Eyebrow "Lumen shows you how" + example stem + 2-4-paragraph solution + final answer + [Got it!] dismiss.
+  3. Same modal reused by §105-Phase-6 trouble-spot banner (currently dismiss-only; will gain a [Show example] secondary button when this lands).
+- **Backend:** Option A from spec — add a new lambda action `getExample({topic, grade})` that calls gpt-4o-mini with the Lumen-voice prompt (system prompt mirrors CLAUDE.md §19 from `lambda/tutor.js#buildSystemPrompt`), caches result per topic with 24h TTL in DynamoDB or in-memory.
+- **Cost:** ~$0.001 per topic × ~600 topics = ~$0.60 lifetime backfill if fully populated. With lazy gen + cache, real cost is ~$0.001 per first-tap per kid. Negligible.
+- **Order:** ships when Hamid approves the Lumen-voice prompt + new lambda action. Compose with §105 Phase 6 banner (add the [Show example] button to the trouble-spot banner once the modal is ready).
+- **Logged:** 2026-05-15
+
+### §105-PHASE-4 Adaptive mastery score (SmartScore-inspired) per topic
+- **State:** spec received 2026-05-15; shipped Phase 2 + 5 + 6 in §105 commit. Phase 4 deferred.
+- **What needed:**
+  1. Per-(user, state, subject, grade, topic) mastery value 0-100. Starts at 0.
+  2. Formula per spec: on correct, +4 to +8 (decreasing as mastery climbs, +1 to +2 above 80 = Challenge Zone). On wrong, -3 to -6 below 80, -4 to -8 above 80.
+  3. Thresholds: 80 = Proficient (green badge), 90 = Excellence (gold-shimmer badge), 100 = Mastery (confetti + ✓ on topic-list page).
+  4. Display: header line "⭐ {mastery}" in practice; topic-list rows show per-topic mastery score.
+- **Backend:** new DynamoDB structure — either extend `staar-stats` with a per-topic map OR add a new `staar-mastery` table keyed by `(userId, state, subject, grade, topic)`. New lambda actions `getMastery` / `updateMastery`.
+- **MVP path (no backend):** localStorage at `staar.mastery.<username>.<topic-slug>` while the DDB schema is being scoped. Hamid sees the formula behavior + display before backend cost.
+- **Order:** scoping decision needed on the DDB approach + formula validation before ship. Worth a focused turn with Hamid's eyeball on the formula's emotional curve (does -8 above 80 feel demoralizing? does +1 in challenge zone feel rewarding?).
+- **Logged:** 2026-05-15
+
 ### §104 BETA LOCK-IN — honor "$5/month forever" promise
 - **State:** marketing commitment shipped 2026-05-15 (commit pending push,
   §104). The landing page now promises beta sign-ups locked-in at

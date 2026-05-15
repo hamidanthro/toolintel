@@ -30428,3 +30428,108 @@ body.practice-page .q-prompt .q-scratch-btn {
     padding: 12px 18px;
   }
 }
+
+/* ==========================================================================
+   §105 Phase 2 + 5 + 6 (May 15, 2026) — topic + skill ID + time chip
+   in practice header, trouble-spot empathy banner
+
+   Phase 2: topic line sits above the §99 today line. Shows topic name
+            + 4-char skill ID + time chip. Hidden when no _unit.title.
+   Phase 5: time chip "⏱ M:SS" in the topic line, secondary color.
+   Phase 6: trouble-spot empathy banner appears above the question
+            prompt when wrong-streak ≥ 3. Dismissable; resets the
+            5-question suppression window on dismiss.
+
+   Phases 3 + 4 deferred to TODO (lambda action + DDB schema work).
+   ========================================================================== */
+
+.practice-topic-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 8px;
+  padding: 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.85);
+  flex-wrap: wrap;
+}
+.practice-topic-name {
+  font-weight: 600;
+  color: #ffffff;
+}
+.practice-topic-sep {
+  color: rgba(255, 255, 255, 0.35);
+}
+.practice-topic-id {
+  font-family: 'JetBrains Mono', monospace, system-ui;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(251, 191, 36, 0.85);
+  letter-spacing: 0.04em;
+  background: rgba(251, 191, 36, 0.08);
+  border: 1px solid rgba(251, 191, 36, 0.18);
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+.practice-topic-time {
+  margin-left: auto;
+  font-family: 'JetBrains Mono', monospace, system-ui;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .practice-topic-line {
+    font-size: 12.5px;
+    margin: 2px 0 6px;
+  }
+  .practice-topic-id { font-size: 10px; padding: 1px 5px; }
+  .practice-topic-time { font-size: 11px; }
+}
+
+/* Trouble-spot empathy banner — sits above the question prompt
+   inside .question-card. Lumen-warm tone, dismissable, no
+   "Show example" button until Phase 3 ships (then it gains a
+   secondary action). */
+.q-trouble-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  margin: 0 0 14px;
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.28);
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.92);
+}
+.q-trouble-banner-icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--gold, #fbbf24);
+}
+.q-trouble-banner-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.q-trouble-banner-dismiss {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+  border-radius: 4px;
+}
+.q-trouble-banner-dismiss:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+}

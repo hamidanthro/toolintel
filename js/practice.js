@@ -1195,6 +1195,17 @@
                restart button are gone — restart already lives in the
                §81 ⋯ menu. -->
           <div class="practice-header practice-header--slim" data-q="1">
+            <!-- §105 Phase 2 + 5 (May 15) — topic name + 4-char skill
+                 ID + session-elapsed time chip. Sits above the
+                 §99 today line. Populated by updateTopicLine() on
+                 every question mount (topic may change between
+                 questions in mixed mode). -->
+            <div class="practice-topic-line" id="practice-topic-line" hidden>
+              <span class="practice-topic-name" id="practice-topic-name"></span>
+              <span class="practice-topic-sep" id="practice-topic-sep" hidden>·</span>
+              <span class="practice-topic-id" id="practice-topic-id"></span>
+              <span class="practice-topic-time" id="practice-topic-time"></span>
+            </div>
             <div class="practice-today-line" id="practice-today-line">
               <span class="practice-today-q"><span id="progress-num">1</span> today</span>
               <span class="practice-today-sep practice-today-correctsep" hidden>·</span>
@@ -1524,6 +1535,11 @@
           qbox.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       } catch (_) {}
+      // §105 Phase 2 + 5 — topic name + skill ID + time chip refresh
+      try { updateTopicLine(q); } catch (_) {}
+      // §105 Phase 6 — trouble-spot banner check (renders if streak ≥ 3
+      // AND not currently in a dismissal-suppression window).
+      try { maybeShowTroubleSpot(i); } catch (_) {}
       attachQuestionHandlers(q);
       // §98 — install IntersectionObserver indicator chip so kids on
       // long-content questions (Reading passages, Grade 8 Science
@@ -1542,6 +1558,123 @@
           subject: SUBJECT_SLUG_RESOLVED
         });
       }
+    }
+
+    // ============================================================
+    // §105 — Phase 2 (skill ID) + Phase 5 (time chip) + Phase 6
+    // (trouble-spot empathy banner)
+    // ============================================================
+    const STOPWORDS_4ID = new Set([
+      'to','of','the','a','an','in','on','and','or','for','with',
+      'from','at','by','as','is','are','be'
+    ]);
+    function computeSkillId(gradeSlug, topicName) {
+      let gradePart = '';
+      if (gradeSlug === 'grade-k') gradePart = 'K';
+      else if (gradeSlug === 'algebra-1') gradePart = 'A1';
+      else if (gradeSlug && gradeSlug.startsWith('grade-')) gradePart = gradeSlug.slice(6);
+      else gradePart = (gradeSlug || '').toUpperCase().slice(0, 2);
+      if (!topicName) return gradePart;
+      const tokens = String(topicName).split(/[\s\-—]+/).filter(t => /[a-z0-9]/i.test(t));
+      const significant = tokens.filter(t => !STOPWORDS_4ID.has(t.toLowerCase()));
+      let abbr = significant.map(t => t[0].toUpperCase()).join('');
+      // If only one significant word: take 3-letter consonant-rich slice.
+      if (significant.length === 1) {
+        const w = significant[0].toUpperCase();
+        const consonants = w.replace(/[^BCDFGHJKLMNPQRSTVWXZ]/g, '');
+        abbr = (consonants.length >= 3 ? consonants.slice(0, 3) : w.slice(0, 3));
+      } else if (abbr.length < 3 && significant[0]) {
+        const consonants = significant[0].slice(1).replace(/[^bcdfghjklmnpqrstvwxz]/gi, '').toUpperCase();
+        abbr = (abbr + consonants).slice(0, 4 - gradePart.length);
+      }
+      return (gradePart + abbr).slice(0, 5); // cap total length
+    }
+
+    // §105 Phase 5 — session timer. Starts on first paint of the
+    // practice surface; resets when kid leaves + re-enters.
+    let _practiceStartedAt = null;
+    let _timeChipInterval = null;
+    function fmtElapsed(ms) {
+      const total = Math.floor(ms / 1000);
+      const h = Math.floor(total / 3600);
+      const m = Math.floor((total % 3600) / 60);
+      const s = total % 60;
+      if (h > 0) return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      return `${m}:${String(s).padStart(2,'0')}`;
+    }
+    function updateTimeChip() {
+      const el = document.getElementById('practice-topic-time');
+      if (!el || !_practiceStartedAt) return;
+      el.textContent = '⏱ ' + fmtElapsed(Date.now() - _practiceStartedAt);
+    }
+
+    // §105 Phase 2 — populate the topic-line on every new question
+    // mount. Hidden when no _unit.title is present (math without a
+    // topic context; reading without a passage; etc).
+    function updateTopicLine(q) {
+      const row = document.getElementById('practice-topic-line');
+      const nameEl = document.getElementById('practice-topic-name');
+      const idEl = document.getElementById('practice-topic-id');
+      const sepEl = document.getElementById('practice-topic-sep');
+      const timeEl = document.getElementById('practice-topic-time');
+      if (!row) return;
+      const topicName = (q && q._unit && q._unit.title) ? String(q._unit.title) : '';
+      const skillId = computeSkillId(slug, topicName);
+      if (!topicName && !skillId) { row.hidden = true; return; }
+      row.hidden = false;
+      if (nameEl) nameEl.textContent = topicName || '';
+      if (idEl)   idEl.textContent   = skillId || '';
+      if (sepEl)  sepEl.hidden = !(topicName && skillId);
+      // Start the session timer on first call.
+      if (!_practiceStartedAt) {
+        _practiceStartedAt = Date.now();
+        if (timeEl) timeEl.textContent = '⏱ 0:00';
+        if (_timeChipInterval) clearInterval(_timeChipInterval);
+        _timeChipInterval = setInterval(updateTimeChip, 1000);
+      } else {
+        updateTimeChip();
+      }
+    }
+
+    // §105 Phase 6 — trouble-spot empathy banner. Surfaces when the
+    // kid has 3 wrong in a row on the current topic. Dismissable for
+    // the next 5 questions (suppressDismissedUntil = current question
+    // index + 5). The full "Show example" interaction lands when
+    // Phase 3 ships; for now the banner is empathetic copy + dismiss
+    // so the kid feels seen but isn't promised a feature that
+    // doesn't exist yet.
+    let _troubleDismissedUntilIdx = -1;
+    function maybeShowTroubleSpot(qIndex) {
+      const card = document.querySelector('.question-card[data-state="asking"]');
+      if (!card) return;
+      // Already-rendered banner — bail (avoid double-paint on re-render).
+      if (card.querySelector('.q-trouble-banner')) return;
+      const wrong = window._stWrongStreak || 0;
+      if (wrong < 3) return;
+      if (typeof qIndex === 'number' && qIndex < _troubleDismissedUntilIdx) return;
+      const banner = document.createElement('div');
+      banner.className = 'q-trouble-banner';
+      banner.setAttribute('role', 'status');
+      banner.innerHTML = `
+        <span class="q-trouble-banner-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><polygon points="12 2 15 8 21 9 17 14 18 21 12 18 6 21 7 14 3 9 9 8"/></svg>
+        </span>
+        <span class="q-trouble-banner-text">Lumen noticed you might be stuck. Take your time — you've got this.</span>
+        <button type="button" class="q-trouble-banner-dismiss" aria-label="Dismiss">×</button>
+      `;
+      // Mount above the question prompt so the kid sees encouragement
+      // BEFORE re-reading the next question.
+      const prompt = card.querySelector('.q-prompt');
+      if (prompt && prompt.parentNode) {
+        prompt.parentNode.insertBefore(banner, prompt);
+      } else {
+        card.insertBefore(banner, card.firstChild);
+      }
+      const dismiss = banner.querySelector('.q-trouble-banner-dismiss');
+      if (dismiss) dismiss.addEventListener('click', () => {
+        _troubleDismissedUntilIdx = (typeof qIndex === 'number' ? qIndex : 0) + 5;
+        banner.remove();
+      });
     }
 
     // §98 — IntersectionObserver-driven scroll indicator. Single
@@ -1821,6 +1954,9 @@
           if (_streak > (window._stMaxCorrectStreak || 0)) {
             window._stMaxCorrectStreak = _streak;
           }
+          // §105 Phase 6 — reset wrong-streak on any correct so the
+          // trouble-spot banner doesn't surface mid-recovery.
+          window._stWrongStreak = 0;
           if (_streak % 5 === 0 && STATE_INFO && STATE_INFO.testName) {
             showToast(pickRandom(STAAR_STREAK_TEMPLATES)(STATE_INFO.testName, _streak));
           }
@@ -1831,6 +1967,9 @@
           } catch (_) {}
         } else {
           window._stCorrectStreak = 0;
+          // §105 Phase 6 — bump wrong-streak for trouble-spot
+          // detection on the NEXT question render.
+          window._stWrongStreak = (window._stWrongStreak || 0) + 1;
         }
         Stats.record(slug, stats, { unitId: q._unit?.id, unitTitle: q._unit?.title, isCorrect });
         // Achievements: track every answer + bump multi-task daily quest.
