@@ -65,19 +65,12 @@
   }
 
   function brandHtml() {
+    // §109 — wordmark-only. Star icon dropped per premium pass.
+    // Logos-with-icons read fast-shipped; pure wordmarks (Stripe,
+    // Linear, Vercel, Anthropic) read pedigreed. Letter-spacing
+    // applied in CSS on .brand-text.
     return [
-      '<a href="/index.html" class="brand" aria-label="GradeEarn home">',
-        '<svg class="brand-logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false">',
-          '<defs><linearGradient id="ghStarGrad" x1="0%" y1="0%" x2="100%" y2="100%">',
-            '<stop offset="0%" stop-color="#fde047"/>',
-            '<stop offset="55%" stop-color="#fbbf24"/>',
-            '<stop offset="100%" stop-color="#f59e0b"/>',
-          '</linearGradient></defs>',
-          '<path d="M16 2.6 19.6 11.5 29.2 12.2 21.8 18.4 24.2 27.6 16 22.4 7.8 27.6 10.2 18.4 2.8 12.2 12.4 11.5 Z" ',
-                'fill="url(#ghStarGrad)" stroke="rgba(255,255,255,0.18)" stroke-width="0.6" stroke-linejoin="round"/>',
-          '<circle cx="25" cy="6" r="1.6" fill="#fde047" opacity="0.95"/>',
-          '<circle cx="25" cy="6" r="3" fill="#fde047" opacity="0.25"/>',
-        '</svg>',
+      '<a href="/index.html" class="brand brand--wordmark" aria-label="GradeEarn home">',
         '<span class="brand-text">Grade<span class="brand-text-accent">Earn</span></span>',
       '</a>'
     ].join('');
