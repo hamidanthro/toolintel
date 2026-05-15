@@ -20,6 +20,7 @@ const args = require('minimist')(process.argv.slice(2), {
 
 const lake = require('./lake-client');
 const { generateOne } = require('./generators');
+const { check: correctnessCheck } = require('./widget-correctness-check');
 
 const KIND_CONFIG = {
   'tape-diagram': {
@@ -97,6 +98,16 @@ async function main() {
         results.push({ status: 'shape-fail', reason: 'choices not 4' });
         continue;
       }
+
+      // §110 phase-20e — deterministic correctness check BEFORE save.
+      const ccVerdict = correctnessCheck({ question: q.question, stimulus: q.stimulus, choices: q.choices, correctIndex: q.correctIndex });
+      if (!ccVerdict.ok) {
+        otherErr++;
+        results.push({ status: 'correctness-fail', bug: ccVerdict.bug, reason: ccVerdict.reason, question: q.question });
+        console.warn(`[probe-${KIND}] correctness-fail ${ccVerdict.bug}: ${ccVerdict.reason}`);
+        continue;
+      }
+
       const contentId = lake.generateId('q');
       const record = {
         poolKey: poolKey(), contentId,

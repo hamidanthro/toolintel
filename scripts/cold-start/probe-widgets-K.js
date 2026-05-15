@@ -13,6 +13,7 @@ const fs = require('fs');
 const path = require('path');
 const lake = require('./lake-client');
 const { generateOne } = require('./generators');
+const { check: correctnessCheck } = require('./widget-correctness-check');
 const STATE = 'texas';
 const SUBJECT = 'math';
 const GRADE = 'grade-k';
@@ -33,6 +34,13 @@ async function probe(widgetMode, teks, questionType, target, validateFn) {
       });
       if (!validateFn(q)) {
         console.log('  [skip] failed K-appropriate filter');
+        continue;
+      }
+
+      // §110 phase-20e — deterministic correctness check BEFORE save.
+      const ccVerdict = correctnessCheck({ question: q.question, stimulus: q.stimulus, choices: q.choices, correctIndex: q.correctIndex });
+      if (!ccVerdict.ok) {
+        console.log('  [skip] correctness-fail ' + ccVerdict.bug + ': ' + ccVerdict.reason);
         continue;
       }
 

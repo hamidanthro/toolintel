@@ -16,6 +16,7 @@ const args = require('minimist')(process.argv.slice(2), {
 
 const lake = require('./lake-client');
 const { generateOne } = require('./generators');
+const { check: correctnessCheck } = require('./widget-correctness-check');
 
 const STATE = 'texas';
 const SUBJECT = 'math';
@@ -60,15 +61,14 @@ async function main() {
         results.push({ status: 'shape-fail', reason: 'choices not 4' });
         continue;
       }
-      // Sanity check the math: sum(rows) * sum(cols) must equal the
-      // marked-correct choice (as parsed integer).
-      const sumRows = (q.stimulus.rows || []).reduce((a,b) => a + b, 0);
-      const sumCols = (q.stimulus.cols || []).reduce((a,b) => a + b, 0);
-      const expectedProduct = sumRows * sumCols;
-      const markedChoice = parseInt(String(q.choices[q.correctIndex]).replace(/[^0-9-]/g, ''), 10);
-      if (!Number.isFinite(markedChoice) || markedChoice !== expectedProduct) {
+
+      // §110 phase-20e — deterministic correctness check BEFORE save.
+      // Subsumes the old hand-rolled math-mismatch check below.
+      const ccVerdict = correctnessCheck({ question: q.question, stimulus: q.stimulus, choices: q.choices, correctIndex: q.correctIndex });
+      if (!ccVerdict.ok) {
         otherErr++;
-        results.push({ status: 'math-mismatch', sumRows, sumCols, expectedProduct, markedChoice, q });
+        results.push({ status: 'correctness-fail', bug: ccVerdict.bug, reason: ccVerdict.reason, question: q.question });
+        console.warn('[probe-am] correctness-fail ' + ccVerdict.bug + ': ' + ccVerdict.reason);
         continue;
       }
 

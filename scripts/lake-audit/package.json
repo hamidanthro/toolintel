@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.658.0",
-    "@aws-sdk/lib-dynamodb": "^3.658.0"
+    "@aws-sdk/lib-dynamodb": "^3.658.0",
+    "minimist": "^1.2.8"
   }
 }

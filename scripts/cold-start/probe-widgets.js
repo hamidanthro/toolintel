@@ -38,6 +38,7 @@ const args = require('minimist')(process.argv.slice(2), {
 
 const lake = require('./lake-client');
 const { generateOne } = require('./generators');
+const { check: correctnessCheck } = require('./widget-correctness-check');
 
 const STATE = 'texas';
 const SUBJECT = 'math';
@@ -92,6 +93,17 @@ async function main() {
       if (!allFractionBars) {
         otherErr++;
         results.push({ status: 'shape-fail', reason: 'choices not all fraction-bar specs', sample: { question: q.question, choices: q.choices } });
+        continue;
+      }
+
+      // §110 phase-20e — deterministic correctness check BEFORE save.
+      // This is the audit logic from scripts/lake-audit/audit-widget-rows.js
+      // applied at write time so future bug rows can't sneak past.
+      const ccVerdict = correctnessCheck({ question: q.question, choices: q.choices, correctIndex: q.correctIndex });
+      if (!ccVerdict.ok) {
+        otherErr++;
+        results.push({ status: 'correctness-fail', bug: ccVerdict.bug, reason: ccVerdict.reason, question: q.question });
+        console.warn('[probe-widgets] correctness-fail ' + ccVerdict.bug + ': ' + ccVerdict.reason);
         continue;
       }
 
