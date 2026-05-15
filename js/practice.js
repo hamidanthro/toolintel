@@ -2587,6 +2587,11 @@
           followup.addEventListener('submit', onFollowupSubmit);
         }
 
+        // \u00a7111 \u2014 track which chip labels the kid has already tapped
+        // this session so we can fade them on subsequent renders. The
+        // 3 chips were repeating identically after each AI reply,
+        // creating "d\u00e9j\u00e0 vu" \u2014 kid feels stuck on the same loop.
+        const usedChipLabels = new Set();
         const renderChips = () => {
           const wrap = document.createElement('div');
           wrap.className = 'tutor-suggestions';
@@ -2595,7 +2600,11 @@
             btn.type = 'button';
             btn.className = 'tutor-chip';
             btn.textContent = label;
-            btn.addEventListener('click', () => { submitFollowup(label); });
+            if (usedChipLabels.has(label)) btn.dataset.used = '1';
+            btn.addEventListener('click', () => {
+              usedChipLabels.add(label);
+              submitFollowup(label);
+            });
             wrap.appendChild(btn);
           });
           tutorOut.appendChild(wrap);

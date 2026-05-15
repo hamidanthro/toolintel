@@ -30697,3 +30697,109 @@ body.practice-page .choice--widget .widget-table {
   body.practice-page .q-stimulus .widget-mount { padding: 10px 12px; }
   body.practice-page .choice--widget { padding: 10px 12px; }
 }
+
+/* =============================================================
+   §111 — Wrong-answer card premium pass (2026-05-15)
+
+   Critique applied (kid sees a "Cancel/Wrong" state and the card
+   currently feels CD-ROM-y):
+
+   1. Red border around the whole card → soft top-bar accent only.
+      Premium products (IXL/Khan/Duolingo) keep error signal
+      contained to a single chip/bar, never the full container.
+   2. Gold-highlighted numbers inside tutor prose compete with the
+      gold Next-question CTA and the gold star icon. Drop the gold
+      tint on inline <strong> so the kid's eye doesn't bounce.
+   3. The compact tutor line ("8 + 0 = 8") is undersized — needs
+      to be the visual focus of the wrong card. Bump font size
+      + line weight.
+   4. The send button reads as a chunky empty square. Match the
+      input's height + premium dark-on-light contrast.
+   ============================================================= */
+
+/* (1) Soften the red card outline. Replace 0.55-opacity border +
+   12% red glow with a single 2px red top accent + subtle inset. */
+body.practice-page .question-card[data-state="wrong"] {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow:
+    inset 0 2px 0 rgba(239, 68, 68, 0.55),
+    0 1px 3px rgba(0, 0, 0, 0.18) !important;
+}
+
+/* (2) Drop gold-tint on inline <strong> inside the tutor reply
+   when we're in a wrong-answer expanded state. Keep weight, drop
+   the color so the prose breathes. */
+body.practice-page .question-card[data-state="wrong"] .tutor-msg strong,
+body.practice-page .q-wrong-expand .tutor-msg strong {
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 600;
+}
+
+/* (3) Make the compact tutor line read like an answer-reveal card.
+   Currently a single inline line; promote it. */
+body.practice-page .q-wrong-tutor-line {
+  font-size: 18px;
+  line-height: 1.45;
+  font-weight: 600;
+  color: #fde68a;
+  padding: 14px 16px;
+  background: rgba(251, 191, 36, 0.06);
+  border: 1px solid rgba(251, 191, 36, 0.18);
+  border-radius: 12px;
+  margin: 6px 0 12px;
+}
+body.practice-page .q-wrong-tutor-icon {
+  flex-shrink: 0;
+  margin-right: 4px;
+  color: #fbbf24;
+}
+
+/* (4) Premium send button. Match input height (44px), drop the
+   chunky 32x32. Use a refined amber gradient with crisp icon. */
+body.practice-page .tutor-followup--row .tutor-send {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: #0f172a;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 1px 2px rgba(0, 0, 0, 0.15);
+  transition: transform 0.06s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+body.practice-page .tutor-followup--row .tutor-send svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2;
+}
+body.practice-page .tutor-followup--row .tutor-send:hover {
+  filter: brightness(1.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 2px 4px rgba(251, 191, 36, 0.35);
+}
+body.practice-page .tutor-followup--row .tutor-send:active {
+  transform: translateY(1px);
+}
+body.practice-page .tutor-followup--row input {
+  height: 44px;
+}
+
+/* Tighter tutor panel padding so the kid keeps Next visible. */
+body.practice-page .q-wrong-expand .tutor-box {
+  padding: 12px 14px;
+}
+body.practice-page .q-wrong-expand .tutor-msg {
+  margin-bottom: 10px;
+}
+body.practice-page .q-wrong-expand .tutor-msg:last-child {
+  margin-bottom: 4px;
+}
+
+/* Hide / minimize duplicate chip after the kid taps it — currently
+   the same 3 chips show after each round. Apply a slight fade so
+   the kid sees the AI has "moved past" their first signal. */
+body.practice-page .tutor-suggestions .tutor-chip[data-used="1"] {
+  opacity: 0.45;
+  pointer-events: none;
+}
