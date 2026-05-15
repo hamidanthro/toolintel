@@ -2677,7 +2677,7 @@
     }
 
     function finish() {
-      bar.style.width = '100%';
+      if (bar) bar.style.width = '100%';
       if (barPulse) barPulse.style.left = '100%';
       const pct = Math.round((correct / questions.length) * 100);
       const perfect = correct === questions.length && questions.length > 0;
