@@ -3281,14 +3281,32 @@ async function handleGetWidgetBatch(payload) {
 
   // Shape for practice.js — same field names handleGenerate returns.
   // Forward stimulus widget if present (number-line / plotter etc.).
+  //
+  // §110 phase-20a CRITICAL FIX — derive `answer` from
+  // choices[correctIndex] when the choice is a plain string.
+  // Without this, the frontend's checkAnswer() compares the kid's
+  // pick ("5:00") against an empty answer string and marks EVERY
+  // widget-stimulus question wrong, regardless of whether the kid
+  // got it right. Widget-spec object choices (fraction-bar) use a
+  // different __w:N radio-value path and didn't need this; only
+  // stimulus widgets with text choices were affected.
   const questions = picked.map(it => {
+    const ci = typeof it.correctIndex === 'number' ? it.correctIndex : 0;
+    let derivedAnswer = '';
+    if (Array.isArray(it.choices) && ci >= 0 && ci < it.choices.length) {
+      const c = it.choices[ci];
+      if (typeof c === 'string') derivedAnswer = c;
+      // For widget-object choices (e.g. fraction-bar), the frontend
+      // takes the correctIndex-vs-userIndex path via radio __w:N, so
+      // answer can stay empty.
+    }
     const shaped = {
       id: it.contentId,
       type: 'multiple_choice',
       prompt: it.question || it.prompt || '',
       choices: it.choices,
-      correctIndex: typeof it.correctIndex === 'number' ? it.correctIndex : 0,
-      answer: '',
+      correctIndex: ci,
+      answer: derivedAnswer,
       explanation: it.explanation || '',
       teks: it.teks || '',
       unitTitle: 'Fractions on a model',
