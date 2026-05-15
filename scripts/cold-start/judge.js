@@ -137,6 +137,63 @@ function inferType(question) {
   return (Array.isArray(question.choices) && question.choices.length > 0) ? 'multiple_choice' : 'numeric';
 }
 
+// §110 — render a widget spec as a one-line human description so the
+// judge can evaluate the diagram's mathematical content. Examples:
+//   fraction-bar parts=4 filled=1 → "fraction-bar: 4 equal parts, 1 shaded (= 1/4)"
+//   number-line range=[0,10] marks=[3.5] → "number-line: 0 to 10, mark at 3.5"
+//   plotter bar [15,25,10] → "bar chart: [1st=15, 2nd=25, 3rd=10]"
+function renderWidgetSpec(spec) {
+  if (!spec || typeof spec !== 'object') return '(invalid widget)';
+  if (typeof spec.type !== 'string') return '(widget with no type)';
+  switch (spec.type) {
+    case 'fraction-bar': {
+      const p = spec.parts, f = spec.filled;
+      if (!Number.isInteger(p) || !Number.isInteger(f)) return `fraction-bar (malformed: parts=${p}, filled=${f})`;
+      // Show the canonical fraction + the simplified form (if different)
+      const g = function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); };
+      const div = f > 0 ? g(f, p) : p;
+      const simpN = f > 0 ? f / div : 0;
+      const simpD = f > 0 ? p / div : 1;
+      const simp = (simpN !== f || simpD !== p) ? ` (simplifies to ${simpN}/${simpD})` : '';
+      return `fraction-bar: ${p} equal parts, ${f} shaded (= ${f}/${p}${simp})`;
+    }
+    case 'number-line': {
+      const r = Array.isArray(spec.range) ? spec.range : ['?', '?'];
+      const step = spec.step != null ? `, step=${spec.step}` : '';
+      const ls = spec.labelStyle ? `, labels=${spec.labelStyle}` : '';
+      const marks = Array.isArray(spec.marks) && spec.marks.length
+        ? `, marks=[${spec.marks.map(m => m.at).join(', ')}]`
+        : '';
+      const ineq = spec.inequality ? `, inequality ${spec.inequality} at ${spec.inequalityAt}` : '';
+      return `number-line: range [${r[0]}, ${r[1]}]${step}${ls}${marks}${ineq}`;
+    }
+    case 'plotter': {
+      const chart = spec.chart || 'bar';
+      const cats = Array.isArray(spec.categories) ? spec.categories : [];
+      const vals = Array.isArray(spec.values) ? spec.values : [];
+      const pairs = cats.map((c, i) => `${c}=${vals[i]}`).join(', ');
+      const labels = (spec.xLabel || spec.yLabel) ? ` (x=${spec.xLabel || '?'}, y=${spec.yLabel || '?'})` : '';
+      return `${chart} chart: [${pairs}]${labels}`;
+    }
+    case 'table': {
+      const headers = Array.isArray(spec.headers) ? spec.headers : [];
+      const rows = Array.isArray(spec.rows) ? spec.rows : [];
+      const rowsStr = rows.map(r => '[' + r.join(', ') + ']').join('; ');
+      return `table: headers=[${headers.join(', ')}], rows=${rowsStr}`;
+    }
+    case 'area-model': {
+      if (spec.fractionGrid) {
+        return `area-model fraction grid: row ${spec.rowNum}/${spec.rowDen} × col ${spec.colNum}/${spec.colDen}`;
+      }
+      const r = Array.isArray(spec.rows) ? spec.rows.join('+') : '?';
+      const c = Array.isArray(spec.cols) ? spec.cols.join('+') : '?';
+      return `area-model multiplication: (${r}) × (${c})`;
+    }
+    default:
+      return `(unknown widget type: ${spec.type})`;
+  }
+}
+
 function buildUserPrompt(question, context) {
   const stem = question.question || question.stem || question.prompt || '';
   const choices = Array.isArray(question.choices) ? question.choices : [];
@@ -151,13 +208,33 @@ function buildUserPrompt(question, context) {
     ? `\nPassage:\n  Title: ${question.passage.title || '(untitled)'}\n  Type: ${question.passage.type || 'unknown'}\n  Text: ${question.passage.text}\n`
     : '';
 
+  // §110 — render widget-spec choices in human-readable form so the
+  // judge can evaluate them. Without this, JS stringifies objects as
+  // "[object Object]" and the judge correctly rejects with
+  // DIAGRAM_INCOHERENT every time.
+  function renderChoice(c) {
+    if (c == null) return '(empty)';
+    if (typeof c === 'string') return c;
+    if (typeof c === 'object' && c.type) {
+      return renderWidgetSpec(c);
+    }
+    return String(c);
+  }
   const choicesBlock = type === 'numeric'
     ? '  (numeric question — kid types a free-form numeric answer; no multiple-choice options)'
-    : choices.map((c, i) => `  ${letterFor(i)}. ${c}`).join('\n');
+    : choices.map((c, i) => `  ${letterFor(i)}. ${renderChoice(c)}`).join('\n');
 
+  // Optional stimulus widget on the question itself — render it for the judge.
+  const stimulusBlock = (question.stimulus && typeof question.stimulus === 'object' && question.stimulus.type)
+    ? `\nStimulus diagram: ${renderWidgetSpec(question.stimulus)}\n`
+    : '';
+
+  const correctRendered = type === 'multiple_choice' && correctIdx != null
+    ? renderChoice(choices[correctIdx])
+    : correctValue;
   const correctLine = type === 'numeric'
     ? `Correct numeric answer: ${question.answer != null ? question.answer : correctValue}`
-    : `Marked correct: ${correctLetter}. ${correctValue}`;
+    : `Marked correct: ${correctLetter}. ${correctRendered}`;
 
   const flagshipNote = FLAGSHIP_STATES.has(String(context.stateSlug || '').toLowerCase())
     ? `(${context.stateSlug} is a flagship state — own-state references are allowed)`
@@ -168,7 +245,7 @@ function buildUserPrompt(question, context) {
   Subject: ${context.subject || '?'}
   Grade: ${context.gradeLabel || context.grade || '?'}
   Type: ${type}
-${passage}
+${passage}${stimulusBlock}
 Question:
   ${stem}
 

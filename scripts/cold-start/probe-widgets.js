@@ -95,54 +95,71 @@ async function main() {
         continue;
       }
 
-      // Save via lake-client. _enforceSaveSchema in content-lake.js
-      // will re-validate every widget spec server-side and reject the
-      // PutItem on any schema break. Stamp _probeRunId.
-      const candidate = {
-        ...q,
-        _probeRunId: RUN_ID,
-        _widgetMode: WIDGET_MODE
-      };
-      const saveRes = await lake.saveQuestion({
-        poolKey: poolKey(),
-        candidate,
-        stateSlug: STATE,
-        gradeSlug: GRADE,
+      // Build the full lake row. lake.saveQuestion is a low-level put;
+      // it expects the row shape already complete (matches the pattern
+      // in probe-pack-wired.js#75-101). No embedding for widget items
+      // (text stems are short / templatey; dedup-free is fine at probe
+      // scale — full sweeps can add embeddings later).
+      const contentId = lake.generateId('q');
+      const pk = poolKey();
+      const record = {
+        poolKey: pk,
+        contentId,
+        state: STATE,
+        grade: GRADE,
         subject: SUBJECT,
-        questionType: 'teks-' + QUESTION_TYPE
-      });
-      if (!saveRes || saveRes.saved === false) {
-        const reason = (saveRes && saveRes.reason) || 'unknown';
-        if (/dup/i.test(reason)) {
+        questionType: 'teks-' + QUESTION_TYPE,
+        question: q.question,
+        choices: q.choices,
+        correctIndex: q.correctIndex,
+        explanation: q.explanation,
+        passage: null,
+        embedding: [],
+        qualityScore: 0.6,
+        timesServed: 0, timesCorrect: 0, timesIncorrect: 0, reportedCount: 0,
+        reviewStatus: 'unreviewed',
+        status: 'active',
+        generatedAt: Date.now(),
+        generatedBy: 'cold-start-widget',
+        promptVersion: q._promptVersion || 'cold-v1-widget',
+        tokensUsed: q._tokensUsed || 0,
+        _judge: q._judge || 'unknown',
+        teks: q._packTeks || TEKS,
+        _widgetMode: WIDGET_MODE,
+        _probeRunId: RUN_ID
+      };
+      try {
+        await lake.saveQuestion(record);
+        saved++;
+        results.push({
+          status: 'saved',
+          contentId,
+          judge: q._judge || 'unknown',
+          question: q.question,
+          correctIndex: q.correctIndex,
+          choices: q.choices,
+          explanation: q.explanation
+        });
+        console.log('[probe-widgets] +' + saved + '/' + TARGET_COUNT + ' contentId=' + contentId + ' judge=' + (q._judge || '?'));
+      } catch (saveErr) {
+        if (saveErr && saveErr.name === 'DuplicateError') {
           dupSkip++;
-          results.push({ status: 'dup-skip', reason });
-        } else if (/schema/i.test(reason)) {
-          schemaRej++;
-          results.push({ status: 'schema-reject', reason, question: q.question, choices: q.choices });
+          results.push({ status: 'dup-skip', reason: saveErr.message });
         } else {
           otherErr++;
-          results.push({ status: 'save-fail', reason });
+          results.push({ status: 'save-fail', name: saveErr && saveErr.name, message: (saveErr && saveErr.message || '').slice(0, 200) });
+          console.warn('[probe-widgets] save failed:', saveErr && saveErr.message);
         }
         continue;
       }
-      saved++;
-      results.push({
-        status: 'saved',
-        contentId: saveRes.contentId,
-        judge: q._judge || 'unknown',
-        question: q.question,
-        correctIndex: q.correctIndex,
-        choices: q.choices,
-        explanation: q.explanation
-      });
-      console.log('[probe-widgets] +' + saved + '/' + TARGET_COUNT + ' contentId=' + saveRes.contentId + ' judge=' + (q._judge || '?'));
     } catch (err) {
       if (err && err.name === 'JudgeRejectedTwiceError') {
         judgeRejTwice++;
+        // The class uses firstReasons/secondReasons (failedChecks arrays).
         results.push({
           status: 'judge-reject-twice',
-          firstFailedChecks: err.firstFailedChecks,
-          secondFailedChecks: err.secondFailedChecks
+          firstReasons: err.firstReasons,
+          secondReasons: err.secondReasons
         });
       } else {
         otherErr++;
