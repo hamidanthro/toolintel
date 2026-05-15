@@ -459,14 +459,39 @@
   function guestQCacheKey() {
     const g = (typeof slug === 'string' && slug) ? slug : (params.get('g') || 'unknown');
     const s = (typeof SUBJECT_SLUG === 'string' && SUBJECT_SLUG) ? SUBJECT_SLUG : (params.get('subj') || 'math');
-    return `staar.guest.qcache:${s}:${g}`;
+    // §110 phase-20g — bumped key version from v1 to v2 to evict every
+    // installed guest cache. Pre-§110-phase-20a caches stored widget
+    // questions with answer:'' which made the kid score wrong on every
+    // pick even after the lambda fix shipped. v2 forces re-fetch with
+    // the now-correct answer field populated.
+    return `staar.guest.qcache:v2:${s}:${g}`;
   }
   function loadGuestQCache() {
     try {
+      // Also evict the old v1 key on first read so the kid's localStorage
+      // doesn't accumulate dead entries.
+      try {
+        const oldKey = guestQCacheKey().replace(':v2:', ':');
+        if (localStorage.getItem(oldKey)) localStorage.removeItem(oldKey);
+      } catch (_) {}
       const raw = localStorage.getItem(guestQCacheKey());
       if (!raw) return null;
       const arr = JSON.parse(raw);
-      return Array.isArray(arr) && arr.length ? arr : null;
+      if (!Array.isArray(arr) || !arr.length) return null;
+      // Defense-in-depth: discard cache if any question has empty
+      // answer + non-widget-object choices (the broken shape from
+      // pre-phase-20a). Forces re-fetch.
+      const looksBroken = arr.some(q => {
+        const hasObjChoice = Array.isArray(q.choices) && q.choices.some(c => c && typeof c === 'object' && c.type);
+        if (hasObjChoice) return false; // widget choices use __w:N path
+        return q.type === 'multiple_choice' && (!q.answer || q.answer === '');
+      });
+      if (looksBroken) {
+        console.warn('[practice] guest qcache has broken shape (empty answer field) — discarding');
+        try { localStorage.removeItem(guestQCacheKey()); } catch (_) {}
+        return null;
+      }
+      return arr;
     } catch (_) { return null; }
   }
   function saveGuestQCache(questions) {
