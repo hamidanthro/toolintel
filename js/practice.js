@@ -213,20 +213,26 @@
   try { document.body.setAttribute('data-subject', SUBJECT_SLUG); } catch (_) {}
 
   // State — URL → user record → localStorage → 'texas' fallback.
+  // Normalize to lowercase: GitHub Pages routing + STATES.getBySlug
+  // both expect lowercase slugs.
   let STATE_SLUG = params.get('s');
-  if (!STATE_SLUG && _u0 && _u0.state) STATE_SLUG = _u0.state;
+  if (STATE_SLUG) STATE_SLUG = String(STATE_SLUG).toLowerCase();
+  if (!STATE_SLUG && _u0 && _u0.state) STATE_SLUG = String(_u0.state).toLowerCase();
   if (!STATE_SLUG) {
-    try { STATE_SLUG = localStorage.getItem('gradeearn.state') || null; } catch (_) {}
+    try { STATE_SLUG = (localStorage.getItem('gradeearn.state') || '').toLowerCase() || null; } catch (_) {}
   }
   if (!STATE_SLUG) STATE_SLUG = 'texas';
   if (STATES && !STATES.getBySlug(STATE_SLUG)) STATE_SLUG = 'texas';
 
   // Grade — URL, then user record. Required.
-  // Normalize to lowercase: GitHub Pages is case-sensitive, so
-  // ?g=grade-K would 404 on data/grade-K-curriculum.json.
+  // Normalize to lowercase + alias bare digits / K → grade-N / grade-k.
+  // GitHub Pages is case-sensitive, so ?g=grade-K would 404 on
+  // data/grade-K-curriculum.json. Also handle ?g=K and ?g=3 variants.
   let slug = params.get('g');
   if (slug) slug = String(slug).toLowerCase();
   if (!slug && _u0 && _u0.grade) slug = String(_u0.grade).toLowerCase();
+  if (slug && /^(k|[0-9]+)$/.test(slug)) slug = 'grade-' + slug;
+  if (slug === 'kindergarten') slug = 'grade-k';
   const unitId = params.get('u');
   const lessonId = params.get('l');
 
@@ -776,9 +782,13 @@
   }
 
   function tryWidgetOnlySession() {
-    if (STATE_SLUG_RESOLVED !== 'texas' || SUBJECT_SLUG_RESOLVED !== 'math') {
+    // Widget fallback is math-only by design (no reading widgets shipped
+    // yet). For reading/science/SS without curriculum, no rescue path
+    // exists; show "coming soon".
+    if (SUBJECT_SLUG_RESOLVED !== 'math') {
       return showComingSoon();
     }
+    console.log('[widgets] curriculum missing for ' + STATE_SLUG_RESOLVED + '/' + slug + ' — trying widget fallback');
     fetch(TUTOR_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -793,7 +803,10 @@
       .then(r => r.ok ? r.json() : Promise.reject('no-batch'))
       .then(body => {
         const qs = Array.isArray(body && body.questions) ? body.questions : [];
-        if (qs.length < 5) return showComingSoon();
+        if (qs.length < 3) {
+          console.warn('[widgets] only ' + qs.length + ' widget rows for ' + STATE_SLUG_RESOLVED + '/' + slug + ' — showing coming soon');
+          return showComingSoon();
+        }
         console.log('[widgets] curriculum missing — falling through to widget-only session (' + qs.length + ' questions)');
         // Build a minimal "curriculum" shape so start() / runQuiz work.
         const fakeCurr = {
