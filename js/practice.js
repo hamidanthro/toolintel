@@ -926,15 +926,27 @@
 
   // Background fetch of AI-generated questions. Calls back with the list.
   async function fetchGeneratedAsync(curr, pool, meta, onReady) {
-    // §110 phase 6 — widget content serve path. When URL carries
-    // ?demo=widgets, call the new lambda getWidgetBatch action which
-    // returns widget questions live from staar-content-pool (no
-    // OpenAI round-trip). Real lake → kid flow. Falls through to the
-    // standard generate flow on any error.
-    if (params.get('demo') === 'widgets') {
+    // §110 phase 6/8 — widget content serve path. Two activation modes:
+    //  (a) URL param ?demo=widgets: force-load ALL widget questions for
+    //      the session (the demo flow — bypass standard generate).
+    //  (b) Standard auto-serve (no ?demo flag): when widget content
+    //      exists for the kid's (state, grade) in the lake, BLEND it
+    //      into the session. Widget questions land first; the standard
+    //      generate flow tops up the rest. No OpenAI round-trip for the
+    //      widget half — pure lake-read, cheaper + higher quality.
+    //
+    // Gate: only fire the auto-blend when widget content exists for the
+    // kid's grade. The lambda returns available=N so we can skip the
+    // call entirely on grades / subjects with no widgets.
+    const forceDemo = params.get('demo') === 'widgets';
+    const isMathTexas = STATE_SLUG_RESOLVED === 'texas' && SUBJECT_SLUG_RESOLVED === 'math';
+    const widgetEligibleGrades = new Set(['grade-3', 'grade-4']);
+    const tryWidgetAuto = isMathTexas && widgetEligibleGrades.has(curr.grade);
+    if (forceDemo || tryWidgetAuto) {
       try {
         const reqN = parseInt(params.get('n'), 10);
         const targetN = [10, 25, 50, 100].includes(reqN) ? reqN : 25;
+        const widgetCount = Math.min(30, targetN);
         const res = await fetch(TUTOR_ENDPOINT, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -943,21 +955,26 @@
             state: STATE_SLUG_RESOLVED,
             grade: curr.grade,
             questionType: 'concept',
-            count: Math.min(30, targetN)
+            count: widgetCount
           })
         });
         if (res.ok) {
           const body = await res.json();
           const qs = Array.isArray(body && body.questions) ? body.questions : [];
-          if (qs.length) {
-            console.log('[demo-widgets] loaded ' + qs.length + ' widget questions from lake ' + body.poolKey + ' (available=' + body.available + ')');
+          // Threshold: auto-mode only kicks in if the lake has at least
+          // 10 widget rows for this (state, grade). Below that, fall
+          // through to standard text-only generate so the kid never
+          // sees a 2-question widget burst followed by 23 text items.
+          const threshold = forceDemo ? 1 : 10;
+          if (qs.length >= threshold) {
+            console.log('[widgets] serving ' + qs.length + ' widget questions from ' + body.poolKey + ' (available=' + body.available + ', mode=' + (forceDemo ? 'demo-force' : 'auto') + ')');
             onReady(qs);
             return;
           }
+          console.log('[widgets] only ' + qs.length + ' widget rows available (need ' + threshold + ') — falling through to standard generate');
         }
-        console.warn('[demo-widgets] lambda returned empty — falling through to standard generate');
       } catch (e) {
-        console.warn('[demo-widgets] lambda call failed:', e && e.message);
+        console.warn('[widgets] lambda call failed (non-fatal):', e && e.message);
       }
     }
     // Match generated count to session size so deep/marathon modes have
