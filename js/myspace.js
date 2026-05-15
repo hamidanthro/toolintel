@@ -636,12 +636,6 @@
       pop.hidden = true;
       btn.setAttribute('aria-expanded', 'false');
     });
-    pop.querySelectorAll('[data-stub]').forEach(function (b) {
-      b.addEventListener('click', function () {
-        alert('Coming soon — for now, focus on Journal / Homework / Tasks.');
-        pop.hidden = true;
-      });
-    });
   }
 
   // ============================================================

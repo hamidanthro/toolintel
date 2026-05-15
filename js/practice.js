@@ -327,10 +327,6 @@
             <span class="practice-breadcrumb-menu-ico" aria-hidden="true">↻</span>
             <span class="practice-breadcrumb-menu-label">Restart unit</span>
           </button>
-          <button type="button" role="menuitem" class="practice-breadcrumb-menu-item" data-action="report">
-            <span class="practice-breadcrumb-menu-ico" aria-hidden="true">⚑</span>
-            <span class="practice-breadcrumb-menu-label">Report a problem</span>
-          </button>
           <button type="button" role="menuitem" class="practice-breadcrumb-menu-item" data-action="home">
             <span class="practice-breadcrumb-menu-ico" aria-hidden="true">🏠</span>
             <span class="practice-breadcrumb-menu-label">Exit to home</span>
@@ -395,12 +391,6 @@
                 window.STAARAuth.signOut();
               }
             } catch (_) {}
-          } else if (action === 'report') {
-            // TODO: report-a-problem capture. No-op for now so the
-            // menu surface is visible and the intent is discoverable;
-            // full handler ships in a follow-up. (The 'switch-state'
-            // action was removed 2026-05-14 with the menu item per
-            // Texas-only product rule.)
           }
         });
       });

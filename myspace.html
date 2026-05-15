@@ -89,8 +89,7 @@
         <span>More</span>
       </button>
       <div class="ms-popover" id="ms-popover" hidden>
-        <button type="button" class="ms-popover-item" data-stub="goals">Goals</button>
-        <button type="button" class="ms-popover-item" data-stub="achievements">Achievements</button>
+        <a class="ms-popover-item" href="/achievements.html">Achievements</a>
         <a class="ms-popover-item" href="/settings.html">Settings</a>
         <a class="ms-popover-item" href="/index.html">Back to GradeEarn</a>
       </div>
@@ -275,12 +274,6 @@
                 <li role="option" data-value="">All subjects</li>
               </ul>
             </div>
-            <!-- Attach affordance (disabled for now — visual presence only per §41) -->
-            <button type="button" class="ms-composer-attach" id="ms-composer-attach" disabled aria-label="Attach (coming soon)" title="Attach (coming soon)">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
-              </svg>
-            </button>
             <textarea class="ms-composer-input" id="ms-composer-input" placeholder="Ask about your homework, journal, or schedule…" maxlength="1000" rows="1"></textarea>
             <span class="ms-composer-char-count" id="ms-composer-char-count"></span>
             <button type="submit" class="ms-composer-send" id="ms-composer-send" disabled aria-label="Send">
@@ -355,6 +348,6 @@
 </div>
 
 <script src="/js/auth.js?v=20260514a"></script>
-<script src="/js/myspace.js?v=20260513b"></script>
+<script src="/js/myspace.js?v=20260515b"></script>
 </body>
 </html>

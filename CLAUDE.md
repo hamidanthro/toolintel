@@ -18,17 +18,14 @@ overridden so future sessions don't repeat the same diagnoses.
    CLI is structurally complete. Verified 2026-05-02 (smoke test +
    self-audit).
 
-2. **Phase 2 (backend lambda refactor): 🟥 NOT DONE.**
-   `lambda/pool-topup/generators.js:7` still defines `STATE_PROMPTS`;
-   `:39` still has the silent Texas fallback
-   (`STATE_PROMPTS[stateSlug] || STATE_PROMPTS.texas`); buildPrompt still does
-   NOT throw on unknown state. Currently harmless because the
-   `staar-pool-topup-hourly` EventBridge rule is DISABLED — the Phase 0 gate
-   is what's keeping this from polluting the lake. **Do not re-enable the
-   rule before this lands**; it will silently fall back to Texas for every
-   other state. Phase 2 also includes building a JSON snapshot of
-   `states-data.js` that lambda code can read at runtime — lambda cannot
-   `require()` the frontend file directly because it depends on `window`.
+2. **Phase 2 (backend lambda refactor): ✅ DONE.**
+   Verified 2026-05-15: `lambda/pool-topup/generators.js` no longer
+   defines `STATE_PROMPTS`. It loads state metadata from
+   `states-snapshot.json` (built by `scripts/build-states-snapshot.js`
+   from `js/states-data.js`, the §8 single source of truth) and throws
+   on unknown slug instead of silently falling back to Texas.
+   EventBridge rule `staar-pool-topup-hourly` remains DISABLED — re-enable
+   as part of Phase 7 (sweeps with all rails in place).
 
    ~~Earlier this session, §0 #1 was framed as "Phase 1 is NOT done" and
    pointed at this same lambda file. RETRACTED — the lambda work is Phase 2,

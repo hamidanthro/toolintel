@@ -203,11 +203,27 @@
         <p class="hero-placement-line">
           Not sure which grade fits? <a href="placement.html">Take the placement test <span class="placement-arrow" aria-hidden="true">→</span></a>
         </p>
-        <!-- §52 polish: "Check your STAAR score" external CTA removed
-             from the mobile landing — it was Texas-specific scope creep
-             that locked the brand to one state's test on the very first
-             screen a parent sees. The /texasassessment.gov route remains
-             reachable from /legal and the parent dashboard if needed. -->
+        <!-- §107 (2026-05-15) — "Check your STAAR score" external CTA
+             restored as a sibling to the §107 hero pill. Same reasoning:
+             Texas-only product per memory rule, so the texasassessment.gov
+             link belongs prominently on the hero. CSS at .hero-staar-score-*
+             is preserved in css/styles.css from §52 (kept after the
+             original removal). -->
+        <p class="hero-staar-score-line">
+          <a class="hero-staar-score-btn" href="https://www.texasassessment.gov/" target="_blank" rel="noopener noreferrer nofollow">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="9" y1="15" x2="15" y2="15"/>
+              <line x1="9" y1="11" x2="15" y2="11"/>
+            </svg>
+            Check your STAAR score
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M7 17L17 7"/>
+              <polyline points="7 7 17 7 17 17"/>
+            </svg>
+          </a>
+        </p>
       </div>
     </div>
     <div class="hero-bottom-fade" aria-hidden="true"></div>
@@ -647,17 +663,11 @@
     </div>
   </footer>
 
-  <script src="js/migrate-storage.js?v=20260427a"></script>
   <script src="js/i18n.js?v=20260510a"></script>
   <script src="js/prefs.js?v=20260426a"></script>
   <script src="js/fx.js?v=20260426a"></script>
   <script src="js/states-data.js?v=20260510d"></script>
   <script src="js/quick-search.js?v=20260512c" defer></script>
-  <!-- §47 — js/hero-state-go.js + js/state-picker.js removed from
-       landing. State-picker UI is hidden in favor of direct Texas
-       grade pills. Both files preserved on disk for re-activation. -->
-  <!--<script src="js/hero-state-go.js?v=20260427a"></script>-->
-  <!--<script src="js/state-picker.js?v=20260505a"></script>-->
   <script src="js/fun-facts.js?v=20260513a"></script>
   <script src="js/speech.js?v=20260512a"></script>
   <script src="js/auth.js?v=20260514a"></script>
