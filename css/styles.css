@@ -30803,3 +30803,108 @@ body.practice-page .tutor-suggestions .tutor-chip[data-used="1"] {
   opacity: 0.45;
   pointer-events: none;
 }
+
+/* =============================================================
+   §112 — Wrong-card follow-up shell (premium rebuild)
+   Re-do the follow-up row as ONE cohesive shell instead of two
+   floating elements with a gap. Input + button live inside the
+   shell; gold accent on the button's right edge only.
+   ============================================================= */
+
+body.practice-page .tutor-followup--row {
+  display: flex;
+  align-items: stretch;        /* both children fill the row */
+  gap: 0;                      /* zero gap — button is flush */
+  padding: 0;                  /* shell border is the only frame */
+  margin-top: 14px;
+  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  overflow: hidden;            /* clip button to match radius */
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+body.practice-page .tutor-followup--row:focus-within {
+  border-color: rgba(251, 191, 36, 0.6);
+  box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.10);
+}
+
+body.practice-page .tutor-followup--row input {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  height: 44px;
+  padding: 0 14px;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 44px;
+}
+body.practice-page .tutor-followup--row input:focus {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;  /* defeat older blue focus ring */
+}
+body.practice-page .tutor-followup--row input::placeholder {
+  color: rgba(255, 255, 255, 0.42);
+}
+
+body.practice-page .tutor-followup--row .tutor-send {
+  flex: 0 0 56px;              /* fixed width, no shrink */
+  width: 56px;
+  height: 44px;
+  border: none !important;
+  border-radius: 0 !important; /* matches shell's clipped overflow */
+  background: linear-gradient(135deg, #fbbf24, #f59e0b) !important;
+  color: #0f172a !important;
+  cursor: pointer;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  transition: filter 0.15s ease, transform 0.06s ease;
+}
+body.practice-page .tutor-followup--row .tutor-send:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+body.practice-page .tutor-followup--row .tutor-send:active {
+  transform: translateY(0);     /* keep flush; we already feel the press via filter */
+  filter: brightness(0.95);
+}
+body.practice-page .tutor-followup--row .tutor-send:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Force the SVG icon to be VISIBLE. Earlier rules left it at
+   16x16 inside 32x32 = lost. Now 18x18 inside 56x44 cell, with
+   explicit color override (the only thing that could've made
+   it invisible was a cascaded color matching the bg). */
+body.practice-page .tutor-followup--row .tutor-send svg {
+  width: 18px !important;
+  height: 18px !important;
+  stroke: #0f172a !important;
+  fill: none !important;
+  stroke-width: 2 !important;
+  pointer-events: none;
+  display: block;
+}
+
+@media (max-width: 480px) {
+  body.practice-page .tutor-followup--row {
+    margin-top: 12px;
+    border-radius: 12px;
+  }
+  body.practice-page .tutor-followup--row input {
+    height: 44px;
+    padding: 0 12px;
+    font-size: 16px;            /* iOS auto-zoom prevention */
+  }
+  body.practice-page .tutor-followup--row .tutor-send {
+    flex: 0 0 52px;
+    width: 52px;
+  }
+}
