@@ -30368,3 +30368,63 @@ body.practice-page .q-prompt .q-scratch-btn {
   margin-left: 4px;
   margin-top: 0;
 }
+
+/* ==========================================================================
+   §104 Pricing section — beta lock-in + trust line + inline CTA
+   (May 15, 2026)
+
+   Three-beat structure inside .parent-layer--pricing:
+     1. h2: "Free while we're in beta." (unchanged)
+     2. emphasized sub: "$5/month forever" lock-in (urgency)
+     3. smaller trustline: "Real toys come from your subscription..."
+     4. inline CTA: "Sign up free →" gold button
+   ========================================================================== */
+
+/* Emphasized lock-in line: same family/size as the base .parent-h2-sub
+   but slightly brighter color + strong-tag accent for the dollar number. */
+.parent-h2-sub--emphasis {
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0 0 12px;
+  max-width: 520px;
+}
+.parent-h2-sub--emphasis strong {
+  color: var(--gold, #fbbf24);
+  font-weight: 700;
+}
+
+/* Smaller trust line — secondary color, reads as a footnote below the
+   urgency line. */
+.parent-h2-trustline {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+  max-width: 480px;
+}
+
+/* Pricing CTA wrapper — gives the button vertical breathing room
+   between the header copy and the founder-note that follows. */
+.pricing-cta {
+  margin: 20px 0 24px;
+}
+.pricing-cta-btn {
+  /* Reuses the existing .btn.btn-primary base; just constrain the
+     pill width so it doesn't span the full max-width on desktop. */
+  padding: 10px 22px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  .parent-h2-sub--emphasis { font-size: 15px; }
+  .parent-h2-trustline { font-size: 12.5px; }
+  .pricing-cta { margin: 16px 0 20px; }
+  .pricing-cta-btn {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 18px;
+  }
+}

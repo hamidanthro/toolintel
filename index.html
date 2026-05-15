@@ -122,7 +122,7 @@
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" />
 
-  <link rel="stylesheet" href="css/styles.css?v=20260515d" />
+  <link rel="stylesheet" href="css/styles.css?v=20260515e" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -534,8 +534,22 @@
     <header class="parent-layer-head">
       <span class="parent-eyebrow">Pricing</span>
       <h2 class="parent-h2">Free while we're in beta.</h2>
-      <p class="parent-h2-sub">Real toys cost real money — that comes from the future paid plan, not from selling your kid's data.</p>
+      <!-- §104 (2026-05-15) — pricing section gets a three-beat
+           structure: free-now → $5/mo lock-in → trust pledge. The
+           lock-in number is the urgency hook for the parent who's
+           weighing "what'll this cost me when beta ends?" The trust
+           line preserves the prior "not selling your kid's data"
+           pledge, reworded to tie it to the subscription.
+           Marketing commitment only — the mechanism to honor the
+           lock-in for beta users is a TODO (auth metadata flag like
+           `pricing.legacyBetaLockIn = true` applied at billing time
+           when payment infra ships). -->
+      <p class="parent-h2-sub parent-h2-sub--emphasis">Sign up now and lock in <strong>$5/month forever</strong> — even after paid plans launch.</p>
+      <p class="parent-h2-trustline">Real toys come from your subscription, not from selling your kid's data.</p>
     </header>
+    <div class="pricing-cta">
+      <button type="button" class="btn btn-primary pricing-cta-btn" id="pricing-signup-btn">Sign up free &rarr;</button>
+    </div>
     <div class="founder-note">
       <p class="founder-note-text">Built by a dad who's also an engineer in San&nbsp;Antonio. The goal isn't to be the biggest test prep app. It's to be the one your kid actually opens.</p>
       <p class="founder-note-sig">&mdash; Hamid Ali, GradeEarn</p>
@@ -1502,6 +1516,19 @@
     document.addEventListener('DOMContentLoaded', () => {
       // Wait a tick for auth.js to restore session, then render.
       setTimeout(() => { showDashboard(); startLeaderboardPolling(); refreshLiveCount(); startLivePolling(); wireSubjectToggle(); wirePracticeCTAs(); }, 0);
+
+      // §104 — pricing-section CTA: tap → open the auth modal.
+      // Same pattern as the §95 guest-banner CTA (practice.js:640):
+      // STAARAuth.showLogin() opens the signup modal that handles
+      // both new-account creation + sign-in.
+      const pricingBtn = document.getElementById('pricing-signup-btn');
+      if (pricingBtn) {
+        pricingBtn.addEventListener('click', () => {
+          if (window.STAARAuth && window.STAARAuth.showLogin) {
+            window.STAARAuth.showLogin();
+          }
+        });
+      }
 
       // Cursor-reactive spotlight on hero (desktop / fine pointer only)
       const fine = window.matchMedia('(pointer: fine)').matches && window.innerWidth > 768;

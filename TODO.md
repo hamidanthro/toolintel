@@ -125,6 +125,25 @@ Resolved section)_
 
 ## pre-paid-launch
 
+### §104 BETA LOCK-IN — honor "$5/month forever" promise
+- **State:** marketing commitment shipped 2026-05-15 (commit pending push,
+  §104). The landing page now promises beta sign-ups locked-in at
+  $5/month forever even after paid plans launch. The mechanism to
+  HONOR this commitment when payment infra ships is not built.
+- **Resume when payment infra ships:**
+  1. Add a per-user flag in `staar-users`: `pricing.legacyBetaLockIn`
+     (boolean). Default: false. Set to true at signup-time for users
+     who created accounts during the beta window (cutoff date TBD when
+     paid plans launch).
+  2. At billing-creation time, branch on the flag — if true, apply the
+     $5/mo legacy price to the kid's plan regardless of the current
+     standard rate.
+  3. Surface the locked-in price in the kid/parent settings page so
+     legacy beta users can see what they're paying.
+- **Order:** ship before the paid-plans launch; otherwise the marketing
+  promise is unhonored.
+- **Logged:** 2026-05-15
+
 ### OWNER NOTIFICATION ON NEW ACCOUNT CREATION
 - **State:** requested 2026-05-14. Not started.
 - **Goal:** when a new GradeEarn account is created, notify Hamid
