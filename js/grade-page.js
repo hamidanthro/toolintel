@@ -406,9 +406,25 @@
       }).join('');
       const reviewUrl = `practice.html?review=1&s=${encodeURIComponent(state.slug)}&g=${encodeURIComponent(gradeSlug)}&subj=math`;
       const reviewChip = `<a class="subject-extra-chip subject-extra-chip--review" href="${reviewUrl}">↻ Review your wrong answers</a>`;
+      // §113 — Fun Facts entry on grade.html. Previously buried one
+      // level deeper (subject.html's "Browse fun facts" link); user
+      // reported "I don't see my fun facts anymore" on the grade page.
+      // Map grade slug → age-band catalog filter so the deep-link lands
+      // on filtered content directly.
+      const gradeNum = (() => {
+        const m = String(gradeSlug || '').match(/^grade-(\d+|k)$/);
+        if (!m) return null;
+        if (m[1] === 'k') return 0;
+        return parseInt(m[1], 10);
+      })();
+      const ageBand = (gradeNum == null) ? 'all' :
+                      gradeNum <= 2 ? 'k-2' :
+                      gradeNum <= 4 ? '3-4' : '5-8';
+      const factsUrl = `/facts.html?age=${ageBand}`;
+      const factsChip = `<a class="subject-extra-chip subject-extra-chip--facts" href="${factsUrl}">✨ Fun facts</a>`;
       extras.innerHTML = `
         <div class="subject-extras-label">More ways to practice</div>
-        <div class="subject-extras-row">${mockChips}${printChips}${reviewChip}</div>
+        <div class="subject-extras-row">${mockChips}${printChips}${factsChip}${reviewChip}</div>
       `;
       grid.parentNode.insertBefore(extras, grid.nextSibling);
     }
