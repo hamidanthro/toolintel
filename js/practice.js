@@ -926,6 +926,29 @@
 
   // Background fetch of AI-generated questions. Calls back with the list.
   async function fetchGeneratedAsync(curr, pool, meta, onReady) {
+    // §110 demo mode — when URL carries ?demo=widgets, bypass the
+    // lambda call and load a static JSON of widget questions saved by
+    // the cold-start probe. Lets a kid (or reviewer) see widget
+    // rendering end-to-end without the lambda needing pool-first logic.
+    // Path: /data/demo-widget-questions.json (built from the probe run
+    // at scripts/cold-start/output/probe-widgets-*.json).
+    if (params.get('demo') === 'widgets') {
+      try {
+        const res = await fetch('/data/demo-widget-questions.json?v=20260515a');
+        if (res.ok) {
+          const body = await res.json();
+          const qs = Array.isArray(body && body.questions) ? body.questions : [];
+          if (qs.length) {
+            console.log('[demo-widgets] loaded ' + qs.length + ' static widget questions');
+            onReady(qs);
+            return;
+          }
+        }
+        console.warn('[demo-widgets] static JSON empty / missing — falling through to lambda');
+      } catch (e) {
+        console.warn('[demo-widgets] fetch failed:', e && e.message);
+      }
+    }
     // Match generated count to session size so deep/marathon modes have
     // enough fresh content. Cap at 30 (lambda's per-call max).
     const reqN = parseInt(params.get('n'), 10);

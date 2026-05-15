@@ -1,0 +1,366 @@
+{
+  "questions": [
+    {
+      "id": "q_0mp721zjm_27f545e2a5dd",
+      "type": "multiple_choice",
+      "prompt": "Emma has a chocolate bar divided into 3 equal pieces. She eats 1 piece. Which bar shows the fraction of the chocolate bar Emma ate?",
+      "choices": [
+        {
+          "type": "fraction-bar",
+          "parts": 3,
+          "filled": 1
+        },
+        {
+          "type": "fraction-bar",
+          "parts": 6,
+          "filled": 1
+        },
+        {
+          "type": "fraction-bar",
+          "parts": 3,
+          "filled": 2
+        },
+        {
+          "type": "fraction-bar",
+          "parts": 4,
+          "filled": 1
+        }
+      ],
+      "correctIndex": 0,
+      "answer": "",
+      "explanation": "The bar is divided into 3 equal parts and 1 part is shaded, so it shows 1/3.",
+      "teks": "3.3A",
+      "unitTitle": "Fractions on a model",
+      "lessonTitle": "Visual fraction comparison",
+      "contentId": "q_0mp721zjm_27f545e2a5dd",
+      "poolKey": "texas#grade-3#math#teks-concept",
+      "_widgetMode": "fraction-bar-choices"
+    },
+    {
+      "id": "q_0mp7222v5_f9e48d492793",
+      "type": "multiple_choice",
+      "prompt": "Amara shares a pizza with her friends. She eats 1/3 of the pizza. Which model represents 1/3 of the pizza?",
+      "choices": [
+        {
+          "type": "fraction-bar",
+          "parts": 3,
+          "filled": 1
+        },
+        {
+          "type": "fraction-bar",
+          "parts": 6,
+          "filled": 1
+        },
+        {
+          "type": "fraction-bar",
+          "parts": 3,
+          "filled": 2
+        },
+        {
+          "type": "fraction-bar",
+          "parts": 4,
+          "filled": 1
+        }
+      ],
+      "correctIndex": 0,
+      "answer": "",
+      "explanation": "The bar is divided into 3 equal parts and 1 part is shaded, so it shows 1/3.",
+      "teks": "3.3A",
+      "unitTitle": "Fractions on a model",
+      "lessonTitle": "Visual fraction comparison",
+      "contentId": "q_0mp7222v5_f9e48d492793",
+      "poolKey": "texas#grade-3#math#teks-concept",
+      "_widgetMode": "fraction-bar-choices"
+    },
+    {
+      "id": "q_0mp7226z3_5e9876fcc155",
+      "type": "multiple_choice",
+      "prompt": "Hana divided a rectangle into 3 equal parts. She shaded 1 of them. Which bar matches?",
+      "choices": [
+        {
+          "type": "fraction-bar",
+          "parts": 3,
+          "filled": 1
+        },
+        {
+          "type": "fraction-bar",
+          "parts": 6,
+          "filled": 1
+        },
+        {
+          "type": "fraction-bar",
+          "parts": 3,
+          "filled": 2
+        },
+        {
+          "type": "fraction-bar",
+          "parts": 4,
+          "filled": 1
+        }
+      ],
+      "correctIndex": 0,
+      "answer": "",
+      "explanation": "The bar is divided into 3 equal parts and 1 part is shaded, so it shows 1/3.",
+      "teks": "3.3A",
+      "unitTitle": "Fractions on a model",
+      "lessonTitle": "Visual fraction comparison",
+      "contentId": "q_0mp7226z3_5e9876fcc155",
+      "poolKey": "texas#grade-3#math#teks-concept",
+      "_widgetMode": "fraction-bar-choices"
+    },
+    {
+      "id": "q_0mp7229ns_31f51ee769c5",
+      "type": "multiple_choice",
+      "prompt": "James divides a rectangle into 4 equal parts. He shades 2 of them. Which bar matches?",
+      "choices": [
+        {
+          "type": "fraction-bar",
+          "parts": 4,
+          "filled": 2
+        },
+        {
+          "type": "fraction-bar",
+          "parts": 4,
+          "filled": 3
+        },
+        {
+          "type": "fraction-bar",
+          "parts": 8,
+          "filled": 4
+        },
+        {
+          "type": "fraction-bar",
+          "parts": 6,
+          "filled": 2
+        }
+      ],
+      "correctIndex": 0,
+      "answer": "",
+      "explanation": "The bar is divided into 4 equal parts and 2 parts are shaded, so it shows 2/4.",
+      "teks": "3.3A",
+      "unitTitle": "Fractions on a model",
+      "lessonTitle": "Visual fraction comparison",
+      "contentId": "q_0mp7229ns_31f51ee769c5",
+      "poolKey": "texas#grade-3#math#teks-concept",
+      "_widgetMode": "fraction-bar-choices"
+    },
+    {
+      "id": "q_0mp722c3x_307297f72256",
+      "type": "multiple_choice",
+      "prompt": "Luis divides a rectangle into 4 equal parts. He shades 1 of them. Which bar matches?",
+      "choices": [
+        {
+          "type": "fraction-bar",
+          "parts": 4,
+          "filled": 1
+        },
+        {
+          "type": "fraction-bar",
+          "parts": 6,
+          "filled": 1
+        },
+        {
+          "type": "fraction-bar",
+          "parts": 4,
+          "filled": 3
+        },
+        {
+          "type": "fraction-bar",
+          "parts": 3,
+          "filled": 1
+        }
+      ],
+      "correctIndex": 0,
+      "answer": "",
+      "explanation": "The bar is divided into 4 equal parts and 1 part is shaded, so it shows 1/4.",
+      "teks": "3.3A",
+      "unitTitle": "Fractions on a model",
+      "lessonTitle": "Visual fraction comparison",
+      "contentId": "q_0mp722c3x_307297f72256",
+      "poolKey": "texas#grade-3#math#teks-concept",
+      "_widgetMode": "fraction-bar-choices"
+    },
+    {
+      "id": "q_0mp722evj_c033d9e5ec2f",
+      "type": "multiple_choice",
+      "prompt": "Camila divides a rectangle into 3 equal parts. She shades 1 of them. Which bar matches?",
+      "choices": [
+        {
+          "type": "fraction-bar",
+          "parts": 3,
+          "filled": 1
+        },
+        {
+          "type": "fraction-bar",
+          "parts": 6,
+          "filled": 1
+        },
+        {
+          "type": "fraction-bar",
+          "parts": 3,
+          "filled": 2
+        },
+        {
+          "type": "fraction-bar",
+          "parts": 4,
+          "filled": 1
+        }
+      ],
+      "correctIndex": 0,
+      "answer": "",
+      "explanation": "The bar is divided into 3 equal parts and 1 part is shaded, so it shows 1/3.",
+      "teks": "3.3A",
+      "unitTitle": "Fractions on a model",
+      "lessonTitle": "Visual fraction comparison",
+      "contentId": "q_0mp722evj_c033d9e5ec2f",
+      "poolKey": "texas#grade-3#math#teks-concept",
+      "_widgetMode": "fraction-bar-choices"
+    },
+    {
+      "id": "q_0mp722hel_5ec98d064171",
+      "type": "multiple_choice",
+      "prompt": "Eduardo has a rectangle divided into 3 equal parts. He shades 1 part. Which bar matches?",
+      "choices": [
+        {
+          "type": "fraction-bar",
+          "parts": 3,
+          "filled": 1
+        },
+        {
+          "type": "fraction-bar",
+          "parts": 6,
+          "filled": 1
+        },
+        {
+          "type": "fraction-bar",
+          "parts": 3,
+          "filled": 2
+        },
+        {
+          "type": "fraction-bar",
+          "parts": 4,
+          "filled": 1
+        }
+      ],
+      "correctIndex": 0,
+      "answer": "",
+      "explanation": "The bar is divided into 3 equal parts and 1 part is shaded, so it shows 1/3.",
+      "teks": "3.3A",
+      "unitTitle": "Fractions on a model",
+      "lessonTitle": "Visual fraction comparison",
+      "contentId": "q_0mp722hel_5ec98d064171",
+      "poolKey": "texas#grade-3#math#teks-concept",
+      "_widgetMode": "fraction-bar-choices"
+    },
+    {
+      "id": "q_0mp722kek_0b6246a9fb4f",
+      "type": "multiple_choice",
+      "prompt": "Mateo cuts a bar into 3 equal parts and shades 1 of them. Which fraction bar shows that?",
+      "choices": [
+        {
+          "type": "fraction-bar",
+          "parts": 3,
+          "filled": 1
+        },
+        {
+          "type": "fraction-bar",
+          "parts": 6,
+          "filled": 1
+        },
+        {
+          "type": "fraction-bar",
+          "parts": 3,
+          "filled": 2
+        },
+        {
+          "type": "fraction-bar",
+          "parts": 4,
+          "filled": 1
+        }
+      ],
+      "correctIndex": 0,
+      "answer": "",
+      "explanation": "The bar is divided into 3 equal parts and 1 part is shaded, so it shows 1/3.",
+      "teks": "3.3A",
+      "unitTitle": "Fractions on a model",
+      "lessonTitle": "Visual fraction comparison",
+      "contentId": "q_0mp722kek_0b6246a9fb4f",
+      "poolKey": "texas#grade-3#math#teks-concept",
+      "_widgetMode": "fraction-bar-choices"
+    },
+    {
+      "id": "q_0mp722nq3_bcf1b7d4f373",
+      "type": "multiple_choice",
+      "prompt": "Madison divides a rectangle into 3 equal parts. She shades 1 of them. Which bar matches?",
+      "choices": [
+        {
+          "type": "fraction-bar",
+          "parts": 3,
+          "filled": 1
+        },
+        {
+          "type": "fraction-bar",
+          "parts": 6,
+          "filled": 1
+        },
+        {
+          "type": "fraction-bar",
+          "parts": 3,
+          "filled": 2
+        },
+        {
+          "type": "fraction-bar",
+          "parts": 4,
+          "filled": 1
+        }
+      ],
+      "correctIndex": 0,
+      "answer": "",
+      "explanation": "The bar is divided into 3 equal parts and 1 part is shaded, so it shows 1/3.",
+      "teks": "3.3A",
+      "unitTitle": "Fractions on a model",
+      "lessonTitle": "Visual fraction comparison",
+      "contentId": "q_0mp722nq3_bcf1b7d4f373",
+      "poolKey": "texas#grade-3#math#teks-concept",
+      "_widgetMode": "fraction-bar-choices"
+    },
+    {
+      "id": "q_0mp722q0k_44fbbbee628b",
+      "type": "multiple_choice",
+      "prompt": "Gabriela divides a rectangle into 3 equal parts. She shades 1 of them. Which bar matches?",
+      "choices": [
+        {
+          "type": "fraction-bar",
+          "parts": 3,
+          "filled": 1
+        },
+        {
+          "type": "fraction-bar",
+          "parts": 6,
+          "filled": 1
+        },
+        {
+          "type": "fraction-bar",
+          "parts": 3,
+          "filled": 2
+        },
+        {
+          "type": "fraction-bar",
+          "parts": 4,
+          "filled": 1
+        }
+      ],
+      "correctIndex": 0,
+      "answer": "",
+      "explanation": "The bar is divided into 3 equal parts and 1 part is shaded, so it shows 1/3.",
+      "teks": "3.3A",
+      "unitTitle": "Fractions on a model",
+      "lessonTitle": "Visual fraction comparison",
+      "contentId": "q_0mp722q0k_44fbbbee628b",
+      "poolKey": "texas#grade-3#math#teks-concept",
+      "_widgetMode": "fraction-bar-choices"
+    }
+  ],
+  "model": "cold-start-widget",
+  "seed": "demo-widgets-v1"
+}
