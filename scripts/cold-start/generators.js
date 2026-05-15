@@ -101,6 +101,18 @@ function buildWidgetModePrompt({ stateSlug, grade, subject, questionType, packEn
   if (widgetMode === 'area-model-stimulus') {
     return buildAreaModelStimulusPrompt({ stateSlug, grade, packEnrichment });
   }
+  if (widgetMode === 'tape-diagram-stimulus') {
+    return buildTapeDiagramStimulusPrompt({ stateSlug, grade, packEnrichment });
+  }
+  if (widgetMode === 'base-10-blocks-stimulus') {
+    return buildBase10BlocksStimulusPrompt({ stateSlug, grade, packEnrichment });
+  }
+  if (widgetMode === 'shape-2d-stimulus') {
+    return buildShape2dStimulusPrompt({ stateSlug, grade, packEnrichment });
+  }
+  if (widgetMode === 'clock-face-stimulus') {
+    return buildClockFaceStimulusPrompt({ stateSlug, grade, packEnrichment });
+  }
   if (widgetMode !== 'fraction-bar-choices') return null;
 
   const record = getStateRecord(stateSlug);
@@ -358,6 +370,208 @@ Output ONLY valid JSON in this exact shape:
 }`;
 }
 
+// §110 phase 14 — Tier-2 widget prompts.
+//
+// 1. tape-diagram-stimulus
+//    A part-whole / part-part-whole tape diagram with one cell marked
+//    "?". Stem is a multi-step word problem; choices are 4 text numbers.
+//
+// 2. base-10-blocks-stimulus
+//    A base-10 block picture for K-3 place-value. Choices are 4 text
+//    numbers (one is the modeled value).
+//
+// 3. shape-2d-stimulus
+//    A labeled 2D shape. Choices ask the kid for area / perimeter /
+//    classification depending on TEKS.
+//
+// 4. clock-face-stimulus
+//    Analog clock. Choices are 4 time strings ("3:15").
+
+function buildTapeDiagramStimulusPrompt({ stateSlug, grade, packEnrichment }) {
+  const record = getStateRecord(stateSlug);
+  const testName = record.testName, standards = record.standards;
+  const grLabel = gradeReadable(grade);
+  const packTeksBlock = packEnrichment && packEnrichment.teks
+    ? `\nTARGET STANDARD: TEKS ${packEnrichment.teks.id} — ${packEnrichment.teks.text}\n`
+    : '';
+  return `You are an expert ${testName} math item writer for ${grLabel}.
+
+Standards: align to ${standards} for ${grLabel}.
+${packTeksBlock}
+The question shows a TAPE DIAGRAM (the stimulus) — a horizontal strip partitioned into parts. The kid uses the diagram to solve a word problem. The 4 multiple-choice options are TEXT integers.
+
+STIMULUS (must be a tape-diagram widget spec):
+- Required shape:
+    { "type": "tape-diagram", "parts": [{"label":"<num-or-?>", "fill": "navy"|null}, ...], "total": "<number-or-?>", "totalAt": "top" }
+- 2-4 parts. Exactly ONE cell may have label "?" (the unknown); OR the total may be "?".
+- Numeric cell labels MUST sum to the total (when total is numeric and no ? on a cell).
+- "fill": null for unshaded cells, "navy" for shaded cells.
+
+STEM (multi-step word problem):
+- 1-2 short sentences. Describe a kid scenario where the tape diagram models the situation. End with "What number is the ?" or "How many <X>?".
+- Example: "Maria has 12 stickers. She gives some to a friend and has 5 left. The tape diagram shows the situation. How many did she give away?"
+
+CHOICES (4 text integer strings):
+- CORRECT = the value that makes the tape diagram consistent.
+- DISTRACTORS = real K-3 misconceptions: (a) the total instead of the unknown part; (b) sum of parts when difference was needed; (c) off-by-one.
+
+VALIDATION:
+- parts.length 2-4.
+- Exactly one ? marker total (across parts + the total field).
+- Numeric labels sum to total when total is numeric.
+
+EXPLANATION:
+- 1-2 sentences. Reference the cells: "The two parts add to 12. One is 5. So the other is 12 - 5 = 7."
+
+Output ONLY valid JSON:
+{
+  "question": "...",
+  "stimulus": { "type": "tape-diagram", "parts": [{"label":"5","fill":"navy"},{"label":"?","fill":null}], "total": "12", "totalAt": "top" },
+  "choices": ["7", "17", "12", "6"],
+  "correctIndex": 0,
+  "explanation": "..."
+}`;
+}
+
+function buildBase10BlocksStimulusPrompt({ stateSlug, grade, packEnrichment }) {
+  const record = getStateRecord(stateSlug);
+  const testName = record.testName, standards = record.standards;
+  const grLabel = gradeReadable(grade);
+  const packTeksBlock = packEnrichment && packEnrichment.teks
+    ? `\nTARGET STANDARD: TEKS ${packEnrichment.teks.id} — ${packEnrichment.teks.text}\n`
+    : '';
+  return `You are an expert ${testName} math item writer for ${grLabel}.
+
+Standards: align to ${standards} for ${grLabel}.
+${packTeksBlock}
+The question shows BASE-10 BLOCKS (the stimulus). The kid counts hundreds, tens, and ones to find the number. The 4 multiple-choice options are TEXT integers.
+
+STIMULUS (must be a base-10-blocks widget spec):
+- Required shape:
+    { "type": "base-10-blocks", "hundreds": 0..9, "tens": 0..9, "ones": 0..9 }
+- At least one of hundreds/tens/ones > 0. Total value = hundreds×100 + tens×10 + ones.
+- Total <= 999.
+
+STEM:
+- "What number is shown by the blocks?" / "Which number do the blocks represent?" / "Count the blocks. What number is shown?"
+
+CHOICES:
+- CORRECT = exact total value as integer string.
+- DISTRACTORS = real K-3 misconceptions:
+  * Hundreds <-> tens swap (e.g., 152 modeled but kid picks 215)
+  * Misread one place (e.g., 152 → 142)
+  * Ignored a place (e.g., 152 → 52)
+  * Off by 10 or 100
+
+EXPLANATION:
+- "There are H hundreds, T tens, and O ones. H×100 + T×10 + O = NNN."
+
+Output ONLY valid JSON:
+{
+  "question": "What number is shown by the blocks?",
+  "stimulus": { "type": "base-10-blocks", "hundreds": 1, "tens": 5, "ones": 2 },
+  "choices": ["152", "215", "142", "52"],
+  "correctIndex": 0,
+  "explanation": "There are 1 hundred, 5 tens, and 2 ones. 1×100 + 5×10 + 2 = 152."
+}`;
+}
+
+function buildShape2dStimulusPrompt({ stateSlug, grade, packEnrichment }) {
+  const record = getStateRecord(stateSlug);
+  const testName = record.testName, standards = record.standards;
+  const grLabel = gradeReadable(grade);
+  const packTeksBlock = packEnrichment && packEnrichment.teks
+    ? `\nTARGET STANDARD: TEKS ${packEnrichment.teks.id} — ${packEnrichment.teks.text}\n`
+    : '';
+  return `You are an expert ${testName} math item writer for ${grLabel}.
+
+Standards: align to ${standards} for ${grLabel}.
+${packTeksBlock}
+The question shows a LABELED 2D SHAPE (the stimulus). The kid computes area OR perimeter OR identifies the shape. The 4 multiple-choice options are TEXT strings (numbers with units, or shape names).
+
+STIMULUS (must be a shape-2d widget spec):
+- Required shape:
+    { "type": "shape-2d", "shape": "rectangle"|"square"|"right-triangle"|"circle"|"trapezoid"|"parallelogram", "labels": {...} }
+- For "rectangle" / "square": labels.width + labels.height with units (e.g., "8 cm", "5 cm").
+- For "right-triangle": labels.leg1 + labels.leg2 (and optionally hyp for Pythagorean grade-8).
+- For "circle": labels.radius.
+- For "trapezoid": labels.top + labels.bottom + labels.height.
+
+STEM patterns (pick ONE):
+- Area: "What is the area of this rectangle?" / "Find the area of the triangle."
+- Perimeter: "What is the perimeter of this rectangle?"
+- Classification: "Which shape is this?" (then choices are shape NAMES)
+
+CHOICES (4 text strings):
+- CORRECT = the right answer with appropriate units (e.g., "40 sq cm" for area, "26 cm" for perimeter, "rectangle" for classification).
+- DISTRACTORS = real K-5 misconceptions:
+  * Perimeter computed when area asked (or vice versa)
+  * Used only one factor (e.g., 8 instead of 8×5=40)
+  * Wrong unit suffix (cm vs sq cm)
+  * Confused shape categories
+
+VALIDATION:
+- For area: marked answer = labeled width × height (rectangle) or 0.5 × base × height (triangle).
+- For perimeter: marked answer = 2(w+h) (rectangle) or sum of all sides (triangle).
+- Units in the answer string MUST match the units in labels.
+
+EXPLANATION:
+- "The rectangle is 8 cm × 5 cm. Area = 8 × 5 = 40 sq cm."
+
+Output ONLY valid JSON:
+{
+  "question": "What is the area of this rectangle?",
+  "stimulus": { "type": "shape-2d", "shape": "rectangle", "labels": { "width": "8 cm", "height": "5 cm" } },
+  "choices": ["40 sq cm", "26 cm", "13 cm", "40 cm"],
+  "correctIndex": 0,
+  "explanation": "The rectangle is 8 cm × 5 cm. Area = 8 × 5 = 40 sq cm."
+}`;
+}
+
+function buildClockFaceStimulusPrompt({ stateSlug, grade, packEnrichment }) {
+  const record = getStateRecord(stateSlug);
+  const testName = record.testName, standards = record.standards;
+  const grLabel = gradeReadable(grade);
+  const packTeksBlock = packEnrichment && packEnrichment.teks
+    ? `\nTARGET STANDARD: TEKS ${packEnrichment.teks.id} — ${packEnrichment.teks.text}\n`
+    : '';
+  return `You are an expert ${testName} math item writer for ${grLabel}.
+
+Standards: align to ${standards} for ${grLabel}.
+${packTeksBlock}
+The question shows an ANALOG CLOCK (the stimulus). The kid reads the time. The 4 multiple-choice options are TEXT time strings (e.g. "3:15").
+
+STIMULUS (must be a clock-face widget spec):
+- Required shape:
+    { "type": "clock-face", "hour": 1..12, "minute": 0..59 }
+- Prefer "5-minute" minute values for K-3 (0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55).
+
+STEM:
+- "What time does the clock show?" / "Which time matches the clock?" / "Read the clock. What time is it?"
+
+CHOICES (4 text "H:MM" strings):
+- CORRECT = the stimulus time formatted "H:MM".
+- DISTRACTORS = real K-3 misconceptions:
+  * Hour + minute swapped (4:15 modeled, 15:04 wrong unit form OR 4:15 with hour=15)
+  * Hour off by 1 (3:15 vs 4:15)
+  * Minute confused for 5-min count (3:15 vs 3:03 if kid reads "3" as 3 minutes)
+
+VALIDATION:
+- Marked choice MUST equal the stimulus hour + minute formatted as "H:MM" (minute zero-padded to 2 digits).
+
+EXPLANATION:
+- "The hour hand is between 3 and 4. The minute hand is on the 3, which is 15 minutes. The time is 3:15."
+
+Output ONLY valid JSON:
+{
+  "question": "What time does the clock show?",
+  "stimulus": { "type": "clock-face", "hour": 3, "minute": 15 },
+  "choices": ["3:15", "4:15", "3:03", "15:03"],
+  "correctIndex": 0,
+  "explanation": "..."
+}`;
+}
+
 function buildPrompt({ stateSlug, grade, subject, questionType, packEnrichment }) {
   const record = getStateRecord(stateSlug);
   if (!record) {
@@ -571,7 +785,65 @@ async function _callGenerator(systemPrompt, regenFeedback, grade, stateSlug, pac
   // shaped for word-problem text choices, not visual-comparison
   // questions). The widget-mode system prompt is self-contained.
   let userMessage;
-  if (widgetMode === 'area-model-stimulus') {
+  if (widgetMode === 'clock-face-stimulus') {
+    const hour = 1 + Math.floor(Math.random() * 12);
+    const fiveMinSlots = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
+    const minute = fiveMinSlots[Math.floor(Math.random() * fiveMinSlots.length)];
+    const mmStr = minute < 10 ? '0' + minute : '' + minute;
+    const targetLine = `\nThe clock MUST show hour=${hour}, minute=${minute}. The correct choice MUST be "${hour}:${mmStr}".`;
+    userMessage = regenFeedback
+      ? `Generate the clock question now. ${namesLine}${targetLine}\n\nPrevious attempt was rejected: ${regenFeedback.failedChecks.join(', ')}. ${regenFeedback.reasons.join(' ')}`
+      : `Generate the clock question now. ${namesLine}${targetLine}`;
+  } else if (widgetMode === 'shape-2d-stimulus') {
+    const SCENARIOS = [
+      { task: 'area', shape: 'rectangle', w: 8, h: 5, unit: 'cm', expected: '40 sq cm' },
+      { task: 'area', shape: 'rectangle', w: 12, h: 7, unit: 'm', expected: '84 sq m' },
+      { task: 'perimeter', shape: 'rectangle', w: 6, h: 4, unit: 'cm', expected: '20 cm' },
+      { task: 'perimeter', shape: 'rectangle', w: 9, h: 3, unit: 'in', expected: '24 in' },
+      { task: 'area', shape: 'square', w: 5, h: 5, unit: 'm', expected: '25 sq m' },
+      { task: 'perimeter', shape: 'square', w: 7, h: 7, unit: 'cm', expected: '28 cm' },
+      { task: 'area', shape: 'right-triangle', w: 6, h: 8, unit: 'cm', expected: '24 sq cm' }
+    ];
+    const s = SCENARIOS[Math.floor(Math.random() * SCENARIOS.length)];
+    const labelKey = s.shape === 'right-triangle' ? 'leg1' : 'width';
+    const labelKey2 = s.shape === 'right-triangle' ? 'leg2' : 'height';
+    const targetLine = `\nUse shape="${s.shape}" with labels.${labelKey}="${s.w} ${s.unit}", labels.${labelKey2}="${s.h} ${s.unit}". The stem MUST ask for ${s.task}. The correct choice MUST be "${s.expected}".`;
+    userMessage = regenFeedback
+      ? `Generate the shape question now. ${namesLine}${targetLine}\n\nPrevious attempt was rejected: ${regenFeedback.failedChecks.join(', ')}. ${regenFeedback.reasons.join(' ')}`
+      : `Generate the shape question now. ${namesLine}${targetLine}`;
+  } else if (widgetMode === 'base-10-blocks-stimulus') {
+    let h, t, o;
+    do {
+      h = Math.floor(Math.random() * 10);
+      t = Math.floor(Math.random() * 10);
+      o = Math.floor(Math.random() * 10);
+    } while ((h + t + o) === 0);
+    const total = h * 100 + t * 10 + o;
+    const targetLine = `\nThe blocks MUST be hundreds=${h}, tens=${t}, ones=${o} (total = ${total}). The correct choice MUST be "${total}".`;
+    userMessage = regenFeedback
+      ? `Generate the base-10 question now. ${namesLine}${targetLine}\n\nPrevious attempt was rejected: ${regenFeedback.failedChecks.join(', ')}. ${regenFeedback.reasons.join(' ')}`
+      : `Generate the base-10 question now. ${namesLine}${targetLine}`;
+  } else if (widgetMode === 'tape-diagram-stimulus') {
+    const TAPES = [
+      { parts: 2, total: 12, unknownIdx: 1, knownVals: [5], unknownVal: 7 },
+      { parts: 2, total: 20, unknownIdx: 0, knownVals: [13], unknownVal: 7 },
+      { parts: 3, total: 24, unknownIdx: 2, knownVals: [8, 8], unknownVal: 8 },
+      { parts: 2, total: 18, unknownIdx: 1, knownVals: [11], unknownVal: 7 },
+      { parts: 3, total: 30, unknownIdx: 0, knownVals: [12, 9], unknownVal: 9 },
+      { parts: 2, total: 14, unknownIdx: 1, knownVals: [6], unknownVal: 8 }
+    ];
+    const tt = TAPES[Math.floor(Math.random() * TAPES.length)];
+    const partsSpec = [];
+    let ki = 0;
+    for (let i = 0; i < tt.parts; i++) {
+      if (i === tt.unknownIdx) partsSpec.push({ label: '?', fill: null });
+      else partsSpec.push({ label: String(tt.knownVals[ki++]), fill: 'navy' });
+    }
+    const targetLine = `\nThe tape diagram MUST have ${tt.parts} parts: ${JSON.stringify(partsSpec)} and total "${tt.total}". The unknown ("?") MUST equal ${tt.unknownVal}. The correct choice MUST be "${tt.unknownVal}".`;
+    userMessage = regenFeedback
+      ? `Generate the tape-diagram question now. ${namesLine}${targetLine}\n\nPrevious attempt was rejected: ${regenFeedback.failedChecks.join(', ')}. ${regenFeedback.reasons.join(' ')}`
+      : `Generate the tape-diagram question now. ${namesLine}${targetLine}`;
+  } else if (widgetMode === 'area-model-stimulus') {
     // §110 phase-11 — area-model multiplication stimulus. Per-call
     // factor pair injection so the model rotates through factor sizes
     // instead of always doing 14×23.

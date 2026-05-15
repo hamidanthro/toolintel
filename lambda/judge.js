@@ -158,7 +158,28 @@ function renderWidgetSpec(spec) {
       }
       const r = Array.isArray(spec.rows) ? spec.rows.join('+') : '?';
       const c = Array.isArray(spec.cols) ? spec.cols.join('+') : '?';
-      return `area-model multiplication: (${r}) × (${c})`;
+      const sumR = (Array.isArray(spec.rows) ? spec.rows : []).reduce((a,b)=>a+b,0);
+      const sumC = (Array.isArray(spec.cols) ? spec.cols : []).reduce((a,b)=>a+b,0);
+      return `area-model multiplication: (${r}=${sumR}) × (${c}=${sumC}) = ${sumR*sumC}`;
+    }
+    case 'tape-diagram': {
+      const parts = Array.isArray(spec.parts) ? spec.parts : [];
+      const partsStr = parts.map(p => p.label + (p.fill ? ' (shaded)' : '')).join(' | ');
+      const total = spec.total ? `, total=${spec.total}` : '';
+      return `tape-diagram: [${partsStr}]${total}`;
+    }
+    case 'base-10-blocks': {
+      const h = spec.hundreds || 0, t = spec.tens || 0, o = spec.ones || 0;
+      const total = h * 100 + t * 10 + o;
+      return `base-10-blocks: ${h} hundreds + ${t} tens + ${o} ones = ${total}`;
+    }
+    case 'shape-2d': {
+      const labelStr = spec.labels ? Object.entries(spec.labels).map(([k,v]) => k + '=' + v).join(', ') : 'no labels';
+      return `shape-2d: ${spec.shape} (${labelStr})`;
+    }
+    case 'clock-face': {
+      const mm = spec.minute < 10 ? '0' + spec.minute : spec.minute;
+      return `clock-face: ${spec.hour}:${mm}`;
     }
     default:
       return `(unknown widget type: ${spec.type})`;
