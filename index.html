@@ -122,7 +122,7 @@
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" />
 
-  <link rel="stylesheet" href="css/styles.css?v=20260515b" />
+  <link rel="stylesheet" href="css/styles.css?v=20260515c" />
 </head>
 <body class="home-page">
   <header class="site-header">
@@ -407,6 +407,36 @@
       <span class="parent-eyebrow">For parents</span>
       <h2 class="parent-h2">Here's how it works.</h2>
     </header>
+    <!-- §102 (2026-05-15) — 3-chip stat row. Surfaces 'bounded session'
+         (10-20 questions) + 'low time commitment' (15 min/day) +
+         'grade-aligned' trust signals that were buried in prose
+         elsewhere. Sits between the section h2 and the 1-2-3 steps
+         so parents who scan get the numbers first; parents who read
+         get the prose narrative below. Reuses existing gold + navy
+         tokens — no new color tokens. -->
+    <div class="how-stats">
+      <div class="how-stat">
+        <span class="how-stat-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+        </span>
+        <span class="how-stat-num">10&ndash;20</span>
+        <span class="how-stat-cap">questions per session</span>
+      </div>
+      <div class="how-stat">
+        <span class="how-stat-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </span>
+        <span class="how-stat-num">15 min</span>
+        <span class="how-stat-cap">a day</span>
+      </div>
+      <div class="how-stat">
+        <span class="how-stat-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        </span>
+        <span class="how-stat-num">Grade-aligned</span>
+        <span class="how-stat-cap">to your state's test</span>
+      </div>
+    </div>
     <ol class="how-steps">
       <li class="how-step">
         <div class="how-step-num">1</div>

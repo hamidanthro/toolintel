@@ -30245,3 +30245,83 @@ body.settings-page h1, body.settings-page h2, body.settings-page h3 {
   color: rgba(251, 191, 36, 0.85);
   margin: 0 0 14px;
 }
+
+/* ==========================================================================
+   §102 Landing-page trust-stat chips (May 15, 2026)
+
+   Inside .parent-layer--how, between the section h2 and the
+   .how-steps ol. Three chips surfacing the "bounded session +
+   low time commitment + grade-aligned" trust signals that were
+   buried in prose elsewhere. Reuses existing brand tokens (gold,
+   navy panel gradient from .how-step, white-ish secondary text).
+   ========================================================================== */
+
+.how-stats {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 0 0 28px;
+  padding: 0;
+}
+.how-stat {
+  flex: 1 1 220px;
+  min-width: 0;
+  max-width: 320px;
+  padding: 16px 18px;
+  border: 1px solid rgba(251, 191, 36, 0.18);
+  border-radius: 12px;
+  background: linear-gradient(180deg,
+    rgba(40, 53, 91, 0.28) 0%,
+    rgba(20, 29, 51, 0.28) 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+}
+.how-stat-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gold, #fbbf24);
+  margin-bottom: 4px;
+}
+.how-stat-num {
+  font-size: 22px;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.1;
+  letter-spacing: -0.005em;
+}
+.how-stat-cap {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.35;
+}
+
+@media (max-width: 640px) {
+  .how-stats {
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .how-stat {
+    flex: 1 1 auto;
+    max-width: 100%;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+  }
+  .how-stat-icon {
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+  .how-stat-num {
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .how-stat-cap {
+    flex: 1 1 auto;
+    font-size: 12.5px;
+  }
+}
