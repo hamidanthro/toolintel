@@ -1515,6 +1515,9 @@
         }
       }
       qbox.innerHTML = renderQuestion(q, isLocked, i, questions.length);
+      // §110 — render any stimulus / widget-spec choices into their
+      // placeholder mounts. No-op for text-only questions.
+      try { renderQuestionWidgets(q, qbox); } catch (e) { console.warn('[widgets] post-mount render failed', e); }
       // §98 — scroll the question stem into view on every new mount
       // (initial load + Next tap). Was gated to i>0; spec says always.
       // The original guard was "only if not already near top"; preserve
@@ -3590,13 +3593,23 @@
       // it expands the visual hit-target leftward and gives the choice a
       // stable identity for screen readers.
       const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
-      body = q.choices.map((c, cIdx) => `
-        <label class="choice" data-letter="${LETTERS[cIdx] || (cIdx + 1)}">
-          <input type="radio" name="ans" value="${escapeAttr(c)}" required />
-          <span class="choice-letter" aria-hidden="true">${LETTERS[cIdx] || (cIdx + 1)}</span>
-          <span class="choice-content">${renderChoiceLabel(c)}</span>
-        </label>
-      `).join('');
+      body = q.choices.map((c, cIdx) => {
+        // §110 widget choice: an object with .type is a widget spec.
+        // The choice's visible content is rendered post-mount by
+        // renderQuestionWidgets(); for now we emit a placeholder and
+        // give the radio a special value '__w:N' so the answer-checker
+        // can map back to correctIndex.
+        const isWidget = c && typeof c === 'object' && c.type;
+        const radioValue = isWidget ? ('__w:' + cIdx) : escapeAttr(c);
+        const content = isWidget
+          ? '<div class="widget-mount" data-choice-widget="' + cIdx + '"></div>'
+          : renderChoiceLabel(c);
+        return '<label class="choice ' + (isWidget ? 'choice--widget' : '') + '" data-letter="' + (LETTERS[cIdx] || (cIdx + 1)) + '">'
+             + '<input type="radio" name="ans" value="' + radioValue + '" required />'
+             + '<span class="choice-letter" aria-hidden="true">' + (LETTERS[cIdx] || (cIdx + 1)) + '</span>'
+             + '<span class="choice-content">' + content + '</span>'
+             + '</label>';
+      }).join('');
     } else {
       body = `<input class="num-input" type="text" name="ans" autocomplete="off" placeholder="Your answer" required />`;
     }
@@ -3667,16 +3680,44 @@
     // desktop and stacks them on phone. The earlier §82 .reading-split
     // wrapper broke that layout by inserting a single child between
     // them and the grid container — DO NOT re-wrap.
+    // §110 stimulus widget — optional diagram BETWEEN prompt and choices.
+    // Rendered post-mount by renderQuestionWidgets() below.
+    const stimulusHtml = (q.stimulus && typeof q.stimulus === 'object' && q.stimulus.type)
+      ? '<div class="q-stimulus"><div class="widget-mount" data-stimulus-widget="1"></div></div>'
+      : '';
     return `
       ${passageHtml}
       <form class="question-card" data-state="asking" data-cents="${cents}">
         ${navHtml}
         ${eyebrowHtml}
         <div class="q-prompt">${readBtn}${scratchBtn}<span class="q-prompt-text">${escapeHtml(q.prompt)}</span></div>
+        ${stimulusHtml}
         <div class="q-body">${body}</div>
         <div class="q-inline-fb" data-role="inline-fb" hidden></div>
         <button class="btn btn-primary q-cta" type="submit" data-role="check">${ctaLabel}</button>
       </form>`;
+  }
+
+  // §110 — post-mount widget render. Called after qbox.innerHTML is
+  // replaced; walks the new DOM for stimulus + choice widget mounts
+  // and dispatches each to GradeEarnWidgets.render(). Safe to call
+  // when there are no widgets (no-op).
+  function renderQuestionWidgets(q, container) {
+    if (!window.GradeEarnWidgets || !container) return;
+    if (q.stimulus && typeof q.stimulus === 'object' && q.stimulus.type) {
+      const stimMount = container.querySelector('[data-stimulus-widget]');
+      if (stimMount) window.GradeEarnWidgets.render(q.stimulus, stimMount);
+    }
+    if (Array.isArray(q.choices)) {
+      const choiceMounts = container.querySelectorAll('[data-choice-widget]');
+      choiceMounts.forEach(function (mount) {
+        const idx = parseInt(mount.getAttribute('data-choice-widget'), 10);
+        const spec = q.choices[idx];
+        if (spec && typeof spec === 'object' && spec.type) {
+          window.GradeEarnWidgets.render(spec, mount);
+        }
+      });
+    }
   }
 
   // §74 Phase 3 — Reading passage card (markdown body via ReadingRender).
@@ -3927,12 +3968,25 @@
   function getAnswerFromForm(q, form) {
     if (q.type === 'multiple_choice') {
       const sel = form.querySelector('input[name="ans"]:checked');
-      return sel ? sel.value : null;
+      if (!sel) return null;
+      const v = sel.value;
+      // §110 widget choice: radio value is '__w:<idx>'. Return as int
+      // so checkAnswer routes through the index-comparison branch.
+      if (typeof v === 'string' && v.indexOf('__w:') === 0) {
+        return parseInt(v.slice(4), 10);
+      }
+      return v;
     }
     return form.querySelector('input[name="ans"]').value.trim();
   }
 
   function checkAnswer(q, userAnswer) {
+    // §110 widget-choice mode: userAnswer is the selected index.
+    // Compare directly to q.correctIndex. This bypasses string-equality
+    // since widget choices have no displayable string form.
+    if (typeof userAnswer === 'number' && Number.isInteger(userAnswer)) {
+      return userAnswer === q.correctIndex;
+    }
     const norm = s => String(s).trim().toLowerCase().replace(/\s+/g, '').replace(/,/g, '');
     const a = norm(userAnswer);
     if (a === norm(q.answer)) return true;

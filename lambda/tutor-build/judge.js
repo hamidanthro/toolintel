@@ -23,7 +23,8 @@ const FAILURE_MODES = [
   'STATE_LEAK',
   'ANSWER_LANGUAGE',
   'PROMPT_INJECTION',
-  'COGNITIVE_DEMAND_MISMATCH'
+  'COGNITIVE_DEMAND_MISMATCH',
+  'DIAGRAM_INCOHERENT'
 ];
 
 const FLAGSHIP_STATES = new Set(['texas', 'california', 'florida', 'new-york']);
@@ -78,6 +79,13 @@ You evaluate against EXACTLY these 8 failure modes. Use the exact key names in y
    Example B: a grade-6 question that resolves to "6 × 1/2 = 3" — single-step multiplication by a unit fraction is grade-5 demand at best. REJECT.
    Example C: a grade-8 question that resolves to "12 + 8 = 20" — grade-1/2 demand. REJECT.
    Grades 6-8 should require multi-step rational-number / proportion / algebra reasoning. Algebra-1 should require symbolic manipulation. If the stated-grade math reduces to a single-step arithmetic operation a 5th grader could do mentally, fire COGNITIVE_DEMAND_MISMATCH. The stem's WORDS may sound grade-appropriate (recipe scaling, planning a fundraiser); only the underlying MATH operation matters here.
+
+9. DIAGRAM_INCOHERENT — A widget spec in the question is malformed, internally inconsistent, or contradicts the marked answer. Applies ONLY when the question carries a "stimulus" widget OR when one or more "choices" are widget-spec objects (i.e., not plain strings).
+   Example A: fraction-bar with parts=5, filled=7 — filled exceeds parts. REJECT.
+   Example B: question asks "Which model shows 1/3?" and the marked-correct choice is a fraction-bar with parts=4, filled=1 (= 1/4, NOT 1/3). REJECT.
+   Example C: question stimulus is a number-line with no marker and the question asks "What fraction is marked?" — the diagram doesn't carry the information the question needs. REJECT.
+   Example D: an area-model fractionGrid with rowDen=3, rowNum=5 — numerator exceeds denominator. REJECT.
+   Schema rules (each widget type defines its own __validate; consult docs/widgets/widget-spec-schema.md). If you see a "type" you don't recognize, that's a REJECT too (unknown widget type). Do NOT apply DIAGRAM_INCOHERENT to text-only questions; widget-free questions cannot trip this check.
 
 Verdict rules:
 - "pass" — zero failure modes triggered.

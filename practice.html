@@ -23,7 +23,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=20260515g" />
+  <link rel="stylesheet" href="css/styles.css?v=20260515h" />
 </head>
 <body class="practice-page practice-mode">
   <header class="site-header">
@@ -103,7 +103,17 @@
   <script src="js/achievements.js?v=20260510d"></script>
   <script src="js/text-utils.js?v=20260510a"></script>
   <script src="js/voice-recorder.js?v=20260513c"></script>
-  <script src="js/practice.js?v=20260515b"></script>
+  <!-- §110 widget renderer — diagram support (fraction-bar, number-line,
+       plotter, table, area-model). Load BEFORE practice.js so the
+       attach hook can dispatch to window.GradeEarnWidgets on render. -->
+  <script src="js/widgets/svg-helpers.js?v=20260515a"></script>
+  <script src="js/widgets/widget-renderer.js?v=20260515a"></script>
+  <script src="js/widgets/fraction-bar.js?v=20260515a"></script>
+  <script src="js/widgets/number-line.js?v=20260515a"></script>
+  <script src="js/widgets/plotter.js?v=20260515a"></script>
+  <script src="js/widgets/table.js?v=20260515a"></script>
+  <script src="js/widgets/area-model.js?v=20260515a"></script>
+  <script src="js/practice.js?v=20260515c"></script>
   <script src="js/scratchpad.js?v=20260513a"></script>
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
   <script src="/js/site-header.js?v=20260515k"></script>

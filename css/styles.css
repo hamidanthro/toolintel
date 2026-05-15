@@ -30538,3 +30538,162 @@ body.practice-page .q-prompt .q-scratch-btn {
   color: #ffffff;
   background: rgba(255, 255, 255, 0.06);
 }
+
+/* =============================================================
+   §110 — Widget renderer (js/widgets/*.js)
+   Styles for the diagram widget library: fraction-bar,
+   number-line, plotter, table, area-model. All widgets render
+   into a .widget-mount container; SVG widgets carry .widget-svg,
+   table widget renders a .widget-table HTML element.
+
+   STAAR conventions per docs/widgets/architecture.md:
+   - Verdana font for all in-diagram labels (set on SVG <text>).
+   - Navy (#1e3a8a) is the canonical online-test bar/fill color.
+   - Tight padding, thin black strokes, no gradients/shadows.
+   ============================================================= */
+
+.widget-mount {
+  display: inline-block;
+  vertical-align: top;
+  max-width: 100%;
+  line-height: 0;          /* prevent baseline gap under inline SVG */
+}
+.widget-mount + .widget-mount {
+  margin-left: 14px;
+}
+
+/* Inline SVG widgets (fraction-bar, number-line, plotter, area-model). */
+.widget-svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* HTML table widget. STAAR convention: header row bold + light
+   gray fill; thin black borders; tight padding; Verdana. */
+.widget-table {
+  border-collapse: collapse;
+  font-family: Verdana, "DejaVu Sans", sans-serif;
+  font-size: 13px;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1.5px solid #0f172a;
+}
+.widget-table caption.widget-table-caption {
+  caption-side: top;
+  text-align: left;
+  font-weight: 600;
+  padding: 4px 6px 6px;
+  color: #0f172a;
+}
+.widget-table thead th {
+  background: #f1f5f9;
+  font-weight: 700;
+  text-align: left;
+  padding: 6px 10px;
+  border: 1px solid #0f172a;
+  white-space: nowrap;
+}
+.widget-table tbody td {
+  padding: 5px 10px;
+  border: 1px solid #475569;
+  vertical-align: middle;
+}
+.widget-table tbody tr:nth-child(even) td {
+  background: #fafbfc;
+}
+
+/* Error placeholder shown when a spec is malformed. */
+.widget-error {
+  display: inline-block;
+  padding: 6px 10px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  color: #6b7280;
+  background: #f3f4f6;
+  border: 1px dashed #d1d5db;
+  border-radius: 6px;
+  user-select: none;
+}
+
+/* Dark-surface variant — widgets rendered on the dark practice
+   page background need lighter contrast around them. The widget
+   itself stays light (paper-style) but the container gets a
+   white card with subtle shadow so the widget reads as "paper
+   inside the dark practice card." Used inside MC choice tiles
+   when the choice IS the widget. */
+body.practice-page .widget-svg,
+body.practice-page .widget-table {
+  background: #ffffff;
+  border-radius: 8px;
+}
+body.practice-page .widget-mount {
+  padding: 10px;
+  background: #ffffff;
+  border-radius: 8px;
+}
+
+/* Choice-tile-as-widget: when a MC choice is "which diagram?",
+   the entire choice tile is the widget plus an answer letter.
+   This styling lets the choice .q-choice already on the page
+   wrap a .widget-mount cleanly. */
+.q-choice .widget-mount {
+  margin: 0;
+  width: 100%;
+  background: #ffffff;
+}
+
+/* Mobile — shrink widget sizes proportionally. */
+@media (max-width: 480px) {
+  .widget-svg { width: 100%; }
+  .widget-mount + .widget-mount { margin-left: 8px; }
+  .widget-table { font-size: 12px; }
+  .widget-table thead th { padding: 5px 8px; }
+  .widget-table tbody td { padding: 4px 8px; }
+}
+
+/* §110 — practice page widget integration. Stimulus widget sits
+   between the question prompt and the choice list. Choice-widget
+   variant gives the choice tile a "paper" inner surface that contrasts
+   with the dark practice card. */
+body.practice-page .q-stimulus {
+  margin: 14px 0 18px;
+  display: flex;
+  justify-content: center;
+}
+body.practice-page .q-stimulus .widget-mount {
+  margin: 0;
+  background: #ffffff;
+  padding: 14px 18px;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  max-width: 100%;
+}
+body.practice-page .choice--widget {
+  align-items: center;
+  padding: 12px 16px;
+}
+body.practice-page .choice--widget .choice-content {
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: center;
+}
+body.practice-page .choice--widget .choice-content .widget-mount {
+  margin: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+body.practice-page .choice--widget .widget-svg,
+body.practice-page .choice--widget .widget-table {
+  max-width: 100%;
+  background: #ffffff;
+  padding: 8px;
+  border-radius: 8px;
+}
+@media (max-width: 480px) {
+  body.practice-page .q-stimulus .widget-mount { padding: 10px 12px; }
+  body.practice-page .choice--widget { padding: 10px 12px; }
+}

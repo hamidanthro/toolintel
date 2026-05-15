@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Widget Demo — GradeEarn</title>
+  <link rel="stylesheet" href="css/styles.css?v=20260515h">
+  <style>
+    body { background: #f8fafc; color: #0f172a; font-family: Inter, system-ui, sans-serif; padding: 32px 20px; max-width: 1100px; margin: 0 auto; }
+    h1 { font-size: 24px; font-weight: 700; margin: 0 0 8px; }
+    .lede { color: #475569; font-size: 14px; margin: 0 0 28px; max-width: 60ch; }
+    section { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px 22px; margin: 0 0 18px; }
+    section > h2 { font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #1e293b; margin: 0 0 6px; }
+    section > p.note { font-size: 13px; color: #64748b; margin: 0 0 14px; }
+    .demo-row { display: flex; gap: 18px; flex-wrap: wrap; align-items: flex-start; }
+    .demo-card { padding: 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; min-width: 200px; }
+    .demo-card .demo-label { font-size: 12px; color: #475569; margin-bottom: 8px; font-weight: 500; }
+    .demo-card pre { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #475569; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px; margin-top: 10px; overflow-x: auto; max-width: 320px; white-space: pre-wrap; word-break: break-all; }
+  </style>
+</head>
+<body>
+  <h1>GradeEarn Widget Renderer — §110 Demo</h1>
+  <p class="lede">Each panel renders one widget type from a tiny JSON spec. STAAR-faithful conventions (Verdana, navy fills, thin black strokes, stacked fractions on number-line labels). All renderers vanilla JS + inline SVG; no React, no bundler.</p>
+
+  <section>
+    <h2>fraction-bar</h2>
+    <p class="note">The IXL-screenshot widget. <code>parts</code> = denominator, <code>filled</code> = numerator. Cell widths are integer pixels (sacred equal-parts rule).</p>
+    <div class="demo-row" id="row-frac"></div>
+  </section>
+
+  <section>
+    <h2>number-line</h2>
+    <p class="note">Major + minor ticks, arrows both ends, fraction labels rendered as stacked num/den (STAAR convention). Optional marker points + inequalities.</p>
+    <div class="demo-row" id="row-nl"></div>
+  </section>
+
+  <section>
+    <h2>plotter</h2>
+    <p class="note">Bar / dot / line / histogram. Single uniform fill color across all bars (STAAR convention).</p>
+    <div class="demo-row" id="row-plot"></div>
+  </section>
+
+  <section>
+    <h2>table</h2>
+    <p class="note">HTML table (semantic + a11y-friendly), Verdana font, bold header row.</p>
+    <div class="demo-row" id="row-tab"></div>
+  </section>
+
+  <section>
+    <h2>area-model</h2>
+    <p class="note">Two flavors: multi-digit multiplication (place-value rectangles + partial products) and fraction × fraction (overlap-shaded grid).</p>
+    <div class="demo-row" id="row-am"></div>
+  </section>
+
+  <section>
+    <h2>Error handling</h2>
+    <p class="note">Malformed specs render a tiny "Diagram unavailable" placeholder — never throw, never blank.</p>
+    <div class="demo-row" id="row-err"></div>
+  </section>
+
+  <script src="js/widgets/svg-helpers.js?v=20260515a"></script>
+  <script src="js/widgets/widget-renderer.js?v=20260515a"></script>
+  <script src="js/widgets/fraction-bar.js?v=20260515a"></script>
+  <script src="js/widgets/number-line.js?v=20260515a"></script>
+  <script src="js/widgets/plotter.js?v=20260515a"></script>
+  <script src="js/widgets/table.js?v=20260515a"></script>
+  <script src="js/widgets/area-model.js?v=20260515a"></script>
+  <script>
+  (function () {
+    'use strict';
+    function demoCard(rowId, label, spec) {
+      var row = document.getElementById(rowId);
+      var card = document.createElement('div');
+      card.className = 'demo-card';
+      var lab = document.createElement('div');
+      lab.className = 'demo-label';
+      lab.textContent = label;
+      card.appendChild(lab);
+      var mount = document.createElement('div');
+      mount.className = 'widget-mount';
+      card.appendChild(mount);
+      window.GradeEarnWidgets.render(spec, mount);
+      var pre = document.createElement('pre');
+      pre.textContent = JSON.stringify(spec, null, 2);
+      card.appendChild(pre);
+      row.appendChild(card);
+    }
+
+    // fraction-bar
+    demoCard('row-frac', '1/3', { type: 'fraction-bar', parts: 3, filled: 1 });
+    demoCard('row-frac', '2/6', { type: 'fraction-bar', parts: 6, filled: 2 });
+    demoCard('row-frac', '3/8 (teal)', { type: 'fraction-bar', parts: 8, filled: 3, color: 'teal' });
+    demoCard('row-frac', '5/5 (whole)', { type: 'fraction-bar', parts: 5, filled: 5, color: 'gold', label: 'auto' });
+    demoCard('row-frac', '0/4 (empty)', { type: 'fraction-bar', parts: 4, filled: 0 });
+
+    // number-line
+    demoCard('row-nl', '0–10 integers, mark 7', {
+      type: 'number-line', range: [0, 10], step: 1,
+      marks: [{ at: 7, color: 'navy', label: 'P' }]
+    });
+    demoCard('row-nl', '0–1 thirds (fractions)', {
+      type: 'number-line', range: [0, 1], step: 1 / 3, labelStyle: 'fraction',
+      marks: [{ at: 2 / 3, color: 'navy' }]
+    });
+    demoCard('row-nl', 'Inequality x ≤ 3', {
+      type: 'number-line', range: [-5, 5], step: 1,
+      inequality: 'le', inequalityAt: 3
+    });
+    demoCard('row-nl', '0–10 with minor ticks', {
+      type: 'number-line', range: [0, 10], step: 2, minorStep: 0.5
+    });
+
+    // plotter
+    demoCard('row-plot', 'Bar (school absences)', {
+      type: 'plotter', chart: 'bar',
+      categories: ['1st', '2nd', '3rd', '4th', '5th'],
+      values: [15, 25, 5, 10, 10],
+      xLabel: 'Grade', yLabel: 'Students absent'
+    });
+    demoCard('row-plot', 'Dot plot', {
+      type: 'plotter', chart: 'dot',
+      categories: ['Spring', 'Summer', 'Fall', 'Winter'],
+      values: [2, 4, 3, 1]
+    });
+    demoCard('row-plot', 'Line plot', {
+      type: 'plotter', chart: 'line',
+      categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+      values: [3, 5, 4, 7, 6],
+      xLabel: 'Day', yLabel: 'Books read'
+    });
+
+    // table
+    demoCard('row-tab', 'Steps per day', {
+      type: 'table',
+      headers: ['Day', 'Steps'],
+      rows: [['Mon', '5,200'], ['Tue', '6,100'], ['Wed', '4,800'], ['Thu', '7,000']],
+      align: ['left', 'right']
+    });
+    demoCard('row-tab', 'Function table', {
+      type: 'table',
+      headers: ['x', 'y'],
+      rows: [['1', '5'], ['2', '8'], ['3', '11'], ['4', '14']],
+      align: ['center', 'center']
+    });
+
+    // area-model
+    demoCard('row-am', '23 × 14 (place value)', {
+      type: 'area-model',
+      rows: [10, 4],
+      cols: [20, 3],
+      showProducts: true
+    });
+    demoCard('row-am', '2/3 × 3/4 (frac grid)', {
+      type: 'area-model',
+      fractionGrid: true,
+      rowDen: 3, rowNum: 2,
+      colDen: 4, colNum: 3
+    });
+
+    // error
+    demoCard('row-err', 'Missing type', {});
+    demoCard('row-err', 'Unknown type', { type: 'mystery' });
+    demoCard('row-err', 'Bad spec', { type: 'fraction-bar', parts: 3, filled: 7 });
+  })();
+  </script>
+</body>
+</html>
