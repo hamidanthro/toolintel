@@ -926,27 +926,38 @@
 
   // Background fetch of AI-generated questions. Calls back with the list.
   async function fetchGeneratedAsync(curr, pool, meta, onReady) {
-    // §110 demo mode — when URL carries ?demo=widgets, bypass the
-    // lambda call and load a static JSON of widget questions saved by
-    // the cold-start probe. Lets a kid (or reviewer) see widget
-    // rendering end-to-end without the lambda needing pool-first logic.
-    // Path: /data/demo-widget-questions.json (built from the probe run
-    // at scripts/cold-start/output/probe-widgets-*.json).
+    // §110 phase 6 — widget content serve path. When URL carries
+    // ?demo=widgets, call the new lambda getWidgetBatch action which
+    // returns widget questions live from staar-content-pool (no
+    // OpenAI round-trip). Real lake → kid flow. Falls through to the
+    // standard generate flow on any error.
     if (params.get('demo') === 'widgets') {
       try {
-        const res = await fetch('/data/demo-widget-questions.json?v=20260515a');
+        const reqN = parseInt(params.get('n'), 10);
+        const targetN = [10, 25, 50, 100].includes(reqN) ? reqN : 25;
+        const res = await fetch(TUTOR_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'getWidgetBatch',
+            state: STATE_SLUG_RESOLVED,
+            grade: curr.grade,
+            questionType: 'concept',
+            count: Math.min(30, targetN)
+          })
+        });
         if (res.ok) {
           const body = await res.json();
           const qs = Array.isArray(body && body.questions) ? body.questions : [];
           if (qs.length) {
-            console.log('[demo-widgets] loaded ' + qs.length + ' static widget questions');
+            console.log('[demo-widgets] loaded ' + qs.length + ' widget questions from lake ' + body.poolKey + ' (available=' + body.available + ')');
             onReady(qs);
             return;
           }
         }
-        console.warn('[demo-widgets] static JSON empty / missing — falling through to lambda');
+        console.warn('[demo-widgets] lambda returned empty — falling through to standard generate');
       } catch (e) {
-        console.warn('[demo-widgets] fetch failed:', e && e.message);
+        console.warn('[demo-widgets] lambda call failed:', e && e.message);
       }
     }
     // Match generated count to session size so deep/marathon modes have

@@ -454,6 +454,7 @@ exports.handler = async (event) => {
   if (action === 'getReadingItem')      return await handleGetReadingItem(payload);
   if (action === 'getScienceItem')      return await handleGetScienceItem(payload);
   if (action === 'getSocialStudiesItem') return await handleGetSocialStudiesItem(payload);
+  if (action === 'getWidgetBatch')      return await handleGetWidgetBatch(payload);
   if (action === 'defineWord')          return await handleDefineWord(payload);
   if (action === 'earn')           return await handleEarn(payload);
   if (action === 'lose')           return await handleLose(payload);
@@ -3206,6 +3207,104 @@ async function handleGetSocialStudiesItem(payload) {
   console.log('[ss] poolKey=' + poolKey + ' questionsFound=' + questions.length);
 
   return ok({ passage, questions });
+}
+
+// §110 phase 6 — Widget content serve path.
+// POST { action: 'getWidgetBatch', state?, grade?, teks?, count? }
+// Returns { questions: [...], poolKey, count } pulled from
+// staar-content-pool by poolKey query. No OpenAI fallback (this is
+// strictly a lake-read endpoint — widget questions are cold-start
+// only at this stage). For grade-3 fractions today the canonical
+// poolKey is 'texas#grade-3#math#teks-concept'; future widget
+// content under other (state, grade, teks) tuples is served the
+// same way as soon as the cold-start sweep saves it.
+async function handleGetWidgetBatch(payload) {
+  const requestedState = payload.state ? String(payload.state).trim().toLowerCase() : null;
+  if (requestedState && !isValidState(requestedState)) return bad(400, 'Invalid state');
+
+  const effectiveState = requestedState || DEFAULT_STATE;
+  const rawGrade = String(payload.grade || 'grade-3').trim().toLowerCase();
+  const grade = VALID_GRADES.has(rawGrade) ? rawGrade : 'grade-3';
+  const questionType = String(payload.questionType || 'concept').trim().toLowerCase();
+  const count = Math.max(1, Math.min(30, parseInt(payload.count, 10) || 10));
+
+  // Math widget rows are saved under poolKey: '<state>#<prefixed-grade>#math#teks-<questionType>'.
+  // Matches §110 phase-4/5b probe persistence (probe-widgets.js#poolKey()).
+  const poolKey = `${effectiveState}#${grade}#math#teks-${questionType}`;
+
+  console.log('[widget-batch] REQUEST state=' + effectiveState + ' grade=' + grade + ' qt=' + questionType + ' count=' + count);
+
+  // Paginate the partition. Most kids will hit small counts so a single
+  // page is typical, but defend against large partitions.
+  const items = [];
+  let lastKey;
+  try {
+    do {
+      const r = await ddb.send(new QueryCommand({
+        TableName: CONTENT_POOL_TABLE,
+        KeyConditionExpression: 'poolKey = :pk',
+        ExpressionAttributeValues: { ':pk': poolKey },
+        ExclusiveStartKey: lastKey,
+        Limit: 100
+      }));
+      for (const it of (r.Items || [])) {
+        // Only widget content with object choices. Skip text-only rows
+        // (the same poolKey carries §31 sweep text content too).
+        if (Array.isArray(it.choices) && it.choices.some(c => c && typeof c === 'object' && c.type)) {
+          items.push(it);
+        }
+      }
+      lastKey = r.LastEvaluatedKey;
+    } while (lastKey && items.length < count * 4);
+  } catch (err) {
+    console.error('[widget-batch] query failed:', err.message || err);
+    return bad(500, 'lookup_failed');
+  }
+
+  console.log('[widget-batch] found ' + items.length + ' widget rows for ' + poolKey);
+
+  // Filter to active + non-broken status only (mirror reading path).
+  const active = items.filter(q => q.status !== 'broken' && q.status !== 'deprecated');
+  if (active.length === 0) {
+    return ok({ questions: [], poolKey, count: 0, available: 0 });
+  }
+
+  // Shuffle and take up to `count` so kids see a different subset each
+  // session. Also stamp timesServed (fire-and-forget).
+  for (let i = active.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [active[i], active[j]] = [active[j], active[i]];
+  }
+  const picked = active.slice(0, count);
+
+  // Shape for practice.js — same field names handleGenerate returns.
+  const questions = picked.map(it => ({
+    id: it.contentId,
+    type: 'multiple_choice',
+    prompt: it.question || it.prompt || '',
+    choices: it.choices,
+    correctIndex: typeof it.correctIndex === 'number' ? it.correctIndex : 0,
+    answer: '',
+    explanation: it.explanation || '',
+    teks: it.teks || '',
+    unitTitle: 'Fractions on a model',
+    lessonTitle: 'Visual fraction comparison',
+    contentId: it.contentId,
+    poolKey: it.poolKey,
+    _widgetMode: it._widgetMode || 'fraction-bar-choices'
+  }));
+
+  // Bump timesServed best-effort.
+  for (const it of picked) {
+    ddb.send(new UpdateCommand({
+      TableName: CONTENT_POOL_TABLE,
+      Key: { poolKey: it.poolKey, contentId: it.contentId },
+      UpdateExpression: 'ADD timesServed :one',
+      ExpressionAttributeValues: { ':one': 1 }
+    })).catch(() => {});
+  }
+
+  return ok({ questions, poolKey, count: questions.length, available: active.length });
 }
 
 // §77 Phase C — Tap-any-word definitions.
