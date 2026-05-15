@@ -54,6 +54,30 @@
   </section>
 
   <section>
+    <h2>tape-diagram (Tier 2)</h2>
+    <p class="note">STAAR grade 3-5 strip diagram. Black outline + labeled parts; optional total brace.</p>
+    <div class="demo-row" id="row-tape"></div>
+  </section>
+
+  <section>
+    <h2>base-10-blocks (Tier 2)</h2>
+    <p class="note">STAAR K-3 place-value. Flat 2D (not isometric) per TEA convention. Black-on-white outline.</p>
+    <div class="demo-row" id="row-b10"></div>
+  </section>
+
+  <section>
+    <h2>shape-2d (Tier 2)</h2>
+    <p class="note">Labeled rectangles, triangles, circles, right triangles, polygons. Outline-only by default per STAAR.</p>
+    <div class="demo-row" id="row-shp"></div>
+  </section>
+
+  <section>
+    <h2>clock-face (Tier 2)</h2>
+    <p class="note">Analog clock with 12 hour numbers + 60 minute ticks. STAAR grades 1-3.</p>
+    <div class="demo-row" id="row-clk"></div>
+  </section>
+
+  <section>
     <h2>Error handling</h2>
     <p class="note">Malformed specs render a tiny "Diagram unavailable" placeholder — never throw, never blank.</p>
     <div class="demo-row" id="row-err"></div>
@@ -66,6 +90,10 @@
   <script src="js/widgets/plotter.js?v=20260515a"></script>
   <script src="js/widgets/table.js?v=20260515a"></script>
   <script src="js/widgets/area-model.js?v=20260515a"></script>
+  <script src="js/widgets/tape-diagram.js?v=20260515a"></script>
+  <script src="js/widgets/base-10-blocks.js?v=20260515a"></script>
+  <script src="js/widgets/shape-2d.js?v=20260515a"></script>
+  <script src="js/widgets/clock-face.js?v=20260515a"></script>
   <script>
   (function () {
     'use strict';
@@ -157,6 +185,54 @@
       rowDen: 3, rowNum: 2,
       colDen: 4, colNum: 3
     });
+
+    // tape-diagram
+    demoCard('row-tape', 'Two parts (5 + ? = 12)', {
+      type: 'tape-diagram',
+      parts: [
+        { label: '5', fill: 'navy' },
+        { label: '?', fill: null }
+      ],
+      total: '12'
+    });
+    demoCard('row-tape', '3-part ratio (8 : 8 : 8)', {
+      type: 'tape-diagram',
+      parts: [{ label: '8' }, { label: '8' }, { label: '8' }],
+      total: '24', totalAt: 'top'
+    });
+
+    // base-10-blocks
+    demoCard('row-b10', '125 (1H + 2T + 5O)', {
+      type: 'base-10-blocks', hundreds: 1, tens: 2, ones: 5
+    });
+    demoCard('row-b10', '34 (3T + 4O)', {
+      type: 'base-10-blocks', hundreds: 0, tens: 3, ones: 4
+    });
+    demoCard('row-b10', '6 (just ones)', {
+      type: 'base-10-blocks', hundreds: 0, tens: 0, ones: 6
+    });
+
+    // shape-2d
+    demoCard('row-shp', 'Rectangle 8×5', {
+      type: 'shape-2d', shape: 'rectangle',
+      labels: { width: '8 cm', height: '5 cm' }
+    });
+    demoCard('row-shp', 'Right triangle 3-4-5', {
+      type: 'shape-2d', shape: 'right-triangle',
+      labels: { leg1: '3', leg2: '4', hyp: '5' }
+    });
+    demoCard('row-shp', 'Circle r=4', {
+      type: 'shape-2d', shape: 'circle',
+      labels: { radius: '4 in' }
+    });
+    demoCard('row-shp', 'Hexagon', {
+      type: 'shape-2d', shape: 'hexagon'
+    });
+
+    // clock-face
+    demoCard('row-clk', '3:15', { type: 'clock-face', hour: 3, minute: 15 });
+    demoCard('row-clk', '7:45', { type: 'clock-face', hour: 7, minute: 45 });
+    demoCard('row-clk', '12:00', { type: 'clock-face', hour: 12, minute: 0 });
 
     // error
     demoCard('row-err', 'Missing type', {});

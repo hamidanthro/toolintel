@@ -81,6 +81,34 @@ function validateWidgetSpec(spec) {
       if (sumRow <= 0 || sumCol <= 0) return 'rows_cols_sum_zero';
       return null;
     }
+    case 'tape-diagram': {
+      if (!Array.isArray(spec.parts) || spec.parts.length < 1 || spec.parts.length > 10) return 'parts_out_of_range';
+      for (let i = 0; i < spec.parts.length; i++) {
+        const p = spec.parts[i];
+        if (!p || typeof p !== 'object') return 'part_' + i + '_not_object';
+        if (p.label == null || (typeof p.label !== 'string' && typeof p.label !== 'number')) return 'part_' + i + '_label_missing';
+      }
+      return null;
+    }
+    case 'base-10-blocks': {
+      const digits = ['hundreds','tens','ones'];
+      for (const f of digits) {
+        if (!Number.isInteger(spec[f]) || spec[f] < 0 || spec[f] > 9) return f + '_out_of_range';
+      }
+      if ((spec.hundreds + spec.tens + spec.ones) === 0) return 'all_digits_zero';
+      return null;
+    }
+    case 'shape-2d': {
+      const ok = ['rectangle','square','circle','triangle','right-triangle','pentagon','hexagon','trapezoid','parallelogram'];
+      if (ok.indexOf(spec.shape) === -1) return 'shape_invalid';
+      if (spec.labels != null && typeof spec.labels !== 'object') return 'labels_not_object';
+      return null;
+    }
+    case 'clock-face': {
+      if (!Number.isInteger(spec.hour) || spec.hour < 1 || spec.hour > 12) return 'hour_out_of_range';
+      if (!Number.isInteger(spec.minute) || spec.minute < 0 || spec.minute > 59) return 'minute_out_of_range';
+      return null;
+    }
     default:
       return 'unknown_type:' + spec.type;
   }
