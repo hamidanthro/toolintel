@@ -171,12 +171,15 @@
     <div class="hero-spotlight" aria-hidden="true"></div>
     <div class="container hero-content hero-content--focus">
       <div class="hero-focus">
-        <!-- §52 polish: TEXAS STAAR · TEKS-aligned pill removed (scope
-             creep — same reason we killed it from the footer + worksheets
-             ribbon). The headline below stands on its own.
-             Live-count pill also removed — urgency theater isn't for a
-             kids product. The #hero-live element stays as a hidden
-             no-op so refreshLiveCount() in this file doesn't error. -->
+        <!-- §107 (2026-05-15) — TEXAS STAAR · TEKS-aligned pill restored
+             at Hamid's request. The §52 removal was scope-creep concern;
+             since GradeEarn is Texas-only by hard rule (memory: Texas-only
+             product), naming the test on the hero is correct positioning,
+             not scope creep. CSS at .hero-teks-badge is preserved. -->
+        <div class="hero-teks-badge" aria-hidden="true">
+          <span class="hero-teks-star">★</span>
+          <span>Texas STAAR · TEKS-aligned</span>
+        </div>
         <div class="hero-live-pill" id="hero-live" hidden aria-hidden="true">
           <span class="hero-live-dot" hidden></span>
           <span id="hero-live-text" hidden></span>
