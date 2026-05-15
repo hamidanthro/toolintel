@@ -768,15 +768,33 @@
   } else if (SUBJECT_SLUG === 'social-studies') {
     startSocialStudies();
   } else {
-    fetch(`data/${slug}-curriculum.json?v=20260514a`)
-      .then(r => r.ok ? r.json() : Promise.reject('not-found'))
-      .then(curr => start(curr))
-      .catch(() => {
-        // §110 phase-16 — curriculum-missing fallback. Before showing
-        // "coming soon", try widgets: if the lake has widget content
-        // for this grade, run a widget-only session. Lets kindergarten
-        // (no curriculum JSON for math) + any other grade with widgets
-        // start practicing immediately.
+    // §110 phase-18 — wrap the curriculum fetch in deep diagnostics so
+    // we can see exactly which branch fails when a kid hits a
+    // dead-end. Logs go to console AND to window._lastPracticeError
+    // so a reviewer can paste them back.
+    console.log('[practice] flow: subject=' + SUBJECT_SLUG_RESOLVED + ' state=' + STATE_SLUG_RESOLVED + ' grade=' + slug);
+    const currUrl = `data/${slug}-curriculum.json?v=20260514a`;
+    console.log('[practice] fetching curriculum:', currUrl);
+    fetch(currUrl)
+      .then(r => {
+        console.log('[practice] curriculum HTTP ' + r.status + ' for ' + currUrl);
+        if (!r.ok) {
+          window._lastPracticeError = { stage: 'fetch', status: r.status, url: currUrl };
+          return Promise.reject('not-found');
+        }
+        return r.json();
+      })
+      .then(curr => {
+        const totalQ = (curr.units || []).reduce((acc, u) => acc + (u.lessons || []).reduce((a, l) => a + (l.questions || []).length, 0), 0);
+        console.log('[practice] curriculum parsed: ' + (curr.units || []).length + ' units, ' + totalQ + ' total questions');
+        if (totalQ === 0) {
+          window._lastPracticeError = { stage: 'empty-curriculum', units: (curr.units || []).length };
+        }
+        start(curr);
+      })
+      .catch(err => {
+        console.warn('[practice] curriculum fetch/parse FAILED:', err);
+        window._lastPracticeError = window._lastPracticeError || { stage: 'parse-or-network', err: String(err) };
         tryWidgetOnlySession();
       });
   }
@@ -833,11 +851,20 @@
   }
 
   function showComingSoon() {
+    // §110 phase-18 — surface diagnostic context on the dead-end card
+    // so we can debug live without DevTools access. Last-error
+    // breadcrumb tells us why we landed here.
+    const lastErr = window._lastPracticeError || { stage: 'unknown' };
+    const debug = encodeURIComponent(JSON.stringify({
+      slug: slug, state: STATE_SLUG_RESOLVED, subject: SUBJECT_SLUG_RESOLVED,
+      err: lastErr
+    }));
     root.innerHTML = `
       <h2>Practice</h2>
       <div class="card">
         <p style="color:var(--muted);">Practice for this grade is coming soon.</p>
         <p><a href="grades.html">Back to grades</a></p>
+        <p style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:14px;font-family:'JetBrains Mono',monospace;">debug: g=${escapeHtml(String(slug || '?'))} s=${escapeHtml(String(STATE_SLUG_RESOLVED || '?'))} subj=${escapeHtml(String(SUBJECT_SLUG_RESOLVED || '?'))} err=${escapeHtml(lastErr.stage || '?')} <a href="?${debug}" style="color:rgba(255,255,255,0.5);">copy</a></p>
       </div>`;
   }
 
