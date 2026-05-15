@@ -1,0 +1,25 @@
+{
+  "name": "widget-equivalent-distractor-fail",
+  "description": "Stem asks 'Which model shows 1/2?' Marked correct (index 0) is parts=2, filled=1 (= 1/2). BUT distractor at index 2 is parts=6, filled=3 — which simplifies to 1/2 as well. Two mathematically-equivalent 'correct' visuals → MULTIPLE_CORRECT (per CLAUDE.md §27 framing) AND DIAGRAM_INCOHERENT (the answer set isn't unique).",
+  "question": {
+    "question": "Which model shows 1/2 of the rectangle?",
+    "choices": [
+      { "type": "fraction-bar", "parts": 2, "filled": 1 },
+      { "type": "fraction-bar", "parts": 4, "filled": 1 },
+      { "type": "fraction-bar", "parts": 6, "filled": 3 },
+      { "type": "fraction-bar", "parts": 5, "filled": 1 }
+    ],
+    "correctIndex": 0,
+    "explanation": "The rectangle is divided into 2 equal parts and 1 is shaded."
+  },
+  "context": {
+    "stateSlug": "texas",
+    "subject": "math",
+    "grade": "grade-3",
+    "gradeLabel": "grade 3"
+  },
+  "expected": {
+    "verdict": "reject",
+    "failedChecks": ["MULTIPLE_CORRECT", "DIAGRAM_INCOHERENT"]
+  }
+}

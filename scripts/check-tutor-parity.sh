@@ -141,6 +141,24 @@ if [ -f "$RA" ] && [ -f "$RB" ]; then
   fi
 fi
 
+# ============================================================
+# CHECK 7 — widget-validators.js byte-identical between source and build
+# §110 widget-spec validators. Server-side gate for the diagram
+# infrastructure; drift would mean the deployed lake accepts widget
+# specs that the frontend renderer can't render.
+# ============================================================
+WA="$REPO_ROOT/lambda/widget-validators.js"
+WB="$REPO_ROOT/lambda/tutor-build/widget-validators.js"
+if [ -f "$WA" ] && [ -f "$WB" ]; then
+  if cmp -s "$WA" "$WB"; then
+    echo "[parity] OK: widget-validators.js byte-identical between source and build"
+  else
+    FAIL=1
+    echo "[parity] FAIL: widget-validators.js differs between source and build" >&2
+    diff "$WA" "$WB" | head -20 | sed 's/^/[parity]   /' >&2
+  fi
+fi
+
 if [ "$FAIL" -ne 0 ]; then
   echo "[parity] ABORT — drift detected. Resolve before deploy." >&2
   echo "[parity] If this drift was intentional and tutor-build is the new source of truth," >&2

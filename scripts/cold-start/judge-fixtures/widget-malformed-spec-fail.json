@@ -1,0 +1,25 @@
+{
+  "name": "widget-malformed-spec-fail",
+  "description": "Choice C has filled=7 with parts=5 — filled exceeds parts. Schema-broken widget spec. Judge MUST flag DIAGRAM_INCOHERENT.",
+  "question": {
+    "question": "Which model represents 2/5 of the rectangle?",
+    "choices": [
+      { "type": "fraction-bar", "parts": 5, "filled": 2 },
+      { "type": "fraction-bar", "parts": 5, "filled": 1 },
+      { "type": "fraction-bar", "parts": 5, "filled": 7 },
+      { "type": "fraction-bar", "parts": 4, "filled": 2 }
+    ],
+    "correctIndex": 0,
+    "explanation": "The rectangle is divided into 5 equal parts and 2 are shaded."
+  },
+  "context": {
+    "stateSlug": "texas",
+    "subject": "math",
+    "grade": "grade-3",
+    "gradeLabel": "grade 3"
+  },
+  "expected": {
+    "verdict": "reject",
+    "failedChecks": ["DIAGRAM_INCOHERENT"]
+  }
+}

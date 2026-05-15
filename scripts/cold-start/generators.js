@@ -82,6 +82,75 @@ function getPackEnrichment(stateSlug, subject, grade, teksOverride) {
   return { teks, contexts: contexts || [], stems: stems || [] };
 }
 
+// §110 phase 2 — widget-mode prompt for visual fraction items.
+// When generateOne() is called with widgetMode='fraction-bar-choices',
+// the prompt instructs the model to emit fraction-bar widget specs for
+// each of the 4 multiple-choice options instead of text. The kid sees
+// "Which model represents 1/3?" with 4 fraction bars to compare.
+//
+// Returns the full system prompt or null if no widget-mode prompt
+// exists for the given (subject, questionType, widgetMode) combo.
+function buildWidgetModePrompt({ stateSlug, grade, subject, questionType, packEnrichment, widgetMode }) {
+  if (widgetMode !== 'fraction-bar-choices') return null;
+  if (subject !== 'math') return null;
+
+  const record = getStateRecord(stateSlug);
+  if (!record) throw new Error(`generators.buildWidgetModePrompt: unknown state slug "${stateSlug}"`);
+  const testName = record.testName;
+  const standards = record.standards;
+  const grLabel = gradeReadable(grade);
+  const packTeksBlock = packEnrichment && packEnrichment.teks
+    ? `\nTARGET STANDARD: TEKS ${packEnrichment.teks.id} — ${packEnrichment.teks.text}\nCognitive demand: ${packEnrichment.teks.cognitive_demand}\n`
+    : '';
+
+  return `You are an expert ${testName} math item writer building a VISUAL fraction-comparison question for ${grLabel}.
+
+Standards: align to ${standards} for ${grLabel}.
+${packTeksBlock}
+The 4 answer choices are NOT text — they are fraction-bar diagrams. The kid compares the 4 diagrams and picks the one that matches the question stem.
+
+QUESTION STEM:
+- Write a short stem (1-2 sentences) that names a fraction in words or numerals.
+- Examples of valid stems:
+    "Which model represents 1/3 of the poster?"
+    "Which fraction bar shows 2/5 shaded?"
+    "Lila divides a rectangle into 4 equal parts. She shades 3 of them. Which bar matches?"
+- Do NOT include any "A./B./C./D." labels in the stem.
+
+CHOICES (must be 4 widget-spec objects):
+- Each choice is a JSON object with exactly these fields:
+    { "type": "fraction-bar", "parts": <integer 1-20>, "filled": <integer 0..parts> }
+- ONE choice must visually match the fraction named in the stem.
+- The OTHER THREE are distractors that reflect common misconceptions:
+    * Same denominator, wrong numerator (e.g. for 1/3: parts=3, filled=2)
+    * Same numerator, wrong denominator (e.g. for 1/3: parts=6, filled=1) — note this is 1/6, NOT equivalent to 1/3
+    * Different denominator AND numerator that's a common confusion (e.g. for 1/3: parts=4, filled=1 = 1/4)
+- NEVER include a distractor that is mathematically equivalent to the correct answer (e.g. for 1/3, do NOT include parts=6, filled=2 which is also 1/3). The judge will reject this as DIAGRAM_INCOHERENT.
+
+VALIDATION RULES (strict):
+- parts must be an integer 1..20.
+- filled must be an integer 0..parts.
+- The correct choice's filled/parts must EQUAL the fraction named in the stem in lowest terms OR the same numerator/denominator the stem named.
+- The other 3 choices must each NOT equal the correct fraction in any form (as a decimal: their filled/parts ratio must differ from the correct ratio).
+
+EXPLANATION:
+- 1-2 sentences. Reference WHY the correct bar matches: "The bar is divided into 3 equal parts and 1 part is shaded, so it shows 1/3."
+- Do NOT use LaTeX. Write fractions as "1/3".
+
+Output ONLY valid JSON in this exact shape:
+{
+  "question": "...",
+  "choices": [
+    { "type": "fraction-bar", "parts": 3, "filled": 1 },
+    { "type": "fraction-bar", "parts": 6, "filled": 1 },
+    { "type": "fraction-bar", "parts": 3, "filled": 2 },
+    { "type": "fraction-bar", "parts": 4, "filled": 1 }
+  ],
+  "correctIndex": 0,
+  "explanation": "..."
+}`;
+}
+
 function buildPrompt({ stateSlug, grade, subject, questionType, packEnrichment }) {
   const record = getStateRecord(stateSlug);
   if (!record) {
@@ -253,7 +322,7 @@ function cognitiveDemandFor(grade) {
   return 'COGNITIVE DEMAND: match the cognitive demand of the stated grade — not too easy, not too hard.';
 }
 
-async function _callGenerator(systemPrompt, regenFeedback, grade, stateSlug, packEnrichment) {
+async function _callGenerator(systemPrompt, regenFeedback, grade, stateSlug, packEnrichment, widgetMode) {
   // Name pool: prefer pack-sourced (demographic-weighted) when state has a
   // pack; fall back to the §30 hardcoded NAME_POOL otherwise.
   const packNames = stateSlug ? statePack.sampleAuthenticNames(stateSlug, 5) : null;
@@ -291,9 +360,19 @@ async function _callGenerator(systemPrompt, regenFeedback, grade, stateSlug, pac
   // in K-3 word problems.
   const grammarLine = '\nGrammar: when a count is exactly 1, use the SINGULAR noun form ("1 pencil", "1 apple", "1 cookie"). When the count is 0 or 2 or more, use the PLURAL form ("0 pencils", "5 apples"). Never write "1 pencils" or "1 cookies."';
 
-  const userMessage = regenFeedback
-    ? `Generate the question now. ${namesLine}\n${demandLine}${contextsLine}${stemsLine}${grammarLine}\n\nPrevious attempt was rejected by quality review for: ${regenFeedback.failedChecks.join(', ')}. Specifically: ${regenFeedback.reasons.join(' ')} Generate a new question that fixes these issues.`
-    : `Generate the question now. ${namesLine}\n${demandLine}${contextsLine}${stemsLine}${grammarLine}`;
+  // §110 widget mode: skip the contexts/stems/grammar lines (they're
+  // shaped for word-problem text choices, not visual-comparison
+  // questions). The widget-mode system prompt is self-contained.
+  let userMessage;
+  if (widgetMode === 'fraction-bar-choices') {
+    userMessage = regenFeedback
+      ? `Generate the visual fraction question now. ${namesLine}\n\nPrevious attempt was rejected by quality review for: ${regenFeedback.failedChecks.join(', ')}. Specifically: ${regenFeedback.reasons.join(' ')} Generate a new question where each choice is a valid fraction-bar widget spec.`
+      : `Generate the visual fraction question now. ${namesLine}`;
+  } else {
+    userMessage = regenFeedback
+      ? `Generate the question now. ${namesLine}\n${demandLine}${contextsLine}${stemsLine}${grammarLine}\n\nPrevious attempt was rejected by quality review for: ${regenFeedback.failedChecks.join(', ')}. Specifically: ${regenFeedback.reasons.join(' ')} Generate a new question that fixes these issues.`
+      : `Generate the question now. ${namesLine}\n${demandLine}${contextsLine}${stemsLine}${grammarLine}`;
+  }
   const completion = await getOpenAI().chat.completions.create({
     model: 'gpt-4o-mini',
     messages: [
@@ -309,7 +388,7 @@ async function _callGenerator(systemPrompt, regenFeedback, grade, stateSlug, pac
   return { parsed, tokensUsed: completion.usage?.total_tokens || 0 };
 }
 
-async function generateOne({ state, grade, subject, type, teksOverride }) {
+async function generateOne({ state, grade, subject, type, teksOverride, widgetMode }) {
   const stateSlug = state;
   const questionType = type;
   // Load pack enrichment once per generation — cached per process.
@@ -322,20 +401,28 @@ async function generateOne({ state, grade, subject, type, teksOverride }) {
     ? getPackEnrichment(stateSlug, subject, grade, teksOverride)
     : null;
   if (packEnrichment) {
-    console.log(`[gen] state=${stateSlug} grade=${grade} pack-loaded TEKS=${packEnrichment.teks.id} contexts=${packEnrichment.contexts.length} stems=${packEnrichment.stems.length}`);
+    console.log(`[gen] state=${stateSlug} grade=${grade} pack-loaded TEKS=${packEnrichment.teks.id} contexts=${packEnrichment.contexts.length} stems=${packEnrichment.stems.length}${widgetMode ? ' widget=' + widgetMode : ''}`);
   }
-  const systemPrompt = buildPrompt({ stateSlug, grade, subject, questionType, packEnrichment });
+  // §110 phase 2 — widget-mode prompt selection. If a widgetMode is
+  // specified AND the buildWidgetModePrompt() returns a non-null
+  // prompt for the (subject, questionType, mode) combo, use it.
+  // Otherwise fall through to the standard text-only prompt.
+  const widgetPrompt = widgetMode
+    ? buildWidgetModePrompt({ stateSlug, grade, subject, questionType, packEnrichment, widgetMode })
+    : null;
+  const systemPrompt = widgetPrompt || buildPrompt({ stateSlug, grade, subject, questionType, packEnrichment });
   const judgeContext = { stateSlug, subject, grade, gradeLabel: gradeReadable(grade) };
 
-  const first = await _callGenerator(systemPrompt, null, grade, stateSlug, packEnrichment);
+  const first = await _callGenerator(systemPrompt, null, grade, stateSlug, packEnrichment, widgetMode);
 
   if (!JUDGE_ENABLED) {
     return {
       ...first.parsed,
       _generatedBy: 'gpt-4o-mini',
-      _promptVersion: 'cold-v1',
+      _promptVersion: widgetMode ? 'cold-v1-widget-' + widgetMode : 'cold-v1',
       _tokensUsed: first.tokensUsed,
-      _packTeks: packEnrichment?.teks?.id || null
+      _packTeks: packEnrichment?.teks?.id || null,
+      _widgetMode: widgetMode || null
     };
   }
 
@@ -344,29 +431,31 @@ async function generateOne({ state, grade, subject, type, teksOverride }) {
     return {
       ...first.parsed,
       _generatedBy: 'gpt-4o-mini',
-      _promptVersion: 'cold-v1',
+      _promptVersion: widgetMode ? 'cold-v1-widget-' + widgetMode : 'cold-v1',
       _tokensUsed: first.tokensUsed,
       _judge: 'pass',
-      _packTeks: packEnrichment?.teks?.id || null
+      _packTeks: packEnrichment?.teks?.id || null,
+      _widgetMode: widgetMode || null
     };
   }
 
   // First attempt rejected — regenerate ONCE with judge feedback appended
   // to the user message. No third attempt: two strikes and out is intentional.
-  const second = await _callGenerator(systemPrompt, verdict1, grade, stateSlug, packEnrichment);
+  const second = await _callGenerator(systemPrompt, verdict1, grade, stateSlug, packEnrichment, widgetMode);
   const verdict2 = await judgeQuestion(second.parsed, judgeContext);
   if (verdict2.verdict === 'pass') {
     return {
       ...second.parsed,
       _generatedBy: 'gpt-4o-mini',
-      _promptVersion: 'cold-v1-regen',
+      _promptVersion: widgetMode ? 'cold-v1-widget-' + widgetMode + '-regen' : 'cold-v1-regen',
       _tokensUsed: first.tokensUsed + second.tokensUsed,
       _judge: 'pass-after-regen',
-      _packTeks: packEnrichment?.teks?.id || null
+      _packTeks: packEnrichment?.teks?.id || null,
+      _widgetMode: widgetMode || null
     };
   }
 
   throw new JudgeRejectedTwiceError(verdict1.failedChecks, verdict2.failedChecks);
 }
 
-module.exports = { generateOne, buildPrompt, STATE_STYLE_OVERRIDES, GENERIC_STYLE, QUESTION_TYPE_PROMPTS };
+module.exports = { generateOne, buildPrompt, buildWidgetModePrompt, STATE_STYLE_OVERRIDES, GENERIC_STYLE, QUESTION_TYPE_PROMPTS };

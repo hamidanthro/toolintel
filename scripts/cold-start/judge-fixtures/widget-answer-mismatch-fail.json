@@ -1,0 +1,25 @@
+{
+  "name": "widget-answer-mismatch-fail",
+  "description": "Stem asks 'Which model shows 1/3?' but the marked-correct choice (correctIndex 0) is a fraction-bar with parts=4, filled=1 — that visualizes 1/4, NOT 1/3. Direct contradiction between stem and answer. Judge MUST flag DIAGRAM_INCOHERENT (or FACTUAL).",
+  "question": {
+    "question": "Which model represents 1/3 of the rectangle?",
+    "choices": [
+      { "type": "fraction-bar", "parts": 4, "filled": 1 },
+      { "type": "fraction-bar", "parts": 5, "filled": 1 },
+      { "type": "fraction-bar", "parts": 6, "filled": 2 },
+      { "type": "fraction-bar", "parts": 8, "filled": 1 }
+    ],
+    "correctIndex": 0,
+    "explanation": "The rectangle is divided into parts and 1 part is shaded."
+  },
+  "context": {
+    "stateSlug": "texas",
+    "subject": "math",
+    "grade": "grade-3",
+    "gradeLabel": "grade 3"
+  },
+  "expected": {
+    "verdict": "reject",
+    "failedChecks": ["DIAGRAM_INCOHERENT"]
+  }
+}

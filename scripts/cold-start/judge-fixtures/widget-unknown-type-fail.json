@@ -1,0 +1,25 @@
+{
+  "name": "widget-unknown-type-fail",
+  "description": "Choice has 'type': 'pie-chart' — not a registered widget type in the GradeEarn renderer. Judge MUST flag DIAGRAM_INCOHERENT (unknown type would render as 'Diagram unavailable' to the kid).",
+  "question": {
+    "question": "Which model represents 1/4 of the circle?",
+    "choices": [
+      { "type": "pie-chart", "slices": 4, "filled": 1 },
+      { "type": "fraction-bar", "parts": 4, "filled": 1 },
+      { "type": "fraction-bar", "parts": 5, "filled": 1 },
+      { "type": "fraction-bar", "parts": 3, "filled": 1 }
+    ],
+    "correctIndex": 1,
+    "explanation": "A rectangle divided into 4 equal parts with 1 shaded shows 1/4."
+  },
+  "context": {
+    "stateSlug": "texas",
+    "subject": "math",
+    "grade": "grade-3",
+    "gradeLabel": "grade 3"
+  },
+  "expected": {
+    "verdict": "reject",
+    "failedChecks": ["DIAGRAM_INCOHERENT"]
+  }
+}
