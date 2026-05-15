@@ -628,11 +628,18 @@
 
     const remaining = guestRemaining();
     const pts = window._sessionPoints || 0;
-    // Compact one-line format. On phone, the long form ("Sign up
-    // free to unlock 100,000+ questions") is replaced with the
-    // shorter "Sign up →" — CSS controls which span renders.
+    // §103 — consolidated guest banner. Was scarcity-only ("N of 30
+    // free preview · X pts earned · Sign up →"); §94 polish spec
+    // asked for a SECOND banner below the card with value messaging
+    // ("save progress · earn cents toward toys"). Per §94 STEP 5
+    // 'consolidate to ONE banner', the §95 sticky-top stays as the
+    // single guest CTA but now combines both messages:
+    //   - Lead: value pitch ("Save progress + earn toys")
+    //   - Trail: scarcity count ("N of 30 free") so kids feel the
+    //     bounded session
+    //   - Pts-earned breadcrumb still shown when >0 (loss-aversion)
     bar.innerHTML = `
-      <span class="guest-banner-count"><strong>${remaining} of ${GUEST_LIMIT}</strong> free preview${pts > 0 ? ` · <strong class="guest-banner-pts">${pts} pts earned</strong>` : ''}</span>
+      <span class="guest-banner-count">Save progress + earn toys · <strong>${remaining} of ${GUEST_LIMIT} free</strong>${pts > 0 ? ` · <strong class="guest-banner-pts">${pts} pts earned</strong>` : ''}</span>
       <a href="#" class="guest-banner-cta" id="guest-signup-btn">Sign up &rarr;</a>
       <button type="button" class="guest-banner-dismiss" id="guest-banner-dismiss" aria-label="Dismiss">×</button>
     `;
@@ -1765,6 +1772,16 @@
           // something else started a different utterance our button should
           // go idle.
           if (state === 'idle') setPlaying(false);
+        });
+      }
+      // §103 — wire the inline scratch button to STAARScratchpad.toggle().
+      // The floating bottom-right pencil is suppressed on practice.html
+      // by CSS (see styles.css §103 block); this inline button is the
+      // canonical entry point.
+      const scratchBtnEl = qbox.querySelector('[data-act="scratch"]');
+      if (scratchBtnEl && window.STAARScratchpad && typeof window.STAARScratchpad.toggle === 'function') {
+        scratchBtnEl.addEventListener('click', () => {
+          try { window.STAARScratchpad.toggle(); } catch (_) {}
         });
       }
       form.addEventListener('submit', e => {
@@ -3468,6 +3485,17 @@
           ${SPEECH_ICON_HTML}
         </button>`
       : '';
+    // §103 — inline scratch-paper button next to the speaker. The
+    // floating bottom-right scratchpad pencil was an unlabeled mystery
+    // affordance per Hamid screenshot review. Surface it as a labeled
+    // sibling of the speaker icon at the top-right of the question
+    // prompt area. Toggles the existing scratchpad-inline element via
+    // the public STAARScratchpad.toggle() API.
+    const scratchBtn = (!hasPassage && window.STAARScratchpad)
+      ? `<button type="button" class="speech-btn q-scratch-btn" data-act="scratch" aria-label="Open scratch paper" title="Scratch paper">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+        </button>`
+      : '';
 
     // Reading passage rendering — two paths:
     //  - §74 Phase 3 (markdown body via ReadingRender): when q.passage.body is present
@@ -3515,7 +3543,7 @@
       <form class="question-card" data-state="asking" data-cents="${cents}">
         ${navHtml}
         ${eyebrowHtml}
-        <div class="q-prompt">${readBtn}<span class="q-prompt-text">${escapeHtml(q.prompt)}</span></div>
+        <div class="q-prompt">${readBtn}${scratchBtn}<span class="q-prompt-text">${escapeHtml(q.prompt)}</span></div>
         <div class="q-body">${body}</div>
         <div class="q-inline-fb" data-role="inline-fb" hidden></div>
         <button class="btn btn-primary q-cta" type="submit" data-role="check">${ctaLabel}</button>

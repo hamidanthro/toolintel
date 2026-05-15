@@ -30325,3 +30325,46 @@ body.settings-page h1, body.settings-page h2, body.settings-page h3 {
     font-size: 12.5px;
   }
 }
+
+/* ==========================================================================
+   §103 Practice inline-scratch button + suppress floating pencil
+   (May 15, 2026)
+
+   The floating bottom-right scratchpad pencil was an unlabeled mystery
+   affordance per Hamid's screenshot reviews. §103 surfaces it as a
+   labeled sibling of the speaker icon at the top-right of the question
+   prompt area. The floating pencil is CSS-hidden on practice.html;
+   the canonical entry point is now the inline button.
+   ========================================================================== */
+
+/* Hide the floating bottom-right scratchpad-toggle on practice.html
+   only. Other pages (mock test, etc.) still see the original
+   affordance. */
+body.practice-page .scratchpad-inline[data-state="collapsed"] .scratchpad-toggle--icon {
+  display: none !important;
+}
+
+/* Inline scratch button — visually a sibling of .speech-btn so they
+   render as a pair at the top-right of the question prompt. Reuses
+   .speech-btn base styling so size + tap target + idle colors match
+   without re-defining. */
+body.practice-page .q-scratch-btn.speech-btn {
+  color: rgba(255, 255, 255, 0.55);
+}
+body.practice-page .q-scratch-btn.speech-btn:hover,
+body.practice-page .q-scratch-btn.speech-btn:focus-visible {
+  color: var(--gold, #fbbf24);
+}
+body.practice-page .q-scratch-btn.speech-btn[aria-pressed="true"] {
+  color: var(--gold, #fbbf24);
+}
+
+/* Group speaker + scratch buttons at the top-right of .q-prompt with
+   a small gap between them, instead of overlapping or stacking awkwardly.
+   The existing .q-speech-btn float-right rule (per .q-prompt) handles
+   the speaker; this puts the scratch button right next to it. */
+body.practice-page .q-prompt .q-scratch-btn {
+  float: right;
+  margin-left: 4px;
+  margin-top: 0;
+}
