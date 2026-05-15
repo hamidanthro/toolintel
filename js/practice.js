@@ -1497,18 +1497,24 @@
         }
       }
       qbox.innerHTML = renderQuestion(q, isLocked, i, questions.length);
-      // I6 smooth scroll-to-top for the question card so kids on phones
-      // don't end up reading the next question with the previous answer
-      // still mid-screen. Only fires on Q2+ (skip the initial paint).
-      if (i > 0) {
-        try {
-          const rect = qbox.getBoundingClientRect();
-          if (rect.top < 0 || rect.top > window.innerHeight * 0.5) {
-            qbox.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-        } catch (_) {}
-      }
+      // §98 — scroll the question stem into view on every new mount
+      // (initial load + Next tap). Was gated to i>0; spec says always.
+      // The original guard was "only if not already near top"; preserve
+      // that to avoid jitter when the page already opens at top.
+      try {
+        const rect = qbox.getBoundingClientRect();
+        if (rect.top < 0 || rect.top > window.innerHeight * 0.5) {
+          qbox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      } catch (_) {}
       attachQuestionHandlers(q);
+      // §98 — install IntersectionObserver indicator chip so kids on
+      // long-content questions (Reading passages, Grade 8 Science
+      // multi-sentence answers, multi-step word problems) get a
+      // visible "↓ Scroll to check answer" affordance when the
+      // in-flow button is below the fold. Mobile-only (CSS hides
+      // .q-cta-indicator at >=768px).
+      try { installCtaIndicator(qbox); } catch (_) {}
       // Lake: record question shown (Prompt I1)
       if (window.GradeEarnLake && q.contentId) {
         window.GradeEarnLake.onQuestionShown({
@@ -1519,6 +1525,74 @@
           subject: SUBJECT_SLUG_RESOLVED
         });
       }
+    }
+
+    // §98 — IntersectionObserver-driven scroll indicator. Single
+    // shared observer; re-targeted on each new question mount.
+    // Pattern matches js/facts.js#io for consistency.
+    let _ctaObserver = null;
+    function installCtaIndicator(scope) {
+      // Reset prior observation
+      if (_ctaObserver) {
+        try { _ctaObserver.disconnect(); } catch (_) {}
+        _ctaObserver = null;
+      }
+      // Phone only — at >=768px the CSS hides .q-cta-indicator entirely,
+      // and natural desktop scroll is sufficient. Bail to avoid
+      // installing a no-op observer.
+      if (window.innerWidth >= 768) return;
+
+      // Find the primary action button (asking → q-cta; wrong → first
+      // button in .q-wrong-actions). One of them is always present
+      // post-renderQuestion.
+      const target = scope.querySelector('.q-cta')
+        || scope.querySelector('.q-wrong-actions .btn-primary')
+        || scope.querySelector('.q-wrong-next');
+      if (!target) return;
+
+      // Build (or reuse) the floating indicator chip mounted on body
+      // so position:fixed isn't constrained by ancestor overflow.
+      let chip = document.getElementById('q-cta-indicator');
+      if (!chip) {
+        chip = document.createElement('button');
+        chip.type = 'button';
+        chip.id = 'q-cta-indicator';
+        chip.className = 'q-cta-indicator';
+        chip.setAttribute('aria-label', 'Scroll to action button');
+        chip.innerHTML = '<span class="q-cta-indicator-arrow" aria-hidden="true">↓</span><span class="q-cta-indicator-label"></span>';
+        document.body.appendChild(chip);
+        chip.addEventListener('click', () => {
+          const t = chip._target;
+          if (!t) return;
+          try {
+            t.scrollIntoView({ block: 'center', behavior: 'smooth' });
+          } catch (_) {}
+        });
+      }
+      chip._target = target;
+      // Label by state: asking → "Scroll to check answer";
+      // wrong/correct → "Scroll to next".
+      const labelEl = chip.querySelector('.q-cta-indicator-label');
+      if (labelEl) {
+        const isAsking = !!scope.querySelector('.question-card[data-state="asking"]');
+        labelEl.textContent = isAsking ? ' Scroll to check answer' : ' Scroll to next';
+      }
+      // Reset visibility before observing — the prior question's chip
+      // state shouldn't bleed into the new one.
+      chip.classList.remove('visible');
+
+      _ctaObserver = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          // Visible (intersecting ≥50%) → hide chip; offscreen → show.
+          if (e.isIntersecting) chip.classList.remove('visible');
+          else chip.classList.add('visible');
+        });
+      }, {
+        root: null, // viewport
+        rootMargin: '0px 0px -16px 0px',
+        threshold: 0.5,
+      });
+      _ctaObserver.observe(target);
     }
 
     function attachQuestionHandlers(q) {
@@ -2075,6 +2149,11 @@
           checkBtn.replaceWith(nextInline);
         }
       }
+      // §98 — re-target the scroll-indicator at the new wrong-state
+      // primary action (the .q-wrong-next button OR the replaced
+      // .q-cta Next button above). The asking-state observer was
+      // pointing at the now-gone Check answer button.
+      try { installCtaIndicator(qbox); } catch (_) {}
 
       // §94 — old .q-meta footer is gone (was at bottom of card,
       // buried below Check answer). Topic + reward now render as a

@@ -28305,10 +28305,13 @@ body.practice-page .tutor-followup--row .tutor-send:hover {
     padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
   }
 
-  /* Wrong-answer two-button row (§68) + Correct-answer auto-advance
-     chip (§54) — these are CONTAINERS, so they get the navy bar
-     treatment with backdrop blur. They hold their own buttons inside. */
-  body.practice-page .q-wrong-actions,
+  /* §98 (May 15) — auto-advance chip stays as a fixed-bottom container.
+     Wrong-actions row + .q-cta button switch to IN-FLOW per §98 fix.
+     The Sun-Earth-Moon-tides screenshot showed the fixed-bottom .q-cta
+     overlaying the last answer choice on long-content questions
+     (Reading passages, Grade 8 Science, multi-step word problems).
+     IntersectionObserver-driven indicator chip telegraphs "scroll
+     down" when the in-flow button is offscreen. */
   body.practice-page .q-autoadvance {
     position: fixed !important;
     left: 0; right: 0; bottom: 0;
@@ -28325,27 +28328,19 @@ body.practice-page .tutor-followup--row .tutor-send:hover {
     box-sizing: border-box;
   }
 
-  /* §93 — Check answer button: kid couldn't see it on mobile Safari.
-     The prior rule applied navy-bar styling DIRECTLY to the button
-     (background: rgba(6,13,31,0.95) on .q-cta), overriding the gold
-     gradient from line 6419 → button rendered navy-on-navy with
-     dark text → invisible. Hamid screenshot 7:53 PM May 14 confirms.
-     Fix: float the button as a gold pill at viewport bottom with
-     side gutters. No navy bar — the button IS the action, full
-     contrast, unambiguous. Reaches above iPhone home indicator via
-     safe-area-inset-bottom. */
+  /* §98 — .q-cta in-flow at end of card. Preserves the §93 gold
+     visual treatment (gradient + dark text + radius + shadow) and
+     the disabled-state visual. position:fixed dropped. The
+     IntersectionObserver-driven .q-cta-indicator (rendered as a
+     floating chip below the viewport when the button is offscreen)
+     handles the "kid can't see the button" case for long-content
+     questions. */
   body.practice-page .question-card[data-state="asking"] .q-cta {
-    position: fixed !important;
-    left: 16px !important;
-    right: 16px !important;
-    bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
-    z-index: 50 !important;
-    width: auto !important;
+    position: static !important;
+    width: 100% !important;
     height: 52px !important;
-    margin: 0 !important;
+    margin: 16px 0 0 !important;
     padding: 0 26px !important;
-    /* Restore gold gradient from line 6419 — was the primary brand
-       button treatment, accidentally overridden by §69. */
     background: linear-gradient(135deg, #fde68a 0%, #fbbf24 50%, #f59e0b 100%) !important;
     color: #060d1f !important;
     border: none !important;
@@ -28357,12 +28352,28 @@ body.practice-page .tutor-followup--row .tutor-send:hover {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
   }
-  /* Visual disabled state when no choice is selected. Form-level
-     submit still fires the existing validation path — this is
-     visual-only to telegraph "pick something first". */
   body.practice-page .question-card[data-state="asking"]:not(:has(input:checked)) .q-cta {
     opacity: 0.55;
     box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+  }
+
+  /* §98 — wrong-answer row in-flow at end of card too. Drop the
+     fixed-bottom navy-bar treatment so it doesn't overlay long
+     content the same way the §93 .q-cta did. */
+  body.practice-page .q-wrong-actions {
+    position: static !important;
+    display: flex !important;
+    gap: 10px !important;
+    align-items: center !important;
+    width: 100% !important;
+    margin: 16px 0 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-sizing: border-box;
   }
 
   /* Wrong-state buttons share the row inside the fixed bar */
@@ -30096,4 +30107,60 @@ body.league-page h1, body.league-page h2, body.league-page h3,
 body.games-page h1, body.games-page h2, body.games-page h3,
 body.settings-page h1, body.settings-page h2, body.settings-page h3 {
   color: rgba(255, 255, 255, 0.96) !important;
+}
+
+/* ==========================================================================
+   §98 Scroll-to-action indicator chip (May 15, 2026)
+
+   Phase 1 / §93 made the .q-cta button always visible by fixing it to
+   viewport bottom. That worked for short questions but overlapped the
+   last answer choice on long-content questions (Reading passages,
+   Grade 8 Science multi-sentence answers, multi-step word problems).
+   Hamid screenshot 2:31 AM May 15 confirmed.
+
+   §98 makes the .q-cta in-flow at the end of the question card.
+   When the button is offscreen below the fold, this indicator chip
+   floats at viewport bottom telegraphing "↓ Scroll to check answer".
+   IntersectionObserver toggles .visible per the button's position.
+
+   Mobile-only — desktop scroll behavior is natural enough that the
+   chip would be noise.
+   ========================================================================== */
+
+.q-cta-indicator {
+  display: none;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  z-index: 60;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 16px;
+  background: linear-gradient(135deg, #fde68a 0%, #fbbf24 50%, #f59e0b 100%);
+  color: #060d1f;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  border: none;
+  border-radius: 999px;
+  box-shadow: 0 8px 22px rgba(251, 191, 36, 0.35), 0 2px 6px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 200ms ease;
+  white-space: nowrap;
+}
+.q-cta-indicator.visible {
+  display: inline-flex;
+  opacity: 1;
+}
+.q-cta-indicator-arrow {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Mobile-only — desktop never shows the indicator. */
+@media (min-width: 768px) {
+  .q-cta-indicator { display: none !important; }
 }
