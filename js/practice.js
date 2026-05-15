@@ -222,8 +222,11 @@
   if (STATES && !STATES.getBySlug(STATE_SLUG)) STATE_SLUG = 'texas';
 
   // Grade — URL, then user record. Required.
+  // Normalize to lowercase: GitHub Pages is case-sensitive, so
+  // ?g=grade-K would 404 on data/grade-K-curriculum.json.
   let slug = params.get('g');
-  if (!slug && _u0 && _u0.grade) slug = _u0.grade;
+  if (slug) slug = String(slug).toLowerCase();
+  if (!slug && _u0 && _u0.grade) slug = String(_u0.grade).toLowerCase();
   const unitId = params.get('u');
   const lessonId = params.get('l');
 
@@ -763,13 +766,66 @@
       .then(r => r.ok ? r.json() : Promise.reject('not-found'))
       .then(curr => start(curr))
       .catch(() => {
-        root.innerHTML = `
-          <h2>Practice</h2>
-          <div class="card">
-            <p style="color:var(--muted);">Practice for this grade is coming soon.</p>
-            <p><a href="grades.html">Back to grades</a></p>
-          </div>`;
+        // §110 phase-16 — curriculum-missing fallback. Before showing
+        // "coming soon", try widgets: if the lake has widget content
+        // for this grade, run a widget-only session. Lets kindergarten
+        // (no curriculum JSON for math) + any other grade with widgets
+        // start practicing immediately.
+        tryWidgetOnlySession();
       });
+  }
+
+  function tryWidgetOnlySession() {
+    if (STATE_SLUG_RESOLVED !== 'texas' || SUBJECT_SLUG_RESOLVED !== 'math') {
+      return showComingSoon();
+    }
+    fetch(TUTOR_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'getWidgetBatch',
+        state: STATE_SLUG_RESOLVED,
+        grade: slug,
+        questionType: 'concept',
+        count: 15
+      })
+    })
+      .then(r => r.ok ? r.json() : Promise.reject('no-batch'))
+      .then(body => {
+        const qs = Array.isArray(body && body.questions) ? body.questions : [];
+        if (qs.length < 5) return showComingSoon();
+        console.log('[widgets] curriculum missing — falling through to widget-only session (' + qs.length + ' questions)');
+        // Build a minimal "curriculum" shape so start() / runQuiz work.
+        const fakeCurr = {
+          grade: slug,
+          title: (slug === 'grade-k' ? 'Kindergarten' : slug.replace('grade-', 'Grade ')) + ' Math',
+          units: [{
+            id: 'widgets-u1',
+            order: 1,
+            title: 'Visual practice',
+            teks: [],
+            summary: 'Diagram-based practice questions.',
+            lessons: [{
+              id: 'widgets-u1l1',
+              title: 'Visual questions',
+              teks: '',
+              objective: '',
+              questions: qs
+            }]
+          }]
+        };
+        start(fakeCurr);
+      })
+      .catch(() => showComingSoon());
+  }
+
+  function showComingSoon() {
+    root.innerHTML = `
+      <h2>Practice</h2>
+      <div class="card">
+        <p style="color:var(--muted);">Practice for this grade is coming soon.</p>
+        <p><a href="grades.html">Back to grades</a></p>
+      </div>`;
   }
 
   function renderHome() {
