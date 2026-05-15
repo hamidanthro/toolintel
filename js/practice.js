@@ -273,37 +273,36 @@
     // session. countdownPill kept as an empty string so the template
     // string interpolation below doesn't error.
     let countdownPill = '';
-    // §81 — pts chip + user pill. Read balance + displayName from
-    // STAARAuth so the practice top bar carries the same identity
-    // surface every other page has. Guests get a "Sign in" affordance
-    // in place of the user pill so the row never feels orphaned.
+    // §99 (May 15) — kid-comprehension pass on the top bar.
+    //   - brand-star removed: it duplicates the points-pill star
+    //     icon at 5px difference (Hamid 2:31 AM screenshot — kid sees
+    //     two stars, can't tell which is what). Kid is already inside
+    //     the app; logo isn't load-bearing here.
+    //   - state/grade/subject pill row removed: "Grade 3 Math"
+    //     already renders prominently in the slim header below
+    //     (.practice-eyebrow-title). Redundant.
+    //   - points-chip icon: 'target' glyph instead of ★ so it reads
+    //     visually distinct from any star elsewhere.
+    //   - kept: back arrow, points chip, ⋯ menu. Three things, all
+    //     functional, none decorative.
     const u = (window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser()) || null;
     const ptsChip = u
       ? `<a class="practice-pts-chip" href="myspace.html" aria-label="Your points">
-           <span class="practice-pts-chip-icon" aria-hidden="true">★</span>
+           <span class="practice-pts-chip-icon" aria-hidden="true">
+             <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>
+           </span>
            <span class="practice-pts-chip-value">${Number(u.balanceCents || 0)}</span>
+           <span class="practice-pts-chip-suffix">pts</span>
          </a>`
       : `<a class="practice-pts-chip practice-pts-chip--guest" href="index.html#auth" aria-label="Sign in">Sign in</a>`;
     const soundOn = !(window.STAARPrefs && window.STAARPrefs.get && window.STAARPrefs.get().sound === false);
     const userDisplay = u ? (u.displayName || u.username || '') : '';
     bar.innerHTML = `
       <nav class="practice-breadcrumb" aria-label="Practice context">
-        <a class="practice-breadcrumb-brand" href="index.html" aria-label="GradeEarn home">
-          <span class="practice-breadcrumb-brand-mark" aria-hidden="true">★</span>
-          <span class="practice-breadcrumb-brand-text">GradeEarn</span>
-        </a>
-        <a class="practice-breadcrumb-back" href="${backHref}" aria-label="Back to grade">
+        <a class="practice-breadcrumb-back" href="${backHref}" aria-label="Back">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
         </a>
-        <div class="practice-breadcrumb-pills">
-          <span class="practice-pill practice-pill--state">
-            <span class="practice-pill-state-abbr">${escapePcb(STATE_INFO.nameAbbr || '')}</span>
-            <span class="practice-pill-state-test">${escapePcb(STATE_INFO.testName || '')}</span>
-          </span>
-          <span class="practice-pill practice-pill--grade">${escapePcb(gradeName)}</span>
-          <span class="practice-pill practice-pill--subject">${escapePcb(subjLabel)}</span>
-          ${countdownPill}
-        </div>
+        <span class="practice-breadcrumb-title">${escapePcb(gradeName)} ${escapePcb(subjLabel)}</span>
         ${ptsChip}
         <button type="button" class="practice-breadcrumb-overflow" aria-label="More actions" aria-haspopup="menu" aria-expanded="false">
           <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
@@ -1173,33 +1172,44 @@
       <div class="practice-layout practice-layout--solo">
         <div class="practice-main">
           ${lockedBanner}
+          <!-- §99 — header redesign for kid comprehension. The prior
+               .practice-eyebrow block was:
+                 "Grade 3 Math · 1/25 · 4 correct · 12 pts [Restart]"
+               + a near-empty progress bar.
+
+               Replaced with a single "today line" that GROWS as the
+               kid answers questions (emotionally additive vs the prior
+               near-empty progress bar). Format:
+                 "Question 4 today · 3 right so far 🔥"
+               Streak emoji at ≥3 correct in a row (one 🔥), ≥7 (two),
+               ≥12 (three).
+
+               The 1/25 total counter, the progress bar, and the in-bar
+               restart button are gone — restart already lives in the
+               §81 ⋯ menu. -->
           <div class="practice-header practice-header--slim" data-q="1">
-            <div class="practice-eyebrow">
-              <span class="practice-eyebrow-title">${titleBits.join(' · ')}</span>
-              <span class="practice-eyebrow-sep">·</span>
-              <span class="practice-eyebrow-progress" aria-label="Question progress"><span id="progress-num">1</span>/${questions.length}</span>
-              <!-- §74 (May 13) — live session score on the practice
-                   eyebrow. The §71 strip removed the sidebar (with its
-                   accuracy ring + stat cards) and the kid lost ALL
-                   visibility of how they were doing mid-session.
-                   These two micro-pills (correct count + pts earned)
-                   live INLINE on the eyebrow — no card chrome
-                   re-added, no sidebar back, just two numbers the
-                   kid can glance at. Updated by updateLiveScore()
-                   on every answer. Both default to 0; hidden until
-                   first answer lands. -->
-              <span class="practice-eyebrow-sep practice-eyebrow-livesep" hidden>·</span>
-              <span class="practice-eyebrow-live" id="practice-live-correct" hidden aria-label="Correct this session"><span id="practice-live-correct-num">0</span> correct</span>
-              <span class="practice-eyebrow-sep practice-eyebrow-livesep" hidden>·</span>
-              <span class="practice-eyebrow-live practice-eyebrow-live--pts" id="practice-live-pts" hidden aria-label="Points earned this session"><span id="practice-live-pts-num">0</span> pts</span>
-              <span id="restart-wrap" class="practice-eyebrow-restart">
-                <button type="button" class="btn-restart" id="restart-btn" title="Start this practice over">
-                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+            <div class="practice-today-line" id="practice-today-line">
+              <span class="practice-today-q"><span id="progress-num">1</span> today</span>
+              <span class="practice-today-sep practice-today-correctsep" hidden>·</span>
+              <span class="practice-today-correct" id="practice-today-correct" hidden>
+                <span id="practice-live-correct-num">0</span> right so far
+              </span>
+              <span class="practice-today-streak" id="practice-today-streak" aria-hidden="true" hidden></span>
+              <!-- Live-pts span kept hidden for back-compat with the
+                   updateLiveScore() writer (id is still queried). The
+                   number is now surfaced inside the §99 Check answer
+                   button instead. -->
+              <span class="practice-today-live-pts" id="practice-live-pts" hidden><span id="practice-live-pts-num">0</span></span>
+              <!-- Restart wrapper kept hidden for back-compat with the
+                   ⋯ menu handler that programmatically clicks #restart-btn.
+                   The visible Restart pill is gone; the ⋯ menu's Restart
+                   unit item is the canonical entry. -->
+              <span id="restart-wrap" class="practice-eyebrow-restart" hidden>
+                <button type="button" class="btn-restart" id="restart-btn" title="Start over">
                   <span>Restart</span>
                 </button>
               </span>
             </div>
-            <div class="progress-bar"><div class="progress-track"><div class="progress-fill" id="bar"></div></div><div class="progress-pulse" id="bar-pulse"></div></div>
           </div>
           <div id="qbox"></div>
           <div id="scratchpad-mount"></div>
@@ -1894,25 +1904,33 @@
         try { if (typeof window._refreshSessionPts === 'function') window._refreshSessionPts(); } catch (_) {}
         try { renderGuestBanner(); } catch (_) {}
       }
-      // §74 — live session score on the practice eyebrow. The §71
-      // strip pulled out the perf-panel sidebar; the kid lost ALL
-      // mid-session feedback on how they were doing. This two-pill
-      // inline strip fills the gap: "N correct" + "M pts" appear
-      // on the eyebrow row as soon as the first answer lands.
-      // Updates on every answer (correct + wrong both bump
-      // "answered" implicitly via stats.total). `correct` is the
-      // closure variable runQuiz already maintains.
+      // §99 — today line update. The §74 two-pill strip became the
+      // §99 single-line "Question N today · X right so far {🔥}". Same
+      // `correct` closure as before, plus a running-streak emoji
+      // (3+ → 🔥, 7+ → 🔥🔥, 12+ → 🔥🔥🔥). Streak resets on wrong
+      // (handled below via the closure-local `_streak` counter).
       try {
         const liveCorrect    = document.getElementById('practice-live-correct');
         const liveCorrectNum = document.getElementById('practice-live-correct-num');
-        const livePts        = document.getElementById('practice-live-pts');
         const livePtsNum     = document.getElementById('practice-live-pts-num');
-        const liveSeps       = document.querySelectorAll('.practice-eyebrow-livesep');
+        const correctSep     = document.querySelector('.practice-today-correctsep');
+        const streakEl       = document.getElementById('practice-today-streak');
         if (liveCorrectNum) liveCorrectNum.textContent = correct;
         if (livePtsNum)     livePtsNum.textContent = (window._sessionPoints || 0);
         if (liveCorrect)    liveCorrect.hidden = false;
-        if (livePts)        livePts.hidden = false;
-        liveSeps.forEach(s => { s.hidden = false; });
+        if (correctSep)     correctSep.hidden = false;
+        // Streak emoji — read window._stCorrectStreak which is the
+        // global running-streak counter maintained at line ~1803
+        // (incremented on correct, reset to 0 on wrong).
+        if (streakEl) {
+          const s = window._stCorrectStreak || 0;
+          let fire = '';
+          if (s >= 12) fire = '🔥🔥🔥';
+          else if (s >= 7) fire = '🔥🔥';
+          else if (s >= 3) fire = '🔥';
+          streakEl.textContent = fire;
+          streakEl.hidden = !fire;
+        }
       } catch (_) {}
       const nextLabel = i + 1 >= questions.length ? 'See results' : 'Next question →';
 
@@ -3466,22 +3484,22 @@
       ? `<div class="reading-q-nav" aria-label="Question position">Question ${idx + 1} of ${total}</div>`
       : '';
 
-    // §94 — topic + reward stake render as an EYEBROW at the TOP of
-    // the question card now (was a buried footer line at the
-    // bottom under the Check answer button, where kids never saw
-    // it). Format: WORD PROBLEMS · +5 pts — uppercase, gold-tinted,
-    // 11px letter-spaced. The leading topic anchors context; the
-    // trailing stake reads as a reward, not a stake (the `±` was
-    // misleading copy — per §94 non-punitive policy, wallet only
-    // ever increments).
-    const topic = q._unit?.title ? escapeHtml(q._unit.title) : '';
-    const stake = locked
-      ? '⭐ Mastered'
-      : `+${cents} pts`;
-    const eyebrowParts = [topic, stake].filter(Boolean);
-    const eyebrowHtml = eyebrowParts.length
-      ? `<div class="q-card-eyebrow" data-role="eyebrow">${eyebrowParts.join(' · ')}</div>`
+    // §99 — institutional all-caps eyebrow removed. The kid was
+    // seeing "MEASUREMENT: PERIMETER & AREA · +4 PTS" in caps-gold
+    // letter-spaced font — textbook chapter heading energy. Per
+    // 5:03 AM screenshot review.
+    // - Topic name: dropped from the card. The question stem itself
+    //   teaches the concept; an all-caps label above it adds nothing
+    //   for an 8-year-old.
+    // - "+N pts" stake: moves INTO the Check answer button text
+    //   (line below) so the kid sees the reward attached to the
+    //   action that triggers it.
+    // - "⭐ Mastered" lock indicator: only renders when locked
+    //   (rare path); stays as a small badge.
+    const eyebrowHtml = locked
+      ? `<div class="q-card-eyebrow q-card-eyebrow--locked" data-role="eyebrow">⭐ Mastered</div>`
       : '';
+    const ctaLabel = locked ? 'Check answer' : `Check answer · +${cents} pts`;
 
     // §56 — inline feedback slot. Sits between input and primary
     // button so the kid sees outcome → explanation → next-action in
@@ -3500,7 +3518,7 @@
         <div class="q-prompt">${readBtn}<span class="q-prompt-text">${escapeHtml(q.prompt)}</span></div>
         <div class="q-body">${body}</div>
         <div class="q-inline-fb" data-role="inline-fb" hidden></div>
-        <button class="btn btn-primary q-cta" type="submit" data-role="check">Check answer</button>
+        <button class="btn btn-primary q-cta" type="submit" data-role="check">${ctaLabel}</button>
       </form>`;
   }
 

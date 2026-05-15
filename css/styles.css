@@ -30164,3 +30164,84 @@ body.settings-page h1, body.settings-page h2, body.settings-page h3 {
 @media (min-width: 768px) {
   .q-cta-indicator { display: none !important; }
 }
+
+/* ==========================================================================
+   §99 Practice header redesign for kid comprehension (May 15, 2026)
+
+   Hamid 5:03 AM screenshot review: 8-year-old looking at practice
+   header sees 9 elements competing for attention, two stars with
+   no explanation, "MEASUREMENT: PERIMETER & AREA · +4 PTS" eyebrow
+   reading as textbook chapter heading, near-empty progress bar
+   on Q1 telegraphing "long way to go".
+
+   Strip the header to 5 things a kid recognizes immediately:
+     Row 1 (top bar):  [← back]  Grade 3 Math  [🎯 608 pts]  [⋯]
+     Row 2 (today line): Question N today · X right so far {🔥}
+     Question card: no eyebrow; "+N pts" inline in Check answer button.
+   ========================================================================== */
+
+/* Top-bar title — sits between back arrow and pts chip. */
+.practice-breadcrumb-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.005em;
+  padding-left: 4px;
+}
+@media (min-width: 768px) {
+  .practice-breadcrumb-title { font-size: 15px; }
+}
+
+/* Pts chip — add suffix ("pts") so the number has meaning. */
+.practice-pts-chip-suffix {
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.7;
+  margin-left: 2px;
+  letter-spacing: 0.02em;
+}
+
+/* Today line — small, secondary, grows as kid answers. Sits below
+   the top bar, above the question card. */
+.practice-today-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0 14px;
+  padding: 0;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  flex-wrap: wrap;
+  line-height: 1.4;
+}
+.practice-today-line .practice-today-q {
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.75);
+}
+.practice-today-line .practice-today-q::before {
+  content: 'Question ';
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.55);
+}
+.practice-today-line .practice-today-correct {
+  color: rgba(255, 255, 255, 0.75);
+}
+.practice-today-line .practice-today-streak {
+  font-size: 13px;
+  margin-left: 2px;
+}
+
+/* Mastered indicator (kept only for locked questions). */
+.q-card-eyebrow--locked {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(251, 191, 36, 0.85);
+  margin: 0 0 14px;
+}
