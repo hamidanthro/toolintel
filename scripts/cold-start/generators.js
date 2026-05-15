@@ -91,8 +91,17 @@ function getPackEnrichment(stateSlug, subject, grade, teksOverride) {
 // Returns the full system prompt or null if no widget-mode prompt
 // exists for the given (subject, questionType, widgetMode) combo.
 function buildWidgetModePrompt({ stateSlug, grade, subject, questionType, packEnrichment, widgetMode }) {
-  if (widgetMode !== 'fraction-bar-choices') return null;
   if (subject !== 'math') return null;
+  if (widgetMode === 'number-line-stimulus') {
+    return buildNumberLineStimulusPrompt({ stateSlug, grade, packEnrichment });
+  }
+  if (widgetMode === 'plotter-stimulus') {
+    return buildPlotterStimulusPrompt({ stateSlug, grade, packEnrichment });
+  }
+  if (widgetMode === 'area-model-stimulus') {
+    return buildAreaModelStimulusPrompt({ stateSlug, grade, packEnrichment });
+  }
+  if (widgetMode !== 'fraction-bar-choices') return null;
 
   const record = getStateRecord(stateSlug);
   if (!record) throw new Error(`generators.buildWidgetModePrompt: unknown state slug "${stateSlug}"`);
@@ -148,6 +157,204 @@ Output ONLY valid JSON in this exact shape:
   ],
   "correctIndex": 0,
   "explanation": "..."
+}`;
+}
+
+// §110 phase 9 — number-line stimulus prompt. The question carries a
+// stimulus widget (a number line with one marker dot); the 4 choices
+// are TEXT fractions, one of which matches the marked point.
+//
+// Returns the full system prompt or null if widgetMode is not for
+// number-line items.
+function buildNumberLineStimulusPrompt({ stateSlug, grade, packEnrichment }) {
+  const record = getStateRecord(stateSlug);
+  if (!record) throw new Error(`unknown state slug "${stateSlug}"`);
+  const testName = record.testName;
+  const standards = record.standards;
+  const grLabel = gradeReadable(grade);
+  const packTeksBlock = packEnrichment && packEnrichment.teks
+    ? `\nTARGET STANDARD: TEKS ${packEnrichment.teks.id} — ${packEnrichment.teks.text}\n`
+    : '';
+
+  return `You are an expert ${testName} math item writer for ${grLabel}.
+
+Standards: align to ${standards} for ${grLabel}.
+${packTeksBlock}
+The question shows a NUMBER LINE diagram (the stimulus) with one marker dot. The 4 multiple-choice options are TEXT fractions. The kid picks the fraction that matches the marker's position on the number line.
+
+STIMULUS (must be a number-line widget spec object):
+- Required shape:
+    { "type": "number-line", "range": [0, 1], "step": <1/denominator>, "labelStyle": "fraction", "marks": [{ "at": <fraction-as-decimal>, "color": "navy" }] }
+- The range MUST start at 0 and end at 1 (canonical STAAR fraction number line).
+- The step MUST equal 1 / denominator where denominator is the canonical denominator of the marked fraction (e.g., for the fraction 2/3 the step is 1/3, 0.3333..., or simply use 0.3333333; the renderer reads the raw value).
+- The "at" value on the marker is the decimal value of the fraction (e.g., 2/3 → 0.6666666666666666).
+- Use labelStyle: "fraction" so the renderer draws stacked-fraction tick labels.
+
+STEM:
+- "What fraction is marked on the number line?" or a near-paraphrase.
+- ~10 words. Do NOT name the answer fraction inside the stem.
+
+CHOICES (4 strings, fraction notation like "1/3"):
+- The CORRECT choice is the fraction in lowest terms whose decimal value matches the marker's "at" value.
+- 3 DISTRACTORS reflect realistic misconceptions:
+    * "Wrong-direction count": the kid mis-counts tick positions (e.g., for 2/3 marked, a distractor of 1/3 or 3/3)
+    * "Denominator confusion": same numerator wrong denominator (e.g., 2/4 if the line has 3 divisions)
+    * "Inverted": numerator/denominator swapped (e.g., 3/2 for 2/3)
+- NEVER include a distractor mathematically equivalent to the correct answer in lowest terms.
+
+VALIDATION:
+- The 4 choices must be 4 distinct fraction strings.
+- The correctIndex's choice must equal the fraction that matches the marker.
+- range must be [0, 1]. step > 0 and ≤ 1.
+- Mark.at must be a number in [0, 1].
+
+EXPLANATION:
+- 1-2 sentences, plain text, no LaTeX. Reference the partitioning: "The number line is divided into 3 equal parts. The marker sits on the 2nd partition, so it is 2/3."
+
+Output ONLY valid JSON in this exact shape:
+{
+  "question": "What fraction is marked on the number line?",
+  "stimulus": {
+    "type": "number-line",
+    "range": [0, 1],
+    "step": 0.333333,
+    "labelStyle": "fraction",
+    "marks": [{ "at": 0.666666, "color": "navy" }]
+  },
+  "choices": ["2/3", "1/3", "3/3", "3/2"],
+  "correctIndex": 0,
+  "explanation": "..."
+}`;
+}
+
+// §110 phase 10 — plotter (bar graph) stimulus prompt. The question
+// carries a bar-chart stimulus widget; the 4 choices are TEXT numbers
+// answering a question about the data (e.g. "How many more apples
+// than pears?").
+function buildPlotterStimulusPrompt({ stateSlug, grade, packEnrichment }) {
+  const record = getStateRecord(stateSlug);
+  if (!record) throw new Error(`unknown state slug "${stateSlug}"`);
+  const testName = record.testName;
+  const standards = record.standards;
+  const grLabel = gradeReadable(grade);
+  const packTeksBlock = packEnrichment && packEnrichment.teks
+    ? `\nTARGET STANDARD: TEKS ${packEnrichment.teks.id} — ${packEnrichment.teks.text}\n`
+    : '';
+
+  return `You are an expert ${testName} math item writer for ${grLabel}.
+
+Standards: align to ${standards} for ${grLabel}.
+${packTeksBlock}
+The question shows a BAR GRAPH (the stimulus) and asks a one-step data-reading question. The 4 multiple-choice options are TEXT numbers.
+
+STIMULUS (must be a plotter widget spec object):
+- Required shape:
+    { "type": "plotter", "chart": "bar", "categories": ["A","B","C","D"], "values": [n1,n2,n3,n4], "xLabel": "...", "yLabel": "...", "yMax": ..., "yStep": ... }
+- 3-5 bars (categories.length 3-5).
+- Each value an integer 1-50 (grade-3) or 1-100 (grade-4+).
+- yMax should be a "nice" round number ≥ max(values). yStep should give 4-6 tick marks.
+- categories should be short single-word labels.
+
+STEM (one-step data-reading question):
+- Pick ONE of these question patterns:
+    * "How many <category> are there?"  (direct read)
+    * "How many more <A> than <B>?"     (difference)
+    * "What is the total of <A> and <B>?"  (sum of two bars)
+    * "Which category has the most/fewest?"  (extreme — choices are CATEGORY NAMES, not numbers, in this case)
+- Reference the chart context naturally ("In the chart, ...").
+- Do NOT name the numerical answer in the stem.
+
+CHOICES (4 TEXT items):
+- For numerical answers: 4 distinct number strings. CORRECT = the answer to the question. DISTRACTORS = real misconceptions:
+    * Off-by-one in the read
+    * Wrong-bar read
+    * Sum instead of difference (or vice versa)
+- For "most/fewest" questions: 4 of the category names. CORRECT = the actual max/min category.
+
+VALIDATION:
+- categories.length must equal values.length (and chart='bar').
+- All values >= 0, all integers.
+- 4 choices, all distinct, one matches the answer.
+
+EXPLANATION:
+- 1-2 sentences. Reference the data values: "The chart shows apples=8, pears=5. The difference is 8 - 5 = 3."
+
+Output ONLY valid JSON in this exact shape:
+{
+  "question": "In the chart, how many more apples are there than pears?",
+  "stimulus": {
+    "type": "plotter",
+    "chart": "bar",
+    "categories": ["Apples", "Pears", "Plums", "Grapes"],
+    "values": [8, 5, 6, 3],
+    "xLabel": "Fruit", "yLabel": "Count",
+    "yMax": 10, "yStep": 2
+  },
+  "choices": ["3", "13", "5", "8"],
+  "correctIndex": 0,
+  "explanation": "The chart shows apples=8 and pears=5. The difference is 8 - 5 = 3."
+}`;
+}
+
+// §110 phase 11 — area-model stimulus prompt for multi-digit
+// multiplication (TEKS 4.4D / 5.3D). Stimulus = area-model widget
+// with row + col factor decomposition. Choices = 4 number strings,
+// one is the correct product.
+function buildAreaModelStimulusPrompt({ stateSlug, grade, packEnrichment }) {
+  const record = getStateRecord(stateSlug);
+  if (!record) throw new Error(`unknown state slug "${stateSlug}"`);
+  const testName = record.testName;
+  const standards = record.standards;
+  const grLabel = gradeReadable(grade);
+  const packTeksBlock = packEnrichment && packEnrichment.teks
+    ? `\nTARGET STANDARD: TEKS ${packEnrichment.teks.id} — ${packEnrichment.teks.text}\n`
+    : '';
+
+  return `You are an expert ${testName} math item writer for ${grLabel}.
+
+Standards: align to ${standards} for ${grLabel}.
+${packTeksBlock}
+The question shows an AREA MODEL (the stimulus) of a multi-digit multiplication, with each row × col factor labeled and each sub-rectangle's partial product inside. The 4 multiple-choice options are TEXT numbers.
+
+STIMULUS (must be an area-model widget spec object):
+- Required shape:
+    { "type": "area-model", "rows": [<integers>], "cols": [<integers>], "showProducts": true }
+- "rows" decomposes one factor by place value. E.g. 14 → [10, 4]; 23 → [20, 3]; 256 → [200, 50, 6].
+- "cols" decomposes the other factor.
+- For grade 4 (TEKS 4.4D): factors should be 2-digit × 1-digit OR 2-digit × 2-digit. Avoid 3-digit factors.
+- showProducts: always true (the widget will fill each cell with its product).
+
+STEM:
+- "What is the total product?" / "What is <row-total> × <col-total>?" / "What is the product shown in the area model?"
+- ~10-15 words. Mention the two factors so the kid knows what's being computed.
+
+CHOICES (4 TEXT integers):
+- CORRECT = (sum of rows) × (sum of cols).
+- DISTRACTORS = real K-5 multiplication misconceptions:
+    * Sum-of-partial-products with ONE missing partial (e.g. forgot the cross term)
+    * Sum of factors instead of product (e.g. 14 + 23 = 37 when the answer is 322)
+    * Wrong place-value carry (off by 10× or 100×)
+
+VALIDATION:
+- rows.length and cols.length each 2-3 (not 1, not 4+).
+- Each entry a positive integer ≤ 999.
+- Sum-of-rows × sum-of-cols MUST match the correct choice exactly.
+
+EXPLANATION:
+- 1-2 sentences. Reference the partials: "The four cells are 10×20=200, 10×3=30, 4×20=80, 4×3=12. Sum: 200+30+80+12=322."
+
+Output ONLY valid JSON in this exact shape:
+{
+  "question": "What is 14 × 23 shown in the area model?",
+  "stimulus": {
+    "type": "area-model",
+    "rows": [10, 4],
+    "cols": [20, 3],
+    "showProducts": true
+  },
+  "choices": ["322", "302", "37", "262"],
+  "correctIndex": 0,
+  "explanation": "The four cells are 10×20=200, 10×3=30, 4×20=80, 4×3=12. The sum is 200+30+80+12=322."
 }`;
 }
 
@@ -364,7 +571,67 @@ async function _callGenerator(systemPrompt, regenFeedback, grade, stateSlug, pac
   // shaped for word-problem text choices, not visual-comparison
   // questions). The widget-mode system prompt is self-contained.
   let userMessage;
-  if (widgetMode === 'fraction-bar-choices') {
+  if (widgetMode === 'area-model-stimulus') {
+    // §110 phase-11 — area-model multiplication stimulus. Per-call
+    // factor pair injection so the model rotates through factor sizes
+    // instead of always doing 14×23.
+    const FACTOR_PAIRS = [
+      [14, 23], [16, 24], [18, 25], [22, 13], [24, 14],
+      [26, 15], [32, 17], [37, 24], [42, 16], [45, 23],
+      [12, 8], [14, 7], [18, 6], [25, 8], [36, 7],
+      [128, 4], [234, 5], [156, 6]
+    ];
+    const [a, b] = FACTOR_PAIRS[Math.floor(Math.random() * FACTOR_PAIRS.length)];
+    // Decompose by place value: 14 → [10, 4], 234 → [200, 30, 4].
+    function decompose(n) {
+      const parts = [];
+      let mag = Math.pow(10, Math.floor(Math.log10(n)));
+      let rest = n;
+      while (mag >= 1 && rest > 0) {
+        const d = Math.floor(rest / mag);
+        if (d > 0) parts.push(d * mag);
+        rest = rest - d * mag;
+        mag = mag / 10;
+      }
+      return parts;
+    }
+    const rowsArr = decompose(a);
+    const colsArr = decompose(b);
+    const targetLine = `\nFactor pair for this question: ${a} × ${b} = ${a * b}. Use rows=${JSON.stringify(rowsArr)} and cols=${JSON.stringify(colsArr)} in the area-model spec. The correct choice MUST be "${a * b}". Vary the stem wording.`;
+    userMessage = regenFeedback
+      ? `Generate the area-model question now. ${namesLine}${targetLine}\n\nPrevious attempt was rejected: ${regenFeedback.failedChecks.join(', ')}. ${regenFeedback.reasons.join(' ')}`
+      : `Generate the area-model question now. ${namesLine}${targetLine}`;
+  } else if (widgetMode === 'plotter-stimulus') {
+    // §110 phase-10 — bar-graph stimulus. Rotate question patterns +
+    // bar counts so the model doesn't converge on a single template.
+    const QUESTIONS = [
+      'How many <X> are there?',
+      'How many more <A> than <B>?',
+      'How many fewer <A> than <B>?',
+      'What is the total of <A> and <B>?',
+      'Which category has the most?',
+      'Which category has the fewest?'
+    ];
+    const BAR_COUNTS = [3, 4, 5];
+    const pickedQ = QUESTIONS[Math.floor(Math.random() * QUESTIONS.length)];
+    const pickedBars = BAR_COUNTS[Math.floor(Math.random() * BAR_COUNTS.length)];
+    const targetLine = `\nUse this question pattern: "${pickedQ}" (replace <A>, <B>, <X> with category names from your chart). Use exactly ${pickedBars} bars. Vary categories across calls (fruits, colors, sports, animals, classroom supplies, weather days).`;
+    userMessage = regenFeedback
+      ? `Generate the bar-graph question now. ${namesLine}${targetLine}\n\nPrevious attempt was rejected: ${regenFeedback.failedChecks.join(', ')}. ${regenFeedback.reasons.join(' ')}`
+      : `Generate the bar-graph question now. ${namesLine}${targetLine}`;
+  } else if (widgetMode === 'number-line-stimulus') {
+    // §110 phase-9 — number-line stimulus. Per-call denominator
+    // injection so the model rotates through 2,3,4,5,6,8,10
+    // partitions instead of converging on /3 or /4.
+    const DEN_POOL = [2, 3, 4, 5, 6, 8, 10];
+    const den = DEN_POOL[Math.floor(Math.random() * DEN_POOL.length)];
+    const num = 1 + Math.floor(Math.random() * (den - 1));
+    const dec = num / den;
+    const targetLine = `\nThe number line MUST be divided into ${den} equal parts (step = ${(1/den).toFixed(6)}). The marker MUST be at ${num}/${den} (decimal value ${dec.toFixed(6)}). The correct choice MUST be "${num}/${den}" written in lowest terms. Vary the stem wording across calls.`;
+    userMessage = regenFeedback
+      ? `Generate the number-line question now. ${namesLine}${targetLine}\n\nPrevious attempt was rejected by quality review for: ${regenFeedback.failedChecks.join(', ')}. Specifically: ${regenFeedback.reasons.join(' ')} Generate a new question.`
+      : `Generate the number-line question now. ${namesLine}${targetLine}`;
+  } else if (widgetMode === 'fraction-bar-choices') {
     // §110 phase-5b — fraction-target injection. Same pattern as the
     // §30 name-pool fix: gpt-4o-mini at temp 0.9 defaults to "1/3"
     // across calls when given no concrete target. Per-call SHUFFLED

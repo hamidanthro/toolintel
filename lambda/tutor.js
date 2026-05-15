@@ -3248,11 +3248,13 @@ async function handleGetWidgetBatch(payload) {
         Limit: 100
       }));
       for (const it of (r.Items || [])) {
-        // Only widget content with object choices. Skip text-only rows
-        // (the same poolKey carries §31 sweep text content too).
-        if (Array.isArray(it.choices) && it.choices.some(c => c && typeof c === 'object' && c.type)) {
-          items.push(it);
-        }
+        // Widget content qualifies via either (a) at least one choice
+        // is a widget-spec object (fraction-bar etc.), or (b) the row
+        // carries a stimulus widget (number-line / plotter / area-model
+        // with text choices). Skip plain text-only rows.
+        const hasObjectChoice = Array.isArray(it.choices) && it.choices.some(c => c && typeof c === 'object' && c.type);
+        const hasStimulusWidget = it.stimulus && typeof it.stimulus === 'object' && it.stimulus.type;
+        if (hasObjectChoice || hasStimulusWidget) items.push(it);
       }
       lastKey = r.LastEvaluatedKey;
     } while (lastKey && items.length < count * 4);
@@ -3278,21 +3280,28 @@ async function handleGetWidgetBatch(payload) {
   const picked = active.slice(0, count);
 
   // Shape for practice.js — same field names handleGenerate returns.
-  const questions = picked.map(it => ({
-    id: it.contentId,
-    type: 'multiple_choice',
-    prompt: it.question || it.prompt || '',
-    choices: it.choices,
-    correctIndex: typeof it.correctIndex === 'number' ? it.correctIndex : 0,
-    answer: '',
-    explanation: it.explanation || '',
-    teks: it.teks || '',
-    unitTitle: 'Fractions on a model',
-    lessonTitle: 'Visual fraction comparison',
-    contentId: it.contentId,
-    poolKey: it.poolKey,
-    _widgetMode: it._widgetMode || 'fraction-bar-choices'
-  }));
+  // Forward stimulus widget if present (number-line / plotter etc.).
+  const questions = picked.map(it => {
+    const shaped = {
+      id: it.contentId,
+      type: 'multiple_choice',
+      prompt: it.question || it.prompt || '',
+      choices: it.choices,
+      correctIndex: typeof it.correctIndex === 'number' ? it.correctIndex : 0,
+      answer: '',
+      explanation: it.explanation || '',
+      teks: it.teks || '',
+      unitTitle: 'Fractions on a model',
+      lessonTitle: 'Visual fraction comparison',
+      contentId: it.contentId,
+      poolKey: it.poolKey,
+      _widgetMode: it._widgetMode || 'fraction-bar-choices'
+    };
+    if (it.stimulus && typeof it.stimulus === 'object' && it.stimulus.type) {
+      shaped.stimulus = it.stimulus;
+    }
+    return shaped;
+  });
 
   // Bump timesServed best-effort.
   for (const it of picked) {
