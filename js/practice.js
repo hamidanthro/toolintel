@@ -851,20 +851,11 @@
   }
 
   function showComingSoon() {
-    // §110 phase-18 — surface diagnostic context on the dead-end card
-    // so we can debug live without DevTools access. Last-error
-    // breadcrumb tells us why we landed here.
-    const lastErr = window._lastPracticeError || { stage: 'unknown' };
-    const debug = encodeURIComponent(JSON.stringify({
-      slug: slug, state: STATE_SLUG_RESOLVED, subject: SUBJECT_SLUG_RESOLVED,
-      err: lastErr
-    }));
     root.innerHTML = `
       <h2>Practice</h2>
       <div class="card">
         <p style="color:var(--muted);">Practice for this grade is coming soon.</p>
         <p><a href="grades.html">Back to grades</a></p>
-        <p style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:14px;font-family:'JetBrains Mono',monospace;">debug: g=${escapeHtml(String(slug || '?'))} s=${escapeHtml(String(STATE_SLUG_RESOLVED || '?'))} subj=${escapeHtml(String(SUBJECT_SLUG_RESOLVED || '?'))} err=${escapeHtml(lastErr.stage || '?')} <a href="?${debug}" style="color:rgba(255,255,255,0.5);">copy</a></p>
       </div>`;
   }
 
@@ -1636,12 +1627,15 @@
       document.body.classList.remove('q-answered');
       // Reset the scratchpad between questions so kids don't see prior scribbles.
       try { window.STAARScratchpad?.reset(); } catch (_) {}
-      progressNum.textContent = i + 1;
+      if (progressNum) progressNum.textContent = i + 1;
       // §77 B3 — kid sees momentum on Q1 (10%) instead of empty bar.
       // (i + 0.5) / N — Q1/5=10%, Q2/5=30%, Q3/5=50%, Q4/5=70%, Q5/5=90%.
       // The end-of-set screen sets the bar to 100% explicitly.
+      // §110 phase-19: the #bar + #bar-pulse elements were removed in
+      // an earlier header-redesign pass; null-guard so show() doesn't
+      // throw and dead-end the kid back to "coming soon".
       const pct = ((i + 0.5) / questions.length) * 100;
-      bar.style.width = `${pct}%`;
+      if (bar) bar.style.width = `${pct}%`;
       if (barPulse) barPulse.style.left = `${pct}%`;
       // §77 B5 — Restart hidden on Q1 (no progress to lose). data-q on the
       // header drives a CSS rule that hides #restart-wrap when q=1.
