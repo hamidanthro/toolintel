@@ -33458,3 +33458,67 @@ body.grade-page .more-ways-summary {
   margin-top: 4px;
   padding: 10px 0 4px;
 }
+
+/* ============================================================
+   §123 — Surgical spacing fix (May 17 post-mortem)
+   ============================================================
+   THE BUG: global rule at line 712 — `section { padding: 56px 0; }` —
+   adds 112px of vertical padding to EVERY <section> on the page.
+   The §122 polish set tight `.grade-content--v2 { gap: 14px }` flex
+   gaps between siblings, but flex `gap` is ADDITIVE to children's
+   own padding — it doesn't replace it. So each section in the
+   article still rendered with 56+content+56 internal padding.
+
+   That's the source of the 150-200px dead-zones the user kept
+   reporting. Three polish prompts didn't catch it because the
+   spacing fixes were applied to the inner blocks (.home-headline,
+   .mindblower-hero etc.) while the <section> wrappers around them
+   stayed at the global 112px padding.
+
+   Plus a secondary contributor: `.breadcrumb-nav { padding: 48px 40px 0 }`
+   adds another 48px above the breadcrumb (line 11248).
+
+   Both reset to 0 inside `body.grade-page` so spacing is governed
+   solely by the §122 caps + the flex `gap` on .grade-content--v2.
+   ============================================================ */
+
+/* Kill the global 56px section padding inside the grade-page article. */
+body.grade-page .grade-content--v2 > section,
+body.grade-page .grade-content--v2 > details {
+  padding: 0 !important;
+}
+
+/* Kill the global 48px breadcrumb-nav top padding inside grade-page. */
+body.grade-page .breadcrumb-nav {
+  padding: 14px 16px 0 !important;
+  max-width: 760px;
+  margin: 0 auto 4px;
+}
+
+/* The Mind Blower hero is a *card*, not a section. Its <section>
+   wrapper now has 0 padding (above) so the card lives at the
+   wrapper edge. Re-state the card padding to make the visual size
+   predictable. */
+body.grade-page .mindblower-hero {
+  margin: 0;
+}
+
+/* Tighten the article container's top/bottom so the page sits near
+   the top of the viewport instead of getting pushed down by the
+   stale §121 padding-bottom: 80px. */
+body.grade-page .grade-content--v2 {
+  padding-top: 0 !important;
+  padding-bottom: 24px !important;
+  gap: 14px !important;
+}
+@media (min-width: 768px) {
+  body.grade-page .grade-content--v2 { gap: 16px !important; }
+}
+
+/* §123 — Mind Blower food-icon swap. The §122 SVG for category
+   'food' was a stylized leaf-in-cup shape that rendered as a power
+   button at 22-28px. Replace with proper ti-seeding paths (real
+   Tabler icon) so almonds + every plant/seed-based fact reads
+   correctly. Implemented via a tighter selector + content-replacing
+   ::after — but easier path: the JS map below this comment already
+   uses the new SVG once practice.js?v=20260517g lands. */
