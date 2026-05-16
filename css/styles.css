@@ -31408,3 +31408,161 @@ body.facts-page--deck {
 .deck-nav[hidden]   { display: none; }
 .deck-empty[hidden] { display: none; }
 .deck-card-why[hidden] { display: none; }
+
+/* =============================================================
+   §115 — Fun Facts category picker (May 16)
+
+   Landing view: grid of category tiles. Tapping a tile transitions
+   to the §114 deck filtered to that category. Kids think in topics
+   (Sports, Dinos, Space) not subjects.
+   ============================================================= */
+
+body.facts-page--deck .deck-picker { padding: 36px 20px 64px; }
+.deck-picker-inner {
+  max-width: 720px;
+  margin: 0 auto;
+}
+.deck-picker-head {
+  text-align: center;
+  margin-bottom: 28px;
+}
+.deck-picker-title {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: clamp(28px, 5vw, 40px);
+  font-weight: 400;
+  color: #ffffff;
+  margin: 6px 0 8px;
+  letter-spacing: -0.01em;
+}
+.deck-picker-sub {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+}
+
+.deck-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 14px;
+}
+.deck-picker-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 18px 16px 14px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 16px;
+  cursor: pointer;
+  text-align: left;
+  transition: transform 0.12s ease, border-color 0.18s ease, background 0.18s ease;
+  position: relative;
+  overflow: hidden;
+}
+.deck-picker-tile:hover {
+  transform: translateY(-2px);
+  border-color: rgba(251, 191, 36, 0.55);
+  background: rgba(251, 191, 36, 0.05);
+}
+.deck-picker-tile--all {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.12), rgba(245, 158, 11, 0.06));
+  border-color: rgba(251, 191, 36, 0.40);
+}
+.deck-picker-tile--all:hover {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.20), rgba(245, 158, 11, 0.10));
+}
+.deck-picker-tile-emoji {
+  font-size: 28px;
+  line-height: 1;
+}
+.deck-picker-tile-name {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+}
+.deck-picker-tile-count {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.55);
+}
+.deck-picker-tile-bar {
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+.deck-picker-tile-bar-fill {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+.deck-picker-tile-progress {
+  font-family: 'JetBrains Mono', 'Inter', monospace;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.40);
+  letter-spacing: 0.04em;
+}
+
+.deck-picker-foot {
+  display: flex;
+  justify-content: center;
+  margin-top: 28px;
+}
+.deck-picker-age {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.78);
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.deck-picker-age strong { color: rgba(251, 191, 36, 0.92); font-weight: 600; }
+.deck-picker-age-arrow { font-size: 10px; opacity: 0.6; }
+.deck-picker-age:hover {
+  border-color: rgba(251, 191, 36, 0.45);
+}
+
+/* Back chevron on the deck head (replaces top-left dead space) */
+.deck-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px 7px 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.65);
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.deck-back:hover {
+  color: #ffffff;
+  border-color: rgba(251, 191, 36, 0.45);
+}
+
+@media (max-width: 540px) {
+  .deck-picker-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .deck-picker-tile { padding: 14px 12px 12px; }
+  .deck-picker-tile-emoji { font-size: 24px; }
+}
+
+/* Hidden-state helpers */
+.deck-picker[hidden], .deck-main[hidden] { display: none; }

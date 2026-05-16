@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=20260516a" />
+  <link rel="stylesheet" href="css/styles.css?v=20260516b" />
 </head>
 <body class="facts-page facts-page--deck">
 
@@ -35,14 +35,37 @@
     </div>
   </header>
 
-  <main class="deck-main">
+  <!-- §115 — Category picker (landing view when no ?cat= in URL).
+       Kids think in categories ("Sports", "Dinos") not subjects.
+       Tapping a tile → ?cat=<id> → deck mode opens filtered. -->
+  <main class="deck-picker" id="deck-picker" hidden>
+    <div class="deck-picker-inner">
+      <header class="deck-picker-head">
+        <span class="deck-eyebrow">Fun Facts</span>
+        <h1 class="deck-picker-title">Pick a topic</h1>
+        <p class="deck-picker-sub">What are you curious about today?</p>
+      </header>
+      <div class="deck-picker-grid" id="deck-picker-grid"></div>
+      <div class="deck-picker-foot">
+        <button type="button" class="deck-picker-age" id="deck-picker-age" aria-haspopup="dialog">
+          <span class="deck-picker-age-label">Age: <strong id="deck-picker-age-label">All ages</strong></span>
+          <span class="deck-picker-age-arrow" aria-hidden="true">▾</span>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <main class="deck-main" id="deck-main" hidden>
     <div class="deck-inner">
 
-      <!-- Compact header: eyebrow + filter chip + position label -->
+      <!-- Compact header: back-to-picker + filter chip + position label -->
       <header class="deck-head">
-        <span class="deck-eyebrow">Fun Facts</span>
+        <button type="button" class="deck-back" id="deck-back" aria-label="Back to topics">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          <span>All topics</span>
+        </button>
         <button type="button" class="deck-filter-chip" id="deck-filter-chip" aria-haspopup="dialog">
-          🎯 <span id="deck-filter-label">All subjects · All ages</span>
+          🎯 <span id="deck-filter-label">All categories · All ages</span>
           <span class="deck-filter-chip-arrow" aria-hidden="true">▾</span>
         </button>
         <div class="deck-position" id="deck-position" aria-live="polite">— of —</div>
@@ -105,13 +128,10 @@
         <h2 class="deck-filter-title">Filter facts</h2>
         <button type="button" class="deck-filter-close" id="deck-filter-close" aria-label="Close">×</button>
       </header>
-      <div class="deck-filter-section">
-        <span class="deck-filter-label">Subject</span>
-        <div class="deck-filter-pills" role="radiogroup" aria-label="Subject">
-          <button type="button" class="deck-fpill" data-filter="subject" data-value="all" aria-checked="true" role="radio">All</button>
-          <button type="button" class="deck-fpill" data-filter="subject" data-value="math" aria-checked="false" role="radio">Math</button>
-          <button type="button" class="deck-fpill" data-filter="subject" data-value="reading" aria-checked="false" role="radio">Reading</button>
-          <button type="button" class="deck-fpill" data-filter="subject" data-value="science" aria-checked="false" role="radio">Science</button>
+      <div class="deck-filter-section" id="deck-filter-section-category">
+        <span class="deck-filter-label">Topic</span>
+        <div class="deck-filter-pills deck-filter-pills--cats" role="radiogroup" aria-label="Topic">
+          <!-- Filled dynamically by js/facts.js with one pill per category + 'All'. -->
         </div>
       </div>
       <div class="deck-filter-section">
@@ -141,7 +161,7 @@
 
   <script>window.STAAR_TUTOR_ENDPOINT = 'https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com/';</script>
   <script src="js/auth.js?v=20260514a"></script>
-  <script src="js/fun-facts.js?v=20260516a"></script>
-  <script src="js/facts.js?v=20260516b"></script>
+  <script src="js/fun-facts.js?v=20260516c"></script>
+  <script src="js/facts.js?v=20260516c"></script>
 </body>
 </html>

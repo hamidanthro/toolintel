@@ -1,74 +1,68 @@
 /**
- * GradeEarn — Fun Facts Discovery Deck (§114, May 16)
+ * GradeEarn — Fun Facts (§115 May 16)
  *
- * Was a scrolling list of fact cards (3rd-grade catalog browsing).
- * Now a single-card-at-a-time deck: focal card with 3 AI-powered
- * pills (🤔 Why?, 🎲 Even weirder, 💚 Save), ghost cards behind
- * for stack illusion, keyboard + swipe + chevron navigation.
+ * Two views in one page, driven by URL state:
+ *   1. PICKER (no ?cat=)        — grid of category tiles + age filter
+ *   2. DECK   (?cat=animals)    — single-card AI-powered deck
  *
- * AI Why? wired to lambda action 'funFactExplain' which calls
- * gpt-4o-mini and caches the result in staar-explanations keyed
- * by `funfact:<factId>`. Subsequent fetches of the same fact
- * return the cached explanation with no model call.
- *
- * No green/teal/cyan introduced. Gold accent only.
+ * Kids pick a topic first (Sports, Dinos, Space, ...), THEN see the
+ * deck filtered to that topic. NO-REPEAT honors per-topic + per-age
+ * scope: within a (cat, age) tuple, every fact shows once before
+ * any repeat. Silent cycle rollover when the topic is exhausted.
  */
 (function () {
   'use strict';
-
-  // ---- Subject → category mapping (carried over from prior list view) ----
-  const SUBJECT_CATEGORIES = {
-    math:    ['math-numbers', 'space', 'inventions', 'robots-tech', 'weird-funny'],
-    reading: ['mythology',    'history', 'music',     'weird-funny', 'animals'],
-    science: ['animals',      'body',  'space', 'dinosaurs', 'robots-tech', 'geography', 'food'],
-    all:     null
-  };
-
-  // ---- Category emoji + label. Mapped per prompt + existing catalog. ----
-  const CATEGORY_EMOJI = {
-    animals: '🦋', body: '🫀', food: '🍯', 'weird-funny': '🎲',
-    space: '🪐', sports: '🏀', dinosaurs: '🦕', mythology: '🐉',
-    history: '🏛', 'math-numbers': '🔢', inventions: '💡',
-    music: '🎵', geography: '🌍', 'robots-tech': '🤖', texas: '⭐'
-  };
-  const CATEGORY_LABEL = {
-    animals: 'Animals', body: 'Body', food: 'Food', 'weird-funny': 'Weird',
-    space: 'Space', sports: 'Sports', dinosaurs: 'Dinos', mythology: 'Myth',
-    history: 'History', 'math-numbers': 'Numbers', inventions: 'Inventions',
-    music: 'Music', geography: 'Geography', 'robots-tech': 'Robots & Tech',
-    texas: 'Texas'
-  };
 
   const CATALOG_URL = '/data/fun-facts.json?v=20260510k';
   const TUTOR_ENDPOINT = window.STAAR_TUTOR_ENDPOINT
     || 'https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com/';
   const SAVED_KEY = 'gradeearn_saved_facts';
 
+  // Category metadata. The 15 categories actually present in the
+  // catalog plus the 'all' meta-tile. Emoji per the §114 spec.
+  const CATEGORIES = [
+    { id: 'all',          label: 'All topics',  emoji: '✨' },
+    { id: 'animals',      label: 'Animals',     emoji: '🦋' },
+    { id: 'space',        label: 'Space',       emoji: '🪐' },
+    { id: 'body',         label: 'Body',        emoji: '🫀' },
+    { id: 'dinosaurs',    label: 'Dinos',       emoji: '🦕' },
+    { id: 'math-numbers', label: 'Numbers',     emoji: '🔢' },
+    { id: 'history',      label: 'History',     emoji: '🏛' },
+    { id: 'inventions',   label: 'Inventions',  emoji: '💡' },
+    { id: 'geography',    label: 'Geography',   emoji: '🌍' },
+    { id: 'robots-tech',  label: 'Robots & Tech', emoji: '🤖' },
+    { id: 'mythology',    label: 'Myth',        emoji: '🐉' },
+    { id: 'music',        label: 'Music',       emoji: '🎵' },
+    { id: 'sports',       label: 'Sports',      emoji: '🏀' },
+    { id: 'food',         label: 'Food',        emoji: '🍯' },
+    { id: 'weird-funny',  label: 'Weird',       emoji: '🎲' },
+    { id: 'texas',        label: 'Texas',       emoji: '⭐' }
+  ];
+  const CAT_BY_ID = Object.fromEntries(CATEGORIES.map(c => [c.id, c]));
+
   let _catalog = null;
   let _filtered = [];
   let _index = 0;
   let _savedIds = null;
-  const _explanationCache = new Map(); // per-session memo of /funFactExplain replies
+  const _explanationCache = new Map();
 
-  const state = { subject: 'all', grade: 'all' };
+  const state = { cat: 'all', grade: 'all', mode: 'picker' };
 
   // ============================================================
-  // Catalog + saved-facts persistence
+  // Catalog + saved + seen
   // ============================================================
   async function loadCatalog() {
     if (_catalog) return _catalog;
     if (window.FunFacts && typeof window.FunFacts._getCatalog === 'function') {
       const cached = window.FunFacts._getCatalog();
-      if (Array.isArray(cached) && cached.length) {
-        _catalog = cached; return _catalog;
-      }
+      if (Array.isArray(cached) && cached.length) { _catalog = cached; return _catalog; }
     }
     try {
       const res = await fetch(CATALOG_URL, { cache: 'force-cache' });
       if (!res.ok) throw new Error('catalog ' + res.status);
       _catalog = await res.json();
     } catch (e) {
-      console.warn('[deck] catalog load failed:', e && e.message);
+      console.warn('[facts] catalog load failed:', e && e.message);
       _catalog = [];
     }
     return _catalog;
@@ -82,9 +76,7 @@
     } catch (_) { _savedIds = new Set(); }
     return _savedIds;
   }
-  function persistSavedIds() {
-    try { localStorage.setItem(SAVED_KEY, JSON.stringify([..._savedIds])); } catch (_) {}
-  }
+  function persistSavedIds() { try { localStorage.setItem(SAVED_KEY, JSON.stringify([..._savedIds])); } catch (_) {} }
   function isSaved(id) { return loadSavedIds().has(id); }
   function toggleSaved(id) {
     const s = loadSavedIds();
@@ -93,56 +85,6 @@
     return s.has(id);
   }
 
-  // ============================================================
-  // Filter + shuffle + position
-  // ============================================================
-  function filterCatalog() {
-    if (!_catalog) return [];
-    const cats = SUBJECT_CATEGORIES[state.subject];
-    return _catalog.filter(f => {
-      if (!f || !f.fact) return false;
-      if (cats && !cats.includes(f.category)) return false;
-      if (state.grade !== 'all') {
-        const grades = Array.isArray(f.gradeLevels) ? f.gradeLevels :
-                       (f.gradeLevel ? [f.gradeLevel] : []);
-        if (!grades.includes(state.grade)) return false;
-      }
-      return true;
-    });
-  }
-
-  // Fisher-Yates shuffle (deterministic seed not needed — kid wants surprise)
-  function shuffle(arr) {
-    const a = arr.slice();
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
-  }
-
-  function applyURLParams() {
-    try {
-      const p = new URLSearchParams(location.search);
-      const subj = p.get('subj') || p.get('subject');
-      if (subj && SUBJECT_CATEGORIES.hasOwnProperty(subj)) state.subject = subj;
-      const age = p.get('age') || p.get('grade');
-      if (age === 'k-2' || age === '3-4' || age === '5-8') state.grade = age;
-    } catch (_) {}
-  }
-  function updateURL() {
-    try {
-      const p = new URLSearchParams();
-      if (state.subject !== 'all') p.set('subj', state.subject);
-      if (state.grade !== 'all')   p.set('age', state.grade);
-      const qs = p.toString();
-      history.replaceState(null, '', qs ? '?' + qs : location.pathname);
-    } catch (_) {}
-  }
-
-  // §114 NO-REPEAT — read the per-kid seen-set maintained by
-  // window.FunFacts (LS key 'gradeearn:ff:seen' + server-synced
-  // funFactsSeen). Returns a Set for O(1) lookups.
   function getSeenSet() {
     try {
       if (window.FunFacts && typeof window.FunFacts._getSeenIds === 'function') {
@@ -155,25 +97,132 @@
     } catch (_) { return new Set(); }
   }
 
+  // ============================================================
+  // Filter — by category + age
+  // ============================================================
+  function filterCatalog(catId, gradeId) {
+    if (!_catalog) return [];
+    const cat = catId || state.cat;
+    const grade = gradeId || state.grade;
+    return _catalog.filter(f => {
+      if (!f || !f.fact) return false;
+      if (cat !== 'all' && f.category !== cat) return false;
+      if (grade !== 'all') {
+        const grades = Array.isArray(f.gradeLevels) ? f.gradeLevels :
+                       (f.gradeLevel ? [f.gradeLevel] : []);
+        if (!grades.includes(grade)) return false;
+      }
+      return true;
+    });
+  }
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  // ============================================================
+  // URL ↔ state
+  // ============================================================
+  function applyURLParams() {
+    try {
+      const p = new URLSearchParams(location.search);
+      const c = p.get('cat') || p.get('category');
+      if (c && CAT_BY_ID[c]) state.cat = c;
+      // Legacy support: ?subj= maps to nothing (subject grouping retired); skip.
+      const age = p.get('age') || p.get('grade');
+      if (age === 'k-2' || age === '3-4' || age === '5-8' || age === 'all') state.grade = age;
+      // Mode is determined by whether ?cat= is present
+      state.mode = c ? 'deck' : 'picker';
+    } catch (_) {}
+  }
+  function pushURL() {
+    try {
+      const p = new URLSearchParams();
+      if (state.mode === 'deck') p.set('cat', state.cat);
+      if (state.grade !== 'all') p.set('age', state.grade);
+      const qs = p.toString();
+      history.pushState(null, '', qs ? '?' + qs : location.pathname);
+    } catch (_) {}
+  }
+  function replaceURL() {
+    try {
+      const p = new URLSearchParams();
+      if (state.mode === 'deck') p.set('cat', state.cat);
+      if (state.grade !== 'all') p.set('age', state.grade);
+      const qs = p.toString();
+      history.replaceState(null, '', qs ? '?' + qs : location.pathname);
+    } catch (_) {}
+  }
+
+  // ============================================================
+  // PICKER VIEW
+  // ============================================================
+  function renderPicker() {
+    document.getElementById('deck-picker').hidden = false;
+    document.getElementById('deck-main').hidden = true;
+
+    const seen = getSeenSet();
+    const grid = document.getElementById('deck-picker-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    // Active categories (skip 'texas' if catalog has very few)
+    CATEGORIES.forEach(c => {
+      const facts = filterCatalog(c.id, state.grade);
+      if (facts.length === 0 && c.id !== 'all') return; // hide empty tiles
+      const seenCount = facts.filter(f => seen.has(f.id)).length;
+      const pct = facts.length ? Math.round((seenCount / facts.length) * 100) : 0;
+      const tile = document.createElement('button');
+      tile.type = 'button';
+      tile.className = 'deck-picker-tile' + (c.id === 'all' ? ' deck-picker-tile--all' : '');
+      tile.dataset.cat = c.id;
+      tile.setAttribute('aria-label', c.label + ' · ' + facts.length + ' facts');
+      tile.innerHTML =
+        '<span class="deck-picker-tile-emoji" aria-hidden="true">' + c.emoji + '</span>' +
+        '<span class="deck-picker-tile-name">' + c.label + '</span>' +
+        '<span class="deck-picker-tile-count">' + facts.length.toLocaleString() + ' facts</span>' +
+        '<div class="deck-picker-tile-bar" aria-hidden="true">' +
+          '<span class="deck-picker-tile-bar-fill" style="width:' + pct + '%"></span>' +
+        '</div>' +
+        '<span class="deck-picker-tile-progress">' + seenCount + ' / ' + facts.length + ' seen</span>';
+      tile.addEventListener('click', () => {
+        state.cat = c.id;
+        state.mode = 'deck';
+        pushURL();
+        enterDeck();
+      });
+      grid.appendChild(tile);
+    });
+
+    const ageLabel = document.getElementById('deck-picker-age-label');
+    if (ageLabel) ageLabel.textContent = labelForGrade(state.grade);
+  }
+
+  function labelForGrade(g) {
+    return g === 'k-2' ? 'K–2' :
+           g === '3-4' ? 'Grades 3–4' :
+           g === '5-8' ? 'Grades 5–8' : 'All ages';
+  }
+
+  // ============================================================
+  // DECK VIEW
+  // ============================================================
   function rebuildDeck() {
     const filtered = filterCatalog();
     let seen = getSeenSet();
-
-    // CYCLE-COMPLETE detection: if every fact in the filtered scope is
-    // already in the seen-set, this is the natural rollover point. Reset
-    // the seen-set silently so the kid starts cycle 2 from a clean slate.
-    // Per CLAUDE.md §39 + memory rule feedback_no_repeat_rule.md.
     const allSeen = filtered.length > 0 && filtered.every(f => seen.has(f.id));
     if (allSeen && window.FunFacts && typeof window.FunFacts._resetSeenForCycle === 'function') {
       try {
-        console.log('[deck] cycle complete (' + filtered.length + ' facts) — resetting seen-set');
+        console.log('[deck] cycle complete (' + filtered.length + ' facts in ' + state.cat + ') — resetting seen-set');
         window.FunFacts._resetSeenForCycle();
         seen = new Set();
       } catch (_) {}
     }
-
-    // Order unseen-first. Within each tier, shuffle so the kid gets
-    // surprise. Unseen facts get exhausted before any seen-fact repeats.
     const unseen = filtered.filter(f => !seen.has(f.id));
     const already = filtered.filter(f => seen.has(f.id));
     _filtered = shuffle(unseen).concat(shuffle(already));
@@ -181,12 +230,17 @@
     render();
   }
 
-  // ============================================================
-  // Rendering
-  // ============================================================
-  function escHtml(s) {
-    return String(s == null ? '' : s).replace(/[&<>"]/g, c =>
-      c === '&' ? '&amp;' : c === '<' ? '&lt;' : c === '>' ? '&gt;' : '&quot;');
+  function enterDeck() {
+    document.getElementById('deck-picker').hidden = true;
+    document.getElementById('deck-main').hidden = false;
+    rebuildDeck();
+  }
+
+  function exitToPicker() {
+    state.mode = 'picker';
+    state.cat = 'all';
+    pushURL();
+    renderPicker();
   }
 
   function prefersReducedMotion() {
@@ -199,7 +253,6 @@
     const nav   = document.getElementById('deck-nav');
     const pos   = document.getElementById('deck-position');
     const help  = document.querySelector('.deck-helper');
-    const fchip = document.getElementById('deck-filter-chip');
 
     if (!_filtered.length) {
       if (stage) stage.hidden = true;
@@ -216,14 +269,12 @@
     if (empty) empty.hidden = true;
 
     const f = _filtered[_index];
-    const emoji = CATEGORY_EMOJI[f.category] || '💡';
-    const cat   = CATEGORY_LABEL[f.category] || (f.category || 'Fun');
+    const cat = CAT_BY_ID[f.category] || { emoji: '💡', label: f.category || 'Fun' };
 
-    document.getElementById('deck-emoji').textContent = emoji;
-    document.getElementById('deck-cat').textContent = cat;
+    document.getElementById('deck-emoji').textContent = cat.emoji;
+    document.getElementById('deck-cat').textContent = cat.label;
     document.getElementById('deck-fact').textContent = f.fact;
 
-    // Save state
     const saveBtn = document.getElementById('deck-btn-save');
     if (saveBtn) {
       const saved = isSaved(f.id);
@@ -233,44 +284,28 @@
       if (heart) heart.textContent = saved ? '💛' : '💚';
     }
 
-    // Why? section — show if we already have a cached explanation
-    // for this fact (either from f._aiExplanation in the catalog or
-    // from our session-memo Map). Otherwise hide until user taps.
     const whyEl = document.getElementById('deck-why');
     if (whyEl) {
       let cached = _explanationCache.get(f.id);
       if (!cached && f._aiExplanation) cached = f._aiExplanation;
-      if (cached) {
-        whyEl.textContent = cached;
-        whyEl.hidden = false;
-      } else {
-        whyEl.textContent = '';
-        whyEl.hidden = true;
-      }
+      if (cached) { whyEl.textContent = cached; whyEl.hidden = false; }
+      else { whyEl.textContent = ''; whyEl.hidden = true; }
     }
 
-    // Position label
     if (pos) pos.textContent = (_index + 1).toLocaleString() + ' of ' + _filtered.length.toLocaleString();
-
-    // Progress dots — sliding window of 5
     renderDots(_index, _filtered.length);
-
-    // Update filter chip label (state changed)
     updateFilterChipLabel();
 
-    // Mark seen via existing FunFacts API (per-user)
     try {
       if (window.FunFacts && typeof window.FunFacts.markFactSeen === 'function') {
         window.FunFacts.markFactSeen(f.id);
       }
     } catch (_) {}
 
-    // Transition animation (skip if prefers-reduced-motion)
     if (direction && !prefersReducedMotion()) {
       const focal = document.getElementById('deck-card-focal');
       if (focal) {
         focal.classList.remove('deck-card--in-left', 'deck-card--in-right');
-        // force reflow then add the right class
         // eslint-disable-next-line no-unused-expressions
         focal.offsetWidth;
         focal.classList.add(direction === 'next' ? 'deck-card--in-right' : 'deck-card--in-left');
@@ -281,16 +316,10 @@
   function renderDots(current, total) {
     const wrap = document.getElementById('deck-dots');
     if (!wrap) return;
-    // Render exactly 5 dots: positions -2, -1, 0, +1, +2 around current.
-    // For ends of the deck, the window still has 5 but shifts so the
-    // current dot stays centered when possible.
     wrap.innerHTML = '';
     for (let offset = -2; offset <= 2; offset++) {
       const dot = document.createElement('span');
-      dot.className = 'deck-dot';
-      // Tier based on |offset|
-      dot.classList.add('deck-dot--t' + Math.abs(offset));
-      // If the absolute index would be invalid (<0 or >=total), treat as ghost
+      dot.className = 'deck-dot deck-dot--t' + Math.abs(offset);
       const abs = current + offset;
       if (abs < 0 || abs >= total) dot.classList.add('deck-dot--ghost');
       wrap.appendChild(dot);
@@ -300,23 +329,15 @@
   function updateFilterChipLabel() {
     const lbl = document.getElementById('deck-filter-label');
     if (!lbl) return;
-    const sLabel = state.subject === 'all' ? 'All subjects' :
-                   state.subject[0].toUpperCase() + state.subject.slice(1);
-    const aLabel = state.grade === 'all' ? 'All ages' :
-                   state.grade === 'k-2' ? 'K–2' :
-                   state.grade === '3-4' ? 'Grades 3–4' :
-                   state.grade === '5-8' ? 'Grades 5–8' : state.grade;
-    lbl.textContent = sLabel + ' · ' + aLabel;
+    const cat = CAT_BY_ID[state.cat] || { label: 'All topics' };
+    lbl.textContent = cat.label + ' · ' + labelForGrade(state.grade);
   }
 
   // ============================================================
-  // Navigation: next / prev / "even weirder" (same category)
+  // Navigation
   // ============================================================
   function next() {
     if (!_filtered.length) return;
-    // §114 NO-REPEAT cycle rollover: if we're advancing PAST the end of
-    // the deck, that means the kid has now seen every fact in scope.
-    // Rebuild — rebuildDeck() detects all-seen and resets silently.
     if (_index >= _filtered.length - 1) {
       rebuildDeck();
       return;
@@ -326,8 +347,6 @@
   }
   function prev() {
     if (!_filtered.length) return;
-    // Prev wraps to the end (no cycle reset on backward — kid is
-    // re-reading their session, not asking for fresh content).
     _index = (_index - 1 + _filtered.length) % _filtered.length;
     render('prev');
   }
@@ -335,12 +354,10 @@
     if (_filtered.length < 2) return next();
     const here = _filtered[_index];
     const seen = getSeenSet();
-    // Prefer unseen + same-category. Fall back to: any-unseen → seen
-    // same-category → any. Maintains NO-REPEAT within the cycle.
     const candidates = _filtered.map((f, i) => ({ f, i })).filter(({ i }) => i !== _index);
     const unseenSameCat = candidates.filter(({ f }) => !seen.has(f.id) && f.category === here.category);
-    const anyUnseen    = candidates.filter(({ f }) => !seen.has(f.id));
-    const seenSameCat  = candidates.filter(({ f }) =>  f.category === here.category);
+    const anyUnseen     = candidates.filter(({ f }) => !seen.has(f.id));
+    const seenSameCat   = candidates.filter(({ f }) =>  f.category === here.category);
     const pool = unseenSameCat.length ? unseenSameCat
                : anyUnseen.length    ? anyUnseen
                : seenSameCat.length  ? seenSameCat
@@ -351,56 +368,34 @@
   }
 
   // ============================================================
-  // AI Why? — call lambda action funFactExplain
+  // AI Why?
   // ============================================================
   async function fetchWhy() {
     if (!_filtered.length) return;
     const f = _filtered[_index];
     if (!f) return;
-    // Cache hits
-    if (_explanationCache.has(f.id)) {
-      revealWhy(_explanationCache.get(f.id));
-      return;
-    }
-    if (f._aiExplanation) {
-      _explanationCache.set(f.id, f._aiExplanation);
-      revealWhy(f._aiExplanation);
-      return;
-    }
+    if (_explanationCache.has(f.id)) { revealWhy(_explanationCache.get(f.id)); return; }
+    if (f._aiExplanation) { _explanationCache.set(f.id, f._aiExplanation); revealWhy(f._aiExplanation); return; }
     const btn = document.getElementById('deck-btn-why');
-    if (btn) {
-      btn.disabled = true;
-      btn.classList.add('deck-action--loading');
-    }
+    if (btn) { btn.disabled = true; btn.classList.add('deck-action--loading'); }
     try {
       const res = await fetch(TUTOR_ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          action: 'funFactExplain',
-          factId: f.id,
-          fact: f.fact,
-          category: f.category,
-          grade: f.gradeLevel || (Array.isArray(f.gradeLevels) ? f.gradeLevels[0] : '3-4')
+          action: 'funFactExplain', factId: f.id, fact: f.fact,
+          category: f.category, grade: f.gradeLevel || (Array.isArray(f.gradeLevels) ? f.gradeLevels[0] : '3-4')
         })
       });
       if (!res.ok) throw new Error('explain ' + res.status);
       const body = await res.json();
       const text = body && body.explanation ? String(body.explanation).trim() : '';
-      if (text) {
-        _explanationCache.set(f.id, text);
-        // Stamp the catalog row so subsequent visits skip the API call
-        f._aiExplanation = text;
-        revealWhy(text);
-      }
+      if (text) { _explanationCache.set(f.id, text); f._aiExplanation = text; revealWhy(text); }
     } catch (e) {
       console.warn('[deck] why fetch failed:', e && e.message);
       revealWhy("That's just how it is — try asking a grown-up for the deeper reason.");
     } finally {
-      if (btn) {
-        btn.disabled = false;
-        btn.classList.remove('deck-action--loading');
-      }
+      if (btn) { btn.disabled = false; btn.classList.remove('deck-action--loading'); }
     }
   }
   function revealWhy(text) {
@@ -417,7 +412,7 @@
   }
 
   // ============================================================
-  // Save flow
+  // Save
   // ============================================================
   function toggleSaveOnCurrent() {
     if (!_filtered.length) return;
@@ -441,18 +436,49 @@
   }
 
   // ============================================================
-  // Filter dialog
+  // Filter dialog — used in deck mode + age picker in picker mode
   // ============================================================
+  function buildFilterCategoryPills() {
+    const wrap = document.querySelector('.deck-filter-pills--cats');
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    CATEGORIES.forEach(c => {
+      const facts = filterCatalog(c.id, state.grade);
+      if (facts.length === 0 && c.id !== 'all') return;
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'deck-fpill';
+      b.dataset.filter = 'cat';
+      b.dataset.value = c.id;
+      b.setAttribute('role', 'radio');
+      b.setAttribute('aria-checked', c.id === state.cat ? 'true' : 'false');
+      if (c.id === state.cat) b.classList.add('deck-fpill--active');
+      b.textContent = c.emoji + ' ' + c.label;
+      b.addEventListener('click', () => {
+        wrap.querySelectorAll('.deck-fpill').forEach(x => {
+          x.classList.remove('deck-fpill--active');
+          x.setAttribute('aria-checked', 'false');
+        });
+        b.classList.add('deck-fpill--active');
+        b.setAttribute('aria-checked', 'true');
+        state.cat = c.id;
+      });
+      wrap.appendChild(b);
+    });
+  }
+
   function openFilterDialog() {
     const dlg = document.getElementById('deck-filter-dialog');
     if (!dlg) return;
-    // Sync pill active states to current state
-    document.querySelectorAll('.deck-fpill').forEach(b => {
-      const f = b.dataset.filter, v = b.dataset.value;
-      const target = f === 'subject' ? state.subject : state.grade;
-      b.classList.toggle('deck-fpill--active', v === target);
-      b.setAttribute('aria-checked', v === target ? 'true' : 'false');
+    buildFilterCategoryPills();
+    document.querySelectorAll('.deck-fpill[data-filter="grade"]').forEach(b => {
+      const active = b.dataset.value === state.grade;
+      b.classList.toggle('deck-fpill--active', active);
+      b.setAttribute('aria-checked', active ? 'true' : 'false');
     });
+    // Hide category section when in picker mode (kid picks topic via tiles, not dialog)
+    const catSection = document.getElementById('deck-filter-section-category');
+    if (catSection) catSection.hidden = (state.mode === 'picker');
     if (typeof dlg.showModal === 'function') dlg.showModal();
     else dlg.setAttribute('open', '');
   }
@@ -463,41 +489,39 @@
     else dlg.removeAttribute('open');
   }
   function wireFilterDialog() {
-    document.querySelectorAll('.deck-fpill').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const f = btn.dataset.filter, v = btn.dataset.value;
-        if (!f || !v) return;
-        if (f === 'subject') state.subject = v;
-        if (f === 'grade')   state.grade   = v;
-        // Active class swap within this row
-        btn.parentElement.querySelectorAll('.deck-fpill').forEach(b => {
-          b.classList.toggle('deck-fpill--active', b === btn);
-          b.setAttribute('aria-checked', b === btn ? 'true' : 'false');
+    document.querySelectorAll('.deck-fpill[data-filter="grade"]').forEach(b => {
+      b.addEventListener('click', () => {
+        state.grade = b.dataset.value;
+        b.parentElement.querySelectorAll('.deck-fpill').forEach(x => {
+          x.classList.toggle('deck-fpill--active', x === b);
+          x.setAttribute('aria-checked', x === b ? 'true' : 'false');
         });
       });
     });
     const apply = document.getElementById('deck-filter-apply');
     if (apply) apply.addEventListener('click', () => {
       closeFilterDialog();
-      updateURL();
-      rebuildDeck();
+      pushURL();
+      if (state.mode === 'deck') rebuildDeck();
+      else renderPicker();
     });
     const close = document.getElementById('deck-filter-close');
     if (close) close.addEventListener('click', closeFilterDialog);
   }
 
   // ============================================================
-  // Keyboard + swipe
+  // Keyboard + swipe (only active in deck mode)
   // ============================================================
   function wireKeyboard() {
     document.addEventListener('keydown', e => {
-      // Ignore if focus is in an input/textarea (filter dialog text inputs)
+      if (state.mode !== 'deck') return;
       const tag = (e.target && e.target.tagName || '').toLowerCase();
       if (tag === 'input' || tag === 'textarea') return;
       if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
       else if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
       else if (e.key === ' ' || e.key === 'Spacebar') { e.preventDefault(); fetchWhy(); }
       else if (e.key === 's' || e.key === 'S') { e.preventDefault(); toggleSaveOnCurrent(); }
+      else if (e.key === 'Escape') { e.preventDefault(); exitToPicker(); }
     });
   }
   function wireSwipe() {
@@ -506,17 +530,12 @@
     let startX = 0, startY = 0, tracking = false;
     stage.addEventListener('touchstart', e => {
       if (!e.touches || !e.touches[0]) return;
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
-      tracking = true;
+      startX = e.touches[0].clientX; startY = e.touches[0].clientY; tracking = true;
     }, { passive: true });
     stage.addEventListener('touchend', e => {
-      if (!tracking) return;
-      tracking = false;
-      const t = e.changedTouches && e.changedTouches[0];
-      if (!t) return;
-      const dx = t.clientX - startX;
-      const dy = t.clientY - startY;
+      if (!tracking) return; tracking = false;
+      const t = e.changedTouches && e.changedTouches[0]; if (!t) return;
+      const dx = t.clientX - startX; const dy = t.clientY - startY;
       if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
         if (dx < 0) next(); else prev();
       }
@@ -524,7 +543,7 @@
   }
 
   // ============================================================
-  // Boot
+  // Boot + back/forward
   // ============================================================
   async function init() {
     applyURLParams();
@@ -545,15 +564,23 @@
     if (next_) next_.addEventListener('click', next);
     const filterChip = document.getElementById('deck-filter-chip');
     if (filterChip) filterChip.addEventListener('click', openFilterDialog);
+    const backBtn = document.getElementById('deck-back');
+    if (backBtn) backBtn.addEventListener('click', exitToPicker);
+    const ageBtn = document.getElementById('deck-picker-age');
+    if (ageBtn) ageBtn.addEventListener('click', openFilterDialog);
     const emptyCta = document.getElementById('deck-empty-cta');
-    if (emptyCta) emptyCta.addEventListener('click', () => {
-      state.subject = 'all'; state.grade = 'all';
-      updateURL();
-      rebuildDeck();
+    if (emptyCta) emptyCta.addEventListener('click', exitToPicker);
+
+    // Browser back/forward
+    window.addEventListener('popstate', () => {
+      applyURLParams();
+      if (state.mode === 'picker') renderPicker();
+      else enterDeck();
     });
 
     await loadCatalog();
-    rebuildDeck();
+    if (state.mode === 'picker') renderPicker();
+    else enterDeck();
   }
 
   if (document.readyState === 'loading') {
