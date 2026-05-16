@@ -140,8 +140,43 @@
     } catch (_) {}
   }
 
+  // §114 NO-REPEAT — read the per-kid seen-set maintained by
+  // window.FunFacts (LS key 'gradeearn:ff:seen' + server-synced
+  // funFactsSeen). Returns a Set for O(1) lookups.
+  function getSeenSet() {
+    try {
+      if (window.FunFacts && typeof window.FunFacts._getSeenIds === 'function') {
+        return new Set(window.FunFacts._getSeenIds() || []);
+      }
+    } catch (_) {}
+    try {
+      const raw = localStorage.getItem('gradeearn:ff:seen');
+      return new Set(raw ? JSON.parse(raw) : []);
+    } catch (_) { return new Set(); }
+  }
+
   function rebuildDeck() {
-    _filtered = shuffle(filterCatalog());
+    const filtered = filterCatalog();
+    let seen = getSeenSet();
+
+    // CYCLE-COMPLETE detection: if every fact in the filtered scope is
+    // already in the seen-set, this is the natural rollover point. Reset
+    // the seen-set silently so the kid starts cycle 2 from a clean slate.
+    // Per CLAUDE.md §39 + memory rule feedback_no_repeat_rule.md.
+    const allSeen = filtered.length > 0 && filtered.every(f => seen.has(f.id));
+    if (allSeen && window.FunFacts && typeof window.FunFacts._resetSeenForCycle === 'function') {
+      try {
+        console.log('[deck] cycle complete (' + filtered.length + ' facts) — resetting seen-set');
+        window.FunFacts._resetSeenForCycle();
+        seen = new Set();
+      } catch (_) {}
+    }
+
+    // Order unseen-first. Within each tier, shuffle so the kid gets
+    // surprise. Unseen facts get exhausted before any seen-fact repeats.
+    const unseen = filtered.filter(f => !seen.has(f.id));
+    const already = filtered.filter(f => seen.has(f.id));
+    _filtered = shuffle(unseen).concat(shuffle(already));
     _index = 0;
     render();
   }
@@ -279,21 +314,37 @@
   // ============================================================
   function next() {
     if (!_filtered.length) return;
-    _index = (_index + 1) % _filtered.length;
+    // §114 NO-REPEAT cycle rollover: if we're advancing PAST the end of
+    // the deck, that means the kid has now seen every fact in scope.
+    // Rebuild — rebuildDeck() detects all-seen and resets silently.
+    if (_index >= _filtered.length - 1) {
+      rebuildDeck();
+      return;
+    }
+    _index = _index + 1;
     render('next');
   }
   function prev() {
     if (!_filtered.length) return;
+    // Prev wraps to the end (no cycle reset on backward — kid is
+    // re-reading their session, not asking for fresh content).
     _index = (_index - 1 + _filtered.length) % _filtered.length;
     render('prev');
   }
   function evenWeirder() {
     if (_filtered.length < 2) return next();
     const here = _filtered[_index];
-    const sameCat = _filtered
-      .map((f, i) => ({ f, i }))
-      .filter(({ f, i }) => i !== _index && f.category === here.category);
-    const pool = sameCat.length ? sameCat : _filtered.map((f, i) => ({ f, i })).filter(({ i }) => i !== _index);
+    const seen = getSeenSet();
+    // Prefer unseen + same-category. Fall back to: any-unseen → seen
+    // same-category → any. Maintains NO-REPEAT within the cycle.
+    const candidates = _filtered.map((f, i) => ({ f, i })).filter(({ i }) => i !== _index);
+    const unseenSameCat = candidates.filter(({ f }) => !seen.has(f.id) && f.category === here.category);
+    const anyUnseen    = candidates.filter(({ f }) => !seen.has(f.id));
+    const seenSameCat  = candidates.filter(({ f }) =>  f.category === here.category);
+    const pool = unseenSameCat.length ? unseenSameCat
+               : anyUnseen.length    ? anyUnseen
+               : seenSameCat.length  ? seenSameCat
+               : candidates;
     const pick = pool[Math.floor(Math.random() * pool.length)];
     _index = pick.i;
     render('next');

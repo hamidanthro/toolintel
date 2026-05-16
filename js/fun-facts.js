@@ -15,7 +15,13 @@
   const LS_SEEN           = 'gradeearn:ff:seen';
   const LS_FIRST_SHOWN_AT = 'gradeearn:ff:firstShownAt';
 
-  const SEEN_CAP          = 200;
+  // §114 — bumped 200 → 3000 so the seen-set can hold the full
+  // catalog under any subject/age filter (max scope is ~2,620 facts
+  // for 'all subjects · all ages'). With cap=200, FIFO eviction
+  // defeated the no-repeat rule before the kid finished the pool.
+  // 3000 × short ID strings ≈ 30KB localStorage — well within
+  // browser quotas.
+  const SEEN_CAP          = 3000;
   const VALID_FREQS       = [1, 5, 10, 25, 'paused'];
   // Catalog version — bump when data/fun-facts.json content changes
   // so clients with cached JSON refetch. Without this, force-cache
@@ -448,6 +454,19 @@
     persistFirstShownAtToLocal(undefined);
   }
 
+  // §114 NO-REPEAT — cycle rollover. Called by the Discovery Deck when
+  // every fact in the current filter scope is already in the seen-set.
+  // Clears the seen array (silent — no UI signal). Per CLAUDE.md §39:
+  // 'never repeat until pool exhausted; rollover should be silent.'
+  // Keeps firstShownAt + freq unchanged.
+  function _resetSeenForCycle() {
+    _state.seen = [];
+    persistSeenToLocal([]);
+    if (typeof _scheduleServerSync === 'function') {
+      try { _scheduleServerSync(); } catch (_) {}
+    }
+  }
+
   // -------- export --------
 
   window.FunFacts = {
@@ -462,6 +481,8 @@
     // when FunFacts has already loaded the JSON). Returns the array
     // (or null if not yet loaded).
     _getCatalog: function () { return _catalog; },
+    // §114 — silent cycle rollover for the Discovery Deck.
+    _resetSeenForCycle: _resetSeenForCycle,
     // Internal — exposed for tests + auth.js wiring + Phase 3 prefetch
     _getSeenIds,
     _getFirstShownAt,
