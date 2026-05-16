@@ -499,6 +499,36 @@ defaults globally.
 
 ## 11. Open hygiene items
 
+### Reflexes before editing CSS / chasing a "shipped but not visible" bug
+
+The §122 wordmark trilogy and the §123 section-padding bug both took
+multiple prompts to surface because new CSS was being layered on top of
+buried global rules. Both classes of bug share a signature: **the
+right code is shipped but the rendered page doesn't reflect it.** The
+reflex now:
+
+1. **Before adding a new CSS rule for a familiar element, grep the
+   stylesheet for `display: none !important` and `display: none`
+   patterns matching the selector** — see if the element is being
+   collapsed by some far-away rule. §122 root cause was a 17,000-line-deep
+   rule `body.practice-mode .site-header .brand { display: none !important; }`
+   that killed the wordmark on every practice-mode page. Three prompts
+   couldn't surface it because all attention was on new rules.
+
+2. **When a tight flex `gap` produces wide visible gaps, the issue is
+   almost always internal padding on the child elements, not the
+   parent's gap rule.** §123 root cause was the global
+   `section { padding: 56px 0 }` — 112px of vertical padding on every
+   `<section>` inside `.grade-content--v2`. Three polish prompts kept
+   tightening margins on the inner blocks (`.home-headline`,
+   `.mindblower-hero`) while the section wrappers stayed at 112px.
+
+3. **Three "shipped but not visible" reports in a row = grep the
+   stylesheet for global selectors before adding more specific rules.**
+   Save 30 minutes of authoring + push + observe + repeat cycles.
+
+### Standing items
+
 - **Git identity:** the last 30+ commits on `main` are authored
   `Bob <bob@Bobs-Mac-mini.local>` — needs the global git user fixed before
   any future push, and ideally an `--author` rewrite of recent commits
