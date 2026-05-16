@@ -4330,6 +4330,74 @@ triggered by Hamid per §19 deploy discipline.
 
 ---
 
+## 125-126. Texas Social Studies — live for grades 3-8 (May 17)
+
+### Why and what
+
+The §91 SS gate is fully lifted for Texas elementary + middle school.
+Six new curriculum JSONs in `data/`, one per grade, each with **30
+starter questions** authored against TEKS, factually-verified,
+age-appropriate, religiously/politically neutral. Schema is the
+math-curriculum format (units → lessons → questions); the existing
+`startSocialStudies` runQuiz pipeline picks them up unmodified.
+
+**Why static curriculum JSON instead of the §91-targeted lake judge+migrate path?**
+The §91 audit found 870 active Texas SS rows in `staar-content-pool`
+that were unjudged + schema-mismatched (bare grade vs prefixed) +
+passage-orphaned + AGE_FIT-mismatched on G3 + had the §27
+letter-prefix-in-choice-text bug on G8. Migrating them would block on
+a judge sweep + manual review. Authoring static curriculum ships
+TODAY. For Grades 3-7 the bar is "factually correct + age-appropriate"
+(no STAAR test below G8), so static content is the right tool. The
+lambda passage-cluster path (`handleGetSocialStudiesItem`) remains
+the canonical channel for Grade 8 STAAR US History when judged
+content lands there.
+
+### Files (§125 = Grade 6, §126 = Grades 3,4,5,7,8)
+
+| File | Contents |
+|---|---|
+| `data/grade-3-social-studies-curriculum.json` | Communities Past & Present (TEKS §113.14). Units: Types of Communities / Geography / Local Government / Community Economics / Community History / Citizenship. |
+| `data/grade-4-social-studies-curriculum.json` | Texas History (TEKS §113.15) ★ kid magnet. Units: Native Texans / Spanish & Mexican Texas / Texas Revolution / Republic & Statehood / Modern Texas / Texas Government. |
+| `data/grade-5-social-studies-curriculum.json` | U.S. History survey (TEKS §113.16). Units: First Americans / Colonization / Revolution / Westward Expansion / Civil War / Modern America. |
+| `data/grade-6-social-studies-curriculum.json` | World Cultures (TEKS §113.18). Units: Geography Tools / World Regions / Economic Systems / Government / Culture / History & Sources. |
+| `data/grade-7-social-studies-curriculum.json` | Texas History deep dive (TEKS §113.19). Units: Pre-Columbian to Spanish / Mexican Texas & Revolution / Republic & Annexation / Civil War & Reconstruction / Cattle Oil Industrial / Modern Texas. |
+| `data/grade-8-social-studies-curriculum.json` | U.S. History through 1877 (TEKS §113.20) ★ STAAR-TESTED. Units: Colonial America / Revolution & Constitution / Early Republic / Westward Expansion / Civil War / Reconstruction. |
+| `js/grade-page.js` (`SUBJECTS[social-studies].liveForGrade`) | Returns `true` for Texas grades 3-8 |
+| `js/practice.js` (`startSocialStudies`) | Tries `data/{grade}-social-studies-curriculum.json` FIRST, falls back to lambda `handleGetSocialStudiesItem` |
+| `lambda/tutor.js` (`SUBJECTS_LIVE`) | Added `'science'` + `'social-studies'` to the allow-list. Science was silently broken (live for grades 3-8 in frontend but rejected at lambda generate). Mirrored to `tutor-build/`. |
+| `lambda/adaptive.js` | Docstring notes the SS subject-scope gap. SS TEKS would collide with math TEKS (e.g. math `6.3A` Number Ops vs SS `6.3A` Geography Tools). Engine v2 needs a subject-namespaced snapshot. Until then SS attempts silently degrade to centred-band targeting (band 2 / no per-strand mastery). |
+
+### Authoring rules used (write these into future SS curriculum work)
+
+1. **Schema:** math-curriculum-compatible. `{ subject, grade, state, title, version, _meta, units: [{ id, title, strand, lessons: [{ id, teks, title, objective, questions: [{ id, type, prompt, choices: [4], answer, correctIndex, explanation }] }] }] }`.
+2. **Question shape:** every question is `type='multiple_choice'` with exactly 4 choices. `correctIndex` 0-3. `answer === choices[correctIndex]` (validated post-author with a Node one-liner; 0 errors across 180 questions).
+3. **TEKS coverage:** 6 units × 1 lesson × 5 questions per grade = 30 questions starter. Each lesson tagged with a real TEKS id (e.g. `4.3A`). Future commits can add more lessons under the same units.
+4. **Voice:** factual, growth-mindset, NO banned §15 phrases ("Most kids", "tricky", "no worries", "Good try", "Nice work", "Great job"). Explanations are 1-3 sentences, age-appropriate vocabulary.
+5. **Texas-flavored where relevant:** examples use Texas cities, Texas industries, Texas history. Bluebonnets, brisket, Padre Island, Galveston, Spindletop, San Jacinto, Sam Houston, etc.
+6. **Religiously/politically neutral:** world religions described by population count only ("more than a billion followers"), Día de los Muertos described as cultural-religious blend, federal/state power described as design choice not opinion.
+7. **Sensitive history handled with care:** slavery described accurately as the brutal system it was. The Civil War cause stated as slavery. The Trail of Tears called what it was. Juneteenth, Reconstruction's unfinished promises, Jim Crow rollback — all named clearly. Tone is factual not preachy.
+
+### Standing rules going forward
+
+1. **For any new SS grade or state, follow the same curriculum JSON pattern** — 6 units, 5 questions per lesson minimum, TEKS-tagged, fact-checked.
+2. **Do NOT enable SS for a state without authored content.** `liveForGrade` returning `true` without curriculum JSON falls through to the lambda passage-cluster, which fails gracefully but isn't the kid experience we want.
+3. **Adaptive engine v2 (subject-namespaced snapshot) is the next blocker for SS-mastery tracking.** Until v2, SS questions don't surface per-strand ratings, recommendations, or "Mastered" pills on the topic picker (because the picker uses the existing flat TEKS_STRANDS lookup which is math-only).
+
+### What ISN'T fixed yet (logged for future drains)
+
+- Adaptive engine v2 subject namespacing. Path: refactor `TEKS_STRANDS` from `{teks: {s,g,d}}` to `{subject: {teks: {s,g,d}}}`, update `strandForTeks(teksId, subject='math')`, update lambda call sites (`handleGenerate`, `handleRecordEvent`, `handleGetAdaptive`) to pass subject. SS strand entries can then live alongside math.
+- Lake judge+migrate sweep for the 870 existing Texas SS rows. They could supplement the static curriculum once judged.
+- Other states (CA, NY, FL, etc.) per SS. Memory `feedback_texas_only.md` says Texas-only — defer indefinitely.
+
+### Lessons logged
+
+- **Static curriculum JSON is the right tool for content that doesn't need state-flavor or test-form match.** For SS grades that aren't STAAR-tested (3-7), the bar is correctness + age-fit. No need to invent a lambda generate path or seed DDB. Ship in 1 commit.
+- **Hidden bugs surfaced while wiring:** lambda `SUBJECTS_LIVE` was `['math','reading']` — Science was structurally broken at the generate path even though grade-page listed it live. Same gotcha would hit any future subject added at the frontend without the lambda allow-list update. Watch for it.
+- **TEKS ID namespacing matters.** Math and SS use overlapping IDs (e.g. both have `6.3A`). The flat `TEKS_STRANDS` map in `lambda/adaptive.js` can't accommodate both without engine v2.
+
+---
+
 ## TOP 3 THINGS YOU SHOULD KNOW
 
 1. **The deploy story is held together by tape and is the single biggest
