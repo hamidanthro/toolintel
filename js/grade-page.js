@@ -53,26 +53,31 @@
       tagline: 'History, geography, civics, economics.',
       icon: 'globe',
       color: '#fbbf24',
-      // §125 (May 17, 2026) — Texas Grade 6 SS is now live. The
-      // §91 gate was the right call when the only path served from
-      // staar-content-pool (where SS rows were unjudged + schema-
-      // mismatched + passage-orphaned + AGE_FIT-mismatched).
+      // §126 (May 17, 2026) — Texas SS live for all elementary +
+      // middle-school grades (3–8). Each grade has its own
+      // data/grade-N-social-studies-curriculum.json with 30 starter
+      // questions authored against the appropriate TEKS:
+      //   • Grade 3 — Communities Past and Present (TEKS §113.14)
+      //   • Grade 4 — Texas History (TEKS §113.15)
+      //   • Grade 5 — U.S. History survey (TEKS §113.16)
+      //   • Grade 6 — World Cultures (TEKS §113.18)
+      //   • Grade 7 — Texas History deep dive (TEKS §113.19)
+      //   • Grade 8 — U.S. History through 1877 (TEKS §113.20) ★ STAAR-tested
       //
-      // For Grade 6, we now serve from a static frontend curriculum
-      // JSON (data/grade-6-social-studies-curriculum.json) — text-
-      // only multiple-choice, 30 starter questions, factually-
-      // verified content authored against TEKS §113.18 (World
-      // Cultures). The handleGetSocialStudiesItem lambda path is
-      // still the canonical channel for Grade 8 STAAR US History
-      // (when content lands there). Other grades stay "Coming soon"
-      // until similar starter content is authored.
+      // §91 gate is fully lifted for these grades because we no
+      // longer depend on the staar-content-pool SS rows (which were
+      // unjudged + schema-mismatched + passage-orphaned). The
+      // frontend curriculum-first path bypasses the lake entirely.
+      // The handleGetSocialStudiesItem lambda path remains the
+      // canonical channel for content augmentation when SS lake
+      // rows are eventually judged + migrated.
       //
       // See docs/knowledge-packs/architecture-decisions.md §SS-USA-BROAD.
       live: false,
       eta: 'Coming soon',
       liveForGrade: function (stateSlug, gradeSlug) {
         if (stateSlug !== 'texas') return false;
-        return gradeSlug === 'grade-6';
+        return ['grade-3','grade-4','grade-5','grade-6','grade-7','grade-8'].includes(gradeSlug);
       }
     }
   ];

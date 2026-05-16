@@ -1,0 +1,441 @@
+{
+  "subject": "social-studies",
+  "grade": "grade-4",
+  "state": "texas",
+  "title": "Grade 4 Social Studies — Texas History",
+  "description": "Texas Grade 4 SS follows TEKS §113.15 — Texas History from prehistoric times to the modern era. Six core strands: Native Texans, Spanish & Mexican Texas, Texas Revolution, Republic & Statehood, Modern Texas, Texas Government. Authored 2026-05-17; content is CLAUDE-SYNTHESIZED from publicly-published TEKS + verified historical sources.",
+  "version": 1,
+  "_meta": {
+    "author": "GradeEarn",
+    "built": "2026-05-17",
+    "schema": "math-curriculum-compatible",
+    "questionCount": 30
+  },
+  "units": [
+    {
+      "id": "native-texans",
+      "title": "Native Texans",
+      "strand": "history",
+      "lessons": [
+        {
+          "id": "indigenous-peoples",
+          "teks": "4.1A",
+          "title": "The First People of Texas",
+          "objective": "Identify the major Native American groups who lived in Texas before European arrival.",
+          "questions": [
+            {
+              "id": "q-ss4-nat-001",
+              "type": "multiple_choice",
+              "prompt": "Which Native American group lived along the Gulf Coast of Texas and was known for fishing?",
+              "choices": ["Caddo", "Comanche", "Karankawa", "Apache"],
+              "answer": "Karankawa",
+              "correctIndex": 2,
+              "explanation": "The Karankawa lived along the Texas Gulf Coast. They fished, hunted, and gathered food. They built temporary shelters because they moved with the seasons."
+            },
+            {
+              "id": "q-ss4-nat-002",
+              "type": "multiple_choice",
+              "prompt": "The Caddo people in East Texas were known for what kind of lifestyle?",
+              "choices": ["Nomadic hunters who never settled", "Farmers who built permanent villages", "Ocean traders only", "Mountain shepherds"],
+              "answer": "Farmers who built permanent villages",
+              "correctIndex": 1,
+              "explanation": "The Caddo in East Texas farmed corn, beans, and squash. They built grass-roofed houses and lived in permanent villages — very different from nomadic groups."
+            },
+            {
+              "id": "q-ss4-nat-003",
+              "type": "multiple_choice",
+              "prompt": "Which Native American group became expert horse-riders on the plains of Texas after horses were introduced by the Spanish?",
+              "choices": ["Caddo", "Comanche", "Karankawa", "Tonkawa"],
+              "answer": "Comanche",
+              "correctIndex": 1,
+              "explanation": "The Comanche became some of the most skilled horse-riders in North America. They controlled the southern plains of Texas for over a hundred years."
+            },
+            {
+              "id": "q-ss4-nat-004",
+              "type": "multiple_choice",
+              "prompt": "Before Europeans arrived, what was the main way most Texas Native Americans got their food?",
+              "choices": [
+                "Buying it from stores",
+                "Hunting, gathering, fishing, and farming",
+                "Shipping it from Europe",
+                "Growing only wheat"
+              ],
+              "answer": "Hunting, gathering, fishing, and farming",
+              "correctIndex": 1,
+              "explanation": "Texas tribes got food from the land around them — hunting buffalo and deer, gathering wild plants, fishing in rivers and the Gulf, and (for groups like the Caddo) farming corn, beans, and squash."
+            },
+            {
+              "id": "q-ss4-nat-005",
+              "type": "multiple_choice",
+              "prompt": "Which animal was MOST important to the Plains tribes of Texas before the 1800s?",
+              "choices": ["Cattle", "Buffalo (bison)", "Horses (before Spanish arrival)", "Sheep"],
+              "answer": "Buffalo (bison)",
+              "correctIndex": 1,
+              "explanation": "Buffalo provided meat for food, hides for clothing and shelter, and bones for tools. Plains tribes followed the buffalo herds across the Texas grasslands. Cattle came later with Europeans; horses came with the Spanish in the 1500s."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "spanish-mexican-texas",
+      "title": "Spanish & Mexican Texas",
+      "strand": "history",
+      "lessons": [
+        {
+          "id": "colonization-missions",
+          "teks": "4.2B",
+          "title": "Spanish Explorers, Missions & Mexican Texas",
+          "objective": "Describe Spanish exploration, the mission system, and Texas under Mexican rule.",
+          "questions": [
+            {
+              "id": "q-ss4-spn-001",
+              "type": "multiple_choice",
+              "prompt": "What country first sent explorers to claim Texas in the 1500s?",
+              "choices": ["France", "Spain", "England", "Mexico"],
+              "answer": "Spain",
+              "correctIndex": 1,
+              "explanation": "Spanish explorers like Cabeza de Vaca and Coronado were the first Europeans in Texas in the 1500s. They claimed the land for Spain — that's why so many Texas places have Spanish names (San Antonio, El Paso, Amarillo)."
+            },
+            {
+              "id": "q-ss4-spn-002",
+              "type": "multiple_choice",
+              "prompt": "What was the MAIN purpose of Spanish missions in Texas?",
+              "choices": [
+                "To build forts to fight the United States",
+                "To teach Catholic religion and Spanish ways to Native Americans",
+                "To dig for gold mines",
+                "To grow cotton for export"
+              ],
+              "answer": "To teach Catholic religion and Spanish ways to Native Americans",
+              "correctIndex": 1,
+              "explanation": "Spanish missions were religious settlements run by Catholic priests. Their goal was to convert Native Americans to Christianity and teach them Spanish language, farming, and crafts. The Alamo started as one such mission (Mission San Antonio de Valero)."
+            },
+            {
+              "id": "q-ss4-spn-003",
+              "type": "multiple_choice",
+              "prompt": "In 1821, Texas became part of which newly independent country?",
+              "choices": ["United States", "France", "Mexico", "Republic of Texas"],
+              "answer": "Mexico",
+              "correctIndex": 2,
+              "explanation": "Mexico won independence from Spain in 1821. Texas was part of Mexico (specifically, the state of Coahuila y Tejas) for the next 15 years, until Texans declared independence in 1836."
+            },
+            {
+              "id": "q-ss4-spn-004",
+              "type": "multiple_choice",
+              "prompt": "Stephen F. Austin is sometimes called the \"Father of Texas\" because he:",
+              "choices": [
+                "Discovered Texas",
+                "Was the first president of the Republic of Texas",
+                "Led the first large group of American families to settle in Mexican Texas",
+                "Drew the Texas flag"
+              ],
+              "answer": "Led the first large group of American families to settle in Mexican Texas",
+              "correctIndex": 2,
+              "explanation": "In the 1820s, Stephen F. Austin brought 300 American families (called the \"Old Three Hundred\") to settle in Mexican Texas with permission from Mexico. He's called \"Father of Texas\" because his colony was the start of Anglo-American settlement that grew into the Republic of Texas."
+            },
+            {
+              "id": "q-ss4-spn-005",
+              "type": "multiple_choice",
+              "prompt": "Why did many Anglo-American settlers come to Mexican Texas in the 1820s?",
+              "choices": [
+                "Mexico offered cheap land if they would settle and farm it",
+                "Texas had gold mines",
+                "Mexico was looking for soldiers",
+                "Texas had a famous university"
+              ],
+              "answer": "Mexico offered cheap land if they would settle and farm it",
+              "correctIndex": 0,
+              "explanation": "Mexico's plan was simple: offer cheap land to settlers in exchange for them building farms, becoming Mexican citizens, and defending the area. Land in Texas was 12 cents an acre versus over a dollar an acre in the United States — a huge bargain."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "texas-revolution",
+      "title": "The Texas Revolution",
+      "strand": "history",
+      "lessons": [
+        {
+          "id": "alamo-san-jacinto",
+          "teks": "4.3A",
+          "title": "From the Alamo to Independence",
+          "objective": "Identify key events and people of the Texas Revolution (1835–1836).",
+          "questions": [
+            {
+              "id": "q-ss4-rev-001",
+              "type": "multiple_choice",
+              "prompt": "The Battle of the Alamo took place in which Texas city?",
+              "choices": ["Houston", "Austin", "San Antonio", "Dallas"],
+              "answer": "San Antonio",
+              "correctIndex": 2,
+              "explanation": "The Alamo is a former Spanish mission in San Antonio. About 200 Texan defenders held it for 13 days in February-March 1836 against a Mexican army of thousands led by General Santa Anna."
+            },
+            {
+              "id": "q-ss4-rev-002",
+              "type": "multiple_choice",
+              "prompt": "What was the rallying cry Texans used AFTER the Alamo to win the revolution?",
+              "choices": [
+                "\"Don't tread on me!\"",
+                "\"Remember the Alamo!\"",
+                "\"Texas forever!\"",
+                "\"Give me liberty!\""
+              ],
+              "answer": "\"Remember the Alamo!\"",
+              "correctIndex": 1,
+              "explanation": "After almost every Alamo defender was killed, \"Remember the Alamo!\" became the battle cry of the Texas army. They shouted it at the Battle of San Jacinto, where they defeated Santa Anna's army in just 18 minutes."
+            },
+            {
+              "id": "q-ss4-rev-003",
+              "type": "multiple_choice",
+              "prompt": "Who led the Texas army to victory at the Battle of San Jacinto?",
+              "choices": ["Stephen F. Austin", "Sam Houston", "Davy Crockett", "James Bowie"],
+              "answer": "Sam Houston",
+              "correctIndex": 1,
+              "explanation": "Sam Houston led the Texan army to a surprising victory at San Jacinto on April 21, 1836. The battle lasted only 18 minutes, captured General Santa Anna, and effectively won Texas's independence."
+            },
+            {
+              "id": "q-ss4-rev-004",
+              "type": "multiple_choice",
+              "prompt": "On March 2, 1836, Texas leaders signed which famous document?",
+              "choices": [
+                "The U.S. Declaration of Independence",
+                "The Texas Declaration of Independence",
+                "The Treaty of Guadalupe Hidalgo",
+                "The Emancipation Proclamation"
+              ],
+              "answer": "The Texas Declaration of Independence",
+              "correctIndex": 1,
+              "explanation": "On March 2, 1836, delegates meeting at Washington-on-the-Brazos signed the Texas Declaration of Independence, declaring Texas free from Mexico. That's why Texans celebrate Texas Independence Day every March 2nd."
+            },
+            {
+              "id": "q-ss4-rev-005",
+              "type": "multiple_choice",
+              "prompt": "After winning independence in 1836, what did Texas become?",
+              "choices": [
+                "A new Mexican state",
+                "An independent country called the Republic of Texas",
+                "A U.S. state right away",
+                "A British colony"
+              ],
+              "answer": "An independent country called the Republic of Texas",
+              "correctIndex": 1,
+              "explanation": "Texas was an independent country — the Republic of Texas — for almost 10 years (1836-1845). It had its own president, flag, money, and embassies. Then it joined the United States as the 28th state in 1845."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "republic-statehood",
+      "title": "Republic of Texas & Statehood",
+      "strand": "history",
+      "lessons": [
+        {
+          "id": "becoming-a-state",
+          "teks": "4.4A",
+          "title": "Republic of Texas, Statehood & the Six Flags",
+          "objective": "Identify key events from independence to statehood and the six flags of Texas.",
+          "questions": [
+            {
+              "id": "q-ss4-rep-001",
+              "type": "multiple_choice",
+              "prompt": "Who was the first president of the Republic of Texas?",
+              "choices": ["Stephen F. Austin", "Sam Houston", "Mirabeau Lamar", "David Burnet"],
+              "answer": "Sam Houston",
+              "correctIndex": 1,
+              "explanation": "Sam Houston was the hero of San Jacinto and the first elected president of the Republic of Texas (1836-1838). He later served as the third president (1841-1844), then as a U.S. senator and governor of the state."
+            },
+            {
+              "id": "q-ss4-rep-002",
+              "type": "multiple_choice",
+              "prompt": "In what year did Texas become the 28th U.S. state?",
+              "choices": ["1836", "1845", "1861", "1900"],
+              "answer": "1845",
+              "correctIndex": 1,
+              "explanation": "Texas joined the United States on December 29, 1845. Many Texans had wanted to join from the start in 1836, but it took 9 years because the U.S. was nervous about adding a slave state and risking war with Mexico."
+            },
+            {
+              "id": "q-ss4-rep-003",
+              "type": "multiple_choice",
+              "prompt": "The phrase \"Six Flags Over Texas\" refers to the six COUNTRIES that have ruled Texas. Which is NOT one of the six flags?",
+              "choices": ["Spain", "Mexico", "Canada", "France"],
+              "answer": "Canada",
+              "correctIndex": 2,
+              "explanation": "The six flags over Texas are Spain, France, Mexico, the Republic of Texas, the Confederate States of America (during the Civil War), and the United States. Canada has never controlled Texas."
+            },
+            {
+              "id": "q-ss4-rep-004",
+              "type": "multiple_choice",
+              "prompt": "Why did Texas join the Confederacy in 1861?",
+              "choices": [
+                "It wanted to leave the United States as part of the Civil War over states' rights and slavery",
+                "Mexico ordered it",
+                "It was conquered by France",
+                "It was tricked by Britain"
+              ],
+              "answer": "It wanted to leave the United States as part of the Civil War over states' rights and slavery",
+              "correctIndex": 0,
+              "explanation": "Texas voted to leave the United States (secede) in 1861 and join the Confederacy, mainly over the issue of slavery and disagreements about states' rights. After the Confederacy lost the Civil War in 1865, Texas was readmitted to the U.S."
+            },
+            {
+              "id": "q-ss4-rep-005",
+              "type": "multiple_choice",
+              "prompt": "What date is Juneteenth, and what does it celebrate?",
+              "choices": [
+                "July 4 — American Independence Day",
+                "June 19 — the day enslaved people in Texas were told they were free in 1865",
+                "March 2 — Texas Independence Day",
+                "April 21 — San Jacinto Day"
+              ],
+              "answer": "June 19 — the day enslaved people in Texas were told they were free in 1865",
+              "correctIndex": 1,
+              "explanation": "On June 19, 1865, federal troops arrived in Galveston, Texas, and announced that all enslaved people were free — over two years after the Emancipation Proclamation. Texans have celebrated Juneteenth ever since; it became a U.S. federal holiday in 2021."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "modern-texas",
+      "title": "Modern Texas — Cattle, Oil & Cities",
+      "strand": "history",
+      "lessons": [
+        {
+          "id": "cattle-oil-growth",
+          "teks": "4.5A",
+          "title": "Cattle Drives, Oil Boom & Texas Growth",
+          "objective": "Identify the industries and changes that shaped modern Texas.",
+          "questions": [
+            {
+              "id": "q-ss4-mod-001",
+              "type": "multiple_choice",
+              "prompt": "After the Civil War, what was the FIRST big industry to make Texans rich?",
+              "choices": ["Computer chips", "Cattle ranching and cattle drives", "Movie making", "Airplanes"],
+              "answer": "Cattle ranching and cattle drives",
+              "correctIndex": 1,
+              "explanation": "After the Civil War (1865-1880s), Texas had millions of wild longhorn cattle. Cowboys drove the herds north along trails like the Chisholm Trail to sell them in Kansas. That's where the iconic Texas cowboy image comes from."
+            },
+            {
+              "id": "q-ss4-mod-002",
+              "type": "multiple_choice",
+              "prompt": "In 1901, a huge oil discovery at Spindletop Hill near Beaumont changed Texas forever. What is Spindletop famous for?",
+              "choices": [
+                "Being the tallest mountain in Texas",
+                "Being the biggest oil well of its time — it started the Texas oil boom",
+                "Being where the Alamo was built",
+                "Being the first NASA base"
+              ],
+              "answer": "Being the biggest oil well of its time — it started the Texas oil boom",
+              "correctIndex": 1,
+              "explanation": "In January 1901, a well at Spindletop near Beaumont started gushing 100,000 barrels of oil per day — more than every other oil well in the world combined. Texas became one of the world's biggest oil producers almost overnight."
+            },
+            {
+              "id": "q-ss4-mod-003",
+              "type": "multiple_choice",
+              "prompt": "NASA's Johnson Space Center, where astronauts have trained since the 1960s, is located in which Texas city?",
+              "choices": ["Austin", "Dallas", "Houston", "El Paso"],
+              "answer": "Houston",
+              "correctIndex": 2,
+              "explanation": "Houston is home to NASA's Johnson Space Center. That's why the famous Apollo 13 quote is \"Houston, we have a problem\" — Houston was Mission Control for the Apollo astronauts."
+            },
+            {
+              "id": "q-ss4-mod-004",
+              "type": "multiple_choice",
+              "prompt": "Texas's population grew rapidly in the 20th century mainly because of:",
+              "choices": [
+                "People moving to Texas for jobs in oil, agriculture, technology, and other industries",
+                "More babies born than any other state",
+                "A law that everyone had to move to Texas",
+                "Texas had the only schools in the country"
+              ],
+              "answer": "People moving to Texas for jobs in oil, agriculture, technology, and other industries",
+              "correctIndex": 0,
+              "explanation": "Texas grew because people moved here for opportunity — oil in the early 1900s, then aerospace, then computers and technology, then service industries. Today Texas is the second-most populous U.S. state, after California."
+            },
+            {
+              "id": "q-ss4-mod-005",
+              "type": "multiple_choice",
+              "prompt": "Which is one of the largest cities in Texas today?",
+              "choices": ["Buffalo", "Houston", "Denver", "Atlanta"],
+              "answer": "Houston",
+              "correctIndex": 1,
+              "explanation": "Houston is the largest city in Texas and the fourth-largest city in the entire United States. Other major Texas cities include San Antonio, Dallas, Austin (the capital), and Fort Worth."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "texas-government",
+      "title": "Texas Government & Symbols",
+      "strand": "government",
+      "lessons": [
+        {
+          "id": "state-government-symbols",
+          "teks": "4.13A",
+          "title": "Texas Government & State Symbols",
+          "objective": "Identify the branches of Texas government and important state symbols.",
+          "questions": [
+            {
+              "id": "q-ss4-gov-001",
+              "type": "multiple_choice",
+              "prompt": "What is the capital city of Texas?",
+              "choices": ["Houston", "Dallas", "Austin", "San Antonio"],
+              "answer": "Austin",
+              "correctIndex": 2,
+              "explanation": "Austin has been the capital of Texas since 1839, when the Republic of Texas chose it. The Texas state government, including the Texas Capitol building, is located there."
+            },
+            {
+              "id": "q-ss4-gov-002",
+              "type": "multiple_choice",
+              "prompt": "The Texas state government, like the U.S. government, is divided into three branches. They are:",
+              "choices": [
+                "Army, Navy, and Air Force",
+                "Legislative, Executive, and Judicial",
+                "Past, Present, and Future",
+                "North, Central, and South"
+              ],
+              "answer": "Legislative, Executive, and Judicial",
+              "correctIndex": 1,
+              "explanation": "Like the U.S. government, Texas has three branches: the Legislative branch (writes laws — the Texas Legislature), the Executive branch (carries out laws — led by the Governor), and the Judicial branch (interprets laws — the courts). Splitting power keeps any one part from getting too strong."
+            },
+            {
+              "id": "q-ss4-gov-003",
+              "type": "multiple_choice",
+              "prompt": "Why is the Texas state flag called the \"Lone Star Flag\"?",
+              "choices": [
+                "Because it has a single white star",
+                "Because it was the first U.S. state flag",
+                "Because it has six stars for the six flags of Texas",
+                "Because of the star on top of the Texas Capitol building"
+              ],
+              "answer": "Because it has a single white star",
+              "correctIndex": 0,
+              "explanation": "The Texas flag has one big white star on the blue stripe — the \"Lone Star.\" The star represents Texas standing alone as an independent republic before joining the U.S. The Texas state nickname is \"The Lone Star State.\""
+            },
+            {
+              "id": "q-ss4-gov-004",
+              "type": "multiple_choice",
+              "prompt": "What is the state flower of Texas?",
+              "choices": ["Yellow Rose", "Bluebonnet", "Texas Tulip", "Pecan Blossom"],
+              "answer": "Bluebonnet",
+              "correctIndex": 1,
+              "explanation": "The bluebonnet has been the state flower since 1901. Every spring, fields of bluebonnets bloom across Texas — especially in the Hill Country. (The Yellow Rose and pecan tree are also Texas symbols, just not the flower.)"
+            },
+            {
+              "id": "q-ss4-gov-005",
+              "type": "multiple_choice",
+              "prompt": "The Texas state motto is one word. What is it?",
+              "choices": ["Liberty", "Friendship", "Independence", "Strength"],
+              "answer": "Friendship",
+              "correctIndex": 1,
+              "explanation": "Texas's state motto is \"Friendship.\" The word comes from a Caddo Indian word, \"tejas,\" which is also where the state got its name. (The word meant something like \"friend\" or \"ally.\")"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

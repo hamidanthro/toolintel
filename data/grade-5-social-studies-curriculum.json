@@ -1,0 +1,501 @@
+{
+  "subject": "social-studies",
+  "grade": "grade-5",
+  "state": "texas",
+  "title": "Grade 5 Social Studies — United States History",
+  "description": "Texas Grade 5 SS follows TEKS §113.16 — U.S. History from Native Americans through the 20th century at a survey level. Six core strands: First Americans, Colonization, Revolution, Westward Expansion, Civil War, 20th-Century America. Authored 2026-05-17.",
+  "version": 1,
+  "_meta": {
+    "author": "GradeEarn",
+    "built": "2026-05-17",
+    "schema": "math-curriculum-compatible",
+    "questionCount": 30
+  },
+  "units": [
+    {
+      "id": "first-americans",
+      "title": "First Americans & Early Cultures",
+      "strand": "history",
+      "lessons": [
+        {
+          "id": "indigenous-cultures",
+          "teks": "5.1A",
+          "title": "Native American Cultures Before 1492",
+          "objective": "Identify major Native American culture regions and adaptations to environment.",
+          "questions": [
+            {
+              "id": "q-ss5-fa-001",
+              "type": "multiple_choice",
+              "prompt": "Native Americans first reached North America from Asia by:",
+              "choices": [
+                "Building sailing ships",
+                "Crossing a land bridge that connected Asia and Alaska during the last Ice Age",
+                "Flying in airplanes",
+                "Coming from Europe in the year 1000"
+              ],
+              "answer": "Crossing a land bridge that connected Asia and Alaska during the last Ice Age",
+              "correctIndex": 1,
+              "explanation": "Scientists believe Native Americans' ancestors crossed Beringia — a land bridge connecting Asia and Alaska — at least 15,000 years ago, when sea levels were lower during the Ice Age. Some may also have traveled by sea along the coast."
+            },
+            {
+              "id": "q-ss5-fa-002",
+              "type": "multiple_choice",
+              "prompt": "The Plains tribes (like the Lakota and Cheyenne) depended heavily on:",
+              "choices": [
+                "Whale hunting",
+                "Buffalo (bison) for food, clothing, shelter, and tools",
+                "Pearl diving",
+                "Wheat farming"
+              ],
+              "answer": "Buffalo (bison) for food, clothing, shelter, and tools",
+              "correctIndex": 1,
+              "explanation": "Plains tribes used nearly every part of the buffalo. Meat for food, hides for clothes and tipis, bones for tools, sinew for thread. When American expansion nearly wiped out buffalo herds in the 1800s, it devastated Plains cultures."
+            },
+            {
+              "id": "q-ss5-fa-003",
+              "type": "multiple_choice",
+              "prompt": "The Eastern Woodland tribes (like the Iroquois) often lived in:",
+              "choices": [
+                "Igloos made of ice",
+                "Longhouses made of wood and bark, in fortified villages",
+                "Tipis they took down each day",
+                "Skyscrapers"
+              ],
+              "answer": "Longhouses made of wood and bark, in fortified villages",
+              "correctIndex": 1,
+              "explanation": "Eastern Woodland tribes built longhouses — long bark-covered wooden buildings where extended families lived. The Iroquois Confederacy was a powerful alliance of five tribes (later six) in present-day New York."
+            },
+            {
+              "id": "q-ss5-fa-004",
+              "type": "multiple_choice",
+              "prompt": "The \"Three Sisters\" planted together by many Native American farmers were:",
+              "choices": [
+                "Corn, beans, and squash",
+                "Wheat, rye, and oats",
+                "Tomatoes, potatoes, and onions",
+                "Apples, peaches, and pears"
+              ],
+              "answer": "Corn, beans, and squash",
+              "correctIndex": 0,
+              "explanation": "Corn, beans, and squash were grown together in the same mound because they help each other: corn provides a stalk for beans to climb, beans add nitrogen to the soil, and squash leaves shade the ground (keeping moisture in). This was one of the most successful farming systems in the world."
+            },
+            {
+              "id": "q-ss5-fa-005",
+              "type": "multiple_choice",
+              "prompt": "Roughly how long had Native Americans been living in the Americas before Europeans arrived?",
+              "choices": [
+                "A few hundred years",
+                "About a thousand years",
+                "Tens of thousands of years",
+                "Just a few decades"
+              ],
+              "answer": "Tens of thousands of years",
+              "correctIndex": 2,
+              "explanation": "Native peoples had lived in the Americas for at least 15,000 years before Columbus arrived in 1492 — vastly longer than Europeans had been in Europe. During that time they developed hundreds of distinct languages, cultures, and complex societies (Maya, Aztec, Inca, Mississippian, and many more)."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "colonization",
+      "title": "European Exploration & Colonization",
+      "strand": "history",
+      "lessons": [
+        {
+          "id": "exploration-colonies",
+          "teks": "5.2A",
+          "title": "Columbus, Colonization & Early America",
+          "objective": "Identify key explorers and the founding of the 13 colonies.",
+          "questions": [
+            {
+              "id": "q-ss5-col-001",
+              "type": "multiple_choice",
+              "prompt": "Christopher Columbus's voyages (starting 1492) led to:",
+              "choices": [
+                "The discovery of an empty continent",
+                "European contact with peoples and lands they hadn't known about — beginning centuries of exploration, colonization, and cultural exchange (and conflict)",
+                "Native Americans visiting Europe first",
+                "The end of all Native American cultures within a year"
+              ],
+              "answer": "European contact with peoples and lands they hadn't known about — beginning centuries of exploration, colonization, and cultural exchange (and conflict)",
+              "correctIndex": 1,
+              "explanation": "Columbus didn't discover an empty land — millions of people already lived in the Americas. But his voyages connected the \"Old World\" (Europe, Asia, Africa) with the \"New World\" (Americas), starting a massive exchange of plants, animals, diseases, and people known as the Columbian Exchange — with huge consequences for both worlds."
+            },
+            {
+              "id": "q-ss5-col-002",
+              "type": "multiple_choice",
+              "prompt": "Why were European diseases SO deadly to Native Americans in the 1500s?",
+              "choices": [
+                "Native Americans had no immune systems",
+                "Native Americans had no resistance to European diseases like smallpox because they had never been exposed before",
+                "The diseases were created in labs",
+                "Diseases were not actually deadly"
+              ],
+              "answer": "Native Americans had no resistance to European diseases like smallpox because they had never been exposed before",
+              "correctIndex": 1,
+              "explanation": "Smallpox, measles, and other diseases that Europeans carried killed up to 90% of Native populations in some regions. Native immune systems had never encountered these diseases. This catastrophe — alongside warfare and forced labor — collapsed many Native societies."
+            },
+            {
+              "id": "q-ss5-col-003",
+              "type": "multiple_choice",
+              "prompt": "The 13 English colonies were divided into three regions. Which region was known for big plantations growing cash crops like tobacco and rice?",
+              "choices": ["New England", "Middle Colonies", "Southern Colonies", "Western Colonies"],
+              "answer": "Southern Colonies",
+              "correctIndex": 2,
+              "explanation": "The Southern Colonies (Virginia, Maryland, the Carolinas, Georgia) had warm climates and fertile soil ideal for tobacco, rice, indigo, and later cotton. These plantations expanded the brutal system of slavery."
+            },
+            {
+              "id": "q-ss5-col-004",
+              "type": "multiple_choice",
+              "prompt": "The Pilgrims sailed to America on which ship in 1620?",
+              "choices": ["Mayflower", "Niña", "Pinta", "Santa María"],
+              "answer": "Mayflower",
+              "correctIndex": 0,
+              "explanation": "The Pilgrims left England (via the Netherlands) on the Mayflower, seeking religious freedom. They landed at Plymouth, Massachusetts, in November 1620 and signed the Mayflower Compact — an early example of self-government."
+            },
+            {
+              "id": "q-ss5-col-005",
+              "type": "multiple_choice",
+              "prompt": "The first Thanksgiving (1621) was a harvest celebration between:",
+              "choices": [
+                "Pilgrims and Wampanoag people, who had helped the Pilgrims survive their first year",
+                "Pilgrims and the British Army",
+                "Spanish explorers and the Aztecs",
+                "Vikings and the French"
+              ],
+              "answer": "Pilgrims and Wampanoag people, who had helped the Pilgrims survive their first year",
+              "correctIndex": 0,
+              "explanation": "Without help from the Wampanoag — especially Squanto, who taught them how to plant corn — half the Pilgrims who came on the Mayflower died in their first winter. The 1621 harvest feast was shared with about 90 Wampanoag, and is the basis for the American Thanksgiving holiday."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "american-revolution",
+      "title": "American Revolution",
+      "strand": "history",
+      "lessons": [
+        {
+          "id": "revolution-founding",
+          "teks": "5.4A",
+          "title": "Revolution, Independence & Founding Documents",
+          "objective": "Identify key events and documents of the American Revolution.",
+          "questions": [
+            {
+              "id": "q-ss5-rev-001",
+              "type": "multiple_choice",
+              "prompt": "The Boston Tea Party (1773) was a protest by colonists against:",
+              "choices": [
+                "Drinking too much coffee",
+                "British taxes on tea — colonists dumped 342 chests of tea into Boston Harbor",
+                "Tea growing in America",
+                "King George visiting Boston"
+              ],
+              "answer": "British taxes on tea — colonists dumped 342 chests of tea into Boston Harbor",
+              "correctIndex": 1,
+              "explanation": "Disguised as Mohawk Indians, about 60 colonists boarded three ships and dumped £10,000 worth of British tea into Boston Harbor. They were protesting the Tea Act, which they saw as taxation without representation. Britain responded harshly — which only united the colonies more."
+            },
+            {
+              "id": "q-ss5-rev-002",
+              "type": "multiple_choice",
+              "prompt": "The Declaration of Independence was adopted on:",
+              "choices": ["July 4, 1776", "June 6, 1944", "December 7, 1941", "October 12, 1492"],
+              "answer": "July 4, 1776",
+              "correctIndex": 0,
+              "explanation": "The Continental Congress adopted the Declaration of Independence on July 4, 1776 — declaring the 13 colonies free and independent from Britain. That's why Americans celebrate Independence Day every July 4th."
+            },
+            {
+              "id": "q-ss5-rev-003",
+              "type": "multiple_choice",
+              "prompt": "Who was the commander of the Continental Army during the Revolutionary War — and later became the first U.S. President?",
+              "choices": ["Benjamin Franklin", "Thomas Jefferson", "George Washington", "John Hancock"],
+              "answer": "George Washington",
+              "correctIndex": 2,
+              "explanation": "Washington led the Continental Army through the long, often desperate war — including the famous winter at Valley Forge. After victory, he was unanimously elected the first U.S. president in 1789, setting precedents that shaped the office to this day."
+            },
+            {
+              "id": "q-ss5-rev-004",
+              "type": "multiple_choice",
+              "prompt": "Why was the Battle of Saratoga (1777) a turning point in the Revolution?",
+              "choices": [
+                "It was the largest battle of the war",
+                "American victory there convinced France to officially ally with the United States, providing money, soldiers, and a navy",
+                "It ended the war immediately",
+                "It happened in Canada"
+              ],
+              "answer": "American victory there convinced France to officially ally with the United States, providing money, soldiers, and a navy",
+              "correctIndex": 1,
+              "explanation": "Before Saratoga, France had quietly helped the Americans. After Saratoga proved Americans could beat the British, France openly allied — sending troops, ships, and a fleet that proved decisive at the Battle of Yorktown (1781), the war's final major engagement."
+            },
+            {
+              "id": "q-ss5-rev-005",
+              "type": "multiple_choice",
+              "prompt": "The U.S. Constitution, ratified in 1788, replaced what earlier governing document?",
+              "choices": [
+                "The Mayflower Compact",
+                "The Articles of Confederation",
+                "The Bill of Rights",
+                "The Magna Carta"
+              ],
+              "answer": "The Articles of Confederation",
+              "correctIndex": 1,
+              "explanation": "The Articles of Confederation (1781) was the first U.S. constitution, but it made the central government too weak. After several crises showed the system wasn't working, delegates met at the Constitutional Convention in 1787 and wrote the U.S. Constitution we still use today."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "westward-expansion",
+      "title": "Westward Expansion",
+      "strand": "history",
+      "lessons": [
+        {
+          "id": "moving-west",
+          "teks": "5.5A",
+          "title": "Louisiana Purchase, Oregon Trail & Manifest Destiny",
+          "objective": "Identify major events and consequences of westward expansion.",
+          "questions": [
+            {
+              "id": "q-ss5-we-001",
+              "type": "multiple_choice",
+              "prompt": "Thomas Jefferson's Louisiana Purchase (1803) from France:",
+              "choices": [
+                "Doubled the size of the United States for about 3 cents an acre",
+                "Cost a billion dollars",
+                "Was rejected by Congress",
+                "Was returned to France a year later"
+              ],
+              "answer": "Doubled the size of the United States for about 3 cents an acre",
+              "correctIndex": 0,
+              "explanation": "Jefferson bought 828,000 square miles for $15 million — roughly 3 cents per acre, one of the best real-estate deals in history. The territory included parts of 15 future U.S. states from Louisiana to Montana."
+            },
+            {
+              "id": "q-ss5-we-002",
+              "type": "multiple_choice",
+              "prompt": "Lewis and Clark led an expedition (1804-1806) to:",
+              "choices": [
+                "Find a Northwest Passage to Asia",
+                "Explore the Louisiana Purchase, map the land, study plants and animals, and reach the Pacific Ocean",
+                "Defeat the British army",
+                "Build a railroad to California"
+              ],
+              "answer": "Explore the Louisiana Purchase, map the land, study plants and animals, and reach the Pacific Ocean",
+              "correctIndex": 1,
+              "explanation": "Jefferson sent Meriwether Lewis and William Clark west to map the new territory and find a route to the Pacific. They were guided crucially by Sacagawea, a Shoshone woman who helped them navigate and translate. The journey produced enormous knowledge about western lands and peoples."
+            },
+            {
+              "id": "q-ss5-we-003",
+              "type": "multiple_choice",
+              "prompt": "The Oregon Trail, used by settlers from the 1840s through the 1880s, ran roughly from:",
+              "choices": [
+                "Boston to New York",
+                "Independence, Missouri to the Oregon Country (around 2,000 miles)",
+                "Mexico to Canada",
+                "Florida to California"
+              ],
+              "answer": "Independence, Missouri to the Oregon Country (around 2,000 miles)",
+              "correctIndex": 1,
+              "explanation": "About 400,000 settlers walked or rode wagons along the Oregon Trail from Missouri to the Pacific Northwest — a journey of about 2,000 miles that took 4-6 months. Many died from disease, accidents, and the difficult terrain."
+            },
+            {
+              "id": "q-ss5-we-004",
+              "type": "multiple_choice",
+              "prompt": "The California Gold Rush (1849) caused:",
+              "choices": [
+                "California's population to grow rapidly as people came seeking gold — leading to California becoming a state in 1850",
+                "Gold to disappear from California",
+                "The end of immigration to America",
+                "The fall of the U.S. dollar"
+              ],
+              "answer": "California's population to grow rapidly as people came seeking gold — leading to California becoming a state in 1850",
+              "correctIndex": 0,
+              "explanation": "When gold was found at Sutter's Mill in 1848, hundreds of thousands of \"forty-niners\" rushed to California. The territory's population exploded — and California was admitted as the 31st state in 1850, becoming the first state west of the Rockies."
+            },
+            {
+              "id": "q-ss5-we-005",
+              "type": "multiple_choice",
+              "prompt": "Westward expansion brought devastating consequences for:",
+              "choices": [
+                "Native Americans, who were forced from their lands, suffered diseases, and saw their populations and cultures collapse",
+                "The U.S. economy, which crashed",
+                "European countries, which lost territory",
+                "Mexico, which gained land"
+              ],
+              "answer": "Native Americans, who were forced from their lands, suffered diseases, and saw their populations and cultures collapse",
+              "correctIndex": 0,
+              "explanation": "As settlers moved west, the U.S. government forced Native tribes off ancestral lands (the Trail of Tears, Indian Removal Act, reservation system). Buffalo populations were nearly wiped out, destroying Plains cultures. Disease, warfare, and broken treaties devastated Native populations across the continent."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "civil-war-era",
+      "title": "Civil War & After",
+      "strand": "history",
+      "lessons": [
+        {
+          "id": "north-south-civil-war",
+          "teks": "5.6A",
+          "title": "Slavery, Civil War & Reconstruction",
+          "objective": "Identify the causes, key events, and aftermath of the Civil War.",
+          "questions": [
+            {
+              "id": "q-ss5-cw-001",
+              "type": "multiple_choice",
+              "prompt": "The MAIN cause of the Civil War was:",
+              "choices": [
+                "Disagreement about taxes",
+                "Slavery — the South wanted to keep and expand it; many in the North wanted to limit or end it",
+                "Border disputes with Mexico",
+                "Religious differences"
+              ],
+              "answer": "Slavery — the South wanted to keep and expand it; many in the North wanted to limit or end it",
+              "correctIndex": 1,
+              "explanation": "Slavery was the central cause. Southern economy and society were built on enslaved labor. When Lincoln's election in 1860 signaled the federal government would limit slavery's expansion, Southern states seceded. The Confederate states' own declarations of secession explicitly cited slavery as the reason."
+            },
+            {
+              "id": "q-ss5-cw-002",
+              "type": "multiple_choice",
+              "prompt": "Abraham Lincoln, the U.S. President during the Civil War, is most famous for:",
+              "choices": [
+                "Building the railroads",
+                "Issuing the Emancipation Proclamation and preserving the Union",
+                "Discovering electricity",
+                "Defeating Mexico"
+              ],
+              "answer": "Issuing the Emancipation Proclamation and preserving the Union",
+              "correctIndex": 1,
+              "explanation": "Lincoln led the country through its darkest crisis. His Emancipation Proclamation (1863) declared enslaved people in Confederate areas free, and the war he led preserved the Union. He was assassinated in April 1865, just days after the war ended."
+            },
+            {
+              "id": "q-ss5-cw-003",
+              "type": "multiple_choice",
+              "prompt": "Juneteenth (June 19) commemorates:",
+              "choices": [
+                "The day enslaved people in Texas learned they were free, in 1865",
+                "The day the Civil War started",
+                "Independence Day",
+                "The day Lincoln was elected"
+              ],
+              "answer": "The day enslaved people in Texas learned they were free, in 1865",
+              "correctIndex": 0,
+              "explanation": "On June 19, 1865, federal troops arrived in Galveston, Texas, and announced that all enslaved people in the state were free — over two years after the Emancipation Proclamation. Juneteenth (\"June\" + \"Nineteenth\") has been celebrated ever since; it became a U.S. federal holiday in 2021."
+            },
+            {
+              "id": "q-ss5-cw-004",
+              "type": "multiple_choice",
+              "prompt": "The 13th Amendment to the U.S. Constitution (1865):",
+              "choices": [
+                "Gave women the right to vote",
+                "Abolished slavery in the United States",
+                "Created the Federal Reserve",
+                "Established income tax"
+              ],
+              "answer": "Abolished slavery in the United States",
+              "correctIndex": 1,
+              "explanation": "The 13th Amendment, ratified at the end of 1865, abolished slavery throughout the United States — making the Emancipation Proclamation's freedom permanent and applying it to every state, not just the former Confederacy."
+            },
+            {
+              "id": "q-ss5-cw-005",
+              "type": "multiple_choice",
+              "prompt": "After the Civil War, Reconstruction (1865-1877) tried to:",
+              "choices": [
+                "Rebuild the South and integrate newly freed Black Americans into society as citizens with full rights",
+                "Send the Confederacy back into the Union by force",
+                "Make slavery legal again",
+                "Move the capital to Atlanta"
+              ],
+              "answer": "Rebuild the South and integrate newly freed Black Americans into society as citizens with full rights",
+              "correctIndex": 0,
+              "explanation": "Reconstruction was a 12-year effort to repair the South, give former enslaved people citizenship and voting rights, and rebuild the country. It achieved important constitutional amendments (13th, 14th, 15th) but ended without finishing — leaving many rights unenforced until the 20th-century Civil Rights Movement."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "modern-america",
+      "title": "Modern America (Survey)",
+      "strand": "history",
+      "lessons": [
+        {
+          "id": "twentieth-century",
+          "teks": "5.8A",
+          "title": "Industrial America, World Wars & Civil Rights",
+          "objective": "Identify major 20th-century developments at a survey level.",
+          "questions": [
+            {
+              "id": "q-ss5-mod-001",
+              "type": "multiple_choice",
+              "prompt": "The late 1800s and early 1900s saw the U.S. become an industrial nation. Which invention transformed American work and life?",
+              "choices": [
+                "The smartphone",
+                "Electricity, the automobile, and the airplane (all invented or popularized in this era)",
+                "The lightbulb only",
+                "Sliced bread"
+              ],
+              "answer": "Electricity, the automobile, and the airplane (all invented or popularized in this era)",
+              "correctIndex": 1,
+              "explanation": "Edison's lightbulb (1879), Ford's affordable Model T car (1908), and the Wright Brothers' first powered flight (1903) all came during this transformative period. Cities grew, factories multiplied, and the economy shifted from farming to industry."
+            },
+            {
+              "id": "q-ss5-mod-002",
+              "type": "multiple_choice",
+              "prompt": "World War II (1939-1945) ended when:",
+              "choices": [
+                "Germany surrendered in May 1945, and Japan surrendered in August 1945 after atomic bombs were dropped on Hiroshima and Nagasaki",
+                "Britain conquered Germany",
+                "Russia declared peace",
+                "France gave up Paris"
+              ],
+              "answer": "Germany surrendered in May 1945, and Japan surrendered in August 1945 after atomic bombs were dropped on Hiroshima and Nagasaki",
+              "correctIndex": 0,
+              "explanation": "WWII ended in two phases: Germany surrendered in May 1945 (\"V-E Day\" — Victory in Europe). Japan held out, but surrendered in August 1945 after the U.S. dropped atomic bombs on Hiroshima and Nagasaki. The war killed over 60 million people worldwide — the deadliest conflict in history."
+            },
+            {
+              "id": "q-ss5-mod-003",
+              "type": "multiple_choice",
+              "prompt": "Dr. Martin Luther King Jr. led which major American movement?",
+              "choices": [
+                "The women's suffrage movement",
+                "The Civil Rights Movement of the 1950s-1960s, using nonviolent protest to fight racial segregation",
+                "The labor union movement of the 1880s",
+                "The temperance movement"
+              ],
+              "answer": "The Civil Rights Movement of the 1950s-1960s, using nonviolent protest to fight racial segregation",
+              "correctIndex": 1,
+              "explanation": "Inspired by Mahatma Gandhi, Dr. King led nonviolent protests — marches, boycotts, sit-ins — to challenge Jim Crow segregation. His leadership helped pass the Civil Rights Act (1964) and the Voting Rights Act (1965). He was assassinated in 1968."
+            },
+            {
+              "id": "q-ss5-mod-004",
+              "type": "multiple_choice",
+              "prompt": "The 19th Amendment (1920) gave the right to vote to:",
+              "choices": [
+                "Black men",
+                "Women",
+                "18-year-olds",
+                "Foreign-born Americans"
+              ],
+              "answer": "Women",
+              "correctIndex": 1,
+              "explanation": "After a 70-year campaign by suffragists like Susan B. Anthony and Elizabeth Cady Stanton, the 19th Amendment guaranteed women the right to vote in all U.S. elections. (Black men had won voting rights with the 15th Amendment in 1870, though many states blocked their voting until the 1960s.)"
+            },
+            {
+              "id": "q-ss5-mod-005",
+              "type": "multiple_choice",
+              "prompt": "The United States landed astronauts on the Moon for the first time in:",
+              "choices": ["1945", "1969", "1989", "2001"],
+              "answer": "1969",
+              "correctIndex": 1,
+              "explanation": "On July 20, 1969, Apollo 11 astronauts Neil Armstrong and Buzz Aldrin became the first humans to walk on the Moon. Armstrong's words — \"That's one small step for man, one giant leap for mankind\" — are among the most famous in history. Houston's Johnson Space Center was Mission Control."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

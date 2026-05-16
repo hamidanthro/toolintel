@@ -1,0 +1,496 @@
+{
+  "subject": "social-studies",
+  "grade": "grade-7",
+  "state": "texas",
+  "title": "Grade 7 Social Studies — Texas History (Deep Dive)",
+  "description": "Texas Grade 7 SS follows TEKS §113.19 — Texas History with analytical depth. Six core strands: Pre-Columbian to Spanish era, Mexican Texas to Revolution, Republic & Annexation, Civil War & Reconstruction, Industrial era (cattle/oil), Modern era & Texas economy. Authored 2026-05-17.",
+  "version": 1,
+  "_meta": {
+    "author": "GradeEarn",
+    "built": "2026-05-17",
+    "schema": "math-curriculum-compatible",
+    "questionCount": 30
+  },
+  "units": [
+    {
+      "id": "early-texas",
+      "title": "Pre-Columbian to Spanish Texas",
+      "strand": "history",
+      "lessons": [
+        {
+          "id": "first-peoples-spanish",
+          "teks": "7.1A",
+          "title": "Indigenous Texas & Spanish Conquest",
+          "objective": "Analyze Texas's earliest cultures and Spanish colonization.",
+          "questions": [
+            {
+              "id": "q-ss7-er-001",
+              "type": "multiple_choice",
+              "prompt": "Which Spanish explorer was shipwrecked on the Texas coast in 1528 and spent 8 years living with and being enslaved by Native groups before returning to Mexico?",
+              "choices": ["Hernán Cortés", "Álvar Núñez Cabeza de Vaca", "Francisco Coronado", "Juan Ponce de León"],
+              "answer": "Álvar Núñez Cabeza de Vaca",
+              "correctIndex": 1,
+              "explanation": "Cabeza de Vaca was shipwrecked near Galveston in 1528. He spent 8 years walking across what is now the southwestern United States and Mexico. His written account is the first European description of Texas."
+            },
+            {
+              "id": "q-ss7-er-002",
+              "type": "multiple_choice",
+              "prompt": "The Caddo Confederacy in East Texas had a complex society. Which of these is NOT true about the Caddo?",
+              "choices": [
+                "They were skilled farmers who grew corn, beans, and squash",
+                "They built mounds and lived in permanent villages",
+                "They traded extensively with other Native groups",
+                "They were nomadic and rarely settled in one place"
+              ],
+              "answer": "They were nomadic and rarely settled in one place",
+              "correctIndex": 3,
+              "explanation": "The Caddo were the opposite of nomadic — they were SETTLED farmers who built permanent grass-roofed houses, ceremonial mounds, and complex trade networks. Their society had clear social classes and leaders called caddis."
+            },
+            {
+              "id": "q-ss7-er-003",
+              "type": "multiple_choice",
+              "prompt": "Why did Spain build missions and presidios in Texas in the 1700s?",
+              "choices": [
+                "To extract gold and silver from Texas",
+                "To spread Catholicism, claim land, and defend against French expansion from Louisiana",
+                "To establish trade with the Comanche only",
+                "To build a transcontinental railroad"
+              ],
+              "answer": "To spread Catholicism, claim land, and defend against French expansion from Louisiana",
+              "correctIndex": 1,
+              "explanation": "Spain had three goals: spread Catholic Christianity through missions, claim and hold Texas territory, and block France (which controlled Louisiana). Missions were religious settlements; presidios were nearby military forts protecting them."
+            },
+            {
+              "id": "q-ss7-er-004",
+              "type": "multiple_choice",
+              "prompt": "Mission San Antonio de Valero, founded in 1718, is better known today by what name?",
+              "choices": ["The Alamo", "San José", "Espíritu Santo", "Concepción"],
+              "answer": "The Alamo",
+              "correctIndex": 0,
+              "explanation": "Mission San Antonio de Valero was founded in 1718. Spanish soldiers later nicknamed it \"el Alamo\" (Spanish for \"cottonwood,\" after a grove of trees nearby). It became the famous battle site in 1836."
+            },
+            {
+              "id": "q-ss7-er-005",
+              "type": "multiple_choice",
+              "prompt": "The Spanish mission system in Texas largely failed because:",
+              "choices": [
+                "Spain lost interest in Texas",
+                "Diseases, conflicts with Native groups, and limited resources made missions hard to sustain",
+                "Texas had no fertile land",
+                "The Mexican government banned them"
+              ],
+              "answer": "Diseases, conflicts with Native groups, and limited resources made missions hard to sustain",
+              "correctIndex": 1,
+              "explanation": "European diseases killed many Native Americans the missions tried to convert. The Comanche and Apache resisted Spanish expansion. Spain didn't send enough soldiers, money, or settlers. Most Texas missions were closed by the early 1800s."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mexican-texas-revolution",
+      "title": "Mexican Texas & the Revolution",
+      "strand": "history",
+      "lessons": [
+        {
+          "id": "austin-to-jacinto",
+          "teks": "7.3A",
+          "title": "From Austin's Colony to San Jacinto",
+          "objective": "Trace the causes and key events of the Texas Revolution.",
+          "questions": [
+            {
+              "id": "q-ss7-rev-001",
+              "type": "multiple_choice",
+              "prompt": "Stephen F. Austin's first colony of 300 American families had to agree to which Mexican requirements?",
+              "choices": [
+                "Speak only Spanish at all times",
+                "Become Mexican citizens, convert to Catholicism, and obey Mexican laws",
+                "Pay Mexico 50% of all crops grown",
+                "Move every two years"
+              ],
+              "answer": "Become Mexican citizens, convert to Catholicism, and obey Mexican laws",
+              "correctIndex": 1,
+              "explanation": "Mexico's empresario system required settlers to become Mexican citizens, convert to Catholicism (officially), and follow Mexican law. In exchange, settlers got large amounts of cheap land. Many colonists honored these rules loosely, which created tension with Mexico."
+            },
+            {
+              "id": "q-ss7-rev-002",
+              "type": "multiple_choice",
+              "prompt": "What single 1830 Mexican law CAUSED much of the tension that led to the Texas Revolution?",
+              "choices": [
+                "The Law of April 6, 1830, which banned further immigration from the United States and increased taxes",
+                "A law requiring Texans to speak only French",
+                "A law dividing Texas into 100 small states",
+                "A law that gave all land back to the Comanche"
+              ],
+              "answer": "The Law of April 6, 1830, which banned further immigration from the United States and increased taxes",
+              "correctIndex": 0,
+              "explanation": "The Law of April 6, 1830 stopped legal U.S. immigration to Texas, put new soldiers in Texas, and raised customs duties. It made many Anglo-Texans feel Mexico had broken its bargain — a key cause of growing rebellion."
+            },
+            {
+              "id": "q-ss7-rev-003",
+              "type": "multiple_choice",
+              "prompt": "The \"Come and Take It\" flag, raised at Gonzales in October 1835, marks the start of:",
+              "choices": [
+                "The Mexican-American War",
+                "The Texas Revolution",
+                "The Civil War in Texas",
+                "World War I"
+              ],
+              "answer": "The Texas Revolution",
+              "correctIndex": 1,
+              "explanation": "The Battle of Gonzales (October 2, 1835) was the FIRST armed clash of the Texas Revolution. Mexican soldiers came to take back a cannon Mexico had loaned the town; the townspeople raised a flag showing the cannon with the words \"Come and Take It\" — and won the small skirmish."
+            },
+            {
+              "id": "q-ss7-rev-004",
+              "type": "multiple_choice",
+              "prompt": "Why did the Battle of the Alamo, despite being a Mexican military victory, ultimately help the Texas cause?",
+              "choices": [
+                "It gave Sam Houston time to organize the Texas army and rally support",
+                "It killed Santa Anna",
+                "It convinced Mexico to give up immediately",
+                "It captured Mexico City"
+              ],
+              "answer": "It gave Sam Houston time to organize the Texas army and rally support",
+              "correctIndex": 0,
+              "explanation": "The 13-day siege of the Alamo (Feb-March 1836) bought Sam Houston critical time to train soldiers, gather supplies, and rally support. The defenders' sacrifice also created the rallying cry \"Remember the Alamo!\" that motivated the Texan army to victory at San Jacinto six weeks later."
+            },
+            {
+              "id": "q-ss7-rev-005",
+              "type": "multiple_choice",
+              "prompt": "The Battle of San Jacinto on April 21, 1836, lasted about how long?",
+              "choices": ["3 days", "Several hours", "Roughly 18 minutes", "Six weeks"],
+              "answer": "Roughly 18 minutes",
+              "correctIndex": 2,
+              "explanation": "The actual battle lasted only about 18 minutes (followed by hours of cleanup). Sam Houston's surprise attack during the Mexican army's afternoon rest period was so effective that Santa Anna's army of 1,400 was destroyed or captured. Santa Anna was caught the next day."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "republic-annexation",
+      "title": "Republic of Texas & Annexation",
+      "strand": "history",
+      "lessons": [
+        {
+          "id": "ten-year-republic",
+          "teks": "7.4A",
+          "title": "Texas as a Republic, then a State",
+          "objective": "Analyze the challenges of the Republic of Texas and the path to U.S. statehood.",
+          "questions": [
+            {
+              "id": "q-ss7-rep-001",
+              "type": "multiple_choice",
+              "prompt": "Why did many Texans want the United States to annex (take in) Texas right after independence in 1836?",
+              "choices": [
+                "Texas had massive debts and frequent fights with Mexico — joining the U.S. promised protection and stability",
+                "Texas wanted to become a French territory",
+                "The Republic of Texas had no flag",
+                "Texas was running out of land"
+              ],
+              "answer": "Texas had massive debts and frequent fights with Mexico — joining the U.S. promised protection and stability",
+              "correctIndex": 0,
+              "explanation": "The Republic of Texas was deeply in debt, threatened by Mexico (which never recognized Texas independence), and struggled to fund a working government. Annexation by the U.S. promised debt relief, military protection, and access to U.S. markets."
+            },
+            {
+              "id": "q-ss7-rep-002",
+              "type": "multiple_choice",
+              "prompt": "U.S. annexation of Texas was DELAYED for nine years (1836-1845) mostly because:",
+              "choices": [
+                "Texas refused to join",
+                "Adding Texas as a slave state would upset the balance with free states, and it risked war with Mexico",
+                "Mexico had already given Texas back to Spain",
+                "Britain had occupied Texas"
+              ],
+              "answer": "Adding Texas as a slave state would upset the balance with free states, and it risked war with Mexico",
+              "correctIndex": 1,
+              "explanation": "Two big obstacles delayed Texas annexation: (1) Texas allowed slavery, so adding it would shift the balance in Congress between slave and free states; and (2) Mexico had warned that annexation would mean war. Both fears were realized in 1846 when the Mexican-American War began."
+            },
+            {
+              "id": "q-ss7-rep-003",
+              "type": "multiple_choice",
+              "prompt": "Which war broke out almost immediately after Texas became a U.S. state in 1845?",
+              "choices": ["The Civil War", "The Mexican-American War", "The Spanish-American War", "The War of 1812"],
+              "answer": "The Mexican-American War",
+              "correctIndex": 1,
+              "explanation": "The Mexican-American War (1846-1848) started over disputes about the U.S.-Mexico border after Texas joined the U.S. Mexico still considered Texas part of Mexico. The U.S. won, and the Treaty of Guadalupe Hidalgo gave the U.S. huge new territory including California, Arizona, New Mexico, and more."
+            },
+            {
+              "id": "q-ss7-rep-004",
+              "type": "multiple_choice",
+              "prompt": "Mirabeau Lamar, the second president of the Republic of Texas, is most associated with:",
+              "choices": [
+                "Making Spanish the only language of Texas",
+                "Founding a public education system and making Austin the capital",
+                "Allying with Mexico",
+                "Banning all newspapers"
+              ],
+              "answer": "Founding a public education system and making Austin the capital",
+              "correctIndex": 1,
+              "explanation": "Lamar (president 1838-1841) set aside land for public schools, which is why he's sometimes called the \"Father of Texas Education.\" He also moved the capital to the small town of Waterloo and renamed it Austin. His policies toward Native Americans were harsh and led to the forced removal of the Cherokee from East Texas."
+            },
+            {
+              "id": "q-ss7-rep-005",
+              "type": "multiple_choice",
+              "prompt": "Sam Houston's relationship with the U.S. government before he became Texas president included:",
+              "choices": [
+                "He never lived outside Texas",
+                "He served as governor of Tennessee and as a U.S. Congressman before coming to Texas",
+                "He was born in Mexico",
+                "He never met any U.S. presidents"
+              ],
+              "answer": "He served as governor of Tennessee and as a U.S. Congressman before coming to Texas",
+              "correctIndex": 1,
+              "explanation": "Sam Houston had a remarkable career: U.S. Congressman from Tennessee, governor of Tennessee, then moved to Texas, became the hero of San Jacinto, twice president of the Republic of Texas, U.S. Senator from Texas, AND governor of Texas. Few Americans served in more leadership roles."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "civil-war-reconstruction",
+      "title": "Texas in the Civil War & Reconstruction",
+      "strand": "history",
+      "lessons": [
+        {
+          "id": "secession-rebuilding",
+          "teks": "7.5A",
+          "title": "Secession, Civil War & Reconstruction in Texas",
+          "objective": "Analyze Texas's role in the Civil War and the Reconstruction era.",
+          "questions": [
+            {
+              "id": "q-ss7-cw-001",
+              "type": "multiple_choice",
+              "prompt": "Texas voted to secede from the United States in February 1861. The main reason was:",
+              "choices": [
+                "Disagreement over the protection and expansion of slavery, plus broader states'-rights conflicts",
+                "Mexico had invaded again",
+                "Britain offered Texas a better deal",
+                "The Texas legislature wanted to rejoin Mexico"
+              ],
+              "answer": "Disagreement over the protection and expansion of slavery, plus broader states'-rights conflicts",
+              "correctIndex": 0,
+              "explanation": "Texas's official Declaration of Causes of Secession (Feb 1861) explicitly cited the protection of slavery and disagreements with the federal government's stance on slavery as the main reasons. States' rights conflicts and economic disagreements also played a role."
+            },
+            {
+              "id": "q-ss7-cw-002",
+              "type": "multiple_choice",
+              "prompt": "Sam Houston, who was governor of Texas in 1861, took what action when Texas voted to secede?",
+              "choices": [
+                "He celebrated and led the Confederate Texas army",
+                "He refused to take the oath of loyalty to the Confederacy and was removed from office",
+                "He moved to Mexico",
+                "He immediately joined the Union army"
+              ],
+              "answer": "He refused to take the oath of loyalty to the Confederacy and was removed from office",
+              "correctIndex": 1,
+              "explanation": "Sam Houston opposed secession — he believed it would destroy Texas. When the Texas legislature required all officials to swear loyalty to the Confederacy, Houston refused. He was removed from the governorship and died in Huntsville in 1863 before the war ended."
+            },
+            {
+              "id": "q-ss7-cw-003",
+              "type": "multiple_choice",
+              "prompt": "Most Civil War battles fought ON Texas soil were:",
+              "choices": [
+                "Massive battles with tens of thousands of soldiers",
+                "Relatively small clashes, since most of the war was fought east of the Mississippi",
+                "Fought between Texas and Mexico",
+                "Naval battles in the Pacific"
+              ],
+              "answer": "Relatively small clashes, since most of the war was fought east of the Mississippi",
+              "correctIndex": 1,
+              "explanation": "Most major Civil War battles happened in Virginia, Tennessee, Mississippi, and Georgia. Texas saw smaller engagements (like the Battle of Galveston). Interestingly, the last battle of the Civil War — Palmito Ranch in May 1865 — was fought in Texas, more than a month AFTER the official surrender."
+            },
+            {
+              "id": "q-ss7-cw-004",
+              "type": "multiple_choice",
+              "prompt": "Why did the news that enslaved people were free not reach Texas until June 19, 1865 — over two years after the Emancipation Proclamation?",
+              "choices": [
+                "Telegraphs were broken",
+                "Texas was the most western Confederate state, federal troops did not arrive to enforce the order until June 1865",
+                "Texas had no enslaved people before that date",
+                "Lincoln canceled the proclamation"
+              ],
+              "answer": "Texas was the most western Confederate state, federal troops did not arrive to enforce the order until June 1865",
+              "correctIndex": 1,
+              "explanation": "The Emancipation Proclamation only freed enslaved people in CONFEDERATE-held areas, and only when Union troops arrived to enforce it. Texas was the westernmost Confederate state with the fewest Union troops. General Granger arrived in Galveston June 19, 1865 — that's the day we commemorate as Juneteenth."
+            },
+            {
+              "id": "q-ss7-cw-005",
+              "type": "multiple_choice",
+              "prompt": "During Reconstruction (1865-1877), what major change to Texas law and government occurred?",
+              "choices": [
+                "Texas became part of Mexico again",
+                "A new state constitution was written that, among other things, allowed Black men to vote and serve in office",
+                "All Texans were required to move out of the state",
+                "Texas split into four smaller states"
+              ],
+              "answer": "A new state constitution was written that, among other things, allowed Black men to vote and serve in office",
+              "correctIndex": 1,
+              "explanation": "Reconstruction-era constitutions (the 13th, 14th, and 15th Amendments to the U.S. Constitution and Texas's 1869 constitution) extended voting rights to Black men and required equal protection under law. Many Black Texans served in the legislature during this period. After Reconstruction ended in 1877, many of these gains were rolled back by Jim Crow laws."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "industrial-texas",
+      "title": "Cattle, Oil & Industrial Texas",
+      "strand": "history",
+      "lessons": [
+        {
+          "id": "cattle-oil-railroads",
+          "teks": "7.7A",
+          "title": "Cattle Kingdom, Oil Boom & Railroads",
+          "objective": "Analyze the economic transformations of Texas from 1870 to 1930.",
+          "questions": [
+            {
+              "id": "q-ss7-ind-001",
+              "type": "multiple_choice",
+              "prompt": "The era of the great Texas cattle drives (roughly 1866-1885) ended because:",
+              "choices": [
+                "Cattle went extinct",
+                "Railroads reached deep into Texas, making long drives unnecessary, and barbed wire fenced off the open range",
+                "Cowboys went on strike",
+                "Mexico banned Texas cattle"
+              ],
+              "answer": "Railroads reached deep into Texas, making long drives unnecessary, and barbed wire fenced off the open range",
+              "correctIndex": 1,
+              "explanation": "Two innovations killed the cattle-drive era: railroads expanded southward (so ranchers shipped cattle by train instead of driving them north to Kansas), and barbed wire (invented 1874) let landowners fence off pastures, ending the open range."
+            },
+            {
+              "id": "q-ss7-ind-002",
+              "type": "multiple_choice",
+              "prompt": "The Spindletop oil discovery (January 10, 1901) is significant because:",
+              "choices": [
+                "It produced more oil in a day than every other well in the world combined and started the modern oil industry",
+                "It was the first time anyone in Texas drilled for oil",
+                "It was located in Mexico",
+                "It produced gold instead of oil"
+              ],
+              "answer": "It produced more oil in a day than every other well in the world combined and started the modern oil industry",
+              "correctIndex": 0,
+              "explanation": "Spindletop blew oil 150 feet into the air at 100,000 barrels per day — more than every other oil well in the world combined at the time. It transformed Texas into a major oil-producing region and made oil a cheap, abundant energy source for the 20th century."
+            },
+            {
+              "id": "q-ss7-ind-003",
+              "type": "multiple_choice",
+              "prompt": "Which industries grew rapidly in Texas because of cheap oil and easy transportation in the early 1900s?",
+              "choices": [
+                "Refining, petrochemicals, automobile manufacturing, and shipping",
+                "Whale hunting",
+                "Silk weaving",
+                "Maple syrup production"
+              ],
+              "answer": "Refining, petrochemicals, automobile manufacturing, and shipping",
+              "correctIndex": 0,
+              "explanation": "Cheap Texas oil powered new industries: oil refineries turned crude into gasoline; petrochemical plants made plastics and fertilizers; shipping ports grew at Houston and Galveston; and the affordable gasoline supported the rise of the automobile industry nationally."
+            },
+            {
+              "id": "q-ss7-ind-004",
+              "type": "multiple_choice",
+              "prompt": "Which of these MOST affected Texas agriculture in the early 1900s?",
+              "choices": [
+                "The boll weevil destroyed cotton crops, leading to the rise of new crops and mechanization",
+                "Texas stopped growing food entirely",
+                "Mexico banned all Texas crops",
+                "Only oranges could be grown"
+              ],
+              "answer": "The boll weevil destroyed cotton crops, leading to the rise of new crops and mechanization",
+              "correctIndex": 0,
+              "explanation": "The boll weevil, a beetle that arrived in Texas around 1892, devastated cotton crops. Farmers diversified — turning to citrus in the Rio Grande Valley, vegetables, and ranching — and mechanized farming to fight pests and labor shortages."
+            },
+            {
+              "id": "q-ss7-ind-005",
+              "type": "multiple_choice",
+              "prompt": "The Great Depression (1929-1939) hit Texas especially hard because:",
+              "choices": [
+                "Oil prices collapsed AND a major drought called the Dust Bowl ruined farmland across the Great Plains",
+                "Texas was the only state affected",
+                "Mexico declared war on Texas",
+                "All banks moved to California"
+              ],
+              "answer": "Oil prices collapsed AND a major drought called the Dust Bowl ruined farmland across the Great Plains",
+              "correctIndex": 0,
+              "explanation": "Texas faced a double crisis: oil prices crashed (because too many new fields had been discovered), AND severe drought turned parts of the Texas Panhandle into the Dust Bowl. Many farmers lost everything and moved west. New Deal programs eventually brought some relief."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "modern-texas-economy",
+      "title": "Modern Texas & Economy",
+      "strand": "economics",
+      "lessons": [
+        {
+          "id": "tech-population-economy",
+          "teks": "7.8A",
+          "title": "Texas in the Late 20th & 21st Century",
+          "objective": "Analyze the modern Texas economy and demographic shifts.",
+          "questions": [
+            {
+              "id": "q-ss7-mod-001",
+              "type": "multiple_choice",
+              "prompt": "Which Texas city became the headquarters of the U.S. space program in the 1960s?",
+              "choices": ["Houston", "Dallas", "Austin", "San Antonio"],
+              "answer": "Houston",
+              "correctIndex": 0,
+              "explanation": "NASA's Manned Spacecraft Center (renamed Johnson Space Center in 1973) opened near Houston in 1963. Houston was Mission Control for Apollo, the Space Shuttle, and continues to train astronauts today. \"Houston, we have a problem\" became one of the most famous lines in space history."
+            },
+            {
+              "id": "q-ss7-mod-002",
+              "type": "multiple_choice",
+              "prompt": "Today, what is the LARGEST sector of the Texas economy?",
+              "choices": [
+                "Agriculture only",
+                "Cattle ranching only",
+                "Energy + petrochemicals are huge, but services (finance, healthcare, technology) actually employ more Texans than any other sector",
+                "Fishing"
+              ],
+              "answer": "Energy + petrochemicals are huge, but services (finance, healthcare, technology) actually employ more Texans than any other sector",
+              "correctIndex": 2,
+              "explanation": "Texas is famous for oil and gas, which generate huge revenue. But the service sector — including finance, healthcare, retail, and technology — employs the most Texans. Austin and Dallas have become major tech hubs, sometimes called \"Silicon Hills.\""
+            },
+            {
+              "id": "q-ss7-mod-003",
+              "type": "multiple_choice",
+              "prompt": "Texas's population has shifted significantly. Today, Texas is:",
+              "choices": [
+                "Almost entirely rural",
+                "More than 85% urban — most Texans live in cities and suburbs",
+                "The smallest U.S. state by population",
+                "Larger than the rest of the United States combined"
+              ],
+              "answer": "More than 85% urban — most Texans live in cities and suburbs",
+              "correctIndex": 1,
+              "explanation": "Despite Texas's wide-open image, over 85% of Texans live in metropolitan areas. The five largest cities — Houston, San Antonio, Dallas, Austin, and Fort Worth — all rank among the 20 most populous U.S. cities."
+            },
+            {
+              "id": "q-ss7-mod-004",
+              "type": "multiple_choice",
+              "prompt": "Which group is the FASTEST-growing portion of the Texas population in the 21st century?",
+              "choices": ["Hispanic/Latino Texans", "Norwegian immigrants", "Australian transplants", "Antarctic researchers"],
+              "answer": "Hispanic/Latino Texans",
+              "correctIndex": 0,
+              "explanation": "The Hispanic/Latino population — which has long historical roots in Texas — has been the fastest-growing major group for decades. The 2020 U.S. Census found Hispanic/Latino Texans make up about 40% of Texas's population, on track to soon be the largest single group."
+            },
+            {
+              "id": "q-ss7-mod-005",
+              "type": "multiple_choice",
+              "prompt": "Texas has no state income tax. What is the LARGEST source of state revenue today?",
+              "choices": [
+                "Sales taxes (especially on retail purchases) plus oil and gas production taxes",
+                "Income tax on millionaires only",
+                "Federal grants",
+                "Tourism taxes from out-of-state visitors only"
+              ],
+              "answer": "Sales taxes (especially on retail purchases) plus oil and gas production taxes",
+              "correctIndex": 0,
+              "explanation": "Texas pays for state services mainly through sales tax, business taxes, and taxes on oil and gas production. Property taxes (local) fund schools. Texas is one of only nine U.S. states with no state income tax — a deliberate policy choice."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

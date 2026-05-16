@@ -1,6 +1,25 @@
 /**
  * GradeEarn — Adaptive Pacing Engine (Phase 1)
  *
+ * SUBJECT SCOPE: math only. §126 (May 17) authored SS curricula for
+ * grades 3-8, but the SS TEKS IDs (e.g. "6.3A" for Geography Tools)
+ * COLLIDE with math TEKS IDs (e.g. "6.3A" for Number Ops). This
+ * snapshot's flat map can only hold one strand per id. Adding SS
+ * would silently rewrite math strand recognition.
+ *
+ * v2 plan: namespace the snapshot by subject:
+ *   TEKS_STRANDS = { math: { '6.3A': {...} }, 'social-studies': { '6.3A': {...} } }
+ * and have strandForTeks(teksId, subject='math') do the lookup.
+ *
+ * Until v2 ships, SS questions silently degrade to centred-band
+ * targeting (band 2 / strand=null). The §118 engine still records
+ * SS attempts via the lambda recordEvent path (no strand → no
+ * mastery tracking, but session-band bumps/drops still fire on
+ * consecutive correct/wrong streaks).
+ */
+/**
+ * GradeEarn — Adaptive Pacing Engine (Phase 1)
+ *
  * Three layers, all pure-logic (no AWS calls — caller does the IO):
  *
  *   1) Per-strand ability rating (ELO-lite, K=24). Each strand a kid

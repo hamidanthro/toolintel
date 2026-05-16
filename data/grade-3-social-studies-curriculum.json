@@ -1,0 +1,501 @@
+{
+  "subject": "social-studies",
+  "grade": "grade-3",
+  "state": "texas",
+  "title": "Grade 3 Social Studies — Communities Past and Present",
+  "description": "Texas Grade 3 SS follows TEKS §113.14 — Communities Past and Present. Six core strands: Types of Communities, Geography of Communities, Government Services, Community Economics, Community History & Change, Citizenship & Culture. Authored 2026-05-17.",
+  "version": 1,
+  "_meta": {
+    "author": "GradeEarn",
+    "built": "2026-05-17",
+    "schema": "math-curriculum-compatible",
+    "questionCount": 30
+  },
+  "units": [
+    {
+      "id": "types-of-communities",
+      "title": "Types of Communities",
+      "strand": "geography",
+      "lessons": [
+        {
+          "id": "urban-suburban-rural",
+          "teks": "3.4A",
+          "title": "Urban, Suburban & Rural Communities",
+          "objective": "Identify and describe different types of communities.",
+          "questions": [
+            {
+              "id": "q-ss3-tc-001",
+              "type": "multiple_choice",
+              "prompt": "An URBAN community is one that:",
+              "choices": [
+                "Has farms, fields, and few people",
+                "Is a city with many people, tall buildings, and lots of shops",
+                "Is in space",
+                "Has only trees"
+              ],
+              "answer": "Is a city with many people, tall buildings, and lots of shops",
+              "correctIndex": 1,
+              "explanation": "Urban communities are cities. They have lots of people living close together, tall buildings, busy streets, public transportation, and many stores and offices. Houston, Dallas, and San Antonio are urban communities in Texas."
+            },
+            {
+              "id": "q-ss3-tc-002",
+              "type": "multiple_choice",
+              "prompt": "A RURAL community usually has:",
+              "choices": [
+                "Skyscrapers and subway trains",
+                "Fewer people, more open space, farms, ranches, and small towns",
+                "Beaches with millions of people",
+                "Hundreds of factories"
+              ],
+              "answer": "Fewer people, more open space, farms, ranches, and small towns",
+              "correctIndex": 1,
+              "explanation": "Rural communities have lots of open land — farms, ranches, fields, and forests — with fewer people spread out. Small towns are usually rural. Most of Texas's land area is rural, even though most Texans live in urban or suburban areas."
+            },
+            {
+              "id": "q-ss3-tc-003",
+              "type": "multiple_choice",
+              "prompt": "A SUBURBAN community is usually:",
+              "choices": [
+                "In the middle of the wilderness",
+                "An area of homes and neighborhoods near a city — between urban and rural",
+                "Far from any city",
+                "Only for businesses, not homes"
+              ],
+              "answer": "An area of homes and neighborhoods near a city — between urban and rural",
+              "correctIndex": 1,
+              "explanation": "Suburbs are neighborhoods near a city. People often live in suburbs and drive into the city for work. Plano, near Dallas, and Sugar Land, near Houston, are examples of suburban Texas communities."
+            },
+            {
+              "id": "q-ss3-tc-004",
+              "type": "multiple_choice",
+              "prompt": "Which TYPE of community would MOST likely have a buffalo ranch and dirt roads?",
+              "choices": ["Urban", "Suburban", "Rural", "Underground"],
+              "answer": "Rural",
+              "correctIndex": 2,
+              "explanation": "Ranches need lots of open land for animals to graze. That kind of space is found in rural communities, not cities or suburbs. Dirt roads are also common in rural areas where there isn't as much traffic."
+            },
+            {
+              "id": "q-ss3-tc-005",
+              "type": "multiple_choice",
+              "prompt": "What is something almost ALL communities (urban, suburban, AND rural) have?",
+              "choices": [
+                "Subway systems",
+                "People, homes, and ways to share resources like roads, schools, and stores",
+                "Skyscrapers over 50 stories tall",
+                "Ocean beaches"
+              ],
+              "answer": "People, homes, and ways to share resources like roads, schools, and stores",
+              "correctIndex": 1,
+              "explanation": "All communities — no matter the size — share basic features: people living together, homes, places to work, schools, and ways to get around. They just look different depending on whether they're a big city, a suburb, or a small town."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "geography-of-communities",
+      "title": "Geography of Communities",
+      "strand": "geography",
+      "lessons": [
+        {
+          "id": "maps-and-features",
+          "teks": "3.5A",
+          "title": "Where We Live: Maps & Natural Features",
+          "objective": "Use map skills and identify how geography shapes communities.",
+          "questions": [
+            {
+              "id": "q-ss3-geo-001",
+              "type": "multiple_choice",
+              "prompt": "On a standard map, north is usually:",
+              "choices": ["At the bottom", "At the top", "On the left side", "In the middle"],
+              "answer": "At the top",
+              "correctIndex": 1,
+              "explanation": "Almost every map you see places north at the top. The four main directions are north (up), south (down), east (right), and west (left). Most maps include a compass rose to remind you."
+            },
+            {
+              "id": "q-ss3-geo-002",
+              "type": "multiple_choice",
+              "prompt": "The picture-key on a map that tells you what the symbols mean is called a:",
+              "choices": ["Legend (or key)", "Compass", "Globe", "Trail"],
+              "answer": "Legend (or key)",
+              "correctIndex": 0,
+              "explanation": "A legend (also called a map key) is the box on a map that shows what each symbol and color stands for — like a triangle for a mountain or a star for a capital city."
+            },
+            {
+              "id": "q-ss3-geo-003",
+              "type": "multiple_choice",
+              "prompt": "Many big cities were built near a river. Why?",
+              "choices": [
+                "Rivers are fun to look at",
+                "Rivers provided water for drinking, farming, and a way to travel and trade",
+                "Rivers are only found in cities",
+                "Rivers don't allow plants to grow"
+              ],
+              "answer": "Rivers provided water for drinking, farming, and a way to travel and trade",
+              "correctIndex": 1,
+              "explanation": "Before trains and trucks, rivers were the easiest way to move goods over long distances. Cities like New York (Hudson River) and San Antonio (San Antonio River) grew along rivers because water meant farming, drinking, and trading were possible."
+            },
+            {
+              "id": "q-ss3-geo-004",
+              "type": "multiple_choice",
+              "prompt": "The Texas Hill Country is a region with:",
+              "choices": [
+                "Flat farmland and no hills",
+                "Rolling hills, rivers, and old limestone — popular for ranching and tourism",
+                "Tropical rainforests",
+                "Glaciers and icebergs"
+              ],
+              "answer": "Rolling hills, rivers, and old limestone — popular for ranching and tourism",
+              "correctIndex": 1,
+              "explanation": "The Texas Hill Country is in central Texas (around Austin and Fredericksburg). It has rolling hills, clear rivers, and lots of limestone. People visit for the bluebonnets in spring, river swimming, and dance halls."
+            },
+            {
+              "id": "q-ss3-geo-005",
+              "type": "multiple_choice",
+              "prompt": "Why might a community grow LARGER if it's near a major highway?",
+              "choices": [
+                "Highways scare people away",
+                "Highways make it easier for people to travel, ship goods, and reach the community",
+                "Highways are only for trucks",
+                "Highways prevent communities from growing"
+              ],
+              "answer": "Highways make it easier for people to travel, ship goods, and reach the community",
+              "correctIndex": 1,
+              "explanation": "Roads and highways connect communities. A town near a highway can ship goods out easier, get supplies in, and attract new businesses and residents who can travel easily. That's why many Texas cities grew along Interstate 35 and Interstate 10."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "government-services",
+      "title": "Local Government & Services",
+      "strand": "government",
+      "lessons": [
+        {
+          "id": "what-government-does",
+          "teks": "3.10A",
+          "title": "What Local Government Does for You",
+          "objective": "Identify services that local government provides.",
+          "questions": [
+            {
+              "id": "q-ss3-gov-001",
+              "type": "multiple_choice",
+              "prompt": "Which of these is a job of LOCAL (city) government?",
+              "choices": [
+                "Running the U.S. Navy",
+                "Making sure streets are paved, picking up trash, and running parks and libraries",
+                "Printing dollar bills",
+                "Sending astronauts to space"
+              ],
+              "answer": "Making sure streets are paved, picking up trash, and running parks and libraries",
+              "correctIndex": 1,
+              "explanation": "Cities take care of local services — streets, trash collection, parks, libraries, local police. Bigger jobs (national defense, money) belong to the federal government in Washington, D.C. State government (Texas in Austin) is in between."
+            },
+            {
+              "id": "q-ss3-gov-002",
+              "type": "multiple_choice",
+              "prompt": "Who leads a city government? Usually:",
+              "choices": ["A king", "A mayor", "A general", "A pop star"],
+              "answer": "A mayor",
+              "correctIndex": 1,
+              "explanation": "A mayor is the leader of a city. Mayors are usually elected by citizens. They work with a city council to make decisions about the city — like budgets, parks, streets, and local laws (called ordinances)."
+            },
+            {
+              "id": "q-ss3-gov-003",
+              "type": "multiple_choice",
+              "prompt": "What kind of community service helps when there's a fire?",
+              "choices": [
+                "The fire department",
+                "The post office",
+                "The library",
+                "The local zoo"
+              ],
+              "answer": "The fire department",
+              "correctIndex": 0,
+              "explanation": "Fire departments are public services run by city or town governments. They put out fires, rescue people, and respond to medical emergencies. Most cities also have police, ambulance services (EMS), and 9-1-1 emergency call centers."
+            },
+            {
+              "id": "q-ss3-gov-004",
+              "type": "multiple_choice",
+              "prompt": "Where does local government usually get the money to pay for these services?",
+              "choices": [
+                "From magic",
+                "From taxes paid by people who live and work in the city",
+                "From a national lottery only",
+                "From outer space"
+              ],
+              "answer": "From taxes paid by people who live and work in the city",
+              "correctIndex": 1,
+              "explanation": "Local government services are paid for by local taxes — mostly property taxes (paid by homeowners) and sales taxes (a few extra cents on things you buy). When you visit a library or play in a city park, the people of the city paid for it with their taxes."
+            },
+            {
+              "id": "q-ss3-gov-005",
+              "type": "multiple_choice",
+              "prompt": "Why do communities need rules and laws?",
+              "choices": [
+                "To make life harder",
+                "To keep people safe, settle disagreements fairly, and help the community work smoothly",
+                "Only so people can be punished",
+                "Communities don't need rules"
+              ],
+              "answer": "To keep people safe, settle disagreements fairly, and help the community work smoothly",
+              "correctIndex": 1,
+              "explanation": "Rules and laws (like \"stop at red lights\" or \"keep your dog on a leash in parks\") help everyone get along. Without them, people would argue and someone might get hurt. Good laws are fair and protect everyone."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "community-economics",
+      "title": "Community Economics",
+      "strand": "economics",
+      "lessons": [
+        {
+          "id": "goods-services-jobs",
+          "teks": "3.6A",
+          "title": "Goods, Services, Producers & Consumers",
+          "objective": "Identify economic roles people play in communities.",
+          "questions": [
+            {
+              "id": "q-ss3-econ-001",
+              "type": "multiple_choice",
+              "prompt": "GOODS are things that are made or grown and sold. SERVICES are work people do for others. Which is a GOOD?",
+              "choices": [
+                "A haircut",
+                "An apple from a grocery store",
+                "A doctor's checkup",
+                "A bus ride"
+              ],
+              "answer": "An apple from a grocery store",
+              "correctIndex": 1,
+              "explanation": "An apple is a thing you can hold — it's a GOOD. Haircuts, doctor visits, and bus rides are SERVICES — work that someone does for you."
+            },
+            {
+              "id": "q-ss3-econ-002",
+              "type": "multiple_choice",
+              "prompt": "A PRODUCER makes or grows things to sell. A CONSUMER buys and uses them. A farmer growing corn is:",
+              "choices": ["A consumer", "A producer", "Neither", "Both at the same time only"],
+              "answer": "A producer",
+              "correctIndex": 1,
+              "explanation": "A farmer growing corn is producing it — making something that other people will buy. The grocery store that buys it from the farmer is also a producer (they prepare it for sale). The family that buys corn for dinner is the consumer."
+            },
+            {
+              "id": "q-ss3-econ-003",
+              "type": "multiple_choice",
+              "prompt": "When you spend $5 on a book, you are doing what?",
+              "choices": [
+                "Being a consumer",
+                "Being a producer",
+                "Saving money",
+                "Voting"
+              ],
+              "answer": "Being a consumer",
+              "correctIndex": 0,
+              "explanation": "A consumer is someone who buys (or consumes) goods or services. When you spend your money on something, you're being a consumer. Most people are consumers AND producers — they earn money at a job (producer) and spend it on things they need (consumer)."
+            },
+            {
+              "id": "q-ss3-econ-004",
+              "type": "multiple_choice",
+              "prompt": "Why do people in a community NEED each other economically?",
+              "choices": [
+                "Because we like to talk",
+                "Because nobody can grow, make, and provide everything they need on their own — so we trade money for goods and services others provide",
+                "Because rules say so",
+                "We don't need each other"
+              ],
+              "answer": "Because nobody can grow, make, and provide everything they need on their own — so we trade money for goods and services others provide",
+              "correctIndex": 1,
+              "explanation": "No one person can be a farmer AND doctor AND builder AND teacher AND store clerk all at once. Communities work because different people do different jobs and trade with each other. That's called specialization and interdependence."
+            },
+            {
+              "id": "q-ss3-econ-005",
+              "type": "multiple_choice",
+              "prompt": "Saving means:",
+              "choices": [
+                "Spending all your money right away",
+                "Putting money aside instead of spending it now, so you have it for later",
+                "Giving your money away",
+                "Hiding money so you can't find it"
+              ],
+              "answer": "Putting money aside instead of spending it now, so you have it for later",
+              "correctIndex": 1,
+              "explanation": "Saving means keeping some of your money for later — for a big purchase, an emergency, or just to grow your savings. Many people save in a bank account, where the money is safe and can even earn a little extra (called interest)."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "community-history",
+      "title": "Community History & Change",
+      "strand": "history",
+      "lessons": [
+        {
+          "id": "change-over-time",
+          "teks": "3.1A",
+          "title": "How Communities Change Over Time",
+          "objective": "Identify ways communities change and grow.",
+          "questions": [
+            {
+              "id": "q-ss3-hist-001",
+              "type": "multiple_choice",
+              "prompt": "100 years ago, how did most people in Texas communities get around?",
+              "choices": [
+                "Cars and airplanes",
+                "Mostly walking, horses, wagons, and some early trains",
+                "Spaceships",
+                "Bicycles only"
+              ],
+              "answer": "Mostly walking, horses, wagons, and some early trains",
+              "correctIndex": 1,
+              "explanation": "In the early 1900s, most people walked or used horses and wagons for short trips, and trains for long trips. Cars existed but were expensive. By 1930, cars were more common, and roads and highways spread quickly across Texas."
+            },
+            {
+              "id": "q-ss3-hist-002",
+              "type": "multiple_choice",
+              "prompt": "Why did many Texas communities grow rapidly in the 20th century?",
+              "choices": [
+                "Everyone won the lottery",
+                "Oil was discovered, the economy grew, and people moved to Texas for jobs",
+                "Other states ran out of space",
+                "People hate cold weather everywhere else"
+              ],
+              "answer": "Oil was discovered, the economy grew, and people moved to Texas for jobs",
+              "correctIndex": 1,
+              "explanation": "Oil discovered at Spindletop in 1901 launched Texas's oil boom. Later, aerospace (NASA in Houston) and technology (computers in Austin, Dallas) brought even more growth. Texas has been one of the fastest-growing U.S. states for decades."
+            },
+            {
+              "id": "q-ss3-hist-003",
+              "type": "multiple_choice",
+              "prompt": "Sam Houston is an important figure in Texas history because he:",
+              "choices": [
+                "Discovered Texas",
+                "Led the army that won Texas independence at the Battle of San Jacinto and became the first president of the Republic of Texas",
+                "Invented the lightbulb",
+                "Wrote the U.S. Constitution"
+              ],
+              "answer": "Led the army that won Texas independence at the Battle of San Jacinto and became the first president of the Republic of Texas",
+              "correctIndex": 1,
+              "explanation": "Sam Houston was a famous Texas hero. He led the Texas army to a surprise victory at the Battle of San Jacinto in 1836, capturing the Mexican general Santa Anna. He then became the first president of the Republic of Texas. The city of Houston is named after him."
+            },
+            {
+              "id": "q-ss3-hist-004",
+              "type": "multiple_choice",
+              "prompt": "Which of these is a way communities CHANGE over time?",
+              "choices": [
+                "New people move in, old buildings are replaced, new technology arrives, and the kinds of jobs people have change",
+                "Communities never change",
+                "Only the weather changes",
+                "Communities only get smaller, never bigger"
+              ],
+              "answer": "New people move in, old buildings are replaced, new technology arrives, and the kinds of jobs people have change",
+              "correctIndex": 0,
+              "explanation": "Communities are always changing — new families move in, businesses open and close, schools and parks get built, technology (phones, the internet, electric cars) changes how people live. Some changes happen slowly, others (like a new highway or a big new factory) very fast."
+            },
+            {
+              "id": "q-ss3-hist-005",
+              "type": "multiple_choice",
+              "prompt": "Why is it important to know your community's history?",
+              "choices": [
+                "It isn't important",
+                "Understanding the past helps explain why the community is the way it is today, and what challenges it overcame",
+                "So you can win a contest",
+                "Only old people need to know history"
+              ],
+              "answer": "Understanding the past helps explain why the community is the way it is today, and what challenges it overcame",
+              "correctIndex": 1,
+              "explanation": "Every community has a story. Why is the city named what it's named? Why is the courthouse there? Why are there festivals every spring? Understanding history helps you appreciate where you live — and helps the community remember important events and people."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "citizenship-culture",
+      "title": "Citizenship & Culture",
+      "strand": "culture",
+      "lessons": [
+        {
+          "id": "being-a-good-citizen",
+          "teks": "3.11A",
+          "title": "Citizenship, Heroes & Cultural Diversity",
+          "objective": "Identify characteristics of good citizenship and cultural diversity.",
+          "questions": [
+            {
+              "id": "q-ss3-cit-001",
+              "type": "multiple_choice",
+              "prompt": "Being a good CITIZEN in your community means:",
+              "choices": [
+                "Following rules, helping neighbors, and respecting other people",
+                "Avoiding all your neighbors",
+                "Only doing things if you get paid",
+                "Refusing to vote when you grow up"
+              ],
+              "answer": "Following rules, helping neighbors, and respecting other people",
+              "correctIndex": 0,
+              "explanation": "Good citizens follow community rules and laws, help others, treat people with respect, take care of public spaces (like parks), and when they're grown up, vote and stay informed about their community. Good citizenship starts small and gets bigger as you grow."
+            },
+            {
+              "id": "q-ss3-cit-002",
+              "type": "multiple_choice",
+              "prompt": "Cultural diversity in a community means:",
+              "choices": [
+                "Everyone is exactly the same",
+                "People with different backgrounds, languages, foods, holidays, and traditions live together",
+                "Only people from one country live there",
+                "People don't speak to each other"
+              ],
+              "answer": "People with different backgrounds, languages, foods, holidays, and traditions live together",
+              "correctIndex": 1,
+              "explanation": "A diverse community has people from many backgrounds — different countries, religions, languages, foods, music, and traditions. Texas is especially diverse, with strong Mexican, German, Czech, African American, Asian, and many other heritages all part of Texas life."
+            },
+            {
+              "id": "q-ss3-cit-003",
+              "type": "multiple_choice",
+              "prompt": "Which of these is a Texas CULTURAL celebration that mixes Mexican and Texan traditions?",
+              "choices": [
+                "Cinco de Mayo and Día de los Muertos (Day of the Dead)",
+                "Thanksgiving in July",
+                "Boxing Day",
+                "Bastille Day"
+              ],
+              "answer": "Cinco de Mayo and Día de los Muertos (Day of the Dead)",
+              "correctIndex": 0,
+              "explanation": "Both are Mexican celebrations that are widely observed across Texas. Cinco de Mayo (May 5) celebrates Mexico's victory over France at the Battle of Puebla in 1862. Día de los Muertos (Nov 1-2) honors family members who have died, with traditions including marigolds, altars, and sweet treats called pan de muerto."
+            },
+            {
+              "id": "q-ss3-cit-004",
+              "type": "multiple_choice",
+              "prompt": "Heroes in a community are people who:",
+              "choices": [
+                "Wear capes and fly",
+                "Have done brave, kind, or important things — like firefighters, teachers, civil-rights leaders, or veterans",
+                "Live in very tall buildings",
+                "Are the richest people"
+              ],
+              "answer": "Have done brave, kind, or important things — like firefighters, teachers, civil-rights leaders, or veterans",
+              "correctIndex": 1,
+              "explanation": "Community heroes don't usually wear capes. They include firefighters who run toward danger, teachers who change lives, civil-rights leaders who fought for fairness, veterans who served, and ordinary people who help neighbors. You can be a hero by doing good things, every day."
+            },
+            {
+              "id": "q-ss3-cit-005",
+              "type": "multiple_choice",
+              "prompt": "Which of these is something you can do RIGHT NOW as a 3rd-grader to be a good citizen?",
+              "choices": [
+                "Vote in elections",
+                "Be kind, help at home and at school, take care of public places, learn about your community, and respect others",
+                "Pay property taxes",
+                "Serve in the army"
+              ],
+              "answer": "Be kind, help at home and at school, take care of public places, learn about your community, and respect others",
+              "correctIndex": 1,
+              "explanation": "Voting, paying taxes, and serving in the military are responsibilities for adults. But kids can be great citizens too: being kind, helping at home, doing your best at school, picking up litter in parks, and respecting people who are different from you. Good citizenship is a lifelong habit."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

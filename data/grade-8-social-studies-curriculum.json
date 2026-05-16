@@ -1,0 +1,507 @@
+{
+  "subject": "social-studies",
+  "grade": "grade-8",
+  "state": "texas",
+  "title": "Grade 8 Social Studies — U.S. History (Through 1877)",
+  "description": "Texas Grade 8 SS follows TEKS §113.20 — U.S. History from colonization through Reconstruction. THIS IS THE STAAR-TESTED GRADE for Social Studies. Six core strands: Colonial America, Revolution & Constitution, Early Republic, Westward Expansion, Civil War, Reconstruction. Authored 2026-05-17.",
+  "version": 1,
+  "_meta": {
+    "author": "GradeEarn",
+    "built": "2026-05-17",
+    "schema": "math-curriculum-compatible",
+    "questionCount": 30,
+    "staarTested": true
+  },
+  "units": [
+    {
+      "id": "colonial-america",
+      "title": "Colonial America (1607–1763)",
+      "strand": "history",
+      "lessons": [
+        {
+          "id": "13-colonies",
+          "teks": "8.2A",
+          "title": "Founding & Growth of the 13 Colonies",
+          "objective": "Identify the founding, regions, and economies of the original 13 English colonies.",
+          "questions": [
+            {
+              "id": "q-ss8-col-001",
+              "type": "multiple_choice",
+              "prompt": "Jamestown, founded in 1607, was the first PERMANENT English settlement in North America. It was located in what is now:",
+              "choices": ["Massachusetts", "Virginia", "Plymouth Rock", "New York"],
+              "answer": "Virginia",
+              "correctIndex": 1,
+              "explanation": "Jamestown was founded in 1607 in present-day Virginia as a business venture by the Virginia Company. It survived disease and starvation in its first years; the Plymouth Colony (Massachusetts) came later in 1620."
+            },
+            {
+              "id": "q-ss8-col-002",
+              "type": "multiple_choice",
+              "prompt": "The Mayflower Compact (1620) is considered an important early example of:",
+              "choices": [
+                "An absolute monarchy",
+                "Self-government — colonists agreeing to make and obey their own laws",
+                "Trade between England and Spain",
+                "Religious neutrality"
+              ],
+              "answer": "Self-government — colonists agreeing to make and obey their own laws",
+              "correctIndex": 1,
+              "explanation": "The Pilgrims signed the Mayflower Compact before landing at Plymouth. It established that they would form a government and obey \"just and equal laws\" agreed upon by the group — an early American example of self-government based on consent."
+            },
+            {
+              "id": "q-ss8-col-003",
+              "type": "multiple_choice",
+              "prompt": "The three colonial regions (New England, Middle, and Southern) had different economies because:",
+              "choices": [
+                "England assigned each region a different job",
+                "Their geography and climate suited different industries — fishing/trade in New England, mixed farming in the Middle, plantation farming in the South",
+                "Each had different laws against business",
+                "They spoke different languages"
+              ],
+              "answer": "Their geography and climate suited different industries — fishing/trade in New England, mixed farming in the Middle, plantation farming in the South",
+              "correctIndex": 1,
+              "explanation": "Geography determined economy: rocky New England soil with great harbors led to fishing, shipbuilding, and trade. The Middle Colonies' fertile soil supported diverse farming and trade through cities like Philadelphia. Warm climates and rich soil in the South supported plantation cash crops (tobacco, rice, indigo, later cotton) — and the brutal expansion of slavery."
+            },
+            {
+              "id": "q-ss8-col-004",
+              "type": "multiple_choice",
+              "prompt": "The triangular trade involved exchanging which three things between which three regions?",
+              "choices": [
+                "Cars between USA, Mexico, and Canada",
+                "Manufactured goods to Africa, enslaved Africans to the Americas, and raw materials (like sugar) back to Europe",
+                "Spices between China, India, and Japan",
+                "Whales between Greenland, Iceland, and Norway"
+              ],
+              "answer": "Manufactured goods to Africa, enslaved Africans to the Americas, and raw materials (like sugar) back to Europe",
+              "correctIndex": 1,
+              "explanation": "The triangular trade was a brutal Atlantic trade system: European manufactured goods (cloth, guns, rum) were traded for kidnapped Africans, who were forced across the Atlantic on the Middle Passage to work American plantations. Raw materials (sugar, tobacco, cotton) from those plantations went back to Europe."
+            },
+            {
+              "id": "q-ss8-col-005",
+              "type": "multiple_choice",
+              "prompt": "The French and Indian War (1754-1763) is important to American history because:",
+              "choices": [
+                "France conquered all 13 colonies",
+                "It left Britain in debt and led to new taxes on the colonies — major causes of the Revolution",
+                "It united France and England forever",
+                "It had nothing to do with the colonies"
+              ],
+              "answer": "It left Britain in debt and led to new taxes on the colonies — major causes of the Revolution",
+              "correctIndex": 1,
+              "explanation": "Britain won the war (the colonies fought alongside Britain against France and France's Native American allies). But Britain emerged deeply in debt. To pay for the war and to defend the new territories, Britain imposed new taxes on the colonies — the Stamp Act, Sugar Act, Townshend Acts — sparking the resistance that became the Revolution."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "revolution-constitution",
+      "title": "Revolution & Constitution (1763–1789)",
+      "strand": "history",
+      "lessons": [
+        {
+          "id": "founding-documents",
+          "teks": "8.4A",
+          "title": "From Revolution to the Constitution",
+          "objective": "Analyze the causes of the Revolution and the structure of the Constitution.",
+          "questions": [
+            {
+              "id": "q-ss8-rev-001",
+              "type": "multiple_choice",
+              "prompt": "The slogan \"No taxation without representation\" expressed which colonial complaint?",
+              "choices": [
+                "That colonists paid no taxes at all",
+                "That Britain taxed the colonies even though colonists had no elected members in the British Parliament",
+                "That taxes should be paid only by women",
+                "That all taxes should go to the colonies"
+              ],
+              "answer": "That Britain taxed the colonies even though colonists had no elected members in the British Parliament",
+              "correctIndex": 1,
+              "explanation": "Colonists objected that Parliament was passing taxes on them without their consent — they had no representatives in Parliament who could vote on those laws. This violated what colonists saw as their rights as English subjects."
+            },
+            {
+              "id": "q-ss8-rev-002",
+              "type": "multiple_choice",
+              "prompt": "The Declaration of Independence (1776), written mainly by Thomas Jefferson, stated that all people are endowed with certain unalienable rights including:",
+              "choices": [
+                "Free internet access",
+                "Life, Liberty, and the pursuit of Happiness",
+                "Free silver and gold",
+                "Free travel to Europe"
+              ],
+              "answer": "Life, Liberty, and the pursuit of Happiness",
+              "correctIndex": 1,
+              "explanation": "The Declaration's most famous line says \"all men are created equal\" with unalienable rights to \"Life, Liberty, and the pursuit of Happiness.\" These ideas — drawn from philosophers like John Locke — became foundational to American government, even though they applied unevenly to women, enslaved people, and Native Americans at the time."
+            },
+            {
+              "id": "q-ss8-rev-003",
+              "type": "multiple_choice",
+              "prompt": "The Articles of Confederation, the FIRST government of the United States (1781-1789), failed because:",
+              "choices": [
+                "Britain refused to recognize it",
+                "It made the central government too weak — it couldn't tax, raise an army, or regulate trade between states",
+                "It was written in Latin",
+                "It only governed Massachusetts"
+              ],
+              "answer": "It made the central government too weak — it couldn't tax, raise an army, or regulate trade between states",
+              "correctIndex": 1,
+              "explanation": "The Articles created a national government with almost no real powers — fearing tyranny, the founders went too far the other way. Without taxing power, an army, or trade regulation, the new nation couldn't function. That's why the Constitution (1787) created a stronger federal government."
+            },
+            {
+              "id": "q-ss8-rev-004",
+              "type": "multiple_choice",
+              "prompt": "The U.S. Constitution divides the federal government into three branches. Which branch makes the laws?",
+              "choices": ["Executive (President)", "Judicial (Courts)", "Legislative (Congress)", "Military"],
+              "answer": "Legislative (Congress)",
+              "correctIndex": 2,
+              "explanation": "Congress (the Legislative branch) makes laws. The President (Executive) carries them out. The Supreme Court (Judicial) interprets them. The three branches check and balance each other so no single branch can take over."
+            },
+            {
+              "id": "q-ss8-rev-005",
+              "type": "multiple_choice",
+              "prompt": "The Bill of Rights — the first 10 amendments to the Constitution — was added in 1791 mainly to:",
+              "choices": [
+                "Make slavery legal",
+                "Give specific protections to individuals against government — like freedom of speech, religion, and the press",
+                "Establish the U.S. Army",
+                "Set the value of the dollar"
+              ],
+              "answer": "Give specific protections to individuals against government — like freedom of speech, religion, and the press",
+              "correctIndex": 1,
+              "explanation": "Anti-Federalists worried the new Constitution gave too much power to the federal government. The Bill of Rights was added to guarantee specific individual rights: speech, religion, press, assembly, jury trial, no cruel punishments, and reserved powers to the states and the people."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "early-republic",
+      "title": "The Early Republic (1789–1820s)",
+      "strand": "history",
+      "lessons": [
+        {
+          "id": "washington-jefferson-madison",
+          "teks": "8.5A",
+          "title": "Washington, Jefferson & the New Nation",
+          "objective": "Identify key developments and decisions of the first presidents.",
+          "questions": [
+            {
+              "id": "q-ss8-er-001",
+              "type": "multiple_choice",
+              "prompt": "George Washington, the first U.S. president, set what important precedent (tradition) about presidential terms?",
+              "choices": [
+                "He served only one term",
+                "He served two terms and refused a third — establishing a tradition broken only once in U.S. history",
+                "He served until he died in office",
+                "He served four terms"
+              ],
+              "answer": "He served two terms and refused a third — establishing a tradition broken only once in U.S. history",
+              "correctIndex": 1,
+              "explanation": "Washington could likely have been president for life. Instead, he stepped down after two terms in 1797, setting a tradition that lasted 144 years — until Franklin D. Roosevelt won a third (and fourth) term during WWII. The 22nd Amendment (1951) made two terms the official limit."
+            },
+            {
+              "id": "q-ss8-er-002",
+              "type": "multiple_choice",
+              "prompt": "The Louisiana Purchase (1803), made by President Thomas Jefferson, did what?",
+              "choices": [
+                "Doubled the size of the United States by buying a huge territory from France",
+                "Returned Louisiana to Spain",
+                "Built the Louisiana Purchase Mall",
+                "Banned slavery west of Louisiana"
+              ],
+              "answer": "Doubled the size of the United States by buying a huge territory from France",
+              "correctIndex": 0,
+              "explanation": "Jefferson bought 828,000 square miles from France for $15 million — about 3 cents per acre. The Louisiana Territory included all or part of 15 modern states from Louisiana to Montana. It doubled the country's size and opened the West to American expansion."
+            },
+            {
+              "id": "q-ss8-er-003",
+              "type": "multiple_choice",
+              "prompt": "Marbury v. Madison (1803) was the Supreme Court case that established:",
+              "choices": [
+                "The President's power to declare war",
+                "Judicial review — the Supreme Court's power to strike down laws that violate the Constitution",
+                "Slavery in all new states",
+                "That federal courts have no power"
+              ],
+              "answer": "Judicial review — the Supreme Court's power to strike down laws that violate the Constitution",
+              "correctIndex": 1,
+              "explanation": "Chief Justice John Marshall ruled in Marbury v. Madison that the Supreme Court can declare a law unconstitutional. This power — judicial review — wasn't in the Constitution's text but has been one of the Court's most important powers ever since."
+            },
+            {
+              "id": "q-ss8-er-004",
+              "type": "multiple_choice",
+              "prompt": "The Monroe Doctrine (1823) warned European countries against:",
+              "choices": [
+                "Selling spices",
+                "Establishing NEW colonies in the Western Hemisphere or interfering with independent nations there",
+                "Trading with China",
+                "Adopting American currency"
+              ],
+              "answer": "Establishing NEW colonies in the Western Hemisphere or interfering with independent nations there",
+              "correctIndex": 1,
+              "explanation": "President James Monroe declared that European powers should leave the Americas alone — no new colonies, no interference with existing independent nations. The U.S. promised in return to stay out of European affairs. The Monroe Doctrine became a foundation of U.S. foreign policy."
+            },
+            {
+              "id": "q-ss8-er-005",
+              "type": "multiple_choice",
+              "prompt": "The Industrial Revolution began transforming the U.S. economy in the early 1800s. One key American invention was:",
+              "choices": [
+                "The lightbulb",
+                "Eli Whitney's cotton gin (1793), which made cotton processing much faster — and tragically expanded slavery",
+                "The car",
+                "The airplane"
+              ],
+              "answer": "Eli Whitney's cotton gin (1793), which made cotton processing much faster — and tragically expanded slavery",
+              "correctIndex": 1,
+              "explanation": "Whitney's cotton gin removed seeds from cotton 50 times faster than by hand. This made cotton hugely profitable in the South — and led plantation owners to demand MORE enslaved labor, not less. Slavery was probably declining before the cotton gin; the gin reversed that and entrenched it for another 70 years."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "westward-expansion",
+      "title": "Westward Expansion & Sectional Tension",
+      "strand": "history",
+      "lessons": [
+        {
+          "id": "manifest-destiny",
+          "teks": "8.6A",
+          "title": "Manifest Destiny, Mexican-American War & Sectionalism",
+          "objective": "Analyze westward expansion and the growing tensions between North and South.",
+          "questions": [
+            {
+              "id": "q-ss8-we-001",
+              "type": "multiple_choice",
+              "prompt": "\"Manifest Destiny\" was the 19th-century belief that:",
+              "choices": [
+                "Americans were destined by God to expand across the entire North American continent",
+                "America should never expand beyond the original 13 colonies",
+                "The President should rule for life",
+                "Manufacturing was destined to fail"
+              ],
+              "answer": "Americans were destined by God to expand across the entire North American continent",
+              "correctIndex": 0,
+              "explanation": "Coined in 1845, \"Manifest Destiny\" was the belief that the United States was meant to stretch from Atlantic to Pacific. The idea inspired westward migration, the Mexican-American War, and policies that displaced Native Americans — including the Trail of Tears in the 1830s."
+            },
+            {
+              "id": "q-ss8-we-002",
+              "type": "multiple_choice",
+              "prompt": "The Mexican-American War (1846-1848) ended with the Treaty of Guadalupe Hidalgo. The treaty gave the United States control of:",
+              "choices": [
+                "Just Texas",
+                "California, Arizona, New Mexico, Nevada, Utah, and parts of Colorado/Wyoming — about 525,000 square miles",
+                "Canada",
+                "Cuba"
+              ],
+              "answer": "California, Arizona, New Mexico, Nevada, Utah, and parts of Colorado/Wyoming — about 525,000 square miles",
+              "correctIndex": 1,
+              "explanation": "The Mexican Cession gave the U.S. roughly half of Mexico's territory in exchange for $15 million. This vast new land (modern California, Arizona, New Mexico, Nevada, Utah, and parts of Colorado, Wyoming, and Kansas) intensified the slavery debate — which territories would allow slavery?"
+            },
+            {
+              "id": "q-ss8-we-003",
+              "type": "multiple_choice",
+              "prompt": "The Missouri Compromise (1820) tried to settle the slavery question by:",
+              "choices": [
+                "Banning slavery everywhere immediately",
+                "Admitting Missouri as a slave state and Maine as a free state, and banning slavery in northern Louisiana Territory",
+                "Allowing Missouri to be split in half",
+                "Sending all enslaved people back to Africa"
+              ],
+              "answer": "Admitting Missouri as a slave state and Maine as a free state, and banning slavery in northern Louisiana Territory",
+              "correctIndex": 1,
+              "explanation": "The Missouri Compromise balanced one new slave state with one new free state, and drew a line (36°30' latitude) — slavery would be allowed south of the line but banned north of it. It held for over 30 years until the Kansas-Nebraska Act (1854) overturned it."
+            },
+            {
+              "id": "q-ss8-we-004",
+              "type": "multiple_choice",
+              "prompt": "The Trail of Tears (1838-1839) refers to:",
+              "choices": [
+                "A famous railroad line",
+                "The forced removal of the Cherokee and other Southeast tribes to land west of the Mississippi, during which thousands died",
+                "A Civil War battle",
+                "A trade route to Mexico"
+              ],
+              "answer": "The forced removal of the Cherokee and other Southeast tribes to land west of the Mississippi, during which thousands died",
+              "correctIndex": 1,
+              "explanation": "President Andrew Jackson's Indian Removal Act forced about 60,000 Native Americans — including the Cherokee, Choctaw, Creek, Chickasaw, and Seminole — from their homes in the Southeast to \"Indian Territory\" (modern Oklahoma). Roughly 4,000 Cherokee died from disease, exposure, and starvation on the journey."
+            },
+            {
+              "id": "q-ss8-we-005",
+              "type": "multiple_choice",
+              "prompt": "The Compromise of 1850 included which controversial law that required Northerners to help capture escaped enslaved people?",
+              "choices": [
+                "The Fugitive Slave Act",
+                "The Stamp Act",
+                "The Sugar Act",
+                "The Quartering Act"
+              ],
+              "answer": "The Fugitive Slave Act",
+              "correctIndex": 0,
+              "explanation": "The Fugitive Slave Act of 1850 required Northerners (even in free states) to help return escaped enslaved people to their enslavers in the South — under threat of fines or jail. It outraged abolitionists and inspired Harriet Beecher Stowe to write \"Uncle Tom's Cabin\" (1852), which influenced public opinion against slavery."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "civil-war",
+      "title": "The Civil War (1861–1865)",
+      "strand": "history",
+      "lessons": [
+        {
+          "id": "war-and-emancipation",
+          "teks": "8.7A",
+          "title": "Civil War: Causes, Course & Emancipation",
+          "objective": "Analyze the causes and outcomes of the Civil War.",
+          "questions": [
+            {
+              "id": "q-ss8-cw-001",
+              "type": "multiple_choice",
+              "prompt": "The MOST fundamental cause of the Civil War was:",
+              "choices": [
+                "A border dispute with Canada",
+                "Slavery — its expansion into new territories, its morality, and its role in the economy",
+                "British interference",
+                "Disagreements about the U.S. Mint"
+              ],
+              "answer": "Slavery — its expansion into new territories, its morality, and its role in the economy",
+              "correctIndex": 1,
+              "explanation": "While related issues — states' rights, economic differences, political power — all mattered, slavery was the bedrock cause. Southern states' own secession documents explicitly cited slavery. Lincoln's election in 1860, won without any Southern electoral votes, signaled that the federal government would limit slavery's expansion — and the South seceded rather than accept that."
+            },
+            {
+              "id": "q-ss8-cw-002",
+              "type": "multiple_choice",
+              "prompt": "The Civil War began on April 12, 1861, when Confederate forces attacked which federal fort?",
+              "choices": ["Fort Knox", "Fort Sumter", "Fort Worth", "Fort McHenry"],
+              "answer": "Fort Sumter",
+              "correctIndex": 1,
+              "explanation": "Confederate forces fired on Fort Sumter in Charleston Harbor, South Carolina. The federal garrison surrendered after 34 hours of bombardment. President Lincoln then called for 75,000 volunteers to put down the rebellion — and the Civil War was on."
+            },
+            {
+              "id": "q-ss8-cw-003",
+              "type": "multiple_choice",
+              "prompt": "The Emancipation Proclamation (January 1, 1863):",
+              "choices": [
+                "Freed every enslaved person in the United States immediately",
+                "Declared enslaved people in Confederate-controlled areas free — turning the war into a war for freedom",
+                "Was issued by the Confederacy",
+                "Banned slavery in the Caribbean"
+              ],
+              "answer": "Declared enslaved people in Confederate-controlled areas free — turning the war into a war for freedom",
+              "correctIndex": 1,
+              "explanation": "Lincoln's proclamation freed enslaved people in CONFEDERATE-held areas (not in Union slave states like Maryland and Missouri). Its actual immediate effect was limited, but it transformed the war's purpose to include ending slavery, allowed Black men to fight for the Union army, and discouraged European countries from supporting the Confederacy."
+            },
+            {
+              "id": "q-ss8-cw-004",
+              "type": "multiple_choice",
+              "prompt": "The Battle of Gettysburg (July 1863) is considered a turning point of the war because:",
+              "choices": [
+                "It was the first battle of the war",
+                "It was the deadliest battle and ended the Confederate invasion of the North — the South was now on the defensive",
+                "Sherman captured Atlanta during it",
+                "Lincoln gave the Declaration of Independence there"
+              ],
+              "answer": "It was the deadliest battle and ended the Confederate invasion of the North — the South was now on the defensive",
+              "correctIndex": 1,
+              "explanation": "Over three days at Gettysburg, Pennsylvania, about 51,000 soldiers were killed, wounded, or captured — the war's bloodiest battle. Lee's defeat ended his second invasion of the North. From that point on, the Confederacy fought a defensive war they were slowly losing. Lincoln's Gettysburg Address — given at the dedication of the cemetery there — became one of the most famous American speeches."
+            },
+            {
+              "id": "q-ss8-cw-005",
+              "type": "multiple_choice",
+              "prompt": "The Civil War ended on April 9, 1865, when General Robert E. Lee surrendered to General Ulysses S. Grant at:",
+              "choices": ["Gettysburg", "Vicksburg", "Appomattox Court House", "Washington, D.C."],
+              "answer": "Appomattox Court House",
+              "correctIndex": 2,
+              "explanation": "Lee surrendered to Grant at the Appomattox Court House in Virginia. Grant offered generous terms — Confederate soldiers could go home rather than become prisoners. Other Confederate forces surrendered over the next few weeks. The war was over, but Lincoln was assassinated just five days later, leaving the work of Reconstruction to others."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "reconstruction",
+      "title": "Reconstruction (1865–1877)",
+      "strand": "history",
+      "lessons": [
+        {
+          "id": "amendments-and-rights",
+          "teks": "8.8A",
+          "title": "13th, 14th, 15th Amendments & Reconstruction",
+          "objective": "Analyze the achievements and failures of Reconstruction.",
+          "questions": [
+            {
+              "id": "q-ss8-rec-001",
+              "type": "multiple_choice",
+              "prompt": "The 13th Amendment (1865) did what?",
+              "choices": [
+                "Gave women the right to vote",
+                "Abolished slavery throughout the United States",
+                "Gave the federal government the power to tax incomes",
+                "Lowered the voting age to 18"
+              ],
+              "answer": "Abolished slavery throughout the United States",
+              "correctIndex": 1,
+              "explanation": "The 13th Amendment, ratified in December 1865 after the war, abolished slavery throughout the United States. The Emancipation Proclamation had only freed enslaved people in Confederate areas; the 13th Amendment finally ended it everywhere, permanently, as the supreme law of the land."
+            },
+            {
+              "id": "q-ss8-rec-002",
+              "type": "multiple_choice",
+              "prompt": "The 14th Amendment (1868) is one of the most important amendments because it:",
+              "choices": [
+                "Established Citizen-by-birth and equal protection under the law for all citizens",
+                "Created the Federal Reserve",
+                "Set the minimum wage",
+                "Ended prohibition"
+              ],
+              "answer": "Established Citizen-by-birth and equal protection under the law for all citizens",
+              "correctIndex": 0,
+              "explanation": "The 14th Amendment made anyone born in the United States a citizen (overturning the Dred Scott decision that had denied citizenship to Black Americans) and required states to provide \"equal protection of the laws.\" These guarantees became the basis for many later civil rights rulings, including Brown v. Board of Education."
+            },
+            {
+              "id": "q-ss8-rec-003",
+              "type": "multiple_choice",
+              "prompt": "The 15th Amendment (1870) granted what right to whom?",
+              "choices": [
+                "Women the right to vote",
+                "Black men the right to vote — extending voting regardless of race or previous enslavement",
+                "All Americans the right to a free education",
+                "Everyone the right to own property"
+              ],
+              "answer": "Black men the right to vote — extending voting regardless of race or previous enslavement",
+              "correctIndex": 1,
+              "explanation": "The 15th Amendment said voting rights couldn't be denied based on \"race, color, or previous condition of servitude.\" It enfranchised Black men. (Women — Black or white — would have to wait another 50 years for the 19th Amendment in 1920.) Many Black men served in state legislatures and Congress during Reconstruction."
+            },
+            {
+              "id": "q-ss8-rec-004",
+              "type": "multiple_choice",
+              "prompt": "After Reconstruction ended in 1877, many Southern states passed laws to:",
+              "choices": [
+                "Increase Black voting and economic opportunity",
+                "Roll back the rights Black Americans had gained — including through poll taxes, literacy tests, and Jim Crow segregation laws",
+                "Apologize for slavery officially",
+                "Give every freedperson 100 acres of land"
+              ],
+              "answer": "Roll back the rights Black Americans had gained — including through poll taxes, literacy tests, and Jim Crow segregation laws",
+              "correctIndex": 1,
+              "explanation": "The compromise that ended Reconstruction in 1877 removed federal troops from the South. Southern states then passed \"Jim Crow\" laws that segregated public life, and used poll taxes, literacy tests, and other tactics to prevent Black Americans from voting. These restrictions weren't fully overturned until the Civil Rights Act (1964) and Voting Rights Act (1965)."
+            },
+            {
+              "id": "q-ss8-rec-005",
+              "type": "multiple_choice",
+              "prompt": "Why is Reconstruction often called \"unfinished\"?",
+              "choices": [
+                "The federal government never ended it officially",
+                "Many of its promises — full citizenship, equal protection, voting rights for Black Americans — were undermined or ignored for nearly a century afterward",
+                "It was never started",
+                "It only lasted one year"
+              ],
+              "answer": "Many of its promises — full citizenship, equal protection, voting rights for Black Americans — were undermined or ignored for nearly a century afterward",
+              "correctIndex": 1,
+              "explanation": "Reconstruction's constitutional amendments were revolutionary, but the country didn't actually deliver on them for almost 100 years. The Civil Rights Movement of the 1950s and 1960s is often called the \"Second Reconstruction\" because it FINALLY enforced rights the 14th and 15th Amendments had promised in 1868 and 1870."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
