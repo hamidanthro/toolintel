@@ -37,6 +37,10 @@ const { SESv2Client, SendEmailCommand } = require('@aws-sdk/client-sesv2');
 const crypto = require('crypto');
 const lake = require('./content-lake');
 const judge = require('./judge');
+// §118 Adaptive Pacing Engine — per-strand ELO + session difficulty
+// bands + soft mastery recommendations. Pure-logic module; the lambda
+// owns the read/write of the kid's adaptiveState blob.
+const adaptive = require('./adaptive');
 const crisis = require('./crisis-detector');
 const replyJudge = require('./reply-judge');
 
@@ -429,6 +433,7 @@ exports.handler = async (event) => {
   if (action === 'resendVerification')   return await handleResendVerification(payload, event);
   if (action === 'getStats') return await handleGetStats(payload);
   if (action === 'putStats') return await handlePutStats(payload);
+  if (action === 'getAdaptive') return await handleGetAdaptive(payload);
   if (action === 'getWrongAnswers')     return await handleGetWrongAnswers(payload);
   if (action === 'getParentSummary')    return await handleGetParentSummary(payload);
   if (action === 'getFunFactsState')    return await handleGetFunFactsState(payload);
@@ -625,8 +630,64 @@ async function handleGenerate(payload) {
   const effectiveState = requestedState || userState || DEFAULT_STATE;
   const effectiveSubject = requestedSubject || DEFAULT_SUBJECT;
 
+  // ===== §118 Adaptive Pacing — pre-generate hook =====
+  // Read the kid's adaptiveState; if it suggests a different strand
+  // than the topics imply (free-practice + mastered-current-strand
+  // case), swap topics for the recommendation. Always inject the
+  // current session difficulty band into the generator prompt so
+  // rigor scales with the kid's streak. Auth-less generate calls
+  // (no token) skip — there's no per-user state to read.
+  let adaptivePacing = null;
+  let topicsForGen = topics;
+  let bandForGen = 2;
+  let userIdForAdaptive = null;
+  if (payload.token) {
+    try {
+      const a = await verifyToken(payload.token).catch(() => null);
+      if (a && (a.userId || a.username)) {
+        userIdForAdaptive = a.userId || a.username;
+        const adaptiveState = await readAdaptiveState(
+          userIdForAdaptive, effectiveState, grade, effectiveSubject
+        );
+        const summary = adaptive.summarize(adaptiveState, String(grade || '').toLowerCase());
+        adaptivePacing = summary;
+        // Current band: continue session if mid-flight, otherwise centred.
+        if (summary.sessionBand != null) bandForGen = summary.sessionBand;
+
+        // Free-practice mastery redirect: only triggers when the kid
+        // asked for multiple topics (free practice). Scope-pinned
+        // single-topic calls (one TEKS in `topics`) honor the
+        // explicit pick — the kid asked for that TEKS, give it.
+        const isFreePractice = Array.isArray(topics) && topics.length > 1;
+        if (isFreePractice && summary.recommended) {
+          // Are the topics dominated by a strand the kid has mastered?
+          let strandsInTopics = new Set();
+          for (const t of topics) {
+            const m = adaptive.strandForTeks(t.teks);
+            if (m) strandsInTopics.add(m.strand);
+          }
+          const allMastered = strandsInTopics.size > 0 &&
+            [...strandsInTopics].every(s => summary.mastered.includes(s));
+          if (allMastered) {
+            const recTeks = adaptive.teksForStrand(
+              summary.recommended, String(grade || '').toLowerCase()
+            );
+            if (recTeks.length > 0) {
+              topicsForGen = recTeks.slice(0, Math.min(6, recTeks.length)).map(id => ({
+                teks: id, title: '', objective: '', sample: ''
+              }));
+              console.info(`[adaptive] free-practice redirect: all topics mastered → strand=${summary.recommended} (${recTeks.length} TEKS)`);
+            }
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('[adaptive] pre-generate hook failed:', e.message);
+    }
+  }
+
   const system = buildGeneratorSystem(grade, effectiveState, effectiveSubject);
-  const user = buildGeneratorUser({ count, seed, topics });
+  const user = buildGeneratorUser({ count, seed, topics: topicsForGen, difficultyBand: bandForGen });
 
   try {
     const apiKey = await getApiKey();
@@ -756,7 +817,10 @@ async function handleGenerate(payload) {
       judgeCalls: gated.judgeCalls,
       budgetExceeded: gated.budgetExceeded
     };
-    return ok({ questions, model: MODEL, seed, judge: judgeMeta });
+    // §118 — echo adaptive pacing so the frontend can surface the
+    // current target strand + difficulty band on the practice card
+    // (e.g. "Stepping up" / "Try this next" / "Mastered" pills).
+    return ok({ questions, model: MODEL, seed, judge: judgeMeta, pacing: adaptivePacing });
   } catch (err) {
     console.error('Generate error:', err.message || err);
     return bad(502, 'Question generator unavailable');
@@ -813,15 +877,32 @@ OUTPUT FORMAT (STRICT JSON, no prose around it)
 }`;
 }
 
-function buildGeneratorUser({ count, seed, topics }) {
+function buildGeneratorUser({ count, seed, topics, difficultyBand }) {
   const topicLines = topics.map((t, i) =>
     `${i + 1}. TEKS ${t.teks || '?'} \u2014 ${t.title || ''}${t.objective ? ` | objective: ${clip(t.objective, 160)}` : ''}${t.sample ? ` | sample: "${clip(t.sample, 140)}"` : ''}`
   ).join('\n');
 
+  // \u00a7118 Phase 1 \u2014 Difficulty-band hint. The lambda's adaptive engine
+  // tracks the kid's session band (0..4); when it bumps up the
+  // generator should produce questions a notch harder. Phrased as
+  // explicit rigor calibration, not a number \u2014 the model handles
+  // language steering better than scalars.
+  let rigorBlock = '';
+  if (Number.isInteger(difficultyBand)) {
+    const labels = {
+      0: 'EASIEST tier. Single-step procedural recall \u2014 kid is rebuilding confidence. Smaller numbers, one operation, no edge cases.',
+      1: 'EASY tier. One or two procedural steps. Standard textbook scenario; no twist.',
+      2: 'CORE tier. Typical STAAR-released-test rigor for this grade. Moderate steps + standard scenario variety.',
+      3: 'HARDER tier. Multi-step with a non-trivial number choice or context. Closer to STAAR\u2019s upper tier within this TEKS.',
+      4: 'TOUGHEST tier. Multi-step + edge case + a distractor designed to catch a common misconception. Kid is performing strongly; stretch them.'
+    };
+    rigorBlock = `\n\nRIGOR CALIBRATION (the kid\u2019s current adaptive band):\n${labels[difficultyBand] || labels[2]}\nKeep state-flavor + age-fit unchanged; only the math demand scales.`;
+  }
+
   return `Generate exactly ${count} fresh STAAR-style practice questions.
 
 Distribute the questions across these TEKS topics (roughly even, but you may shift one or two):
-${topicLines}
+${topicLines}${rigorBlock}
 
 Every question must be type "multiple_choice" with exactly 4 choices. Do NOT produce numeric/free-response questions. (We standardized the whole lake on multiple-choice in May 2026 \u2014 kids tap one of four choices instead of typing.)
 Use seed "${seed}" to make this set DIFFERENT from any previous run \u2014 vary scenarios, names, numbers, and contexts.
@@ -1907,6 +1988,77 @@ async function handlePutStats(payload) {
   }
 
   return ok({ ok: true });
+}
+
+// ============================================================
+// §118 Adaptive State persistence — read/write the kid's pacing
+// engine state. Stored on staar-stats under a dedicated slug so it
+// doesn't collide with the existing per-grade stats blob.
+// ============================================================
+
+function adaptiveSlugFor(state, grade, subject) {
+  const s = String(state || 'texas').toLowerCase();
+  const g = String(grade || '').toLowerCase();
+  const subj = String(subject || 'math').toLowerCase();
+  return `adaptive#${s}#${g}#${subj}`;
+}
+
+async function readAdaptiveState(userId, state, grade, subject) {
+  if (!userId) return adaptive.defaultState();
+  const slug = adaptiveSlugFor(state, grade, subject);
+  try {
+    const r = await ddb.send(new GetCommand({
+      TableName: STATS_TABLE,
+      Key: { userId, slug }
+    }));
+    if (r.Item && r.Item.data && typeof r.Item.data === 'object') {
+      return r.Item.data;
+    }
+  } catch (e) {
+    console.warn('[adaptive] read failed:', e.message);
+  }
+  return adaptive.defaultState();
+}
+
+async function writeAdaptiveState(userId, state, grade, subject, data) {
+  if (!userId) return;
+  const slug = adaptiveSlugFor(state, grade, subject);
+  try {
+    await ddb.send(new PutCommand({
+      TableName: STATS_TABLE,
+      Item: { userId, slug, data, updatedAt: Date.now() }
+    }));
+  } catch (e) {
+    console.warn('[adaptive] write failed:', e.message);
+  }
+}
+
+async function handleGetAdaptive(payload) {
+  const auth = await verifyToken(payload.token);
+  const grade = payload.grade ? String(payload.grade).toLowerCase() : null;
+  // Ship a TEKS→strand slice for the requested grade so the subject
+  // picker can decorate unit cards (Mastered / Try this next) without
+  // its own copy of the snapshot. Always included, even for anon
+  // callers — reference data, not personal.
+  const teksToStrand = {};
+  const snapshot = adaptive._teksSnapshot && adaptive._teksSnapshot();
+  if (grade && snapshot) {
+    for (const [id, rec] of Object.entries(snapshot)) {
+      if (rec.g === grade) teksToStrand[id] = rec.s;
+    }
+  }
+  if (!auth) {
+    return ok({ summary: adaptive.summarize(adaptive.defaultState(), grade), teksToStrand });
+  }
+  const userId = auth.userId || auth.username;
+  const state = payload.state || 'texas';
+  const subject = payload.subject || 'math';
+  const st = await readAdaptiveState(userId, state, grade, subject);
+  return ok({
+    summary: adaptive.summarize(st, grade),
+    teksToStrand,
+    state, grade, subject
+  });
 }
 
 async function handleGetStats(payload) {
@@ -4819,7 +4971,52 @@ async function handleRecordEvent(payload) {
     })).catch(() => {});
   }
 
-  return ok({ recorded: true });
+  // §118 — Adaptive pacing update. Read kid's adaptiveState, apply
+  // the answer signal (strand ELO + session streak + mastery), write
+  // back. Best-effort and non-blocking; pacing field in the response
+  // lets the frontend show the "stepping up" pill on bumps. Skips
+  // anon (guest) callers and rows without a valid TEKS in poolKey.
+  let pacing = null;
+  if (
+    auth && (auth.username || auth.userId) &&
+    (eventType === 'answered-correct' || eventType === 'answered-incorrect') &&
+    poolKey
+  ) {
+    const teksId = adaptive.teksFromPoolKey(poolKey);
+    if (teksId) {
+      try {
+        const userIdForAdaptive = auth.userId || auth.username;
+        // Pull state/grade/subject from the poolKey rather than the
+        // payload — the frontend ALREADY sends these but parsing the
+        // poolKey is authoritative.
+        const parts = String(poolKey).split('#');
+        const stateForAdaptive = parts[0] || state || 'texas';
+        const gradeForAdaptive = parts[1] || grade || null;
+        const subjectForAdaptive = parts[2] || subject || 'math';
+        const prev = await readAdaptiveState(
+          userIdForAdaptive, stateForAdaptive, gradeForAdaptive, subjectForAdaptive
+        );
+        const itemBand = (meta && Number.isInteger(meta.itemBand))
+          ? meta.itemBand : 2;
+        const result = adaptive.recordAnswer(prev, {
+          sessionId,
+          teks: teksId,
+          isCorrect: eventType === 'answered-correct',
+          contentId,
+          itemBand
+        });
+        // Write asynchronously — don't block the response on it.
+        writeAdaptiveState(
+          userIdForAdaptive, stateForAdaptive, gradeForAdaptive, subjectForAdaptive, result.state
+        ).catch(() => {});
+        pacing = result.pacing;
+      } catch (e) {
+        console.warn('[adaptive] recordAnswer failed:', e.message);
+      }
+    }
+  }
+
+  return ok({ recorded: true, pacing });
 }
 
 async function handleReportContent(payload) {

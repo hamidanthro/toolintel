@@ -162,11 +162,25 @@
     function render() {
       if (state === 'idle') {
         removeFixedBar();
-        container.innerHTML =
-          '<button type="button" class="voice-rec-btn voice-rec-start" aria-label="Start recording">' +
-            '<span class="voice-rec-icon" aria-hidden="true">🎙️</span>' +
-            '<span class="voice-rec-label">Record yourself reading</span>' +
-          '</button>';
+        // §120 — when mounted with data-icon-only="1" (passage card
+        // audio row), render a compact Tabler-microphone-only button
+        // matched to the Listen-button shape. Default render keeps
+        // the pill with the OS emoji for back-compat with other
+        // surfaces that mount the recorder.
+        const iconOnly = container.getAttribute('data-icon-only') === '1';
+        const TI_MIC = '<svg class="voice-rec-icon-svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>';
+        if (iconOnly) {
+          container.innerHTML =
+            '<button type="button" class="voice-rec-btn voice-rec-start" aria-label="Record yourself reading" title="Record">' +
+              TI_MIC +
+            '</button>';
+        } else {
+          container.innerHTML =
+            '<button type="button" class="voice-rec-btn voice-rec-start" aria-label="Start recording">' +
+              '<span class="voice-rec-icon" aria-hidden="true">' + TI_MIC + '</span>' +
+              '<span class="voice-rec-label">Record yourself reading</span>' +
+            '</button>';
+        }
         container.querySelector('.voice-rec-start').addEventListener('click', startRecording);
         return;
       }

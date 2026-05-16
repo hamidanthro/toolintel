@@ -288,6 +288,102 @@
         try { navigator.vibrate && navigator.vibrate(10); } catch (_) {}
       }, { passive: true });
     });
+
+    // §118 — Adaptive overlay. Fetch the kid's pacing summary +
+    // TEKS→strand map from the lambda, then decorate the topic
+    // cards with "Try this next" (gold pill on the recommended
+    // strand) and "Mastered" (subtle on strands the kid has cleared).
+    // Soft signals only — every card stays tappable. Auth-less
+    // visitors get the no-op fallback (summary.recommended is null
+    // for an empty default state).
+    try { await applyAdaptiveOverlay(curr.units); } catch (e) {
+      console.warn('[subject-page] adaptive overlay failed:', e);
+    }
+  }
+
+  // §118 — Topic-card decoration based on adaptive-engine state.
+  async function applyAdaptiveOverlay(units) {
+    let summary = null;
+    let teksToStrand = null;
+    try {
+      const auth = window.STAARAuth;
+      const token = (auth && auth.token && auth.token()) || null;
+      const endpoint = (auth && auth.endpoint && auth.endpoint())
+        || window.STAAR_TUTOR_ENDPOINT
+        || window.TUTOR_ENDPOINT;
+      if (!endpoint) return;
+      const resp = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'getAdaptive',
+          token, state: STATE_SLUG || 'texas',
+          grade: GRADE_SLUG, subject: 'math'
+        })
+      });
+      if (!resp.ok) return;
+      const data = await resp.json();
+      summary = data && data.summary;
+      teksToStrand = data && data.teksToStrand;
+    } catch (e) {
+      return; // best-effort
+    }
+    if (!summary || !teksToStrand) return;
+    const masteredSet = new Set(summary.mastered || []);
+    const recommended = summary.recommended || null;
+    if (!recommended && masteredSet.size === 0) return; // nothing to show
+
+    // Determine each unit's dominant strand from its lessons' TEKS.
+    const dominantStrandFor = (unit) => {
+      const counts = {};
+      (unit.lessons || []).forEach(l => {
+        const strand = l && l.teks && teksToStrand[l.teks];
+        if (strand) counts[strand] = (counts[strand] || 0) + 1;
+      });
+      let best = null, bestN = 0;
+      for (const [s, n] of Object.entries(counts)) {
+        if (n > bestN) { best = s; bestN = n; }
+      }
+      return best;
+    };
+
+    units.forEach(unit => {
+      const strand = dominantStrandFor(unit);
+      if (!strand) return;
+      const card = document.querySelector(`.topic-card[data-topic="${cssEscape(unit.id)}"]`);
+      if (!card) return;
+      // Mastered: subtle visual deprioritise + pill.
+      if (masteredSet.has(strand)) {
+        card.classList.add('topic-card--mastered');
+        if (!card.querySelector('.topic-card-pill')) {
+          const pill = document.createElement('span');
+          pill.className = 'topic-card-pill topic-card-pill--mastered';
+          pill.setAttribute('aria-label', 'Mastered');
+          pill.innerHTML = '<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg><span>Mastered</span>';
+          card.appendChild(pill);
+        }
+      }
+      // Recommended: gold accent + "Try this next" pill. Skip if also
+      // mastered (defensive — shouldn't happen since the engine
+      // excludes mastered strands from recommendations, but covers
+      // races).
+      if (strand === recommended && !masteredSet.has(strand)) {
+        card.classList.add('topic-card--recommended');
+        if (!card.querySelector('.topic-card-pill--rec')) {
+          const pill = document.createElement('span');
+          pill.className = 'topic-card-pill topic-card-pill--rec';
+          pill.setAttribute('aria-label', 'Try this next');
+          pill.innerHTML = '<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="5 12 19 12"/><polyline points="12 5 19 12 12 19"/></svg><span>Try this next</span>';
+          card.appendChild(pill);
+        }
+      }
+    });
+  }
+
+  // Minimal CSS.escape shim — attribute selectors need quoted ids.
+  function cssEscape(s) {
+    if (typeof CSS !== 'undefined' && CSS.escape) return CSS.escape(s);
+    return String(s).replace(/(["\\])/g, '\\$1');
   }
 
   document.addEventListener('DOMContentLoaded', init);

@@ -306,47 +306,55 @@
       : `<a class="practice-pts-chip practice-pts-chip--guest" href="index.html#auth" aria-label="Sign in">Sign in</a>`;
     const soundOn = !(window.STAARPrefs && window.STAARPrefs.get && window.STAARPrefs.get().sound === false);
     const userDisplay = u ? (u.displayName || u.username || '') : '';
+    // §120 — Tabler outline SVG icons for overflow menu. The legacy
+    // OS-emoji icons (🔊 🔇 📊 ↻ 🏠 👤 ⎋) rendered inconsistently
+    // across iOS / Android / desktop. Replaced with currentColor
+    // Tabler icons so they tint with the menu's text color.
+    const TI_VOL_ON = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>';
+    const TI_VOL_OFF = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
+    const TI_CHART = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>';
+    const TI_REFRESH = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>';
+    const TI_HOME = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>';
+    const TI_USER = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+    const TI_LOGOUT = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>';
     bar.innerHTML = `
       <nav class="practice-breadcrumb" aria-label="Practice context">
         <a class="practice-breadcrumb-back" href="${backHref}" aria-label="Back">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
         </a>
-        <span class="practice-breadcrumb-title">${escapePcb(gradeName)} ${escapePcb(subjLabel)}</span>
+        <span class="practice-breadcrumb-title">
+          <span class="practice-breadcrumb-title-main">${escapePcb(gradeName)} ${escapePcb(subjLabel)}</span>
+          <span class="practice-breadcrumb-title-sub" id="practice-page-subtitle"></span>
+        </span>
         ${ptsChip}
         <button type="button" class="practice-breadcrumb-overflow" aria-label="More actions" aria-haspopup="menu" aria-expanded="false">
           <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
         </button>
         <div class="practice-breadcrumb-menu" role="menu" hidden>
           <button type="button" role="menuitem" class="practice-breadcrumb-menu-item" data-action="sound" aria-pressed="${soundOn ? 'true' : 'false'}">
-            <span class="practice-breadcrumb-menu-ico" aria-hidden="true">${soundOn ? '🔊' : '🔇'}</span>
+            <span class="practice-breadcrumb-menu-ico" aria-hidden="true">${soundOn ? TI_VOL_ON : TI_VOL_OFF}</span>
             <span class="practice-breadcrumb-menu-label">Sound</span>
             <span class="practice-breadcrumb-menu-state">${soundOn ? 'On' : 'Off'}</span>
           </button>
-          <!-- §81 "Switch state" item removed 2026-05-14 — Texas-only
-               product per memory rule (feedback_texas_only.md). The
-               item was a no-op TODO; surfacing a "Switch state" menu
-               item that always says "TX" with no other choices is
-               affordance-pollution. If multi-state ever ships, this
-               is the right home for the picker. -->
           <button type="button" role="menuitem" class="practice-breadcrumb-menu-item" data-action="progress">
-            <span class="practice-breadcrumb-menu-ico" aria-hidden="true">📊</span>
+            <span class="practice-breadcrumb-menu-ico" aria-hidden="true">${TI_CHART}</span>
             <span class="practice-breadcrumb-menu-label">Show progress</span>
           </button>
           <button type="button" role="menuitem" class="practice-breadcrumb-menu-item" data-action="restart">
-            <span class="practice-breadcrumb-menu-ico" aria-hidden="true">↻</span>
+            <span class="practice-breadcrumb-menu-ico" aria-hidden="true">${TI_REFRESH}</span>
             <span class="practice-breadcrumb-menu-label">Restart unit</span>
           </button>
           <button type="button" role="menuitem" class="practice-breadcrumb-menu-item" data-action="home">
-            <span class="practice-breadcrumb-menu-ico" aria-hidden="true">🏠</span>
+            <span class="practice-breadcrumb-menu-ico" aria-hidden="true">${TI_HOME}</span>
             <span class="practice-breadcrumb-menu-label">Exit to home</span>
           </button>
           ${u ? `<div class="practice-breadcrumb-menu-sep" role="separator"></div>
           <a role="menuitem" class="practice-breadcrumb-menu-item practice-breadcrumb-menu-item--user" href="myspace.html">
-            <span class="practice-breadcrumb-menu-ico" aria-hidden="true">👤</span>
+            <span class="practice-breadcrumb-menu-ico" aria-hidden="true">${TI_USER}</span>
             <span class="practice-breadcrumb-menu-label">${escapePcb(userDisplay)}</span>
           </a>
           <button type="button" role="menuitem" class="practice-breadcrumb-menu-item" data-action="signout">
-            <span class="practice-breadcrumb-menu-ico" aria-hidden="true">⎋</span>
+            <span class="practice-breadcrumb-menu-ico" aria-hidden="true">${TI_LOGOUT}</span>
             <span class="practice-breadcrumb-menu-label">Sign out</span>
           </button>` : ''}
         </div>
@@ -1708,13 +1716,19 @@
       // .q-cta-indicator at >=768px).
       try { installCtaIndicator(qbox); } catch (_) {}
       // Lake: record question shown (Prompt I1)
+      // §118 — also surface teks + type so lake-events can bundle them
+      // into the answered-event meta. The lambda's adaptive engine
+      // needs `teks` to look up the strand and `type` to infer the
+      // item's difficulty band (e.g. computation = -1, data-interp = +1).
       if (window.GradeEarnLake && q.contentId) {
         window.GradeEarnLake.onQuestionShown({
           contentId: q.contentId,
           poolKey: q.poolKey,
           state: STATE_SLUG_RESOLVED,
           grade: curr.grade,
-          subject: SUBJECT_SLUG_RESOLVED
+          subject: SUBJECT_SLUG_RESOLVED,
+          teks: q.teks || (q._lesson && q._lesson.teks) || null,
+          type: q.type || 'multiple_choice'
         });
       }
     }
@@ -1784,6 +1798,26 @@
       if (nameEl) nameEl.textContent = topicName || '';
       if (idEl)   idEl.textContent   = skillId || '';
       if (sepEl)  sepEl.hidden = !(topicName && skillId);
+      // §120 — also mirror the topic name into the new two-line page
+      // header subtitle ("Earth Science · Fossils" style). The legacy
+      // .practice-topic-line is hidden by CSS in §120 but the writer
+      // is preserved so other consumers (skill ID, time chip) keep
+      // working. Subtitle layout: "{domain} · {topic}" when both are
+      // available; "{topic}" alone otherwise; hidden if nothing.
+      const subEl = document.getElementById('practice-page-subtitle');
+      if (subEl) {
+        const subjLabel = SUBJECT_SLUG === 'math' ? 'Math' :
+                         SUBJECT_SLUG === 'reading' ? 'Reading' :
+                         SUBJECT_SLUG === 'science' ? 'Science' :
+                         SUBJECT_SLUG === 'social-studies' ? 'Social Studies' :
+                         SUBJECT_SLUG;
+        const domain = (q && q._unit && q._unit.domain) ? String(q._unit.domain) : '';
+        const parts = [];
+        if (domain) parts.push(domain);
+        if (topicName) parts.push(topicName);
+        subEl.textContent = parts.length ? parts.join(' · ') : '';
+        subEl.hidden = parts.length === 0;
+      }
       // Start the session timer on first call.
       if (!_practiceStartedAt) {
         _practiceStartedAt = Date.now();
@@ -1958,6 +1992,20 @@
       // §74 Phase 3 — wire the new reading passage card (markdown body
       // via ReadingRender; CSS counter renders paragraph numbers).
       const passageCard = qbox.querySelector('.reading-passage-card');
+      if (passageCard) {
+        // §120 — Hide-passage footer toggle. Flips .is-collapsed on
+        // the card; CSS hides the body and rotates the chevron.
+        const footerToggle = passageCard.querySelector('[data-role="toggle-passage"]');
+        if (footerToggle && !footerToggle.dataset.wired) {
+          footerToggle.dataset.wired = '1';
+          footerToggle.addEventListener('click', () => {
+            const nowCollapsed = passageCard.classList.toggle('is-collapsed');
+            footerToggle.setAttribute('aria-pressed', nowCollapsed ? 'true' : 'false');
+            const lbl = footerToggle.querySelector('.reading-passage-toggle-label-text');
+            if (lbl) lbl.textContent = nowCollapsed ? 'Show passage' : 'Hide passage';
+          });
+        }
+      }
       if (passageCard && q.passage && q.passage.body) {
         // Speaker — read plain text (no inline numbers, no markdown chars).
         const speakBtn = passageCard.querySelector('[data-role="speak-passage"]');
@@ -2018,11 +2066,23 @@
         }
       }
       // Lake: track radio choice changes for rapid-flip detection (Prompt I1)
+      // §120 — also mirror the radio's checked-state into a CSS class
+      // on the parent <label class="choice"> so the gold-selected
+      // visual treatment paints WITHOUT a CSS :has() dependency (Safari
+      // 15 + older Android Chrome would otherwise miss it).
       if (window.GradeEarnLake) {
         form.querySelectorAll('input[type="radio"][name="ans"]').forEach(r => {
           r.addEventListener('change', () => window.GradeEarnLake.onChoiceFlip());
         });
       }
+      // §120 — selected-state class management
+      form.querySelectorAll('input[type="radio"][name="ans"]').forEach(r => {
+        r.addEventListener('change', () => {
+          form.querySelectorAll('.choice').forEach(c => c.classList.remove('is-selected'));
+          const lbl = r.closest('.choice');
+          if (lbl) lbl.classList.add('is-selected');
+        });
+      });
       // Esc clears the typed answer (free-response only).
       const numInput = form.querySelector('.num-input');
       if (numInput) {
@@ -2086,6 +2146,34 @@
         // §73 — Check cancels any in-flight question speech.
         try { if (window.Speech) window.Speech.stop(); } catch (_) {}
         const isCorrect = checkAnswer(q, userAnswer);
+        // §120 — paint post-check state on the form + choices so the
+        // gold-correct / red-incorrect visuals show before showFeedback
+        // runs the full feedback panel. The .choice rows get
+        // .is-correct or .is-incorrect; the form gets .is-checked which
+        // CSS uses to switch the choices into post-check styling.
+        try {
+          form.classList.add('is-checked');
+          if (q.type === 'multiple_choice' && Array.isArray(q.choices)) {
+            const pickedIdx = q.choices.indexOf(userAnswer);
+            const correctIdx = Number.isInteger(q.correctIndex)
+              ? q.correctIndex
+              : (q.answer != null ? q.choices.indexOf(q.answer) : -1);
+            form.querySelectorAll('.choice').forEach((lbl, i) => {
+              if (i === correctIdx) lbl.classList.add('is-correct');
+              else if (i === pickedIdx && pickedIdx !== correctIdx) lbl.classList.add('is-incorrect');
+            });
+          }
+          // §120 — morph the earn label to "✓ +N¢ earned" briefly so the
+          // kid feels the cents land before the next question loads.
+          const earnEl = qbox.querySelector('[data-role="earn-label"]');
+          if (earnEl) {
+            const cents = difficultyCents(q);
+            if (isCorrect) {
+              earnEl.classList.add('q-earn-label--earned');
+              earnEl.innerHTML = `<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg><span>+${cents}¢ earned</span>`;
+            }
+          }
+        } catch (_) {}
         // Lake: record answer event (Prompt I1)
         if (window.GradeEarnLake && q.contentId) {
           let pickedIdx = null;
@@ -2729,6 +2817,30 @@
           // Finishing a session counts toward the "finish a session"
           // and "practice for 2+ min" daily-quest tasks.
           window.Achievements.bumpDailyMission('session', 1);
+        }
+      } catch (_) {}
+      // §119 — Persist last unit + last session result on the journey
+      // record so the Continue card on grade.html can render
+      // "{subject} · {unit}" + "You got X of Y last time" instead of
+      // a generic "Pick up where you left off". Only writes when the
+      // session had any real questions.
+      try {
+        const u = window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser();
+        if (u && u.username && questions.length > 0) {
+          const key = `staar.journey.${u.username}`;
+          const j = JSON.parse(localStorage.getItem(key) || '{}');
+          if (meta && meta.unit) {
+            j.lastUnit = meta.unit.id;
+            j.lastUnitTitle = meta.unit.title || j.lastUnitTitle || null;
+          }
+          j.lastSessionResult = {
+            correct,
+            total: questions.length,
+            subject: SUBJECT_SLUG,
+            unit: meta && meta.unit ? meta.unit.id : null,
+            at: new Date().toISOString()
+          };
+          localStorage.setItem(key, JSON.stringify(j));
         }
       } catch (_) {}
       const justMastered = perfect && sKey && !isLocked;
@@ -3823,11 +3935,39 @@
     } else if (q.passage && q.passage.text) {
       passageHtml = renderPassage(q.passage);
     }
-    // §74 — question-of-N navigator for reading sets. Renders only when a
-    // passage is present (math single-question flow doesn't need it).
-    const navHtml = (q.passage && Number.isFinite(idx) && Number.isFinite(total))
-      ? `<div class="reading-q-nav" aria-label="Question position">Question ${idx + 1} of ${total}</div>`
+    // §120 — Progress + earn strip. Replaces the legacy
+    // "Question N of M" text line with the gold-dash progression on
+    // the LEFT and "+X¢ if correct" on the RIGHT. Renders for any
+    // multi-question session (reading or math) when both idx and
+    // total are known; degrades to just the earn label otherwise.
+    const dashCount = Number.isFinite(total) ? Math.max(1, Math.min(10, total)) : 0;
+    const curIdx = Number.isFinite(idx) ? Math.max(0, idx) : 0;
+    const dashes = dashCount > 0
+      ? Array.from({ length: dashCount }, (_, i) => {
+          const cls = (i < curIdx) ? 'q-progress-dash q-progress-dash--done'
+                   : (i === curIdx) ? 'q-progress-dash q-progress-dash--current'
+                   : 'q-progress-dash';
+          return `<span class="${cls}" aria-hidden="true"></span>`;
+        }).join('')
       : '';
+    const navHtml = (dashCount > 0)
+      ? `<div class="q-progress-earn" aria-label="Question position and reward">
+          <div class="q-progress-earn-left">
+            <div class="q-progress-dashes">${dashes}</div>
+            <span class="q-progress-label">${curIdx + 1} of ${dashCount}</span>
+          </div>
+          <span class="q-earn-label" data-role="earn-label">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>
+            <span>+${cents}¢ if correct</span>
+          </span>
+        </div>`
+      : `<div class="q-progress-earn" aria-label="Reward">
+          <span></span>
+          <span class="q-earn-label" data-role="earn-label">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>
+            <span>+${cents}¢ if correct</span>
+          </span>
+        </div>`;
 
     // §99 — institutional all-caps eyebrow removed. The kid was
     // seeing "MEASUREMENT: PERIMETER & AREA · +4 PTS" in caps-gold
@@ -3898,37 +4038,55 @@
   // §74 Phase 3 — Reading passage card (markdown body via ReadingRender).
   // Mounted above the question card on every reading-flow question render.
   // Speaker icon wired by attachQuestionHandlers via [data-role="speak-passage"].
+  // §120 — rebuild: Listen + Record buttons cluster in the header (same
+  // 30px square shape, gold-tinted Listen vs neutral Record), footer
+  // Hide-passage toggle. Default-collapsed flag: if this passage was
+  // already shown on a prior question (same passageId in session
+  // store), open the card collapsed so the kid isn't re-reading.
   function renderReadingPassageCard(p) {
     if (!p || !p.body) return '';
     const title = String(p.title || '').replace(/^#{1,6}\s+/, '');
     const innerHtml = window.ReadingRender ? window.ReadingRender.renderPassage(p.body) : '';
     const speechSupported = window.Speech && window.Speech._isSupported && window.Speech._isSupported();
-    const speakerHtml = speechSupported
-      ? `<button type="button" class="speech-btn passage-speech-btn" data-role="speak-passage" aria-label="Read passage aloud" aria-pressed="false">
-          ${SPEECH_ICON_HTML}
+    // Listen button — Tabler ti-volume. Default state is NOT muted;
+    // tapping starts TTS, tapping again pauses. The old speaker-icon
+    // pair (muted + active) defaulted to MUTED which kids who need
+    // read-aloud never discovered. §120 explicitly forbids that.
+    const listenHtml = speechSupported
+      ? `<button type="button" class="passage-audio-btn passage-audio-btn--listen speech-btn passage-speech-btn" data-role="speak-passage" aria-label="Read passage aloud" aria-pressed="false" title="Listen">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
         </button>`
       : '';
-    // Tier 6 AE — record-yourself slot (kid taps to record reading the
-    // passage aloud, then plays back). Mount handled in
-    // attachQuestionHandlers via [data-role="voice-mount"]; local-only,
-    // no upload.
+    // Record button — Tabler ti-microphone. voice-recorder.js mounts
+    // its internal button into [data-role="voice-mount"]; CSS in §120
+    // collapses the label so only the icon renders, matched in size
+    // to the Listen button.
     const voiceMount = (window.GEVoice && window.GEVoice.supported && window.GEVoice.supported())
-      ? '<div class="voice-recorder-slot" data-role="voice-mount"></div>'
+      ? '<div class="voice-recorder-slot" data-role="voice-mount" data-icon-only="1"></div>'
       : '';
-    // Voice slot sits ABOVE the passage body so a kid on a phone
-    // doesn't have to scroll past every paragraph to find the record
-    // button. While recording, the slot promotes itself to a
-    // fixed-bottom bar (see voice-recorder.js + CSS) so the timer +
-    // stop control are always reachable while the kid reads.
+    // Default-collapsed for subsequent questions on the same passage.
+    // The first question of a passage opens expanded; once any Q for
+    // this passageId fires, future renders flip to collapsed (kid
+    // already read it). Tracked on a session-scoped Set.
+    const pid = p.passageId || '';
+    if (!window._geSeenPassageIds) window._geSeenPassageIds = new Set();
+    const seenBefore = pid && window._geSeenPassageIds.has(pid);
+    const collapsedCls = seenBefore ? ' is-collapsed' : '';
+    if (pid) window._geSeenPassageIds.add(pid);
     return `
-      <article class="reading-passage-card" data-state="default" data-passage-id="${escapeAttr(p.passageId || '')}">
+      <article class="reading-passage-card${collapsedCls}" data-state="default" data-passage-id="${escapeAttr(pid)}">
         <header class="reading-passage-card-header">
           <h2 class="reading-passage-card-title">${escapeHtml(title)}</h2>
-          ${speakerHtml}
-          <button type="button" class="reading-passage-expand" data-role="expand-passage" aria-label="Expand passage" aria-pressed="false" title="Expand">⤢</button>
+          <div class="reading-passage-card-audio">
+            ${listenHtml}
+            ${voiceMount}
+          </div>
         </header>
-        ${voiceMount}
         <div class="reading-passage-card-body">${innerHtml}</div>
+        <button type="button" class="reading-passage-toggle-footer" data-role="toggle-passage" aria-pressed="${seenBefore ? 'true' : 'false'}">
+          <span class="reading-passage-toggle-label-text">${seenBefore ? 'Show passage' : 'Hide passage'}</span>
+          <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>
+        </button>
       </article>`;
   }
 
@@ -4397,6 +4555,67 @@
       t.classList.remove('show');
       setTimeout(() => t.remove(), 250);
     }, 2000);
+  }
+
+  // §118 — Adaptive pacing pill. Fired when the lambda's adaptive
+  // engine bumps the kid's difficulty band on the most recent answer
+  // (cc ≥ 5 → band++; cw ≥ 2 → band--). The pill anchors above the
+  // question card area for ~4s. Reduced-motion users get the static
+  // text without the entrance animation.
+  let _lastPacingPill = 0;
+  function showAdaptivePill(pacing) {
+    if (!pacing) return;
+    // Throttle: at most one pill per 3 seconds. Prevents stacking if
+    // the kid streaks fast.
+    const now = Date.now();
+    if (now - _lastPacingPill < 3000) return;
+    _lastPacingPill = now;
+
+    let label = null;
+    let kind = null;
+    if (pacing.bumped === 'up') {
+      label = 'Stepping up'; kind = 'up';
+    } else if (pacing.bumped === 'down') {
+      label = 'Easing back'; kind = 'down';
+    } else if (pacing.mastered && pacing.comfortNudge && pacing.rec) {
+      label = 'Ready for the next strand'; kind = 'rec';
+    } else {
+      return;
+    }
+
+    // Strip any previous pill so we never stack.
+    const old = document.querySelector('.adaptive-pill');
+    if (old) old.remove();
+
+    const pill = document.createElement('div');
+    pill.className = `adaptive-pill adaptive-pill--${kind}`;
+    pill.setAttribute('role', 'status');
+    pill.setAttribute('aria-live', 'polite');
+    pill.innerHTML = `
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        ${kind === 'up'
+          ? '<polyline points="18 15 12 9 6 15"/>'
+          : kind === 'down'
+            ? '<polyline points="6 9 12 15 18 9"/>'
+            : '<path d="M5 12h14"/><polyline points="12 5 19 12 12 19"/>'}
+      </svg>
+      <span>${label}</span>`;
+    document.body.appendChild(pill);
+    requestAnimationFrame(() => pill.classList.add('show'));
+    setTimeout(() => {
+      pill.classList.remove('show');
+      setTimeout(() => pill.remove(), 250);
+    }, 3500);
+  }
+  // Wire the pacing pill once. The CustomEvent fires from lake-events
+  // whenever the lambda's recordEvent response carries a `pacing`
+  // field — happens on every answered-correct / answered-incorrect
+  // when the kid is signed in.
+  if (!window._geAdaptivePillBound) {
+    window._geAdaptivePillBound = true;
+    window.addEventListener('gradeearn:pacing', (e) => {
+      try { showAdaptivePill(e && e.detail && e.detail.pacing); } catch (_) {}
+    });
   }
 
   function flashRestart() {

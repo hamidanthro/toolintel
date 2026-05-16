@@ -12113,17 +12113,559 @@ body.grade-page > * {
   background: rgba(251, 191, 36, 0.14);
   color: #fff;
 }
-/* §113 — Fun facts chip on the grade page More-ways row. Purple
-   accent to differentiate from gold (mock/tests) + blue (review). */
+/* §117 — Fun facts chip uses the brand gold (was purple). The §114-§116
+   Discovery Deck moved the brand to gold-only; this chip is the deck's
+   entry point and should match. */
 .subject-extra-chip--facts {
-  border-color: rgba(167, 139, 250, 0.30);
-  color: #c4b5fd;
-  background: rgba(167, 139, 250, 0.06);
+  border-color: rgba(251, 191, 36, 0.30);
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.06);
 }
 .subject-extra-chip--facts:hover {
-  border-color: #a78bfa;
-  background: rgba(167, 139, 250, 0.14);
+  border-color: #fbbf24;
+  background: rgba(251, 191, 36, 0.14);
   color: #fff;
+}
+
+/* §117 — Tabler SVG icons on extras chips. Sized to match the chip
+   typography, currentColor inherits the chip's text color so they
+   tint with the brand gold on hover. */
+.subject-extra-chip svg {
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+/* §117 — Math subject icon is a typographic "123" in serif gold, not
+   an SVG. Renders inside the same .subject-card-icon plate as the
+   other Tabler outlines. Letter-spacing keeps the three digits
+   feeling like a glyph, not a number. */
+.subject-card-icon-glyph {
+  font-family: 'Instrument Serif', serif;
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: currentColor;
+}
+
+/* ============================================================
+   §118 — Adaptive Pacing UI
+   ============================================================
+   Three surfaces:
+     • In-session pill (.adaptive-pill) — pops above the question card
+       when the lambda's adaptive engine bumps the difficulty band.
+       Three flavours: --up (gold), --down (slate), --rec (gold).
+     • Topic card "Mastered" tag — subtle, kept tappable. Greys the
+       card border slightly without dimming the text (kids hate
+       seeing their accomplishments dimmed).
+     • Topic card "Try this next" pill — gold accent on the strand
+       the engine recommends. Pulls attention without being shouty.
+   All animations gated on prefers-reduced-motion.
+   ============================================================ */
+
+.adaptive-pill {
+  position: fixed;
+  top: 76px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-10px);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(20, 29, 51, 0.96) 0%, rgba(20, 29, 51, 0.86) 100%);
+  border: 1px solid rgba(251, 191, 36, 0.50);
+  color: #fbbf24;
+  box-shadow: 0 8px 24px -6px rgba(251, 191, 36, 0.30),
+              0 0 0 1px rgba(251, 191, 36, 0.10) inset;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9000;
+  transition: opacity 240ms ease, transform 240ms ease;
+}
+.adaptive-pill.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.adaptive-pill--down {
+  color: rgba(255, 255, 255, 0.85);
+  border-color: rgba(148, 163, 184, 0.40);
+  box-shadow: 0 8px 24px -6px rgba(148, 163, 184, 0.20);
+}
+.adaptive-pill--rec {
+  /* Same gold as --up, but the icon arrow points right (next-strand) */
+}
+@media (max-width: 480px) {
+  .adaptive-pill {
+    top: 64px;
+    font-size: 12px;
+    padding: 7px 14px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .adaptive-pill,
+  .adaptive-pill.show {
+    transition: none;
+    transform: translateX(-50%);
+  }
+}
+
+/* Topic-card adaptive overlays (subject.html picker) */
+.topic-card-pill {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  pointer-events: none;
+}
+.topic-card-pill--mastered {
+  color: rgba(255, 255, 255, 0.62);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+.topic-card-pill--rec {
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.10);
+  border: 1px solid rgba(251, 191, 36, 0.40);
+  box-shadow: 0 0 12px -2px rgba(251, 191, 36, 0.35);
+}
+/* Wrap the card so the pill can absolute-position relative to it.
+   .topic-card is typically the anchor — give it position: relative
+   so the pill anchors locally rather than escaping to the wrap. */
+.topic-card { position: relative; }
+.topic-card--mastered {
+  /* Don't dim the text. Just soften the border so the eye reads
+     this as "already cleared" without losing the affordance. */
+  border-color: rgba(255, 255, 255, 0.06) !important;
+}
+.topic-card--recommended {
+  border-color: rgba(251, 191, 36, 0.45) !important;
+  box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.10) inset,
+              0 8px 26px -10px rgba(251, 191, 36, 0.32);
+}
+@media (hover: hover) {
+  .topic-card--recommended:hover {
+    border-color: #fbbf24 !important;
+    box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.18) inset,
+                0 14px 36px -10px rgba(251, 191, 36, 0.45);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .topic-card--recommended { box-shadow: none; }
+}
+
+/* ============================================================
+   §119 — Home IA rebuild (post-login grade.html)
+   ============================================================
+   Component stack:
+     1. .home-greeting       — Hi {name} 👋 + state · grade
+     2. .earn-hero           — daily-target progress bar
+     3. .continue-card       — last-practiced unit + CTA
+     4. .subject-tiles-grid  — 3-tile mini subject picker
+     5. .mindblower-teaser   — fun-fact deep-link
+     6. .more-ways           — collapsed accordion of secondary modes
+
+   All gold-only per §117 brand. Mobile-first; desktop scales up via
+   max-width. Each section is self-contained — kids on cold-start
+   skip greeting + continue-card cleanly without leaving gaps.
+   ============================================================ */
+
+.grade-content--v2 {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 16px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+@media (min-width: 768px) {
+  .grade-content--v2 { padding-top: 12px; gap: 22px; }
+}
+
+/* ---------- Greeting ---------- */
+.home-greeting {
+  margin-top: 4px;
+}
+.home-greeting-title {
+  margin: 0 0 4px;
+  font-family: 'Instrument Serif', serif;
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+.home-greeting-wave {
+  display: inline-block;
+  margin-left: 4px;
+  /* The OS-emoji wave is the one place we keep an emoji — it reads as
+     a real wave, not as a system icon, and lives in body copy not
+     chrome. Bigger so it sits on baseline with the serif Hi. */
+  font-size: 24px;
+}
+.home-greeting-sub {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.005em;
+}
+@media (min-width: 768px) {
+  .home-greeting-title { font-size: 40px; }
+}
+
+/* ---------- Earn-today hero ---------- */
+.earn-hero {
+  padding: 14px 18px;
+  background: linear-gradient(180deg,
+    rgba(40, 53, 91, 0.5) 0%,
+    rgba(20, 29, 51, 0.5) 100%);
+  border: 1px solid rgba(251, 191, 36, 0.22);
+  border-radius: 14px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+}
+.earn-hero-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.earn-hero-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: -0.005em;
+}
+.earn-hero-target {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.55);
+  font-variant-numeric: tabular-nums;
+}
+.earn-hero-earned {
+  font-weight: 700;
+  color: #fbbf24;
+}
+.earn-hero-bar {
+  position: relative;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.earn-hero-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+  border-radius: 999px;
+  transition: width 320ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.earn-hero-sub {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.005em;
+}
+@media (prefers-reduced-motion: reduce) {
+  .earn-hero-bar-fill { transition: none; }
+}
+
+/* ---------- Continue card ---------- */
+.continue-card {
+  display: block;
+  padding: 18px;
+  text-decoration: none;
+  background: linear-gradient(180deg,
+    rgba(30, 41, 75, 0.7) 0%,
+    rgba(15, 23, 42, 0.7) 100%);
+  border: 1px solid rgba(251, 191, 36, 0.32);
+  border-radius: 16px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset,
+              0 8px 24px -10px rgba(251, 191, 36, 0.18);
+  transition: transform 180ms cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 180ms ease,
+              border-color 180ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+@media (hover: hover) {
+  .continue-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(251, 191, 36, 0.55);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset,
+                0 14px 32px -10px rgba(251, 191, 36, 0.32);
+  }
+}
+.continue-card:active { transform: scale(0.99); }
+.continue-card-eyebrow {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: #fbbf24;
+  margin-bottom: 6px;
+}
+.continue-card-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.continue-card-body {
+  flex: 1;
+  min-width: 0;
+}
+.continue-card-title {
+  margin: 0 0 4px;
+  font-family: 'Instrument Serif', serif;
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+.continue-card-sub {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.62);
+}
+.continue-card-progress {
+  display: inline-flex;
+  gap: 4px;
+}
+.continue-dot {
+  width: 24px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.10);
+}
+.continue-dot--correct {
+  background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+}
+.continue-card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  color: #0a0f1f;
+  flex-shrink: 0;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+}
+@media (max-width: 380px) {
+  .continue-card-title { font-size: 20px; }
+  .continue-card-cta { padding: 9px 14px; font-size: 12px; }
+}
+
+/* ---------- Subject tiles (3-up grid) ---------- */
+.subject-tiles {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.subject-tiles-head { padding: 0; }
+.subject-tiles-eyebrow {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+.subject-tiles-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.subject-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 18px 10px;
+  min-height: 96px;
+  background: linear-gradient(180deg,
+    rgba(40, 53, 91, 0.4) 0%,
+    rgba(20, 29, 51, 0.4) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: 'Inter';
+  transition: all 180ms cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+  text-align: center;
+}
+@media (hover: hover) {
+  .subject-tile:hover {
+    transform: translateY(-2px);
+    border-color: rgba(251, 191, 36, 0.40);
+    background: linear-gradient(180deg,
+      rgba(40, 53, 91, 0.6) 0%,
+      rgba(20, 29, 51, 0.6) 100%);
+    box-shadow: 0 8px 22px -10px rgba(251, 191, 36, 0.30);
+  }
+}
+.subject-tile:active { transform: scale(0.97); }
+.subject-tile-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.08);
+  border: 1px solid rgba(251, 191, 36, 0.22);
+  border-radius: 10px;
+}
+.subject-tile-icon .subject-card-icon-glyph {
+  font-family: 'Instrument Serif', serif;
+  font-size: 18px;
+}
+.subject-tile-name {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: #ffffff;
+}
+.subject-tile-footer {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: -2px;
+}
+.subject-tile--soon,
+.subject-tile--unavailable {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.subject-tile--soon .subject-tile-icon,
+.subject-tile--unavailable .subject-tile-icon {
+  filter: grayscale(0.6);
+  color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+.subject-tile--continue {
+  border-color: rgba(251, 191, 36, 0.35) !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .subject-tile { transition: none; }
+}
+
+/* ---------- Mind-Blower teaser ---------- */
+.mindblower-teaser {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: linear-gradient(180deg,
+    rgba(40, 53, 91, 0.45) 0%,
+    rgba(20, 29, 51, 0.45) 100%);
+  border: 1px solid rgba(251, 191, 36, 0.22);
+  border-radius: 12px;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.85);
+  transition: all 180ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+@media (hover: hover) {
+  .mindblower-teaser:hover {
+    border-color: rgba(251, 191, 36, 0.50);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px -10px rgba(251, 191, 36, 0.25);
+  }
+}
+.mindblower-teaser-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: #fbbf24;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.mindblower-teaser-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.78);
+  font-style: italic;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: 'Instrument Serif', serif;
+  font-style: normal;
+  font-size: 14px;
+  letter-spacing: -0.005em;
+}
+.mindblower-teaser-arrow {
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.55);
+}
+@media (max-width: 480px) {
+  .mindblower-teaser { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .mindblower-teaser-text { white-space: normal; font-size: 13px; }
+  .mindblower-teaser-arrow { align-self: flex-end; margin-top: -22px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mindblower-teaser { transition: none; }
+}
+
+/* ---------- More-ways accordion ---------- */
+.more-ways {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.more-ways-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.78);
+  cursor: pointer;
+  list-style: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.more-ways-summary::-webkit-details-marker { display: none; }
+.more-ways-chevron {
+  transition: transform 200ms ease;
+  color: rgba(255, 255, 255, 0.45);
+}
+.more-ways[open] .more-ways-chevron {
+  transform: rotate(180deg);
+}
+.more-ways-body {
+  padding: 0 16px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .more-ways-chevron { transition: none; }
 }
 
 /* G5: arrow slides right on hover, icon micro-tilts. The subject-card
@@ -17515,11 +18057,13 @@ body.grade-page .grade-content--minimal {
   padding: 0 16px;
 }
 
-/* Status bar — one inline row, no card, secondary colour. */
+/* Status bar — one inline row, no card, secondary colour.
+   §117: context chip removed (duplicated breadcrumb), so the bar is
+   chips-only and right-aligns under the breadcrumb. */
 .home-status-bar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 12px;
   margin: 8px 0 24px;
   padding: 6px 0;
@@ -31713,4 +32257,550 @@ body.facts-page--deck .deck-picker-tile-emoji {
   background: rgba(251, 191, 36, 0.10);
   border: 1px solid rgba(251, 191, 36, 0.28);
   border-radius: 10px;
+}
+
+/* ============================================================
+   §120 — Reading-comprehension question rebuild (May 17)
+   ============================================================
+   Target: question stem ALWAYS visible, passage collapsible (sticky
+   on scroll), text left-aligned (never justified), per-question
+   earning visible. Gold-only per design system; red used only as a
+   wrong-answer status color (not chrome).
+
+   Surfaces touched:
+     • .practice-context-bar  — two-line title (Grade N Subject /
+                                 Domain · Topic) + compact pts pill
+     • .practice-header--slim — old "Question N today · M right"
+                                 line hidden on the question card
+     • .reading-q-nav         — replaced visual contents with the
+                                 progress-earn strip (5 dashes +
+                                 "N of M" + "+X¢ if correct")
+     • .reading-passage-card  — Listen + Record audio in header,
+                                 Hide-passage toggle in footer
+     • .q-prompt              — wrapped in .q-stem block (gold-tinted
+                                 bg + 2px gold left border + eyebrow)
+     • .choice                — full-width letter-circle button rows
+                                 with gold-selected and post-check
+                                 correct/wrong states
+     • .q-cta                 — sticky full-width gold Check pill
+
+   All animations gated on prefers-reduced-motion. No new breakpoints.
+   ============================================================ */
+
+/* ---------- §120 Header — two-line title ---------- */
+body.practice-page .practice-breadcrumb {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 4px;
+}
+body.practice-page .practice-breadcrumb-back {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  transition: all 160ms ease;
+}
+body.practice-page .practice-breadcrumb-back:hover {
+  border-color: rgba(251, 191, 36, 0.45);
+  color: #fbbf24;
+}
+body.practice-page .practice-breadcrumb-title {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  font-family: 'Inter';
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: -0.005em;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+body.practice-page .practice-breadcrumb-title-sub {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 500;
+  font-family: 'Inter';
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.01em;
+}
+body.practice-page .practice-pts-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  background: rgba(251, 191, 36, 0.12);
+  border: 1px solid rgba(251, 191, 36, 0.36);
+  border-radius: 999px;
+  color: #fbbf24;
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-decoration: none;
+  white-space: nowrap;
+}
+body.practice-page .practice-pts-chip-suffix {
+  display: none;  /* §120 spec — drop "pts" word, just icon + number */
+}
+body.practice-page .practice-breadcrumb-overflow {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  color: rgba(255, 255, 255, 0.65);
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+body.practice-page .practice-breadcrumb-overflow:hover {
+  border-color: rgba(251, 191, 36, 0.45);
+  color: #fbbf24;
+}
+
+/* §120 — hide the legacy "Question N today · M right so far" line
+   on the practice card. The new progress-earn strip beneath the
+   passage carries the per-question position; the daily counter
+   moves to the home page's earn-hero (§119). */
+body.practice-page .practice-header--slim .practice-today-line {
+  display: none;
+}
+body.practice-page .practice-header--slim .practice-topic-line {
+  display: none;
+}
+body.practice-page .practice-header--slim {
+  margin: 0;
+  padding: 0;
+}
+
+/* ---------- §120 Progress + earn strip ---------- */
+.q-progress-earn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 2px 14px;
+  font-family: 'Inter';
+}
+.q-progress-earn-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.q-progress-dashes {
+  display: inline-flex;
+  gap: 4px;
+}
+.q-progress-dash {
+  width: 18px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(251, 191, 36, 0.30);
+  transition: background 200ms ease;
+}
+.q-progress-dash--done {
+  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+}
+.q-progress-dash--current {
+  background: #fbbf24;
+  box-shadow: 0 0 6px rgba(251, 191, 36, 0.55);
+}
+.q-progress-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.q-earn-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #fbbf24;
+  letter-spacing: -0.005em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.q-earn-label.q-earn-label--earned {
+  /* §120 — earned state stays gold per design system (no green/teal).
+     Brightened with a soft halo so it reads as "lit up" vs the
+     dimmer pre-check gold without violating the palette. */
+  color: #fbbf24;
+  text-shadow: 0 0 6px rgba(251, 191, 36, 0.55);
+}
+.q-earn-label svg { flex-shrink: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .q-progress-dash { transition: none; }
+}
+
+/* ---------- §120 Passage card ---------- */
+body.practice-page .reading-passage-card {
+  position: relative;
+  margin: 0 0 14px;
+  padding: 14px 16px 12px;
+  background: linear-gradient(180deg,
+    rgba(30, 41, 75, 0.55) 0%,
+    rgba(15, 23, 42, 0.55) 100%);
+  border: 1px solid rgba(251, 191, 36, 0.20);
+  border-radius: 14px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+}
+body.practice-page .reading-passage-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+body.practice-page .reading-passage-card-title {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-family: 'Inter';
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+  letter-spacing: -0.005em;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Audio controls (Listen + Record) — same visual weight, 28px squares */
+body.practice-page .reading-passage-card-audio {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+body.practice-page .passage-audio-btn {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  color: rgba(255, 255, 255, 0.78);
+  cursor: pointer;
+  transition: all 160ms ease;
+  padding: 0;
+}
+body.practice-page .passage-audio-btn:hover {
+  border-color: rgba(251, 191, 36, 0.45);
+  color: #fbbf24;
+}
+body.practice-page .passage-audio-btn--listen,
+body.practice-page .passage-audio-btn.speech-btn--playing {
+  background: rgba(251, 191, 36, 0.12);
+  border-color: rgba(251, 191, 36, 0.40);
+  color: #fbbf24;
+}
+body.practice-page .reading-passage-card .reading-passage-expand {
+  display: none;  /* §120 — full expand is the open card; we don't
+                     fullscreen anymore. The Hide-passage toggle in
+                     the footer is the canonical collapse control. */
+}
+
+/* Passage body — LEFT-ALIGNED, never justified. */
+body.practice-page .reading-passage-card-body {
+  font-family: 'Inter';
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.88);
+  text-align: left !important;
+  text-justify: none !important;
+  hyphens: none;
+}
+body.practice-page .reading-passage-card-body p {
+  margin: 0 0 10px;
+  text-align: left !important;
+}
+body.practice-page .reading-passage-card-body p:last-child {
+  margin-bottom: 0;
+}
+
+/* Hide-passage toggle (footer) */
+body.practice-page .reading-passage-toggle-footer {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 10px;
+  padding: 4px 0;
+  background: none;
+  border: none;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(251, 191, 36, 0.78);
+  cursor: pointer;
+  letter-spacing: 0.01em;
+}
+body.practice-page .reading-passage-toggle-footer:hover { color: #fbbf24; }
+body.practice-page .reading-passage-toggle-footer svg {
+  transition: transform 200ms ease;
+}
+
+/* Collapsed state — body and toggle-footer chevron rotate */
+body.practice-page .reading-passage-card.is-collapsed .reading-passage-card-body {
+  display: none;
+}
+body.practice-page .reading-passage-card.is-collapsed .reading-passage-toggle-footer svg {
+  transform: rotate(180deg);
+}
+@media (prefers-reduced-motion: reduce) {
+  body.practice-page .reading-passage-toggle-footer svg { transition: none; }
+}
+
+/* Sticky-on-scroll thin bar. Inside the page scroll container —
+   no position:fixed. When scrolled past the card the top edge
+   sticks; the body remains in flow. */
+body.practice-page .reading-passage-card-header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: linear-gradient(180deg,
+    rgba(15, 23, 42, 0.95) 0%,
+    rgba(15, 23, 42, 0.85) 100%);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+/* ---------- §120 Question stem block ---------- */
+body.practice-page .question-card .q-prompt {
+  position: relative;
+  display: block;
+  margin: 0 0 14px;
+  padding: 12px 14px 12px 16px;
+  background: rgba(251, 191, 36, 0.08);
+  border: 1px solid rgba(251, 191, 36, 0.22);
+  border-left: 2px solid #fbbf24;
+  border-radius: 0 10px 10px 0;
+}
+body.practice-page .question-card .q-prompt::before {
+  content: 'QUESTION';
+  display: block;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #fbbf24;
+  margin-bottom: 4px;
+}
+body.practice-page .question-card .q-prompt-text {
+  font-family: 'Inter';
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.4;
+  letter-spacing: -0.005em;
+}
+/* The inline speaker/scratch buttons that sit inside .q-prompt
+   stay at the top-right of the gold block. */
+body.practice-page .question-card .q-prompt .speech-btn,
+body.practice-page .question-card .q-prompt .q-scratch-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+}
+
+/* ---------- §120 Answer choices — full-width letter-circle rows ---------- */
+body.practice-page .question-card .q-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+body.practice-page .question-card .choice {
+  position: relative;
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  min-height: 52px;
+  background: rgba(30, 41, 75, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 160ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+body.practice-page .question-card .choice:hover {
+  border-color: rgba(251, 191, 36, 0.30);
+  background: rgba(30, 41, 75, 0.65);
+}
+body.practice-page .question-card .choice input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+body.practice-page .question-card .choice .choice-letter {
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 11px;
+  font-weight: 500;
+  font-family: 'Inter';
+  flex-shrink: 0;
+}
+body.practice-page .question-card .choice .choice-content {
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.92);
+  font-family: 'Inter';
+  letter-spacing: -0.005em;
+  min-width: 0;
+  word-wrap: break-word;
+}
+body.practice-page .question-card .choice.is-selected {
+  border-color: rgba(251, 191, 36, 0.55);
+  background: rgba(251, 191, 36, 0.06);
+}
+body.practice-page .question-card .choice.is-selected .choice-letter {
+  background: rgba(251, 191, 36, 0.18);
+  border-color: rgba(251, 191, 36, 0.65);
+  color: #fbbf24;
+}
+/* Post-check states */
+body.practice-page .question-card.is-checked .choice {
+  cursor: default;
+}
+body.practice-page .question-card.is-checked .choice.is-correct {
+  border-color: #fbbf24;
+  background: rgba(251, 191, 36, 0.12);
+}
+body.practice-page .question-card.is-checked .choice.is-correct .choice-letter {
+  background: rgba(251, 191, 36, 0.20);
+  border-color: #fbbf24;
+  color: #fbbf24;
+}
+body.practice-page .question-card.is-checked .choice.is-incorrect {
+  border-color: rgba(239, 68, 68, 0.55);
+  background: rgba(239, 68, 68, 0.10);
+}
+body.practice-page .question-card.is-checked .choice.is-incorrect .choice-letter {
+  background: rgba(239, 68, 68, 0.16);
+  border-color: rgba(239, 68, 68, 0.55);
+  color: #fca5a5;
+}
+/* Status icon (✓ or ✗) appears after Check */
+body.practice-page .question-card .choice-status {
+  display: none;
+}
+body.practice-page .question-card.is-checked .choice.is-correct .choice-status,
+body.practice-page .question-card.is-checked .choice.is-incorrect .choice-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+body.practice-page .question-card.is-checked .choice.is-correct .choice-status { color: #fbbf24; }
+body.practice-page .question-card.is-checked .choice.is-incorrect .choice-status { color: #fca5a5; }
+@media (prefers-reduced-motion: reduce) {
+  body.practice-page .question-card .choice { transition: none; }
+}
+
+/* ---------- §120 Sticky Check button ---------- */
+body.practice-page .question-card .btn-primary.q-cta {
+  position: sticky;
+  bottom: 12px;
+  z-index: 6;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px 20px;
+  font-family: 'Inter';
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: #0a0f1f;
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px -4px rgba(251, 191, 36, 0.35);
+  transition: transform 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
+  margin-top: 4px;
+}
+body.practice-page .question-card .btn-primary.q-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px -4px rgba(251, 191, 36, 0.45);
+}
+body.practice-page .question-card .btn-primary.q-cta:active {
+  transform: scale(0.99);
+}
+body.practice-page .question-card .btn-primary.q-cta:disabled,
+body.practice-page .question-card .btn-primary.q-cta[aria-disabled="true"] {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.30) 0%, rgba(245, 158, 11, 0.30) 100%);
+  color: rgba(10, 15, 31, 0.55);
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  body.practice-page .question-card .btn-primary.q-cta { transition: none; }
+}
+
+/* ---------- §120 Voice recorder icon-only mode ---------- */
+/* When the voice mount lives inside the passage card header (audio
+   row), render the Record button as a 30px square that matches the
+   Listen button. The legacy pill form ("🎙️ Record yourself reading")
+   remains for any other surface that mounts it. */
+body.practice-page .reading-passage-card-audio .voice-recorder-slot,
+body.practice-page .reading-passage-card-audio .voice-recorder {
+  display: inline-flex;
+}
+body.practice-page .reading-passage-card-audio .voice-rec-btn.voice-rec-start {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  color: rgba(255, 255, 255, 0.78);
+  cursor: pointer;
+}
+body.practice-page .reading-passage-card-audio .voice-rec-btn.voice-rec-start:hover {
+  border-color: rgba(251, 191, 36, 0.45);
+  color: #fbbf24;
+}
+body.practice-page .reading-passage-card-audio .voice-rec-label {
+  display: none;  /* hide "Record yourself reading" inline label */
+}
+body.practice-page .reading-passage-card-audio .voice-rec-icon-svg {
+  width: 16px;
+  height: 16px;
 }

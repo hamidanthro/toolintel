@@ -75,7 +75,21 @@
 
     if (window.STAARAuth && typeof window.STAARAuth.api === 'function') {
       const token = (window.STAARAuth.token && window.STAARAuth.token()) || null;
-      window.STAARAuth.api('recordEvent', Object.assign({ token }, body)).catch(() => {});
+      // §118 — resolve the api promise so we can capture the lambda's
+      // `pacing` field on answered events and broadcast it. The pacing
+      // payload tells the UI when the adaptive engine has bumped the
+      // session difficulty band ("Stepping up" pill) or eased it back.
+      window.STAARAuth.api('recordEvent', Object.assign({ token }, body))
+        .then((resp) => {
+          try {
+            if (resp && resp.pacing) {
+              window.dispatchEvent(new CustomEvent('gradeearn:pacing', {
+                detail: { pacing: resp.pacing, eventType }
+              }));
+            }
+          } catch (_) {}
+        })
+        .catch(() => {});
     }
   }
 
@@ -83,6 +97,26 @@
     currentContext = Object.assign({}, ctx || {});
     questionStartTime = Date.now();
     answerChanges = 0;
+  }
+
+  // §118 — compute the difficulty band of an item from its TEKS
+  // cognitive_demand + type. Mirrors lambda/adaptive.js's
+  // inferItemDifficultyBand so the frontend can attach `itemBand`
+  // to answer events without an extra DDB round-trip on the server.
+  // Returns 0..4 clamped; defaults to 2 (centre) on unknown.
+  const _DEMAND_DELTA = { l: -1, m: 0, h: +1 };
+  const _TYPE_DELTA = {
+    'computation': -1, 'word-problem': 0, 'concept': 0, 'data-interpretation': +1
+  };
+  function inferItemBand(teks, type) {
+    let band = 2;
+    if (window.GE_TEKS_DEMAND && teks && window.GE_TEKS_DEMAND[teks]) {
+      band += (_DEMAND_DELTA[window.GE_TEKS_DEMAND[teks]] || 0);
+    }
+    if (type && _TYPE_DELTA[type] != null) band += _TYPE_DELTA[type];
+    if (band < 0) band = 0;
+    if (band > 4) band = 4;
+    return band;
   }
 
   function onChoiceFlip() {
@@ -97,10 +131,15 @@
     const pk = poolKey || currentContext.poolKey;
     const timeToAnswer = questionStartTime ? (Date.now() - questionStartTime) / 1000 : null;
 
+    // §118 — itemBand goes into meta so the lambda's adaptive engine
+    // can score the answer against the item's difficulty (ELO step).
+    // Without this, the engine assumes band=2 (centre) for every
+    // answer, which makes the rating updates noisier.
+    const itemBand = inferItemBand(currentContext.teks, currentContext.type);
     recordEvent(isCorrect ? 'answered-correct' : 'answered-incorrect', {
       contentId: cid, poolKey: pk, pickedChoice,
       timeToAnswer,
-      meta: { answerChanges }
+      meta: { answerChanges, itemBand }
     });
 
     if (timeToAnswer !== null && timeToAnswer > HESITATION_MS / 1000) {

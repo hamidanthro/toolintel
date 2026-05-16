@@ -136,7 +136,11 @@ if ('serviceWorker' in navigator) {
   // sessions/devices (small dopamine hit, kid-friendly identity).
   // Used as fallback when user.color is not set on the session.
   function stableUserColor(seed) {
-    const palette = ['#7c3aed', '#ec4899', '#14b8a6', '#f59e0b', '#3b82f6', '#10b981'];
+    // §117 — Brand is gold. The old rainbow palette (pink/purple/teal/
+    // blue/green) violated the design system on every page that
+    // renders the avatar. Restricted to gold shades; the hash still
+    // gives each kid a stable variant so identity stays distinguishable.
+    const palette = ['#fbbf24', '#f59e0b', '#fcd34d', '#d97706'];
     const s = String(seed || '');
     let h = 5381;
     for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;

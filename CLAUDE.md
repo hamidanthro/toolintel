@@ -4156,6 +4156,180 @@ sessions; the audit-tier items above are the May 10 additions.
 
 ---
 
+## 118. Adaptive Pacing Engine (Phase 1 — May 16)
+
+### Why this exists
+
+Hamid surfaced a behavioural pattern: **kids cherry-pick the easy
+subjects/units to maximise cents, and the system makes no attempt to
+push them into weaker areas or shift complexity within a grade when
+they're coasting.** The brief: "detect skill level... lock or
+recommend a sub-subject... shift complexity even within the same
+grade if things look too easy (e.g. 10 in a row correct)."
+
+The fix is a per-kid pacing engine — same family of techniques used
+by Khan Academy (mastery gating), IXL (SmartScore ELO), Duolingo
+(ELO + spaced rep), ALEKS / Carnegie Learning (BKT + skill graph),
+and STAAR-online itself (CAT — Cambium's adaptive testing platform).
+We're shipping the lightweight intersection: per-strand ELO + session
+difficulty bands + soft mastery recommendations. No hard locks (a
+kid who wants to keep practising a mastered topic still can — it's
+just visually deprioritised), no BKT (too heavy for our scale today).
+
+### Architecture
+
+Three layers, all in `lambda/adaptive.js` (pure logic, no AWS calls).
+The lambda owns IO; the engine owns rules.
+
+**Layer 1 — Per-strand ELO ability rating.** Each kid has a rating
+per (state × grade × subject × strand). Starts at 1200 (population
+mean). K-factor = 24 — converges in 15-20 answers. Item difficulty
+band 0-4 maps to ELO opponent 800/1000/1200/1400/1600. Each answer
+shifts the rating via the standard chess formula. Stored on
+`staar-stats.{userId, slug='adaptive#<state>#<grade>#<subject>'}.data`.
+
+**Layer 2 — In-session streak-triggered difficulty band.** The
+engine tracks `consecutiveCorrect (cc)` and `consecutiveWrong (cw)`
+within the current strand of the current session. When `cc >= 5`,
+the session's target difficulty band bumps `up` by 1 (capped at 4).
+When `cw >= 2`, it drops by 1 (floor 0). Each bump resets the
+relevant counter. The lambda's `handleGenerate` reads this band and
+injects an explicit rigor-calibration block into the OpenAI prompt
+("EASIEST tier", "CORE tier", "TOUGHEST tier") so generated content
+scales with the kid's session momentum.
+
+**Layer 3 — Soft mastery + cross-strand recommendation.** A strand
+is "mastered" sticky-true when: `n >= 10 AND c/n >= 0.85 AND last10
+has ≥ 8 correct`. Mastered strands stay accessible (every topic
+card is still tappable), but:
+  - the `summary.recommended` field flips to the kid's *weakest
+    unmastered* strand in their grade, sorted by (rating asc,
+    attempts asc),
+  - `handleGenerate` on **free practice** (topics.length > 1) with
+    *all* topics dominated by mastered strands swaps in TEKS from
+    the recommended strand,
+  - `subject.html` decorates the recommended unit with a gold "Try
+    this next" pill + accent border, and mastered units with a
+    subtle "Mastered" tag.
+  - Scoped practice (single-TEKS, `?u=...&t=...`) is exempt — the
+    kid asked for that TEKS, give them that TEKS.
+
+### Data model
+
+`staar-stats.{userId, slug='adaptive#<state>#<grade>#<subject>'}.data`:
+```js
+{
+  v: 1,
+  strands: {
+    "number-and-operations": {
+      r: 1278,                       // ELO rating
+      n: 47, c: 38,                  // total attempts / correct
+      last10: "1011110111",          // newest right
+      masteredAt: "2026-05-17T..."   // sticky once set
+    },
+    "geometry": { ... }
+  },
+  session: {
+    id: "s_abc",                     // matches client sessionId
+    strand: "number-and-operations",
+    cc: 5, cw: 0, band: 3,
+    startedAt: "..."
+  },
+  rec: "geometry",                   // current next-strand nudge
+  updatedAt: "..."
+}
+```
+
+Size at steady state: ~6 strands × ~70 bytes ≈ 500 bytes. Far under
+the 12 KB STATS_TABLE cap. Schema version field for future migration.
+
+### Wire-up surfaces
+
+| Surface | What it does |
+|---|---|
+| `lambda/adaptive.js` | Pure-logic engine. ~600 lines. Exports `defaultState`, `recordAnswer`, `selectAdaptive`, `summarize`, `strandForTeks`, `teksForStrand`, `teksFromPoolKey`, `inferItemDifficultyBand`. Snapshot of 194 TEKS → strand inlined at end of file; regenerate one-liner is in the source comment when `state-packs/texas/standards/teks-math.json` changes. |
+| `lambda/tutor.js` `handleGenerate` | Pre-generate: reads adaptiveState; on free-practice with all-mastered topic strands, swaps `topics` for recommendation-strand TEKS; injects `difficultyBand` into the generator prompt. Post-generate: echoes `pacing` in response. |
+| `lambda/tutor.js` `handleRecordEvent` | On `answered-correct`/`answered-incorrect`: parses TEKS from poolKey, runs `adaptive.recordAnswer`, writes adaptiveState back, includes the `pacing` step result in the response. |
+| `lambda/tutor.js` `handleGetAdaptive` (NEW action) | Returns `{ summary, teksToStrand }` for a (state, grade, subject) scope. Used by `subject.html` to decorate topic cards. |
+| `js/lake-events.js` | `onQuestionShown` now accepts `teks` + `type`. `onAnswered` computes `itemBand` from those + a lightweight type/demand delta table and bundles it into `meta.itemBand`. After the lambda call, dispatches `gradeearn:pacing` CustomEvent with the response pacing. |
+| `js/practice.js` | Sends `teks` + `type` on every question shown. Listens for `gradeearn:pacing` → renders `.adaptive-pill` ("Stepping up" / "Easing back" / "Ready for the next strand") above the question card for ~3.5s, throttled to 1 per 3s. |
+| `js/subject-page.js` | After topic grid renders, calls `getAdaptive`. For each unit, picks the dominant strand from `unit.lessons[].teks`. Mastered → adds `.topic-card--mastered` + subtle pill. Recommended → adds `.topic-card--recommended` + gold "Try this next" pill. |
+| `css/styles.css` §118 block | Pill styles + topic-card overlays. Gold for bumps and recommendations; slate for ease-back. All animations gated on `prefers-reduced-motion`. |
+
+### Tuning knobs (in `lambda/adaptive.js`)
+
+| Constant | Default | Behaviour |
+|---|---|---|
+| `K_FACTOR` | 24 | ELO step. Higher = faster convergence, noisier ratings. 24 is the chess "club rapid" value and converges in ~15-20 answers. |
+| `STARTING_ELO` | 1200 | Population mean baseline; cold-start rating. |
+| `BUMP_AFTER_CC` | 5 | Consecutive correct before in-session bump up. |
+| `DROP_AFTER_CW` | 2 | Consecutive wrong before in-session ease back. |
+| `MASTERY_MIN_ATTEMPTS` | 10 | Floor before mastery can latch. |
+| `MASTERY_PCT_THRESHOLD` | 0.85 | Overall accuracy needed for mastery. |
+| `MASTERY_LAST10_THRESHOLD` | 8 | ≥ 8 of the last 10 must be correct (catches old correct streaks that have since rotted). |
+| `COMFORT_STREAK_NUDGE` | 10 | When `cc >= 10` in the same strand AND that strand is mastered, surface "Ready for the next strand" pill. |
+
+Hamid named "10 in a row" explicitly. The bump threshold is 5 (more
+responsive); 10 is reserved for the cross-strand nudge so we don't
+shout "stepping up" every five answers — kids tune out novelty fast.
+
+### What this ships (Phase 1)
+
+✅ Per-strand ELO rating + persistence
+✅ In-session 5cc-bump / 2cw-drop with prompt-side rigor calibration
+✅ Soft mastery flag + recommendation pickRecommendedStrand()
+✅ Free-practice topic redirect on all-mastered
+✅ "Stepping up" / "Easing back" / "Ready for next strand" pills
+✅ Topic-card "Mastered" + "Try this next" overlays
+✅ Cross-vendor architecture: engine logic separate from IO
+
+### What this does NOT do (Phase 2-4 deferred)
+
+| Phase | Scope | Why now? |
+|---|---|---|
+| **Phase 2 — Cents calibration** | Today every correct answer = 15¢ flat. The cherry-pick incentive lives at the reward layer. Phase 2 reweights: harder-band correct = up to 25¢; mastered-strand correct = as little as 8¢. Selector + telemetry are in place; just need a cents-from-band lookup in `lambda/tutor.js` answer-event handler + an additive lifetime-cap check. | Defer because mispriced rewards are politically expensive — easy to demotivate the kid by suddenly paying less for the same work. Roll out gradually with announcement: "harder questions now earn more". |
+| **Phase 3 — Population item ELO** | Today item difficulty is inferred from TEKS tier + type + cognitive demand. Phase 3 mints a per-item ELO rating from `staar-content-events` (timesCorrect / timesIncorrect aggregates). Item ratings stamp `_difficultyBand` on the row at write time; `inferItemDifficultyBand` reads the explicit field instead of inferring. | Needs ≥1 month of event volume to stabilise per-item ratings. Premature now; instrumentation already captures the data. |
+| **Phase 4 — Bayesian Knowledge Tracing** | Replace the single-rating-per-strand with a probabilistic mastery model: P(known), P(slip), P(guess), P(transit). Carnegie Learning / ALEKS standard. Lets the engine distinguish "the kid mastered this two weeks ago but might have forgotten" from "still learning". | Heavy. ELO captures ~80% of the value at 10% of the complexity. Revisit at >5k paying kids. |
+
+### Reading/Science/SS
+
+Adaptive pacing is **math-only** for v1. Reading uses passage-based
+units (different schema), Science is barely launched (§38), SS is
+gated behind the USA-broad KP (§91 §SS-USA-BROAD). When those
+mature, the engine generalises by snapshotting their standards
+files into TEKS_STRANDS-style maps. Engine logic stays unchanged.
+
+### Backwards compatibility
+
+- Anon (guest) kids: every adaptive code path short-circuits to the
+  default empty state. No state stored, no recommendations, no pill.
+  Generation falls back to the pre-§118 behaviour.
+- Stale frontend / unauthed events / events with no parseable TEKS:
+  `handleRecordEvent` returns `pacing: null`; `gradeearn:pacing`
+  event simply isn't dispatched.
+- Schema migration: `v: 1` in the state blob. Future bumps clone
+  forward; engine reads any `v` and returns sane defaults on missing
+  fields.
+
+### Files touched (May 16)
+
+| File | Edit summary |
+|---|---|
+| `lambda/adaptive.js` (NEW) | Engine module. Pure logic. |
+| `lambda/tutor-build/adaptive.js` (NEW) | Byte-identical mirror. |
+| `lambda/tutor.js` | `+require('./adaptive')`, new `handleGetAdaptive` action + readAdaptiveState/writeAdaptiveState helpers + `adaptiveSlugFor`; `handleGenerate` pre-hook reads state and swaps topics on mastery; `handleRecordEvent` writes adaptiveState + returns pacing; `buildGeneratorUser` accepts `difficultyBand`. |
+| `lambda/tutor-build/tutor.js` | Byte-identical mirror. Parity check passes. |
+| `js/lake-events.js` | `onQuestionShown` accepts `teks/type`; `onAnswered` sends `itemBand`; dispatches `gradeearn:pacing` CustomEvent on response. |
+| `js/practice.js` | Sends `teks/type` on `onQuestionShown`; adds `showAdaptivePill` + `gradeearn:pacing` listener. |
+| `js/subject-page.js` | After grid renders, fetches `getAdaptive` and decorates units with mastered / recommended pills. |
+| `css/styles.css` | `.adaptive-pill` + `.topic-card-pill` + `.topic-card--mastered` + `.topic-card--recommended` rules in the §118 block. |
+
+Parity check passes. JS syntax checks pass. Lambda is committed but
+**not yet deployed** — `./deploy.sh` is the next step, manually
+triggered by Hamid per §19 deploy discipline.
+
+---
+
 ## TOP 3 THINGS YOU SHOULD KNOW
 
 1. **The deploy story is held together by tape and is the single biggest
