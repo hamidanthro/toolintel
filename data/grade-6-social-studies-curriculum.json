@@ -1,0 +1,471 @@
+{
+  "subject": "social-studies",
+  "grade": "grade-6",
+  "state": "texas",
+  "title": "Grade 6 Social Studies — World Cultures",
+  "description": "Texas Grade 6 SS follows TEKS §113.18 — World Cultures. Six core strands: Geography, World Regions, Economic Systems, Government & Citizenship, Culture & Heritage, History & Sources. STAAR does not test SS at Grade 6 (state test is Grade 8 US History), so this curriculum focuses on world-cultures content rather than test-prep drilling. Starter set authored 2026-05-17; content is CLAUDE-SYNTHESIZED from publicly-published TEKS + verified world-facts.",
+  "version": 1,
+  "_meta": {
+    "author": "GradeEarn",
+    "built": "2026-05-17",
+    "schema": "math-curriculum-compatible",
+    "questionCount": 30
+  },
+  "units": [
+    {
+      "id": "geography-tools",
+      "title": "Geography Tools & Maps",
+      "strand": "geography",
+      "lessons": [
+        {
+          "id": "map-basics",
+          "teks": "6.3A",
+          "title": "Map Basics: Directions, Scale, Legend",
+          "objective": "Read cardinal and intermediate directions, use map scale and legend.",
+          "questions": [
+            {
+              "id": "q-ss6-geo-001",
+              "type": "multiple_choice",
+              "prompt": "On a map with north pointing up, which direction is directly to your right?",
+              "choices": ["North", "South", "East", "West"],
+              "answer": "East",
+              "correctIndex": 2,
+              "explanation": "On a standard map with north at the top, east is to the right and west is to the left. South is at the bottom."
+            },
+            {
+              "id": "q-ss6-geo-002",
+              "type": "multiple_choice",
+              "prompt": "A map legend (or key) shows what?",
+              "choices": [
+                "The exact location of a place using latitude and longitude",
+                "What the symbols and colors on the map mean",
+                "The distance between two cities",
+                "The shape of mountains"
+              ],
+              "answer": "What the symbols and colors on the map mean",
+              "correctIndex": 1,
+              "explanation": "A legend lists every symbol used on the map (rivers, cities, roads, etc.) and what each one represents. Distance is shown by the scale, not the legend."
+            },
+            {
+              "id": "q-ss6-geo-003",
+              "type": "multiple_choice",
+              "prompt": "Which is an intermediate direction (between two cardinal directions)?",
+              "choices": ["South", "East", "Northwest", "North"],
+              "answer": "Northwest",
+              "correctIndex": 2,
+              "explanation": "Cardinal directions are North, South, East, and West. Intermediate directions are halfway between them: northeast, northwest, southeast, southwest."
+            },
+            {
+              "id": "q-ss6-geo-004",
+              "type": "multiple_choice",
+              "prompt": "If a map's scale says \"1 inch = 100 miles\" and Austin and San Antonio are 0.8 inches apart on the map, about how far apart are they in real life?",
+              "choices": ["8 miles", "80 miles", "800 miles", "8,000 miles"],
+              "answer": "80 miles",
+              "correctIndex": 1,
+              "explanation": "0.8 × 100 = 80 miles. Austin and San Antonio are roughly 80 miles apart in real life — the scale is a quick way to estimate real distances from a map."
+            },
+            {
+              "id": "q-ss6-geo-005",
+              "type": "multiple_choice",
+              "prompt": "The Equator divides the Earth into which two halves?",
+              "choices": [
+                "Eastern Hemisphere and Western Hemisphere",
+                "Northern Hemisphere and Southern Hemisphere",
+                "Land Hemisphere and Water Hemisphere",
+                "Old World and New World"
+              ],
+              "answer": "Northern Hemisphere and Southern Hemisphere",
+              "correctIndex": 1,
+              "explanation": "The Equator is the imaginary line at 0° latitude. It splits Earth into the Northern Hemisphere (above) and Southern Hemisphere (below). The Prime Meridian splits east/west."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "world-regions",
+      "title": "World Regions & Continents",
+      "strand": "geography",
+      "lessons": [
+        {
+          "id": "continents-oceans",
+          "teks": "6.1B",
+          "title": "The Seven Continents & Five Oceans",
+          "objective": "Identify the continents and oceans and a few defining features of each.",
+          "questions": [
+            {
+              "id": "q-ss6-reg-001",
+              "type": "multiple_choice",
+              "prompt": "How many continents are there?",
+              "choices": ["Five", "Six", "Seven", "Eight"],
+              "answer": "Seven",
+              "correctIndex": 2,
+              "explanation": "The seven continents are Africa, Antarctica, Asia, Australia, Europe, North America, and South America."
+            },
+            {
+              "id": "q-ss6-reg-002",
+              "type": "multiple_choice",
+              "prompt": "Which continent is the largest by both land area and population?",
+              "choices": ["Africa", "Asia", "Europe", "North America"],
+              "answer": "Asia",
+              "correctIndex": 1,
+              "explanation": "Asia is the largest continent by area (over 17 million square miles) and by population (over 4 billion people — more than half of everyone on Earth)."
+            },
+            {
+              "id": "q-ss6-reg-003",
+              "type": "multiple_choice",
+              "prompt": "Which ocean is the largest?",
+              "choices": ["Atlantic", "Indian", "Pacific", "Arctic"],
+              "answer": "Pacific",
+              "correctIndex": 2,
+              "explanation": "The Pacific Ocean covers about a third of the Earth's surface — bigger than all the land on Earth combined."
+            },
+            {
+              "id": "q-ss6-reg-004",
+              "type": "multiple_choice",
+              "prompt": "Which continent has no permanent human residents?",
+              "choices": ["Australia", "Antarctica", "Africa", "South America"],
+              "answer": "Antarctica",
+              "correctIndex": 1,
+              "explanation": "Antarctica is too cold for permanent settlement. Scientists from many countries take turns staying at research stations, but no one lives there year-round permanently."
+            },
+            {
+              "id": "q-ss6-reg-005",
+              "type": "multiple_choice",
+              "prompt": "Texas is part of which continent?",
+              "choices": ["South America", "North America", "Central America", "Asia"],
+              "answer": "North America",
+              "correctIndex": 1,
+              "explanation": "Texas is one of fifty U.S. states. The United States, Canada, and Mexico are all on the continent of North America."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "economic-systems",
+      "title": "Economic Systems & Trade",
+      "strand": "economics",
+      "lessons": [
+        {
+          "id": "supply-demand-systems",
+          "teks": "6.7A",
+          "title": "Supply, Demand & How Countries Trade",
+          "objective": "Recognize basic economic systems and the role of supply and demand.",
+          "questions": [
+            {
+              "id": "q-ss6-econ-001",
+              "type": "multiple_choice",
+              "prompt": "Which type of economy lets people decide what to make and sell with very little government control?",
+              "choices": [
+                "Command economy",
+                "Traditional economy",
+                "Market economy",
+                "Subsistence economy"
+              ],
+              "answer": "Market economy",
+              "correctIndex": 2,
+              "explanation": "In a market economy, businesses and consumers — not the government — decide what gets produced. The United States is mostly a market economy."
+            },
+            {
+              "id": "q-ss6-econ-002",
+              "type": "multiple_choice",
+              "prompt": "If a popular new video game suddenly has way more people wanting it than copies in stores, what usually happens to its price?",
+              "choices": [
+                "The price goes down",
+                "The price stays the same forever",
+                "The price goes up",
+                "The price becomes zero"
+              ],
+              "answer": "The price goes up",
+              "correctIndex": 2,
+              "explanation": "When demand (how many people want something) is higher than supply (how many are available), the price tends to rise. This is one of the most important rules in economics."
+            },
+            {
+              "id": "q-ss6-econ-003",
+              "type": "multiple_choice",
+              "prompt": "Texas exports a lot of oil to other countries. \"Exports\" means goods that are:",
+              "choices": [
+                "Brought into a country to be sold",
+                "Sent out of a country to be sold somewhere else",
+                "Made for the country's own people only",
+                "Given away for free"
+              ],
+              "answer": "Sent out of a country to be sold somewhere else",
+              "correctIndex": 1,
+              "explanation": "Exports leave the country to be sold elsewhere. Imports are the opposite — goods brought in from other countries."
+            },
+            {
+              "id": "q-ss6-econ-004",
+              "type": "multiple_choice",
+              "prompt": "In Japan, people pay for things with yen. In Mexico, they use the peso. The euro is used in many European countries. What do all three have in common?",
+              "choices": [
+                "They are all paper money only",
+                "They are all currencies",
+                "They are all the same value",
+                "They are all used in the United States"
+              ],
+              "answer": "They are all currencies",
+              "correctIndex": 1,
+              "explanation": "A currency is the system of money a country uses. Different countries use different currencies. Some places (like much of Europe) share one."
+            },
+            {
+              "id": "q-ss6-econ-005",
+              "type": "multiple_choice",
+              "prompt": "In a command economy, who decides what factories produce and at what price goods are sold?",
+              "choices": [
+                "Each shopper",
+                "Each store owner",
+                "The country's government",
+                "International trade agreements"
+              ],
+              "answer": "The country's government",
+              "correctIndex": 2,
+              "explanation": "Command economies are controlled centrally by the government, which sets production levels and prices. North Korea is one example. Most countries today use a mixed economy — some government rules, plus a free market."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "government-citizenship",
+      "title": "Government & Citizenship",
+      "strand": "government",
+      "lessons": [
+        {
+          "id": "types-of-government",
+          "teks": "6.11A",
+          "title": "Types of Government & Citizen Responsibilities",
+          "objective": "Distinguish democracy, monarchy, and authoritarian systems; understand citizen responsibilities.",
+          "questions": [
+            {
+              "id": "q-ss6-gov-001",
+              "type": "multiple_choice",
+              "prompt": "Which form of government lets citizens choose their leaders by voting in fair elections?",
+              "choices": ["Monarchy", "Democracy", "Dictatorship", "Theocracy"],
+              "answer": "Democracy",
+              "correctIndex": 1,
+              "explanation": "Democracy comes from Greek words meaning \"rule by the people.\" Citizens vote to elect leaders and influence laws. The United States is a representative democracy."
+            },
+            {
+              "id": "q-ss6-gov-002",
+              "type": "multiple_choice",
+              "prompt": "In a monarchy, the head of government is usually a:",
+              "choices": [
+                "President elected by voters",
+                "Prime minister chosen by parliament",
+                "King or queen, often by birth",
+                "Council of judges"
+              ],
+              "answer": "King or queen, often by birth",
+              "correctIndex": 2,
+              "explanation": "In a monarchy, one person rules — usually a king or queen — and the position is normally inherited. Some modern monarchies (like the United Kingdom) are constitutional: the monarch is a symbol while elected officials run the government."
+            },
+            {
+              "id": "q-ss6-gov-003",
+              "type": "multiple_choice",
+              "prompt": "Which is a responsibility of citizens in the United States?",
+              "choices": [
+                "Working in every government office",
+                "Obeying laws and serving on a jury when called",
+                "Choosing a new state to live in every year",
+                "Paying for other people's purchases"
+              ],
+              "answer": "Obeying laws and serving on a jury when called",
+              "correctIndex": 1,
+              "explanation": "Citizens are expected to follow laws, pay taxes, vote when eligible, and serve on a jury if called. These responsibilities help keep the government and courts running."
+            },
+            {
+              "id": "q-ss6-gov-004",
+              "type": "multiple_choice",
+              "prompt": "An \"unlimited government\" is one where:",
+              "choices": [
+                "Citizens always vote on every decision",
+                "Rulers have no real limits on their power and can make laws as they wish",
+                "Two countries share the same leader",
+                "There is no government at all"
+              ],
+              "answer": "Rulers have no real limits on their power and can make laws as they wish",
+              "correctIndex": 1,
+              "explanation": "Unlimited governments — like absolute monarchies or dictatorships — concentrate power without rules limiting the ruler. A limited government, like the U.S., has a constitution and laws that the leaders must follow."
+            },
+            {
+              "id": "q-ss6-gov-005",
+              "type": "multiple_choice",
+              "prompt": "Why does the U.S. Constitution divide power between the federal government and the states?",
+              "choices": [
+                "So no single part of government becomes too powerful",
+                "Because each state has its own currency",
+                "Because the federal government cannot make laws",
+                "Because states are larger than the country"
+              ],
+              "answer": "So no single part of government becomes too powerful",
+              "correctIndex": 0,
+              "explanation": "Splitting power between federal and state governments is called federalism. The Founders designed it this way so that no single level of government could overpower the others — a check on power."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "culture-heritage",
+      "title": "Culture & Heritage",
+      "strand": "culture",
+      "lessons": [
+        {
+          "id": "culture-elements",
+          "teks": "6.15A",
+          "title": "Elements of Culture: Language, Beliefs, Customs",
+          "objective": "Identify the major elements that make up a culture.",
+          "questions": [
+            {
+              "id": "q-ss6-cul-001",
+              "type": "multiple_choice",
+              "prompt": "Which of these is an example of an element of culture?",
+              "choices": [
+                "The temperature in a region",
+                "Language, religion, food, and art",
+                "The shape of the country",
+                "How many rivers a country has"
+              ],
+              "answer": "Language, religion, food, and art",
+              "correctIndex": 1,
+              "explanation": "Culture is everything a group of people share that gets passed down: language, beliefs, customs, music, food, art, holidays, and more. Climate and geography shape culture but aren't part of it."
+            },
+            {
+              "id": "q-ss6-cul-002",
+              "type": "multiple_choice",
+              "prompt": "When pizza traveled from Italy to nearly every country in the world, that is an example of:",
+              "choices": [
+                "A trade barrier",
+                "Cultural diffusion (the spread of culture)",
+                "A market economy",
+                "A natural disaster"
+              ],
+              "answer": "Cultural diffusion (the spread of culture)",
+              "correctIndex": 1,
+              "explanation": "Cultural diffusion is when ideas, foods, music, or customs from one group spread to others. Pizza, sushi, salsa, and the English language are all examples that have spread far beyond where they started."
+            },
+            {
+              "id": "q-ss6-cul-003",
+              "type": "multiple_choice",
+              "prompt": "Spanish is the most widely spoken language in Mexico. Spanish is also spoken in much of South America. What event in history is the biggest reason Spanish spread to so many countries?",
+              "choices": [
+                "Modern internet sharing",
+                "The Olympic Games",
+                "Spanish exploration and colonization of the Americas",
+                "World War II"
+              ],
+              "answer": "Spanish exploration and colonization of the Americas",
+              "correctIndex": 2,
+              "explanation": "Starting in the 1500s, Spain established colonies across much of the Americas. The Spanish language, customs, and many traditions spread with the colonists and remain part of those countries today."
+            },
+            {
+              "id": "q-ss6-cul-004",
+              "type": "multiple_choice",
+              "prompt": "Which of these is a major world religion that has more than a billion followers today?",
+              "choices": ["Esperanto", "Christianity", "Hieroglyphics", "Calligraphy"],
+              "answer": "Christianity",
+              "correctIndex": 1,
+              "explanation": "Christianity, Islam, and Hinduism each have more than a billion followers worldwide. Esperanto is a constructed language; hieroglyphics is an ancient Egyptian writing system; calligraphy is the art of fancy handwriting."
+            },
+            {
+              "id": "q-ss6-cul-005",
+              "type": "multiple_choice",
+              "prompt": "Día de los Muertos (Day of the Dead) is a Mexican holiday where families honor relatives who have died. This tradition is an example of:",
+              "choices": [
+                "A government law",
+                "A scientific experiment",
+                "A cultural celebration that mixes Indigenous and Catholic traditions",
+                "An economic system"
+              ],
+              "answer": "A cultural celebration that mixes Indigenous and Catholic traditions",
+              "correctIndex": 2,
+              "explanation": "Día de los Muertos blends traditions from Indigenous Mexican peoples (especially the Aztecs) with Catholic All Saints' Day. It's a great example of cultural diffusion — two traditions combining into something new."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "history-sources",
+      "title": "History & Using Sources",
+      "strand": "history",
+      "lessons": [
+        {
+          "id": "primary-vs-secondary",
+          "teks": "6.21A",
+          "title": "Primary Sources, Secondary Sources & Timelines",
+          "objective": "Tell the difference between primary and secondary sources; read a timeline.",
+          "questions": [
+            {
+              "id": "q-ss6-hist-001",
+              "type": "multiple_choice",
+              "prompt": "Which is a primary source?",
+              "choices": [
+                "A biography written 200 years after a president died",
+                "A textbook chapter about World War II",
+                "A diary written by someone who lived through World War II",
+                "A documentary made in 2020 about ancient Egypt"
+              ],
+              "answer": "A diary written by someone who lived through World War II",
+              "correctIndex": 2,
+              "explanation": "Primary sources come directly from someone who lived through or witnessed an event — diaries, letters, photographs, original documents. Secondary sources (biographies, textbooks, documentaries) are written later by people who studied the primary sources."
+            },
+            {
+              "id": "q-ss6-hist-002",
+              "type": "multiple_choice",
+              "prompt": "On a timeline, an event labeled \"500 BCE\" happened ____ an event labeled \"200 BCE.\"",
+              "choices": [
+                "BEFORE",
+                "AFTER",
+                "AT THE SAME TIME AS",
+                "ON THE SAME CONTINENT AS"
+              ],
+              "answer": "BEFORE",
+              "correctIndex": 0,
+              "explanation": "BCE means \"Before the Common Era,\" counting backward from year 1. So 500 BCE is 300 years before 200 BCE. The bigger the BCE number, the older the event."
+            },
+            {
+              "id": "q-ss6-hist-003",
+              "type": "multiple_choice",
+              "prompt": "A historian is studying the Roman Empire. Which would give them the most direct evidence about what Roman daily life was like?",
+              "choices": [
+                "A movie made in 2018 set in ancient Rome",
+                "Roman coins, pottery, and wall paintings dug up from Roman cities",
+                "A modern textbook chapter titled \"Daily Life in Ancient Rome\"",
+                "A novel written today about Rome"
+              ],
+              "answer": "Roman coins, pottery, and wall paintings dug up from Roman cities",
+              "correctIndex": 1,
+              "explanation": "Real objects (artifacts) that survive from the time are some of the strongest primary sources. They show actual daily life — what coins were used, what food was eaten, what people decorated their walls with."
+            },
+            {
+              "id": "q-ss6-hist-004",
+              "type": "multiple_choice",
+              "prompt": "Which civilization is famous for building large pyramids along the Nile River about 4,500 years ago?",
+              "choices": ["Ancient China", "Ancient Egypt", "The Roman Empire", "Ancient Japan"],
+              "answer": "Ancient Egypt",
+              "correctIndex": 1,
+              "explanation": "Ancient Egypt built the famous pyramids — including the Great Pyramid of Giza, finished around 2560 BCE — as tombs for pharaohs along the Nile River."
+            },
+            {
+              "id": "q-ss6-hist-005",
+              "type": "multiple_choice",
+              "prompt": "Which is the BEST way to check whether a fact you read online is reliable?",
+              "choices": [
+                "Trust it if the website looks fancy",
+                "Trust it if many people share it on social media",
+                "Look for the same fact in two or more independent, trusted sources",
+                "Trust it if the author has a strong opinion"
+              ],
+              "answer": "Look for the same fact in two or more independent, trusted sources",
+              "correctIndex": 2,
+              "explanation": "Real historians and scientists cross-check sources. If two or more independent, trustworthy sources agree, the fact is more likely to be reliable. Looks, popularity, and strong opinions don't make something true."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

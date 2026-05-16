@@ -3242,6 +3242,58 @@
       'grade-8':'Grade 8'
     })[slug] || slug;
     const fakeCurr = { grade: slug, title: `${grTitle} Social Studies`, units: [] };
+    // §125 — Curriculum-first SS loader (Grade 6 World Cultures lands here).
+    // Tries data/<grade>-social-studies-curriculum.json before falling to
+    // the lambda passage-cluster path (which serves Grade 8 STAAR US
+    // History). When found, routes through the same math-style runQuiz
+    // pipeline kids already know.
+    const curriculumUrl = `data/${slug}-social-studies-curriculum.json?v=20260517i`;
+    try {
+      const curRes = await fetch(curriculumUrl);
+      if (curRes.ok) {
+        const curJson = await curRes.json();
+        if (curJson && Array.isArray(curJson.units) && curJson.units.length > 0) {
+          // Flatten units → lessons → questions into a single playable
+          // queue. Each question carries its lesson's TEKS + title for
+          // the §118 adaptive engine to pick up.
+          const items = [];
+          for (const unit of curJson.units) {
+            for (const lesson of (unit.lessons || [])) {
+              for (const q of (lesson.questions || [])) {
+                if (!q.choices || q.choices.length === 0) continue;
+                items.push({
+                  id: q.id,
+                  contentId: q.id,
+                  type: 'multiple_choice',
+                  prompt: q.prompt,
+                  choices: q.choices,
+                  answer: q.answer,
+                  correctIndex: q.correctIndex,
+                  explanation: q.explanation || '',
+                  teks: lesson.teks || '',
+                  _unit: { id: unit.id, title: unit.title, domain: unit.strand || '' },
+                  _lesson: { id: lesson.id, title: lesson.title, teks: lesson.teks || '' }
+                });
+              }
+            }
+          }
+          if (items.length > 0) {
+            console.log('[social-studies] curriculum hit: ' + items.length + ' questions from ' + curriculumUrl);
+            // Shuffle so the kid doesn't always see the same order.
+            for (let i = items.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [items[i], items[j]] = [items[j], items[i]];
+            }
+            const ssCurr = { grade: slug, title: curJson.title || fakeCurr.title, units: curJson.units };
+            runQuiz(ssCurr, items, null, { enhance: null });
+            return;
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('[social-studies] curriculum load failed:', e.message);
+    }
+    // Fallback: lambda passage-cluster (Grade 8 STAAR US History today).
     try {
       const res = await fetch(TUTOR_ENDPOINT, {
         method: 'POST',

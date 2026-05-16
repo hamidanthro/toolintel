@@ -53,21 +53,26 @@
       tagline: 'History, geography, civics, economics.',
       icon: 'globe',
       color: '#fbbf24',
-      // §91 (May 14, 2026) — SS gated until USA-broad KP ships. Audit
-      // found 870 active Texas SS rows in staar-content-pool, ZERO
-      // judged (no _judge or _judgedAt stamps), schema mismatch
-      // (rows store grade as bare '3'/'k' vs frontend's 'grade-3'
-      // form), passage-tethered orphans in K-2 (questions reference a
-      // passage that isn't there), AGE_FIT mismatch on G3 (Reconstruction
-      // is grade-7+ TEKS), and §27 letter-prefix-in-choice-text bug on
-      // G8 ('A. ...' / 'B. ...' literal letters inside choice strings).
-      // Re-enable per-grade when the USA-broad SS Knowledge Pack ships
-      // AND a judge sweep clears the existing rows or new content gens.
+      // §125 (May 17, 2026) — Texas Grade 6 SS is now live. The
+      // §91 gate was the right call when the only path served from
+      // staar-content-pool (where SS rows were unjudged + schema-
+      // mismatched + passage-orphaned + AGE_FIT-mismatched).
+      //
+      // For Grade 6, we now serve from a static frontend curriculum
+      // JSON (data/grade-6-social-studies-curriculum.json) — text-
+      // only multiple-choice, 30 starter questions, factually-
+      // verified content authored against TEKS §113.18 (World
+      // Cultures). The handleGetSocialStudiesItem lambda path is
+      // still the canonical channel for Grade 8 STAAR US History
+      // (when content lands there). Other grades stay "Coming soon"
+      // until similar starter content is authored.
+      //
       // See docs/knowledge-packs/architecture-decisions.md §SS-USA-BROAD.
       live: false,
       eta: 'Coming soon',
       liveForGrade: function (stateSlug, gradeSlug) {
-        return false;
+        if (stateSlug !== 'texas') return false;
+        return gradeSlug === 'grade-6';
       }
     }
   ];

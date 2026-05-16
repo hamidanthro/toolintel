@@ -1002,7 +1002,12 @@ const VALID_STATE_SLUGS = new Set([
   'wisconsin','wyoming'
 ]);
 const VALID_SUBJECTS = new Set(['math','reading','science','social-studies']);
-const SUBJECTS_LIVE = new Set(['math', 'reading']);
+// §125 — science added (was live per js/grade-page.js but the lambda
+// generate path was rejecting it as "Subject coming soon" — silently
+// broken). social-studies added for Grade 6 Texas live launch via the
+// frontend curriculum JSON; lambda generate path will be used by
+// future grades and on-demand augmentation.
+const SUBJECTS_LIVE = new Set(['math', 'reading', 'science', 'social-studies']);
 const DEFAULT_STATE = 'texas';
 const DEFAULT_SUBJECT = 'math';
 
