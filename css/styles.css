@@ -33522,3 +33522,45 @@ body.grade-page .grade-content--v2 {
    correctly. Implemented via a tighter selector + content-replacing
    ::after — but easier path: the JS map below this comment already
    uses the new SVG once practice.js?v=20260517g lands. */
+
+/* ============================================================
+   §124 — Breathing-room dial (May 17, post §123)
+   ============================================================
+   §123 collapsed the page from ~1600px → ~640px tall by killing the
+   global section padding. Result fit the viewport but read as
+   "too squeezed" — premium products use moderate vertical rhythm,
+   not minimum. This bumps the article flex gap and breadcrumb
+   spacing back up to a comfortable level without re-introducing
+   the 56px-per-section blow-out.
+
+   Targets:
+   • breadcrumb-nav top padding: 14px → 24px
+   • article flex gap: 14px → 22px desktop / 26px ≥768px
+   • headline → next section: ~6-8px more breathing room via
+     small headline bottom margin
+   • signup-nudge top: 4px → 12px
+   ============================================================ */
+body.grade-page .breadcrumb-nav {
+  padding: 24px 16px 0 !important;
+  margin-bottom: 6px !important;
+}
+body.grade-page .grade-content--v2 {
+  gap: 22px !important;
+  padding-bottom: 32px !important;
+}
+@media (min-width: 768px) {
+  body.grade-page .grade-content--v2 { gap: 26px !important; }
+}
+body.grade-page .home-headline {
+  margin: 0 0 6px !important;
+}
+body.grade-page .signup-nudge {
+  margin-top: 10px !important;
+  padding: 10px 0 4px !important;
+}
+/* Touch-up: the Mind Blower hero still feels cramped against the
+   subjects below it. Add a hair of bottom margin so the hero card
+   doesn't visually fuse with the OR-PRACTICE-A-SUBJECT eyebrow. */
+body.grade-page .mindblower-hero-wrap {
+  padding-bottom: 4px !important;
+}
