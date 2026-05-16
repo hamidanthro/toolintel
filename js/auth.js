@@ -1467,7 +1467,41 @@ if ('serviceWorker' in navigator) {
         <div class="profile-stat"><div class="profile-stat-value">${u.grade ? gradeShortLabel(u.grade) : '—'}</div><div class="profile-stat-label">Grade</div></div>
       </div>
       <nav class="profile-sheet-nav">
-        <a class="profile-sheet-row profile-sheet-row--featured" href="${R('marketplace.html')}">
+        <!-- §127 (May 17, 2026) — MySpace + Trophies + League + Games
+             added to the mobile profile sheet. The kid's primary
+             personal dashboard (MySpace) was unreachable on phone
+             because:
+               • The old .mobile-menu-toggle hamburger (which had it)
+                 is killed on mobile by CSS line ~8640 (display: none
+                 !important — "Tab bar replaces hamburger from
+                 Prompt 26").
+               • The §122 .nav-toggle hamburger has MySpace but the
+                 profile sheet is the more discoverable mobile entry
+                 point per the §60 2-tab bar design (Home + Me).
+             Order: MySpace first since it's the kid's dashboard;
+             then Trophies / League / Games as related personal
+             surfaces; THEN the featured Toy marketplace row. -->
+        <a class="profile-sheet-row profile-sheet-row--featured" href="${R('myspace.html')}">
+          <span class="profile-sheet-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>
+          <span class="profile-sheet-row-text">MySpace<span class="profile-sheet-row-meta">Your dashboard</span></span>
+          <span class="profile-sheet-row-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </a>
+        <a class="profile-sheet-row" href="${R('achievements.html')}">
+          <span class="profile-sheet-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/><path d="M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22M18 2H6v7a6 6 0 0012 0V2z"/></svg></span>
+          Trophies
+          <span class="profile-sheet-row-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </a>
+        <a class="profile-sheet-row" href="${R('league.html')}">
+          <span class="profile-sheet-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><circle cx="12" cy="8" r="6"/><polyline points="8.21 13.89 7 22 12 19 17 22 15.79 13.88"/></svg></span>
+          League
+          <span class="profile-sheet-row-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </a>
+        <a class="profile-sheet-row" href="${R('games.html')}">
+          <span class="profile-sheet-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><polyline points="6 11 18 11"/><polyline points="6 13 18 13"/><circle cx="9" cy="12" r="3"/><circle cx="15" cy="12" r="3"/><path d="M3 6h18v12a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></span>
+          Games
+          <span class="profile-sheet-row-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </a>
+        <a class="profile-sheet-row" href="${R('marketplace.html')}">
           <span class="profile-sheet-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/></svg></span>
           <span class="profile-sheet-row-text">Toy marketplace<span class="profile-sheet-row-meta">${wallet} available</span></span>
           <span class="profile-sheet-row-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg></span>
