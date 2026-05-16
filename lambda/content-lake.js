@@ -359,6 +359,36 @@ async function getOrGenerateQuestion({ poolKey, userId, recentContentIds = [], g
 // EXPLANATIONS
 // ============================================================
 
+// §114 — Direct cache read/write for non-MC explanations (e.g. fun-fact
+// 'Why?' replies). Same staar-explanations table, just bypasses the
+// generator-callback flow of getOrGenerateExplanation.
+async function getExplanationByKey({ contentId, variantKey }) {
+  const r = await ddb.send(new GetCommand({
+    TableName: EXPLANATIONS_TABLE,
+    Key: { contentId, variantKey }
+  }));
+  return r.Item || null;
+}
+async function putExplanationDirect({ contentId, variantKey, explanation, generatedBy, detailLevel, wrongChoiceIndex }) {
+  const item = {
+    contentId,
+    variantKey,
+    wrongChoiceIndex: typeof wrongChoiceIndex === 'number' ? wrongChoiceIndex : -1,
+    detailLevel: detailLevel || 'direct',
+    explanation,
+    generatedBy: generatedBy || 'gpt-4o-mini',
+    generatedAt: Date.now(),
+    timesServed: 1,
+    timesHelpful: 0,
+    timesNotHelpful: 0,
+    qualityScore: 0.5,
+    language: 'en-US',
+    status: 'active'
+  };
+  await ddb.send(new PutCommand({ TableName: EXPLANATIONS_TABLE, Item: item }));
+  return item;
+}
+
 async function getOrGenerateExplanation({
   contentId, wrongChoiceIndex, detailLevel = 'detailed', generator
 }) {
@@ -522,6 +552,8 @@ module.exports = {
   savePoolItem,
   readPoolForBucket,
   getOrGenerateExplanation,
+  getExplanationByKey,
+  putExplanationDirect,
   getOrGenerateTutorResponse,
   recordEvent,
   computeEmbedding,

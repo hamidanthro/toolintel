@@ -10,15 +10,15 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
 
   <title>Fun Facts — GradeEarn</title>
-  <meta name="description" content="Browse age-appropriate fun facts by subject and grade band." />
+  <meta name="description" content="An AI-powered fact deck. One card at a time. Tap to learn why." />
   <meta name="robots" content="noindex, follow" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=20260515k" />
+  <link rel="stylesheet" href="css/styles.css?v=20260516a" />
 </head>
-<body class="facts-page">
+<body class="facts-page facts-page--deck">
 
   <header class="site-header">
     <div class="container">
@@ -35,51 +35,99 @@
     </div>
   </header>
 
-  <main class="facts-main">
-    <div class="facts-inner">
+  <main class="deck-main">
+    <div class="deck-inner">
 
-      <header class="facts-page-head">
-        <span class="facts-eyebrow">Fun Facts</span>
-        <h1 class="facts-title">Stuff worth knowing</h1>
-        <p class="facts-sub" id="facts-sub">Pick a subject and an age band to browse.</p>
+      <!-- Compact header: eyebrow + filter chip + position label -->
+      <header class="deck-head">
+        <span class="deck-eyebrow">Fun Facts</span>
+        <button type="button" class="deck-filter-chip" id="deck-filter-chip" aria-haspopup="dialog">
+          🎯 <span id="deck-filter-label">All subjects · All ages</span>
+          <span class="deck-filter-chip-arrow" aria-hidden="true">▾</span>
+        </button>
+        <div class="deck-position" id="deck-position" aria-live="polite">— of —</div>
       </header>
 
-      <!-- Subject pills (math / reading / science / all) -->
-      <div class="facts-filter-row" role="radiogroup" aria-label="Subject">
-        <button type="button" class="facts-pill facts-pill--active" data-filter="subject" data-value="all" role="radio" aria-checked="true">All</button>
-        <button type="button" class="facts-pill" data-filter="subject" data-value="math"    role="radio" aria-checked="false">Math</button>
-        <button type="button" class="facts-pill" data-filter="subject" data-value="reading" role="radio" aria-checked="false">Reading</button>
-        <button type="button" class="facts-pill" data-filter="subject" data-value="science" role="radio" aria-checked="false">Science</button>
+      <!-- Card stack (focal + 2 ghost cards) -->
+      <div class="deck-stage" id="deck-stage" aria-live="polite">
+        <div class="deck-card deck-card--ghost deck-card--ghost-2" aria-hidden="true"></div>
+        <div class="deck-card deck-card--ghost deck-card--ghost-1" aria-hidden="true"></div>
+        <article class="deck-card deck-card--focal" id="deck-card-focal" tabindex="0" aria-label="Fact card">
+          <div class="deck-card-head">
+            <div class="deck-card-emoji-tile" aria-hidden="true" id="deck-emoji">💡</div>
+            <span class="deck-card-cat" id="deck-cat">Loading</span>
+          </div>
+          <p class="deck-card-fact" id="deck-fact">Loading a fact for you…</p>
+          <div class="deck-card-why" id="deck-why" hidden></div>
+          <div class="deck-card-actions">
+            <button type="button" class="deck-action deck-action--why" id="deck-btn-why" aria-label="Why is this true?">
+              <span class="deck-action-emoji" aria-hidden="true">🤔</span>
+              <span class="deck-action-label">Why?</span>
+            </button>
+            <button type="button" class="deck-action deck-action--weirder" id="deck-btn-weirder" aria-label="Show me a weirder fact">
+              <span class="deck-action-emoji" aria-hidden="true">🎲</span>
+              <span class="deck-action-label">Even weirder</span>
+            </button>
+            <button type="button" class="deck-action deck-action--save" id="deck-btn-save" aria-label="Save this fact" aria-pressed="false">
+              <span class="deck-action-emoji deck-heart" aria-hidden="true">💚</span>
+              <span class="deck-action-label">Save</span>
+            </button>
+          </div>
+        </article>
       </div>
 
-      <!-- Grade-band pills (k-2 / 3-4 / 5-8 / all) -->
-      <div class="facts-filter-row facts-filter-row--second" role="radiogroup" aria-label="Age band">
-        <button type="button" class="facts-pill facts-pill--active" data-filter="grade" data-value="all" role="radio" aria-checked="true">All ages</button>
-        <button type="button" class="facts-pill" data-filter="grade" data-value="k-2" role="radio" aria-checked="false">K–2</button>
-        <button type="button" class="facts-pill" data-filter="grade" data-value="3-4" role="radio" aria-checked="false">Grades 3–4</button>
-        <button type="button" class="facts-pill" data-filter="grade" data-value="5-8" role="radio" aria-checked="false">Grades 5–8</button>
-      </div>
-
-      <!-- Stats line: "147 facts · 18 you've seen" -->
-      <div class="facts-meta" id="facts-meta" hidden>
-        <span id="facts-count">0</span> facts<span class="facts-meta-sep">·</span>
-        <span id="facts-seen-count">0</span> you've seen
-      </div>
-
-      <!-- Feed — fact cards. Populated by js/facts.js. -->
-      <div class="facts-feed" id="facts-feed" aria-live="polite"></div>
-
-      <!-- Empty state (shown when 0 facts match the active filters) -->
-      <div class="facts-empty" id="facts-empty" hidden>
+      <!-- Empty state -->
+      <div class="deck-empty" id="deck-empty" hidden>
         <p>No facts match those filters yet.</p>
-        <p class="facts-empty-sub">Try a different subject or age band.</p>
+        <button type="button" class="deck-empty-cta" id="deck-empty-cta">Reset filters</button>
       </div>
 
-      <!-- Load-more (large catalog; paginated 30 per page) -->
-      <button type="button" class="facts-loadmore" id="facts-loadmore" hidden>Show more facts</button>
+      <!-- Navigation row -->
+      <div class="deck-nav" id="deck-nav">
+        <button type="button" class="deck-nav-btn deck-nav-btn--prev" id="deck-prev" aria-label="Previous fact">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div class="deck-dots" id="deck-dots" aria-hidden="true"></div>
+        <button type="button" class="deck-nav-btn deck-nav-btn--next" id="deck-next" aria-label="Next fact">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+
+      <p class="deck-helper">← → to navigate · space for why · S to save</p>
 
     </div>
   </main>
+
+  <!-- Filter dialog (bottom-sheet on mobile, centered modal on desktop) -->
+  <dialog class="deck-filter-dialog" id="deck-filter-dialog" aria-label="Filter facts">
+    <form method="dialog" class="deck-filter-form">
+      <header class="deck-filter-head">
+        <h2 class="deck-filter-title">Filter facts</h2>
+        <button type="button" class="deck-filter-close" id="deck-filter-close" aria-label="Close">×</button>
+      </header>
+      <div class="deck-filter-section">
+        <span class="deck-filter-label">Subject</span>
+        <div class="deck-filter-pills" role="radiogroup" aria-label="Subject">
+          <button type="button" class="deck-fpill" data-filter="subject" data-value="all" aria-checked="true" role="radio">All</button>
+          <button type="button" class="deck-fpill" data-filter="subject" data-value="math" aria-checked="false" role="radio">Math</button>
+          <button type="button" class="deck-fpill" data-filter="subject" data-value="reading" aria-checked="false" role="radio">Reading</button>
+          <button type="button" class="deck-fpill" data-filter="subject" data-value="science" aria-checked="false" role="radio">Science</button>
+        </div>
+      </div>
+      <div class="deck-filter-section">
+        <span class="deck-filter-label">Age</span>
+        <div class="deck-filter-pills" role="radiogroup" aria-label="Age band">
+          <button type="button" class="deck-fpill" data-filter="grade" data-value="all" aria-checked="true" role="radio">All ages</button>
+          <button type="button" class="deck-fpill" data-filter="grade" data-value="k-2" aria-checked="false" role="radio">K–2</button>
+          <button type="button" class="deck-fpill" data-filter="grade" data-value="3-4" aria-checked="false" role="radio">Grades 3–4</button>
+          <button type="button" class="deck-fpill" data-filter="grade" data-value="5-8" aria-checked="false" role="radio">Grades 5–8</button>
+        </div>
+      </div>
+      <footer class="deck-filter-foot">
+        <button type="button" class="deck-filter-apply" id="deck-filter-apply">Apply</button>
+      </footer>
+    </form>
+  </dialog>
 
   <footer class="product-footer" aria-label="Compliance and support">
     <a href="/parent.html" class="product-footer-link">Parent dashboard</a>
@@ -91,9 +139,9 @@
     <a href="/legal/ai-disclosure.html" class="product-footer-link">AI Disclosure</a>
   </footer>
 
+  <script>window.STAAR_TUTOR_ENDPOINT = 'https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com/';</script>
   <script src="js/auth.js?v=20260514a"></script>
   <script src="js/fun-facts.js?v=20260513a"></script>
-  <script src="js/speech.js?v=20260512a"></script>
-  <script src="js/facts.js?v=20260513a"></script>
+  <script src="js/facts.js?v=20260516a"></script>
 </body>
 </html>

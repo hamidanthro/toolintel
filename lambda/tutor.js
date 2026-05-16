@@ -433,6 +433,7 @@ exports.handler = async (event) => {
   if (action === 'getParentSummary')    return await handleGetParentSummary(payload);
   if (action === 'getFunFactsState')    return await handleGetFunFactsState(payload);
   if (action === 'updateFunFactsState') return await handleUpdateFunFactsState(payload);
+  if (action === 'funFactExplain')      return await handleFunFactExplain(payload);
   if (action === 'getAchievementsState')    return await handleGetAchievementsState(payload);
   if (action === 'updateAchievementsState') return await handleUpdateAchievementsState(payload);
   if (action === 'savePushSubscription')    return await handleSavePushSubscription(payload);
@@ -2408,6 +2409,75 @@ async function handleUpdateFunFactsState(payload) {
 
   await ddb.send(new UpdateCommand(params));
   return ok({ ok: true });
+}
+
+// ===== §114 Fun-Fact AI Why? — gpt-4o-mini explanation, shared cache =====
+// POST { action: 'funFactExplain', factId, fact, category, grade }
+// Returns { explanation, cached: bool }.
+//
+// Cache layer: reuses the existing staar-explanations table with a
+// synthetic key {contentId: 'funfact:<factId>', variantKey: 'fact-why'}.
+// First call hits gpt-4o-mini ~250 tokens (~$0.0001). Subsequent calls
+// for the same fact return the cached text — no model call.
+async function handleFunFactExplain(payload) {
+  const factId = String(payload.factId || '').trim();
+  const fact = String(payload.fact || '').trim();
+  const category = String(payload.category || '').trim();
+  const grade = String(payload.grade || '3-4').trim();
+  if (!factId || !fact) return bad(400, 'factId and fact required');
+
+  // Cache check
+  const contentId = 'funfact:' + factId;
+  const variantKey = 'fact-why';
+  try {
+    const cached = await lake.getExplanationByKey({ contentId, variantKey });
+    if (cached && cached.explanation) {
+      return ok({ explanation: cached.explanation, cached: true });
+    }
+  } catch (e) {
+    console.warn('[funfact-why] cache read failed:', e && e.message);
+  }
+
+  // Cache miss — call gpt-4o-mini
+  const apiKey = await getApiKey().catch(() => null);
+  if (!apiKey) return bad(502, 'AI unavailable');
+
+  const system = "You are a warm, curious tutor for a 3rd-4th grader. Explain in 2 short sentences why this fact is true or how it works. Use simple words a 9-year-old knows. Be specific — never generic. No exclamation marks. Do not start with 'Well,' 'So,' 'Actually,' or 'Great question'.";
+  const user = `Fact: ${fact}\nCategory: ${category}`;
+
+  let text = '';
+  try {
+    const result = await callOpenAI(apiKey, {
+      model: 'gpt-4o-mini',
+      messages: [
+        { role: 'system', content: system },
+        { role: 'user',   content: user }
+      ],
+      temperature: 0.7,
+      max_tokens: 120
+    });
+    text = (result?.choices?.[0]?.message?.content || '').trim();
+  } catch (e) {
+    console.warn('[funfact-why] model call failed:', e && e.message);
+    return bad(502, 'explain_failed');
+  }
+  if (!text) return bad(502, 'empty_explanation');
+
+  // Write back to cache (fire-and-forget — if it fails, kid still gets the text)
+  try {
+    await lake.putExplanationDirect({
+      contentId,
+      variantKey,
+      explanation: text,
+      generatedBy: 'gpt-4o-mini',
+      detailLevel: 'fact-why',
+      wrongChoiceIndex: -1
+    });
+  } catch (e) {
+    console.warn('[funfact-why] cache write failed:', e && e.message);
+  }
+
+  return ok({ explanation: text, cached: false });
 }
 
 // ===== Achievements state (cross-device sync) =====
