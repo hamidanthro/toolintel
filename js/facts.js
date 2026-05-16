@@ -45,6 +45,7 @@
   let _index = 0;
   let _savedIds = null;
   const _explanationCache = new Map();
+  let _whyPulseTimer = null; // §116 — auto-stop pulse after 4s
 
   const state = { cat: 'all', grade: 'all', mode: 'picker' };
 
@@ -280,8 +281,11 @@
       const saved = isSaved(f.id);
       saveBtn.setAttribute('aria-pressed', saved ? 'true' : 'false');
       saveBtn.classList.toggle('deck-action--saved', saved);
-      const heart = saveBtn.querySelector('.deck-heart');
-      if (heart) heart.textContent = saved ? '💛' : '💚';
+      // §116 — Tabler heart icon: swap outline ↔ filled visibility
+      const outline = saveBtn.querySelector('.deck-icon--heart-outline');
+      const filled  = saveBtn.querySelector('.deck-icon--heart-filled');
+      if (outline) outline.hidden = saved;
+      if (filled)  filled.hidden  = !saved;
     }
 
     const whyEl = document.getElementById('deck-why');
@@ -311,6 +315,39 @@
         focal.classList.add(direction === 'next' ? 'deck-card--in-right' : 'deck-card--in-left');
       }
     }
+
+    // §116 — Why? pulse manager. On every new card render, restart
+    // the pulse IF the kid hasn't tapped Why? for this fact AND
+    // prefers-reduced-motion is not set. Auto-stops after 4s.
+    startWhyPulse();
+  }
+
+  function startWhyPulse() {
+    const btn = document.getElementById('deck-btn-why');
+    if (!btn) return;
+    // Clear any previous timer
+    if (_whyPulseTimer) { clearTimeout(_whyPulseTimer); _whyPulseTimer = null; }
+    if (prefersReducedMotion()) {
+      btn.classList.remove('deck-action--ai-pulsing');
+      return;
+    }
+    const f = _filtered[_index];
+    // If kid already tapped Why? for this fact (cached explanation
+    // exists), skip the pulse — they know the move now.
+    if (f && (_explanationCache.has(f.id) || f._aiExplanation)) {
+      btn.classList.remove('deck-action--ai-pulsing');
+      return;
+    }
+    btn.classList.add('deck-action--ai-pulsing');
+    _whyPulseTimer = setTimeout(() => {
+      btn.classList.remove('deck-action--ai-pulsing');
+      _whyPulseTimer = null;
+    }, 4000);
+  }
+  function stopWhyPulse() {
+    const btn = document.getElementById('deck-btn-why');
+    if (btn) btn.classList.remove('deck-action--ai-pulsing');
+    if (_whyPulseTimer) { clearTimeout(_whyPulseTimer); _whyPulseTimer = null; }
   }
 
   function renderDots(current, total) {
@@ -374,6 +411,7 @@
     if (!_filtered.length) return;
     const f = _filtered[_index];
     if (!f) return;
+    stopWhyPulse(); // §116 — kid engaged, stop the attention signal
     if (_explanationCache.has(f.id)) { revealWhy(_explanationCache.get(f.id)); return; }
     if (f._aiExplanation) { _explanationCache.set(f.id, f._aiExplanation); revealWhy(f._aiExplanation); return; }
     const btn = document.getElementById('deck-btn-why');
@@ -422,16 +460,47 @@
     if (btn) {
       btn.setAttribute('aria-pressed', nowSaved ? 'true' : 'false');
       btn.classList.toggle('deck-action--saved', nowSaved);
+      // §116 — swap outline ↔ filled heart SVGs
+      const outline = btn.querySelector('.deck-icon--heart-outline');
+      const filled  = btn.querySelector('.deck-icon--heart-filled');
+      if (outline) outline.hidden = nowSaved;
+      if (filled)  filled.hidden  = !nowSaved;
       const heart = btn.querySelector('.deck-heart');
-      if (heart) {
-        heart.textContent = nowSaved ? '💛' : '💚';
-        if (!prefersReducedMotion()) {
-          heart.classList.remove('deck-heart--bounce');
-          // eslint-disable-next-line no-unused-expressions
-          heart.offsetWidth;
-          heart.classList.add('deck-heart--bounce');
-        }
+      if (heart && !prefersReducedMotion()) {
+        heart.classList.remove('deck-heart--bounce');
+        // eslint-disable-next-line no-unused-expressions
+        heart.offsetWidth;
+        heart.classList.add('deck-heart--bounce');
       }
+      // §116 — gold-particle burst (3 dots fading up + out)
+      if (nowSaved && !prefersReducedMotion()) {
+        spawnSaveBurst(btn);
+      }
+    }
+  }
+
+  // §116 — small gold-particle burst when the kid saves a fact.
+  // 3 absolutely-positioned dots inside the heart container, each
+  // animated by CSS class .deck-particle--up and removed after the
+  // animation ends.
+  function spawnSaveBurst(btn) {
+    const heart = btn.querySelector('.deck-heart');
+    if (!heart) return;
+    // Anchor relative to heart
+    if (getComputedStyle(heart).position === 'static') {
+      heart.style.position = 'relative';
+    }
+    for (let i = 0; i < 3; i++) {
+      const d = document.createElement('span');
+      d.className = 'deck-particle';
+      // Spread 3 particles slightly: -8px, 0, +8px x; randomize tiny y wobble
+      const x = (i - 1) * 8 + (Math.random() * 4 - 2);
+      d.style.setProperty('--dx', x + 'px');
+      heart.appendChild(d);
+      // Cleanup once animation ends
+      d.addEventListener('animationend', () => { d.remove(); }, { once: true });
+      // Failsafe: remove after 700ms regardless
+      setTimeout(() => { if (d.parentElement) d.remove(); }, 700);
     }
   }
 

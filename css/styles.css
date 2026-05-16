@@ -31566,3 +31566,151 @@ body.facts-page--deck .deck-picker { padding: 36px 20px 64px; }
 
 /* Hidden-state helpers */
 .deck-picker[hidden], .deck-main[hidden] { display: none; }
+
+/* =============================================================
+   §116 — Brand-system cleanup on the Fun Facts deck (May 16)
+
+   Kills the OS-emoji chrome (🤔 🎲 💚 🎯), replaces with inline
+   Tabler-style SVG icons in gold/cream. Adds the AI-moment
+   signal to the Why? button: subtle gold-gradient bg + pulsing
+   halo + sparkle-icon wobble. All honored by prefers-reduced-motion.
+
+   PALETTE LOCK: navy + gold only. No green / teal / cyan /
+   magenta / pink anywhere in chrome (the heart emoji
+   is gone — now a navy-cream / gold SVG via stroke=currentColor).
+   ============================================================= */
+
+/* Base icon — adopts surrounding color via currentColor */
+.deck-icon {
+  flex-shrink: 0;
+  pointer-events: none;
+  vertical-align: middle;
+}
+
+/* Filter chip — replace 🎯 emoji with sliders icon, gold-tinted */
+body.facts-page--deck .deck-filter-chip .deck-icon {
+  color: rgba(251, 191, 36, 0.85);
+}
+body.facts-page--deck .deck-filter-chip:hover .deck-icon {
+  color: #fbbf24;
+}
+
+/* Action pill icons */
+.deck-action .deck-icon {
+  color: rgba(255, 255, 255, 0.78);
+}
+.deck-action:hover:not(:disabled) .deck-icon {
+  color: #ffffff;
+}
+
+/* Why? button — the AI moment. Subtle gold gradient + slight
+   border emphasis + pulse halo until tapped. */
+.deck-action--why,
+.deck-action--ai {
+  position: relative;
+  background: linear-gradient(180deg, rgba(251, 191, 36, 0.12), rgba(251, 191, 36, 0.06)) !important;
+  border-color: rgba(251, 191, 36, 0.50) !important;
+  color: #fde68a !important;
+}
+.deck-action--why .deck-icon {
+  color: #fbbf24 !important;
+}
+.deck-action--why:hover:not(:disabled) {
+  background: linear-gradient(180deg, rgba(251, 191, 36, 0.22), rgba(251, 191, 36, 0.10)) !important;
+  border-color: rgba(251, 191, 36, 0.80) !important;
+}
+
+/* Why? pulse — only while .deck-action--ai-pulsing is on. JS
+   removes the class on tap, after 4s, or if the explanation is
+   already cached for the current card. */
+@media (prefers-reduced-motion: no-preference) {
+  .deck-action--ai-pulsing {
+    animation: deckAiPulse 2s ease-in-out infinite;
+  }
+  .deck-action--ai-pulsing .deck-icon--sparkles {
+    animation: deckSparkleWobble 1.4s ease-in-out infinite;
+    transform-origin: center;
+  }
+}
+@keyframes deckAiPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.0); }
+  50%      { box-shadow: 0 0 8px 2px rgba(251, 191, 36, 0.18); }
+}
+@keyframes deckSparkleWobble {
+  0%, 100% { transform: rotate(-8deg); }
+  50%      { transform: rotate(8deg); }
+}
+
+/* Save button — Tabler heart. Outline (cream/60) when not saved,
+   filled (gold) when saved. JS toggles which SVG is hidden. */
+.deck-action--save .deck-heart {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.deck-action--save .deck-icon--heart {
+  color: rgba(255, 255, 255, 0.60);
+}
+.deck-action--save:hover:not(:disabled) .deck-icon--heart {
+  color: rgba(255, 255, 255, 0.85);
+}
+.deck-action--save.deck-action--saved {
+  color: #fde68a !important;
+  border-color: rgba(251, 191, 36, 0.55);
+  background: rgba(251, 191, 36, 0.10);
+}
+.deck-action--save.deck-action--saved .deck-icon--heart {
+  color: #fbbf24 !important;
+}
+
+/* Gold-particle burst on save */
+.deck-particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fde68a, #fbbf24);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  opacity: 1;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .deck-particle {
+    animation: deckParticleUp 600ms ease-out forwards;
+  }
+}
+@keyframes deckParticleUp {
+  0%   { transform: translate(calc(-50% + 0px), -50%)               scale(0.6); opacity: 0; }
+  20%  { transform: translate(calc(-50% + var(--dx, 0px)), -120%)   scale(1.0); opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--dx, 0px)), -300%)   scale(0.4); opacity: 0; }
+}
+
+/* Mobile tightening — Tabler icons are 16px so pill stays readable */
+@media (max-width: 540px) {
+  .deck-action { gap: 5px; }
+  .deck-icon { width: 14px; height: 14px; }
+}
+
+/* §116 — Strengthen category emoji tile containers. Emoji stays
+   (it's CONTENT, not chrome), but some emoji bring their own
+   palette (basketball orange, dartboard rainbow) — tile's gold-
+   tinted bg + stronger border helps contain. */
+body.facts-page--deck .deck-card-emoji-tile {
+  background: rgba(251, 191, 36, 0.14);
+  border-color: rgba(251, 191, 36, 0.40);
+  box-shadow: inset 0 0 0 1px rgba(251, 191, 36, 0.06);
+}
+body.facts-page--deck .deck-picker-tile-emoji {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  font-size: 22px !important;
+  background: rgba(251, 191, 36, 0.10);
+  border: 1px solid rgba(251, 191, 36, 0.28);
+  border-radius: 10px;
+}

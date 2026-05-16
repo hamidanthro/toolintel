@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=20260516b" />
+  <link rel="stylesheet" href="css/styles.css?v=20260516c" />
 </head>
 <body class="facts-page facts-page--deck">
 
@@ -41,7 +41,7 @@
   <main class="deck-picker" id="deck-picker" hidden>
     <div class="deck-picker-inner">
       <header class="deck-picker-head">
-        <span class="deck-eyebrow">Fun Facts</span>
+        <span class="deck-eyebrow">Mind blowers</span>
         <h1 class="deck-picker-title">Pick a topic</h1>
         <p class="deck-picker-sub">What are you curious about today?</p>
       </header>
@@ -65,7 +65,13 @@
           <span>All topics</span>
         </button>
         <button type="button" class="deck-filter-chip" id="deck-filter-chip" aria-haspopup="dialog">
-          🎯 <span id="deck-filter-label">All categories · All ages</span>
+          <svg class="deck-icon" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" y1="6" x2="12" y2="6"/><line x1="16" y1="6" x2="20" y2="6"/>
+            <line x1="4" y1="12" x2="6" y2="12"/><line x1="10" y1="12" x2="20" y2="12"/>
+            <line x1="4" y1="18" x2="15" y2="18"/><line x1="19" y1="18" x2="20" y2="18"/>
+            <circle cx="14" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="17" cy="18" r="2"/>
+          </svg>
+          <span id="deck-filter-label">All categories · All ages</span>
           <span class="deck-filter-chip-arrow" aria-hidden="true">▾</span>
         </button>
         <div class="deck-position" id="deck-position" aria-live="polite">— of —</div>
@@ -83,16 +89,35 @@
           <p class="deck-card-fact" id="deck-fact">Loading a fact for you…</p>
           <div class="deck-card-why" id="deck-why" hidden></div>
           <div class="deck-card-actions">
-            <button type="button" class="deck-action deck-action--why" id="deck-btn-why" aria-label="Why is this true?">
-              <span class="deck-action-emoji" aria-hidden="true">🤔</span>
+            <!-- §116 Why? — the AI magic moment. Pulses + sparkle wobbles
+                 until tapped (or 4s timeout, or prefers-reduced-motion). -->
+            <button type="button" class="deck-action deck-action--why deck-action--ai" id="deck-btn-why" aria-label="Why is this true?">
+              <svg class="deck-icon deck-icon--sparkles" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12c5 0 7 -2 7 -7c0 5 2 7 7 7c-5 0 -7 2 -7 7c0 -5 -2 -7 -7 -7z"/>
+                <path d="M14 5l1 -1l-1 -1l-1 1l1 1zm6 8l1 -1l-1 -1l-1 1l1 1zm-3 7l1.5 -1.5l-1.5 -1.5l-1.5 1.5l1.5 1.5z"/>
+              </svg>
               <span class="deck-action-label">Why?</span>
             </button>
             <button type="button" class="deck-action deck-action--weirder" id="deck-btn-weirder" aria-label="Show me a weirder fact">
-              <span class="deck-action-emoji" aria-hidden="true">🎲</span>
+              <svg class="deck-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="4" y="4" width="16" height="16" rx="3"/>
+                <circle cx="8.5" cy="8.5" r=".75" fill="currentColor"/>
+                <circle cx="15.5" cy="8.5" r=".75" fill="currentColor"/>
+                <circle cx="12" cy="12" r=".75" fill="currentColor"/>
+                <circle cx="8.5" cy="15.5" r=".75" fill="currentColor"/>
+                <circle cx="15.5" cy="15.5" r=".75" fill="currentColor"/>
+              </svg>
               <span class="deck-action-label">Even weirder</span>
             </button>
             <button type="button" class="deck-action deck-action--save" id="deck-btn-save" aria-label="Save this fact" aria-pressed="false">
-              <span class="deck-action-emoji deck-heart" aria-hidden="true">💚</span>
+              <span class="deck-heart" aria-hidden="true">
+                <svg class="deck-icon deck-icon--heart deck-icon--heart-outline" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572"/>
+                </svg>
+                <svg class="deck-icon deck-icon--heart deck-icon--heart-filled" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" stroke="none" hidden>
+                  <path d="M6.979 3.074a6 6 0 0 1 4.988 1.425l.037 .033l.034 -.03a6 6 0 0 1 4.733 -1.44l.246 .036a6 6 0 0 1 3.364 10.008l-.18 .185l-.048 .041l-7.45 7.379a1 1 0 0 1 -1.313 .082l-.094 -.082l-7.493 -7.422a6 6 0 0 1 3.176 -10.215z"/>
+                </svg>
+              </span>
               <span class="deck-action-label">Save</span>
             </button>
           </div>
@@ -161,7 +186,7 @@
 
   <script>window.STAAR_TUTOR_ENDPOINT = 'https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com/';</script>
   <script src="js/auth.js?v=20260514a"></script>
-  <script src="js/fun-facts.js?v=20260516c"></script>
-  <script src="js/facts.js?v=20260516c"></script>
+  <script src="js/fun-facts.js?v=20260516d"></script>
+  <script src="js/facts.js?v=20260516d"></script>
 </body>
 </html>
