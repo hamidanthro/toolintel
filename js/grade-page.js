@@ -584,13 +584,32 @@
   //  - Right-side category-emoji tile pulled from the Discovery
   //    Deck's CATEGORIES map (one place where emoji is allowed
   //    because it's the content of the featured card).
-  const _MB_CATEGORY_EMOJI = {
-    'animals': '🐾', 'space': '🪐', 'body': '🫀', 'food': '🍯',
-    'texas': '⭐', 'sports': '🏀', 'inventions': '💡', 'history': '🏛',
-    'math-numbers': '🔢', 'weird-funny': '✨', 'dinosaurs': '🦕',
-    'music': '🎵', 'geography': '🌍', 'robots-tech': '🤖',
-    'mythology': '🐉', 'all': '✨'
+  // §122 — Replace OS emoji with Tabler-icon SVGs. The §121 emoji tile
+  // was failing the "honey pot for an almond fact" test because the
+  // category-to-emoji map was too coarse. Tabler outline icons keep
+  // a consistent navy+gold treatment and don't depend on emoji
+  // semantics. Map each fact category to one Tabler-style SVG; fall
+  // back to a bulb for unmapped categories.
+  const _MB_CATEGORY_ICON = {
+    'animals':     '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="10" r="2.2"/><circle cx="18" cy="10" r="2.2"/><circle cx="9.5" cy="6" r="2.2"/><circle cx="14.5" cy="6" r="2.2"/><path d="M8 16c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4-4-1.8-4-4z"/></svg>',
+    'sports':      '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v18"/><path d="M3 12h18"/><path d="M5.6 5.6 18.4 18.4"/><path d="M5.6 18.4 18.4 5.6"/></svg>',
+    'space':       '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><ellipse cx="12" cy="12" rx="11" ry="3.5" transform="rotate(-25 12 12)"/></svg>',
+    'body':        '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h3l2-4 4 8 2-4h7"/></svg>',
+    'history':     '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V9l7-6 7 6v12"/><path d="M9 21V13h6v8"/></svg>',
+    'science':     '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1.5"/><path d="M12 21.5C7 19 4 16 4 12s3-7 8-9.5"/><path d="M12 21.5C17 19 20 16 20 12s-3-7-8-9.5"/><path d="M3.5 14.5c3.5 1 8 .5 12-2s7-5.5 5-7"/><path d="M3.5 9.5c3.5-1 8-.5 12 2s7 5.5 5 7"/></svg>',
+    'inventions':  '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6"/><path d="M10 21h4"/><path d="M12 3a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2v.3h6V18c0-.8.4-1.5 1-2A7 7 0 0 0 12 3z"/></svg>',
+    'math-numbers':'<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/><circle cx="7" cy="6" r="0.5" fill="currentColor"/><circle cx="12" cy="12" r="0.5" fill="currentColor"/><circle cx="17" cy="18" r="0.5" fill="currentColor"/></svg>',
+    'food':        '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v6"/><path d="M9 5c0 2 1.5 4 3 4s3-2 3-4"/><path d="M7 9c-2 1-3 3-3 5 0 4 4 7 8 7s8-3 8-7c0-2-1-4-3-5"/></svg>',
+    'dinosaurs':   '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 18c0-4 2-7 6-8l-2-3 4 1 1-3 3 4-1 2c3 1 5 3 5 7"/><circle cx="17" cy="9" r="0.6" fill="currentColor"/></svg>',
+    'music':       '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
+    'geography':   '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8"/><path d="M3.6 15h16.8"/><path d="M12 3a14 14 0 0 1 0 18"/><path d="M12 3a14 14 0 0 0 0 18"/></svg>',
+    'robots-tech': '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="8" width="16" height="11" rx="2"/><line x1="12" y1="4" x2="12" y2="8"/><circle cx="12" cy="3" r="1"/><circle cx="9" cy="13" r="1" fill="currentColor"/><circle cx="15" cy="13" r="1" fill="currentColor"/></svg>',
+    'mythology':   '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 17c4 2 12 2 16 0"/><path d="M8 12c0-3 2-5 4-5s4 2 4 5"/><path d="M6 17v3"/><path d="M18 17v3"/></svg>',
+    'texas':       '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15 8 21 9 17 14 18 21 12 18 6 21 7 14 3 9 9 8"/></svg>',
+    'weird-funny': '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/><path d="M8 14c1.5 2 6.5 2 8 0"/></svg>',
+    'all':         '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 18a2 2 0 0 1 2 2 2 2 0 0 1 2-2 2 2 0 0 1-2-2 2 2 0 0 1-2 2zm0-12a2 2 0 0 1 2 2 2 2 0 0 1 2-2 2 2 0 0 1-2-2 2 2 0 0 1-2 2zM9 18a6 6 0 0 1 6-6 6 6 0 0 1-6-6 6 6 0 0 1-6 6 6 6 0 0 1 6 6z"/></svg>'
   };
+  const _MB_FALLBACK_ICON = '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6"/><path d="M10 21h4"/><path d="M12 3a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2v.3h6V18c0-.8.4-1.5 1-2A7 7 0 0 0 12 3z"/></svg>';
   function renderMindBlowerHero(state, gradeSlug) {
     const host = document.getElementById('mindblower-wrap');
     if (!host || !window.FunFacts || typeof window.FunFacts.loadCatalog !== 'function') return;
@@ -643,7 +662,7 @@
       // Field is `fact` (not `text`) — schema verified 2026-05-17.
       const factText = String(fact.fact || fact.text || '').trim();
       if (!factText) return;
-      const emoji = _MB_CATEGORY_EMOJI[fact.category] || _MB_CATEGORY_EMOJI.all;
+      const iconSvg = _MB_CATEGORY_ICON[fact.category] || _MB_FALLBACK_ICON;
       const factsUrl = `/facts.html?age=${ageBand}${fact.category ? '&cat=' + encodeURIComponent(fact.category) : ''}`;
       const countLabel = factCount > 0
         ? `${factCount.toLocaleString('en-US')} facts for ${escapeHtml(gradeLabel)}`
@@ -675,7 +694,7 @@
               ${countLabel ? `<span class="mindblower-hero-count">${countLabel}</span>` : ''}
             </div>
           </div>
-          <span class="mindblower-hero-emoji" aria-hidden="true">${emoji}</span>
+          <span class="mindblower-hero-icon" aria-hidden="true">${iconSvg}</span>
         </a>
       `;
       host.hidden = false;
@@ -688,14 +707,18 @@
   // "You're in." + "Let's earn." (display serif with gold "earn").
   // Skipped for logged-in users — the §119 greeting + earn-hero +
   // continue-card stack carries the welcome moment for them.
+  // §122 — Single-line composed headline. Combines the prior
+  // two-line "You're in." + "Let's earn." stack into one display-
+  // serif line, centered, with the gold portion ending on "earn."
+  // No size differential within the headline; the gold is the only
+  // visual contrast.
   function renderHeadline(state, gradeSlug) {
     const host = document.getElementById('home-headline');
     if (!host) return;
     const u = (window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser()) || null;
     if (u) { host.hidden = true; return; }
     host.innerHTML = `
-      <span class="home-headline-eyebrow">You're in.</span>
-      <h1 class="home-headline-title">Let's <span class="home-headline-gold">earn.</span></h1>
+      <h1 class="home-headline-title">You're in. <span class="home-headline-gold">Let's earn.</span></h1>
     `;
     host.hidden = false;
   }
@@ -703,13 +726,18 @@
   // ============================================================
   // §121 — Sign-up nudge (logged-out only)
   // ============================================================
+  // §122 — Mobile gets the compact copy "Track earnings?". Picked via
+  // matchMedia instead of a CSS reveal so the two copies can't both
+  // ship on a single page accidentally.
   function renderSignupNudge() {
     const host = document.getElementById('signup-nudge');
     if (!host) return;
     const u = (window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser()) || null;
     if (u) { host.hidden = true; return; }
+    const isMobile = window.matchMedia && window.matchMedia('(max-width: 480px)').matches;
+    const leadCopy = isMobile ? 'Track earnings?' : 'Want to track your earnings?';
     host.innerHTML = `
-      <span>Want to track your earnings?</span><a href="index.html#auth">Sign up free →</a>
+      <span>${leadCopy}</span><a href="index.html#auth">Sign up free →</a>
     `;
     host.hidden = false;
   }

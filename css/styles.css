@@ -17360,10 +17360,17 @@ body.practice-page .question-card .q-inline-fb.q-inline-fb--tutor {
    - Single-line inline feedback chip
    ============================================================ */
 
-/* Hide the GradeEarn brand on practice flow pages — breadcrumb
-   'TX · Grade 3 · Math' carries the identity. */
+/* §121 — Brand wordmark is now anchored top-left on EVERY internal
+   page (gold-G square tile + "GradeEarn"). The earlier rule that hid
+   the brand on body.practice-mode was the root cause of three prompts
+   failing to render the wordmark on grade.html / practice.html /
+   facts.html — body.practice-mode applies broadly, and the !important
+   display:none collapsed the wordmark and the new ::before gold-G
+   tile alike. Rule kept but neutered with a comment so future
+   archaeologists understand the path. */
 body.practice-mode .site-header .brand {
-  display: none !important;
+  /* display: none !important;  killed §121 — wordmark MUST render on
+     every internal page; the breadcrumb is not a brand anchor. */
 }
 
 /* §68 Auto-advance indicator (CORRECT state). Replaces the Check
@@ -33111,4 +33118,343 @@ body.grade-page .breadcrumb--mid-dot .breadcrumb-change-link:hover {
   text-decoration: underline;
   text-decoration-color: rgba(251, 191, 36, 0.45);
   text-underline-offset: 3px;
+}
+
+/* ============================================================
+   §122 — Page 2 polish + mobile hamburger + wordmark unblock
+   ============================================================
+   Resolves the THREE-PROMPT wordmark regression (root cause was
+   body.practice-mode .site-header .brand { display: none !important }
+   at line 17365 — killed earlier in this commit). Plus the
+   consolidated polish pass: grid texture, tighter vertical rhythm,
+   merged headline, 2x2 mobile subjects, Tabler-icon Mind Blower tile,
+   stacked earn chip, contained collapsed-more, compact mobile copy.
+   ============================================================ */
+
+/* ---------- §122 Body grid texture ---------- */
+body.grade-page {
+  background-image:
+    linear-gradient(rgba(212, 175, 55, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212, 175, 55, 0.025) 1px, transparent 1px),
+    radial-gradient(ellipse at 50% 0%, rgba(212, 175, 55, 0.05) 0%, transparent 50%);
+  background-size: 32px 32px, 32px 32px, 100% 600px;
+  background-repeat: repeat, repeat, no-repeat;
+  background-position: 0 0, 0 0, 0 0;
+  background-attachment: fixed, fixed, fixed;
+}
+
+/* ---------- §122 Mobile hamburger + slide-down nav ---------- */
+.site-header .container {
+  position: relative;
+}
+.site-header .nav-toggle {
+  display: none;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.78);
+  cursor: pointer;
+  padding: 0;
+  margin-right: 8px;
+  -webkit-tap-highlight-color: transparent;
+}
+.site-header .nav-toggle:hover,
+.site-header .nav-toggle[aria-expanded="true"] {
+  border-color: rgba(251, 191, 36, 0.45);
+  color: #fbbf24;
+}
+.site-header .nav-mobile-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 6px;
+  padding: 8px;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(10, 15, 31, 0.98) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 12px;
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.55);
+  z-index: 100;
+}
+.site-header .nav-mobile-panel:not([hidden]) {
+  display: flex;
+}
+.site-header .nav-mobile-panel a {
+  display: block;
+  padding: 10px 14px;
+  font-family: 'Inter';
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  border-radius: 8px;
+  transition: background 140ms ease, color 140ms ease;
+}
+.site-header .nav-mobile-panel a:hover,
+.site-header .nav-mobile-panel a.active {
+  background: rgba(251, 191, 36, 0.10);
+  color: #fbbf24;
+}
+@media (max-width: 768px) {
+  .site-header .nav-toggle { display: inline-flex; }
+  .site-header .nav { display: none !important; }
+}
+
+/* ---------- §122 Brand wordmark sizing tightening ---------- */
+.brand--wordmark::before {
+  width: 26px;
+  height: 26px;
+  font-size: 17px;
+  border-radius: 6px;
+}
+.brand--wordmark .brand-text {
+  font-size: 15px;
+  letter-spacing: -0.003em;
+}
+
+/* ---------- §122 Tighten vertical rhythm on grade.html ---------- */
+body.grade-page .breadcrumb-nav {
+  margin-top: 0;
+  margin-bottom: 4px;
+  text-align: center;
+}
+body.grade-page .breadcrumb {
+  justify-content: center;
+}
+.grade-content--v2 {
+  gap: 14px;
+  padding-top: 4px;
+  padding-bottom: 32px;
+}
+@media (min-width: 768px) {
+  .grade-content--v2 { gap: 16px; padding-top: 8px; }
+}
+
+/* ---------- §122 Headline merge — single line, centered ---------- */
+.home-headline {
+  margin: 0 0 4px;
+  text-align: center;
+}
+.home-headline-eyebrow {
+  /* deprecated — single-line headline doesn't use a separate eyebrow */
+  display: none;
+}
+.home-headline-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.018em;
+  color: #ffffff;
+  margin: 0;
+}
+.home-headline-title .home-headline-gold {
+  color: #fbbf24;
+  font-weight: 600;
+}
+@media (min-width: 768px) {
+  .home-headline-title { font-size: 34px; }
+}
+@media (min-width: 1100px) {
+  .home-headline-title { font-size: 36px; }
+}
+
+/* ---------- §122 Mind Blower hero — tighter, Tabler icon, light beam ---------- */
+.mindblower-hero {
+  position: relative;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 18px;
+}
+@media (min-width: 768px) {
+  .mindblower-hero { padding: 18px 22px; gap: 18px; }
+}
+/* Soft light beam in the top-left, behind everything else. */
+.mindblower-hero::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  left: -60px;
+  width: 240px;
+  height: 240px;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.10) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+.mindblower-hero-body,
+.mindblower-hero-icon {
+  position: relative;
+  z-index: 1;
+}
+.mindblower-hero-eyebrow {
+  margin-bottom: 6px;
+}
+.mindblower-hero-fact {
+  font-size: 18px;
+  line-height: 1.32;
+}
+@media (min-width: 768px) {
+  .mindblower-hero-fact { font-size: 22px; }
+}
+@media (min-width: 1100px) {
+  .mindblower-hero-fact { font-size: 24px; }
+}
+.mindblower-hero-actions {
+  margin-top: 10px;
+  gap: 12px;
+}
+.mindblower-hero-cta {
+  padding: 8px 14px;
+  font-size: 12.5px;
+}
+
+/* Tabler-icon tile — replaces the §121 OS-emoji tile. */
+.mindblower-hero-icon {
+  flex-shrink: 0;
+  align-self: flex-start;
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, rgba(251, 191, 36, 0.18) 0%, rgba(251, 191, 36, 0.05) 100%);
+  border: 1px solid rgba(251, 191, 36, 0.40);
+  border-radius: 10px;
+  color: #fbbf24;
+}
+.mindblower-hero-icon svg { width: 22px; height: 22px; }
+@media (min-width: 768px) {
+  .mindblower-hero-icon { width: 54px; height: 54px; border-radius: 13px; }
+  .mindblower-hero-icon svg { width: 28px; height: 28px; }
+}
+/* Hide the §121 emoji slot if it's still around in stale renders. */
+.mindblower-hero-emoji { display: none; }
+
+/* Bigger sparkles — visible but quiet. */
+.mindblower-hero-sparkles {
+  top: 12px;
+  right: 70px;
+  color: rgba(251, 191, 36, 0.40);
+}
+.mindblower-hero-sparkles svg:nth-child(1) { width: 18px; height: 18px; opacity: 0.40; }
+.mindblower-hero-sparkles svg:nth-child(2) { width: 12px; height: 12px; opacity: 0.28; }
+.mindblower-hero-sparkles svg:nth-child(3) { width: 14px; height: 14px; opacity: 0.32; }
+@media (max-width: 480px) {
+  .mindblower-hero-sparkles {
+    right: 56px;
+    top: 10px;
+  }
+  .mindblower-hero-sparkles svg:nth-child(1) { width: 14px; height: 14px; }
+  .mindblower-hero-sparkles svg:nth-child(2) { width: 10px; height: 10px; }
+  .mindblower-hero-sparkles svg:nth-child(3) { width: 10px; height: 10px; }
+}
+
+/* ---------- §122 Subjects — 2x2 mobile, 4-col desktop ---------- */
+.subject-tiles {
+  gap: 8px;
+}
+.subject-tiles-head {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+.subject-tiles-chip {
+  display: inline-block;
+  padding: 2px 8px;
+  background: rgba(251, 191, 36, 0.12);
+  border: 1px solid rgba(251, 191, 36, 0.30);
+  color: #fbbf24;
+  border-radius: 999px;
+  font-family: 'Inter';
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+/* The §121 .subject-tiles-tagline rule is superseded by .subject-tiles-chip
+   but kept as a safety alias in case any stale HTML is in cache. */
+.subject-tiles-tagline {
+  display: inline-block;
+  padding: 2px 8px;
+  background: rgba(251, 191, 36, 0.12);
+  border: 1px solid rgba(251, 191, 36, 0.30);
+  color: #fbbf24;
+  border-radius: 999px;
+  font-family: 'Inter';
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+.subject-tiles-tagline::before { content: none; }
+
+/* Mobile: 2x2. Desktop ≥768: 4-col. */
+.subject-tiles-grid {
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 8px;
+}
+@media (min-width: 768px) {
+  .subject-tiles-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+}
+
+/* Tile sizing tightening */
+body.grade-page .subject-tile {
+  padding: 14px 12px;
+  min-height: 96px;
+  gap: 4px;
+}
+body.grade-page .subject-tile-icon {
+  width: 32px;
+  height: 32px;
+}
+body.grade-page .subject-tile-icon .subject-card-icon-glyph {
+  font-size: 22px;
+}
+body.grade-page .subject-tile-icon svg {
+  width: 20px !important;
+  height: 20px !important;
+}
+body.grade-page .subject-tile-name {
+  font-size: 13px;
+}
+body.grade-page .subject-tile-sub {
+  font-size: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* ---------- §122 Collapsed-more — subtle container ---------- */
+body.grade-page .more-ways {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+}
+body.grade-page .more-ways-summary {
+  padding: 9px 12px;
+  font-size: 12px;
+}
+@media (min-width: 768px) {
+  body.grade-page .more-ways-summary { padding: 10px 14px; }
+}
+/* Full vs short label — mobile shows short, desktop shows full. */
+.more-ways-label--full { display: inline; }
+.more-ways-label--short { display: none; }
+@media (max-width: 480px) {
+  .more-ways-label--full { display: none; }
+  .more-ways-label--short { display: inline; }
+}
+
+/* ---------- §122 Sign-up nudge spacing ---------- */
+.signup-nudge {
+  margin-top: 4px;
+  padding: 10px 0 4px;
 }

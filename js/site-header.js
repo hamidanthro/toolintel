@@ -94,6 +94,30 @@
     return '<div id="user-slot" class="user-slot"></div>';
   }
 
+  // §122 — Mobile hamburger button. Sits next to the wordmark; the
+  // nav pill is hidden on <768px (CSS). Click toggles a slide-down
+  // panel that renders the same NAV_ITEMS in a vertical menu.
+  function hamburgerHtml() {
+    return [
+      '<button type="button" class="nav-toggle" aria-label="Open menu" aria-haspopup="menu" aria-expanded="false">',
+        '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="8" x2="20" y2="8"/><line x1="4" y1="16" x2="20" y2="16"/></svg>',
+      '</button>'
+    ].join('');
+  }
+
+  function mobileNavPanelHtml(signedIn) {
+    const items = NAV_ITEMS.filter(function (i) {
+      if (i.authOnly && !signedIn) return false;
+      if (i.anonOnly && signedIn) return false;
+      return true;
+    });
+    const links = items.map(function (i) {
+      const active = isCurrentPath(i.href) ? ' class="active"' : '';
+      return '<a href="' + i.href + '"' + active + '>' + i.label + '</a>';
+    }).join('');
+    return '<div class="nav-mobile-panel" role="menu" hidden>' + links + '</div>';
+  }
+
   function normalize() {
     const header = document.querySelector('header.site-header');
     if (!header) return;
@@ -107,7 +131,32 @@
     }
 
     const signedIn = isSignedIn();
-    container.innerHTML = brandHtml() + navHtml(signedIn) + userSlotHtml();
+    container.innerHTML = hamburgerHtml() + brandHtml() + navHtml(signedIn) + userSlotHtml() + mobileNavPanelHtml(signedIn);
+
+    // §122 — wire the hamburger toggle.
+    const toggle = container.querySelector('.nav-toggle');
+    const panel = container.querySelector('.nav-mobile-panel');
+    if (toggle && panel) {
+      toggle.addEventListener('click', function (e) {
+        e.stopPropagation();
+        const expanded = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', String(!expanded));
+        panel.hidden = expanded;
+      });
+      // Dismiss on outside click + Escape.
+      document.addEventListener('click', function (e) {
+        if (!container.contains(e.target)) {
+          toggle.setAttribute('aria-expanded', 'false');
+          panel.hidden = true;
+        }
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          toggle.setAttribute('aria-expanded', 'false');
+          panel.hidden = true;
+        }
+      });
+    }
 
     // Re-populate #user-slot (Sign in button OR avatar pill)
     if (window.STAARAuth && typeof window.STAARAuth.refreshHeader === 'function') {
