@@ -32804,3 +32804,311 @@ body.practice-page .reading-passage-card-audio .voice-rec-icon-svg {
   width: 16px;
   height: 16px;
 }
+
+/* ============================================================
+   §121 — Page 2 reshape (May 17)
+   ============================================================
+   • Brand wordmark: gold-G square tile + "GradeEarn" on every page
+     that already uses .brand--wordmark (auto-applies via ::before).
+   • home-headline: "You're in. / Let's earn." for logged-out kids.
+   • mindblower-hero: promoted from teaser pill to a full hero card
+     above the subjects, with category emoji + fact count + CTA.
+   • subject-tiles-grid: 4-col with Social Studies inline (dashed
+     "Coming soon" tile) + one-line subtitles per subject.
+   • signup-nudge: bottom CTA for logged-out kids.
+
+   Gold-only palette. Reduced-motion safe. No new breakpoints.
+   ============================================================ */
+
+/* ---------- §121 Brand wordmark — gold-G square tile prepended.
+   This block REPLACES the legacy text-only wordmark via ::before
+   on .brand--wordmark, so every page that already has the existing
+   anchor automatically gets the upgraded brand without any HTML
+   change. The serif "G" is drawn as content of the ::before so it
+   never breaks layout on long viewports. ---------- */
+.brand--wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.brand--wordmark::before {
+  content: 'G';
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  background: linear-gradient(135deg, #fbbf24 0%, #b8941f 100%);
+  color: #0a0f1f;
+  font-family: 'Instrument Serif', serif;
+  font-size: 19px;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1;
+  flex-shrink: 0;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.18) inset,
+              0 4px 10px -2px rgba(251, 191, 36, 0.30);
+}
+@media (hover: hover) {
+  .brand--wordmark:hover::before {
+    background: linear-gradient(135deg, #fde68a 0%, #fbbf24 100%);
+  }
+}
+.brand--wordmark .brand-text {
+  font-family: 'Inter';
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: -0.005em;
+}
+.brand--wordmark .brand-text-accent {
+  color: #ffffff;  /* §121 — single-color wordmark; gold lives in the G tile */
+}
+
+/* ---------- §121 Headline block (logged-out only) ---------- */
+.home-headline {
+  margin-top: -8px;
+  margin-bottom: 4px;
+}
+.home-headline-eyebrow {
+  display: block;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.62);
+  margin-bottom: 4px;
+  letter-spacing: 0.005em;
+}
+.home-headline-title {
+  margin: 0;
+  font-family: 'Instrument Serif', serif;
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+.home-headline-title .home-headline-gold {
+  color: #fbbf24;
+}
+@media (min-width: 768px) {
+  .home-headline-title { font-size: 38px; }
+}
+
+/* ---------- §121 Breadcrumb "change" link ---------- */
+body.grade-page .breadcrumb--mid-dot .breadcrumb-change-link {
+  margin-left: 10px;
+  font-size: 11px;
+  color: rgba(251, 191, 36, 0.70);
+  text-decoration: none;
+  letter-spacing: 0.005em;
+}
+body.grade-page .breadcrumb--mid-dot .breadcrumb-change-link:hover {
+  color: #fbbf24;
+}
+
+/* ---------- §121 Mind Blower HERO card ---------- */
+.mindblower-hero {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+  padding: 22px 24px;
+  background: linear-gradient(135deg,
+    rgba(251, 191, 36, 0.14) 0%,
+    rgba(20, 29, 51, 0.55) 60%,
+    rgba(15, 23, 42, 0.55) 100%);
+  border: 1px solid rgba(251, 191, 36, 0.40);
+  border-radius: 20px;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.92);
+  overflow: hidden;
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+}
+@media (hover: hover) {
+  .mindblower-hero:hover {
+    border-color: rgba(251, 191, 36, 0.62);
+    box-shadow: 0 14px 38px -10px rgba(251, 191, 36, 0.35);
+    transform: translateY(-2px);
+  }
+}
+.mindblower-hero-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.mindblower-hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #fbbf24;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.mindblower-hero-eyebrow svg { flex-shrink: 0; }
+.mindblower-hero-fact {
+  margin: 0;
+  font-family: 'Instrument Serif', serif;
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: -0.015em;
+  color: #ffffff;
+  max-width: 540px;
+}
+@media (min-width: 768px) {
+  .mindblower-hero-fact { font-size: 24px; }
+}
+.mindblower-hero-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+.mindblower-hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  color: #0a0f1f;
+  border-radius: 999px;
+  font-family: 'Inter';
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  letter-spacing: -0.005em;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+  box-shadow: 0 4px 12px -2px rgba(251, 191, 36, 0.32);
+}
+.mindblower-hero-cta:hover { transform: translateY(-1px); }
+.mindblower-hero-cta:active { transform: scale(0.98); }
+.mindblower-hero-count {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.005em;
+  font-variant-numeric: tabular-nums;
+}
+/* Right-side category emoji tile — 56px gold-tinted square */
+.mindblower-hero-emoji {
+  flex-shrink: 0;
+  align-self: flex-start;
+  width: 56px;
+  height: 56px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(251, 191, 36, 0.14);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  border-radius: 14px;
+  font-size: 28px;
+  line-height: 1;
+}
+/* Decorative sparkles (top-right corner) */
+.mindblower-hero-sparkles {
+  position: absolute;
+  top: 14px;
+  right: 76px;
+  pointer-events: none;
+  color: rgba(251, 191, 36, 0.30);
+}
+.mindblower-hero-sparkles svg + svg {
+  margin-left: 6px;
+}
+@media (max-width: 480px) {
+  .mindblower-hero { padding: 18px 18px; gap: 12px; }
+  .mindblower-hero-fact { font-size: 18px; line-height: 1.32; }
+  .mindblower-hero-emoji { width: 44px; height: 44px; font-size: 22px; border-radius: 11px; }
+  .mindblower-hero-sparkles { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mindblower-hero, .mindblower-hero-cta { transition: none; }
+}
+
+/* ---------- §121 Subjects head — eyebrow + tagline inline ---------- */
+.subject-tiles-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 2px;
+}
+.subject-tiles-tagline {
+  font-family: 'Inter';
+  font-size: 11px;
+  font-weight: 500;
+  color: #fbbf24;
+  letter-spacing: -0.005em;
+}
+.subject-tiles-tagline::before {
+  content: '· ';
+  color: rgba(255, 255, 255, 0.35);
+  margin-right: 1px;
+}
+
+/* ---------- §121 Subject tiles — 4-up grid with subtitles ---------- */
+@media (min-width: 480px) {
+  .subject-tiles-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+.subject-tile {
+  padding: 16px 12px;
+  min-height: 112px;
+  gap: 6px;
+}
+.subject-tile-sub {
+  font-family: 'Inter';
+  font-size: 10.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.50);
+  letter-spacing: -0.005em;
+  text-align: center;
+  line-height: 1.2;
+}
+/* Coming-soon tiles get dashed border + faded chrome */
+.subject-tile--soon {
+  border-style: dashed !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  background: transparent;
+  opacity: 0.7;
+}
+.subject-tile--soon .subject-tile-icon {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.10);
+  color: rgba(255, 255, 255, 0.30);
+}
+.subject-tile--soon .subject-tile-footer {
+  font-size: 9.5px;
+  letter-spacing: 0.10em;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+/* ---------- §121 Sign-up nudge (logged-out only) ---------- */
+.signup-nudge {
+  margin-top: 6px;
+  padding: 14px 0 4px;
+  text-align: center;
+  font-family: 'Inter';
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.50);
+  letter-spacing: 0.005em;
+}
+.signup-nudge a {
+  color: #fbbf24;
+  font-weight: 500;
+  text-decoration: none;
+  margin-left: 4px;
+}
+.signup-nudge a:hover {
+  color: #fde68a;
+  text-decoration: underline;
+  text-decoration-color: rgba(251, 191, 36, 0.45);
+  text-underline-offset: 3px;
+}

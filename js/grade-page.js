@@ -275,11 +275,14 @@
     const lastSubj = readLastSubject();
 
     renderGreeting(state, gradeSlug);
+    renderHeadline(state, gradeSlug);
     renderEarnHero(state, gradeSlug);
     renderContinueCard(state, gradeSlug, lastSubj);
+    renderMindBlowerHero(state, gradeSlug);  // §121 — promoted ABOVE subjects
     renderSubjectTiles(state, gradeSlug, offeredFor, lastSubj);
-    renderMindBlower(gradeSlug);
     renderMoreWays(state, gradeSlug, offeredFor);
+    renderSignupNudge();
+    renderBreadcrumbChangeLink(state, gradeSlug);
 
     // ===== Reward strip + daily quest + review CTA (kept) =====
     // The earn-hero replaces the old reward strip visually, but the
@@ -500,6 +503,15 @@
   // as a tile grid. Tiles for subjects that aren't offered or aren't
   // live get a subtle "Soon"/"Not tested" footer instead of being
   // hidden — the kid still sees the slot, just dim.
+  // §121 — One-line subtitle per subject tile to give the kid a hint
+  // of what each path teaches. Sourced from SUBJECTS[*].tagline,
+  // shortened to ≤ 22 chars so it fits the 4-up grid on phone.
+  const _SUBJECT_TILE_SUBS = {
+    'math': 'Place value, fractions',
+    'reading': 'Comprehension, vocab',
+    'science': 'Earth, life, physical',
+    'social-studies': 'History, geography'
+  };
   function renderSubjectTiles(state, gradeSlug, offeredFor, lastSubj) {
     const grid = document.getElementById('subject-grid');
     if (!grid) return;
@@ -521,15 +533,20 @@
         footer = '<span class="subject-tile-footer">Not tested</span>';
       } else if (!isLive) {
         stateClass = ' subject-tile--soon';
-        footer = `<span class="subject-tile-footer">${escapeHtml(subj.eta || 'Soon')}</span>`;
+        footer = `<span class="subject-tile-footer">${escapeHtml((subj.eta || 'Soon').toUpperCase())}</span>`;
       } else if (subj.slug === lastSubj) {
         stateClass = ' subject-tile--continue';
       }
+      const sub = isLive ? (_SUBJECT_TILE_SUBS[subj.slug] || '') : '';
+      const subHtml = sub
+        ? `<span class="subject-tile-sub">${escapeHtml(sub)}</span>`
+        : '';
       const ariaLabel = isLive ? `Practice ${subj.name}` : `${subj.name} — not yet available`;
       return `
         <${tag} class="subject-tile${stateClass}" ${hrefAttr} data-subject="${escapeHtml(subj.slug)}" ${isLive ? `role="button" aria-label="${escapeHtml(ariaLabel)}"` : 'aria-disabled="true"'}>
           <span class="subject-tile-icon" aria-hidden="true">${getSubjectIcon(subj.icon)}</span>
           <span class="subject-tile-name">${escapeHtml(subj.name)}</span>
+          ${subHtml}
           ${footer}
         </${tag}>
       `;
@@ -549,7 +566,32 @@
   // teaser is stable across navigations within a day. Tapping the
   // teaser deep-links into /facts.html?age=<band> where the kid can
   // open the Discovery Deck.
-  function renderMindBlower(gradeSlug) {
+  // §121 — Mind Blower HERO. Promoted from a one-line teaser pill to
+  // the visual hero of the page. Hamid explicit ask: "It should be
+  // the visual hero of this page, not a tertiary pill."
+  //
+  // Bug fix included: the prior §119 implementation read `f.text` but
+  // the actual catalog field is `f.fact` — the teaser never rendered
+  // for that reason. Switched to `f.fact` with `f.text` as fallback.
+  //
+  // Selection logic per spec:
+  //  - Filter by grade-band (k-2 / 3-4 / 5-8)
+  //  - Prefer facts with `_judgedAt` set (judged content is higher
+  //    quality and ready for the AI "Why?" reveal in the deck)
+  //  - Session-cached: sessionStorage key
+  //    `gradeearn_today_mindblower_{ageBand}` so the kid sees the
+  //    same fact across page revisits in one session
+  //  - Right-side category-emoji tile pulled from the Discovery
+  //    Deck's CATEGORIES map (one place where emoji is allowed
+  //    because it's the content of the featured card).
+  const _MB_CATEGORY_EMOJI = {
+    'animals': '🐾', 'space': '🪐', 'body': '🫀', 'food': '🍯',
+    'texas': '⭐', 'sports': '🏀', 'inventions': '💡', 'history': '🏛',
+    'math-numbers': '🔢', 'weird-funny': '✨', 'dinosaurs': '🦕',
+    'music': '🎵', 'geography': '🌍', 'robots-tech': '🤖',
+    'mythology': '🐉', 'all': '✨'
+  };
+  function renderMindBlowerHero(state, gradeSlug) {
     const host = document.getElementById('mindblower-wrap');
     if (!host || !window.FunFacts || typeof window.FunFacts.loadCatalog !== 'function') return;
     const gradeNum = (() => {
@@ -561,10 +603,10 @@
     const ageBand = (gradeNum == null) ? 'all' :
                     gradeNum <= 2 ? 'k-2' :
                     gradeNum <= 4 ? '3-4' : '5-8';
+    const gradeLabel = GRADE_NAMES[gradeSlug] || gradeSlug;
 
     window.FunFacts.loadCatalog().then(catalog => {
       if (!Array.isArray(catalog) || catalog.length === 0) return;
-      // Filter by gradeLevel (legacy) or gradeLevels (multi-tag).
       const matchBand = (f) => {
         if (ageBand === 'all') return true;
         if (f.gradeLevel === ageBand) return true;
@@ -573,28 +615,121 @@
       };
       const pool = catalog.filter(matchBand);
       const arr = pool.length > 0 ? pool : catalog;
-      // Deterministic pick by date.
-      const d = new Date();
-      const seedStr = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
-      let seed = 0;
-      for (let i = 0; i < seedStr.length; i++) seed = (seed * 31 + seedStr.charCodeAt(i)) & 0x7fffffff;
-      const fact = arr[seed % arr.length];
-      if (!fact || !fact.text) return;
-      const text = String(fact.text).trim();
-      const teaser = text.length > 80 ? text.slice(0, 77).trimEnd() + '…' : text;
-      const factsUrl = `/facts.html?age=${ageBand}`;
+      const factCount = pool.length;
+
+      // Session-cached selection — keeps the same fact across page
+      // navigations in one session.
+      const sessKey = `gradeearn_today_mindblower_${ageBand}`;
+      let fact = null;
+      try {
+        const cachedId = sessionStorage.getItem(sessKey);
+        if (cachedId) fact = arr.find(f => f && f.id === cachedId) || null;
+      } catch (_) {}
+
+      if (!fact) {
+        // Prefer judged facts; fall back to any.
+        const judged = arr.filter(f => f && f._judgedAt);
+        const selectFrom = judged.length > 0 ? judged : arr;
+        // Deterministic pick by date so the "today" feel holds even
+        // without sessionStorage (e.g. private mode).
+        const d = new Date();
+        const seedStr = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}-${ageBand}`;
+        let seed = 0;
+        for (let i = 0; i < seedStr.length; i++) seed = (seed * 31 + seedStr.charCodeAt(i)) & 0x7fffffff;
+        fact = selectFrom[seed % selectFrom.length];
+        try { if (fact && fact.id) sessionStorage.setItem(sessKey, fact.id); } catch (_) {}
+      }
+      if (!fact) return;
+      // Field is `fact` (not `text`) — schema verified 2026-05-17.
+      const factText = String(fact.fact || fact.text || '').trim();
+      if (!factText) return;
+      const emoji = _MB_CATEGORY_EMOJI[fact.category] || _MB_CATEGORY_EMOJI.all;
+      const factsUrl = `/facts.html?age=${ageBand}${fact.category ? '&cat=' + encodeURIComponent(fact.category) : ''}`;
+      const countLabel = factCount > 0
+        ? `${factCount.toLocaleString('en-US')} facts for ${escapeHtml(gradeLabel)}`
+        : '';
+
+      // Decorative sparkles (3 of them, varied sizes/positions, low
+      // opacity). Anchored top-right via CSS.
+      const sparklesHtml = `
+        <span class="mindblower-hero-sparkles" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 0l3 9 9 3-9 3-3 9-3-9-9-3 9-3z"/></svg>
+          <svg viewBox="0 0 24 24" width="10" height="10" fill="currentColor"><path d="M12 0l3 9 9 3-9 3-3 9-3-9-9-3 9-3z"/></svg>
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" style="opacity:0.6;"><path d="M12 0l3 9 9 3-9 3-3 9-3-9-9-3 9-3z"/></svg>
+        </span>`;
+
       host.innerHTML = `
-        <a class="mindblower-teaser" href="${escapeHtml(factsUrl)}" aria-label="Today's mind-blower — open Mind Blowers">
-          <span class="mindblower-teaser-eyebrow">
-            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 18a2 2 0 0 1 2 2 2 2 0 0 1 2-2 2 2 0 0 1-2-2 2 2 0 0 1-2 2zm0-12a2 2 0 0 1 2 2 2 2 0 0 1 2-2 2 2 0 0 1-2-2 2 2 0 0 1-2 2zM9 18a6 6 0 0 1 6-6 6 6 0 0 1-6-6 6 6 0 0 1-6 6 6 6 0 0 1 6 6z"/></svg>
-            <span>TODAY'S MIND-BLOWER</span>
-          </span>
-          <span class="mindblower-teaser-text">${escapeHtml(teaser)}</span>
-          <svg class="mindblower-teaser-arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        <a class="mindblower-hero" href="${escapeHtml(factsUrl)}" aria-label="Today's mind-blower — open Mind Blowers">
+          ${sparklesHtml}
+          <div class="mindblower-hero-body">
+            <span class="mindblower-hero-eyebrow">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 18a2 2 0 0 1 2 2 2 2 0 0 1 2-2 2 2 0 0 1-2-2 2 2 0 0 1-2 2zm0-12a2 2 0 0 1 2 2 2 2 0 0 1 2-2 2 2 0 0 1-2-2 2 2 0 0 1-2 2zM9 18a6 6 0 0 1 6-6 6 6 0 0 1-6-6 6 6 0 0 1-6 6 6 6 0 0 1 6 6z"/></svg>
+              <span>TODAY'S MIND-BLOWER</span>
+            </span>
+            <p class="mindblower-hero-fact">${escapeHtml(factText)}</p>
+            <div class="mindblower-hero-actions">
+              <span class="mindblower-hero-cta">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="14" height="16" rx="2"/><path d="M7 5V3a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-2"/></svg>
+                <span>Open the deck</span>
+              </span>
+              ${countLabel ? `<span class="mindblower-hero-count">${countLabel}</span>` : ''}
+            </div>
+          </div>
+          <span class="mindblower-hero-emoji" aria-hidden="true">${emoji}</span>
         </a>
       `;
       host.hidden = false;
     }).catch(() => {});
+  }
+
+  // ============================================================
+  // §121 — Headline block (logged-out only)
+  // ============================================================
+  // "You're in." + "Let's earn." (display serif with gold "earn").
+  // Skipped for logged-in users — the §119 greeting + earn-hero +
+  // continue-card stack carries the welcome moment for them.
+  function renderHeadline(state, gradeSlug) {
+    const host = document.getElementById('home-headline');
+    if (!host) return;
+    const u = (window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser()) || null;
+    if (u) { host.hidden = true; return; }
+    host.innerHTML = `
+      <span class="home-headline-eyebrow">You're in.</span>
+      <h1 class="home-headline-title">Let's <span class="home-headline-gold">earn.</span></h1>
+    `;
+    host.hidden = false;
+  }
+
+  // ============================================================
+  // §121 — Sign-up nudge (logged-out only)
+  // ============================================================
+  function renderSignupNudge() {
+    const host = document.getElementById('signup-nudge');
+    if (!host) return;
+    const u = (window.STAARAuth && window.STAARAuth.currentUser && window.STAARAuth.currentUser()) || null;
+    if (u) { host.hidden = true; return; }
+    host.innerHTML = `
+      <span>Want to track your earnings?</span><a href="index.html#auth">Sign up free →</a>
+    `;
+    host.hidden = false;
+  }
+
+  // ============================================================
+  // §121 — Breadcrumb "change" link
+  // ============================================================
+  // The existing breadcrumb prints "Texas · Grade 3" but offers no
+  // affordance to switch. Adds a small "change" link that points
+  // back to the state's grade picker.
+  function renderBreadcrumbChangeLink(state, gradeSlug) {
+    const last = document.getElementById('breadcrumb-grade');
+    if (!last || last.querySelector('.breadcrumb-change-link')) return;
+    const url = `states/?s=${encodeURIComponent(state.slug)}`;
+    const link = document.createElement('a');
+    link.className = 'breadcrumb-change-link';
+    link.href = url;
+    link.textContent = 'change';
+    link.setAttribute('aria-label', 'Change state or grade');
+    last.appendChild(link);
   }
 
   // ============================================================
@@ -631,18 +766,12 @@
     }).join('');
     const reviewUrl = `practice.html?review=1&s=${encodeURIComponent(state.slug)}&g=${encodeURIComponent(gradeSlug)}&subj=math`;
     const reviewChip = `<a class="subject-extra-chip subject-extra-chip--review" href="${reviewUrl}">${TI_RELOAD}<span>Review your wrong answers</span></a>`;
-    const gradeNum = (() => {
-      const m = String(gradeSlug || '').match(/^grade-(\d+|k)$/);
-      if (!m) return null;
-      if (m[1] === 'k') return 0;
-      return parseInt(m[1], 10);
-    })();
-    const ageBand = (gradeNum == null) ? 'all' :
-                    gradeNum <= 2 ? 'k-2' :
-                    gradeNum <= 4 ? '3-4' : '5-8';
-    const factsUrl = `/facts.html?age=${ageBand}`;
-    const factsChip = `<a class="subject-extra-chip subject-extra-chip--facts" href="${factsUrl}">${TI_SPARKLES}<span>Mind blowers</span></a>`;
-    body.innerHTML = mockChips + printChips + reviewChip + factsChip;
+    // §121 — Mind Blowers chip REMOVED from the accordion. It's now
+    // the hero card above the subjects; surfacing it here too would
+    // dilute the hierarchy. TI_SPARKLES const left untouched above —
+    // unused by this function now but kept available for any future
+    // consumer that wants the same outline icon.
+    body.innerHTML = mockChips + printChips + reviewChip;
   }
 
   // ============================================================

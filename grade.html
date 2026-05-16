@@ -43,7 +43,7 @@
   </script>
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&family=JetBrains+Mono:wght@400;500&display=swap">
-  <link rel="stylesheet" href="css/styles.css?v=20260517d">
+  <link rel="stylesheet" href="css/styles.css?v=20260517e">
 
   <script src="js/i18n.js?v=20260510a"></script>
   <script src="js/states-data.js?v=20260510d"></script>
@@ -116,33 +116,39 @@
        loaded) cleanly drops that section without leaving an empty
        slot. The legacy "What to expect" panel is removed — it was
        marketing copy on what should be a tool surface. -->
+  <!-- §121 reshape (May 17). Mind Blower promoted to hero card; new
+       headline block for logged-out; subjects 4-up with subtitles +
+       Social Studies inline; sign-up nudge at bottom for logged-out. -->
   <article class="grade-content grade-content--v2" id="grade-content" hidden>
     <section class="home-greeting" id="home-greeting" hidden></section>
+    <section class="home-headline" id="home-headline" hidden></section>
     <section class="earn-hero" id="earn-hero" hidden></section>
     <section class="continue-card-wrap" id="continue-card-wrap" hidden></section>
+    <section class="mindblower-hero-wrap" id="mindblower-wrap" hidden></section>
 
     <!-- Subject tiles. The legacy .subject-grid id is preserved so
          js/grade-page.js can keep its existing populateSubjects()
          contract; the markup it writes here is the new tile layout. -->
     <section class="subject-tiles" id="subject-section">
       <header class="subject-tiles-head">
-        <span class="subject-tiles-eyebrow">OR PICK A SUBJECT</span>
+        <span class="subject-tiles-eyebrow">OR PRACTICE A SUBJECT</span>
+        <span class="subject-tiles-tagline">earn up to 10¢ per question</span>
       </header>
       <div class="subject-tiles-grid" id="subject-grid"></div>
     </section>
 
-    <section class="mindblower-teaser-wrap" id="mindblower-wrap" hidden></section>
-
-    <!-- More-ways-to-practice. Was a static row of chips below the
-         subject grid; now a <details> accordion so the home page
-         stays uncluttered. Populated by JS. -->
+    <!-- More-ways-to-practice. Collapsed by default; label rephrased
+         to give the user a reason to expand. -->
     <details class="more-ways" id="more-ways">
       <summary class="more-ways-summary">
-        <span>More ways to practice</span>
+        <span>Or try a mock test, worksheets, or review wrong answers</span>
         <svg class="more-ways-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
       </summary>
       <div class="more-ways-body" id="more-ways-body"></div>
     </details>
+
+    <!-- §121 Sign-up nudge — only renders for logged-out kids. -->
+    <section class="signup-nudge" id="signup-nudge" hidden></section>
   </article>
 </main>
 
@@ -166,7 +172,7 @@
 <script src="js/spaced-rep.js?v=20260509a"></script>
 <script src="js/mastery.js?v=20260510a"></script>
 <script src="js/achievements.js?v=20260510d"></script>
-<script src="js/grade-page.js?v=20260517c"></script>
+<script src="js/grade-page.js?v=20260517e"></script>
 
   <script src="/js/site-header.js?v=20260515k"></script>
 </body>
