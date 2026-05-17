@@ -431,7 +431,11 @@
       if (text) { _explanationCache.set(f.id, text); f._aiExplanation = text; revealWhy(text); }
     } catch (e) {
       console.warn('[deck] why fetch failed:', e && e.message);
-      revealWhy("That's just how it is — try asking a grown-up for the deeper reason.");
+      // §130 — fallback string. Was "That's just how it is — try
+      // asking a grown-up for the deeper reason" which only fit the
+      // old "Why?" button label. New label is "Tell me more" so the
+      // fallback should read as "we couldn't fetch the elaboration".
+      revealWhy("Couldn't fetch more details right now — try again in a second, or ask a grown-up.");
     } finally {
       if (btn) { btn.disabled = false; btn.classList.remove('deck-action--loading'); }
     }

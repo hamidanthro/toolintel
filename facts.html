@@ -10,7 +10,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
 
   <title>Fun Facts — GradeEarn</title>
-  <meta name="description" content="An AI-powered fact deck. One card at a time. Tap to learn why." />
+  <meta name="description" content="An AI-powered fact deck. One card at a time. Tap to learn more." />
   <meta name="robots" content="noindex, follow" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -89,14 +89,18 @@
           <p class="deck-card-fact" id="deck-fact">Loading a fact for you…</p>
           <div class="deck-card-why" id="deck-why" hidden></div>
           <div class="deck-card-actions">
-            <!-- §116 Why? — the AI magic moment. Pulses + sparkle wobbles
-                 until tapped (or 4s timeout, or prefers-reduced-motion). -->
-            <button type="button" class="deck-action deck-action--why deck-action--ai" id="deck-btn-why" aria-label="Why is this true?">
+            <!-- §130 — Label changed from "Why?" to "Tell me more". "Why?"
+                 only fit cause-and-effect facts; a fact like "Mongolia's
+                 Flaming Cliffs is a famous fossil site" has no "why",
+                 just a "tell me more". The button still triggers the
+                 same AI elaboration call (funFactExplain). Pulse +
+                 sparkle wobble (§116) unchanged. -->
+            <button type="button" class="deck-action deck-action--why deck-action--ai" id="deck-btn-why" aria-label="Tell me more about this fact">
               <svg class="deck-icon deck-icon--sparkles" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M3 12c5 0 7 -2 7 -7c0 5 2 7 7 7c-5 0 -7 2 -7 7c0 -5 -2 -7 -7 -7z"/>
                 <path d="M14 5l1 -1l-1 -1l-1 1l1 1zm6 8l1 -1l-1 -1l-1 1l1 1zm-3 7l1.5 -1.5l-1.5 -1.5l-1.5 1.5l1.5 1.5z"/>
               </svg>
-              <span class="deck-action-label">Why?</span>
+              <span class="deck-action-label">Tell me more</span>
             </button>
             <button type="button" class="deck-action deck-action--weirder" id="deck-btn-weirder" aria-label="Show me a weirder fact">
               <svg class="deck-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -141,7 +145,7 @@
         </button>
       </div>
 
-      <p class="deck-helper">← → to navigate · space for why · S to save</p>
+      <p class="deck-helper">← → to navigate · space to learn more · S to save</p>
 
     </div>
   </main>
@@ -186,7 +190,7 @@
 
   <script>window.STAAR_TUTOR_ENDPOINT = 'https://4wvuw21yjl.execute-api.us-east-1.amazonaws.com/';</script>
   <script src="js/auth.js?v=20260517k"></script>
-  <script src="js/fun-facts.js?v=20260517k"></script>
-  <script src="js/facts.js?v=20260516d"></script>
+  <script src="js/fun-facts.js?v=20260517l"></script>
+  <script src="js/facts.js?v=20260517l"></script>
 </body>
 </html>
