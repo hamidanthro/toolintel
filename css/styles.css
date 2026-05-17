@@ -34180,3 +34180,48 @@ body.practice-page.has-reading-passage .practice-breadcrumb-title-sub {
     line-height: 1.4 !important;
   }
 }
+
+/* ============================================================
+   §135 — Choice text wrapping by character on math (May 17 hotfix)
+   ============================================================
+   THE BUG: §120 defined the choice as a 3-column grid (28px letter
+   chip + 1fr content + auto status icon). §79 (May 13) hid the
+   .choice-letter with `display: none !important` because Hamid
+   wanted just the answer text, no A/B/C/D chip. But the grid still
+   has THREE tracks defined for three children:
+     1. <input type="radio">   — position: absolute (out of flow)
+     2. <span.choice-letter>   — display: none (out of flow)
+     3. <span.choice-content>  — the only visible grid item
+
+   With only ONE in-flow grid item and THREE columns, the content
+   auto-places into the FIRST column (28px wide). Result: every
+   choice cell on math renders as a 28px-wide vertical strip with
+   the text wrapping one character per line. Hamid screenshot:
+   "< (less than)" rendering as "<" on line 1, "(les" line 2,
+   "s tha" line 3, "n)" line 4.
+
+   THE FIX: collapse the grid to `1fr auto` so the content takes
+   the 1fr column and the status icon (when shown post-check) takes
+   the auto column. The vestigial 28px track is removed. Letter
+   stays hidden per §79.
+   ============================================================ */
+
+body.practice-page .question-card .choice {
+  grid-template-columns: 1fr auto !important;
+}
+
+/* Reset the §131 mobile reading override too — same fix needed
+   inside the bottom-sheet question card. */
+body.practice-page.has-reading-passage .question-card .choice {
+  grid-template-columns: 1fr auto !important;
+}
+
+/* Defensive: explicit grid-column on the content so even if some
+   future rule re-introduces a wider grid, the text doesn't get
+   squeezed. */
+body.practice-page .question-card .choice .choice-content {
+  grid-column: 1 / span 1;
+  min-width: 0;
+  overflow-wrap: anywhere;  /* break long words like URLs, NOT every char */
+  word-break: normal;
+}
