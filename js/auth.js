@@ -1689,18 +1689,22 @@ if ('serviceWorker' in navigator) {
   // EXCEPT home itself. Top-left corner so it doesn't compete with
   // the sticky-bottom action bar (§69). Visible only on mobile
   // (<=767px) via CSS. One source of truth; idempotent.
+  //
+  // §128 (May 17, 2026) — NEUTERED. The §122 wordmark restoration
+  // (gold-G square tile + "GradeEarn" text) is now the home anchor
+  // on every internal page. The floating FAB at the bottom-left
+  // duplicated that affordance and read as "broken" on the
+  // post-grade subject picker per Hamid screenshot review. Function
+  // kept defined (idempotent) so both callsites (line ~1113 and
+  // ~1729) keep working — they just no-op now. Cleanup also removes
+  // any stale FAB the kid has cached on their installed PWA shell.
   function ensureHomeAffordance() {
-    // Skip on home itself
-    if (document.body.classList.contains('home-page')) return;
-    // Idempotent — bail if already mounted
-    if (document.querySelector('.ge-home-affordance')) return;
-    const a = document.createElement('a');
-    a.className = 'ge-home-affordance';
-    a.setAttribute('href', '/index.html');
-    a.setAttribute('aria-label', 'Home');
-    a.setAttribute('title', 'Home');
-    a.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2h-4v-7h-6v7H5a2 2 0 0 1-2-2z"/></svg>';
-    document.body.appendChild(a);
+    // §128 — kill any existing FAB on cached pages.
+    const stale = document.querySelector('.ge-home-affordance');
+    if (stale && stale.parentNode) stale.parentNode.removeChild(stale);
+    // No new FAB is mounted. The brand wordmark in .site-header
+    // links to /index.html on every internal page.
+    return;
   }
 
   // §89 — global signed-in body class. Set BEFORE any fetch so the

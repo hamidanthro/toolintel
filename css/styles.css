@@ -33564,3 +33564,11 @@ body.grade-page .signup-nudge {
 body.grade-page .mindblower-hero-wrap {
   padding-bottom: 4px !important;
 }
+
+/* §128 — Kill the floating home FAB. The §122 wordmark (gold-G +
+   "GradeEarn") is now the home anchor on every internal page; the
+   FAB was redundant and read as "broken UI" per the May 17 phone
+   screenshot review. JS-side `ensureHomeAffordance` is neutered too
+   (auth.js §128); this CSS is the belt-and-suspenders safety in
+   case a cached page or a future call path mounts one. */
+.ge-home-affordance { display: none !important; }

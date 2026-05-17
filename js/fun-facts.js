@@ -28,6 +28,15 @@
   // keeps stale catalogs around (and K-2 kids would never see the
   // K-2-tagged facts).
   const CATALOG_URL       = '/data/fun-facts.json?v=20260510k';
+  // §129 (May 17, 2026) — Sidecar expansion file for Grade 3 (3-4 age
+  // band). 450 new facts added: 30 per category across all 15
+  // categories. Fetched in parallel with the main catalog; merged
+  // before _catalog is set. Future expansions can chain more
+  // -expansion-vN.json files here without touching the 1.6MB
+  // canonical file.
+  const CATALOG_EXPANSION_URLS = [
+    '/data/fun-facts-g3-expansion-v1.json?v=20260517a'
+  ];
 
   // -------- in-memory state (mirror) --------
   let _catalog = null;        // null = not loaded yet; array once fetched
@@ -262,16 +271,42 @@
 
   // -------- catalog loader --------
 
+  // §129 — Load main catalog + all expansion files in parallel,
+  // dedupe by id, and concat into a single array. Expansion files
+  // fetch as best-effort: if any one fails (404, parse error), we
+  // still ship the main catalog plus whatever expansions succeeded.
   function loadCatalog() {
     if (_catalog) return Promise.resolve(_catalog);
     if (_catalogLoading) return _catalogLoading;
-    _catalogLoading = fetch(CATALOG_URL, { cache: 'force-cache' })
+    const mainPromise = fetch(CATALOG_URL, { cache: 'force-cache' })
       .then(res => {
         if (!res.ok) throw new Error('catalog ' + res.status);
         return res.json();
-      })
-      .then(json => {
-        _catalog = Array.isArray(json) ? json.filter(f => f && f.id) : [];
+      });
+    const expansionPromises = CATALOG_EXPANSION_URLS.map(url =>
+      fetch(url, { cache: 'force-cache' })
+        .then(res => res.ok ? res.json() : null)
+        .catch(err => {
+          console.warn('[funFacts] expansion load failed:', url, err && err.message);
+          return null;
+        })
+    );
+    _catalogLoading = Promise.all([mainPromise, ...expansionPromises])
+      .then(([main, ...expansions]) => {
+        const mainArr = Array.isArray(main) ? main.filter(f => f && f.id) : [];
+        const seen = new Set(mainArr.map(f => f.id));
+        const extras = [];
+        for (const ex of expansions) {
+          if (!Array.isArray(ex)) continue;
+          for (const f of ex) {
+            if (!f || !f.id) continue;
+            if (seen.has(f.id)) continue;
+            seen.add(f.id);
+            extras.push(f);
+          }
+        }
+        _catalog = mainArr.concat(extras);
+        console.info('[funFacts] catalog loaded:', mainArr.length, 'main +', extras.length, 'expansion =', _catalog.length, 'total');
         return _catalog;
       })
       .catch(err => {
