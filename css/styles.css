@@ -33883,3 +33883,120 @@ body.practice-page.has-reading-passage .question-card .btn-primary.q-cta {
 body.practice-page.has-reading-passage .practice-breadcrumb-title-sub {
   display: block;
 }
+
+/* ============================================================
+   §132 — Desktop reading-question fix (post §131 hotfix)
+   ============================================================
+   The §131 bottom-sheet layout sets body.has-reading-passage to
+   `height: 100dvh; overflow: hidden` so the passage scrolls inside
+   the card while the question stays pinned at the bottom. Great
+   on mobile. On desktop, the same rules lock the viewport to
+   100vh and leave the page with hundreds of pixels of dead space
+   AND no scroll path (Hamid screenshot May 17 — "lots of empty
+   space and not scrollable").
+
+   THE FIX: above 1024px (desktop tablet portrait+), revert to
+   natural page-scroll behavior. The bottom-sheet pattern stays
+   on phones; desktop gets the §120 stacked layout where the
+   passage + question render top-to-bottom and the whole page
+   scrolls. Sticky-title kill from §131 remains effective on
+   both viewports — that's what actually fixed the overlap bug.
+   ============================================================ */
+
+@media (min-width: 1025px) {
+  body.practice-page.has-reading-passage {
+    height: auto !important;
+    overflow: visible !important;
+  }
+  body.practice-page.has-reading-passage main,
+  body.practice-page.has-reading-passage section,
+  body.practice-page.has-reading-passage section > .container,
+  body.practice-page.has-reading-passage #practice-root,
+  body.practice-page.has-reading-passage .practice-layout--solo,
+  body.practice-page.has-reading-passage .practice-main,
+  body.practice-page.has-reading-passage #qbox {
+    display: block !important;
+    flex: none !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    height: auto !important;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  body.practice-page.has-reading-passage .reading-passage-card {
+    display: block;
+    flex: none !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none;
+    margin: 16px 0;
+    padding: 0;
+    /* §120 card chrome restored on desktop */
+    background: linear-gradient(180deg,
+      rgba(30, 41, 75, 0.55) 0%,
+      rgba(15, 23, 42, 0.55) 100%);
+    border: 1px solid rgba(251, 191, 36, 0.20);
+    border-radius: 14px;
+  }
+  body.practice-page.has-reading-passage .reading-passage-card-header {
+    padding: 14px 18px 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  body.practice-page.has-reading-passage .reading-passage-card-body {
+    flex: none !important;
+    overflow: visible !important;
+    max-height: none;
+    padding: 14px 18px 16px;
+  }
+  /* Hide the progress bar on desktop — the passage body doesn't
+     scroll internally on this layout, so a 0%-stuck bar would be
+     useless visual noise. */
+  body.practice-page.has-reading-passage .reading-progress-bar {
+    display: none;
+  }
+  /* Question card on desktop: restore the §120 card styling, drop
+     the bottom-sheet fade gradient. */
+  body.practice-page.has-reading-passage .question-card {
+    flex: none !important;
+    position: static !important;
+    margin: 16px 0 !important;
+    padding: 20px 22px !important;
+    max-height: none;
+    background: linear-gradient(180deg,
+      rgba(40, 53, 91, 0.5) 0%,
+      rgba(20, 29, 51, 0.5) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 16px !important;
+    overflow: visible !important;
+  }
+  /* Restore the hide-passage footer toggle (hidden by §131 on
+     phones; useful as a comfort affordance on desktop). */
+  body.practice-page.has-reading-passage .reading-passage-toggle-footer {
+    display: inline-flex;
+    padding: 4px 18px 12px;
+  }
+  /* Title can use its natural single-line width on desktop —
+     plenty of horizontal room. */
+  body.practice-page.has-reading-passage .reading-passage-card-title {
+    -webkit-line-clamp: unset;
+    display: block;
+    max-width: none;
+  }
+  /* Restore comfortable type sizes on desktop. */
+  body.practice-page.has-reading-passage .reading-passage-card-body {
+    font-size: 15px;
+    line-height: 1.65;
+  }
+  body.practice-page.has-reading-passage .question-card .q-prompt-text {
+    font-size: 15px;
+  }
+  body.practice-page.has-reading-passage .question-card .choice .choice-content {
+    font-size: 13.5px;
+  }
+  body.practice-page.has-reading-passage .question-card .choice {
+    min-height: 48px;
+    padding: 11px 14px;
+  }
+}
