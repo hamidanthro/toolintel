@@ -34000,3 +34000,57 @@ body.practice-page.has-reading-passage .practice-breadcrumb-title-sub {
     padding: 11px 14px;
   }
 }
+
+/* ============================================================
+   §133 — Reading mobile layout hotfix (post §131 + §132)
+   ============================================================
+   THE BUG: §131 rule `body.has-reading-passage section, body.
+   has-reading-passage section .container { flex: 1 }` matched
+   BOTH .container divs inside <section>: (1) the one wrapping
+   the practice-context-bar at the top, and (2) the
+   #practice-root container at the bottom.
+
+   Both became flex: 1 children → split the available height
+   50/50 → top container ended up with hundreds of pixels of
+   empty space (the context bar is tiny), and the passage card
+   was crammed into the bottom half. Phone screenshot: huge dead
+   zone at the top, passage card "stuck below the middle of the
+   screen" + no scroll path.
+
+   THE FIX: the context-bar's container should be flex-shrink: 0
+   (size to its small content). Only #practice-root should be
+   flex: 1 (fill remaining height). Scope rules accordingly.
+   ============================================================ */
+
+@media (max-width: 1024px) {
+  /* Override the §131 generic flex: 1 on .container — the
+     context-bar's container must size to its content, NOT
+     stretch to consume half the viewport. */
+  body.practice-page.has-reading-passage section > .container:not(#practice-root) {
+    flex: 0 0 auto !important;
+    display: block !important;
+    min-height: 0 !important;
+  }
+  /* The <section> wrapper itself is the flex column container. */
+  body.practice-page.has-reading-passage section {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    padding: 0;
+  }
+  /* Ensure #practice-root gets the remaining height. */
+  body.practice-page.has-reading-passage #practice-root {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    padding: 0 12px !important;
+  }
+  /* Practice-context-bar takes its natural height inside the
+     non-flex container. */
+  body.practice-page.has-reading-passage .practice-context-bar {
+    flex: 0 0 auto;
+  }
+}
