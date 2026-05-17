@@ -1689,9 +1689,33 @@
         }
       }
       qbox.innerHTML = renderQuestion(q, isLocked, i, questions.length);
+      // §131 — Flag the body when a reading passage is present so the
+      // page layout flips to the bottom-sheet pattern (flex-column
+      // 100dvh, passage card scrolls internally, question stays
+      // pinned at bottom). Math + science questions (no passage)
+      // keep the legacy page-scroll layout untouched.
+      try {
+        const hasPassageNow = !!(q.passage && (q.passage.body || q.passage.text));
+        document.body.classList.toggle('has-reading-passage', hasPassageNow);
+      } catch (_) {}
       // §110 — render any stimulus / widget-spec choices into their
       // placeholder mounts. No-op for text-only questions.
       try { renderQuestionWidgets(q, qbox); } catch (e) { console.warn('[widgets] post-mount render failed', e); }
+      // §131 — wire the reading progress bar: as the kid scrolls the
+      // passage body, update the gold bar's width 0%-100%.
+      try {
+        const bodyEl = qbox.querySelector('.reading-passage-card-body');
+        const fillEl = qbox.querySelector('[data-role="reading-progress"]');
+        if (bodyEl && fillEl) {
+          const updateProgress = () => {
+            const max = bodyEl.scrollHeight - bodyEl.clientHeight;
+            const pct = max > 0 ? Math.min(100, (bodyEl.scrollTop / max) * 100) : 100;
+            fillEl.style.width = pct + '%';
+          };
+          bodyEl.addEventListener('scroll', updateProgress, { passive: true });
+          updateProgress();
+        }
+      } catch (_) {}
       // §98 — scroll the question stem into view on every new mount
       // (initial load + Next tap). Was gated to i>0; spec says always.
       // The original guard was "only if not already near top"; preserve
@@ -2020,10 +2044,14 @@
           if (typeof window.Speech.prewarm === 'function') {
             try { window.Speech.prewarm(plainText); } catch (_) {}
           }
+          // §131 — toggle the inline label between "Listen" and "Pause"
+          // alongside the existing aria-label/playing-class state.
+          const labelEl = speakBtn.querySelector('[data-role="listen-label"]');
           const setPlaying = (on) => {
             speakBtn.classList.toggle('speech-btn--playing', !!on);
             speakBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
             speakBtn.setAttribute('aria-label', on ? 'Stop reading' : 'Read passage aloud');
+            if (labelEl) labelEl.textContent = on ? 'Pause' : 'Listen';
           };
           speakBtn.addEventListener('click', (e) => {
             e.preventDefault();
@@ -4104,17 +4132,21 @@
     // tapping starts TTS, tapping again pauses. The old speaker-icon
     // pair (muted + active) defaulted to MUTED which kids who need
     // read-aloud never discovered. §120 explicitly forbids that.
+    // §131 — Labeled audio pills: "Listen" + "Read" with text labels
+    // visible inline. The §120 icon-only mode forced kids to guess
+    // what each button did; the labels make it obvious. JS toggles
+    // the label between "Listen" and "Pause" while playing.
     const listenHtml = speechSupported
       ? `<button type="button" class="passage-audio-btn passage-audio-btn--listen speech-btn passage-speech-btn" data-role="speak-passage" aria-label="Read passage aloud" aria-pressed="false" title="Listen">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+          <span class="passage-audio-btn-label" data-role="listen-label">Listen</span>
         </button>`
       : '';
-    // Record button — Tabler ti-microphone. voice-recorder.js mounts
-    // its internal button into [data-role="voice-mount"]; CSS in §120
-    // collapses the label so only the icon renders, matched in size
-    // to the Listen button.
+    // Record button — voice-recorder.js mounts its internal button
+    // into [data-role="voice-mount"]; §131 enables the "Read" label
+    // via data-mini-label so the button reads "🎙 Read" inline.
     const voiceMount = (window.GEVoice && window.GEVoice.supported && window.GEVoice.supported())
-      ? '<div class="voice-recorder-slot" data-role="voice-mount" data-icon-only="1"></div>'
+      ? '<div class="voice-recorder-slot" data-role="voice-mount" data-icon-only="1" data-mini-label="Read"></div>'
       : '';
     // Default-collapsed for subsequent questions on the same passage.
     // The first question of a passage opens expanded; once any Q for
@@ -4134,6 +4166,8 @@
             ${voiceMount}
           </div>
         </header>
+        <!-- §131 — 2px scroll-driven progress bar between title and body. -->
+        <div class="reading-progress-bar" aria-hidden="true"><div class="reading-progress-bar-fill" data-role="reading-progress"></div></div>
         <div class="reading-passage-card-body">${innerHtml}</div>
         <button type="button" class="reading-passage-toggle-footer" data-role="toggle-passage" aria-pressed="${seenBefore ? 'true' : 'false'}">
           <span class="reading-passage-toggle-label-text">${seenBefore ? 'Show passage' : 'Hide passage'}</span>

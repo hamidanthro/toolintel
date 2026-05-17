@@ -17884,11 +17884,14 @@ body.practice-page .q-prompt > .q-speech-btn {
   align-items: center;
   gap: 8px;
   margin-bottom: 10px;
-  position: sticky;
-  top: 0;
+  /* §131 — KILLED `position: sticky; top: 0` here. The §120 rebuild
+     re-introduced the sticky title bar; in production it floated
+     over passage text and rendered IN THE MIDDLE of the scrollable
+     body. The new bottom-sheet layout (§131) puts the title bar at
+     the top of a flex-column passage card with the BODY scrolling
+     internally — sticky is not needed. */
   background: linear-gradient(180deg, #0d2249 0%, rgba(13, 34, 73, 0.92) 100%);
   padding-bottom: 8px;
-  z-index: 1;
 }
 .reading-passage-card-title {
   flex: 1;
@@ -32575,20 +32578,19 @@ body.practice-page .reading-passage-card.is-collapsed .reading-passage-toggle-fo
   body.practice-page .reading-passage-toggle-footer svg { transition: none; }
 }
 
-/* Sticky-on-scroll thin bar. Inside the page scroll container —
-   no position:fixed. When scrolled past the card the top edge
-   sticks; the body remains in flow. */
+/* §131 — KILLED. The §120 sticky-title-bar rule rendered the
+   header floating IN THE MIDDLE of the scrollable passage body
+   (Hamid screenshot May 17, 10:42 AM). The new §131 bottom-sheet
+   layout fixes the problem structurally: passage card is a flex
+   column with internal scroll, so the title sits naturally at the
+   top without needing sticky positioning. Rule kept as a comment
+   tombstone so future sessions don't re-add it. */
 body.practice-page .reading-passage-card-header {
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  background: linear-gradient(180deg,
-    rgba(15, 23, 42, 0.95) 0%,
-    rgba(15, 23, 42, 0.85) 100%);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  padding-top: 4px;
-  padding-bottom: 4px;
+  /* position: sticky;  killed §131 — caused title bar to render
+     OVER passage content as the kid scrolled. The bottom-sheet
+     layout makes sticky unnecessary. */
+  position: static;
+  background: transparent;
 }
 
 /* ---------- §120 Question stem block ---------- */
@@ -33572,3 +33574,312 @@ body.grade-page .mindblower-hero-wrap {
    (auth.js §128); this CSS is the belt-and-suspenders safety in
    case a cached page or a future call path mounts one. */
 .ge-home-affordance { display: none !important; }
+
+/* ============================================================
+   §131 — Reading question UI rebuild (May 17, 10:42 AM)
+   ============================================================
+   ROOT CAUSE of the "broken reading UI" screenshot:
+     • §120 sticky-title-bar rendered the title IN THE MIDDLE of
+       the passage body as the kid scrolled (visual bug surfaced
+       at user-test).
+     • Question stem disappeared below the fold because passage +
+       question rendered as siblings in a tall page-scroll layout
+       — no internal scroll, no sticky question.
+     • Title truncated to "A Special Discovery on Galv…" because
+       white-space: nowrap was applied as a layout band-aid.
+
+   THE FIX — bottom-sheet pattern on mobile reading:
+     • body.practice-page.has-reading-passage is a flex column
+       sized to 100dvh with overflow:hidden — the page no longer
+       scrolls; the passage card scrolls INTERNALLY.
+     • Header / banner / progress strip = flex-shrink: 0 at top.
+     • .reading-passage-card = flex: 1, internal flex column, body
+       scrolls (overflow-y: auto), title bar stays naturally at
+       the top of the card.
+     • .question-card = flex-shrink: 0, sticks at bottom of the
+       viewport.
+     • Title can wrap up to 2 lines (no nowrap).
+     • Audio controls become labeled pills: "Listen" + "Read".
+     • 2px reading-progress bar between title and body.
+     • Numbered paragraphs inline (gold, 11px, weight 500).
+     • Defensive text-align: left !important on body.
+
+   Math + science (no passage) UNAFFECTED — `has-reading-passage`
+   body class is only set when q.passage is present.
+   ============================================================ */
+
+/* Top-level flex-column page when a passage is present. */
+body.practice-page.has-reading-passage {
+  height: 100dvh;
+  overflow: hidden;
+}
+body.practice-page.has-reading-passage main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+body.practice-page.has-reading-passage section,
+body.practice-page.has-reading-passage section .container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0;
+}
+body.practice-page.has-reading-passage #practice-root {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0 12px;
+}
+body.practice-page.has-reading-passage .practice-layout--solo,
+body.practice-page.has-reading-passage .practice-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+body.practice-page.has-reading-passage #qbox {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Passage card — flex column, fills available height. */
+body.practice-page.has-reading-passage .reading-passage-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  margin: 8px 0;
+  padding: 0;
+}
+
+/* Title bar — first child of the flex column; NEVER sticky. */
+body.practice-page.has-reading-passage .reading-passage-card-header {
+  flex-shrink: 0;
+  position: static !important;
+  background: transparent !important;
+  padding: 12px 14px 8px;
+  margin: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+body.practice-page.has-reading-passage .reading-passage-card-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  white-space: normal !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.25;
+  max-width: calc(100% - 140px);  /* leave room for audio pills */
+}
+
+/* §131 reading progress bar — 2px under the title bar, scroll-driven. */
+body.practice-page.has-reading-passage .reading-progress-bar {
+  flex-shrink: 0;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+body.practice-page.has-reading-passage .reading-progress-bar-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0%;
+  background: linear-gradient(90deg, #fbbf24 0%, rgba(251, 191, 36, 0.5) 100%);
+  transition: width 80ms linear;
+}
+
+/* Passage body — scrolls internally. Always left-aligned. */
+body.practice-page.has-reading-passage .reading-passage-card-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px 16px 16px;
+  margin: 0;
+  text-align: left !important;
+  text-justify: none !important;
+}
+body.practice-page.has-reading-passage .reading-passage-card-body p {
+  text-align: left !important;
+  padding-left: 0 !important;
+  margin: 0 0 12px;
+  hyphens: none;
+}
+body.practice-page.has-reading-passage .reading-passage-card-body p:last-child {
+  margin-bottom: 0;
+}
+
+/* §131 — Numbered paragraph polish. Switch from CSS counter()
+   (which floats numbers awkwardly outside the paragraph) to inline
+   gold numbers prepended via ::before that sit at the START of the
+   paragraph text, on the same line. */
+body.practice-page.has-reading-passage .reading-passage-card-body {
+  counter-reset: para;
+}
+body.practice-page.has-reading-passage .reading-passage-card-body p {
+  counter-increment: para;
+}
+body.practice-page.has-reading-passage .reading-passage-card-body p::before {
+  content: counter(para);
+  display: inline-block;
+  margin-right: 8px;
+  color: #fbbf24;
+  font-weight: 500;
+  font-size: 11px;
+  vertical-align: 1px;
+  /* Reset any floating/positioning from the §74 CSS counter rules
+     that the §131 layout doesn't want. */
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Audio controls — labeled pills. */
+body.practice-page.has-reading-passage .reading-passage-card-audio {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+body.practice-page.has-reading-passage .passage-audio-btn {
+  width: auto;
+  height: auto;
+  padding: 5px 10px;
+  border-radius: 999px;
+  gap: 5px;
+  font-family: 'Inter';
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+body.practice-page.has-reading-passage .passage-audio-btn svg {
+  width: 13px;
+  height: 13px;
+}
+body.practice-page.has-reading-passage .passage-audio-btn-label {
+  display: inline-block;
+}
+body.practice-page.has-reading-passage .passage-audio-btn--listen,
+body.practice-page.has-reading-passage .passage-audio-btn.speech-btn--playing {
+  background: rgba(251, 191, 36, 0.14);
+  border-color: rgba(251, 191, 36, 0.50);
+  color: #fbbf24;
+}
+/* Same treatment for the voice-recorder mounted "Read" button. */
+body.practice-page.has-reading-passage .reading-passage-card-audio .voice-rec-btn.voice-rec-start {
+  width: auto;
+  height: auto;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-family: 'Inter';
+  font-size: 11px;
+  font-weight: 600;
+  gap: 5px;
+}
+body.practice-page.has-reading-passage .reading-passage-card-audio .voice-rec-label {
+  display: inline-block !important;
+  font-size: 11px;
+  letter-spacing: -0.005em;
+}
+body.practice-page.has-reading-passage .reading-passage-card-audio .voice-rec-icon-svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* Hide the §120 footer toggle ("Hide passage / Show passage") — the
+   bottom-sheet layout makes hiding unnecessary; the question is
+   always visible and the passage scrolls inside its container. */
+body.practice-page.has-reading-passage .reading-passage-toggle-footer {
+  display: none;
+}
+
+/* The QUESTION card — sticky bottom sheet. flex-shrink: 0 keeps
+   choices + Check button always visible without overlapping the
+   passage. Top fade so the passage scroll bleeds visually into
+   the bottom sheet. */
+body.practice-page.has-reading-passage .question-card {
+  flex-shrink: 0;
+  position: relative;
+  margin: 0 -12px;
+  padding: 12px 14px 14px !important;
+  background: linear-gradient(180deg,
+    transparent 0%,
+    rgba(10, 22, 40, 0.92) 14%,
+    #0a1628 36%) !important;
+  border-top: 1px solid rgba(251, 191, 36, 0.18);
+  border-radius: 0 !important;
+  max-height: 60vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* §131 — Hide the legacy in-card progress nav ("Question 1 of 5")
+   on reading flows; the §120 q-progress-earn strip already lives
+   inside this card and carries the same info. */
+body.practice-page.has-reading-passage .reading-q-nav {
+  display: none;
+}
+
+/* §131 — In the bottom sheet, the q-progress-earn strip becomes
+   the first row (replaces the legacy "Question 1 of 5" position). */
+body.practice-page.has-reading-passage .question-card .q-progress-earn {
+  padding: 0 0 8px;
+}
+
+/* The §120 QUESTION stem block + lettered choices + Check button
+   keep their styling — they were already designed for the bottom
+   sheet pattern. Just adjust spacing for the smaller container. */
+body.practice-page.has-reading-passage .question-card .q-prompt {
+  margin: 0 0 10px;
+  padding: 8px 11px 8px 13px;
+}
+body.practice-page.has-reading-passage .question-card .q-prompt::before {
+  font-size: 8px;
+  letter-spacing: 0.16em;
+}
+body.practice-page.has-reading-passage .question-card .q-prompt-text {
+  font-size: 13px;
+  line-height: 1.35;
+}
+body.practice-page.has-reading-passage .question-card .q-body {
+  gap: 5px;
+  margin-bottom: 10px;
+}
+body.practice-page.has-reading-passage .question-card .choice {
+  padding: 9px 11px;
+  min-height: 40px;
+  grid-template-columns: 22px 1fr auto;
+  gap: 11px;
+}
+body.practice-page.has-reading-passage .question-card .choice .choice-letter {
+  width: 22px;
+  height: 22px;
+  font-size: 10px;
+}
+body.practice-page.has-reading-passage .question-card .choice .choice-content {
+  font-size: 12px;
+  line-height: 1.35;
+}
+body.practice-page.has-reading-passage .question-card .btn-primary.q-cta {
+  position: static;
+  padding: 11px 18px;
+  font-size: 13px;
+}
+
+/* §131 — Header subtitle slot: "Comprehension · {short-passage-title}" */
+body.practice-page.has-reading-passage .practice-breadcrumb-title-sub {
+  display: block;
+}
