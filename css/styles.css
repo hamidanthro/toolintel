@@ -34054,3 +34054,129 @@ body.practice-page.has-reading-passage .practice-breadcrumb-title-sub {
     flex: 0 0 auto;
   }
 }
+
+/* ============================================================
+   §134 — Consolidate reading layout breakpoints (May 17 final fix)
+   ============================================================
+   The §131/§132/§133 layering left a fragile cascade at the
+   1024-1025px boundary AND between rule-specificity within the
+   same viewport. Result: question card on desktop overlapping
+   the passage, answer-choice rows rendering with character-per-line
+   text wrap (super narrow choices).
+
+   Single-breakpoint consolidation:
+     • <769px = mobile bottom-sheet (passage scrolls inside card,
+       question pinned at bottom).
+     • ≥769px = natural document flow. Period. No flex-fixed-
+       height, no overflow:hidden, no margin:0 -12px tricks. The
+       passage card and question card render as normal stacked
+       cards in a scrollable page.
+
+   This entire block has higher cascade weight than §131/§132/§133
+   because it comes later. !important across the board for the
+   layout-flipping properties; lower-priority visual restorations
+   without !important so individual element styles still win.
+   ============================================================ */
+
+@media (min-width: 769px) {
+  /* === LAYOUT RESET — kill the bottom-sheet flex chain === */
+  body.practice-page.has-reading-passage,
+  body.practice-page.has-reading-passage main,
+  body.practice-page.has-reading-passage section,
+  body.practice-page.has-reading-passage section > .container,
+  body.practice-page.has-reading-passage #practice-root,
+  body.practice-page.has-reading-passage .practice-layout--solo,
+  body.practice-page.has-reading-passage .practice-main,
+  body.practice-page.has-reading-passage #qbox {
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    display: block !important;
+    flex: none !important;
+    padding-left: initial;
+    padding-right: initial;
+  }
+
+  /* === PASSAGE CARD — restore §120 stacked-card chrome === */
+  body.practice-page.has-reading-passage .reading-passage-card {
+    display: block !important;
+    flex: none !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    margin: 16px 0 !important;
+    padding: 0;
+    background: linear-gradient(180deg,
+      rgba(30, 41, 75, 0.55) 0%,
+      rgba(15, 23, 42, 0.55) 100%);
+    border: 1px solid rgba(251, 191, 36, 0.20);
+    border-radius: 14px;
+  }
+  body.practice-page.has-reading-passage .reading-passage-card-header {
+    padding: 14px 18px 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  body.practice-page.has-reading-passage .reading-passage-card-body {
+    flex: none !important;
+    overflow: visible !important;
+    max-height: none !important;
+    padding: 14px 18px 16px;
+    font-size: 15px;
+    line-height: 1.65;
+  }
+  /* Hide the scroll-progress bar — no internal scroll on desktop. */
+  body.practice-page.has-reading-passage .reading-progress-bar {
+    display: none !important;
+  }
+  body.practice-page.has-reading-passage .reading-passage-card-title {
+    -webkit-line-clamp: unset;
+    display: block;
+    max-width: none;
+  }
+  body.practice-page.has-reading-passage .reading-passage-toggle-footer {
+    display: inline-flex;
+    padding: 4px 18px 12px;
+  }
+
+  /* === QUESTION CARD — restore §120 stacked-card chrome === */
+  body.practice-page.has-reading-passage .question-card {
+    flex: none !important;
+    position: static !important;
+    margin: 16px 0 !important;
+    padding: 20px 22px !important;
+    max-height: none !important;
+    overflow: visible !important;
+    background: linear-gradient(180deg,
+      rgba(40, 53, 91, 0.5) 0%,
+      rgba(20, 29, 51, 0.5) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 16px !important;
+  }
+  /* §131 mobile-only choice tightening must not bleed to desktop. */
+  body.practice-page.has-reading-passage .question-card .q-prompt-text {
+    font-size: 15px !important;
+    line-height: 1.4 !important;
+  }
+  body.practice-page.has-reading-passage .question-card .q-body {
+    gap: 8px !important;
+    margin-bottom: 14px !important;
+  }
+  body.practice-page.has-reading-passage .question-card .choice {
+    grid-template-columns: 28px 1fr auto !important;
+    gap: 12px !important;
+    padding: 12px 14px !important;
+    min-height: 52px !important;
+  }
+  body.practice-page.has-reading-passage .question-card .choice .choice-letter {
+    width: 26px !important;
+    height: 26px !important;
+    font-size: 11px !important;
+  }
+  body.practice-page.has-reading-passage .question-card .choice .choice-content {
+    font-size: 13.5px !important;
+    line-height: 1.4 !important;
+  }
+}
